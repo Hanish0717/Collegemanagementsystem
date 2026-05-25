@@ -1,4 +1,4 @@
-```text id="u9k3vp"
+/*
 Build ONLY the Hostel Management Module pages for the existing College Management System UI.
 
 IMPORTANT:
@@ -268,8 +268,8 @@ DO NOT:
 - create inconsistent layouts
 
 The Hostel Management module should look like a real enterprise College ERP hostel administration dashboard fully integrated into the existing College Management System UI.
-```
-```text id="u9k3vp"
+*/
+/*
 Build ONLY the Hostel Management Module pages for the existing College Management System UI.
 
 IMPORTANT:
@@ -539,7 +539,7 @@ DO NOT:
 - create inconsistent layouts
 
 The Hostel Management module should look like a real enterprise College ERP hostel administration dashboard fully integrated into the existing College Management System UI.
-```
+*/
 export const adminStats = [
   { label: "Total Students", value: "2,847", change: "+12.4%" },
   { label: "Total Faculty", value: "156", change: "+3.2%" },

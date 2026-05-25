@@ -21,9 +21,6 @@ api.interceptors.request.use((config) => {
 });
 
 // Handle 401 responses — clear auth state
-// NOTE: We do NOT use window.location.href here.
-// Instead, the response interceptor rejects so calling code
-// can handle the redirect via TanStack Router's `throw redirect()`.
 api.interceptors.response.use(
   (res) => res,
   (err) => {
@@ -31,6 +28,8 @@ api.interceptors.response.use(
       if (typeof window !== "undefined") {
         localStorage.removeItem("cms_token");
         localStorage.removeItem("cms_user");
+        localStorage.removeItem("campusly.role");
+        window.location.href = "/login";
       }
     }
     return Promise.reject(err);

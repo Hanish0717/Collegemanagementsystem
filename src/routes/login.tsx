@@ -1,11 +1,20 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { GraduationCap, Mail, Lock, ArrowRight, Github, Chrome, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
-import { login as apiLogin, getDashboardForRole, toBackendRole } from "@/services/authService";
+import { getDashboardForRole, isAuthenticated, getStoredUser } from "@/services/authService";
+import { useAuth } from "../context/AuthContext";
 
 export const Route = createFileRoute("/login")({
+  beforeLoad: () => {
+    if (isAuthenticated()) {
+      const user = getStoredUser();
+      if (user) {
+        throw redirect({ to: getDashboardForRole(user.role) });
+      }
+    }
+  },
   head: () => ({
     meta: [
       { title: "Sign in — College Management System" },
@@ -17,6 +26,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [roleId, setRoleId] = useState<RoleId>("super_admin");
   const active = ROLE_LIST.find(r => r.id === roleId)!;
 
@@ -32,7 +42,7 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const user = await apiLogin({ email, password });
+      const user = await login({ email, password });
 
       // Also sync the legacy role selector so sidebar picks it up
       setActiveRole(roleId);

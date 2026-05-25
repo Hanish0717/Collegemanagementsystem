@@ -136,7 +136,7 @@ function AdminDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Add New Student", tone: "primary" as const },
+              { label: "Add New Student", tone: "default" as const },
               { label: "Mark Attendance", tone: "success" as const },
               { label: "Send Fee Reminder", tone: "warn" as const },
               { label: "Approve Event", tone: "info" as const },

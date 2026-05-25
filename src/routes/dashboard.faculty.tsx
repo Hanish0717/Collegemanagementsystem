@@ -81,7 +81,7 @@ function FacultyDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Mark Attendance", tone: "primary" as const },
+              { label: "Mark Attendance", tone: "default" as const },
               { label: "Upload Assignment", tone: "success" as const },
               { label: "Enter Marks", tone: "warn" as const },
               { label: "Start Online Class", tone: "info" as const },

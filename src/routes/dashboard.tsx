@@ -4,7 +4,8 @@ import {
   GraduationCap, LogOut, Search, Menu, Sun, Moon, ChevronDown, Plus, Bell,
 } from "lucide-react";
 import { getActiveRole, type Role } from "@/lib/roles";
-import { isAuthenticated, logout as authLogout, getStoredUser } from "@/services/authService";
+import { isAuthenticated, getStoredUser } from "@/services/authService";
+import { useAuth } from "../context/AuthContext";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: () => {
@@ -17,17 +18,17 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardLayout() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [dark, setDark] = useState(false);
   const [role, setRole] = useState<Role>(() => getActiveRole());
   const path = useRouterState({ select: r => r.location.pathname });
-  const storedUser = getStoredUser();
-  const displayName = storedUser?.fullName ?? "User";
+  const displayName = user?.fullName ?? "User";
 
   useEffect(() => { setRole(getActiveRole()); }, []);
 
   const handleLogout = () => {
-    authLogout();
+    logout();
     navigate({ to: "/login" });
   };
 

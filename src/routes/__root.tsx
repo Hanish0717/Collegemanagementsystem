@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { FloatingChatWidget } from "@/components/dashboard/FloatingChatWidget";
+import { AuthProvider } from "../context/AuthContext";
 
 function NotFoundComponent() {
   return (
@@ -82,8 +83,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <FloatingChatWidget />
+      <AuthProvider>
+        <Outlet />
+        <FloatingChatWidget />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
