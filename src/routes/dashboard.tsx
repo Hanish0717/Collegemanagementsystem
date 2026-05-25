@@ -1,21 +1,35 @@
-import { Outlet, Link, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { Outlet, Link, createFileRoute, useRouterState, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   GraduationCap, LogOut, Search, Menu, Sun, Moon, ChevronDown, Plus, Bell,
 } from "lucide-react";
 import { getActiveRole, type Role } from "@/lib/roles";
+import { isAuthenticated, logout as authLogout, getStoredUser } from "@/services/authService";
 
 export const Route = createFileRoute("/dashboard")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: DashboardLayout,
 });
 
 function DashboardLayout() {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [dark, setDark] = useState(false);
   const [role, setRole] = useState<Role>(() => getActiveRole());
   const path = useRouterState({ select: r => r.location.pathname });
+  const storedUser = getStoredUser();
+  const displayName = storedUser?.fullName ?? "User";
 
   useEffect(() => { setRole(getActiveRole()); }, []);
+
+  const handleLogout = () => {
+    authLogout();
+    navigate({ to: "/login" });
+  };
 
   const RoleIcon = role.icon;
 
@@ -69,10 +83,10 @@ function DashboardLayout() {
             })}
           </nav>
           <div className="p-3 border-t border-sidebar-border">
-            <Link to="/login" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
+            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground">
               <LogOut className="size-4" />
               {!collapsed && <span>Logout</span>}
-            </Link>
+            </button>
           </div>
         </aside>
 
@@ -106,7 +120,7 @@ function DashboardLayout() {
               <button className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-accent">
                 <div className={`size-7 rounded-lg bg-gradient-to-br ${role.gradient}`} />
                 <div className="hidden md:block text-left leading-tight">
-                  <div className="text-xs font-semibold">Dr. Mehra</div>
+                  <div className="text-xs font-semibold">{displayName}</div>
                   <div className="text-[10px] text-muted-foreground">{role.name}</div>
                 </div>
                 <ChevronDown className="size-3.5 text-muted-foreground" />

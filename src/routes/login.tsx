@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { GraduationCap, Mail, Lock, ArrowRight, Github, Chrome, Check } from "lucide-react";
+import { GraduationCap, Mail, Lock, ArrowRight, Github, Chrome, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
+import { login as apiLogin, getDashboardForRole, toBackendRole } from "@/services/authService";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -19,10 +20,36 @@ function LoginPage() {
   const [roleId, setRoleId] = useState<RoleId>("super_admin");
   const active = ROLE_LIST.find(r => r.id === roleId)!;
 
-  const submit = (e: React.FormEvent) => {
+  // Controlled form state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setActiveRole(roleId);
-    navigate({ to: "/dashboard" });
+    setError(null);
+    setLoading(true);
+
+    try {
+      const user = await apiLogin({ email, password });
+
+      // Also sync the legacy role selector so sidebar picks it up
+      setActiveRole(roleId);
+
+      // Navigate to role-specific dashboard
+      const dest = getDashboardForRole(user.role);
+      navigate({ to: dest });
+    } catch (err: any) {
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        "Login failed. Please try again.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -113,6 +140,13 @@ function LoginPage() {
           <h2 className="text-xl font-bold mt-6">Sign in to your account</h2>
           <p className="text-sm text-muted-foreground mt-1">Enter your institutional credentials to access the campus management system</p>
 
+          {/* Error message */}
+          {error && (
+            <div className="mt-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
           <form className="mt-5 space-y-4" onSubmit={submit}>
             <div className="lg:hidden">
               <label className="text-xs font-medium">Role</label>
@@ -127,16 +161,28 @@ function LoginPage() {
               <label className="text-xs font-medium">Email</label>
               <div className="mt-1 relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <input type="email" defaultValue="dean@university.edu"
-                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@university.edu"
+                  required
+                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
               </div>
             </div>
             <div>
               <label className="text-xs font-medium">Password</label>
               <div className="mt-1 relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <input type="password" defaultValue="college2026"
-                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
               </div>
             </div>
             <div className="flex items-center justify-between text-xs">
@@ -145,8 +191,21 @@ function LoginPage() {
               </label>
               <a href="#" className="text-indigo hover:underline">Forgot password?</a>
             </div>
-            <button type="submit" className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active.gradient} shadow-soft`}>
-              Access as {active.name} <ArrowRight className="size-4" />
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active.gradient} shadow-soft disabled:opacity-70`}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                <>
+                  Access as {active.name} <ArrowRight className="size-4" />
+                </>
+              )}
             </button>
           </form>
 
