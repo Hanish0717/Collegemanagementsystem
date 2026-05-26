@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-import { OAuth2Client } from 'google-auth-library';
 import User from '../models/User.js';
 import OTP from '../models/OTP.js';
 import PasswordReset from '../models/PasswordReset.js';
@@ -8,7 +6,10 @@ import generateOTP from '../utils/generateOTP.js';
 import sendEmail from '../utils/sendEmail.js';
 import sendSMS from '../utils/sendSMS.js';
 import { generateOTPTemplate, generatePasswordResetTemplate } from '../utils/emailTemplates.js';
+import { hashOTP, verifyOTPHash } from '../utils/otpUtils.js';
+import { OTP_EXPIRY_MINUTES, OTP_RESEND_COOLDOWN_SECONDS, OTP_MAX_ATTEMPTS, OTP_BLOCK_TIME_MINUTES } from '../../config.js';
 
+import { OAuth2Client } from 'google-auth-library';
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // @desc    Register a new user
@@ -202,27 +203,38 @@ export const googleAuth = async (req, res, next) => {
 export const sendOtp = async (req, res, next) => {
   try {
     const { email, type } = req.body;
-    if (!email) {
-      const error = new Error('Please provide an email');
-      error.statusCode = 400;
-      return next(error);
+    if (!email) return res.status(400).json({ message: 'Email required' });
+
+    const otpType = type || 'email_verification';
+    const lastOtp = await OTP.findOne({ email, type: otpType }).sort({ createdAt: -1 });
+
+    if (lastOtp) {
+      const cooldown = OTP_RESEND_COOLDOWN_SECONDS * 1000;
+      const timeElapsed = Date.now() - lastOtp.createdAt.getTime();
+      if (timeElapsed < cooldown) {
+        return res.status(429).json({ message: `Please wait ${Math.ceil((cooldown - timeElapsed) / 1000)}s before requesting another OTP` });
+      }
     }
 
     const otp = generateOTP();
+    const hashedOtp = hashOTP(otp);
+
     await OTP.create({
       email,
-      otp,
-      type: type || 'email_verification',
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      otp: hashedOtp,
+      type: otpType,
+      expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000),
+      attempts: 0,
+      blockedUntil: null,
     });
 
     await sendEmail({
       to: email,
       subject: 'Your OTP Code',
-      html: generateOTPTemplate(otp, type || 'Email Verification'),
+      html: generateOTPTemplate(otp, otpType),
     });
 
-    res.status(200).json({ success: true, message: 'OTP sent successfully' });
+    res.status(200).json({ success: true, message: 'OTP sent' });
   } catch (error) {
     next(error);
   }
@@ -234,59 +246,46 @@ export const sendOtp = async (req, res, next) => {
 export const verifyOtp = async (req, res, next) => {
   try {
     const { email, otp, type } = req.body;
-    
-    if (!email || !otp) {
-      const error = new Error('Please provide email and OTP');
-      error.statusCode = 400;
-      return next(error);
+    const otpRecord = await OTP.findOne({ email, type: type || 'email_verification' }).sort({ createdAt: -1 });
+    // Check block status
+    if (otpRecord && otpRecord.blockedUntil && otpRecord.blockedUntil > new Date()) {
+      return res.status(429).json({ message: 'Too many invalid attempts. Try again later.' });
     }
 
-    const validOtp = await OTP.findOne({
-      email,
-      otp,
-      type: type || 'email_verification',
-      expiresAt: { $gt: new Date() },
-    });
-
-    if (!validOtp) {
-      const error = new Error('Invalid or expired OTP');
-      error.statusCode = 400;
-      return next(error);
+    // Validate OTP
+    const isValid = otpRecord && (await verifyOTPHash(otp, otpRecord.otp)) && otpRecord.expiresAt >= new Date();
+    if (!isValid) {
+      // Increment attempts
+      if (otpRecord) {
+        otpRecord.attempts += 1;
+        if (otpRecord.attempts >= OTP_MAX_ATTEMPTS) {
+          otpRecord.blockedUntil = new Date(Date.now() + OTP_BLOCK_TIME_MINUTES * 60000);
+        }
+        await otpRecord.save();
+      }
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 
-    // OTP is valid
-    await OTP.deleteOne({ _id: validOtp._id });
-
-    // Find user
+    // OTP is valid – clean up
+    await OTP.deleteOne({ _id: otpRecord._id });
     const user = await User.findOne({ email });
     if (!user) {
-      const error = new Error('User not found');
-      error.statusCode = 404;
-      return next(error);
+      return res.status(404).json({ message: 'User not found' });
     }
-
-    const token = generateToken(user._id);
-    const userResponse = user.toObject();
-    delete userResponse.password;
-
-    if (type === 'login_otp_email') {
-      return res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        token,
-        user: userResponse,
-      });
-    }
-
-    // For normal email_verification
     user.isVerified = true;
     await user.save();
-
-    res.status(200).json({
+    const token = generateToken(user._id);
+    const userResponse = {
+      id: user._id,
+      fullName: user.fullName || user.name,
+      email: user.email,
+      role: user.role,
+    };
+    return res.status(200).json({
       success: true,
-      message: 'Email verified successfully',
       token,
       user: userResponse,
+      message: 'Verified',
     });
   } catch (error) {
     next(error);
