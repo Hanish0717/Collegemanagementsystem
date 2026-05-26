@@ -5,12 +5,14 @@ const userSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: [true, 'Full name is required'],
+      trim: true,
+    },
+    name: {
+      type: String,
       trim: true,
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
       unique: true,
       trim: true,
       lowercase: true,
@@ -21,7 +23,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
       select: false,
     },
@@ -47,9 +48,25 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    mobile: {
+      type: String,
+      trim: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    mobileVerified: {
+      type: Boolean,
+      default: false,
+    },
     isActive: {
       type: Boolean,
       default: true,
+    },
+    googleId: {
+      type: String,
+      trim: true,
     },
   },
   {
@@ -59,7 +76,12 @@ const userSchema = new mongoose.Schema(
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  if (this.name && !this.fullName) this.fullName = this.name;
+  if (this.fullName && !this.name) this.name = this.fullName;
+  if (this.mobile && !this.phoneNumber) this.phoneNumber = this.mobile;
+  if (this.phoneNumber && !this.mobile) this.mobile = this.phoneNumber;
+
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
 

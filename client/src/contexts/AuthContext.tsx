@@ -13,7 +13,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (payload: Parameters<typeof apiLogin>[0]) => Promise<AuthUser>;
+  login: (payload: Parameters<typeof apiLogin>[0]) => Promise<any>;
   logout: () => void;
   refreshUser: () => Promise<AuthUser | null>;
 }
@@ -30,10 +30,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (payload: Parameters<typeof apiLogin>[0]) => {
     setIsLoading(true);
     try {
-      const loggedInUser = await apiLogin(payload);
-      setUser(loggedInUser);
+      const result = await apiLogin(payload);
+      // Direct login — result is the user object (no OTP step)
+      setUser(result);
       setToken(getToken());
-      return loggedInUser;
+      return result;
     } finally {
       setIsLoading(false);
     }
