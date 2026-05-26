@@ -65,9 +65,9 @@ const ROLE_KEY = "campusly.role"; // must match the key used in roles.ts
 
 // ── Auth Functions ──────────────────────────────────────
 
-/** Login, store token + user, sync role. Returns the AuthUser. */
-export async function login(payload: LoginPayload): Promise<AuthUser> {
-  const { data } = await api.post<LoginResponse>("/api/auth/login", payload);
+export async function login(payload: LoginPayload): Promise<any> {
+  const { data } = await api.post<any>("/api/auth/login", payload);
+
   const { token, user } = data;
 
   localStorage.setItem(TOKEN_KEY, token);
