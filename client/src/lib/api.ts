@@ -1,4 +1,7 @@
 import axios from "axios";
+import { getRouter } from "../router";
+import { toast } from "sonner";
+// Updated API client: use TanStack Router navigation for 401 redirects and toast notifications for error handling
 
 const API_BASE_URL = "http://localhost:5000";
 
@@ -24,13 +27,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    const router = getRouter?.();
     if (err.response?.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("cms_token");
         localStorage.removeItem("cms_user");
         localStorage.removeItem("campusly.role");
-        window.location.href = "/login";
       }
+      toast.error("Session expired. Redirecting to login.");
+      router?.navigate({ to: "/login", replace: true });
+    } else if (err.response?.status === 403) {
+      toast.error("Access denied.");
+    } else if (!err.response) {
+      toast.error("Network error. Please try again later.");
     }
     return Promise.reject(err);
   },
