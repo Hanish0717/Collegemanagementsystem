@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-const MONGODB_URI = "mongodb+srv://maheshkintali018_db_user:preethi08@cluster0.bf7wxvy.mongodb.net/college_management_system?retryWrites=true&w=majority&appName=Cluster0";
+dotenv.config();
+
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const testSchema = new mongoose.Schema({ name: String, createdAt: Date });
 const TestModel = mongoose.model('ConnectionTest', testSchema);

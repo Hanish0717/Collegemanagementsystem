@@ -4,24 +4,14 @@ import User from './src/models/User.js';
 
 dotenv.config();
 
-const demoUsers = [
-  { name: 'Super Admin', email: 'superadmin@college.com', role: 'super-admin' },
-  { name: 'Admin', email: 'admin@college.com', role: 'admin' },
-  { name: 'Faculty', email: 'faculty@college.com', role: 'faculty' },
-  { name: 'Student', email: 'student@college.com', role: 'student' },
-  { name: 'Parent', email: 'parent@college.com', role: 'parent' },
-  { name: 'Librarian', email: 'librarian@college.com', role: 'librarian' },
-  { name: 'Placement Officer', email: 'placement@college.com', role: 'placement-officer' },
-  { name: 'Hostel Warden', email: 'warden@college.com', role: 'hostel-warden' },
-  { name: 'Transport Manager', email: 'transport@college.com', role: 'transport-manager' }
-];
+const demoUsers = [];
 
 const seedDatabase = async () => {
   let connected = false;
   while (!connected) {
     try {
       console.log("Connecting to MongoDB (Retrying if failed)...");
-      await mongoose.connect("mongodb+srv://maheshkintali018_db_user:preethi08@cluster0.bf7wxvy.mongodb.net/college_management_system?retryWrites=true&w=majority&appName=Cluster0", {
+      await mongoose.connect(process.env.MONGODB_URI, {
         serverSelectionTimeoutMS: 5000,
         family: 4
       });
