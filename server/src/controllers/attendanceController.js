@@ -1,23 +1,7 @@
 import Attendance from '../models/Attendance.js';
 import Student from '../models/Student.js';
 import mongoose from 'mongoose';
-
-// Helper: Recalculate student overall attendance percentage and save it
-const updateStudentAttendancePercentage = async (studentId) => {
-  try {
-    const total = await Attendance.countDocuments({ student: studentId });
-    const attended = await Attendance.countDocuments({
-      student: studentId,
-      status: { $in: ['present', 'late'] },
-    });
-
-    const percentage = total > 0 ? Math.round((attended / total) * 100 * 10) / 10 : 100;
-    await Student.findByIdAndUpdate(studentId, { attendancePercentage: percentage });
-    return percentage;
-  } catch (error) {
-    console.error(`Error updating attendance percentage for student ${studentId}:`, error);
-  }
-};
+import { updateStudentAttendancePercentage } from '../services/attendanceService.js';
 
 // @desc    Mark attendance for a student
 // @route   POST /api/attendance/mark
