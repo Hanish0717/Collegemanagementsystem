@@ -7,71 +7,7 @@ import Fee from '../models/Fee.js';
 
 dotenv.config();
 
-const usersToSeed = [
-  {
-    fullName: 'System Super Admin',
-    email: 'superadmin@college.com',
-    password: 'password123',
-    role: 'super-admin',
-    phoneNumber: '9876543210',
-  },
-  {
-    fullName: 'System Admin',
-    email: 'admin@college.com',
-    password: 'password123',
-    role: 'admin',
-    phoneNumber: '9876543211',
-  },
-  {
-    fullName: 'Dr. John Smith',
-    email: 'faculty@college.com',
-    password: 'password123',
-    role: 'faculty',
-    phoneNumber: '9876543212',
-  },
-  {
-    fullName: 'Jane Doe',
-    email: 'student@college.com',
-    password: 'password123',
-    role: 'student',
-    phoneNumber: '9876543213',
-  },
-  {
-    fullName: 'Robert Doe',
-    email: 'parent@college.com',
-    password: 'password123',
-    role: 'parent',
-    phoneNumber: '9876543214',
-  },
-  {
-    fullName: 'Sarah Librarian',
-    email: 'librarian@college.com',
-    password: 'password123',
-    role: 'librarian',
-    phoneNumber: '9876543215',
-  },
-  {
-    fullName: 'Robert Placement',
-    email: 'placement@college.com',
-    password: 'password123',
-    role: 'placement-officer',
-    phoneNumber: '9876543216',
-  },
-  {
-    fullName: 'Emily Warden',
-    email: 'warden@college.com',
-    password: 'password123',
-    role: 'hostel-warden',
-    phoneNumber: '9876543217',
-  },
-  {
-    fullName: 'David Transport',
-    email: 'transport@college.com',
-    password: 'password123',
-    role: 'transport-manager',
-    phoneNumber: '9876543218',
-  },
-];
+const usersToSeed = [];
 
 const booksToSeed = [
   {
