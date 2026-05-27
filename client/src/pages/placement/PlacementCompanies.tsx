@@ -4,8 +4,6 @@ import { Search, Plus, Grid, List, Building2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { companies, drives } from "@/mock/mockData";
 
-
-
 export function PlacementCompanies() {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,14 +11,16 @@ export function PlacementCompanies() {
 
   const industries = ["All", "Technology", "Finance", "Consulting", "IT Services", "E-commerce"];
 
-  const filteredCompanies = companies.filter(comp =>
-    (selectedIndustry === "All" || comp.industry === selectedIndustry) &&
-    (comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      comp.industry.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredCompanies = companies.filter(
+    (comp) =>
+      (selectedIndustry === "All" || comp.industry === selectedIndustry) &&
+      (comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        comp.industry.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   const getCompanyDrives = (companyId: string) => {
-    return drives.filter(d => companies.find(c => c.name === d.company)?.id === companyId).length;
+    return drives.filter((d) => companies.find((c) => c.name === d.company)?.id === companyId)
+      .length;
   };
 
   return (
@@ -66,7 +66,7 @@ export function PlacementCompanies() {
 
           {/* Industry Filter */}
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {industries.map(ind => (
+            {industries.map((ind) => (
               <button
                 key={ind}
                 onClick={() => setSelectedIndustry(ind)}
@@ -86,7 +86,7 @@ export function PlacementCompanies() {
       {/* Grid View */}
       {viewMode === "grid" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredCompanies.map(company => (
+          {filteredCompanies.map((company) => (
             <Card key={company.id} className="hover:-translate-y-1 transition flex flex-col">
               <div className="aspect-video rounded-xl bg-gradient-to-br from-purple-600 to-cyan-500 text-white grid place-items-center mb-4 relative overflow-hidden">
                 <Building2 className="size-12 opacity-80" />
@@ -145,17 +145,31 @@ export function PlacementCompanies() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Industry</th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Package</th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">HR Contact</th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Prev. Hires</th>
-                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Actions</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Company
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Industry
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Package
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    HR Contact
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Status
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Prev. Hires
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {filteredCompanies.map(company => (
+                {filteredCompanies.map((company) => (
                   <tr key={company.id} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4">
                       <div className="font-medium">{company.name}</div>
@@ -176,7 +190,9 @@ export function PlacementCompanies() {
                         {company.hiringStatus}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4 text-center font-medium">{company.previousYearHires}</td>
+                    <td className="py-3 px-4 text-center font-medium">
+                      {company.previousYearHires}
+                    </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1 justify-center">
                         <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
@@ -205,21 +221,27 @@ export function PlacementCompanies() {
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Role</th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Package</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Eligibility</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                  Eligibility
+                </th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Date</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Applicants</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                  Applicants
+                </th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Status</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Actions</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {drives.map(drive => (
+              {drives.map((drive) => (
                 <tr key={drive.id} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{drive.company}</td>
                   <td className="py-3 px-4">{drive.role}</td>
                   <td className="py-3 px-4">
                     <span className="font-semibold text-emerald-600">
-                      {companies.find(c => c.name === drive.company)?.package}
+                      {companies.find((c) => c.name === drive.company)?.package}
                     </span>
                   </td>
                   <td className="py-3 px-4">
@@ -230,7 +252,15 @@ export function PlacementCompanies() {
                   </td>
                   <td className="py-3 px-4 font-medium">{drive.studentCount}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={drive.status === "Upcoming" ? "info" : drive.status === "Ongoing" ? "warn" : "success"}>
+                    <Badge
+                      tone={
+                        drive.status === "Upcoming"
+                          ? "info"
+                          : drive.status === "Ongoing"
+                            ? "warn"
+                            : "success"
+                      }
+                    >
                       {drive.status}
                     </Badge>
                   </td>

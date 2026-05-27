@@ -4,8 +4,6 @@ import { exams, performanceData } from "@/mock/mockData";
 import { Download, Calendar } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
-
-
 export function ExamsPage() {
   return (
     <div className="space-y-6">
@@ -19,16 +17,24 @@ export function ExamsPage() {
           </div>
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
-              <tr>{["Code","Subject","Date","Time","Hall","Duration"].map(h=><th key={h} className="px-5 py-3 text-left font-medium">{h}</th>)}</tr>
+              <tr>
+                {["Code", "Subject", "Date", "Time", "Hall", "Duration"].map((h) => (
+                  <th key={h} className="px-5 py-3 text-left font-medium">
+                    {h}
+                  </th>
+                ))}
+              </tr>
             </thead>
             <tbody>
-              {exams.map(e=>(
+              {exams.map((e) => (
                 <tr key={e.code} className="border-t hover:bg-muted/30">
                   <td className="px-5 py-3 font-mono text-xs">{e.code}</td>
                   <td className="px-5 py-3 font-medium">{e.subject}</td>
                   <td className="px-5 py-3">{e.date}</td>
                   <td className="px-5 py-3">{e.time}</td>
-                  <td className="px-5 py-3"><Badge>{e.hall}</Badge></td>
+                  <td className="px-5 py-3">
+                    <Badge>{e.hall}</Badge>
+                  </td>
                   <td className="px-5 py-3">{e.duration}</td>
                 </tr>
               ))}
@@ -37,7 +43,9 @@ export function ExamsPage() {
         </Card>
 
         <Card>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Hall Ticket</div>
+          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+            Hall Ticket
+          </div>
           <div className="rounded-2xl bg-gradient-primary p-5 text-white">
             <div className="flex items-center justify-between">
               <div>
@@ -47,13 +55,27 @@ export function ExamsPage() {
               <Calendar className="size-6 opacity-80" />
             </div>
             <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-              <div><div className="opacity-70 text-xs">Student</div><div className="font-medium">Aarav Sharma</div></div>
-              <div><div className="opacity-70 text-xs">Roll No.</div><div className="font-medium">STU001</div></div>
-              <div><div className="opacity-70 text-xs">Course</div><div className="font-medium">CS — Year 3</div></div>
-              <div><div className="opacity-70 text-xs">Seat</div><div className="font-medium">A-203 / 14</div></div>
+              <div>
+                <div className="opacity-70 text-xs">Student</div>
+                <div className="font-medium">Aarav Sharma</div>
+              </div>
+              <div>
+                <div className="opacity-70 text-xs">Roll No.</div>
+                <div className="font-medium">STU001</div>
+              </div>
+              <div>
+                <div className="opacity-70 text-xs">Course</div>
+                <div className="font-medium">CS — Year 3</div>
+              </div>
+              <div>
+                <div className="opacity-70 text-xs">Seat</div>
+                <div className="font-medium">A-203 / 14</div>
+              </div>
             </div>
             <div className="mt-5 flex gap-2">
-              {[...Array(8)].map((_,i)=><div key={i} className="flex-1 h-6 rounded bg-white/20" />)}
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex-1 h-6 rounded bg-white/20" />
+              ))}
             </div>
             <button className="mt-5 w-full rounded-xl bg-white text-foreground text-sm font-medium py-2 flex items-center justify-center gap-2">
               <Download className="size-4" /> Download
@@ -71,7 +93,7 @@ export function ExamsPage() {
               <XAxis dataKey="month" fontSize={12} stroke="#64748B" />
               <YAxis fontSize={12} stroke="#64748B" />
               <Tooltip contentStyle={{ borderRadius: 12 }} />
-              <Bar dataKey="score" fill="#9333EA" radius={[8,8,0,0]} />
+              <Bar dataKey="score" fill="#9333EA" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

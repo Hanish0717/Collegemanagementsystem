@@ -3,8 +3,6 @@ import { Calendar, CheckCircle, Clock } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { leaveHistory } from "@/mock/parentData";
 
-
-
 export function ParentLeave() {
   return (
     <div className="space-y-6">
@@ -16,14 +14,24 @@ export function ParentLeave() {
       <div className="grid md:grid-cols-4 gap-4">
         {[
           { label: "Total Requests", value: leaveHistory.length.toString(), tone: "info" as const },
-          { label: "Approved", value: leaveHistory.filter(l => l.status === "Approved").length.toString(), tone: "success" as const },
-          { label: "Pending", value: leaveHistory.filter(l => l.status === "Pending").length.toString(), tone: "warn" as const },
+          {
+            label: "Approved",
+            value: leaveHistory.filter((l) => l.status === "Approved").length.toString(),
+            tone: "success" as const,
+          },
+          {
+            label: "Pending",
+            value: leaveHistory.filter((l) => l.status === "Pending").length.toString(),
+            tone: "warn" as const,
+          },
           { label: "This Month", value: "1", tone: "info" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -34,19 +42,28 @@ export function ParentLeave() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Leave Date", "Reason", "Applied On", "Approval Status", "Remarks"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
-                ))}
+                {["Leave Date", "Reason", "Applied On", "Approval Status", "Remarks"].map(
+                  (column) => (
+                    <th
+                      key={column}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {column}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody className="divide-y">
-              {leaveHistory.map(leave => (
+              {leaveHistory.map((leave) => (
                 <tr key={leave.date} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{leave.date}</td>
                   <td className="py-3 px-4">{leave.reason}</td>
                   <td className="py-3 px-4">{leave.appliedOn}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={leave.status === "Approved" ? "success" : "warn"}>{leave.status}</Badge>
+                    <Badge tone={leave.status === "Approved" ? "success" : "warn"}>
+                      {leave.status}
+                    </Badge>
                   </td>
                   <td className="py-3 px-4 text-xs text-muted-foreground">{leave.remarks}</td>
                 </tr>
@@ -63,18 +80,23 @@ export function ParentLeave() {
             <h3 className="font-semibold">Approved Leaves</h3>
           </div>
           <div className="space-y-2">
-            {leaveHistory.filter(l => l.status === "Approved").map(leave => (
-              <div key={leave.date} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
-                <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {leave.date.slice(5, 10)}
+            {leaveHistory
+              .filter((l) => l.status === "Approved")
+              .map((leave) => (
+                <div
+                  key={leave.date}
+                  className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+                >
+                  <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
+                    {leave.date.slice(5, 10)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{leave.date}</div>
+                    <div className="text-xs text-muted-foreground">{leave.reason}</div>
+                  </div>
+                  <Badge tone="success">Approved</Badge>
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{leave.date}</div>
-                  <div className="text-xs text-muted-foreground">{leave.reason}</div>
-                </div>
-                <Badge tone="success">Approved</Badge>
-              </div>
-            ))}
+              ))}
           </div>
         </Card>
 
@@ -84,18 +106,23 @@ export function ParentLeave() {
             <h3 className="font-semibold">Pending Leaves</h3>
           </div>
           <div className="space-y-2">
-            {leaveHistory.filter(l => l.status === "Pending").map(leave => (
-              <div key={leave.date} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
-                <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
-                  {leave.date.slice(5, 10)}
+            {leaveHistory
+              .filter((l) => l.status === "Pending")
+              .map((leave) => (
+                <div
+                  key={leave.date}
+                  className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+                >
+                  <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
+                    {leave.date.slice(5, 10)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{leave.date}</div>
+                    <div className="text-xs text-muted-foreground">{leave.reason}</div>
+                  </div>
+                  <Badge tone="warn">Pending</Badge>
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{leave.date}</div>
-                  <div className="text-xs text-muted-foreground">{leave.reason}</div>
-                </div>
-                <Badge tone="warn">Pending</Badge>
-              </div>
-            ))}
+              ))}
           </div>
         </Card>
       </div>
@@ -108,7 +135,7 @@ export function ParentLeave() {
             { label: "Casual Leave", taken: "1 day", remaining: "4 days" },
             { label: "Earned Leave", taken: "0 days", remaining: "5 days" },
             { label: "Total This Year", taken: "3 days", remaining: "12 days" },
-          ].map(item => (
+          ].map((item) => (
             <div key={item.label} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="text-sm font-medium">{item.label}</div>
               <div className="flex items-center justify-between mt-2">

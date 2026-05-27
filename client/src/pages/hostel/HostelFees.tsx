@@ -1,10 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { DollarSign, Download, Search, AlertTriangle, Receipt, TrendingUp, Award } from "lucide-react";
+import {
+  DollarSign,
+  Download,
+  Search,
+  AlertTriangle,
+  Receipt,
+  TrendingUp,
+  Award,
+} from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { hostelFees, feeCollectionData } from "@/mock/hostelData";
-
-
 
 export function HostelFees() {
   const feeAnalytics = [
@@ -33,11 +39,13 @@ export function HostelFees() {
           { label: "Pending Dues", value: "$4.5K", tone: "warn" as const },
           { label: "Overdue", value: "$1.2K", tone: "danger" as const },
           { label: "Collection Rate", value: "95%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">This Month</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              This Month
+            </Badge>
           </Card>
         ))}
       </div>
@@ -46,13 +54,20 @@ export function HostelFees() {
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input placeholder="Search by student name, room number..." className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm" />
+            <input
+              placeholder="Search by student name, room number..."
+              className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
+            />
           </div>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Status", "Paid", "Pending", "Overdue"].map(s => <option key={s}>{s}</option>)}
+            {["All Status", "Paid", "Pending", "Overdue"].map((s) => (
+              <option key={s}>{s}</option>
+            ))}
           </select>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["This Month", "Last Month", "This Semester"].map(t => <option key={t}>{t}</option>)}
+            {["This Month", "Last Month", "This Semester"].map((t) => (
+              <option key={t}>{t}</option>
+            ))}
           </select>
         </div>
       </Card>
@@ -64,20 +79,40 @@ export function HostelFees() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Student Name", "Room Number", "Fee Amount", "Due Date", "Payment Status", "Receipt"].map(column => (
-                    <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                  {[
+                    "Student Name",
+                    "Room Number",
+                    "Fee Amount",
+                    "Due Date",
+                    "Payment Status",
+                    "Receipt",
+                  ].map((column) => (
+                    <th
+                      key={column}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {column}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {hostelFees.map(fee => (
+                {hostelFees.map((fee) => (
                   <tr key={fee.studentName} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4 font-medium">{fee.studentName}</td>
                     <td className="py-3 px-4">{fee.roomNumber}</td>
                     <td className="py-3 px-4">{fee.feeAmount}</td>
                     <td className="py-3 px-4 text-muted-foreground">{fee.dueDate}</td>
                     <td className="py-3 px-4">
-                      <Badge tone={fee.paymentStatus === "Paid" ? "success" : fee.paymentStatus === "Overdue" ? "danger" : "warn"}>
+                      <Badge
+                        tone={
+                          fee.paymentStatus === "Paid"
+                            ? "success"
+                            : fee.paymentStatus === "Overdue"
+                              ? "danger"
+                              : "warn"
+                        }
+                      >
                         {fee.paymentStatus}
                       </Badge>
                     </td>
@@ -122,18 +157,27 @@ export function HostelFees() {
             <h3 className="font-semibold">Payment Reminders</h3>
           </div>
           <div className="space-y-2">
-            {hostelFees.filter(f => f.paymentStatus !== "Paid").map(fee => (
-              <div key={fee.studentName} className="p-3 rounded-xl border bg-gradient-soft hover:bg-accent/50 transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-medium">{fee.studentName}</div>
-                    <div className="text-xs text-muted-foreground">{fee.roomNumber} • Due: {fee.dueDate}</div>
+            {hostelFees
+              .filter((f) => f.paymentStatus !== "Paid")
+              .map((fee) => (
+                <div
+                  key={fee.studentName}
+                  className="p-3 rounded-xl border bg-gradient-soft hover:bg-accent/50 transition"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-medium">{fee.studentName}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {fee.roomNumber} • Due: {fee.dueDate}
+                      </div>
+                    </div>
+                    <Badge tone={fee.paymentStatus === "Overdue" ? "danger" : "warn"}>
+                      {fee.paymentStatus}
+                    </Badge>
                   </div>
-                  <Badge tone={fee.paymentStatus === "Overdue" ? "danger" : "warn"}>{fee.paymentStatus}</Badge>
+                  <div className="text-xs text-muted-foreground mt-1">Amount: {fee.feeAmount}</div>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">Amount: {fee.feeAmount}</div>
-              </div>
-            ))}
+              ))}
           </div>
         </Card>
 
@@ -144,19 +188,47 @@ export function HostelFees() {
           </div>
           <div className="space-y-2">
             {[
-              { student: "Rahul Sharma", scholarship: "Merit Scholarship", amount: "$2,000", status: "Active" },
-              { student: "Priya Patel", scholarship: "Need-based Aid", amount: "$1,500", status: "Active" },
-              { student: "Sneha Reddy", scholarship: "Sports Scholarship", amount: "$1,000", status: "Active" },
-              { student: "Vikram Singh", scholarship: "Academic Excellence", amount: "$2,500", status: "Pending" },
-            ].map(scholarship => (
-              <div key={scholarship.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
+              {
+                student: "Rahul Sharma",
+                scholarship: "Merit Scholarship",
+                amount: "$2,000",
+                status: "Active",
+              },
+              {
+                student: "Priya Patel",
+                scholarship: "Need-based Aid",
+                amount: "$1,500",
+                status: "Active",
+              },
+              {
+                student: "Sneha Reddy",
+                scholarship: "Sports Scholarship",
+                amount: "$1,000",
+                status: "Active",
+              },
+              {
+                student: "Vikram Singh",
+                scholarship: "Academic Excellence",
+                amount: "$2,500",
+                status: "Pending",
+              },
+            ].map((scholarship) => (
+              <div
+                key={scholarship.student}
+                className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div>
                   <div className="text-sm font-medium">{scholarship.student}</div>
                   <div className="text-xs text-muted-foreground">{scholarship.scholarship}</div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-medium">{scholarship.amount}</div>
-                  <Badge tone={scholarship.status === "Active" ? "success" : "warn"} className="mt-1">{scholarship.status}</Badge>
+                  <Badge
+                    tone={scholarship.status === "Active" ? "success" : "warn"}
+                    className="mt-1"
+                  >
+                    {scholarship.status}
+                  </Badge>
                 </div>
               </div>
             ))}
@@ -175,7 +247,7 @@ export function HostelFees() {
             { label: "Paid Students", value: "320", icon: "✅" },
             { label: "Pending Students", value: "65", icon: "⏳" },
             { label: "Overdue Students", value: "11", icon: "⚠️" },
-          ].map(summary => (
+          ].map((summary) => (
             <div key={summary.label} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="text-2xl mb-2">{summary.icon}</div>
               <div className="text-xs text-muted-foreground">{summary.label}</div>

@@ -578,62 +578,298 @@ export const departmentDistributionAdmin = [
 ];
 
 export const adminActivities = [
-  { actor: "Admin", action: "approved admission for", target: "Rahul Sharma", time: "15m ago", type: "Approval" },
-  { actor: "System", action: "generated attendance report for", target: "Semester 5", time: "1h ago", type: "Report" },
-  { actor: "Admin", action: "updated fee status for", target: "Priya Patel", time: "2h ago", type: "Update" },
-  { actor: "Faculty", action: "submitted grades for", target: "Data Structures", time: "3h ago", type: "Grade" },
+  {
+    actor: "Admin",
+    action: "approved admission for",
+    target: "Rahul Sharma",
+    time: "15m ago",
+    type: "Approval",
+  },
+  {
+    actor: "System",
+    action: "generated attendance report for",
+    target: "Semester 5",
+    time: "1h ago",
+    type: "Report",
+  },
+  {
+    actor: "Admin",
+    action: "updated fee status for",
+    target: "Priya Patel",
+    time: "2h ago",
+    type: "Update",
+  },
+  {
+    actor: "Faculty",
+    action: "submitted grades for",
+    target: "Data Structures",
+    time: "3h ago",
+    type: "Grade",
+  },
 ];
 
 export const adminNotifications = [
-  { id: "AN-001", title: "New student registration pending approval", type: "Approval", time: "10m ago", unread: true },
-  { id: "AN-002", title: "Fee collection deadline approaching", type: "Alert", time: "1h ago", unread: true },
-  { id: "AN-003", title: "Attendance below 75% for 42 students", type: "Warning", time: "2h ago", unread: false },
-  { id: "AN-004", title: "Event approval request: Tech Fest 2026", type: "Event", time: "3h ago", unread: false },
+  {
+    id: "AN-001",
+    title: "New student registration pending approval",
+    type: "Approval",
+    time: "10m ago",
+    unread: true,
+  },
+  {
+    id: "AN-002",
+    title: "Fee collection deadline approaching",
+    type: "Alert",
+    time: "1h ago",
+    unread: true,
+  },
+  {
+    id: "AN-003",
+    title: "Attendance below 75% for 42 students",
+    type: "Warning",
+    time: "2h ago",
+    unread: false,
+  },
+  {
+    id: "AN-004",
+    title: "Event approval request: Tech Fest 2026",
+    type: "Event",
+    time: "3h ago",
+    unread: false,
+  },
 ];
 
 export const students = [
-  { id: "STU001", name: "Rahul Sharma", department: "Computer Science", year: "Year 3", attendance: "92%", status: "Active" },
-  { id: "STU002", name: "Priya Patel", department: "Electronics", year: "Year 2", attendance: "88%", status: "Active" },
-  { id: "STU003", name: "Amit Kumar", department: "Mechanical", year: "Year 4", attendance: "76%", status: "Warning" },
-  { id: "STU004", name: "Sneha Reddy", department: "Business", year: "Year 1", attendance: "95%", status: "Active" },
-  { id: "STU005", name: "Vikram Singh", department: "Computer Science", year: "Year 3", attendance: "82%", status: "Active" },
-  { id: "STU006", name: "Anjali Gupta", department: "Biotechnology", year: "Year 2", attendance: "71%", status: "Warning" },
-  { id: "STU007", name: "Rajesh Verma", department: "Mechanical", year: "Year 4", attendance: "89%", status: "Active" },
-  { id: "STU008", name: "Kavita Nair", department: "Electronics", year: "Year 2", attendance: "94%", status: "Active" },
+  {
+    id: "STU001",
+    name: "Rahul Sharma",
+    department: "Computer Science",
+    year: "Year 3",
+    attendance: "92%",
+    status: "Active",
+  },
+  {
+    id: "STU002",
+    name: "Priya Patel",
+    department: "Electronics",
+    year: "Year 2",
+    attendance: "88%",
+    status: "Active",
+  },
+  {
+    id: "STU003",
+    name: "Amit Kumar",
+    department: "Mechanical",
+    year: "Year 4",
+    attendance: "76%",
+    status: "Warning",
+  },
+  {
+    id: "STU004",
+    name: "Sneha Reddy",
+    department: "Business",
+    year: "Year 1",
+    attendance: "95%",
+    status: "Active",
+  },
+  {
+    id: "STU005",
+    name: "Vikram Singh",
+    department: "Computer Science",
+    year: "Year 3",
+    attendance: "82%",
+    status: "Active",
+  },
+  {
+    id: "STU006",
+    name: "Anjali Gupta",
+    department: "Biotechnology",
+    year: "Year 2",
+    attendance: "71%",
+    status: "Warning",
+  },
+  {
+    id: "STU007",
+    name: "Rajesh Verma",
+    department: "Mechanical",
+    year: "Year 4",
+    attendance: "89%",
+    status: "Active",
+  },
+  {
+    id: "STU008",
+    name: "Kavita Nair",
+    department: "Electronics",
+    year: "Year 2",
+    attendance: "94%",
+    status: "Active",
+  },
 ];
 
 export const faculty = [
-  { id: "FAC001", name: "Dr. Rajesh Kumar", department: "Computer Science", subject: "Data Structures", experience: "12 years", status: "Active" },
-  { id: "FAC002", name: "Prof. Sarah Lin", department: "Business", subject: "Marketing", experience: "8 years", status: "Active" },
-  { id: "FAC003", name: "Dr. Vikram Rao", department: "Mechanical", subject: "Thermodynamics", experience: "15 years", status: "Active" },
-  { id: "FAC004", name: "Prof. Aisha Khan", department: "Biotechnology", subject: "Genetics", experience: "10 years", status: "Active" },
-  { id: "FAC005", name: "Dr. Marco Rossi", department: "Electronics", subject: "Digital Systems", experience: "7 years", status: "On Leave" },
-  { id: "FAC006", name: "Prof. Emily Chen", department: "Computer Science", subject: "Algorithms", experience: "6 years", status: "Active" },
+  {
+    id: "FAC001",
+    name: "Dr. Rajesh Kumar",
+    department: "Computer Science",
+    subject: "Data Structures",
+    experience: "12 years",
+    status: "Active",
+  },
+  {
+    id: "FAC002",
+    name: "Prof. Sarah Lin",
+    department: "Business",
+    subject: "Marketing",
+    experience: "8 years",
+    status: "Active",
+  },
+  {
+    id: "FAC003",
+    name: "Dr. Vikram Rao",
+    department: "Mechanical",
+    subject: "Thermodynamics",
+    experience: "15 years",
+    status: "Active",
+  },
+  {
+    id: "FAC004",
+    name: "Prof. Aisha Khan",
+    department: "Biotechnology",
+    subject: "Genetics",
+    experience: "10 years",
+    status: "Active",
+  },
+  {
+    id: "FAC005",
+    name: "Dr. Marco Rossi",
+    department: "Electronics",
+    subject: "Digital Systems",
+    experience: "7 years",
+    status: "On Leave",
+  },
+  {
+    id: "FAC006",
+    name: "Prof. Emily Chen",
+    department: "Computer Science",
+    subject: "Algorithms",
+    experience: "6 years",
+    status: "Active",
+  },
 ];
 
 export const academicEvents = [
-  { id: "EVT001", title: "Mid-Semester Exams", date: "2026-06-15", type: "Exam", status: "Upcoming" },
-  { id: "EVT002", title: "Tech Fest 2026", date: "2026-07-20", type: "Event", status: "Pending Approval" },
-  { id: "EVT003", title: "Faculty Meeting", date: "2026-05-28", type: "Meeting", status: "Approved" },
+  {
+    id: "EVT001",
+    title: "Mid-Semester Exams",
+    date: "2026-06-15",
+    type: "Exam",
+    status: "Upcoming",
+  },
+  {
+    id: "EVT002",
+    title: "Tech Fest 2026",
+    date: "2026-07-20",
+    type: "Event",
+    status: "Pending Approval",
+  },
+  {
+    id: "EVT003",
+    title: "Faculty Meeting",
+    date: "2026-05-28",
+    type: "Meeting",
+    status: "Approved",
+  },
   { id: "EVT004", title: "Sports Day", date: "2026-08-10", type: "Event", status: "Approved" },
-  { id: "EVT005", title: "Guest Lecture: AI in Healthcare", date: "2026-06-05", type: "Lecture", status: "Upcoming" },
+  {
+    id: "EVT005",
+    title: "Guest Lecture: AI in Healthcare",
+    date: "2026-06-05",
+    type: "Lecture",
+    status: "Upcoming",
+  },
 ];
 
 export const timetableSlots = [
-  { day: "Monday", time: "09:00 AM", subject: "Data Structures", faculty: "Dr. Rajesh Kumar", room: "Room 101" },
-  { day: "Monday", time: "11:00 AM", subject: "Algorithms", faculty: "Prof. Emily Chen", room: "Room 102" },
-  { day: "Monday", time: "02:00 PM", subject: "Marketing", faculty: "Prof. Sarah Lin", room: "Room 201" },
-  { day: "Tuesday", time: "09:00 AM", subject: "Thermodynamics", faculty: "Dr. Vikram Rao", room: "Room 301" },
-  { day: "Tuesday", time: "11:00 AM", subject: "Digital Systems", faculty: "Dr. Marco Rossi", room: "Room 302" },
-  { day: "Tuesday", time: "02:00 PM", subject: "Genetics", faculty: "Prof. Aisha Khan", room: "Room 401" },
+  {
+    day: "Monday",
+    time: "09:00 AM",
+    subject: "Data Structures",
+    faculty: "Dr. Rajesh Kumar",
+    room: "Room 101",
+  },
+  {
+    day: "Monday",
+    time: "11:00 AM",
+    subject: "Algorithms",
+    faculty: "Prof. Emily Chen",
+    room: "Room 102",
+  },
+  {
+    day: "Monday",
+    time: "02:00 PM",
+    subject: "Marketing",
+    faculty: "Prof. Sarah Lin",
+    room: "Room 201",
+  },
+  {
+    day: "Tuesday",
+    time: "09:00 AM",
+    subject: "Thermodynamics",
+    faculty: "Dr. Vikram Rao",
+    room: "Room 301",
+  },
+  {
+    day: "Tuesday",
+    time: "11:00 AM",
+    subject: "Digital Systems",
+    faculty: "Dr. Marco Rossi",
+    room: "Room 302",
+  },
+  {
+    day: "Tuesday",
+    time: "02:00 PM",
+    subject: "Genetics",
+    faculty: "Prof. Aisha Khan",
+    room: "Room 401",
+  },
 ];
 
 export const feeRecords = [
-  { student: "Rahul Sharma", feeType: "Tuition Fee", amount: "$2,500", dueDate: "2026-06-01", status: "Paid" },
-  { student: "Priya Patel", feeType: "Tuition Fee", amount: "$2,500", dueDate: "2026-06-01", status: "Pending" },
-  { student: "Amit Kumar", feeType: "Hostel Fee", amount: "$800", dueDate: "2026-05-25", status: "Overdue" },
-  { student: "Sneha Reddy", feeType: "Tuition Fee", amount: "$2,500", dueDate: "2026-06-01", status: "Paid" },
-  { student: "Vikram Singh", feeType: "Lab Fee", amount: "$500", dueDate: "2026-05-30", status: "Pending" },
+  {
+    student: "Rahul Sharma",
+    feeType: "Tuition Fee",
+    amount: "$2,500",
+    dueDate: "2026-06-01",
+    status: "Paid",
+  },
+  {
+    student: "Priya Patel",
+    feeType: "Tuition Fee",
+    amount: "$2,500",
+    dueDate: "2026-06-01",
+    status: "Pending",
+  },
+  {
+    student: "Amit Kumar",
+    feeType: "Hostel Fee",
+    amount: "$800",
+    dueDate: "2026-05-25",
+    status: "Overdue",
+  },
+  {
+    student: "Sneha Reddy",
+    feeType: "Tuition Fee",
+    amount: "$2,500",
+    dueDate: "2026-06-01",
+    status: "Paid",
+  },
+  {
+    student: "Vikram Singh",
+    feeType: "Lab Fee",
+    amount: "$500",
+    dueDate: "2026-05-30",
+    status: "Pending",
+  },
 ];
 
 export const attendanceAlerts = [
@@ -645,9 +881,24 @@ export const attendanceAlerts = [
 ];
 
 export const notificationTemplates = [
-  { name: "Fee Reminder", type: "Email", subject: "Fee Payment Reminder", content: "Dear student, your fee payment is due on {date}. Please ensure timely payment." },
-  { name: "Attendance Warning", type: "SMS", subject: "Low Attendance Alert", content: "Your attendance is below 75%. Please attend classes regularly." },
-  { name: "Event Announcement", type: "WhatsApp", subject: "Upcoming Event", content: "Join us for {event} on {date}. Register now!" },
+  {
+    name: "Fee Reminder",
+    type: "Email",
+    subject: "Fee Payment Reminder",
+    content: "Dear student, your fee payment is due on {date}. Please ensure timely payment.",
+  },
+  {
+    name: "Attendance Warning",
+    type: "SMS",
+    subject: "Low Attendance Alert",
+    content: "Your attendance is below 75%. Please attend classes regularly.",
+  },
+  {
+    name: "Event Announcement",
+    type: "WhatsApp",
+    subject: "Upcoming Event",
+    content: "Join us for {event} on {date}. Register now!",
+  },
 ];
 
 export const reportFilters = ["This Month", "This Semester", "This Year", "Custom Range"];

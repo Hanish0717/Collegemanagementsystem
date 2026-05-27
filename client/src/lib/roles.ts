@@ -1,12 +1,35 @@
 import {
-  LayoutDashboard, Users, GraduationCap, CalendarCheck, BookOpen, Wallet,
-  Library, Building2, Bus, Sparkles, Bell, Settings, Shield, Briefcase,
-  Heart, ClipboardList, FileText, Activity, Database,
+  LayoutDashboard,
+  Users,
+  GraduationCap,
+  CalendarCheck,
+  BookOpen,
+  Wallet,
+  Library,
+  Building2,
+  Bus,
+  Sparkles,
+  Bell,
+  Settings,
+  Shield,
+  Briefcase,
+  Heart,
+  ClipboardList,
+  FileText,
+  Activity,
+  Database,
 } from "lucide-react";
 
 export type RoleId =
-  | "super_admin" | "admin" | "faculty" | "student"
-  | "parent" | "librarian" | "placement" | "warden" | "transport";
+  | "super_admin"
+  | "admin"
+  | "faculty"
+  | "student"
+  | "parent"
+  | "librarian"
+  | "placement"
+  | "warden"
+  | "transport";
 
 export type NavItem = {
   to: string;
@@ -21,8 +44,8 @@ export type Role = {
   short: string;
   description: string;
   icon: any;
-  gradient: string;     // tailwind gradient classes
-  accent: string;       // dot color
+  gradient: string; // tailwind gradient classes
+  accent: string; // dot color
   nav: NavItem[];
 };
 
@@ -32,11 +55,20 @@ const notif: NavItem = { to: "/dashboard/notifications", label: "Notifications",
 
 export const ROLES: Record<RoleId, Role> = {
   super_admin: {
-    id: "super_admin", name: "Super Admin", short: "Full system control",
+    id: "super_admin",
+    name: "Super Admin",
+    short: "Full system control",
     description: "Manage admins, automations, global analytics & security.",
-    icon: Shield, gradient: "from-slate-900 to-blue-600", accent: "bg-blue-500",
+    icon: Shield,
+    gradient: "from-slate-900 to-blue-600",
+    accent: "bg-blue-500",
     nav: [
-      { to: "/dashboard/super-admin", label: "Super Admin Dashboard", icon: LayoutDashboard, exact: true },
+      {
+        to: "/dashboard/super-admin",
+        label: "Super Admin Dashboard",
+        icon: LayoutDashboard,
+        exact: true,
+      },
       { to: "/dashboard/super-admin/admins", label: "Admin Management", icon: Users },
       { to: "/dashboard/super-admin/departments", label: "Departments", icon: Building2 },
       { to: "/dashboard/super-admin/courses", label: "Courses", icon: BookOpen },
@@ -50,9 +82,13 @@ export const ROLES: Record<RoleId, Role> = {
     ],
   },
   admin: {
-    id: "admin", name: "Admin", short: "Operations & approvals",
+    id: "admin",
+    name: "Admin",
+    short: "Operations & approvals",
     description: "Run students, faculty, timetables, fees and reports.",
-    icon: Briefcase, gradient: "from-blue-600 to-cyan-500", accent: "bg-cyan-500",
+    icon: Briefcase,
+    gradient: "from-blue-600 to-cyan-500",
+    accent: "bg-cyan-500",
     nav: [
       base,
       { to: "/dashboard/students", label: "Students", icon: Users },
@@ -61,26 +97,36 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/exams", label: "Exams", icon: BookOpen },
       { to: "/dashboard/fees", label: "Fees", icon: Wallet },
       { to: "/dashboard/events", label: "Events", icon: Sparkles },
-      notif, settings,
+      notif,
+      settings,
     ],
   },
   faculty: {
-    id: "faculty", name: "Faculty", short: "Teaching workspace",
+    id: "faculty",
+    name: "Faculty",
+    short: "Teaching workspace",
     description: "Mark attendance, post materials, track students.",
-    icon: GraduationCap, gradient: "from-violet-600 to-blue-600", accent: "bg-violet-500",
+    icon: GraduationCap,
+    gradient: "from-violet-600 to-blue-600",
+    accent: "bg-violet-500",
     nav: [
       base,
       { to: "/dashboard/attendance", label: "Attendance", icon: CalendarCheck },
       { to: "/dashboard/exams", label: "Assignments", icon: ClipboardList },
       { to: "/dashboard/library", label: "Materials", icon: BookOpen },
       { to: "/dashboard/students", label: "Students", icon: Users },
-      notif, settings,
+      notif,
+      settings,
     ],
   },
   student: {
-    id: "student", name: "Student", short: "Your academic hub",
+    id: "student",
+    name: "Student",
+    short: "Your academic hub",
     description: "GPA, attendance, fees, assignments and placements.",
-    icon: Users, gradient: "from-cyan-500 to-indigo-600", accent: "bg-indigo-500",
+    icon: Users,
+    gradient: "from-cyan-500 to-indigo-600",
+    accent: "bg-indigo-500",
     nav: [
       base,
       { to: "/dashboard/attendance", label: "Attendance", icon: CalendarCheck },
@@ -88,25 +134,35 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/fees", label: "Fees", icon: Wallet },
       { to: "/dashboard/library", label: "Library", icon: Library },
       { to: "/dashboard/events", label: "Events", icon: Sparkles },
-      notif, settings,
+      notif,
+      settings,
     ],
   },
   parent: {
-    id: "parent", name: "Parent", short: "Track your child",
+    id: "parent",
+    name: "Parent",
+    short: "Track your child",
     description: "Performance, attendance and fee status at a glance.",
-    icon: Heart, gradient: "from-emerald-500 to-cyan-500", accent: "bg-emerald-500",
+    icon: Heart,
+    gradient: "from-emerald-500 to-cyan-500",
+    accent: "bg-emerald-500",
     nav: [
       base,
       { to: "/dashboard/attendance", label: "Attendance", icon: CalendarCheck },
       { to: "/dashboard/exams", label: "Performance", icon: Activity },
       { to: "/dashboard/fees", label: "Fees", icon: Wallet },
-      notif, settings,
+      notif,
+      settings,
     ],
   },
   librarian: {
-    id: "librarian", name: "Librarian", short: "Library operations",
+    id: "librarian",
+    name: "Librarian",
+    short: "Library operations",
     description: "Books, fines, digital catalog and reports.",
-    icon: Library, gradient: "from-amber-500 to-blue-600", accent: "bg-amber-500",
+    icon: Library,
+    gradient: "from-amber-500 to-blue-600",
+    accent: "bg-amber-500",
     nav: [
       { to: "/dashboard/librarian", label: "Library Overview", icon: Library, exact: true },
       { to: "/dashboard/librarian/books", label: "Book Management", icon: BookOpen },
@@ -121,11 +177,20 @@ export const ROLES: Record<RoleId, Role> = {
     ],
   },
   placement: {
-    id: "placement", name: "Placement Officer", short: "Hiring & companies",
+    id: "placement",
+    name: "Placement Officer",
+    short: "Hiring & companies",
     description: "Companies, interviews, eligibility and resumes.",
-    icon: FileText, gradient: "from-purple-600 to-cyan-500", accent: "bg-purple-500",
+    icon: FileText,
+    gradient: "from-purple-600 to-cyan-500",
+    accent: "bg-purple-500",
     nav: [
-      { to: "/dashboard/placement", label: "Placement Overview", icon: LayoutDashboard, exact: true },
+      {
+        to: "/dashboard/placement",
+        label: "Placement Overview",
+        icon: LayoutDashboard,
+        exact: true,
+      },
       { to: "/dashboard/placement/companies", label: "Companies", icon: Briefcase },
       { to: "/dashboard/placement/drives", label: "Drives", icon: Sparkles },
       { to: "/dashboard/placement/eligibility", label: "Eligibility", icon: ClipboardList },
@@ -140,26 +205,36 @@ export const ROLES: Record<RoleId, Role> = {
     ],
   },
   warden: {
-    id: "warden", name: "Hostel Warden", short: "Hostel management",
+    id: "warden",
+    name: "Hostel Warden",
+    short: "Hostel management",
     description: "Rooms, visitors, complaints and hostel fees.",
-    icon: Building2, gradient: "from-teal-500 to-blue-600", accent: "bg-teal-500",
+    icon: Building2,
+    gradient: "from-teal-500 to-blue-600",
+    accent: "bg-teal-500",
     nav: [
       base,
       { to: "/dashboard/hostel", label: "Hostel", icon: Building2 },
       { to: "/dashboard/students", label: "Residents", icon: Users },
       { to: "/dashboard/fees", label: "Fees", icon: Wallet },
-      notif, settings,
+      notif,
+      settings,
     ],
   },
   transport: {
-    id: "transport", name: "Transport Manager", short: "Routes & vehicles",
+    id: "transport",
+    name: "Transport Manager",
+    short: "Routes & vehicles",
     description: "Buses, routes, drivers and live tracking.",
-    icon: Bus, gradient: "from-orange-500 to-blue-600", accent: "bg-orange-500",
+    icon: Bus,
+    gradient: "from-orange-500 to-blue-600",
+    accent: "bg-orange-500",
     nav: [
       base,
       { to: "/dashboard/transport", label: "Transport", icon: Bus },
       { to: "/dashboard/students", label: "Passengers", icon: Users },
-      notif, settings,
+      notif,
+      settings,
     ],
   },
 };

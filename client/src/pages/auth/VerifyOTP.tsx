@@ -6,7 +6,11 @@ import api from "@/lib/api";
 
 export function VerifyOTP() {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/verify-otp" }) as { phoneNumber?: string; email?: string; target?: string };
+  const search = useSearch({ from: "/verify-otp" }) as {
+    phoneNumber?: string;
+    email?: string;
+    target?: string;
+  };
 
   const targetEmail = search.email;
   const otpType = search.target || "email_verification";
@@ -162,7 +166,8 @@ export function VerifyOTP() {
 
         <h2 className="text-2xl font-bold text-center">Verify it's you</h2>
         <p className="text-sm text-muted-foreground text-center mt-2 px-4">
-          {descriptionText}<br />
+          {descriptionText}
+          <br />
           <span className="font-semibold text-foreground">{displayIdentifier}</span>
         </p>
 
@@ -213,7 +218,8 @@ export function VerifyOTP() {
         <div className="mt-8 flex flex-col items-center justify-center gap-3 text-sm">
           {timer > 0 ? (
             <p className="text-muted-foreground text-center">
-              Code expires in <span className="font-medium text-foreground">{formatTime(timer)}</span>
+              Code expires in{" "}
+              <span className="font-medium text-foreground">{formatTime(timer)}</span>
             </p>
           ) : (
             <p className="text-red-500 font-medium">Code expired</p>

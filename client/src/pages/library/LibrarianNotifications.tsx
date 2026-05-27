@@ -1,26 +1,131 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { AlertCircle, Clock, BookMarked, DollarSign, Plus, Archive } from "lucide-react";
+import { AlertCircle, Clock, BookMarked, DollarSign, Plus, Archive, Send } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { libraryNotifications } from "@/mock/mockData";
-
-
+import { toast } from "sonner";
 
 export function LibrarianNotifications() {
+  const [notifications, setNotifications] = useState(libraryNotifications);
   const [filterType, setFilterType] = useState("All");
   const [archivedCount, setArchivedCount] = useState(0);
 
+  // New Notification Form state
+  const [notifType, setNotifType] = useState("DueReminder");
+  const [notifTemplate, setNotifTemplate] = useState("default");
+  const [notifSubject, setNotifSubject] = useState("");
+  const [notifMessage, setNotifMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
+  // Settings State
+  const [settings, setSettings] = useState([
+    {
+      title: "Due Date Reminders",
+      enabled: true,
+      desc: "Get notified when books are due within 3 days",
+    },
+    { title: "Overdue Alerts", enabled: true, desc: "Critical alerts for overdue books" },
+    { title: "New Arrivals", enabled: true, desc: "Notify about newly added books" },
+    { title: "Fine Reminders", enabled: true, desc: "Payment reminders for pending fines" },
+    { title: "System Updates", enabled: false, desc: "Maintenance and system notifications" },
+  ]);
+
   const notificationTypes = {
     DueReminder: { label: "Due Reminders", icon: Clock, color: "from-amber-500" },
-    Overdue: { label: "Overdue", icon: AlertCircle, color: "from-rose-500" },
+    Overdue: { label: "Overdue Alerts", icon: AlertCircle, color: "from-rose-500" },
     NewArrival: { label: "New Arrivals", icon: BookMarked, color: "from-emerald-500" },
     FinePayment: { label: "Fine Payments", icon: DollarSign, color: "from-cyan-500" },
-    SystemNotification: { label: "System", icon: Plus, color: "from-violet-500" },
+    SystemNotification: { label: "System Announcements", icon: Plus, color: "from-violet-500" },
   };
 
-  const filteredNotifications = filterType === "All"
-    ? libraryNotifications
-    : libraryNotifications.filter(n => n.type === filterType);
+  const templates = {
+    default: { subject: "", message: "" },
+    due: {
+      subject: "Reminder: Library Book Return Due Date",
+      message:
+        "Hello Student, this is a reminder that the library book currently issued to you is due for return within the next 48 hours. Please avoid penalty charges by returning it on time.",
+    },
+    overdue: {
+      subject: "URGENT: Library Book Return Overdue Notice",
+      message:
+        "Attention, the library book issued to your card has exceeded its due date. Please return the resource to the counter immediately to clear your status.",
+    },
+    newBook: {
+      subject: "New Catalog Resource Added to Central Library",
+      message:
+        "Greetings, we have successfully expanded our physical catalog with new books. Stop by the department shelves to check out our latest publications.",
+    },
+  };
+
+  const handleTemplateChange = (val: string) => {
+    setNotifTemplate(val);
+    if (val === "default") {
+      setNotifSubject("");
+      setNotifMessage("");
+    } else {
+      const selectedTpl = templates[val as keyof typeof templates];
+      setNotifSubject(selectedTpl.subject);
+      setNotifMessage(selectedTpl.message);
+    }
+  };
+
+  const handleSendNotification = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!notifSubject.trim() || !notifMessage.trim()) {
+      toast.error("Please fill in both the Subject and Message body.");
+      return;
+    }
+
+    setIsSending(true);
+
+    setTimeout(() => {
+      const newNotif = {
+        id: `LN-${String(notifications.length + 1).padStart(3, "0")}`,
+        title: notifSubject,
+        time: "Just now",
+        type: notifType,
+        unread: true,
+        urgency: notifType === "Overdue" ? "high" : notifType === "DueReminder" ? "medium" : "low",
+      };
+
+      setNotifications([newNotif, ...notifications]);
+      setIsSending(false);
+      toast.success("Broadcast alert dispatched to all active members successfully!");
+      setNotifSubject("");
+      setNotifMessage("");
+      setNotifTemplate("default");
+    }, 800);
+  };
+
+  const handleMarkRead = (id: string) => {
+    setNotifications(
+      notifications.map((n) => {
+        if (n.id === id) {
+          return {
+            ...n,
+            unread: false,
+          };
+        }
+        return n;
+      }),
+    );
+    toast.success("Notification marked as read.");
+  };
+
+  const handleArchive = (id: string) => {
+    setNotifications(notifications.filter((n) => n.id !== id));
+    setArchivedCount((prev) => prev + 1);
+    toast.success("Notification successfully archived.");
+  };
+
+  const handleToggleSetting = (index: number) => {
+    const updated = [...settings];
+    updated[index].enabled = !updated[index].enabled;
+    setSettings(updated);
+    toast.success(`Updated preferences for: ${updated[index].title}`);
+  };
+
+  const filteredNotifications =
+    filterType === "All" ? notifications : notifications.filter((n) => n.type === filterType);
 
   return (
     <div className="space-y-6">
@@ -33,183 +138,259 @@ export function LibrarianNotifications() {
       <div className="grid sm:grid-cols-3 gap-4">
         <Card>
           <div className="text-center">
-            <div className="text-3xl font-bold text-rose-600">{libraryNotifications.filter(n => n.unread).length}</div>
-            <div className="text-xs text-muted-foreground mt-2">Unread</div>
-          </div>
-        </Card>
-        <Card>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-amber-600">{libraryNotifications.filter(n => n.urgency === "high").length}</div>
-            <div className="text-xs text-muted-foreground mt-2">High Priority</div>
-          </div>
-        </Card>
-        <Card>
-          <div className="text-center">
-            <div className="text-3xl font-bold">{archivedCount}</div>
-            <div className="text-xs text-muted-foreground mt-2">Archived</div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Filter Tabs */}
-      <Card>
-        <div className="flex gap-2 overflow-x-auto pb-2">
-          {["All", "DueReminder", "Overdue", "NewArrival", "FinePayment", "SystemNotification"].map(type => (
-            <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition ${
-                filterType === type
-                  ? "bg-gradient-primary text-white"
-                  : "bg-background border text-muted-foreground hover:border-primary"
-              }`}
-            >
-              {type === "All" ? "All" : notificationTypes[type as keyof typeof notificationTypes]?.label || type}
-            </button>
-          ))}
-        </div>
-      </Card>
-
-      {/* Notifications List */}
-      <div className="space-y-3">
-        {filteredNotifications.map(notification => {
-          const typeInfo = notificationTypes[notification.type as keyof typeof notificationTypes];
-          const IconComponent = typeInfo?.icon || AlertCircle;
-
-          return (
-            <Card key={notification.id} className={`border-l-4 relative ${
-              notification.urgency === "high" ? "border-l-rose-500" :
-              notification.urgency === "medium" ? "border-l-amber-500" :
-              "border-l-emerald-500"
-            } hover:-translate-x-1 transition`}>
-              <div className="flex items-start gap-4">
-                {/* Icon */}
-                <div className={`size-12 rounded-xl bg-gradient-to-br ${typeInfo?.color} to-transparent text-white grid place-items-center shrink-0`}>
-                  <IconComponent className="size-5" />
-                </div>
-
-                {/* Main Content */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold">{notification.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
-                </div>
-              </div>
-
-              {/* Action Buttons and Badge - Unified Container */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:gap-2">
-                <button className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-gradient-soft transition whitespace-nowrap">
-                  Mark Read
-                </button>
-
-                {/* Badge + Status Indicator - Right aligned */}
-                <div className="flex items-center gap-2 shrink-0">
-                  {notification.unread && (
-                    <div className="size-2 rounded-full bg-gradient-primary" />
-                  )}
-                  <Badge tone={
-                    notification.urgency === "high" ? "danger" :
-                    notification.urgency === "medium" ? "warn" :
-                    "success"
-                  }>
-                    {notification.urgency}
-                  </Badge>
-                  <button
-                    onClick={() => setArchivedCount(prev => prev + 1)}
-                    className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-rose-100 transition shrink-0 ml-1"
-                  >
-                    <Archive className="size-4" />
-                  </button>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Notification Categories */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card>
-          <h3 className="font-semibold mb-3">📅 Due Reminders</h3>
-          <div className="space-y-2 text-xs text-muted-foreground">
-            <p>• Books due within 3 days</p>
-            <p>• Daily recap at 9 AM</p>
-            <p>• Sent to 234 active members</p>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold mb-3">⚠️ Overdue Alerts</h3>
-          <div className="space-y-2 text-xs text-muted-foreground">
-            <p>• 8 books currently overdue</p>
-            <p>• Escalation notices sent</p>
-            <p>• Follow-up required</p>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold mb-3">📚 New Arrivals</h3>
-          <div className="space-y-2 text-xs text-muted-foreground">
-            <p>• 12 new books added</p>
-            <p>• 5 subjects covered</p>
-            <p>• Announced to all members</p>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold mb-3">💰 Fine Collections</h3>
-          <div className="space-y-2 text-xs text-muted-foreground">
-            <p>• ₹2,840 collected this month</p>
-            <p>• 3 payments pending</p>
-            <p>• Payment reminder sent</p>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold mb-3">🔧 System Events</h3>
-          <div className="space-y-2 text-xs text-muted-foreground">
-            <p>• Inventory audit completed</p>
-            <p>• Backups scheduled daily</p>
-            <p>• Maintenance: Sundays 2-4 PM</p>
-          </div>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold mb-3">⚙️ Preferences</h3>
-          <div className="space-y-2 text-xs text-muted-foreground">
-            <p>• Customize notification types</p>
-            <p>• Set delivery frequency</p>
-            <p>• Enable email alerts</p>
-          </div>
-        </Card>
-      </div>
-
-      {/* Notification Settings */}
-      <Card>
-        <h3 className="font-semibold mb-4">Notification Settings</h3>
-        <div className="space-y-4">
-          {[
-            { title: "Due Date Reminders", enabled: true, desc: "Get notified when books are due within 3 days" },
-            { title: "Overdue Alerts", enabled: true, desc: "Critical alerts for overdue books" },
-            { title: "New Arrivals", enabled: true, desc: "Notify about newly added books" },
-            { title: "Fine Reminders", enabled: true, desc: "Payment reminders for pending fines" },
-            { title: "System Updates", enabled: false, desc: "Maintenance and system notifications" },
-          ].map((setting, i) => (
-            <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gradient-soft transition">
-              <div>
-                <div className="font-medium text-sm">{setting.title}</div>
-                <div className="text-xs text-muted-foreground">{setting.desc}</div>
-              </div>
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  defaultChecked={setting.enabled}
-                  className="rounded"
-                />
-              </label>
+            <div className="text-3xl font-bold text-rose-600">
+              {notifications.filter((n) => n.unread).length}
             </div>
-          ))}
+            <div className="text-xs text-muted-foreground mt-2">Unread Alerts</div>
+          </div>
+        </Card>
+        <Card>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-amber-600">
+              {notifications.filter((n) => n.urgency === "high").length}
+            </div>
+            <div className="text-xs text-muted-foreground mt-2">High Priority Alerts</div>
+          </div>
+        </Card>
+        <Card>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-gradient">{archivedCount}</div>
+            <div className="text-xs text-muted-foreground mt-2">Archived Cards</div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Dispatch Panel */}
+          <Card>
+            <h3 className="font-semibold mb-4 text-gradient">Dispatch Custom Alert</h3>
+            <form onSubmit={handleSendNotification} className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Alert Category
+                  </label>
+                  <select
+                    value={notifType}
+                    onChange={(e) => setNotifType(e.target.value)}
+                    className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  >
+                    {Object.entries(notificationTypes).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Prebuilt Template
+                  </label>
+                  <select
+                    value={notifTemplate}
+                    onChange={(e) => handleTemplateChange(e.target.value)}
+                    className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  >
+                    <option value="default">No template (Custom text)</option>
+                    <option value="due">Book Due Date Notice</option>
+                    <option value="overdue">Overdue Notice</option>
+                    <option value="newBook">New Catalog Arrivals Announcement</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Subject / Headline *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Return reminder details..."
+                  value={notifSubject}
+                  onChange={(e) => setNotifSubject(e.target.value)}
+                  className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Message Body *
+                </label>
+                <textarea
+                  required
+                  placeholder="Type broadcast text body here..."
+                  rows={4}
+                  value={notifMessage}
+                  onChange={(e) => setNotifMessage(e.target.value)}
+                  className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSending || !notifSubject.trim() || !notifMessage.trim()}
+                className="w-full px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition text-sm"
+              >
+                {isSending ? (
+                  <div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="size-4" />
+                )}
+                {isSending ? "Dispatching..." : "Send BroadCast Notification"}
+              </button>
+            </form>
+          </Card>
+
+          {/* Filter Tabs */}
+          <Card>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {[
+                "All",
+                "DueReminder",
+                "Overdue",
+                "NewArrival",
+                "FinePayment",
+                "SystemNotification",
+              ].map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilterType(type)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition cursor-pointer ${
+                    filterType === type
+                      ? "bg-gradient-primary text-white"
+                      : "bg-background border text-muted-foreground hover:border-primary"
+                  }`}
+                >
+                  {type === "All"
+                    ? "All Alerts"
+                    : notificationTypes[type as keyof typeof notificationTypes]?.label || type}
+                </button>
+              ))}
+            </div>
+          </Card>
+
+          {/* Notifications List */}
+          <div className="space-y-3">
+            {filteredNotifications.map((notification) => {
+              const typeInfo =
+                notificationTypes[notification.type as keyof typeof notificationTypes];
+              const IconComponent = typeInfo?.icon || AlertCircle;
+
+              return (
+                <Card
+                  key={notification.id}
+                  className={`border-l-4 relative ${
+                    notification.urgency === "high"
+                      ? "border-l-rose-500"
+                      : notification.urgency === "medium"
+                        ? "border-l-amber-500"
+                        : "border-l-emerald-500"
+                  } hover:-translate-x-1 transition`}
+                >
+                  <div className="flex items-start gap-4">
+                    {/* Icon */}
+                    <div
+                      className={`size-12 rounded-xl bg-gradient-to-br ${typeInfo?.color} to-transparent text-white grid place-items-center shrink-0`}
+                    >
+                      <IconComponent className="size-5" />
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-sm leading-snug">{notification.title}</h3>
+                      <p className="text-[11px] text-muted-foreground mt-1">{notification.time}</p>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons and Badge - Unified Container */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:gap-2 border-t pt-3">
+                    <button
+                      onClick={() => handleMarkRead(notification.id)}
+                      disabled={!notification.unread}
+                      className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-gradient-soft transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer"
+                    >
+                      {notification.unread ? "Mark Read" : "Read"}
+                    </button>
+
+                    {/* Badge + Status Indicator - Right aligned */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      {notification.unread && (
+                        <div className="size-2 rounded-full bg-gradient-primary" />
+                      )}
+                      <Badge
+                        tone={
+                          notification.urgency === "high"
+                            ? "danger"
+                            : notification.urgency === "medium"
+                              ? "warn"
+                              : "success"
+                        }
+                      >
+                        {notification.urgency}
+                      </Badge>
+                      <button
+                        onClick={() => handleArchive(notification.id)}
+                        className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-rose-100 transition shrink-0 ml-1 cursor-pointer"
+                      >
+                        <Archive className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         </div>
-      </Card>
+
+        <div className="space-y-6">
+          {/* Notification Settings */}
+          <Card>
+            <h3 className="font-semibold mb-4 text-gradient">Channel Preferences</h3>
+            <div className="space-y-4">
+              {settings.map((setting, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gradient-soft transition"
+                >
+                  <div className="pr-2">
+                    <div className="font-semibold text-xs leading-snug">{setting.title}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">{setting.desc}</div>
+                  </div>
+                  <label className="flex items-center cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={setting.enabled}
+                      onChange={() => handleToggleSetting(i)}
+                      className="rounded accent-violet-600 size-4 cursor-pointer"
+                    />
+                  </label>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Quick Categories Info */}
+          <Card>
+            <h3 className="font-semibold mb-3">Audience Outreach</h3>
+            <div className="space-y-2.5 text-xs text-muted-foreground">
+              <div className="p-2 bg-gradient-soft border rounded-lg">
+                <div className="font-medium text-foreground">📅 Due Reminder Digests</div>
+                <p className="mt-0.5">
+                  Automated notice dispatched 48 hours prior to borrow expiration.
+                </p>
+              </div>
+              <div className="p-2 bg-gradient-soft border rounded-lg">
+                <div className="font-medium text-foreground">⚠️ Overdue Escalation Rules</div>
+                <p className="mt-0.5">
+                  Fines begin tracking immediately at ₹5/day after due date has passed.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

@@ -4,8 +4,6 @@ import { Calendar, QrCode } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { attendanceHistory, attendanceRecords } from "@/mock/studentData";
 
-
-
 export function StudentAttendance() {
   return (
     <div className="space-y-6">
@@ -20,11 +18,13 @@ export function StudentAttendance() {
           { label: "Present Days", value: "108", tone: "info" as const },
           { label: "Absent Days", value: "12", tone: "danger" as const },
           { label: "This Month", value: "92%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -51,8 +51,13 @@ export function StudentAttendance() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Date", "Subject", "Time", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                {["Date", "Subject", "Time", "Status"].map((column) => (
+                  <th
+                    key={column}
+                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {column}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -60,10 +65,14 @@ export function StudentAttendance() {
               {attendanceRecords.map((record, index) => (
                 <tr key={index} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{record.date}</td>
-                  <td className="py-3 px-4"><Badge tone="info">{record.subject}</Badge></td>
+                  <td className="py-3 px-4">
+                    <Badge tone="info">{record.subject}</Badge>
+                  </td>
                   <td className="py-3 px-4 text-muted-foreground">{record.time}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={record.status === "Present" ? "success" : "danger"}>{record.status}</Badge>
+                    <Badge tone={record.status === "Present" ? "success" : "danger"}>
+                      {record.status}
+                    </Badge>
                   </td>
                 </tr>
               ))}

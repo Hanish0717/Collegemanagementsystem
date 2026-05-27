@@ -1,9 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Line, LineChart, Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Line,
+  LineChart,
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { AlertTriangle, TrendingUp, Calendar, Users } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-
-
 
 export function AiAttendance() {
   const attendanceData = [
@@ -13,8 +23,20 @@ export function AiAttendance() {
     { name: "Sarah Davis", current: 88, predicted: 90, warningLevel: "Low", status: "Excellent" },
     { name: "James Wilson", current: 65, predicted: 68, warningLevel: "High", status: "Critical" },
     { name: "Lisa Anderson", current: 85, predicted: 87, warningLevel: "Low", status: "Good" },
-    { name: "Robert Taylor", current: 74, predicted: 76, warningLevel: "Medium", status: "At Risk" },
-    { name: "Jennifer Martinez", current: 90, predicted: 92, warningLevel: "Low", status: "Excellent" },
+    {
+      name: "Robert Taylor",
+      current: 74,
+      predicted: 76,
+      warningLevel: "Medium",
+      status: "At Risk",
+    },
+    {
+      name: "Jennifer Martinez",
+      current: 90,
+      predicted: 92,
+      warningLevel: "Low",
+      status: "Excellent",
+    },
   ];
 
   const monthlyTrends = [
@@ -55,11 +77,13 @@ export function AiAttendance() {
           { label: "High Risk Alerts", value: "18", tone: "warn" as const },
           { label: "Average Attendance", value: "84.5%", tone: "info" as const },
           { label: "Prediction Accuracy", value: "92%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -87,8 +111,21 @@ export function AiAttendance() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="actual" stroke="#4F46E5" fill="url(#att-actual)" strokeWidth={2} />
-                <Area type="monotone" dataKey="predicted" stroke="#06B6D4" fill="url(#att-pred)" strokeWidth={2} strokeDasharray="5 5" />
+                <Area
+                  type="monotone"
+                  dataKey="actual"
+                  stroke="#4F46E5"
+                  fill="url(#att-actual)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="predicted"
+                  stroke="#06B6D4"
+                  fill="url(#att-pred)"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -103,7 +140,14 @@ export function AiAttendance() {
             <ResponsiveContainer>
               <BarChart data={departmentAnalytics}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="department" stroke="#64748B" fontSize={12} angle={-45} textAnchor="end" height={80} />
+                <XAxis
+                  dataKey="department"
+                  stroke="#64748B"
+                  fontSize={12}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="current" fill="#4F46E5" radius={[4, 4, 0, 0]} />
@@ -120,8 +164,19 @@ export function AiAttendance() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Student Name", "Current Attendance", "Predicted Attendance", "Warning Level", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                {[
+                  "Student Name",
+                  "Current Attendance",
+                  "Predicted Attendance",
+                  "Warning Level",
+                  "Status",
+                ].map((column) => (
+                  <th
+                    key={column}
+                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {column}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -132,10 +187,30 @@ export function AiAttendance() {
                   <td className="py-3 px-4">{student.current}%</td>
                   <td className="py-3 px-4 font-medium">{student.predicted}%</td>
                   <td className="py-3 px-4">
-                    <Badge tone={student.warningLevel === "High" ? "warn" : student.warningLevel === "Medium" ? "info" : "success"}>{student.warningLevel}</Badge>
+                    <Badge
+                      tone={
+                        student.warningLevel === "High"
+                          ? "warn"
+                          : student.warningLevel === "Medium"
+                            ? "info"
+                            : "success"
+                      }
+                    >
+                      {student.warningLevel}
+                    </Badge>
                   </td>
                   <td className="py-3 px-4">
-                    <Badge tone={student.status === "Critical" ? "warn" : student.status === "At Risk" ? "info" : "success"}>{student.status}</Badge>
+                    <Badge
+                      tone={
+                        student.status === "Critical"
+                          ? "warn"
+                          : student.status === "At Risk"
+                            ? "info"
+                            : "success"
+                      }
+                    >
+                      {student.status}
+                    </Badge>
                   </td>
                 </tr>
               ))}
@@ -152,20 +227,57 @@ export function AiAttendance() {
           </div>
           <div className="space-y-3">
             {[
-              { student: "James Wilson", attendance: "65%", type: "Critical", action: "Immediate intervention required" },
-              { student: "John Smith", attendance: "72%", type: "High Risk", action: "Counseling recommended" },
-              { student: "Robert Taylor", attendance: "74%", type: "Medium Risk", action: "Monitor closely" },
-              { student: "Michael Brown", attendance: "78%", type: "Medium Risk", action: "Regular check-ins" },
+              {
+                student: "James Wilson",
+                attendance: "65%",
+                type: "Critical",
+                action: "Immediate intervention required",
+              },
+              {
+                student: "John Smith",
+                attendance: "72%",
+                type: "High Risk",
+                action: "Counseling recommended",
+              },
+              {
+                student: "Robert Taylor",
+                attendance: "74%",
+                type: "Medium Risk",
+                action: "Monitor closely",
+              },
+              {
+                student: "Michael Brown",
+                attendance: "78%",
+                type: "Medium Risk",
+                action: "Regular check-ins",
+              },
             ].map((warning, index) => (
-              <div key={index} className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${warning.type === "Critical" ? "bg-red-50 border-red-200" : warning.type === "High Risk" ? "bg-amber-50 border-amber-200" : ""}`}>
-                <div className={`size-10 rounded-lg ${warning.type === "Critical" ? "bg-red-500" : warning.type === "High Risk" ? "bg-amber-500" : "bg-gradient-primary"} text-white grid place-items-center`}>
+              <div
+                key={index}
+                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${warning.type === "Critical" ? "bg-red-50 border-red-200" : warning.type === "High Risk" ? "bg-amber-50 border-amber-200" : ""}`}
+              >
+                <div
+                  className={`size-10 rounded-lg ${warning.type === "Critical" ? "bg-red-500" : warning.type === "High Risk" ? "bg-amber-500" : "bg-gradient-primary"} text-white grid place-items-center`}
+                >
                   <AlertTriangle className="size-4" />
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{warning.student}</div>
-                  <div className="text-xs text-muted-foreground">{warning.attendance} attendance</div>
+                  <div className="text-xs text-muted-foreground">
+                    {warning.attendance} attendance
+                  </div>
                 </div>
-                <Badge tone={warning.type === "Critical" ? "warn" : warning.type === "High Risk" ? "warn" : "info"}>{warning.type}</Badge>
+                <Badge
+                  tone={
+                    warning.type === "Critical"
+                      ? "warn"
+                      : warning.type === "High Risk"
+                        ? "warn"
+                        : "info"
+                  }
+                >
+                  {warning.type}
+                </Badge>
               </div>
             ))}
           </div>
@@ -178,7 +290,10 @@ export function AiAttendance() {
           </div>
           <div className="space-y-3">
             {warningTimeline.map((item, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+              <div
+                key={index}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center">
                   <Calendar className="size-4" />
                 </div>
@@ -186,7 +301,17 @@ export function AiAttendance() {
                   <div className="text-sm font-medium">{item.date}</div>
                   <div className="text-xs text-muted-foreground">{item.type}</div>
                 </div>
-                <Badge tone={item.type === "High Risk" ? "warn" : item.type === "Medium Risk" ? "info" : "success"}>{item.count} alerts</Badge>
+                <Badge
+                  tone={
+                    item.type === "High Risk"
+                      ? "warn"
+                      : item.type === "Medium Risk"
+                        ? "info"
+                        : "success"
+                  }
+                >
+                  {item.count} alerts
+                </Badge>
               </div>
             ))}
           </div>
@@ -200,14 +325,26 @@ export function AiAttendance() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Expected Improvement", value: "+2.5%", icon: TrendingUp, color: "bg-gradient-primary" },
+            {
+              label: "Expected Improvement",
+              value: "+2.5%",
+              icon: TrendingUp,
+              color: "bg-gradient-primary",
+            },
             { label: "Students at Risk", value: "18", icon: AlertTriangle, color: "bg-red-500" },
-            { label: "Recovery Predicted", value: "12", icon: TrendingUp, color: "bg-gradient-cyan" },
+            {
+              label: "Recovery Predicted",
+              value: "12",
+              icon: TrendingUp,
+              color: "bg-gradient-cyan",
+            },
             { label: "Stable Attendance", value: "215", icon: Users, color: "bg-gradient-violet" },
           ].map((summary, index) => (
             <div key={index} className="p-4 rounded-xl border hover:bg-accent/50 transition">
               <div className="flex items-center gap-2 mb-2">
-                <div className={`size-8 rounded-lg ${summary.color} text-white grid place-items-center`}>
+                <div
+                  className={`size-8 rounded-lg ${summary.color} text-white grid place-items-center`}
+                >
                   <summary.icon className="size-4" />
                 </div>
                 <span className="text-xs text-muted-foreground">{summary.label}</span>

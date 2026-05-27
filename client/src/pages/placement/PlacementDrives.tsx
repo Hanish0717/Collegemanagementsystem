@@ -4,23 +4,25 @@ import { Plus, Calendar, MapPin, Users, Clock } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { drives } from "@/mock/mockData";
 
-
-
 export function PlacementDrives() {
   const [selectedTab, setSelectedTab] = useState<"upcoming" | "ongoing" | "completed">("upcoming");
 
-  const upcoming = drives.filter(d => d.status === "Upcoming");
-  const ongoing = drives.filter(d => d.status === "Ongoing");
-  const completed = drives.filter(d => d.status === "Completed");
+  const upcoming = drives.filter((d) => d.status === "Upcoming");
+  const ongoing = drives.filter((d) => d.status === "Ongoing");
+  const completed = drives.filter((d) => d.status === "Completed");
 
-  const DriveCard = ({ drive }: { drive: typeof drives[0] }) => (
+  const DriveCard = ({ drive }: { drive: (typeof drives)[0] }) => (
     <Card className="hover:-translate-y-1 transition">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h3 className="font-semibold">{drive.company}</h3>
           <p className="text-sm text-muted-foreground mt-1">{drive.role}</p>
         </div>
-        <Badge tone={drive.status === "Upcoming" ? "info" : drive.status === "Ongoing" ? "warn" : "success"}>
+        <Badge
+          tone={
+            drive.status === "Upcoming" ? "info" : drive.status === "Ongoing" ? "warn" : "success"
+          }
+        >
           {drive.status}
         </Badge>
       </div>
@@ -39,7 +41,9 @@ export function PlacementDrives() {
         <div className="flex items-center gap-2 text-sm">
           <Clock className="size-4 text-muted-foreground" />
           <span className="text-muted-foreground">Deadline:</span>
-          <span className="font-medium">{new Date(drive.applicationDeadline).toLocaleDateString()}</span>
+          <span className="font-medium">
+            {new Date(drive.applicationDeadline).toLocaleDateString()}
+          </span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Users className="size-4 text-muted-foreground" />
@@ -119,7 +123,7 @@ export function PlacementDrives() {
       {/* Upcoming Drives */}
       {selectedTab === "upcoming" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {upcoming.map(drive => (
+          {upcoming.map((drive) => (
             <DriveCard key={drive.id} drive={drive} />
           ))}
         </div>
@@ -128,7 +132,7 @@ export function PlacementDrives() {
       {/* Ongoing Drives */}
       {selectedTab === "ongoing" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {ongoing.map(drive => (
+          {ongoing.map((drive) => (
             <DriveCard key={drive.id} drive={drive} />
           ))}
         </div>
@@ -137,7 +141,7 @@ export function PlacementDrives() {
       {/* Completed Drives */}
       {selectedTab === "completed" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {completed.map(drive => (
+          {completed.map((drive) => (
             <DriveCard key={drive.id} drive={drive} />
           ))}
         </div>
@@ -147,17 +151,24 @@ export function PlacementDrives() {
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">June Drive Schedule</h3>
-          <Badge tone="info">{drives.filter(d => d.date.startsWith("2026-06")).length} drives</Badge>
+          <Badge tone="info">
+            {drives.filter((d) => d.date.startsWith("2026-06")).length} drives
+          </Badge>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-          {Array.from({ length: 14 }, (_, i) => i + 10).map(day => {
-            const dayDrives = drives.filter(d => new Date(d.date).getDate() === day);
+          {Array.from({ length: 14 }, (_, i) => i + 10).map((day) => {
+            const dayDrives = drives.filter((d) => new Date(d.date).getDate() === day);
             return (
-              <div key={day} className="min-h-28 rounded-xl border bg-background/60 p-2 hover:bg-accent/50 transition">
+              <div
+                key={day}
+                className="min-h-28 rounded-xl border bg-background/60 p-2 hover:bg-accent/50 transition"
+              >
                 <div className="text-xs font-semibold text-muted-foreground mb-2">Jun {day}</div>
                 <div className="space-y-1.5">
-                  {dayDrives.length === 0 && <div className="text-[11px] text-muted-foreground">No drive</div>}
-                  {dayDrives.map(drive => (
+                  {dayDrives.length === 0 && (
+                    <div className="text-[11px] text-muted-foreground">No drive</div>
+                  )}
+                  {dayDrives.map((drive) => (
                     <div key={drive.id} className="rounded-lg bg-gradient-soft border p-2">
                       <div className="text-xs font-medium truncate">{drive.company}</div>
                       <div className="text-[11px] text-muted-foreground truncate">{drive.role}</div>
@@ -177,11 +188,15 @@ export function PlacementDrives() {
           {drives.map((drive, idx) => (
             <div key={drive.id} className="flex gap-4">
               <div className="flex flex-col items-center">
-                <div className={`size-10 rounded-lg grid place-items-center font-bold text-sm text-white ${
-                  drive.status === "Upcoming" ? "bg-blue-500" : 
-                  drive.status === "Ongoing" ? "bg-amber-500" : 
-                  "bg-emerald-500"
-                }`}>
+                <div
+                  className={`size-10 rounded-lg grid place-items-center font-bold text-sm text-white ${
+                    drive.status === "Upcoming"
+                      ? "bg-blue-500"
+                      : drive.status === "Ongoing"
+                        ? "bg-amber-500"
+                        : "bg-emerald-500"
+                  }`}
+                >
                   {idx + 1}
                 </div>
                 {idx < drives.length - 1 && <div className="w-1 h-8 bg-muted mt-2" />}
@@ -197,7 +212,15 @@ export function PlacementDrives() {
                       <div>👥 {drive.studentCount} applications</div>
                     </div>
                   </div>
-                  <Badge tone={drive.status === "Upcoming" ? "info" : drive.status === "Ongoing" ? "warn" : "success"}>
+                  <Badge
+                    tone={
+                      drive.status === "Upcoming"
+                        ? "info"
+                        : drive.status === "Ongoing"
+                          ? "warn"
+                          : "success"
+                    }
+                  >
                     {drive.status}
                   </Badge>
                 </div>
@@ -217,26 +240,44 @@ export function PlacementDrives() {
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Role</th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Date</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Deadline</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Applications</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                  Deadline
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Applications
+                </th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Rounds</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Status</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {drives.map(drive => (
+              {drives.map((drive) => (
                 <tr key={drive.id} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{drive.company}</td>
                   <td className="py-3 px-4">{drive.role}</td>
-                  <td className="py-3 px-4 text-muted-foreground text-sm">{new Date(drive.date).toLocaleDateString()}</td>
-                  <td className="py-3 px-4 text-muted-foreground text-sm">{new Date(drive.applicationDeadline).toLocaleDateString()}</td>
+                  <td className="py-3 px-4 text-muted-foreground text-sm">
+                    {new Date(drive.date).toLocaleDateString()}
+                  </td>
+                  <td className="py-3 px-4 text-muted-foreground text-sm">
+                    {new Date(drive.applicationDeadline).toLocaleDateString()}
+                  </td>
                   <td className="py-3 px-4 text-center font-medium">{drive.studentCount}</td>
                   <td className="py-3 px-4">
                     <Badge tone="info">{drive.rounds} rounds</Badge>
                   </td>
                   <td className="py-3 px-4">
                     <div className="text-center">
-                      <Badge tone={drive.status === "Upcoming" ? "info" : drive.status === "Ongoing" ? "warn" : "success"}>
+                      <Badge
+                        tone={
+                          drive.status === "Upcoming"
+                            ? "info"
+                            : drive.status === "Ongoing"
+                              ? "warn"
+                              : "success"
+                        }
+                      >
                         {drive.status}
                       </Badge>
                     </div>

@@ -4,8 +4,6 @@ import { Download, TrendingDown } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { attendanceHistory, subjectAttendance } from "@/mock/parentData";
 
-
-
 export function ParentAttendance() {
   return (
     <div className="space-y-6">
@@ -25,11 +23,13 @@ export function ParentAttendance() {
           { label: "Present Days", value: "108", tone: "info" as const },
           { label: "Absent Days", value: "12", tone: "danger" as const },
           { label: "This Month", value: "92%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -56,8 +56,19 @@ export function ParentAttendance() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Subject", "Total Classes", "Attended Classes", "Attendance Percentage", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                {[
+                  "Subject",
+                  "Total Classes",
+                  "Attended Classes",
+                  "Attendance Percentage",
+                  "Status",
+                ].map((column) => (
+                  <th
+                    key={column}
+                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {column}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -69,7 +80,15 @@ export function ParentAttendance() {
                   <td className="py-3 px-4">{subject.attended}</td>
                   <td className="py-3 px-4 font-medium">{subject.percentage}%</td>
                   <td className="py-3 px-4">
-                    <Badge tone={subject.status === "Excellent" ? "success" : subject.status === "Good" ? "info" : "warn"}>
+                    <Badge
+                      tone={
+                        subject.status === "Excellent"
+                          ? "success"
+                          : subject.status === "Good"
+                            ? "info"
+                            : "warn"
+                      }
+                    >
                       {subject.status}
                     </Badge>
                   </td>
@@ -86,12 +105,17 @@ export function ParentAttendance() {
           <h3 className="font-semibold">Low Attendance Alerts</h3>
         </div>
         <div className="space-y-2">
-          {subjectAttendance.filter(s => s.percentage < 85).map((subject, index) => (
-            <div key={index} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
-              <span className="text-sm font-medium">{subject.subject}</span>
-              <Badge tone="warn">{subject.percentage}%</Badge>
-            </div>
-          ))}
+          {subjectAttendance
+            .filter((s) => s.percentage < 85)
+            .map((subject, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
+                <span className="text-sm font-medium">{subject.subject}</span>
+                <Badge tone="warn">{subject.percentage}%</Badge>
+              </div>
+            ))}
         </div>
       </Card>
     </div>

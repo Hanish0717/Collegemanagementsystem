@@ -3,8 +3,6 @@ import { MapPin, User } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { timetableSlots } from "@/mock/studentData";
 
-
-
 export function StudentTimetable() {
   const timeSlots = ["09:00 AM", "11:00 AM", "02:00 PM"];
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -22,11 +20,13 @@ export function StudentTimetable() {
           { label: "Today's Classes", value: "4", tone: "success" as const },
           { label: "Lab Sessions", value: "3", tone: "info" as const },
           { label: "Free Periods", value: "2", tone: "warn" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">This Week</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              This Week
+            </Badge>
           </Card>
         ))}
       </div>
@@ -41,23 +41,30 @@ export function StudentTimetable() {
             <thead className="border-b">
               <tr>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Time</th>
-                {days.map(day => (
-                  <th key={day} className="text-center py-3 px-4 font-semibold text-muted-foreground">{day}</th>
+                {days.map((day) => (
+                  <th
+                    key={day}
+                    className="text-center py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {day}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y">
-              {timeSlots.map(time => (
+              {timeSlots.map((time) => (
                 <tr key={time}>
                   <td className="py-3 px-4 font-medium text-xs bg-gradient-soft">{time}</td>
-                  {days.map(day => {
-                    const slot = timetableSlots.find(s => s.day === day && s.time === time);
+                  {days.map((day) => {
+                    const slot = timetableSlots.find((s) => s.day === day && s.time === time);
                     return (
                       <td key={day} className="py-2 px-2 text-center">
                         {slot ? (
                           <div className="p-2 rounded-lg bg-gradient-soft border">
                             <div className="text-xs font-medium">{slot.subject}</div>
-                            <div className="text-[10px] text-muted-foreground mt-1">{slot.faculty}</div>
+                            <div className="text-[10px] text-muted-foreground mt-1">
+                              {slot.faculty}
+                            </div>
                             <div className="text-[10px] text-muted-foreground flex items-center justify-center gap-1 mt-1">
                               <MapPin className="size-2.5" /> {slot.room}
                             </div>
@@ -80,23 +87,28 @@ export function StudentTimetable() {
       <Card>
         <h3 className="font-semibold mb-4">Today's Schedule</h3>
         <div className="space-y-2">
-          {timetableSlots.filter(s => s.day === "Monday").map(slot => (
-            <div key={slot.time} className="flex items-center gap-4 p-3 rounded-xl border hover:bg-accent/50 transition">
-              <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                {slot.time.slice(0, 2)}
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">{slot.subject}</div>
-                <div className="text-xs text-muted-foreground">{slot.faculty}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-medium">{slot.time}</div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                  <MapPin className="size-2.5" /> {slot.room}
+          {timetableSlots
+            .filter((s) => s.day === "Monday")
+            .map((slot) => (
+              <div
+                key={slot.time}
+                className="flex items-center gap-4 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
+                <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
+                  {slot.time.slice(0, 2)}
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium">{slot.subject}</div>
+                  <div className="text-xs text-muted-foreground">{slot.faculty}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs font-medium">{slot.time}</div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="size-2.5" /> {slot.room}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </Card>
 
@@ -106,11 +118,14 @@ export function StudentTimetable() {
           <h3 className="font-semibold">Faculty Information</h3>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from(new Set(timetableSlots.map(s => s.faculty))).map(faculty => (
+          {Array.from(new Set(timetableSlots.map((s) => s.faculty))).map((faculty) => (
             <div key={faculty} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
-                  {faculty.split(" ").map(n => n[0]).join("")}
+                  {faculty
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
                 <div>
                   <div className="text-sm font-medium">{faculty}</div>

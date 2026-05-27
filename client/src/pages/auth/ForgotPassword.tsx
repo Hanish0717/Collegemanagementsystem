@@ -49,61 +49,64 @@ export function ForgotPassword() {
           <span className="font-bold text-lg">College Management System</span>
         </Link>
 
-          <>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="size-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 grid place-items-center text-white shadow-soft shrink-0">
-                <KeyRound className="size-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold">Forgot Password?</h2>
-                <p className="text-sm text-muted-foreground mt-0.5">We'll send you an OTP code</p>
+        <>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="size-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 grid place-items-center text-white shadow-soft shrink-0">
+              <KeyRound className="size-6" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Forgot Password?</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">We'll send you an OTP code</p>
+            </div>
+          </div>
+
+          {error && (
+            <div className="mt-4 mb-2 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
+          )}
+
+          <form className="mt-6 space-y-4" onSubmit={submit}>
+            <div>
+              <label className="text-xs font-medium">Registered Email Address</label>
+              <div className="mt-1 relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@university.edu"
+                  required
+                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
               </div>
             </div>
 
-            {error && (
-              <div className="mt-4 mb-2 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
-                {error}
-              </div>
-            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 font-medium text-white bg-gradient-primary shadow-soft disabled:opacity-70 transition-all glow-primary mt-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Sending OTP…
+                </>
+              ) : (
+                <>
+                  Send OTP Code <ArrowRight className="size-4" />
+                </>
+              )}
+            </button>
+          </form>
 
-            <form className="mt-6 space-y-4" onSubmit={submit}>
-              <div>
-                <label className="text-xs font-medium">Registered Email Address</label>
-                <div className="mt-1 relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@university.edu"
-                    required
-                    className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 font-medium text-white bg-gradient-primary shadow-soft disabled:opacity-70 transition-all glow-primary mt-2"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Sending OTP…
-                  </>
-                ) : (
-                  <>
-                    Send OTP Code <ArrowRight className="size-4" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <p className="mt-8 text-center text-sm text-muted-foreground">
-              Remember your password? <Link to="/login" className="text-indigo hover:underline font-medium">Sign in</Link>
-            </p>
-          </>
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            Remember your password?{" "}
+            <Link to="/login" className="text-indigo hover:underline font-medium">
+              Sign in
+            </Link>
+          </p>
+        </>
       </motion.div>
     </div>
   );

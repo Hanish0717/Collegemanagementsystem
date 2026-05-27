@@ -5,16 +5,21 @@ import { Building2, Plus, Search, Users } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { departmentsManaged } from "@/mock/superAdminData";
 
-
-
 export function SuperAdminDepartments() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
 
-  const filtered = useMemo(() => departmentsManaged.filter(dept =>
-    (status === "All" || dept.status === status) &&
-    [dept.name, dept.head, dept.id].some(value => value.toLowerCase().includes(search.toLowerCase()))
-  ), [search, status]);
+  const filtered = useMemo(
+    () =>
+      departmentsManaged.filter(
+        (dept) =>
+          (status === "All" || dept.status === status) &&
+          [dept.name, dept.head, dept.id].some((value) =>
+            value.toLowerCase().includes(search.toLowerCase()),
+          ),
+      ),
+    [search, status],
+  );
 
   return (
     <div className="space-y-6">
@@ -32,22 +37,43 @@ export function SuperAdminDepartments() {
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search departments..." className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm" />
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search departments..."
+              className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
+            />
           </div>
-          <select value={status} onChange={(event) => setStatus(event.target.value)} className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All", "Active", "Review", "Inactive"].map(item => <option key={item}>{item}</option>)}
+          <select
+            value={status}
+            onChange={(event) => setStatus(event.target.value)}
+            className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm"
+          >
+            {["All", "Active", "Review", "Inactive"].map((item) => (
+              <option key={item}>{item}</option>
+            ))}
           </select>
         </div>
       </Card>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map(dept => (
+        {filtered.map((dept) => (
           <Card key={dept.id} className="hover:-translate-y-1 transition">
             <div className="flex items-start justify-between mb-4">
               <div className="size-12 rounded-xl bg-gradient-primary text-white grid place-items-center">
                 <Building2 className="size-6" />
               </div>
-              <Badge tone={dept.status === "Active" ? "success" : dept.status === "Review" ? "warn" : "danger"}>{dept.status}</Badge>
+              <Badge
+                tone={
+                  dept.status === "Active"
+                    ? "success"
+                    : dept.status === "Review"
+                      ? "warn"
+                      : "danger"
+                }
+              >
+                {dept.status}
+              </Badge>
             </div>
             <h3 className="font-semibold">{dept.name}</h3>
             <p className="text-xs text-muted-foreground mt-1">{dept.head}</p>
@@ -74,7 +100,9 @@ export function SuperAdminDepartments() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold">Department Analytics</h3>
-              <p className="text-xs text-muted-foreground">Faculty and student count by department</p>
+              <p className="text-xs text-muted-foreground">
+                Faculty and student count by department
+              </p>
             </div>
             <Badge tone="info">Live</Badge>
           </div>
@@ -99,12 +127,27 @@ export function SuperAdminDepartments() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Total Faculty", value: departmentsManaged.reduce((sum, dept) => sum + dept.faculty, 0) },
-              { label: "Total Students", value: departmentsManaged.reduce((sum, dept) => sum + dept.students, 0) },
-              { label: "Active Departments", value: departmentsManaged.filter(dept => dept.status === "Active").length },
-              { label: "Review Required", value: departmentsManaged.filter(dept => dept.status === "Review").length },
-            ].map(stat => (
-              <div key={stat.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
+              {
+                label: "Total Faculty",
+                value: departmentsManaged.reduce((sum, dept) => sum + dept.faculty, 0),
+              },
+              {
+                label: "Total Students",
+                value: departmentsManaged.reduce((sum, dept) => sum + dept.students, 0),
+              },
+              {
+                label: "Active Departments",
+                value: departmentsManaged.filter((dept) => dept.status === "Active").length,
+              },
+              {
+                label: "Review Required",
+                value: departmentsManaged.filter((dept) => dept.status === "Review").length,
+              },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
+              >
                 <span className="text-sm text-muted-foreground">{stat.label}</span>
                 <span className="font-bold">{stat.value}</span>
               </div>

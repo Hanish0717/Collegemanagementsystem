@@ -1,10 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Download, Filter, TrendingDown, TrendingUp, AlertTriangle } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { performanceData, studentPerformance } from "@/mock/facultyData";
-
-
 
 export function FacultyPerformance() {
   return (
@@ -25,11 +35,13 @@ export function FacultyPerformance() {
           { label: "At Risk", value: "5", tone: "danger" as const },
           { label: "Average Score", value: "83%", tone: "info" as const },
           { label: "Avg Attendance", value: "87%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -37,7 +49,10 @@ export function FacultyPerformance() {
       <Card>
         <div className="flex flex-wrap gap-2">
           {["All Students", "Top Performers", "At Risk", "Improving"].map((filter, index) => (
-            <button key={filter} className={`px-4 py-2 rounded-xl text-sm font-medium transition ${index === 0 ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}>
+            <button
+              key={filter}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${index === 0 ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}
+            >
               {filter}
             </button>
           ))}
@@ -83,8 +98,20 @@ export function FacultyPerformance() {
                 <XAxis dataKey="student" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="attendance" stroke="#4F46E5" fill="url(#perf-attendance)" strokeWidth={2} />
-                <Area type="monotone" dataKey="assignments" stroke="#06B6D4" fill="url(#perf-marks)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="attendance"
+                  stroke="#4F46E5"
+                  fill="url(#perf-attendance)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="assignments"
+                  stroke="#06B6D4"
+                  fill="url(#perf-marks)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -94,13 +121,18 @@ export function FacultyPerformance() {
       <Card>
         <h3 className="font-semibold mb-4">Student Performance Cards</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {performanceData.map(student => (
+          {performanceData.map((student) => (
             <Card key={student.student} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {student.student.split(" ").map(n => n[0]).join("")}
+                  {student.student
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
-                <Badge tone={student.overall >= 85 ? "success" : student.overall >= 75 ? "info" : "warn"}>
+                <Badge
+                  tone={student.overall >= 85 ? "success" : student.overall >= 75 ? "info" : "warn"}
+                >
                   {student.overall}%
                 </Badge>
               </div>
@@ -131,12 +163,17 @@ export function FacultyPerformance() {
             <h3 className="font-semibold">Top Performers</h3>
           </div>
           <div className="space-y-2">
-            {performanceData.filter(s => s.overall >= 85).map(student => (
-              <div key={student.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
-                <span className="text-sm font-medium">{student.student}</span>
-                <Badge tone="success">{student.overall}%</Badge>
-              </div>
-            ))}
+            {performanceData
+              .filter((s) => s.overall >= 85)
+              .map((student) => (
+                <div
+                  key={student.student}
+                  className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+                >
+                  <span className="text-sm font-medium">{student.student}</span>
+                  <Badge tone="success">{student.overall}%</Badge>
+                </div>
+              ))}
           </div>
         </Card>
 
@@ -146,12 +183,17 @@ export function FacultyPerformance() {
             <h3 className="font-semibold">Low Performance Alerts</h3>
           </div>
           <div className="space-y-2">
-            {performanceData.filter(s => s.overall < 80).map(student => (
-              <div key={student.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
-                <span className="text-sm font-medium">{student.student}</span>
-                <Badge tone="danger">{student.overall}%</Badge>
-              </div>
-            ))}
+            {performanceData
+              .filter((s) => s.overall < 80)
+              .map((student) => (
+                <div
+                  key={student.student}
+                  className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+                >
+                  <span className="text-sm font-medium">{student.student}</span>
+                  <Badge tone="danger">{student.overall}%</Badge>
+                </div>
+              ))}
           </div>
         </Card>
       </div>

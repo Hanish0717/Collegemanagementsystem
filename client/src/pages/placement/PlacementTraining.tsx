@@ -3,12 +3,10 @@ import { Plus, BookOpen, Brain, Code, Users, CheckCircle, TrendingUp } from "luc
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { trainingPrograms } from "@/mock/mockData";
 
-
-
 export function PlacementTraining() {
-  const assessments = trainingPrograms.filter(t => t.type === "Assessment");
-  const trainings = trainingPrograms.filter(t => t.type === "Training");
-  const mocks = trainingPrograms.filter(t => t.type === "Mock");
+  const assessments = trainingPrograms.filter((t) => t.type === "Assessment");
+  const trainings = trainingPrograms.filter((t) => t.type === "Training");
+  const mocks = trainingPrograms.filter((t) => t.type === "Mock");
 
   const stats = [
     { label: "Total Programs", value: trainingPrograms.length, color: "bg-blue-500" },
@@ -17,7 +15,7 @@ export function PlacementTraining() {
     { label: "Mock Interviews", value: mocks.length, color: "bg-cyan-500" },
   ];
 
-  const TrainingCard = ({ program }: { program: typeof trainingPrograms[0] }) => {
+  const TrainingCard = ({ program }: { program: (typeof trainingPrograms)[0] }) => {
     const completionRate = Math.round((program.completed / program.enrolledStudents) * 100);
 
     return (
@@ -32,8 +30,8 @@ export function PlacementTraining() {
               program.type === "Assessment"
                 ? "info"
                 : program.type === "Training"
-                ? "success"
-                : "warn"
+                  ? "success"
+                  : "warn"
             }
           >
             {program.type}
@@ -93,9 +91,11 @@ export function PlacementTraining() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(stat => (
+        {stats.map((stat) => (
           <Card key={stat.label} className="text-center">
-            <div className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}>
+            <div
+              className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}
+            >
               {stat.value}
             </div>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -105,7 +105,7 @@ export function PlacementTraining() {
 
       {/* All Programs */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {trainingPrograms.map(program => (
+        {trainingPrograms.map((program) => (
           <TrainingCard key={program.id} program={program} />
         ))}
       </div>
@@ -117,17 +117,29 @@ export function PlacementTraining() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Program Name</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                  Program Name
+                </th>
                 <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Type</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Date & Time</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Duration</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Enrolled</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Completed</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Pass %</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Date & Time
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Duration
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Enrolled
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Completed
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Pass %
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {trainingPrograms.map(program => (
+              {trainingPrograms.map((program) => (
                 <tr key={program.id} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{program.name}</td>
                   <td className="py-3 px-4 text-center">
@@ -136,8 +148,8 @@ export function PlacementTraining() {
                         program.type === "Assessment"
                           ? "info"
                           : program.type === "Training"
-                          ? "success"
-                          : "warn"
+                            ? "success"
+                            : "warn"
                       }
                     >
                       {program.type}
@@ -150,7 +162,9 @@ export function PlacementTraining() {
                   <td className="py-3 px-4 text-center font-medium">{program.enrolledStudents}</td>
                   <td className="py-3 px-4 text-center font-medium">{program.completed}</td>
                   <td className="py-3 px-4 text-center">
-                    <span className={`font-bold ${program.passPercentage >= 80 ? "text-emerald-600" : "text-amber-600"}`}>
+                    <span
+                      className={`font-bold ${program.passPercentage >= 80 ? "text-emerald-600" : "text-amber-600"}`}
+                    >
                       {program.passPercentage}%
                     </span>
                   </td>
@@ -170,16 +184,23 @@ export function PlacementTraining() {
             <h3 className="font-semibold">Assessments</h3>
           </div>
           <div className="space-y-2">
-            {assessments.map(program => {
-              const completionRate = Math.round((program.completed / program.enrolledStudents) * 100);
+            {assessments.map((program) => {
+              const completionRate = Math.round(
+                (program.completed / program.enrolledStudents) * 100,
+              );
               return (
-                <div key={program.id} className="p-3 rounded-lg border hover:bg-accent/50 transition">
+                <div
+                  key={program.id}
+                  className="p-3 rounded-lg border hover:bg-accent/50 transition"
+                >
                   <div className="font-medium text-sm">{program.name}</div>
                   <div className="text-xs text-muted-foreground mt-1">{program.date}</div>
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span>Completion: {completionRate}%</span>
-                      <span className="font-bold">{program.completed}/{program.enrolledStudents}</span>
+                      <span className="font-bold">
+                        {program.completed}/{program.enrolledStudents}
+                      </span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5">
                       <div
@@ -201,16 +222,23 @@ export function PlacementTraining() {
             <h3 className="font-semibold">Training Programs</h3>
           </div>
           <div className="space-y-2">
-            {trainings.map(program => {
-              const completionRate = Math.round((program.completed / program.enrolledStudents) * 100);
+            {trainings.map((program) => {
+              const completionRate = Math.round(
+                (program.completed / program.enrolledStudents) * 100,
+              );
               return (
-                <div key={program.id} className="p-3 rounded-lg border hover:bg-accent/50 transition">
+                <div
+                  key={program.id}
+                  className="p-3 rounded-lg border hover:bg-accent/50 transition"
+                >
                   <div className="font-medium text-sm">{program.name}</div>
                   <div className="text-xs text-muted-foreground mt-1">{program.date}</div>
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span>Completion: {completionRate}%</span>
-                      <span className="font-bold">{program.completed}/{program.enrolledStudents}</span>
+                      <span className="font-bold">
+                        {program.completed}/{program.enrolledStudents}
+                      </span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5">
                       <div
@@ -232,16 +260,23 @@ export function PlacementTraining() {
             <h3 className="font-semibold">Mock Interviews</h3>
           </div>
           <div className="space-y-2">
-            {mocks.map(program => {
-              const completionRate = Math.round((program.completed / program.enrolledStudents) * 100);
+            {mocks.map((program) => {
+              const completionRate = Math.round(
+                (program.completed / program.enrolledStudents) * 100,
+              );
               return (
-                <div key={program.id} className="p-3 rounded-lg border hover:bg-accent/50 transition">
+                <div
+                  key={program.id}
+                  className="p-3 rounded-lg border hover:bg-accent/50 transition"
+                >
                   <div className="font-medium text-sm">{program.name}</div>
                   <div className="text-xs text-muted-foreground mt-1">{program.date}</div>
                   <div className="mt-2 space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span>Completion: {completionRate}%</span>
-                      <span className="font-bold">{program.completed}/{program.enrolledStudents}</span>
+                      <span className="font-bold">
+                        {program.completed}/{program.enrolledStudents}
+                      </span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5">
                       <div
@@ -266,7 +301,7 @@ export function PlacementTraining() {
             { category: "Good (70-79%)", count: 87, color: "bg-blue-500" },
             { category: "Average (60-69%)", count: 42, color: "bg-amber-500" },
             { category: "Below Average (<60%)", count: 15, color: "bg-rose-500" },
-          ].map(perf => (
+          ].map((perf) => (
             <div key={perf.category} className="p-3 rounded-lg border">
               <div className="text-xs text-muted-foreground mb-2">{perf.category}</div>
               <div className="flex items-center gap-2">
@@ -285,7 +320,10 @@ export function PlacementTraining() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium block mb-2">Program Name</label>
-              <input placeholder="Enter program name" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                placeholder="Enter program name"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Program Type</label>
@@ -297,24 +335,42 @@ export function PlacementTraining() {
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Date</label>
-              <input type="date" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="date"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Time</label>
-              <input type="time" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="time"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Duration (minutes)</label>
-              <input type="number" placeholder="120" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="number"
+                placeholder="120"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Capacity</label>
-              <input type="number" placeholder="300" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="number"
+                placeholder="300"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
           </div>
           <div>
             <label className="text-sm font-medium block mb-2">Description</label>
-            <textarea placeholder="Program description and instructions" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" rows={3} />
+            <textarea
+              placeholder="Program description and instructions"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              rows={3}
+            />
           </div>
           <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium">
             Schedule Program

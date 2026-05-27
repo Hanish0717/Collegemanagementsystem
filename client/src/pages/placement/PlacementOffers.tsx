@@ -3,17 +3,19 @@ import { Plus, Download, FileText, CheckCircle, Clock } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { offers } from "@/mock/mockData";
 
-
-
 export function PlacementOffers() {
-  const accepted = offers.filter(o => o.status === "Accepted");
-  const pending = offers.filter(o => o.status === "Pending");
+  const accepted = offers.filter((o) => o.status === "Accepted");
+  const pending = offers.filter((o) => o.status === "Pending");
 
   const offerStats = [
     { label: "Total Offers", value: offers.length, color: "bg-blue-500" },
     { label: "Accepted", value: accepted.length, color: "bg-emerald-500" },
     { label: "Pending", value: pending.length, color: "bg-amber-500" },
-    { label: "Acceptance Rate", value: `${Math.round((accepted.length / offers.length) * 100)}%`, color: "bg-purple-500" },
+    {
+      label: "Acceptance Rate",
+      value: `${Math.round((accepted.length / offers.length) * 100)}%`,
+      color: "bg-purple-500",
+    },
   ];
 
   return (
@@ -30,9 +32,11 @@ export function PlacementOffers() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {offerStats.map(stat => (
+        {offerStats.map((stat) => (
           <Card key={stat.label} className="text-center">
-            <div className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}>
+            <div
+              className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}
+            >
               {stat.value}
             </div>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -42,16 +46,14 @@ export function PlacementOffers() {
 
       {/* Offers Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {offers.map(offer => (
+        {offers.map((offer) => (
           <Card key={offer.id} className="hover:-translate-y-1 transition flex flex-col">
             <div className="flex items-start justify-between mb-3">
               <div>
                 <h3 className="font-semibold text-sm">{offer.studentName}</h3>
                 <p className="text-xs text-muted-foreground mt-1">{offer.company}</p>
               </div>
-              <Badge tone={offer.status === "Accepted" ? "success" : "warn"}>
-                {offer.status}
-              </Badge>
+              <Badge tone={offer.status === "Accepted" ? "success" : "warn"}>{offer.status}</Badge>
             </div>
 
             <div className="space-y-2.5 mb-4">
@@ -70,7 +72,9 @@ export function PlacementOffers() {
                 </div>
                 <div className="p-2 rounded-lg bg-gradient-soft text-center">
                   <div className="text-xs text-muted-foreground">Offer Date</div>
-                  <div className="text-sm font-medium">{new Date(offer.offerDate).toLocaleDateString()}</div>
+                  <div className="text-sm font-medium">
+                    {new Date(offer.offerDate).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
             </div>
@@ -97,20 +101,32 @@ export function PlacementOffers() {
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Student</th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Role</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Package</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Joining Date</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Offer Date</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Status</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Actions</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Package
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Joining Date
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Offer Date
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Status
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {offers.map(offer => (
+              {offers.map((offer) => (
                 <tr key={offer.id} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{offer.studentName}</td>
                   <td className="py-3 px-4">{offer.company}</td>
                   <td className="py-3 px-4">{offer.role}</td>
-                  <td className="py-3 px-4 text-center font-semibold text-emerald-600">{offer.package}</td>
+                  <td className="py-3 px-4 text-center font-semibold text-emerald-600">
+                    {offer.package}
+                  </td>
                   <td className="py-3 px-4 text-center text-sm">{offer.joiningDate}</td>
                   <td className="py-3 px-4 text-center text-sm text-muted-foreground">
                     {new Date(offer.offerDate).toLocaleDateString()}
@@ -139,13 +155,15 @@ export function PlacementOffers() {
             <h3 className="font-semibold">Accepted Offers ({accepted.length})</h3>
           </div>
           <div className="space-y-2">
-            {accepted.map(offer => (
+            {accepted.map((offer) => (
               <div key={offer.id} className="p-3 rounded-lg border hover:bg-accent/50 transition">
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="font-medium text-sm">{offer.studentName}</div>
                     <div className="text-xs text-muted-foreground">{offer.company}</div>
-                    <div className="text-xs font-semibold text-emerald-600 mt-1">{offer.package}</div>
+                    <div className="text-xs font-semibold text-emerald-600 mt-1">
+                      {offer.package}
+                    </div>
                   </div>
                   <Badge tone="success">✓</Badge>
                 </div>
@@ -161,7 +179,7 @@ export function PlacementOffers() {
             <h3 className="font-semibold">Pending Acceptances ({pending.length})</h3>
           </div>
           <div className="space-y-2">
-            {pending.map(offer => (
+            {pending.map((offer) => (
               <div key={offer.id} className="p-3 rounded-lg border hover:bg-accent/50 transition">
                 <div className="flex items-start justify-between">
                   <div>
@@ -183,12 +201,14 @@ export function PlacementOffers() {
         <div className="space-y-3">
           {offers
             .sort((a, b) => parseFloat(b.package) - parseFloat(a.package))
-            .map(offer => {
+            .map((offer) => {
               const pkg = parseFloat(offer.package);
-              const maxPkg = parseFloat(offers.reduce((max, o) => {
-                const p = parseFloat(o.package);
-                return p > parseFloat(max.package) ? o : max;
-              }).package);
+              const maxPkg = parseFloat(
+                offers.reduce((max, o) => {
+                  const p = parseFloat(o.package);
+                  return p > parseFloat(max.package) ? o : max;
+                }).package,
+              );
               const percentage = (pkg / maxPkg) * 100;
 
               return (
@@ -219,32 +239,55 @@ export function PlacementOffers() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium block mb-2">Student Name</label>
-              <input placeholder="Select student" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                placeholder="Select student"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Company</label>
-              <input placeholder="Select company" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                placeholder="Select company"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Position</label>
-              <input placeholder="Job title" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                placeholder="Job title"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Package (LPA)</label>
-              <input placeholder="Enter package" type="number" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                placeholder="Enter package"
+                type="number"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Joining Date</label>
-              <input type="date" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="date"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div>
               <label className="text-sm font-medium block mb-2">Location</label>
-              <input placeholder="Office location" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                placeholder="Office location"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
           </div>
           <div>
             <label className="text-sm font-medium block mb-2">Additional Terms</label>
-            <textarea placeholder="Enter any special conditions or terms" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" rows={3} />
+            <textarea
+              placeholder="Enter any special conditions or terms"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              rows={3}
+            />
           </div>
           <div className="flex gap-2">
             <button className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium">
@@ -266,8 +309,11 @@ export function PlacementOffers() {
             { name: "Internship Offer", uses: "Summer/winter internships" },
             { name: "Contract Offer", uses: "Contract-based positions" },
             { name: "Conditional Offer", uses: "Offers with conditions" },
-          ].map(template => (
-            <div key={template.name} className="p-3 border rounded-lg hover:border-primary transition">
+          ].map((template) => (
+            <div
+              key={template.name}
+              className="p-3 border rounded-lg hover:border-primary transition"
+            >
               <div className="font-medium text-sm">{template.name}</div>
               <div className="text-xs text-muted-foreground mt-1">{template.uses}</div>
               <button className="text-xs text-blue-600 hover:underline mt-2">Use Template</button>

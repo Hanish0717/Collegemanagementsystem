@@ -11,7 +11,8 @@ export function Register() {
   const search: any = useSearch({ strict: false });
   const initialRole = (search.role as RoleId) || "student";
   const [roleId, setRoleId] = useState<RoleId>(initialRole);
-  const active = ROLE_LIST.find((r) => r.id === roleId) || ROLE_LIST.find((r) => r.id === "student")!;
+  const active =
+    ROLE_LIST.find((r) => r.id === roleId) || ROLE_LIST.find((r) => r.id === "student")!;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -82,11 +83,12 @@ export function Register() {
             Register as a <span className="text-gradient">{active.name}</span>
           </h1>
           <p className="mt-3 text-sm text-muted-foreground max-w-md">
-            Your role determines your access permissions and the tools available to you on the campus management platform.
+            Your role determines your access permissions and the tools available to you on the
+            campus management platform.
           </p>
 
           <div className="mt-6 grid grid-cols-2 xl:grid-cols-3 gap-3 max-w-3xl">
-            {ROLE_LIST.filter(r => r.id === roleId).map((r) => {
+            {ROLE_LIST.filter((r) => r.id === roleId).map((r) => {
               const selected = r.id === roleId;
               const Icon = r.icon;
               return (
@@ -101,12 +103,18 @@ export function Register() {
                         : "border-border bg-white/60 hover:-translate-y-0.5 hover:shadow-soft"
                     }`}
                 >
-                  {selected && <div className={`absolute inset-0 bg-gradient-to-br ${r.gradient} opacity-95`} />}
+                  {selected && (
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${r.gradient} opacity-95`}
+                    />
+                  )}
                   <div className="relative">
                     <div className="flex items-center justify-between">
                       <div
                         className={`size-9 rounded-xl grid place-items-center ${
-                          selected ? "bg-white/15 text-white backdrop-blur" : `bg-gradient-to-br ${r.gradient} text-white`
+                          selected
+                            ? "bg-white/15 text-white backdrop-blur"
+                            : `bg-gradient-to-br ${r.gradient} text-white`
                         }`}
                       >
                         <Icon className="size-4" />
@@ -117,8 +125,12 @@ export function Register() {
                         </span>
                       )}
                     </div>
-                    <div className={`mt-3 text-sm font-semibold ${selected ? "text-white" : ""}`}>{r.name}</div>
-                    <div className={`text-[11px] mt-0.5 ${selected ? "text-white/85" : "text-muted-foreground"}`}>
+                    <div className={`mt-3 text-sm font-semibold ${selected ? "text-white" : ""}`}>
+                      {r.name}
+                    </div>
+                    <div
+                      className={`text-[11px] mt-0.5 ${selected ? "text-white/85" : "text-muted-foreground"}`}
+                    >
                       {r.short}
                     </div>
                   </div>
@@ -164,7 +176,7 @@ export function Register() {
                 <option value={active.id}>{active.name}</option>
               </select>
             </div>
-            
+
             <div>
               <label className="text-xs font-medium">Full Name</label>
               <div className="mt-1 relative">
@@ -260,7 +272,10 @@ export function Register() {
           </form>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
-            Already have an account? <Link to="/login" className="text-indigo hover:underline font-medium">Sign in</Link>
+            Already have an account?{" "}
+            <Link to="/login" className="text-indigo hover:underline font-medium">
+              Sign in
+            </Link>
           </p>
         </motion.div>
       </div>

@@ -3,8 +3,6 @@ import { Briefcase, Building2, Send, Upload } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { placements } from "@/mock/studentData";
 
-
-
 export function StudentPlacement() {
   return (
     <div className="space-y-6">
@@ -16,14 +14,28 @@ export function StudentPlacement() {
       <div className="grid md:grid-cols-4 gap-4">
         {[
           { label: "Total Companies", value: placements.length.toString(), tone: "info" as const },
-          { label: "Applied", value: placements.filter(p => p.status !== "Not Applied").length.toString(), tone: "success" as const },
-          { label: "Shortlisted", value: placements.filter(p => p.status === "Shortlisted").length.toString(), tone: "info" as const },
-          { label: "Interviews", value: placements.filter(p => p.status === "Interview Scheduled").length.toString(), tone: "warn" as const },
-        ].map(stat => (
+          {
+            label: "Applied",
+            value: placements.filter((p) => p.status !== "Not Applied").length.toString(),
+            tone: "success" as const,
+          },
+          {
+            label: "Shortlisted",
+            value: placements.filter((p) => p.status === "Shortlisted").length.toString(),
+            tone: "info" as const,
+          },
+          {
+            label: "Interviews",
+            value: placements.filter((p) => p.status === "Interview Scheduled").length.toString(),
+            tone: "warn" as const,
+          },
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -31,13 +43,21 @@ export function StudentPlacement() {
       <Card>
         <h3 className="font-semibold mb-4">Placement Opportunities</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {placements.map(placement => (
+          {placements.map((placement) => (
             <Card key={placement.company} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {placement.company.slice(0, 2)}
                 </div>
-                <Badge tone={placement.status === "Not Applied" ? "info" : placement.status === "Interview Scheduled" ? "warn" : "success"}>
+                <Badge
+                  tone={
+                    placement.status === "Not Applied"
+                      ? "info"
+                      : placement.status === "Interview Scheduled"
+                        ? "warn"
+                        : "success"
+                  }
+                >
                   {placement.status}
                 </Badge>
               </div>
@@ -63,18 +83,27 @@ export function StudentPlacement() {
         <Card>
           <h3 className="font-semibold mb-4">Application Status</h3>
           <div className="space-y-2">
-            {placements.filter(p => p.status !== "Not Applied").map(placement => (
-              <div key={placement.company} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
-                <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
-                  {placement.company.slice(0, 2)}
+            {placements
+              .filter((p) => p.status !== "Not Applied")
+              .map((placement) => (
+                <div
+                  key={placement.company}
+                  className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+                >
+                  <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
+                    {placement.company.slice(0, 2)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium">{placement.company}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {placement.position} • {placement.appliedDate}
+                    </div>
+                  </div>
+                  <Badge tone={placement.status === "Interview Scheduled" ? "warn" : "success"}>
+                    {placement.status}
+                  </Badge>
                 </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{placement.company}</div>
-                  <div className="text-xs text-muted-foreground">{placement.position} • {placement.appliedDate}</div>
-                </div>
-                <Badge tone={placement.status === "Interview Scheduled" ? "warn" : "success"}>{placement.status}</Badge>
-              </div>
-            ))}
+              ))}
           </div>
         </Card>
 
@@ -84,16 +113,20 @@ export function StudentPlacement() {
             <h3 className="font-semibold">Upcoming Interviews</h3>
           </div>
           <div className="space-y-2">
-            {placements.filter(p => p.status === "Interview Scheduled").map(placement => (
-              <div key={placement.company} className="p-4 rounded-xl bg-gradient-soft border">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">{placement.company}</span>
-                  <Badge tone="warn">Interview</Badge>
+            {placements
+              .filter((p) => p.status === "Interview Scheduled")
+              .map((placement) => (
+                <div key={placement.company} className="p-4 rounded-xl bg-gradient-soft border">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">{placement.company}</span>
+                    <Badge tone="warn">Interview</Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{placement.position}</div>
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    Date: May 28, 2026 • Time: 10:00 AM
+                  </div>
                 </div>
-                <div className="text-xs text-muted-foreground">{placement.position}</div>
-                <div className="mt-2 text-xs text-muted-foreground">Date: May 28, 2026 • Time: 10:00 AM</div>
-              </div>
-            ))}
+              ))}
           </div>
         </Card>
       </div>
@@ -109,8 +142,14 @@ export function StudentPlacement() {
             <input type="file" className="text-sm" />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
-            <input placeholder="LinkedIn profile URL" className="rounded-lg border bg-background px-3 py-2 text-sm" />
-            <input placeholder="Portfolio URL" className="rounded-lg border bg-background px-3 py-2 text-sm" />
+            <input
+              placeholder="LinkedIn profile URL"
+              className="rounded-lg border bg-background px-3 py-2 text-sm"
+            />
+            <input
+              placeholder="Portfolio URL"
+              className="rounded-lg border bg-background px-3 py-2 text-sm"
+            />
           </div>
           <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
             <Send className="size-4" /> Update Profile
@@ -129,7 +168,7 @@ export function StudentPlacement() {
             { label: "Average Package", value: "$8.5L", icon: "💰" },
             { label: "Highest Package", value: "$25L", icon: "🚀" },
             { label: "Companies Visited", value: "45", icon: "🏢" },
-          ].map(item => (
+          ].map((item) => (
             <div key={item.label} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">{item.icon}</span>

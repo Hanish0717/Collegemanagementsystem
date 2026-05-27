@@ -4,8 +4,6 @@ import { Bot, Play, Settings2 } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { automationCards, automationLogs } from "@/mock/superAdminData";
 
-
-
 export function SuperAdminAutomation() {
   return (
     <div className="space-y-6">
@@ -15,14 +13,18 @@ export function SuperAdminAutomation() {
       />
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {automationCards.map(card => (
+        {automationCards.map((card) => (
           <Card key={card.name} className="hover:-translate-y-1 transition">
             <div className="flex items-start justify-between mb-4">
               <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center">
                 <Bot className="size-5" />
               </div>
-              <button className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${card.enabled ? "bg-emerald-500" : "bg-muted"}`}>
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${card.enabled ? "translate-x-6" : "translate-x-1"}`} />
+              <button
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${card.enabled ? "bg-emerald-500" : "bg-muted"}`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${card.enabled ? "translate-x-6" : "translate-x-1"}`}
+                />
               </button>
             </div>
             <h3 className="font-semibold text-sm">{card.name}</h3>
@@ -70,12 +72,14 @@ export function SuperAdminAutomation() {
             <h3 className="font-semibold">Recent Automation Activity</h3>
           </div>
           <div className="space-y-2">
-            {automationLogs.map(log => (
+            {automationLogs.map((log) => (
               <div key={log.event} className="p-3 rounded-xl border hover:bg-accent/50 transition">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="font-medium text-sm">{log.event}</div>
-                    <div className="text-xs text-muted-foreground">{log.result} • {log.time}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {log.result} • {log.time}
+                    </div>
                   </div>
                   <Badge tone={log.status === "Success" ? "success" : "warn"}>{log.status}</Badge>
                 </div>

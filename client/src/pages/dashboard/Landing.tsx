@@ -2,16 +2,54 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import {
-  GraduationCap, Users, BookOpen, Calendar, Bus, Building2, Bell, BarChart3,
-  Sparkles, ArrowRight, Check, Star, LayoutDashboard, Brain, Database,
-  Cpu, HardDrive, Network, Shield, Target, TrendingUp, Award, Briefcase,
-  Building, Microscope, Wrench, TreePine, FlaskConical, Gamepad2, Music,
-  Camera, Trophy, Coffee, Users as UsersIcon, GraduationCap as GradCap, Zap, Heart,
-  Package, Monitor, Search, Cloud, Facebook, Twitter, Linkedin, Instagram, Mail
+  GraduationCap,
+  Users,
+  BookOpen,
+  Calendar,
+  Bus,
+  Building2,
+  Bell,
+  BarChart3,
+  Sparkles,
+  ArrowRight,
+  Check,
+  Star,
+  LayoutDashboard,
+  Brain,
+  Database,
+  Cpu,
+  HardDrive,
+  Network,
+  Shield,
+  Target,
+  TrendingUp,
+  Award,
+  Briefcase,
+  Building,
+  Microscope,
+  Wrench,
+  TreePine,
+  FlaskConical,
+  Gamepad2,
+  Music,
+  Camera,
+  Trophy,
+  Coffee,
+  Users as UsersIcon,
+  GraduationCap as GradCap,
+  Zap,
+  Heart,
+  Package,
+  Monitor,
+  Search,
+  Cloud,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Mail,
 } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
-
-
 
 export function Landing() {
   const [activeSection, setActiveSection] = useState("about");
@@ -90,8 +128,16 @@ export function Landing() {
               ))}
             </nav>
             <div className="flex items-center gap-2">
-              <Link to="/login" className="text-sm px-3 py-1.5 rounded-lg hover:bg-accent transition">Student Portal</Link>
-              <Link to="/dashboard" className="text-sm px-4 py-2 rounded-lg bg-gradient-primary text-primary-foreground glow-primary font-medium">
+              <Link
+                to="/login"
+                className="text-sm px-3 py-1.5 rounded-lg hover:bg-accent transition"
+              >
+                Student Portal
+              </Link>
+              <Link
+                to="/dashboard"
+                className="text-sm px-4 py-2 rounded-lg bg-gradient-primary text-primary-foreground glow-primary font-medium"
+              >
                 Admin Login
               </Link>
             </div>
@@ -104,7 +150,9 @@ export function Landing() {
         <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
         <div className="mx-auto max-w-7xl px-6 pt-20 pb-28 relative">
           <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto text-center"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs font-medium mb-6">
@@ -112,30 +160,46 @@ export function Landing() {
               <span>Excellence in Engineering Education — Since 1981</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold leading-[1.05]">
-              Empowering Students Through <br /> <span className="text-gradient">Smart Digital Campus Management</span>
+              Empowering Students Through <br />{" "}
+              <span className="text-gradient">Smart Digital Campus Management</span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              A premier engineering institution dedicated to academic excellence, innovation, and holistic development. 
-              Transforming futures through world-class education and cutting-edge research.
+              A premier engineering institution dedicated to academic excellence, innovation, and
+              holistic development. Transforming futures through world-class education and
+              cutting-edge research.
             </p>
             <div className="mt-9 flex items-center justify-center gap-3">
-              <Link to="/dashboard" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-primary text-primary-foreground font-medium glow-primary animate-pulse-glow">
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-primary text-primary-foreground font-medium glow-primary animate-pulse-glow"
+              >
                 Explore Campus ERP <ArrowRight className="size-4" />
               </Link>
-              <Link to="/login" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass-card font-medium">
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass-card font-medium"
+              >
                 <LayoutDashboard className="size-4" /> Student Portal
               </Link>
             </div>
             <div className="mt-10 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1"><Check className="size-4 text-indigo" /> AICTE Approved</span>
-              <span className="inline-flex items-center gap-1"><Check className="size-4 text-indigo" /> NBA Accredited</span>
-              <span className="inline-flex items-center gap-1"><Check className="size-4 text-indigo" /> 92% Placement Record</span>
+              <span className="inline-flex items-center gap-1">
+                <Check className="size-4 text-indigo" /> AICTE Approved
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Check className="size-4 text-indigo" /> NBA Accredited
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Check className="size-4 text-indigo" /> 92% Placement Record
+              </span>
             </div>
           </motion.div>
 
           {/* Floating preview */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-16 relative max-w-5xl mx-auto"
           >
             <div className="absolute -inset-4 bg-gradient-primary rounded-3xl blur-2xl opacity-20" />
@@ -148,23 +212,34 @@ export function Landing() {
                 </div>
                 <div className="grid grid-cols-12 gap-3 p-4">
                   <div className="col-span-2 space-y-2">
-                    {["Dashboard","Students","Faculty","Exams","Fees","Library"].map((i, idx) => (
-                      <div key={i} className={`text-xs px-2.5 py-2 rounded-lg ${idx===0? "bg-gradient-primary text-white" : "bg-muted/60"}`}>{i}</div>
-                    ))}
+                    {["Dashboard", "Students", "Faculty", "Exams", "Fees", "Library"].map(
+                      (i, idx) => (
+                        <div
+                          key={i}
+                          className={`text-xs px-2.5 py-2 rounded-lg ${idx === 0 ? "bg-gradient-primary text-white" : "bg-muted/60"}`}
+                        >
+                          {i}
+                        </div>
+                      ),
+                    )}
                   </div>
                   <div className="col-span-10 grid grid-cols-4 gap-3">
-                    {[1,2,3,4].map(i=>(
+                    {[1, 2, 3, 4].map((i) => (
                       <div key={i} className="rounded-xl p-3 bg-gradient-soft border">
                         <div className="text-[10px] text-muted-foreground">Metric {i}</div>
-                        <div className="text-lg font-bold mt-1">{(i*2480).toLocaleString()}</div>
+                        <div className="text-lg font-bold mt-1">{(i * 2480).toLocaleString()}</div>
                         <div className="h-12 mt-2 bg-gradient-primary opacity-70 rounded-md" />
                       </div>
                     ))}
                     <div className="col-span-3 rounded-xl border p-4 h-40 bg-card">
                       <div className="text-xs font-medium mb-2">Weekly Attendance</div>
                       <div className="flex items-end gap-2 h-24">
-                        {[60,75,55,82,72,90,68].map((h,i)=>(
-                          <div key={i} className="flex-1 rounded-md bg-gradient-primary" style={{height:`${h}%`}} />
+                        {[60, 75, 55, 82, 72, 90, 68].map((h, i) => (
+                          <div
+                            key={i}
+                            className="flex-1 rounded-md bg-gradient-primary"
+                            style={{ height: `${h}%` }}
+                          />
                         ))}
                       </div>
                     </div>
@@ -191,11 +266,16 @@ export function Landing() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">About Our College</div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">Excellence in Education Since 1981</h2>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              About Our College
+            </div>
+            <h2 className="mt-3 text-4xl md:text-5xl font-bold">
+              Excellence in Education Since 1981
+            </h2>
             <p className="mt-4 text-muted-foreground">
-              A premier institution dedicated to academic excellence, innovation, and holistic development of students.
-              Our smart ERP system ensures seamless campus management and enhanced learning experience.
+              A premier institution dedicated to academic excellence, innovation, and holistic
+              development of students. Our smart ERP system ensures seamless campus management and
+              enhanced learning experience.
             </p>
           </motion.div>
 
@@ -208,8 +288,8 @@ export function Landing() {
             >
               <h3 className="text-2xl font-bold mb-4">Our Vision & Mission</h3>
               <p className="text-muted-foreground mb-4">
-                To be a global leader in education by fostering innovation, research, and ethical values.
-                We aim to transform students into responsible citizens and future leaders.
+                To be a global leader in education by fostering innovation, research, and ethical
+                values. We aim to transform students into responsible citizens and future leaders.
               </p>
               <ul className="space-y-3">
                 {[
@@ -217,7 +297,7 @@ export function Landing() {
                   "State-of-the-art infrastructure and facilities",
                   "Industry partnerships for practical exposure",
                   "Focus on research and development",
-                  "Holistic student development programs"
+                  "Holistic student development programs",
                 ].map((item, index) => (
                   <li key={index} className="flex items-center gap-2 text-sm">
                     <Check className="size-4 text-indigo" /> {item}
@@ -259,22 +339,67 @@ export function Landing() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Academic Departments</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              Academic Departments
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">Our Departments</h2>
             <p className="mt-4 text-muted-foreground">
-              Explore our diverse departments offering cutting-edge programs and world-class education.
+              Explore our diverse departments offering cutting-edge programs and world-class
+              education.
             </p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[
-              { name: "CSE", icon: Cpu, faculty: 45, students: 850, desc: "Computer Science & Engineering" },
-              { name: "AIML", icon: Brain, faculty: 32, students: 380, desc: "Artificial Intelligence & ML" },
-              { name: "AI&DS", icon: Database, faculty: 28, students: 350, desc: "AI & Data Science" },
-              { name: "ECE", icon: Microscope, faculty: 38, students: 620, desc: "Electronics & Communication" },
-              { name: "EEE", icon: Zap, faculty: 42, students: 580, desc: "Electrical & Electronics" },
-              { name: "Mechanical", icon: Wrench, faculty: 35, students: 520, desc: "Mechanical Engineering" },
-              { name: "Civil", icon: Building, faculty: 28, students: 450, desc: "Civil Engineering" },
+              {
+                name: "CSE",
+                icon: Cpu,
+                faculty: 45,
+                students: 850,
+                desc: "Computer Science & Engineering",
+              },
+              {
+                name: "AIML",
+                icon: Brain,
+                faculty: 32,
+                students: 380,
+                desc: "Artificial Intelligence & ML",
+              },
+              {
+                name: "AI&DS",
+                icon: Database,
+                faculty: 28,
+                students: 350,
+                desc: "AI & Data Science",
+              },
+              {
+                name: "ECE",
+                icon: Microscope,
+                faculty: 38,
+                students: 620,
+                desc: "Electronics & Communication",
+              },
+              {
+                name: "EEE",
+                icon: Zap,
+                faculty: 42,
+                students: 580,
+                desc: "Electrical & Electronics",
+              },
+              {
+                name: "Mechanical",
+                icon: Wrench,
+                faculty: 35,
+                students: 520,
+                desc: "Mechanical Engineering",
+              },
+              {
+                name: "Civil",
+                icon: Building,
+                faculty: 28,
+                students: 450,
+                desc: "Civil Engineering",
+              },
             ].map((dept, index) => (
               <motion.div
                 key={dept.name}
@@ -309,7 +434,9 @@ export function Landing() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">ERP Capabilities</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              ERP Capabilities
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">Smart Campus Management</h2>
             <p className="mt-4 text-muted-foreground">
               Comprehensive ERP system to manage every aspect of your institution efficiently.
@@ -318,14 +445,46 @@ export function Landing() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: "Attendance Management", icon: Users, desc: "Real-time attendance tracking with biometric integration" },
-              { name: "Fee Management", icon: Briefcase, desc: "Online payment processing and receipt generation" },
-              { name: "Library Management", icon: BookOpen, desc: "Digital library with barcode scanning system" },
-              { name: "Hostel Management", icon: Building2, desc: "Room allocation and mess management system" },
-              { name: "Transport Management", icon: Bus, desc: "GPS-enabled fleet tracking and route optimization" },
-              { name: "Placement Management", icon: Target, desc: "Complete placement cell management and analytics" },
-              { name: "AI Analytics", icon: Brain, desc: "Predictive analytics for student performance" },
-              { name: "Online Exams", icon: BarChart3, desc: "Secure online examination platform with AI proctoring" },
+              {
+                name: "Attendance Management",
+                icon: Users,
+                desc: "Real-time attendance tracking with biometric integration",
+              },
+              {
+                name: "Fee Management",
+                icon: Briefcase,
+                desc: "Online payment processing and receipt generation",
+              },
+              {
+                name: "Library Management",
+                icon: BookOpen,
+                desc: "Digital library with barcode scanning system",
+              },
+              {
+                name: "Hostel Management",
+                icon: Building2,
+                desc: "Room allocation and mess management system",
+              },
+              {
+                name: "Transport Management",
+                icon: Bus,
+                desc: "GPS-enabled fleet tracking and route optimization",
+              },
+              {
+                name: "Placement Management",
+                icon: Target,
+                desc: "Complete placement cell management and analytics",
+              },
+              {
+                name: "AI Analytics",
+                icon: Brain,
+                desc: "Predictive analytics for student performance",
+              },
+              {
+                name: "Online Exams",
+                icon: BarChart3,
+                desc: "Secure online examination platform with AI proctoring",
+              },
             ].map((feature, index) => (
               <motion.div
                 key={feature.name}
@@ -356,10 +515,13 @@ export function Landing() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Placements</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              Placements
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">Industry Partnerships</h2>
             <p className="mt-4 text-muted-foreground">
-              Our students are placed in top companies with excellent packages through our dedicated placement cell.
+              Our students are placed in top companies with excellent packages through our dedicated
+              placement cell.
             </p>
           </motion.div>
 
@@ -400,7 +562,12 @@ export function Landing() {
                 { name: "Amazon", icon: Package, label: "Placement Partner", offers: "80+ Offers" },
                 { name: "Microsoft", icon: Monitor, label: "Hiring Partner", offers: "60+ Offers" },
                 { name: "Google", icon: Search, label: "Top Recruiter", offers: "40+ Offers" },
-                { name: "Accenture", icon: Users, label: "Campus Recruiter", offers: "120+ Offers" },
+                {
+                  name: "Accenture",
+                  icon: Users,
+                  label: "Campus Recruiter",
+                  offers: "120+ Offers",
+                },
                 { name: "IBM", icon: Database, label: "Placement Partner", offers: "90+ Offers" },
                 { name: "Oracle", icon: Cloud, label: "Hiring Partner", offers: "70+ Offers" },
                 { name: "Cisco", icon: Network, label: "Mass Recruiter", offers: "100+ Offers" },
@@ -434,16 +601,33 @@ export function Landing() {
           >
             <div className="flex items-center justify-center gap-2 mb-4">
               <Bell className="size-5 text-indigo" />
-              <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Notice Board</div>
+              <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+                Notice Board
+              </div>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold">Latest Announcements</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { type: "Exams", title: "End Semester Exams", date: "May 15-30, 2026", icon: Calendar },
-              { type: "Placements", title: "TCS Campus Drive", date: "June 5, 2026", icon: Briefcase },
-              { type: "Admissions", title: "B.Tech Admissions 2026", date: "Open Now", icon: GraduationCap },
+              {
+                type: "Exams",
+                title: "End Semester Exams",
+                date: "May 15-30, 2026",
+                icon: Calendar,
+              },
+              {
+                type: "Placements",
+                title: "TCS Campus Drive",
+                date: "June 5, 2026",
+                icon: Briefcase,
+              },
+              {
+                type: "Admissions",
+                title: "B.Tech Admissions 2026",
+                date: "Open Now",
+                icon: GraduationCap,
+              },
               { type: "Events", title: "Tech Fest 2026", date: "June 15-17, 2026", icon: Trophy },
             ].map((notice, index) => (
               <motion.div
@@ -476,7 +660,9 @@ export function Landing() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Campus Life</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              Campus Life
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">Beyond Academics</h2>
             <p className="mt-4 text-muted-foreground">
               Vibrant campus life with numerous clubs, events, sports, and cultural activities.
@@ -485,12 +671,27 @@ export function Landing() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {[
-              { name: "Technical Clubs", icon: Cpu, count: 15, desc: "Robotics, Coding, Innovation" },
+              {
+                name: "Technical Clubs",
+                icon: Cpu,
+                count: 15,
+                desc: "Robotics, Coding, Innovation",
+              },
               { name: "Cultural Events", icon: Music, count: 25, desc: "Music, Dance, Drama" },
-              { name: "Sports Activities", icon: Trophy, count: 20, desc: "Cricket, Football, Basketball" },
+              {
+                name: "Sports Activities",
+                icon: Trophy,
+                count: 20,
+                desc: "Cricket, Football, Basketball",
+              },
               { name: "Workshops", icon: UsersIcon, count: 30, desc: "Skill development programs" },
               { name: "Photography Club", icon: Camera, count: 12, desc: "Visual arts and media" },
-              { name: "Social Service", icon: Heart, count: 18, desc: "Community outreach programs" },
+              {
+                name: "Social Service",
+                icon: Heart,
+                count: 18,
+                desc: "Community outreach programs",
+              },
             ].map((activity, index) => (
               <motion.div
                 key={activity.name}
@@ -505,7 +706,9 @@ export function Landing() {
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{activity.name}</h3>
                 <p className="text-xs text-muted-foreground mb-3">{activity.desc}</p>
-                <div className="text-sm font-medium text-indigo">{activity.count} Active Groups</div>
+                <div className="text-sm font-medium text-indigo">
+                  {activity.count} Active Groups
+                </div>
               </motion.div>
             ))}
           </div>
@@ -537,7 +740,9 @@ export function Landing() {
                       <div className="text-xs text-muted-foreground">{event.date}</div>
                     </div>
                   </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-gradient-primary text-white">{event.type}</span>
+                  <span className="text-xs px-3 py-1 rounded-full bg-gradient-primary text-white">
+                    {event.type}
+                  </span>
                 </div>
               ))}
             </div>
@@ -555,21 +760,48 @@ export function Landing() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Campus Facilities</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              Campus Facilities
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">World-Class Infrastructure</h2>
             <p className="mt-4 text-muted-foreground">
-              State-of-the-art facilities designed to provide the best learning environment for our students.
+              State-of-the-art facilities designed to provide the best learning environment for our
+              students.
             </p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { name: "Central Library", icon: BookOpen, desc: "50,000+ books, digital resources, reading rooms" },
-              { name: "Hostel Facilities", icon: Building2, desc: "AC rooms, mess, 24/7 security, Wi-Fi" },
-              { name: "Transport Service", icon: Bus, desc: "GPS-enabled buses covering entire city" },
-              { name: "Smart Classrooms", icon: Monitor, desc: "Projectors, smart boards, video conferencing" },
-              { name: "Advanced Laboratories", icon: FlaskConical, desc: "Well-equipped labs for all departments" },
-              { name: "Sports Complex", icon: Trophy, desc: "Indoor stadium, gym, playgrounds, courts" },
+              {
+                name: "Central Library",
+                icon: BookOpen,
+                desc: "50,000+ books, digital resources, reading rooms",
+              },
+              {
+                name: "Hostel Facilities",
+                icon: Building2,
+                desc: "AC rooms, mess, 24/7 security, Wi-Fi",
+              },
+              {
+                name: "Transport Service",
+                icon: Bus,
+                desc: "GPS-enabled buses covering entire city",
+              },
+              {
+                name: "Smart Classrooms",
+                icon: Monitor,
+                desc: "Projectors, smart boards, video conferencing",
+              },
+              {
+                name: "Advanced Laboratories",
+                icon: FlaskConical,
+                desc: "Well-equipped labs for all departments",
+              },
+              {
+                name: "Sports Complex",
+                icon: Trophy,
+                desc: "Indoor stadium, gym, playgrounds, courts",
+              },
             ].map((facility, index) => (
               <motion.div
                 key={facility.name}
@@ -594,15 +826,31 @@ export function Landing() {
       <section id="preview" className="py-24">
         <div className="mx-auto max-w-7xl px-6 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Institutional Dashboard</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              Institutional Dashboard
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">Your Campus Command Center</h2>
-            <p className="mt-4 text-muted-foreground">Institutional dashboards with real-time analytics, academic performance metrics, student engagement tracking, and compliance reporting — all accessible from any device.</p>
+            <p className="mt-4 text-muted-foreground">
+              Institutional dashboards with real-time analytics, academic performance metrics,
+              student engagement tracking, and compliance reporting — all accessible from any
+              device.
+            </p>
             <ul className="mt-6 space-y-3">
-              {["Department-Specific Dashboards","Live Academic Analytics","Customizable Dashboard Widgets","24/7 Accessibility & Monitoring"].map(x=>(
-                <li key={x} className="flex items-center gap-2 text-sm"><Check className="size-4 text-indigo" /> {x}</li>
+              {[
+                "Department-Specific Dashboards",
+                "Live Academic Analytics",
+                "Customizable Dashboard Widgets",
+                "24/7 Accessibility & Monitoring",
+              ].map((x) => (
+                <li key={x} className="flex items-center gap-2 text-sm">
+                  <Check className="size-4 text-indigo" /> {x}
+                </li>
               ))}
             </ul>
-            <Link to="/dashboard" className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-primary text-primary-foreground font-medium glow-primary">
+            <Link
+              to="/dashboard"
+              className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-primary text-primary-foreground font-medium glow-primary"
+            >
               View Live Dashboard <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -610,10 +858,10 @@ export function Landing() {
             <div className="absolute -inset-6 bg-gradient-cyan rounded-3xl blur-2xl opacity-20" />
             <div className="relative glass-card rounded-2xl p-5 space-y-3">
               <div className="grid grid-cols-3 gap-3">
-                {[1,2,3].map(i=>(
+                {[1, 2, 3].map((i) => (
                   <div key={i} className="rounded-xl bg-gradient-soft p-3 border">
                     <div className="text-xs text-muted-foreground">KPI {i}</div>
-                    <div className="font-bold text-lg">{(i*1234).toLocaleString()}</div>
+                    <div className="font-bold text-lg">{(i * 1234).toLocaleString()}</div>
                   </div>
                 ))}
               </div>
@@ -626,7 +874,12 @@ export function Landing() {
                       <stop offset="100%" stopColor="#06B6D4" />
                     </linearGradient>
                   </defs>
-                  <path d="M0 60 C 40 20, 80 70, 120 40 S 200 10, 240 30 S 300 20, 300 25" stroke="url(#g)" strokeWidth="3" fill="none" />
+                  <path
+                    d="M0 60 C 40 20, 80 70, 120 40 S 200 10, 240 30 S 300 20, 300 25"
+                    stroke="url(#g)"
+                    strokeWidth="3"
+                    fill="none"
+                  />
                 </svg>
               </div>
               <div className="rounded-xl p-4 bg-gradient-primary text-white">
@@ -643,17 +896,38 @@ export function Landing() {
       <section className="py-24 bg-gradient-soft">
         <div className="mx-auto max-w-7xl px-6">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Trusted by Leadership</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              Trusted by Leadership
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">What Educators Say</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-5">
             {[
-              { name: "Dr. Anjali Mehra", role: "Dean of Academic Affairs, IIT", quote: "The integrated platform replaced our fragmented systems. Faculty engagement increased by 45%, and administrative load decreased significantly. Best decision we made this decade." },
-              { name: "Rohan Verma", role: "Registrar & Senior Administrator", quote: "Compliance reporting that took our office weeks now generates in hours. The dashboards provide unprecedented visibility into institutional performance. Our stakeholders are impressed." },
-              { name: "Prof. Sarah Chen", role: "Head of Department, Computer Science", quote: "Automated attendance, seamless grading, instant student feedback — it's transformed how we teach and mentor. Students appreciate the transparency, and we have more time for what matters." },
-            ].map(t=>(
+              {
+                name: "Dr. Anjali Mehra",
+                role: "Dean of Academic Affairs, IIT",
+                quote:
+                  "The integrated platform replaced our fragmented systems. Faculty engagement increased by 45%, and administrative load decreased significantly. Best decision we made this decade.",
+              },
+              {
+                name: "Rohan Verma",
+                role: "Registrar & Senior Administrator",
+                quote:
+                  "Compliance reporting that took our office weeks now generates in hours. The dashboards provide unprecedented visibility into institutional performance. Our stakeholders are impressed.",
+              },
+              {
+                name: "Prof. Sarah Chen",
+                role: "Head of Department, Computer Science",
+                quote:
+                  "Automated attendance, seamless grading, instant student feedback — it's transformed how we teach and mentor. Students appreciate the transparency, and we have more time for what matters.",
+              },
+            ].map((t) => (
               <div key={t.name} className="glass-card rounded-2xl p-6">
-                <div className="flex gap-1 text-indigo">{[...Array(5)].map((_,i)=><Star key={i} className="size-4 fill-current" />)}</div>
+                <div className="flex gap-1 text-indigo">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="size-4 fill-current" />
+                  ))}
+                </div>
                 <p className="mt-3 text-sm">"{t.quote}"</p>
                 <div className="mt-5 flex items-center gap-3">
                   <div className="size-10 rounded-full bg-gradient-primary" />
@@ -674,11 +948,23 @@ export function Landing() {
           <div className="relative overflow-hidden rounded-3xl bg-gradient-primary p-12 text-center text-white shadow-soft">
             <div className="absolute inset-0 grid-bg opacity-20" />
             <div className="relative">
-              <h2 className="text-4xl md:text-5xl font-bold">Join the Future of Higher Education</h2>
-              <p className="mt-3 opacity-90 max-w-xl mx-auto">Transform your institution with an integrated digital ecosystem trusted by 150+ universities and colleges worldwide.</p>
+              <h2 className="text-4xl md:text-5xl font-bold">
+                Join the Future of Higher Education
+              </h2>
+              <p className="mt-3 opacity-90 max-w-xl mx-auto">
+                Transform your institution with an integrated digital ecosystem trusted by 150+
+                universities and colleges worldwide.
+              </p>
               <div className="mt-8 flex justify-center gap-3">
-                <Link to="/dashboard" className="px-6 py-3 rounded-xl bg-white text-foreground font-medium hover:scale-105 transition">Request Campus Demo</Link>
-                <Link to="/login" className="px-6 py-3 rounded-xl glass text-white font-medium">Explore ERP Features</Link>
+                <Link
+                  to="/dashboard"
+                  className="px-6 py-3 rounded-xl bg-white text-foreground font-medium hover:scale-105 transition"
+                >
+                  Request Campus Demo
+                </Link>
+                <Link to="/login" className="px-6 py-3 rounded-xl glass text-white font-medium">
+                  Explore ERP Features
+                </Link>
               </div>
             </div>
           </div>
@@ -695,7 +981,9 @@ export function Landing() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto mb-16"
           >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">Contact Us</div>
+            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
+              Contact Us
+            </div>
             <h2 className="mt-3 text-4xl md:text-5xl font-bold">Get in Touch</h2>
             <p className="mt-4 text-muted-foreground">
               Have questions? Reach out to us for admissions, placements, or general inquiries.
@@ -704,7 +992,11 @@ export function Landing() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: Building, title: "Address", content: "College Campus, Main Road, City - 500001" },
+              {
+                icon: Building,
+                title: "Address",
+                content: "College Campus, Main Road, City - 500001",
+              },
               { icon: Users, title: "Phone", content: "+91 98765 43210" },
               { icon: Mail, title: "Email", content: "info@college.edu" },
             ].map((contact, index) => (
@@ -732,11 +1024,14 @@ export function Landing() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-4">
-                <div className="size-8 rounded-lg bg-gradient-primary grid place-items-center text-white"><GraduationCap className="size-4" /></div>
+                <div className="size-8 rounded-lg bg-gradient-primary grid place-items-center text-white">
+                  <GraduationCap className="size-4" />
+                </div>
                 <span className="font-semibold">College Management System</span>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Empowering students through smart digital campus management. Excellence in engineering education since 1981.
+                Empowering students through smart digital campus management. Excellence in
+                engineering education since 1981.
               </p>
               <div className="flex gap-3">
                 {[
@@ -745,7 +1040,11 @@ export function Landing() {
                   { icon: Linkedin, label: "LinkedIn" },
                   { icon: Instagram, label: "Instagram" },
                 ].map((social) => (
-                  <a key={social.label} href="#" className="size-8 rounded-lg bg-muted flex items-center justify-center hover:bg-gradient-primary hover:text-white transition">
+                  <a
+                    key={social.label}
+                    href="#"
+                    className="size-8 rounded-lg bg-muted flex items-center justify-center hover:bg-gradient-primary hover:text-white transition"
+                  >
                     <social.icon className="size-4" />
                   </a>
                 ))}
@@ -754,25 +1053,70 @@ export function Landing() {
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/" className="hover:text-foreground transition">Home</Link></li>
-                <li><button onClick={() => scrollToSection("about")} className="hover:text-foreground transition">About</button></li>
-                <li><button onClick={() => scrollToSection("departments")} className="hover:text-foreground transition">Departments</button></li>
-                <li><button onClick={() => scrollToSection("placements")} className="hover:text-foreground transition">Placements</button></li>
+                <li>
+                  <Link to="/" className="hover:text-foreground transition">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={() => scrollToSection("about")}
+                    className="hover:text-foreground transition"
+                  >
+                    About
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => scrollToSection("departments")}
+                    className="hover:text-foreground transition"
+                  >
+                    Departments
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => scrollToSection("placements")}
+                    className="hover:text-foreground transition"
+                  >
+                    Placements
+                  </button>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Important Links</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link to="/login" className="hover:text-foreground transition">Student Portal</Link></li>
-                <li><Link to="/dashboard" className="hover:text-foreground transition">Admin Login</Link></li>
-                <li><a href="#" className="hover:text-foreground transition">Admissions</a></li>
-                <li><a href="#" className="hover:text-foreground transition">Exam Results</a></li>
+                <li>
+                  <Link to="/login" className="hover:text-foreground transition">
+                    Student Portal
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/dashboard" className="hover:text-foreground transition">
+                    Admin Login
+                  </Link>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition">
+                    Admissions
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-foreground transition">
+                    Exam Results
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
           <div className="border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground">© 2026 College Management System. All rights reserved.</p>
-            <p className="text-xs text-muted-foreground">AICTE Approved | NBA Accredited | ISO 9001:2015 Certified</p>
+            <p className="text-xs text-muted-foreground">
+              © 2026 College Management System. All rights reserved.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              AICTE Approved | NBA Accredited | ISO 9001:2015 Certified
+            </p>
           </div>
         </div>
       </footer>

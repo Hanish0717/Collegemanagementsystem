@@ -2,8 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { User, Bell, Shield, Lock, Building2, Save, Key } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 
-
-
 export function HostelSettings() {
   return (
     <div className="space-y-6">
@@ -24,7 +22,9 @@ export function HostelSettings() {
             </div>
             <div className="font-semibold text-lg">Warden Admin</div>
             <div className="text-sm text-muted-foreground">Hostel Block A-D</div>
-            <Badge tone="success" className="mt-2">Active</Badge>
+            <Badge tone="success" className="mt-2">
+              Active
+            </Badge>
           </div>
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-2 text-sm">
@@ -49,20 +49,51 @@ export function HostelSettings() {
           </div>
           <div className="space-y-4">
             {[
-              { label: "Fee payment reminders", description: "Get notified when fee payments are due", enabled: true },
-              { label: "Complaint alerts", description: "Receive alerts for new and escalated complaints", enabled: true },
-              { label: "Visitor notifications", description: "Get notified when visitors check in/out", enabled: true },
-              { label: "Mess updates", description: "Receive updates about mess menu changes", enabled: false },
-              { label: "Emergency alerts", description: "Critical emergency notifications", enabled: true },
-              { label: "Maintenance requests", description: "Notifications for maintenance requests", enabled: true },
-            ].map(setting => (
-              <div key={setting.label} className="flex items-center justify-between p-3 rounded-xl border bg-gradient-soft">
+              {
+                label: "Fee payment reminders",
+                description: "Get notified when fee payments are due",
+                enabled: true,
+              },
+              {
+                label: "Complaint alerts",
+                description: "Receive alerts for new and escalated complaints",
+                enabled: true,
+              },
+              {
+                label: "Visitor notifications",
+                description: "Get notified when visitors check in/out",
+                enabled: true,
+              },
+              {
+                label: "Mess updates",
+                description: "Receive updates about mess menu changes",
+                enabled: false,
+              },
+              {
+                label: "Emergency alerts",
+                description: "Critical emergency notifications",
+                enabled: true,
+              },
+              {
+                label: "Maintenance requests",
+                description: "Notifications for maintenance requests",
+                enabled: true,
+              },
+            ].map((setting) => (
+              <div
+                key={setting.label}
+                className="flex items-center justify-between p-3 rounded-xl border bg-gradient-soft"
+              >
                 <div>
                   <div className="text-sm font-medium">{setting.label}</div>
                   <div className="text-xs text-muted-foreground">{setting.description}</div>
                 </div>
-                <button className={`w-12 h-6 rounded-full transition-colors ${setting.enabled ? "bg-primary" : "bg-muted"}`}>
-                  <div className={`size-5 rounded-full bg-white transition-transform ${setting.enabled ? "translate-x-6" : "translate-x-0.5"}`} />
+                <button
+                  className={`w-12 h-6 rounded-full transition-colors ${setting.enabled ? "bg-primary" : "bg-muted"}`}
+                >
+                  <div
+                    className={`size-5 rounded-full bg-white transition-transform ${setting.enabled ? "translate-x-6" : "translate-x-0.5"}`}
+                  />
                 </button>
               </div>
             ))}
@@ -82,14 +113,18 @@ export function HostelSettings() {
                 <span className="text-sm font-medium">Two-Factor Authentication</span>
                 <Badge tone="success">Enabled</Badge>
               </div>
-              <div className="text-xs text-muted-foreground">Your account is protected with 2FA</div>
+              <div className="text-xs text-muted-foreground">
+                Your account is protected with 2FA
+              </div>
             </div>
             <div className="p-4 rounded-xl border bg-gradient-soft">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Login Notifications</span>
                 <Badge tone="success">Enabled</Badge>
               </div>
-              <div className="text-xs text-muted-foreground">Get notified of new login attempts</div>
+              <div className="text-xs text-muted-foreground">
+                Get notified of new login attempts
+              </div>
             </div>
             <div className="p-4 rounded-xl border bg-gradient-soft">
               <div className="flex items-center justify-between mb-2">
@@ -110,25 +145,33 @@ export function HostelSettings() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Default Room Type</label>
               <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["Single Room", "Double Room", "Triple Room"].map(t => <option key={t}>{t}</option>)}
+                {["Single Room", "Double Room", "Triple Room"].map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Check-in Time</label>
               <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"].map(t => <option key={t}>{t}</option>)}
+                {["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"].map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Check-out Time</label>
               <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["05:00 PM", "06:00 PM", "07:00 PM", "08:00 PM"].map(t => <option key={t}>{t}</option>)}
+                {["05:00 PM", "06:00 PM", "07:00 PM", "08:00 PM"].map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Visitor Policy</label>
               <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["Strict", "Moderate", "Flexible"].map(p => <option key={p}>{p}</option>)}
+                {["Strict", "Moderate", "Flexible"].map((p) => (
+                  <option key={p}>{p}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -144,15 +187,27 @@ export function HostelSettings() {
           <div className="space-y-4 p-4 rounded-xl border bg-gradient-soft">
             <div className="space-y-2">
               <label className="text-sm font-medium">Current Password</label>
-              <input type="password" placeholder="Enter current password" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="password"
+                placeholder="Enter current password"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">New Password</label>
-              <input type="password" placeholder="Enter new password" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="password"
+                placeholder="Enter new password"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Confirm Password</label>
-              <input type="password" placeholder="Confirm new password" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              />
             </div>
             <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
               <Key className="size-4" /> Update Password
