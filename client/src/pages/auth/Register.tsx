@@ -3,12 +3,15 @@ import { motion } from "framer-motion";
 import { GraduationCap, Mail, Lock, User, Phone, ArrowRight, Loader2, Check } from "lucide-react";
 import { useState } from "react";
 import { ROLE_LIST, type RoleId } from "@/lib/roles";
+import { useSearch } from "@tanstack/react-router";
 import api from "@/lib/api";
 
 export function Register() {
   const navigate = useNavigate();
-  const [roleId, setRoleId] = useState<RoleId>("student");
-  const active = ROLE_LIST.find((r) => r.id === roleId)!;
+  const search: any = useSearch({ strict: false });
+  const initialRole = (search.role as RoleId) || "student";
+  const [roleId, setRoleId] = useState<RoleId>(initialRole);
+  const active = ROLE_LIST.find((r) => r.id === roleId) || ROLE_LIST.find((r) => r.id === "student")!;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -76,14 +79,14 @@ export function Register() {
           className="relative"
         >
           <h1 className="text-3xl xl:text-4xl font-bold leading-tight">
-            Register as a <span className="text-gradient">Student</span>
+            Register as a <span className="text-gradient">{active.name}</span>
           </h1>
           <p className="mt-3 text-sm text-muted-foreground max-w-md">
             Your role determines your access permissions and the tools available to you on the campus management platform.
           </p>
 
           <div className="mt-6 grid grid-cols-2 xl:grid-cols-3 gap-3 max-w-3xl">
-            {ROLE_LIST.filter(r => r.id === "student").map((r) => {
+            {ROLE_LIST.filter(r => r.id === roleId).map((r) => {
               const selected = r.id === roleId;
               const Icon = r.icon;
               return (
@@ -158,7 +161,7 @@ export function Register() {
                 disabled
                 className="mt-1 w-full rounded-xl border bg-background/60 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring opacity-80"
               >
-                <option value="student">Student</option>
+                <option value={active.id}>{active.name}</option>
               </select>
             </div>
             

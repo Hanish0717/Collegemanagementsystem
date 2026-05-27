@@ -19,7 +19,7 @@ const demoUsers = [
 const seedDatabase = async () => {
   try {
     console.log("Connecting to MongoDB...");
-    await mongoose.connect("mongodb+srv://maheshkintali018_db_user:preethi08@cluster0.bf7wxvy.mongodb.net/college_management_system?retryWrites=true&w=majority&appName=Cluster0");
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log("Connected successfully!");
 
     for (const u of demoUsers) {

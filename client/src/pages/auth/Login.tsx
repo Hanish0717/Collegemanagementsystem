@@ -293,7 +293,7 @@ function LoginForm() {
           {/* Create Account link — shown for all roles */}
           <p className="mt-5 text-center text-xs text-muted-foreground">
             Don't have an account?{" "}
-            <Link to="/register" className="text-indigo hover:underline font-medium">
+            <Link to="/register" search={{ role: roleId }} className="text-indigo hover:underline font-medium">
               Create account
             </Link>
           </p>
