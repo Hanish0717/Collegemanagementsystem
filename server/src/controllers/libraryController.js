@@ -1,6 +1,7 @@
-import Book from '../models/Book.js';
-import IssuedBook from '../models/IssuedBook.js';
-import Student from '../models/Student.js';
+import Book from '../models/library/Book.js';
+import IssuedBook from '../models/library/IssuedBook.js';
+import Student from '../models/student/Student.js';
+import BookCategory from '../models/library/BookCategory.js';
 import mongoose from 'mongoose';
 
 // Helper: Update overdue status for all active issues
@@ -34,10 +35,34 @@ export const addBook = async (req, res, next) => {
       err.statusCode = 400;
       return next(err);
     }
+
+    let categoryId = null;
+    let categoryNameStr = '';
+    if (category) {
+      if (mongoose.Types.ObjectId.isValid(category)) {
+        categoryId = category;
+        const catDoc = await BookCategory.findById(category);
+        if (catDoc) categoryNameStr = catDoc.name;
+      } else {
+        // Find or create category by name
+        let catDoc = await BookCategory.findOne({ name: { $regex: new RegExp(`^${category.trim()}$`, 'i') } });
+        if (!catDoc) {
+          const code = category.trim().toUpperCase().substring(0, 4) + Math.floor(100 + Math.random() * 900);
+          catDoc = await BookCategory.create({
+            name: category.trim(),
+            code
+          });
+        }
+        categoryId = catDoc._id;
+        categoryNameStr = catDoc.name;
+      }
+    }
+
     const book = await Book.create({
       title,
       author,
-      category,
+      category: categoryId,
+      categoryName: categoryNameStr,
       isbn,
       publisher,
       edition,
@@ -66,7 +91,16 @@ export const getBooks = async (req, res, next) => {
       query.author = { $regex: author, $options: 'i' };
     }
     if (category) {
-      query.category = category;
+      if (mongoose.Types.ObjectId.isValid(category)) {
+        query.category = category;
+      } else {
+        const catDoc = await BookCategory.findOne({ name: { $regex: new RegExp(`^${category.trim()}$`, 'i') } });
+        if (catDoc) {
+          query.category = catDoc._id;
+        } else {
+          query.category = new mongoose.Types.ObjectId(); // unmatched fallback
+        }
+      }
     }
     if (availability === 'available') {
       query.availableCopies = { $gt: 0 };
@@ -186,7 +220,7 @@ export const issueBook = async (req, res, next) => {
     }
     // Prevent duplicate active issue
     const existingIssue = await IssuedBook.findOne({
-      student: studentId,
+      borrower: student.user,
       book: bookId,
       status: { $in: ['issued', 'overdue'] },
     });
@@ -197,9 +231,11 @@ export const issueBook = async (req, res, next) => {
     }
     // Create issue record
     const issued = await IssuedBook.create({
-      student: studentId,
+      borrower: student.user,
       book: bookId,
+      issuedBy: req.user.id,
       dueDate,
+      borrowerType: 'student',
     });
     // Decrement available copies
     book.availableCopies -= 1;
@@ -256,12 +292,40 @@ export const getIssuedBooks = async (req, res, next) => {
     const { status, studentId } = req.query;
     const query = {};
     if (status) query.status = status;
-    if (studentId) query.student = studentId;
+    if (studentId) {
+      const student = await Student.findById(studentId);
+      if (student) {
+        query.borrower = student.user;
+      } else {
+        query.borrower = new mongoose.Types.ObjectId();
+      }
+    }
     const issues = await IssuedBook.find(query)
-      .populate('student', 'fullName rollNumber department')
+      .populate('borrower', 'fullName email')
       .populate('book', 'title author')
       .sort({ issueDate: -1 });
-    res.status(200).json({ success: true, message: 'Issued books fetched', data: issues });
+
+    const studentsList = await Student.find({ isActive: true }).select('user rollNumber department');
+    const studentMap = {};
+    studentsList.forEach(s => {
+      if (s.user) {
+        studentMap[s.user.toString()] = s;
+      }
+    });
+
+    const formattedIssues = issues.map(issue => {
+      const issueObj = issue.toObject({ virtuals: true });
+      const studentProfile = issue.borrower ? studentMap[issue.borrower._id.toString()] : null;
+      issueObj.student = {
+        _id: studentProfile ? studentProfile._id : '',
+        fullName: issue.borrower ? issue.borrower.fullName : 'Unknown Student',
+        rollNumber: studentProfile ? studentProfile.rollNumber : 'N/A',
+        department: studentProfile ? studentProfile.department : 'N/A',
+      };
+      return issueObj;
+    });
+
+    res.status(200).json({ success: true, message: 'Issued books fetched', data: formattedIssues });
   } catch (error) {
     next(error);
   }

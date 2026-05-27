@@ -10,6 +10,10 @@ import studentRoutes from './routes/studentRoutes.js';
 import attendanceRoutes from './routes/attendanceRoutes.js';
 import feeRoutes from './routes/feeRoutes.js';
 import libraryRoutes from './routes/libraryRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import transportRoutes from './routes/transportRoutes.js';
+import placementRoutes from './routes/placementRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 dotenv.config();
 
@@ -38,6 +42,11 @@ app.use('/api/students', studentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/fees', feeRoutes);
 app.use('/api/library', libraryRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/transport', transportRoutes);
+app.use('/api/placement', placementRoutes);
+app.use('/api/ai', aiRoutes);
+
 
 // 404 handler
 app.use(notFound);

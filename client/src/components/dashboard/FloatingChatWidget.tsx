@@ -26,19 +26,32 @@ export function FloatingChatWidget() {
     { label: "Timetable", icon: Search },
   ];
 
-  const handleSendMessage = () => {
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
-    const userMessage = { role: "user" as const, content: inputValue, time: "Now" };
-    setMessages([...messages, userMessage]);
+    const userText = inputValue;
+    const userMessage = { role: "user" as const, content: userText, time: "Now" };
+    setMessages(prev => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const botResponse = { role: "assistant" as const, content: "I'm processing your request. This is a demo response.", time: "Now" };
+    try {
+      const { sendChatMessage } = await import("@/services/aiService");
+      const res = await sendChatMessage(userText, conversationId);
+      if (res.conversationId) {
+        setConversationId(res.conversationId);
+      }
+      const botResponse = { role: "assistant" as const, content: res.response, time: "Now" };
       setMessages(prev => [...prev, botResponse]);
+    } catch (err) {
+      console.error("AI chat failed:", err);
+      const botResponse = { role: "assistant" as const, content: "Sorry, I am having trouble connecting to the campus network. Please check that the server is active.", time: "Now" };
+      setMessages(prev => [...prev, botResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleSuggestedAction = (label: string) => {

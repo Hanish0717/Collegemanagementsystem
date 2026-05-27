@@ -43,26 +43,42 @@ export function AiChatbot() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
 
-    const userMessage = { role: "user" as const, content: inputValue, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-    setMessages([...messages, userMessage]);
+    const messageText = inputValue;
+    const userMessage = { role: "user" as const, content: messageText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+    setMessages(prev => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const responses = [
-        "Your current attendance is 84%. You are eligible for semester exams.",
-        "You have DBMS exam on 24th May and Operating Systems exam on 27th May.",
-        "You have ₹12,000 pending hostel fee due on 30th May.",
-        "Your CGPA is 8.2. You're performing well in all subjects.",
-        "Placement season starts next month. 92% of students got placed last year.",
-      ];
-      const botResponse = { role: "assistant" as const, content: responses[Math.floor(Math.random() * responses.length)], time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-      setMessages(prev => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 1500);
+    import("@/services/aiService").then(({ sendChatMessage }) => {
+      sendChatMessage(messageText, conversationId)
+        .then(res => {
+          const botResponse = { 
+            role: "assistant" as const, 
+            content: res.response, 
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          };
+          setMessages(prev => [...prev, botResponse]);
+          if (res.conversationId) {
+            setConversationId(res.conversationId);
+          }
+          setIsTyping(false);
+        })
+        .catch(err => {
+          console.error("AI chat failed:", err);
+          const errorResponse = { 
+            role: "assistant" as const, 
+            content: "Sorry, I encountered an error connecting to the campus network. Please check that the server is active.", 
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          };
+          setMessages(prev => [...prev, errorResponse]);
+          setIsTyping(false);
+        });
+    });
   };
 
   const handleSuggestedPrompt = (prompt: string) => {
@@ -71,7 +87,9 @@ export function AiChatbot() {
 
   const clearChat = () => {
     setMessages([]);
+    setConversationId(null);
   };
+
 
   return (
     <div className="h-[calc(100vh-2rem)] flex flex-col">

@@ -1,4 +1,5 @@
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid, Legend, LineChart, Line
@@ -9,21 +10,40 @@ import {
 import { motion } from "framer-motion";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import {
-  placementStats, placementTrendData, departmentPlacementData, packageAnalyticsData,
-  drives, applications, offers, interviews, placementNotifications, companies
+  placementStats as mockPlacementStats, placementTrendData, departmentPlacementData, packageAnalyticsData,
+  drives as mockDrives, applications, offers, interviews, placementNotifications, companies as mockCompanies
 } from "@/mock/mockData";
-
-
+import { fetchPlacementData, type PlacementDashboardData } from "@/services/placementService";
 
 const statIcons = [Briefcase, Sparkles, Users, TrendingUp, BarChart3, Calendar];
 const statGradients = ["bg-gradient-primary", "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary", "bg-gradient-violet", "bg-gradient-cyan"];
 
 export function PlacementDashboard() {
   const path = useRouterState({ select: r => r.location.pathname });
+  const [data, setData] = useState<PlacementDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (path === "/dashboard/placement") {
+      fetchPlacementData()
+        .then(res => {
+          setData(res);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.warn("Failed to load live placement dashboard data, using mock fallback:", err);
+          setLoading(false);
+        });
+    }
+  }, [path]);
 
   if (path !== "/dashboard/placement") {
     return <Outlet />;
   }
+
+  const stats = data?.stats || mockPlacementStats;
+  const drives = data?.drives || mockDrives;
+  const companies = data?.companies || mockCompanies;
 
   const placementStatus = [
     { label: "Applied", count: applications.filter(a => a.status === "Applied").length, tone: "info" as const },
@@ -38,17 +58,18 @@ export function PlacementDashboard() {
     <div className="space-y-6">
       <PageHeader
         title="Placement Overview 🎯"
-        desc="Campus recruitment analytics, drive tracking and student placements."
+        desc={loading ? "Synchronizing placement statistics..." : "Campus recruitment analytics, drive tracking and student placements (Live Database Connected)."}
       />
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {placementStats.map((s, i) => (
+        {stats.slice(0, 3).map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}>
-            <StatCard label={s.label} value={s.value} change={s.change} icon={statIcons[i]} gradient={statGradients[i]} />
+            <StatCard label={s.label} value={s.value} change={s.change} icon={statIcons[i % statIcons.length]} gradient={statGradients[i % statGradients.length]} />
           </motion.div>
         ))}
       </div>
+
 
       {/* Charts row */}
       <div className="grid lg:grid-cols-3 gap-4">

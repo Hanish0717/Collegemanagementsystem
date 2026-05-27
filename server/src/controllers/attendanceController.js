@@ -1,5 +1,5 @@
-import Attendance from '../models/Attendance.js';
-import Student from '../models/Student.js';
+import Attendance from '../models/attendance/Attendance.js';
+import Student from '../models/student/Student.js';
 import mongoose from 'mongoose';
 import { updateStudentAttendancePercentage } from '../services/attendanceService.js';
 

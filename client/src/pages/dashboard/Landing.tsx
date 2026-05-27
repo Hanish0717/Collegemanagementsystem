@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import {
   GraduationCap, Users, BookOpen, Calendar, Bus, Building2, Bell, BarChart3,
@@ -7,7 +7,8 @@ import {
   Cpu, HardDrive, Network, Shield, Target, TrendingUp, Award, Briefcase,
   Building, Microscope, Wrench, TreePine, FlaskConical, Gamepad2, Music,
   Camera, Trophy, Coffee, Users as UsersIcon, GraduationCap as GradCap, Zap, Heart,
-  Package, Monitor, Search, Cloud, Facebook, Twitter, Linkedin, Instagram, Mail
+  Package, Monitor, Search, Cloud, Facebook, Twitter, Linkedin, Instagram, Mail,
+  MessageSquare, Send, X
 } from "lucide-react";
 import { createFileRoute } from "@tanstack/react-router";
 
