@@ -6,9 +6,13 @@ import api from "@/lib/api";
 
 export function VerifyOTP() {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/verify-otp" }) as { email?: string; target?: string };
+  const search = useSearch({ from: "/verify-otp" }) as { phoneNumber?: string; email?: string; target?: string };
+
   const targetEmail = search.email;
   const otpType = search.target || "email_verification";
+
+  // Determine display identifier (email)
+  const displayIdentifier = targetEmail || "";
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,12 +43,23 @@ export function VerifyOTP() {
     setResending(true);
     setError(null);
     try {
-      await api.post("/api/auth/send-otp", { email: targetEmail, type: otpType });
-      setTimer(300);
-      setSuccess(`A new OTP has been sent to ${targetEmail}`);
+      if (otpType === "email_verification") {
+        await api.post("/api/auth/send-otp", {
+          email: targetEmail,
+          type: otpType,
+        });
+        setTimer(300);
+        setSuccess("A new OTP has been sent to your email.");
+      } else {
+        // Password reset uses forgot-password endpoint
+        await api.post("/api/auth/forgot-password", { email: targetEmail });
+        setTimer(300);
+        setSuccess(`A new OTP has been sent to ${targetEmail}`);
+      }
       setTimeout(() => setSuccess(null), 4000);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to resend OTP. Please try again.");
+      const msg = err.response?.data?.message || "Failed to resend OTP. Please try again.";
+      setError(msg);
     } finally {
       setResending(false);
     }
@@ -58,15 +73,60 @@ export function VerifyOTP() {
     setLoading(true);
 
     try {
-      await api.post("/api/auth/verify-otp", {
-        email: targetEmail,
-        otp,
-        type: otpType,
-      });
+      if (otpType === "email_verification") {
+        // Email OTP verification (registration / email verification)
+        const { data } = await api.post("/api/auth/verify-otp", {
+          email: targetEmail,
+          otp,
+          type: otpType,
+        });
 
-      // After email verification during signup, go to login page
-      setSuccess("Email verified! You can now sign in with your email and password.");
-      setTimeout(() => navigate({ to: "/login" }), 2000);
+        // After successful verification, store JWT and redirect
+        if (data.token) {
+          localStorage.setItem("cms_token", data.token);
+          localStorage.setItem("cms_user", JSON.stringify(data.user));
+          if (data.user?.role) {
+            const roleMap: Record<string, string> = {
+              "super-admin": "super_admin",
+              admin: "admin",
+              faculty: "faculty",
+              student: "student",
+              parent: "parent",
+              librarian: "librarian",
+              "placement-officer": "placement",
+              "hostel-warden": "warden",
+              "transport-manager": "transport",
+            };
+            localStorage.setItem("campusly.role", roleMap[data.user.role] || "student");
+          }
+          setSuccess("Email verified! Redirecting to dashboard…");
+          const dashboardMap: Record<string, string> = {
+            "super-admin": "/dashboard/super-admin",
+            admin: "/dashboard/admin",
+            faculty: "/dashboard/faculty",
+            student: "/dashboard/student",
+            parent: "/dashboard/parent",
+            librarian: "/dashboard/librarian",
+            "placement-officer": "/dashboard/placement",
+            "hostel-warden": "/dashboard/hostel",
+            "transport-manager": "/dashboard/transport",
+          };
+          const dashPath = dashboardMap[data.user?.role] || "/dashboard";
+          setTimeout(() => navigate({ to: dashPath }), 1500);
+        } else {
+          setSuccess("Email verified! You can now sign in.");
+          setTimeout(() => navigate({ to: "/login" }), 2000);
+        }
+      } else if (otpType === "password_reset") {
+        // Email-based verification (password reset)
+        await api.post("/api/auth/reset-password", {
+          email: targetEmail,
+          otp,
+          type: otpType,
+        });
+        setSuccess("Verified! Redirecting to login…");
+        setTimeout(() => navigate({ to: "/login" }), 2000);
+      }
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
@@ -78,6 +138,9 @@ export function VerifyOTP() {
       setLoading(false);
     }
   };
+
+  // Determine the description text
+  const descriptionText = "A 6-digit OTP has been sent to";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
@@ -99,8 +162,8 @@ export function VerifyOTP() {
 
         <h2 className="text-2xl font-bold text-center">Verify it's you</h2>
         <p className="text-sm text-muted-foreground text-center mt-2 px-4">
-          A 6-digit OTP has been sent to<br />
-          <span className="font-semibold text-foreground">{targetEmail}</span>
+          {descriptionText}<br />
+          <span className="font-semibold text-foreground">{displayIdentifier}</span>
         </p>
 
         {error && (

@@ -1,5 +1,8 @@
+import crypto from 'crypto';
+
 const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  // Generate a secure 6‑digit OTP using crypto.randomInt
+  return crypto.randomInt(100000, 1000000).toString();
 };
 
 export default generateOTP;

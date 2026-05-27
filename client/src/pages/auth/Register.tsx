@@ -37,10 +37,10 @@ export function Register() {
         role: active.id,
       });
 
-      // Redirect to OTP verification page
+      // Redirect to OTP verification page with email
       navigate({
         to: "/verify-otp",
-        search: { email, target: "email_verification" },
+        search: { email: email, target: "email_verification" },
       });
     } catch (err: any) {
       const msg =

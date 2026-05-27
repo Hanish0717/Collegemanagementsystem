@@ -7,9 +7,7 @@ import {
   sendOtp, 
   verifyOtp, 
   forgotPassword, 
-  resetPassword, 
-  sendMobileOtp, 
-  verifyMobileOtp 
+  resetPassword
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -21,17 +19,13 @@ router.post('/login', login);
 router.post('/google', googleAuth);
 router.get('/me', protect, getMe);
 
-// Email OTP Routes
+// Email OTP Routes (primary authentication)
 router.post('/send-otp', sendOtp);
 router.post('/verify-otp', verifyOtp);
 
-// Password Reset Routes
+// Password Reset Routes (email-based)
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
-
-// Mobile OTP Routes
-router.post('/send-mobile-otp', sendMobileOtp);
-router.post('/verify-mobile-otp', verifyMobileOtp);
 
 // Test route to verify role authorization middleware
 router.get('/admin-test', protect, authorizeRoles('admin', 'super-admin'), (req, res) => {

@@ -4,7 +4,6 @@ import PasswordReset from '../models/PasswordReset.js';
 import { generateToken } from '../services/authService.js';
 import generateOTP from '../utils/generateOTP.js';
 import sendEmail from '../utils/sendEmail.js';
-import sendSMS from '../utils/sendSMS.js';
 import { generateOTPTemplate, generatePasswordResetTemplate } from '../utils/emailTemplates.js';
 import { hashOTP, verifyOTPHash } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES, OTP_RESEND_COOLDOWN_SECONDS, OTP_MAX_ATTEMPTS, OTP_BLOCK_TIME_MINUTES } from '../../config.js';
@@ -58,24 +57,31 @@ export const register = async (req, res, next) => {
     // Generate 6-digit OTP
     const otp = generateOTP();
 
+    // Ensure only one active OTP per email
+    await OTP.deleteMany({ email });
+
     // Store OTP in DB
     await OTP.create({
       email,
-      otp,
+      otp: hashOTP(otp),
       type: 'email_verification',
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000),
+      attempts: 0,
+      blockedUntil: null,
     });
 
-    // Send OTP via email
+    console.log("OTP for " + email + ": " + otp);
+
+    // Send OTP via Email
     await sendEmail({
       to: email,
-      subject: 'Verify your College Management System Account',
+      subject: 'Your College Management System OTP',
       html: generateOTPTemplate(otp, 'Email Verification'),
     });
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful. Please check your email for the OTP.',
+      message: 'Registration successful. OTP sent to your email.',
     });
   } catch (error) {
     next(error);
@@ -103,7 +109,7 @@ export const login = async (req, res, next) => {
     }
 
     if (!user.isVerified) {
-      const error = new Error('Please verify your email address first. Check your inbox for the OTP.');
+      const error = new Error('Please verify your email address first.');
       error.statusCode = 401;
       return next(error);
     }
@@ -207,7 +213,6 @@ export const sendOtp = async (req, res, next) => {
 
     const otpType = type || 'email_verification';
     const lastOtp = await OTP.findOne({ email, type: otpType }).sort({ createdAt: -1 });
-
     if (lastOtp) {
       const cooldown = OTP_RESEND_COOLDOWN_SECONDS * 1000;
       const timeElapsed = Date.now() - lastOtp.createdAt.getTime();
@@ -219,6 +224,9 @@ export const sendOtp = async (req, res, next) => {
     const otp = generateOTP();
     const hashedOtp = hashOTP(otp);
 
+    // Ensure only one active OTP per email
+    await OTP.deleteMany({ email });
+
     await OTP.create({
       email,
       otp: hashedOtp,
@@ -228,13 +236,15 @@ export const sendOtp = async (req, res, next) => {
       blockedUntil: null,
     });
 
+    console.log("OTP for " + email + ": " + otp);
+
     await sendEmail({
       to: email,
-      subject: 'Your OTP Code',
-      html: generateOTPTemplate(otp, otpType),
+      subject: 'Your College Management System OTP',
+      html: generateOTPTemplate(otp, otpType === 'email_verification' ? 'Email Verification' : 'OTP Code'),
     });
 
-    res.status(200).json({ success: true, message: 'OTP sent' });
+    res.status(200).json({ success: true, message: 'OTP sent to email successfully' });
   } catch (error) {
     next(error);
   }
@@ -246,28 +256,28 @@ export const sendOtp = async (req, res, next) => {
 export const verifyOtp = async (req, res, next) => {
   try {
     const { email, otp, type } = req.body;
-    const otpRecord = await OTP.findOne({ email, type: type || 'email_verification' }).sort({ createdAt: -1 });
-    // Check block status
-    if (otpRecord && otpRecord.blockedUntil && otpRecord.blockedUntil > new Date()) {
-      return res.status(429).json({ message: 'Too many invalid attempts. Try again later.' });
-    }
+    if (!email) return res.status(400).json({ message: 'Email required' });
 
-    // Validate OTP
-    const isValid = otpRecord && (await verifyOTPHash(otp, otpRecord.otp)) && otpRecord.expiresAt >= new Date();
-    if (!isValid) {
-      // Increment attempts
-      if (otpRecord) {
-        otpRecord.attempts += 1;
-        if (otpRecord.attempts >= OTP_MAX_ATTEMPTS) {
-          otpRecord.blockedUntil = new Date(Date.now() + OTP_BLOCK_TIME_MINUTES * 60000);
-        }
-        await otpRecord.save();
-      }
+    const otpType = type || 'email_verification';
+    const otpRecord = await OTP.findOne({ email, type: otpType }).sort({ createdAt: -1 });
+    if (!otpRecord) {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
-
-    // OTP is valid – clean up
-    await OTP.deleteOne({ _id: otpRecord._id });
+    // Check block status
+    if (otpRecord.blockedUntil && otpRecord.blockedUntil > new Date()) {
+      return res.status(429).json({ message: 'Too many invalid attempts. Try again later.' });
+    }
+    const isValid = (await verifyOTPHash(String(otp), otpRecord.otp)) && otpRecord.expiresAt >= new Date();
+    if (!isValid) {
+      otpRecord.attempts += 1;
+      if (otpRecord.attempts >= OTP_MAX_ATTEMPTS) {
+        otpRecord.blockedUntil = new Date(Date.now() + OTP_BLOCK_TIME_MINUTES * 60000);
+      }
+      await otpRecord.save();
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+    // Successful verification – delete all OTPs for this email
+    await OTP.deleteMany({ email });
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -275,18 +285,9 @@ export const verifyOtp = async (req, res, next) => {
     user.isVerified = true;
     await user.save();
     const token = generateToken(user._id);
-    const userResponse = {
-      id: user._id,
-      fullName: user.fullName || user.name,
-      email: user.email,
-      role: user.role,
-    };
-    return res.status(200).json({
-      success: true,
-      token,
-      user: userResponse,
-      message: 'Verified',
-    });
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    res.status(200).json({ success: true, token, user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -376,103 +377,7 @@ export const resetPassword = async (req, res, next) => {
   }
 };
 
-// @desc    Send Mobile OTP
-// @route   POST /api/auth/send-mobile-otp
-// @access  Public
-export const sendMobileOtp = async (req, res, next) => {
-  try {
-    const { mobile, type } = req.body;
-    if (!mobile) {
-      const error = new Error('Please provide a mobile number');
-      error.statusCode = 400;
-      return next(error);
-    }
 
-    const otpType = type || 'login_otp';
-    const user = await User.findOne({ $or: [{ mobile: mobile }, { phoneNumber: mobile }] });
-
-    if (otpType === 'login_otp' && !user) {
-      const error = new Error('Mobile number not registered. Please register first.');
-      error.statusCode = 404;
-      return next(error);
-    }
-
-    const otp = generateOTP();
-    await OTP.create({
-      mobile,
-      otp,
-      type: otpType,
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
-    });
-
-    await sendSMS(mobile, otp);
-
-    res.status(200).json({ success: true, message: 'OTP sent to mobile successfully' });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// @desc    Verify Mobile OTP
-// @route   POST /api/auth/verify-mobile-otp
-// @access  Public
-export const verifyMobileOtp = async (req, res, next) => {
-  try {
-    const { mobile, otp, type } = req.body;
-    if (!mobile || !otp) {
-      const error = new Error('Please provide mobile number and OTP');
-      error.statusCode = 400;
-      return next(error);
-    }
-
-    const otpType = type || 'login_otp';
-    const validOtp = await OTP.findOne({
-      mobile,
-      otp,
-      type: otpType,
-      expiresAt: { $gt: new Date() },
-    });
-
-    if (!validOtp) {
-      const error = new Error('Invalid or expired OTP');
-      error.statusCode = 400;
-      return next(error);
-    }
-
-    await OTP.deleteOne({ _id: validOtp._id });
-
-    if (otpType === 'login_otp') {
-      const user = await User.findOne({ $or: [{ mobile: mobile }, { phoneNumber: mobile }] });
-      if (!user) {
-        const error = new Error('User not found');
-        error.statusCode = 404;
-        return next(error);
-      }
-      
-      if (!user.isActive) {
-        const error = new Error('Account is deactivated');
-        error.statusCode = 401;
-        return next(error);
-      }
-      
-      const token = generateToken(user._id);
-      const userResponse = user.toObject();
-      delete userResponse.password;
-
-      return res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        token,
-        user: userResponse,
-      });
-    }
-
-    // For mobile_verification
-    res.status(200).json({ success: true, message: 'Mobile number verified successfully' });
-  } catch (error) {
-    next(error);
-  }
-};
 
 // @desc    Get current user profile
 // @route   GET /api/auth/me

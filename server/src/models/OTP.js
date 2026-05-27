@@ -3,11 +3,9 @@ import mongoose from 'mongoose';
 const otpSchema = new mongoose.Schema({
   email: {
     type: String,
+    required: true,
     trim: true,
-  },
-  mobile: {
-    type: String,
-    trim: true,
+    lowercase: true,
   },
   otp: {
     type: String,
@@ -15,7 +13,7 @@ const otpSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['email_verification', 'mobile_verification', 'login_otp', 'password_reset', 'login_otp_email'],
+    enum: ['email_verification', 'login_otp', 'password_reset'],
     required: true,
   },
   expiresAt: {
@@ -29,11 +27,14 @@ const otpSchema = new mongoose.Schema({
   blockedUntil: {
     type: Date,
     default: null,
-  }
+  },
 }, { timestamps: true });
 
 // TTL index to automatically delete the OTP document after it expires
 otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+// Index for fast lookup of latest OTP by email
+otpSchema.index({ email: 1, createdAt: -1 });
 
 const OTP = mongoose.model('OTP', otpSchema);
 
