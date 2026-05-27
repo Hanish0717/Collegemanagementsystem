@@ -38,8 +38,8 @@ function LoginForm() {
     localStorage.removeItem("campusly.role");
   }, []);
 
-  const [roleId, setRoleId] = useState<RoleId>("super_admin");
-  const active = ROLE_LIST.find((r) => r.id === roleId)!;
+  const [roleId, setRoleId] = useState<RoleId | null>(null);
+  const active = roleId ? ROLE_LIST.find((r) => r.id === roleId) : null;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -82,7 +82,7 @@ function LoginForm() {
       const res = await api.post("/api/auth/google", {
         credential: tokenResponse.access_token,
         googleUserInfo: userInfo,
-        role: roleId,
+        role: roleId || "student",
       });
 
       if (res.data.token) {
@@ -135,7 +135,7 @@ function LoginForm() {
           </p>
 
           <div className="mt-6 grid grid-cols-2 xl:grid-cols-3 gap-3 max-w-3xl">
-            {ROLE_LIST.map((r) => {
+            {ROLE_LIST.filter((r) => r.id === "student" || r.id === "parent").map((r) => {
               const selected = r.id === roleId;
               const Icon = r.icon;
               return (
@@ -199,15 +199,17 @@ function LoginForm() {
             <span className="font-bold text-lg">College Management System</span>
           </div>
 
-          <div
-            className={`rounded-2xl p-4 bg-gradient-to-br ${active.gradient} text-white shadow-soft`}
-          >
-            <div className="text-[11px] uppercase tracking-wide opacity-80">Signing in as</div>
-            <div className="text-lg font-semibold mt-0.5">{active.name}</div>
-            <div className="text-xs opacity-85 mt-0.5">{active.description}</div>
-          </div>
+          {active && (
+            <div
+              className={`rounded-2xl p-4 bg-gradient-to-br ${active.gradient} text-white shadow-soft mb-6`}
+            >
+              <div className="text-[11px] uppercase tracking-wide opacity-80">Signing in as</div>
+              <div className="text-lg font-semibold mt-0.5">{active.name}</div>
+              <div className="text-xs opacity-85 mt-0.5">{active.description}</div>
+            </div>
+          )}
 
-          <h2 className="text-xl font-bold mt-6">Sign in to your account</h2>
+          <h2 className="text-xl font-bold">Sign in to your account</h2>
           <p className="text-sm text-muted-foreground mt-1">
             Enter your institutional credentials to access the campus management system
           </p>
@@ -223,11 +225,12 @@ function LoginForm() {
             <div className="lg:hidden">
               <label className="text-xs font-medium">Role</label>
               <select
-                value={roleId}
-                onChange={(e) => setRoleId(e.target.value as RoleId)}
+                value={roleId || ""}
+                onChange={(e) => setRoleId((e.target.value || null) as RoleId | null)}
                 className="mt-1 w-full rounded-xl border bg-background/60 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                {ROLE_LIST.map((r) => (
+                <option value="" disabled>Select your role...</option>
+                {ROLE_LIST.filter((r) => r.id === "student" || r.id === "parent").map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name}
                   </option>
@@ -277,7 +280,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active.gradient} shadow-soft disabled:opacity-70`}
+              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active ? active.gradient : "from-cyan-500 to-indigo-600"} shadow-soft disabled:opacity-70`}
             >
               {loading ? (
                 <>
@@ -286,7 +289,7 @@ function LoginForm() {
                 </>
               ) : (
                 <>
-                  Sign in as {active.name} <ArrowRight className="size-4" />
+                  {active ? `Sign in as ${active.name}` : "Sign In"} <ArrowRight className="size-4" />
                 </>
               )}
             </button>
@@ -336,7 +339,7 @@ function LoginForm() {
             Don't have an account?{" "}
             <Link
               to="/register"
-              search={{ role: roleId }}
+              search={{ role: roleId || "student" }}
               className="text-indigo hover:underline font-medium"
             >
               Create account

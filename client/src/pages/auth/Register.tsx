@@ -10,7 +10,9 @@ export function Register() {
   const navigate = useNavigate();
   const search: any = useSearch({ strict: false });
   const initialRole = (search.role as RoleId) || "student";
-  const [roleId, setRoleId] = useState<RoleId>(initialRole);
+  const allowedRoles: RoleId[] = ["student", "parent"];
+  const finalRole = allowedRoles.includes(initialRole) ? initialRole : "student";
+  const [roleId, setRoleId] = useState<RoleId>(finalRole);
   const active =
     ROLE_LIST.find((r) => r.id === roleId) || ROLE_LIST.find((r) => r.id === "student")!;
 

@@ -135,10 +135,10 @@ export function Landing() {
                 Student Portal
               </Link>
               <Link
-                to="/dashboard"
+                to="/login"
                 className="text-sm px-4 py-2 rounded-lg bg-gradient-primary text-primary-foreground glow-primary font-medium"
               >
-                Admin Login
+                Login
               </Link>
             </div>
           </div>
@@ -1093,8 +1093,8 @@ export function Landing() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/dashboard" className="hover:text-foreground transition">
-                    Admin Login
+                  <Link to="/login" className="hover:text-foreground transition">
+                    Login
                   </Link>
                 </li>
                 <li>
