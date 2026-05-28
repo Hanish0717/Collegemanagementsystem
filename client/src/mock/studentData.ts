@@ -3,7 +3,7 @@ export const studentStats = [
   { label: "Current GPA", value: "3.7", change: "+0.2" },
   { label: "Pending Assignments", value: "3", change: "-1" },
   { label: "Upcoming Classes", value: "4", change: "Today" },
-  { label: "Fee Balance", value: "$1,250", change: "Due" },
+  { label: "Fee Balance", value: "₹45,000", change: "Due" },
   { label: "Leave Balance", value: "5 days", change: "Available" },
   { label: "Events Registered", value: "2", change: "Upcoming" },
   { label: "Placement Status", value: "Active", change: "Eligible" },
@@ -219,10 +219,10 @@ export const studyMaterials = [
 ];
 
 export const feeRecords = [
-  { feeType: "Tuition Fee", amount: "$2,500", dueDate: "2026-06-01", status: "Pending" },
-  { feeType: "Hostel Fee", amount: "$800", dueDate: "2026-05-25", status: "Overdue" },
-  { feeType: "Lab Fee", amount: "$500", dueDate: "2026-06-15", status: "Pending" },
-  { feeType: "Library Fee", amount: "$200", dueDate: "2026-05-30", status: "Pending" },
+  { feeType: "Tuition Fee", amount: "₹45,000", dueDate: "2026-06-01", status: "Pending" },
+  { feeType: "Hostel Fee", amount: "₹35,000", dueDate: "2026-05-25", status: "Overdue" },
+  { feeType: "Lab Fee", amount: "₹8,500", dueDate: "2026-06-15", status: "Pending" },
+  { feeType: "Library Fee", amount: "₹1,500", dueDate: "2026-05-30", status: "Pending" },
 ];
 
 export const leaveRequests = [

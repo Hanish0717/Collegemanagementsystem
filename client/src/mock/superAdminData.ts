@@ -5,7 +5,7 @@ export const superAdminStats = [
   { label: "Total Admins", value: "42", change: "+4.8%" },
   { label: "Active Users", value: "8,934", change: "+11.3%" },
   { label: "System Health", value: "99.8%", change: "+0.3%" },
-  { label: "Revenue Overview", value: "$1.24M", change: "+12.5%" },
+  { label: "Revenue Overview", value: "₹1.24Cr", change: "+12.5%" },
   { label: "Pending Approvals", value: "27", change: "-6.1%" },
 ];
 
@@ -152,7 +152,7 @@ export const departmentsManaged = [
     students: 2140,
     status: "Active",
     head: "Dr. Anjali Mehra",
-    budget: "$320K",
+    budget: "₹32L",
   },
   {
     id: "DEP002",
@@ -161,7 +161,7 @@ export const departmentsManaged = [
     students: 1580,
     status: "Active",
     head: "Prof. Rajesh Kumar",
-    budget: "$240K",
+    budget: "₹24L",
   },
   {
     id: "DEP003",
@@ -170,7 +170,7 @@ export const departmentsManaged = [
     students: 1720,
     status: "Active",
     head: "Dr. Vikram Rao",
-    budget: "$260K",
+    budget: "₹26L",
   },
   {
     id: "DEP004",
@@ -179,7 +179,7 @@ export const departmentsManaged = [
     students: 1120,
     status: "Review",
     head: "Prof. Sarah Lin",
-    budget: "$180K",
+    budget: "₹18L",
   },
   {
     id: "DEP005",
@@ -188,7 +188,7 @@ export const departmentsManaged = [
     students: 860,
     status: "Active",
     head: "Dr. Aisha Khan",
-    budget: "$150K",
+    budget: "₹15L",
   },
   {
     id: "DEP006",
@@ -197,7 +197,7 @@ export const departmentsManaged = [
     students: 620,
     status: "Inactive",
     head: "Prof. Marco Rossi",
-    budget: "$95K",
+    budget: "₹9.5L",
   },
 ];
 
