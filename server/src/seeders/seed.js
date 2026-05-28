@@ -187,7 +187,7 @@ async function seedUsers() {
 
   const seededUsers = {};
   for (const u of usersToSeed) {
-    const user = await User.create(u);
+    const user = await User.create({ ...u, isVerified: true });
     seededUsers[user.role] = user;
     console.log(`   ✅ ${user.email} (${user.role})`);
   }
