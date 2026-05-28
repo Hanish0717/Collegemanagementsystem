@@ -16,9 +16,12 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // @access  Public
 export const register = async (req, res, next) => {
   try {
-    const { name, email, mobile, password, role } = req.body;
+    const { name, fullName, email, mobile, phoneNumber, password, role } = req.body;
 
-    if (!name || !email || !mobile || !password) {
+    const actualName = name || fullName;
+    const actualMobile = mobile || phoneNumber;
+
+    if (!actualName || !email || !actualMobile || !password) {
       const error = new Error('Please fill in all required fields');
       error.statusCode = 400;
       return next(error);
@@ -33,21 +36,21 @@ export const register = async (req, res, next) => {
         return next(error);
       }
       // If not verified, we can let them update their password/details and generate a new OTP
-      userExists.name = name;
-      userExists.fullName = name;
-      userExists.mobile = mobile;
-      userExists.phoneNumber = mobile;
+      userExists.name = actualName;
+      userExists.fullName = actualName;
+      userExists.mobile = actualMobile;
+      userExists.phoneNumber = actualMobile;
       userExists.password = password;
       userExists.role = role || 'student';
       await userExists.save();
     } else {
       // Create user (inactive/unverified)
       await User.create({
-        name,
-        fullName: name,
+        name: actualName,
+        fullName: actualName,
         email,
-        mobile,
-        phoneNumber: mobile,
+        mobile: actualMobile,
+        phoneNumber: actualMobile,
         password,
         role: role || 'student',
         isVerified: false,
