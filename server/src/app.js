@@ -26,6 +26,13 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 
 // Routes
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: "College ERP Backend API is running.",
+    frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173"
+  });
+});
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
