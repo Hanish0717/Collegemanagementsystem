@@ -1,7 +1,7 @@
 export const parentStats = [
   { label: "Child Attendance", value: "87.3%", change: "+2.1%" },
   { label: "Average Marks", value: "85.4%", change: "+1.8%" },
-  { label: "Pending Fees", value: "$1,250", change: "Due" },
+  { label: "Pending Fees", value: "₹45,000", change: "Due" },
   { label: "Upcoming Exams", value: "2", change: "This Week" },
   { label: "Notifications", value: "5", change: "Unread" },
   { label: "Leave Status", value: "Approved", change: "1 Request" },
@@ -132,23 +132,23 @@ export const subjectMarks = [
 export const feeRecords = [
   {
     feeType: "Tuition Fee",
-    amount: "$2,500",
+    amount: "₹45,000",
     dueDate: "2026-06-01",
     status: "Pending",
     receipt: "-",
   },
-  { feeType: "Hostel Fee", amount: "$800", dueDate: "2026-05-25", status: "Overdue", receipt: "-" },
-  { feeType: "Lab Fee", amount: "$500", dueDate: "2026-06-15", status: "Pending", receipt: "-" },
+  { feeType: "Hostel Fee", amount: "₹35,000", dueDate: "2026-05-25", status: "Overdue", receipt: "-" },
+  { feeType: "Lab Fee", amount: "₹8,500", dueDate: "2026-06-15", status: "Pending", receipt: "-" },
   {
     feeType: "Library Fee",
-    amount: "$200",
+    amount: "₹1,500",
     dueDate: "2026-05-30",
     status: "Pending",
     receipt: "-",
   },
   {
     feeType: "Transport Fee",
-    amount: "$300",
+    amount: "₹18,000",
     dueDate: "2026-05-20",
     status: "Paid",
     receipt: "REC-001",

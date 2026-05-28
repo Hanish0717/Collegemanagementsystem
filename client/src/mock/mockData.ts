@@ -22,7 +22,7 @@ export const stats = [
   },
   {
     label: "Fee Collected",
-    value: "$1.24M",
+    value: "₹12.4L",
     change: "+12.5%",
     trend: "up",
     color: "from-indigo-500 to-violet-500",
@@ -379,7 +379,7 @@ export const librarianStats = [
   { label: "Total Books", value: "8,450", change: "+3.2%", icon: "BookOpen" },
   { label: "Issued This Week", value: "342", change: "+12.5%", icon: "BookMarked" },
   { label: "Pending Returns", value: "28", change: "-2.1%", icon: "Clock" },
-  { label: "Fine Collection", value: "$2,840", change: "+18.7%", icon: "DollarSign" },
+  { label: "Fine Collection", value: "₹2,840", change: "+18.7%", icon: "DollarSign" },
 ];
 
 export const bookCirculationData = [

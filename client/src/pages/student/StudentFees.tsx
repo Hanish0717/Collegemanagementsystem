@@ -13,9 +13,9 @@ export function StudentFees() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Due", value: "$1,250", tone: "warn" as const },
-          { label: "Overdue", value: "$800", tone: "danger" as const },
-          { label: "Paid This Year", value: "$8,500", tone: "success" as const },
+          { label: "Total Due", value: "₹45,000", tone: "warn" as const },
+          { label: "Overdue", value: "₹35,000", tone: "danger" as const },
+          { label: "Paid This Year", value: "₹1,00,000", tone: "success" as const },
           { label: "Next Due", value: "May 25", tone: "info" as const },
         ].map((stat) => (
           <Card key={stat.label}>
