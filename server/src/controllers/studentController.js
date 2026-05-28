@@ -1,4 +1,4 @@
-import Student from '../models/Student.js';
+import Student from '../models/student/Student.js';
 
 // @desc    Get all active students with pagination, search, filter, and sorting
 // @route   GET /api/students

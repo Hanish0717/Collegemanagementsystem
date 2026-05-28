@@ -1,5 +1,5 @@
-import Fee from '../models/Fee.js';
-import Student from '../models/Student.js';
+import Fee from '../models/fee/Fee.js';
+import Student from '../models/student/Student.js';
 import mongoose from 'mongoose';
 
 // Helper: Dynamically flag any pending/partial fees whose due date has passed as overdue

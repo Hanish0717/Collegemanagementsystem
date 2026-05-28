@@ -38,11 +38,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+
   const logout = () => {
     apiLogout();
     setUser(null);
     setToken(null);
   };
+
 
   const refreshUser = async () => {
     if (!getToken()) return null;

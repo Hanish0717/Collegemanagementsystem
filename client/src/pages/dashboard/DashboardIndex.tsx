@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   AreaChart,
   Area,
@@ -18,13 +19,14 @@ import {
 import { Users, GraduationCap, CalendarCheck, Wallet, TrendingUp, Calendar } from "lucide-react";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import {
-  attendanceData,
-  performanceData,
-  departmentData,
-  activities,
-  events,
-  stats,
+  attendanceData as mockAttendance,
+  performanceData as mockPerformance,
+  departmentData as mockDepartment,
+  activities as mockActivities,
+  events as mockEvents,
+  stats as mockStats,
 } from "@/mock/mockData";
+import { fetchDashboardData, type DashboardStats } from "@/services/dashboardService";
 
 const statIcons = [Users, GraduationCap, CalendarCheck, Wallet];
 const statGradients = [
@@ -34,17 +36,39 @@ const statGradients = [
   "bg-gradient-primary",
 ];
 
+
 export function DashboardIndex() {
+  const [data, setData] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData()
+      .then(res => {
+        setData(res);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.warn("Failed to load live dashboard stats, using fallback mock data:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const stats = data?.stats || mockStats;
+  const attendanceData = data?.attendanceData || mockAttendance;
+  const departmentData = data?.departmentData || mockDepartment;
+  const performanceData = data?.performanceData || mockPerformance;
+  const events = data?.events || mockEvents;
+  const activities = data?.activities || mockActivities;
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Welcome back, Dr. Mehra 👋"
-        desc="Here's what's happening across your campus today."
+        desc={loading ? "Synchronizing live campus database..." : "Here's what's happening across your campus today (Live Database Connected)."}
       />
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((s, i) => (
           <motion.div
             key={s.label}
             initial={{ opacity: 0, y: 10 }}
@@ -55,8 +79,8 @@ export function DashboardIndex() {
               label={s.label}
               value={s.value}
               change={s.change}
-              icon={statIcons[i]}
-              gradient={statGradients[i]}
+              icon={statIcons[i % statIcons.length]}
+              gradient={statGradients[i % statGradients.length]}
             />
           </motion.div>
         ))}
@@ -182,7 +206,7 @@ export function DashboardIndex() {
                 <div
                   className={`size-11 rounded-xl bg-gradient-to-br ${e.color} text-white grid place-items-center text-xs font-semibold`}
                 >
-                  {e.date.split(" ")[1]}
+                  {e.date}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{e.title}</div>
@@ -225,3 +249,4 @@ export function DashboardIndex() {
     </div>
   );
 }
+

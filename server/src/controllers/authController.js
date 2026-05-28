@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User from '../models/auth/User.js';
 import OTP from '../models/OTP.js';
 import PasswordReset from '../models/PasswordReset.js';
 import { generateToken } from '../services/authService.js';

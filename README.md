@@ -1,5 +1,3 @@
-College Management System
+# College Management System
 
-update the readme file
-
-update the readme file
+A modern, service-based College Management System featuring live MongoDB integrations, OTP verification, and an AI-powered assistant.
