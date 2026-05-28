@@ -21,7 +21,12 @@ export function Login() {
   }
 
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "100000000000-dummyclientid.apps.googleusercontent.com"}>
+    <GoogleOAuthProvider
+      clientId={
+        import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+        "100000000000-dummyclientid.apps.googleusercontent.com"
+      }
+    >
       <LoginForm />
     </GoogleOAuthProvider>
   );
@@ -229,7 +234,9 @@ function LoginForm() {
                 onChange={(e) => setRoleId((e.target.value || null) as RoleId | null)}
                 className="mt-1 w-full rounded-xl border bg-background/60 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="" disabled>Select your role...</option>
+                <option value="" disabled>
+                  Select your role...
+                </option>
                 {ROLE_LIST.filter((r) => r.id === "student" || r.id === "parent").map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name}
@@ -289,7 +296,8 @@ function LoginForm() {
                 </>
               ) : (
                 <>
-                  {active ? `Sign in as ${active.name}` : "Sign In"} <ArrowRight className="size-4" />
+                  {active ? `Sign in as ${active.name}` : "Sign In"}{" "}
+                  <ArrowRight className="size-4" />
                 </>
               )}
             </button>

@@ -4,14 +4,34 @@ import Book from '../models/library/Book.js';
 import Fee from '../models/fee/Fee.js';
 import Event from '../models/cms/Event.js';
 import AuditLog from '../models/audit/AuditLog.js';
+import Admin from '../models/admin/Admin.js';
+import Faculty from '../models/faculty/Faculty.js';
+import Department from '../models/academic/Department.js';
 
 export const getDashboardStats = async (req, res, next) => {
   try {
-    const totalStudents = await Student.countDocuments({ isActive: true });
-    const facultyMembers = await User.countDocuments({ role: 'faculty', isActive: true });
+    let studentFilter = { isActive: true };
+    let facultyFilter = { isActive: true };
+    let feeMatchStage = {};
+
+    if (req.user && req.user.role === 'admin') {
+      const adminProfile = await Admin.findOne({ user: req.user._id });
+      if (adminProfile && adminProfile.department) {
+        studentFilter.department = adminProfile.department;
+        facultyFilter.department = adminProfile.department;
+
+        // Filter fee records by matching students from this department
+        const studentIds = await Student.find({ department: adminProfile.department, isActive: true }).distinct('_id');
+        feeMatchStage = { student: { $in: studentIds } };
+      }
+    }
+
+    const totalStudents = await Student.countDocuments(studentFilter);
+    const facultyMembers = await Faculty.countDocuments(facultyFilter);
     const totalBooks = await Book.countDocuments();
     
     const feeResult = await Fee.aggregate([
+      { $match: feeMatchStage },
       { $group: { _id: null, total: { $sum: '$paidAmount' } } }
     ]);
     const feeCollected = feeResult.length > 0 ? feeResult[0].total : 0;
@@ -34,16 +54,29 @@ export const getDashboardStats = async (req, res, next) => {
 
     // Department Distribution
     const deptDistribution = await Student.aggregate([
-      { $match: { isActive: true } },
+      { $match: studentFilter },
       { $group: { _id: '$department', value: { $sum: 1 } } }
     ]);
 
+    // Populate department names from database
+    const populatedDeptDist = [];
     const colors = ["#4F46E5", "#9333EA", "#06B6D4", "#2563EB", "#7C3AED", "#0891B2"];
-    const departmentData = deptDistribution.map((item, idx) => ({
-      name: item._id || "Other",
-      value: item.value,
-      color: colors[idx % colors.length]
-    }));
+    
+    for (let idx = 0; idx < deptDistribution.length; idx++) {
+      const item = deptDistribution[idx];
+      let deptName = "Other";
+      if (item._id) {
+        const dept = await Department.findById(item._id);
+        if (dept) deptName = dept.name;
+      }
+      populatedDeptDist.push({
+        name: deptName,
+        value: item.value,
+        color: colors[idx % colors.length]
+      });
+    }
+
+    const departmentData = populatedDeptDist;
 
     // If empty, supply default structure matching mock
     if (departmentData.length === 0) {

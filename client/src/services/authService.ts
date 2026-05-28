@@ -2,7 +2,6 @@ import api from "../lib/api";
 import type { RoleId } from "../lib/roles";
 import type { AuthUser, LoginPayload, LoginResponse } from "@/types/auth";
 
-
 // ── Role Mapping (backend ↔ frontend) ───────────────────
 // Backend uses "super-admin", "placement-officer", "hostel-warden", "transport-manager"
 // Frontend uses "super_admin", "placement", "warden", "transport"
@@ -79,7 +78,6 @@ export async function login(payload: LoginPayload): Promise<any> {
 
   return user;
 }
-
 
 /** Fetch the currently authenticated user from backend. */
 export async function fetchCurrentUser(): Promise<AuthUser> {

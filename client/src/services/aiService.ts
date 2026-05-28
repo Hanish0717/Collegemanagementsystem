@@ -5,10 +5,13 @@ export interface ChatResponse {
   conversationId: string | null;
 }
 
-export async function sendChatMessage(message: string, conversationId?: string | null): Promise<ChatResponse> {
+export async function sendChatMessage(
+  message: string,
+  conversationId?: string | null,
+): Promise<ChatResponse> {
   const { data } = await api.post<{ success: boolean; data: ChatResponse }>("/api/ai/chat", {
     message,
-    conversationId
+    conversationId,
   });
   return data.data;
 }

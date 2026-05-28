@@ -73,6 +73,25 @@ const facultySchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    assignedSubjects: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject',
+      }
+    ],
+    assignedSections: [
+      {
+        type: String,
+        trim: true,
+        uppercase: true,
+      }
+    ],
+    assignedStudentIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student',
+      }
+    ],
     designation: {
       type: String,
       required: [true, 'Designation is required'],

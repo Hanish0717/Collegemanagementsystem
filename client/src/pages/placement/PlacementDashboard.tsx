@@ -116,7 +116,11 @@ export function PlacementDashboard() {
     <div className="space-y-6">
       <PageHeader
         title="Placement Overview 🎯"
-        desc={loading ? "Synchronizing placement statistics..." : "Campus recruitment analytics, drive tracking and student placements (Live Database Connected)."}
+        desc={
+          loading
+            ? "Synchronizing placement statistics..."
+            : "Campus recruitment analytics, drive tracking and student placements (Live Database Connected)."
+        }
       />
 
       {/* Stats */}
@@ -138,7 +142,6 @@ export function PlacementDashboard() {
           </motion.div>
         ))}
       </div>
-
 
       {/* Charts row */}
       <div className="grid lg:grid-cols-3 gap-4">

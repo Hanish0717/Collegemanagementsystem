@@ -14,6 +14,10 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import transportRoutes from './routes/transportRoutes.js';
 import placementRoutes from './routes/placementRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import superAdminRoutes from './routes/superAdminRoutes.js';
+import academicRoutes from './routes/academicRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import facultyRoutes from './routes/facultyRoutes.js';
 
 dotenv.config();
 
@@ -47,6 +51,10 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/transport', transportRoutes);
 app.use('/api/placement', placementRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/super-admin', superAdminRoutes);
+app.use('/api/academic', academicRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/faculty', facultyRoutes);
 
 
 // 404 handler

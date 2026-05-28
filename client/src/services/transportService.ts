@@ -10,6 +10,8 @@ export interface BusItem {
 }
 
 export async function fetchTransportData(): Promise<{ buses: BusItem[] }> {
-  const { data } = await api.get<{ success: boolean; data: { buses: BusItem[] } }>("/api/transport/dashboard");
+  const { data } = await api.get<{ success: boolean; data: { buses: BusItem[] } }>(
+    "/api/transport/dashboard",
+  );
   return data.data;
 }

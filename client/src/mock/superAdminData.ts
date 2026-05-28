@@ -1,14 +1,3 @@
-export const superAdminStats = [
-  { label: "Total Colleges/Departments", value: "18", change: "+2.4%" },
-  { label: "Total Students", value: "12,480", change: "+8.2%" },
-  { label: "Total Faculty", value: "684", change: "+2.1%" },
-  { label: "Total Admins", value: "42", change: "+4.8%" },
-  { label: "Active Users", value: "8,934", change: "+11.3%" },
-  { label: "System Health", value: "99.8%", change: "+0.3%" },
-  { label: "Revenue Overview", value: "₹1.24Cr", change: "+12.5%" },
-  { label: "Pending Approvals", value: "27", change: "-6.1%" },
-];
-
 export const systemAnalytics = [
   { month: "Jan", users: 6200, revenue: 820, tickets: 42 },
   { month: "Feb", users: 6800, revenue: 910, tickets: 38 },

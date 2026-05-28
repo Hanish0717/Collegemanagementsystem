@@ -8,8 +8,9 @@
  *   import { User, Student, Fee } from '../models/index.js';
  */
 
-// ─── Auth ────────────────────────────────────────────────
+// ─── Auth & Admin ────────────────────────────────────────
 export { default as User } from './auth/User.js';
+export { default as Admin } from './admin/Admin.js';
 
 // ─── RBAC ────────────────────────────────────────────────
 export { default as Role } from './rbac/Role.js';

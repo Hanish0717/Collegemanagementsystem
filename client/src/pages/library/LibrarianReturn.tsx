@@ -87,7 +87,9 @@ export function LibrarianReturn() {
             <h3 className="font-semibold mb-4 text-gradient">Process Return</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">Select Book to Return *</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Select Book to Return *
+                </label>
                 <select
                   value={selectedIssue}
                   onChange={(e) => setSelectedIssue(e.target.value)}
@@ -95,7 +97,8 @@ export function LibrarianReturn() {
                 >
                   <option value="">Choose book...</option>
                   {issuedBooks.map((b) => {
-                    const studentName = typeof b.student === "object" ? b.student?.fullName : "Student";
+                    const studentName =
+                      typeof b.student === "object" ? b.student?.fullName : "Student";
                     const title = typeof b.book === "object" ? b.book?.title : "Book";
                     return (
                       <option key={b._id} value={b._id}>
@@ -109,7 +112,9 @@ export function LibrarianReturn() {
               {selectedBook && (
                 <div className="grid sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-3 duration-200">
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground">Book Condition</label>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Book Condition
+                    </label>
                     <select
                       value={returnCondition}
                       onChange={(e) => setReturnCondition(e.target.value)}
@@ -123,9 +128,7 @@ export function LibrarianReturn() {
 
                   <div className="p-4 rounded-xl border bg-gradient-soft flex flex-col justify-center">
                     <span className="text-xs text-muted-foreground">Calculated Penalty</span>
-                    <span className="text-xl font-bold text-gradient mt-1">
-                      ₹{calculateFine()}
-                    </span>
+                    <span className="text-xl font-bold text-gradient mt-1">₹{calculateFine()}</span>
                   </div>
                 </div>
               )}
@@ -163,11 +166,14 @@ export function LibrarianReturn() {
             <Card>
               <h3 className="font-semibold mb-4">Active & Overdue Book Loans</h3>
               {issuedBooks.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-6 text-center">No books currently issued.</p>
+                <p className="text-sm text-muted-foreground py-6 text-center">
+                  No books currently issued.
+                </p>
               ) : (
                 <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
                   {issuedBooks.map((issue) => {
-                    const studentName = typeof issue.student === "object" ? issue.student?.fullName : "Student";
+                    const studentName =
+                      typeof issue.student === "object" ? issue.student?.fullName : "Student";
                     const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
                     const title = typeof issue.book === "object" ? issue.book?.title : "Book";
                     return (
@@ -200,7 +206,9 @@ export function LibrarianReturn() {
                 <div className="p-4 rounded-xl bg-gradient-soft border">
                   <div className="text-xs text-muted-foreground mb-1">Total Active Loans</div>
                   <div className="text-3xl font-bold">{issuedBooks.length}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Books currently with students</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Books currently with students
+                  </div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-gradient-soft border">
@@ -229,22 +237,36 @@ export function LibrarianReturn() {
                   <div className="flex items-start gap-3 p-3 rounded-xl border border-blue-100 bg-blue-50/50">
                     <AlertCircle className="size-5 text-blue-600 shrink-0 mt-0.5" />
                     <div className="text-xs text-blue-800 leading-relaxed">
-                      You are about to record the return of <strong>{typeof selectedBook.book === "object" ? selectedBook.book?.title : "Book"}</strong>. Please ensure the book details match.
+                      You are about to record the return of{" "}
+                      <strong>
+                        {typeof selectedBook.book === "object" ? selectedBook.book?.title : "Book"}
+                      </strong>
+                      . Please ensure the book details match.
                     </div>
                   </div>
 
                   <div className="space-y-2.5 text-sm">
                     <div className="flex justify-between border-b pb-2">
                       <span className="text-muted-foreground">Student Name</span>
-                      <span className="font-medium">{typeof selectedBook.student === "object" ? selectedBook.student?.fullName : "Student"}</span>
+                      <span className="font-medium">
+                        {typeof selectedBook.student === "object"
+                          ? selectedBook.student?.fullName
+                          : "Student"}
+                      </span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
                       <span className="text-muted-foreground">Roll Number</span>
-                      <span className="font-medium">{typeof selectedBook.student === "object" ? selectedBook.student?.rollNumber : "N/A"}</span>
+                      <span className="font-medium">
+                        {typeof selectedBook.student === "object"
+                          ? selectedBook.student?.rollNumber
+                          : "N/A"}
+                      </span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
                       <span className="text-muted-foreground">Due Date</span>
-                      <span className="font-medium">{new Date(selectedBook.dueDate).toLocaleDateString()}</span>
+                      <span className="font-medium">
+                        {new Date(selectedBook.dueDate).toLocaleDateString()}
+                      </span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
                       <span className="text-muted-foreground">Condition</span>

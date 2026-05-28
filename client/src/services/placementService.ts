@@ -31,6 +31,8 @@ export interface PlacementDashboardData {
 }
 
 export async function fetchPlacementData(): Promise<PlacementDashboardData> {
-  const { data } = await api.get<{ success: boolean; data: PlacementDashboardData }>("/api/placement/dashboard");
+  const { data } = await api.get<{ success: boolean; data: PlacementDashboardData }>(
+    "/api/placement/dashboard",
+  );
   return data.data;
 }

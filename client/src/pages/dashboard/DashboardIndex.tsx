@@ -36,18 +36,17 @@ const statGradients = [
   "bg-gradient-primary",
 ];
 
-
 export function DashboardIndex() {
   const [data, setData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData()
-      .then(res => {
+      .then((res) => {
         setData(res);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn("Failed to load live dashboard stats, using fallback mock data:", err);
         setLoading(false);
       });
@@ -64,7 +63,11 @@ export function DashboardIndex() {
     <div className="space-y-6">
       <PageHeader
         title="Welcome back, Dr. Mehra 👋"
-        desc={loading ? "Synchronizing live campus database..." : "Here's what's happening across your campus today (Live Database Connected)."}
+        desc={
+          loading
+            ? "Synchronizing live campus database..."
+            : "Here's what's happening across your campus today (Live Database Connected)."
+        }
       />
 
       {/* Stats */}
@@ -250,4 +253,3 @@ export function DashboardIndex() {
     </div>
   );
 }
-

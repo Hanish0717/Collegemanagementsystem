@@ -8,7 +8,7 @@ export function StatCard({
   gradient = "bg-gradient-primary",
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   change?: string;
   icon: any;
   gradient?: string;

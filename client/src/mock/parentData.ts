@@ -137,7 +137,13 @@ export const feeRecords = [
     status: "Pending",
     receipt: "-",
   },
-  { feeType: "Hostel Fee", amount: "₹35,000", dueDate: "2026-05-25", status: "Overdue", receipt: "-" },
+  {
+    feeType: "Hostel Fee",
+    amount: "₹35,000",
+    dueDate: "2026-05-25",
+    status: "Overdue",
+    receipt: "-",
+  },
   { feeType: "Lab Fee", amount: "₹8,500", dueDate: "2026-06-15", status: "Pending", receipt: "-" },
   {
     feeType: "Library Fee",

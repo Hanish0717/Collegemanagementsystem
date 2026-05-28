@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Calendar, CheckCircle2, Loader2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchBooks, issueBook, fetchIssuedBooks, type BookItem, type IssuedBookItem } from "@/services/libraryService";
+import {
+  fetchBooks,
+  issueBook,
+  fetchIssuedBooks,
+  type BookItem,
+  type IssuedBookItem,
+} from "@/services/libraryService";
 import api from "@/lib/api";
 import { toast } from "sonner";
 
@@ -91,9 +97,9 @@ export function LibrarianIssueBooks() {
 
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Issue Book 📖" 
-        desc="Allocate books to students and track issue dates (Live Database Connected)." 
+      <PageHeader
+        title="Issue Book 📖"
+        desc="Allocate books to students and track issue dates (Live Database Connected)."
       />
 
       {loading ? (
@@ -109,7 +115,9 @@ export function LibrarianIssueBooks() {
             <form onSubmit={handleIssueBook} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Select Student *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Select Student *
+                  </label>
                   <select
                     value={selectedStudent}
                     onChange={(e) => setSelectedStudent(e.target.value)}
@@ -126,7 +134,9 @@ export function LibrarianIssueBooks() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Select Book *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Select Book *
+                  </label>
                   <select
                     value={selectedBook}
                     onChange={(e) => setSelectedBook(e.target.value)}
@@ -178,7 +188,11 @@ export function LibrarianIssueBooks() {
                   disabled={submitting}
                   className="flex-1 px-4 py-3 rounded-xl bg-gradient-primary text-white font-medium glow-primary flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
                 >
-                  {submitting ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                  {submitting ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="size-4" />
+                  )}
                   Issue Book
                 </button>
                 <button
@@ -197,11 +211,14 @@ export function LibrarianIssueBooks() {
             <Card>
               <h3 className="font-semibold mb-4">Recently Issued Books</h3>
               {issuedHistory.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-6 text-center">No active book loans currently.</p>
+                <p className="text-sm text-muted-foreground py-6 text-center">
+                  No active book loans currently.
+                </p>
               ) : (
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
                   {issuedHistory.slice(0, 10).map((issue) => {
-                    const studentName = typeof issue.student === "object" ? issue.student?.fullName : "Student";
+                    const studentName =
+                      typeof issue.student === "object" ? issue.student?.fullName : "Student";
                     const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
                     const title = typeof issue.book === "object" ? issue.book?.title : "Book";
                     return (
@@ -234,9 +251,14 @@ export function LibrarianIssueBooks() {
                 <div className="p-4 rounded-xl bg-gradient-soft border">
                   <div className="text-xs text-muted-foreground mb-1">Total Active Loans</div>
                   <div className="text-3xl font-bold">
-                    {issuedHistory.filter((i) => i.status === "issued" || i.status === "overdue").length}
+                    {
+                      issuedHistory.filter((i) => i.status === "issued" || i.status === "overdue")
+                        .length
+                    }
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">Books currently in circulation</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Books currently in circulation
+                  </div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-gradient-soft border">
@@ -256,15 +278,21 @@ export function LibrarianIssueBooks() {
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl bg-gradient-soft border">
                 <div className="text-sm font-medium mb-2">📅 Standard Duration</div>
-                <div className="text-xs text-muted-foreground">14 days from issue date. Can be extended by 7 more days.</div>
+                <div className="text-xs text-muted-foreground">
+                  14 days from issue date. Can be extended by 7 more days.
+                </div>
               </div>
               <div className="p-4 rounded-xl bg-gradient-soft border">
                 <div className="text-sm font-medium mb-2">💰 Fine Rate</div>
-                <div className="text-xs text-muted-foreground">₹5 per day for overdue books. Maximum ₹500 per book.</div>
+                <div className="text-xs text-muted-foreground">
+                  ₹5 per day for overdue books. Maximum ₹500 per book.
+                </div>
               </div>
               <div className="p-4 rounded-xl bg-gradient-soft border">
                 <div className="text-sm font-medium mb-2">📚 Limit</div>
-                <div className="text-xs text-muted-foreground">Max 5 books per student at a time. No more if fines pending.</div>
+                <div className="text-xs text-muted-foreground">
+                  Max 5 books per student at a time. No more if fines pending.
+                </div>
               </div>
             </div>
           </Card>

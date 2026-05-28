@@ -11,11 +11,11 @@ export function TransportDashboard() {
 
   useEffect(() => {
     fetchTransportData()
-      .then(res => {
+      .then((res) => {
         setBuses(res.buses);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn("Failed to load live transport data, using fallback mock data:", err);
         setBuses(mockBuses as any);
         setLoading(false);
@@ -24,9 +24,13 @@ export function TransportDashboard() {
 
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Transport" 
-        desc={loading ? "Synchronizing transport database..." : "Bus routes, drivers and live tracking (Live Database Connected)."} 
+      <PageHeader
+        title="Transport"
+        desc={
+          loading
+            ? "Synchronizing transport database..."
+            : "Bus routes, drivers and live tracking (Live Database Connected)."
+        }
       />
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -101,4 +105,3 @@ export function TransportDashboard() {
     </div>
   );
 }
-

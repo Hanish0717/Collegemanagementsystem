@@ -67,33 +67,38 @@ export function AiChatbot() {
     if (!inputValue.trim()) return;
 
     const messageText = inputValue;
-    const userMessage = { role: "user" as const, content: messageText, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-    setMessages(prev => [...prev, userMessage]);
+    const userMessage = {
+      role: "user" as const,
+      content: messageText,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
     import("@/services/aiService").then(({ sendChatMessage }) => {
       sendChatMessage(messageText, conversationId)
-        .then(res => {
-          const botResponse = { 
-            role: "assistant" as const, 
-            content: res.response, 
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+        .then((res) => {
+          const botResponse = {
+            role: "assistant" as const,
+            content: res.response,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           };
-          setMessages(prev => [...prev, botResponse]);
+          setMessages((prev) => [...prev, botResponse]);
           if (res.conversationId) {
             setConversationId(res.conversationId);
           }
           setIsTyping(false);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("AI chat failed:", err);
-          const errorResponse = { 
-            role: "assistant" as const, 
-            content: "Sorry, I encountered an error connecting to the campus network. Please check that the server is active.", 
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          const errorResponse = {
+            role: "assistant" as const,
+            content:
+              "Sorry, I encountered an error connecting to the campus network. Please check that the server is active.",
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           };
-          setMessages(prev => [...prev, errorResponse]);
+          setMessages((prev) => [...prev, errorResponse]);
           setIsTyping(false);
         });
     });
@@ -107,7 +112,6 @@ export function AiChatbot() {
     setMessages([]);
     setConversationId(null);
   };
-
 
   return (
     <div className="h-[calc(100vh-2rem)] flex flex-col">

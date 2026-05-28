@@ -55,7 +55,7 @@ export function FloatingChatWidget() {
 
     const userText = inputValue;
     const userMessage = { role: "user" as const, content: userText, time: "Now" };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
@@ -66,11 +66,16 @@ export function FloatingChatWidget() {
         setConversationId(res.conversationId);
       }
       const botResponse = { role: "assistant" as const, content: res.response, time: "Now" };
-      setMessages(prev => [...prev, botResponse]);
+      setMessages((prev) => [...prev, botResponse]);
     } catch (err) {
       console.error("AI chat failed:", err);
-      const botResponse = { role: "assistant" as const, content: "Sorry, I am having trouble connecting to the campus network. Please check that the server is active.", time: "Now" };
-      setMessages(prev => [...prev, botResponse]);
+      const botResponse = {
+        role: "assistant" as const,
+        content:
+          "Sorry, I am having trouble connecting to the campus network. Please check that the server is active.",
+        time: "Now",
+      };
+      setMessages((prev) => [...prev, botResponse]);
     } finally {
       setIsTyping(false);
     }

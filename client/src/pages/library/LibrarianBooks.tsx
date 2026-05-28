@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Search, Plus, BookOpen, Grid, List, Loader2, X, Edit, Eye, Trash2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchBooks, createBook, updateBook, deleteBook, type BookItem } from "@/services/libraryService";
+import {
+  fetchBooks,
+  createBook,
+  updateBook,
+  deleteBook,
+  type BookItem,
+} from "@/services/libraryService";
 import { toast } from "sonner";
 
 export function LibrarianBooks() {
@@ -36,7 +42,7 @@ export function LibrarianBooks() {
     "Physics",
     "Electronics",
     "Engineering",
-    "General Knowledge"
+    "General Knowledge",
   ];
 
   const loadBooks = () => {
@@ -203,7 +209,9 @@ export function LibrarianBooks() {
               <button
                 onClick={() => setViewMode("grid")}
                 className={`p-2 rounded-lg transition cursor-pointer ${
-                  viewMode === "grid" ? "bg-gradient-primary text-white" : "text-muted-foreground hover:bg-gradient-soft"
+                  viewMode === "grid"
+                    ? "bg-gradient-primary text-white"
+                    : "text-muted-foreground hover:bg-gradient-soft"
                 }`}
               >
                 <Grid className="size-4" />
@@ -211,7 +219,9 @@ export function LibrarianBooks() {
               <button
                 onClick={() => setViewMode("table")}
                 className={`p-2 rounded-lg transition cursor-pointer ${
-                  viewMode === "table" ? "bg-gradient-primary text-white" : "text-muted-foreground hover:bg-gradient-soft"
+                  viewMode === "table"
+                    ? "bg-gradient-primary text-white"
+                    : "text-muted-foreground hover:bg-gradient-soft"
                 }`}
               >
                 <List className="size-4" />
@@ -269,7 +279,10 @@ export function LibrarianBooks() {
           {viewMode === "grid" && filteredBooks.length > 0 && (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredBooks.map((book) => (
-                <Card key={book._id} className="hover:-translate-y-1 transition flex flex-col justify-between">
+                <Card
+                  key={book._id}
+                  className="hover:-translate-y-1 transition flex flex-col justify-between"
+                >
                   <div>
                     <div className="aspect-[3/2] rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 text-white grid place-items-center mb-4 relative overflow-hidden">
                       <BookOpen className="size-12 opacity-80" />
@@ -290,11 +303,15 @@ export function LibrarianBooks() {
                         </div>
                         <div>
                           <div className="text-[10px] text-muted-foreground">Avail</div>
-                          <div className="font-semibold text-emerald-600">{book.availableCopies}</div>
+                          <div className="font-semibold text-emerald-600">
+                            {book.availableCopies}
+                          </div>
                         </div>
                         <div>
                           <div className="text-[10px] text-muted-foreground">Shelf</div>
-                          <div className="font-semibold text-muted-foreground">{book.shelfNumber || "N/A"}</div>
+                          <div className="font-semibold text-muted-foreground">
+                            {book.shelfNumber || "N/A"}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -335,16 +352,26 @@ export function LibrarianBooks() {
                       <th className="px-4 py-3 font-semibold text-muted-foreground">Title</th>
                       <th className="px-4 py-3 font-semibold text-muted-foreground">Author</th>
                       <th className="px-4 py-3 font-semibold text-muted-foreground">Category</th>
-                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Total</th>
-                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Available</th>
-                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Shelf</th>
-                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Actions</th>
+                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                        Total
+                      </th>
+                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                        Available
+                      </th>
+                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                        Shelf
+                      </th>
+                      <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredBooks.map((book) => (
                       <tr key={book._id} className="border-b hover:bg-gradient-soft transition">
-                        <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{book.isbn}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-muted-foreground">
+                          {book.isbn}
+                        </td>
                         <td className="px-4 py-3 font-medium">{book.title.substring(0, 45)}</td>
                         <td className="px-4 py-3 text-sm">{book.author}</td>
                         <td className="px-4 py-3">
@@ -356,7 +383,9 @@ export function LibrarianBooks() {
                             {book.availableCopies}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-center text-muted-foreground">{book.shelfNumber || "N/A"}</td>
+                        <td className="px-4 py-3 text-center text-muted-foreground">
+                          {book.shelfNumber || "N/A"}
+                        </td>
                         <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
                           <button
                             onClick={() => openEditModal(book)}
@@ -467,7 +496,9 @@ export function LibrarianBooks() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Total Quantity</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Total Quantity
+                  </label>
                   <input
                     type="number"
                     min="1"
@@ -478,7 +509,9 @@ export function LibrarianBooks() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Shelf Number</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Shelf Number
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g. A-12"
@@ -593,7 +626,9 @@ export function LibrarianBooks() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Total Quantity</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Total Quantity
+                  </label>
                   <input
                     type="number"
                     min="1"
@@ -604,7 +639,9 @@ export function LibrarianBooks() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Shelf Number</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Shelf Number
+                  </label>
                   <input
                     type="text"
                     value={shelfNumber}
@@ -669,8 +706,12 @@ export function LibrarianBooks() {
               </div>
               <div>
                 <h4 className="text-lg font-bold">{selectedBook.title}</h4>
-                <p className="text-sm text-muted-foreground mt-1">Written by: {selectedBook.author}</p>
-                <p className="text-xs text-muted-foreground">Published by: {selectedBook.publisher || "N/A"}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Written by: {selectedBook.author}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Published by: {selectedBook.publisher || "N/A"}
+                </p>
               </div>
               {selectedBook.description && (
                 <div className="text-xs text-muted-foreground bg-background p-2.5 rounded-lg border">
@@ -684,7 +725,9 @@ export function LibrarianBooks() {
                 </div>
                 <div>
                   <span className="text-muted-foreground text-xs block">Availability</span>
-                  <span className={`font-semibold ${selectedBook.availableCopies > 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                  <span
+                    className={`font-semibold ${selectedBook.availableCopies > 0 ? "text-emerald-600" : "text-rose-600"}`}
+                  >
                     {selectedBook.availableCopies > 0 ? "In Stock" : "Out of Stock"}
                   </span>
                 </div>
@@ -696,11 +739,15 @@ export function LibrarianBooks() {
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Issued Copies</div>
-                  <div className="text-lg font-bold">{selectedBook.totalCopies - selectedBook.availableCopies}</div>
+                  <div className="text-lg font-bold">
+                    {selectedBook.totalCopies - selectedBook.availableCopies}
+                  </div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Available</div>
-                  <div className="text-lg font-bold text-emerald-600">{selectedBook.availableCopies}</div>
+                  <div className="text-lg font-bold text-emerald-600">
+                    {selectedBook.availableCopies}
+                  </div>
                 </div>
               </div>
               <button

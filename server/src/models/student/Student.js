@@ -135,6 +135,18 @@ const studentSchema = new mongoose.Schema(
       trim: true,
       uppercase: true,
     },
+    facultyAdvisor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Faculty',
+      default: null,
+      index: true,
+    },
+    assignedFacultyIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Faculty',
+      }
+    ],
     batch: {
       type: String,
       trim: true,

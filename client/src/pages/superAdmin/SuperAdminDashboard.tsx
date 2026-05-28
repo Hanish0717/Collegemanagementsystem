@@ -31,38 +31,113 @@ import {
   departmentDistribution,
   superAdminActivities,
   superAdminNotifications,
-  superAdminStats,
   systemAnalytics,
   userActivityData,
 } from "@/mock/superAdminData";
+import { useSuperAdminStats } from "@/hooks/useSuperAdminStats";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const statIcons = [
-  Building2,
-  Users,
-  GraduationCap,
-  ShieldCheck,
-  Activity,
-  CheckCircle,
-  Wallet,
-  Clock,
-];
-const statGradients = [
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
+const statsConfig = [
+  {
+    label: "Total Colleges/Departments",
+    fallback: "18",
+    change: "+2.4%",
+    icon: Building2,
+    gradient: "bg-gradient-primary",
+  },
+  {
+    label: "Total Students",
+    fallback: "0",
+    icon: Users,
+    gradient: "bg-gradient-violet",
+  },
+  {
+    label: "Total Faculty",
+    fallback: "0",
+    icon: GraduationCap,
+    gradient: "bg-gradient-cyan",
+  },
+  {
+    label: "Total Admins",
+    fallback: "0",
+    icon: ShieldCheck,
+    gradient: "bg-gradient-primary",
+  },
+  {
+    label: "Active Users",
+    fallback: "0",
+    icon: Activity,
+    gradient: "bg-gradient-violet",
+  },
+  {
+    label: "System Health",
+    fallback: "99.8%",
+    change: "+0.3%",
+    icon: CheckCircle,
+    gradient: "bg-gradient-cyan",
+  },
+  {
+    label: "Revenue Overview",
+    fallback: "₹0",
+    icon: Wallet,
+    gradient: "bg-gradient-primary",
+  },
+  {
+    label: "Pending Approvals",
+    fallback: "0",
+    icon: Clock,
+    gradient: "bg-gradient-violet",
+  },
 ];
 
 export function SuperAdminDashboard() {
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const { data: liveStats, isLoading } = useSuperAdminStats();
 
   if (path !== "/dashboard/super-admin") {
     return <Outlet />;
   }
+
+  const getStatValue = (label: string, fallback: string) => {
+    const isLiveKey = [
+      "Total Students",
+      "Total Faculty",
+      "Total Admins",
+      "Active Users",
+      "Pending Approvals",
+      "Revenue Overview",
+    ].includes(label);
+
+    if (isLiveKey && isLoading) {
+      return <Skeleton className="h-7 w-20 animate-pulse bg-muted-foreground/10" />;
+    }
+    if (!liveStats) return fallback;
+
+    switch (label) {
+      case "Total Students":
+        return liveStats.totalStudents.toLocaleString("en-IN");
+      case "Total Faculty":
+        return liveStats.totalFaculty.toLocaleString("en-IN");
+      case "Total Admins":
+        return liveStats.totalAdmins.toLocaleString("en-IN");
+      case "Active Users":
+        return liveStats.activeUsers.toLocaleString("en-IN");
+      case "Pending Approvals":
+        return liveStats.pendingApprovals.toLocaleString("en-IN");
+      case "Revenue Overview": {
+        const rev = liveStats.totalRevenue;
+        if (rev >= 10000000) {
+          return `₹${(rev / 10000000).toFixed(2)}Cr`;
+        } else if (rev >= 100000) {
+          return `₹${(rev / 100000).toFixed(2)}L`;
+        } else {
+          return `₹${rev.toLocaleString("en-IN")}`;
+        }
+      }
+      default:
+        return fallback;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -72,7 +147,7 @@ export function SuperAdminDashboard() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {superAdminStats.map((stat, i) => (
+        {statsConfig.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 10 }}
@@ -81,10 +156,10 @@ export function SuperAdminDashboard() {
           >
             <StatCard
               label={stat.label}
-              value={stat.value}
+              value={getStatValue(stat.label, stat.fallback)}
               change={stat.change}
-              icon={statIcons[i]}
-              gradient={statGradients[i]}
+              icon={stat.icon}
+              gradient={stat.gradient}
             />
           </motion.div>
         ))}
