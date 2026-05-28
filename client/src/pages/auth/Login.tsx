@@ -21,7 +21,7 @@ export function Login() {
   }
 
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "100000000000-dummyclientid.apps.googleusercontent.com"}>
       <LoginForm />
     </GoogleOAuthProvider>
   );
