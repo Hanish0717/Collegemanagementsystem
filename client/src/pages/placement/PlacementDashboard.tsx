@@ -52,6 +52,7 @@ const statGradients = [
   "bg-gradient-cyan",
 ];
 
+export function PlacementDashboard() {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const [data, setData] = useState<PlacementDashboardData | null>(null);
   const [loading, setLoading] = useState(true);

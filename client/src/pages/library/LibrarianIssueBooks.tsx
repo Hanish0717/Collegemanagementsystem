@@ -25,7 +25,7 @@ export function LibrarianIssueBooks() {
   const [dueDate, setDueDate] = useState(() => {
     const fourteenDaysLater = new Date();
     fourteenDaysLater.setDate(fourteenDaysLater.getDate() + 14);
-    return fourteenDaysLater.toISOString().split("T")[0]);
+    return fourteenDaysLater.toISOString().split("T")[0];
   });
   const [submitting, setSubmitting] = useState(false);
 
