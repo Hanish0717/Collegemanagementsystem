@@ -1,10 +1,25 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 import User from '../models/User.js';
+import OTP from '../models/OTP.js';
 
 dotenv.config();
 
 const BASE_URL = 'http://localhost:5000/api/auth';
+
+async function getPlaintextOtp(email, type) {
+  const record = await OTP.findOne({ email, type });
+  if (!record) return null;
+  for (let i = 100000; i <= 999999; i++) {
+    const candidate = String(i);
+    const hash = crypto.createHash('sha256').update(candidate).digest('hex');
+    if (hash === record.otp) {
+      return candidate;
+    }
+  }
+  return null;
+}
 
 const results = [];
 function recordResult(testName, status, details) {
@@ -54,14 +69,35 @@ async function runSuite() {
     });
     const data = await res.json();
 
-    if (res.status === 201 && data.success === true && data.token && data.user) {
-      studentToken = data.token;
-      studentUserId = data.user._id;
-
-      if (!data.user.password) {
-        recordResult('Valid Registration (201 Created)', 'PASS', 'Successfully registered user, received token, and password was NOT returned in response.');
+    if (res.status === 201 && data.success === true) {
+      // Succeeded registration, now verify via OTP
+      const plainOtp = await getPlaintextOtp(testEmail, 'email_verification');
+      if (!plainOtp) {
+        recordResult('Valid Registration (201 Created)', 'FAIL', 'OTP document not found in MongoDB after registration.');
       } else {
-        recordResult('Valid Registration (201 Created)', 'FAIL', 'Password field was exposed in registration response payload.');
+        const verifyRes = await fetch(`${BASE_URL}/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: testEmail,
+            otp: plainOtp,
+            type: 'email_verification'
+          })
+        });
+        const verifyData = await verifyRes.json();
+
+        if (verifyRes.status === 200 && verifyData.success === true && verifyData.token && verifyData.user) {
+          studentToken = verifyData.token;
+          studentUserId = verifyData.user._id;
+
+          if (!verifyData.user.password) {
+            recordResult('Valid Registration & OTP Verification (200 OK)', 'PASS', 'Successfully registered user, verified OTP, received token, and password was NOT returned in response.');
+          } else {
+            recordResult('Valid Registration & OTP Verification (200 OK)', 'FAIL', 'Password field was exposed in OTP verification response payload.');
+          }
+        } else {
+          recordResult('Valid Registration & OTP Verification (200 OK)', 'FAIL', `Expected status 200 and success for OTP verify. Got status ${verifyRes.status}: ${JSON.stringify(verifyData)}`);
+        }
       }
     } else {
       recordResult('Valid Registration (201 Created)', 'FAIL', `Expected status 201 and success. Got status ${res.status}: ${JSON.stringify(data)}`);
@@ -177,13 +213,35 @@ async function runSuite() {
         fullName: 'Admin User',
         email: adminEmail,
         password: testPassword,
-        role: 'admin'
+        role: 'admin',
+        phoneNumber: '0987654321'
       })
     });
     const data = await res.json();
     if (res.status === 201 && data.success === true) {
-      adminToken = data.token;
-      recordResult('Valid Admin User Registration (201 Created)', 'PASS', 'Successfully registered user with admin role.');
+      // Succeeded registration, now verify via OTP
+      const plainOtp = await getPlaintextOtp(adminEmail, 'email_verification');
+      if (!plainOtp) {
+        recordResult('Valid Admin User Registration (201 Created)', 'FAIL', 'OTP document not found in MongoDB after registration.');
+      } else {
+        const verifyRes = await fetch(`${BASE_URL}/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: adminEmail,
+            otp: plainOtp,
+            type: 'email_verification'
+          })
+        });
+        const verifyData = await verifyRes.json();
+
+        if (verifyRes.status === 200 && verifyData.success === true && verifyData.token) {
+          adminToken = verifyData.token;
+          recordResult('Valid Admin User Registration & OTP Verification (200 OK)', 'PASS', 'Successfully registered user with admin role and verified OTP.');
+        } else {
+          recordResult('Valid Admin User Registration & OTP Verification (200 OK)', 'FAIL', `Expected status 200 and success for OTP verify. Got status ${verifyRes.status}: ${JSON.stringify(verifyData)}`);
+        }
+      }
     } else {
       recordResult('Valid Admin User Registration (201 Created)', 'FAIL', `Expected 201. Got status ${res.status}: ${JSON.stringify(data)}`);
     }
