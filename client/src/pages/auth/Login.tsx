@@ -13,11 +13,20 @@ export function Login() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <div className="min-h-screen bg-gradient-hero flex items-center justify-center"><Loader2 className="size-8 animate-spin text-primary" /></div>;
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "100000000000-dummyclientid.apps.googleusercontent.com"}>
+    <GoogleOAuthProvider
+      clientId={
+        import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+        "100000000000-dummyclientid.apps.googleusercontent.com"
+      }
+    >
       <LoginForm />
     </GoogleOAuthProvider>
   );
@@ -33,9 +42,9 @@ function LoginForm() {
     localStorage.removeItem("cms_user");
     localStorage.removeItem("campusly.role");
   }, []);
-  
-  const [roleId, setRoleId] = useState<RoleId>("super_admin");
-  const active = ROLE_LIST.find(r => r.id === roleId)!;
+
+  const [roleId, setRoleId] = useState<RoleId | null>(null);
+  const active = roleId ? ROLE_LIST.find((r) => r.id === roleId) : null;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -71,26 +80,26 @@ function LoginForm() {
     setError(null);
     try {
       // Exchange access token for user info
-      const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-      }).then(r => r.json());
+      const userInfo = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+      }).then((r) => r.json());
 
-      const res = await api.post('/api/auth/google', {
+      const res = await api.post("/api/auth/google", {
         credential: tokenResponse.access_token,
         googleUserInfo: userInfo,
-        role: roleId,
+        role: roleId || "student",
       });
 
       if (res.data.token) {
-        localStorage.setItem('cms_token', res.data.token);
-        localStorage.setItem('cms_user', JSON.stringify(res.data.user));
+        localStorage.setItem("cms_token", res.data.token);
+        localStorage.setItem("cms_user", JSON.stringify(res.data.user));
         const role = toFrontendRole(res.data.user.role);
-        localStorage.setItem('campusly.role', role);
+        localStorage.setItem("campusly.role", role);
         await refreshUser();
         navigate({ to: getDashboardForRole(res.data.user.role) });
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Google Sign-In failed. Please try again.');
+      setError(err.response?.data?.message || "Google Sign-In failed. Please try again.");
     } finally {
       setGoogleLoading(false);
     }
@@ -98,7 +107,7 @@ function LoginForm() {
 
   const googleLogin = useGoogleLogin({
     onSuccess: handleGoogleSuccess,
-    onError: () => setError('Google Sign-In was cancelled or failed.'),
+    onError: () => setError("Google Sign-In was cancelled or failed."),
   });
 
   return (
@@ -117,18 +126,21 @@ function LoginForm() {
         </Link>
 
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           className="relative"
         >
           <h1 className="text-3xl xl:text-4xl font-bold leading-tight">
             Choose your <span className="text-gradient">role</span> to access the campus system
           </h1>
           <p className="mt-3 text-sm text-muted-foreground max-w-md">
-            Each role unlocks a customized dashboard with relevant academic analytics, administrative functions, and institutional insights.
+            Each role unlocks a customized dashboard with relevant academic analytics,
+            administrative functions, and institutional insights.
           </p>
 
           <div className="mt-6 grid grid-cols-2 xl:grid-cols-3 gap-3 max-w-3xl">
-            {ROLE_LIST.map(r => {
+            {ROLE_LIST.filter((r) => r.id === "student" || r.id === "parent").map((r) => {
               const selected = r.id === roleId;
               const Icon = r.icon;
               return (
@@ -137,16 +149,22 @@ function LoginForm() {
                   type="button"
                   onClick={() => setRoleId(r.id)}
                   className={`group relative text-left rounded-2xl p-4 border transition-all overflow-hidden
-                    ${selected
-                      ? "border-transparent shadow-soft -translate-y-0.5"
-                      : "border-border bg-white/60 hover:-translate-y-0.5 hover:shadow-soft"}`}
+                    ${
+                      selected
+                        ? "border-transparent shadow-soft -translate-y-0.5"
+                        : "border-border bg-white/60 hover:-translate-y-0.5 hover:shadow-soft"
+                    }`}
                 >
                   {selected && (
-                    <div className={`absolute inset-0 bg-gradient-to-br ${r.gradient} opacity-95`} />
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${r.gradient} opacity-95`}
+                    />
                   )}
                   <div className="relative">
                     <div className="flex items-center justify-between">
-                      <div className={`size-9 rounded-xl grid place-items-center ${selected ? "bg-white/15 text-white backdrop-blur" : `bg-gradient-to-br ${r.gradient} text-white`}`}>
+                      <div
+                        className={`size-9 rounded-xl grid place-items-center ${selected ? "bg-white/15 text-white backdrop-blur" : `bg-gradient-to-br ${r.gradient} text-white`}`}
+                      >
                         <Icon className="size-4" />
                       </div>
                       {selected && (
@@ -155,8 +173,12 @@ function LoginForm() {
                         </span>
                       )}
                     </div>
-                    <div className={`mt-3 text-sm font-semibold ${selected ? "text-white" : ""}`}>{r.name}</div>
-                    <div className={`text-[11px] mt-0.5 ${selected ? "text-white/85" : "text-muted-foreground"}`}>
+                    <div className={`mt-3 text-sm font-semibold ${selected ? "text-white" : ""}`}>
+                      {r.name}
+                    </div>
+                    <div
+                      className={`text-[11px] mt-0.5 ${selected ? "text-white/85" : "text-muted-foreground"}`}
+                    >
                       {r.short}
                     </div>
                   </div>
@@ -164,14 +186,15 @@ function LoginForm() {
               );
             })}
           </div>
-
         </motion.div>
       </div>
 
       {/* Right — form */}
       <div className="flex items-center justify-center p-6 md:p-12 overflow-y-auto max-h-screen">
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           className="w-full max-w-md glass-card rounded-3xl p-8 shadow-soft my-auto"
         >
           <div className="lg:hidden flex items-center gap-2 mb-6">
@@ -181,14 +204,20 @@ function LoginForm() {
             <span className="font-bold text-lg">College Management System</span>
           </div>
 
-          <div className={`rounded-2xl p-4 bg-gradient-to-br ${active.gradient} text-white shadow-soft`}>
-            <div className="text-[11px] uppercase tracking-wide opacity-80">Signing in as</div>
-            <div className="text-lg font-semibold mt-0.5">{active.name}</div>
-            <div className="text-xs opacity-85 mt-0.5">{active.description}</div>
-          </div>
+          {active && (
+            <div
+              className={`rounded-2xl p-4 bg-gradient-to-br ${active.gradient} text-white shadow-soft mb-6`}
+            >
+              <div className="text-[11px] uppercase tracking-wide opacity-80">Signing in as</div>
+              <div className="text-lg font-semibold mt-0.5">{active.name}</div>
+              <div className="text-xs opacity-85 mt-0.5">{active.description}</div>
+            </div>
+          )}
 
-          <h2 className="text-xl font-bold mt-6">Sign in to your account</h2>
-          <p className="text-sm text-muted-foreground mt-1">Enter your institutional credentials to access the campus management system</p>
+          <h2 className="text-xl font-bold">Sign in to your account</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Enter your institutional credentials to access the campus management system
+          </p>
 
           {/* Error message */}
           {error && (
@@ -201,73 +230,89 @@ function LoginForm() {
             <div className="lg:hidden">
               <label className="text-xs font-medium">Role</label>
               <select
-                value={roleId} onChange={(e)=>setRoleId(e.target.value as RoleId)}
+                value={roleId || ""}
+                onChange={(e) => setRoleId((e.target.value || null) as RoleId | null)}
                 className="mt-1 w-full rounded-xl border bg-background/60 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                {ROLE_LIST.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                <option value="" disabled>
+                  Select your role...
+                </option>
+                {ROLE_LIST.filter((r) => r.id === "student" || r.id === "parent").map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                  </option>
+                ))}
               </select>
             </div>
-            
-                <div>
-                  <label className="text-xs font-medium">Email</label>
-                  <div className="mt-1 relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@university.edu"
-                      required
-                      autoComplete="off"
-                      className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium">Password</label>
-                  <div className="mt-1 relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      autoComplete="new-password"
-                      className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <label className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked className="rounded" /> Remember me
-                  </label>
-                  <Link to="/forgot-password" className="text-indigo hover:underline">Forgot password?</Link>
-                </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active.gradient} shadow-soft disabled:opacity-70`}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      Signing in…
-                    </>
-                  ) : (
-                    <>
-                      Sign in as {active.name} <ArrowRight className="size-4" />
-                    </>
-                  )}
-                </button>
-                {/* New Sign‑up link */}
-                <p className="mt-4 text-center text-sm text-muted-foreground">
-                  Don't have an account?{' '}
-                  <Link to="/register" className="text-indigo hover:underline font-medium">
-                    Sign up
-                  </Link>
-                </p>
+            <div>
+              <label className="text-xs font-medium">
+                {roleId === "student"
+                  ? "Email or Admission Number"
+                  : roleId === "parent"
+                  ? "Parent Email or Student Email"
+                  : "Email"}
+              </label>
+              <div className="mt-1 relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <input
+                  type={roleId === "student" ? "text" : "email"}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={
+                    roleId === "student"
+                      ? "you@university.edu or Admission Number"
+                      : roleId === "parent"
+                      ? "parent@example.com or student@example.com"
+                      : "you@university.edu"
+                  }
+                  required
+                  autoComplete="off"
+                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium">Password</label>
+              <div className="mt-1 relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  autoComplete="new-password"
+                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <label className="flex items-center gap-2">
+                <input type="checkbox" defaultChecked className="rounded" /> Remember me
+              </label>
+              <Link to="/forgot-password" className="text-indigo hover:underline">
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active ? active.gradient : "from-cyan-500 to-indigo-600"} shadow-soft disabled:opacity-70`}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                <>
+                  {active ? `Sign in as ${active.name}` : "Sign In"}{" "}
+                  <ArrowRight className="size-4" />
+                </>
+              )}
+            </button>
           </form>
 
           {/* Divider */}
@@ -288,16 +333,38 @@ function LoginForm() {
               <Loader2 className="size-4 animate-spin" />
             ) : (
               <svg className="size-4" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
               </svg>
             )}
-            {googleLoading ? 'Signing in…' : 'Continue with Google'}
+            {googleLoading ? "Signing in…" : "Continue with Google"}
           </button>
 
-          {/* Registration is disabled as accounts are pre-managed by admin */}
+          {/* Create Account link — shown for all roles */}
+          <p className="mt-5 text-center text-xs text-muted-foreground">
+            Don't have an account?{" "}
+            <Link
+              to="/register"
+              search={{ role: roleId || "student" }}
+              className="text-indigo hover:underline font-medium"
+            >
+              Create account
+            </Link>
+          </p>
         </motion.div>
       </div>
     </div>

@@ -1,7 +1,17 @@
 import { ReactNode } from "react";
 
-export function StatCard({ label, value, change, icon: Icon, gradient = "bg-gradient-primary" }:{
-  label: string; value: string; change?: string; icon: any; gradient?: string;
+export function StatCard({
+  label,
+  value,
+  change,
+  icon: Icon,
+  gradient = "bg-gradient-primary",
+}: {
+  label: string;
+  value: ReactNode;
+  change?: string;
+  icon: any;
+  gradient?: string;
 }) {
   return (
     <div className="glass-card rounded-2xl p-5 group hover:-translate-y-0.5 transition-all">
@@ -11,7 +21,9 @@ export function StatCard({ label, value, change, icon: Icon, gradient = "bg-grad
           <div className="mt-2 text-2xl font-bold tracking-tight">{value}</div>
           {change && <div className="mt-1 text-xs text-emerald-600">{change} vs last month</div>}
         </div>
-        <div className={`size-11 rounded-xl ${gradient} grid place-items-center text-white shadow-soft`}>
+        <div
+          className={`size-11 rounded-xl ${gradient} grid place-items-center text-white shadow-soft`}
+        >
           <Icon className="size-5" />
         </div>
       </div>
@@ -19,7 +31,15 @@ export function StatCard({ label, value, change, icon: Icon, gradient = "bg-grad
   );
 }
 
-export function PageHeader({ title, desc, actions }:{ title: string; desc?: string; actions?: ReactNode }) {
+export function PageHeader({
+  title,
+  desc,
+  actions,
+}: {
+  title: string;
+  desc?: string;
+  actions?: ReactNode;
+}) {
   return (
     <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
       <div>
@@ -31,21 +51,31 @@ export function PageHeader({ title, desc, actions }:{ title: string; desc?: stri
   );
 }
 
-export function Badge({ children, tone = "default", className = "" }:{
+export function Badge({
+  children,
+  tone = "default",
+  className = "",
+}: {
   children: ReactNode;
-  tone?: "default"|"success"|"warn"|"danger"|"info";
+  tone?: "default" | "success" | "warn" | "danger" | "info";
   className?: string;
 }) {
-  const tones: Record<string,string> = {
+  const tones: Record<string, string> = {
     default: "bg-muted text-muted-foreground",
     success: "bg-emerald-100 text-emerald-700",
     warn: "bg-amber-100 text-amber-700",
     danger: "bg-rose-100 text-rose-700",
     info: "bg-indigo-100 text-indigo-700",
   };
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium ${tones[tone]} ${className}`}>{children}</span>;
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium ${tones[tone]} ${className}`}
+    >
+      {children}
+    </span>
+  );
 }
 
-export function Card({ children, className = "" }:{ children: ReactNode; className?: string }) {
+export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={`glass-card rounded-2xl p-5 ${className}`}>{children}</div>;
 }

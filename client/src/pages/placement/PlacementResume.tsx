@@ -4,14 +4,14 @@ import { Download, Eye, Check, X, Upload } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { resumes } from "@/mock/mockData";
 
-
-
 export function PlacementResume() {
-  const [selectedTab, setSelectedTab] = useState<"all" | "approved" | "pending" | "rejected">("all");
+  const [selectedTab, setSelectedTab] = useState<"all" | "approved" | "pending" | "rejected">(
+    "all",
+  );
 
-  const approved = resumes.filter(r => r.status === "Approved");
-  const pending = resumes.filter(r => r.status === "Pending Review");
-  const rejected = resumes.filter(r => r.status === "Rejected");
+  const approved = resumes.filter((r) => r.status === "Approved");
+  const pending = resumes.filter((r) => r.status === "Pending Review");
+  const rejected = resumes.filter((r) => r.status === "Rejected");
 
   const getFilteredResumes = () => {
     switch (selectedTab) {
@@ -49,9 +49,11 @@ export function PlacementResume() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {resumeStats.map(stat => (
+        {resumeStats.map((stat) => (
           <Card key={stat.label} className="text-center">
-            <div className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}>
+            <div
+              className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}
+            >
               {stat.value}
             </div>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -105,14 +107,16 @@ export function PlacementResume() {
 
       {/* Resumes Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredResumes.map(resume => (
+        {filteredResumes.map((resume) => (
           <Card key={resume.id} className="hover:-translate-y-1 transition flex flex-col">
             {/* Resume Preview */}
             <div className="aspect-[3/4] rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-dashed mb-4 flex flex-col items-center justify-center p-3 relative overflow-hidden">
               <div className="absolute inset-0 opacity-5 grid-bg" />
               <div className="relative text-center">
                 <div className="text-3xl mb-2">📄</div>
-                <div className="text-xs font-medium text-muted-foreground truncate">{resume.fileName}</div>
+                <div className="text-xs font-medium text-muted-foreground truncate">
+                  {resume.fileName}
+                </div>
               </div>
             </div>
 
@@ -134,7 +138,9 @@ export function PlacementResume() {
                 </div>
                 <div className="flex items-center justify-between p-2 bg-gradient-soft rounded-lg">
                   <span className="text-xs text-muted-foreground">Upload Date</span>
-                  <span className="text-xs font-medium">{new Date(resume.uploadDate).toLocaleDateString()}</span>
+                  <span className="text-xs font-medium">
+                    {new Date(resume.uploadDate).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
 
@@ -144,8 +150,8 @@ export function PlacementResume() {
                     resume.status === "Approved"
                       ? "success"
                       : resume.status === "Rejected"
-                      ? "danger"
-                      : "warn"
+                        ? "danger"
+                        : "warn"
                   }
                   className="w-full text-center block"
                 >
@@ -175,16 +181,26 @@ export function PlacementResume() {
             <thead className="border-b">
               <tr>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Student</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">ATS Score</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Format Check</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Content Check</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Grammar</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  ATS Score
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Format Check
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Content Check
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Grammar
+                </th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Status</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Actions</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {filteredResumes.map(resume => (
+              {filteredResumes.map((resume) => (
                 <tr key={resume.id} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4">
                     <div className="font-medium text-sm">{resume.studentName}</div>
@@ -195,7 +211,10 @@ export function PlacementResume() {
                       <div className="space-y-1">
                         <div className="text-sm font-bold text-emerald-600">{resume.atsScore}%</div>
                         <div className="w-full bg-muted rounded h-1.5">
-                          <div className="bg-emerald-500 h-full rounded" style={{ width: `${resume.atsScore}%` }} />
+                          <div
+                            className="bg-emerald-500 h-full rounded"
+                            style={{ width: `${resume.atsScore}%` }}
+                          />
                         </div>
                       </div>
                     ) : (
@@ -217,8 +236,8 @@ export function PlacementResume() {
                         resume.status === "Approved"
                           ? "success"
                           : resume.status === "Rejected"
-                          ? "danger"
-                          : "warn"
+                            ? "danger"
+                            : "warn"
                       }
                     >
                       {resume.status}
@@ -261,8 +280,11 @@ export function PlacementResume() {
             { name: "Creative Template", desc: "For design and creative positions" },
             { name: "Graduate Template", desc: "For freshers and new graduates" },
             { name: "Executive Template", desc: "For senior and leadership roles" },
-          ].map(template => (
-            <div key={template.name} className="p-4 border rounded-lg hover:border-primary transition">
+          ].map((template) => (
+            <div
+              key={template.name}
+              className="p-4 border rounded-lg hover:border-primary transition"
+            >
               <div className="font-medium text-sm mb-1">{template.name}</div>
               <div className="text-xs text-muted-foreground mb-3">{template.desc}</div>
               <button className="text-xs text-blue-600 hover:underline">Download</button>
@@ -279,21 +301,29 @@ export function PlacementResume() {
             <Check className="size-5 text-emerald-600" />
             <div>
               <div className="font-medium text-sm">80-100%: Excellent</div>
-              <div className="text-xs text-muted-foreground">Automatically approved - High chances of selection</div>
+              <div className="text-xs text-muted-foreground">
+                Automatically approved - High chances of selection
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
-            <div className="size-5 rounded-lg bg-amber-600 text-white grid place-items-center text-xs font-bold">!</div>
+            <div className="size-5 rounded-lg bg-amber-600 text-white grid place-items-center text-xs font-bold">
+              !
+            </div>
             <div>
               <div className="font-medium text-sm">60-79%: Acceptable</div>
-              <div className="text-xs text-muted-foreground">Manual review required - May need adjustments</div>
+              <div className="text-xs text-muted-foreground">
+                Manual review required - May need adjustments
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 rounded-lg bg-rose-50 border border-rose-200">
             <X className="size-5 text-rose-600" />
             <div>
               <div className="font-medium text-sm">Below 60%: Needs Improvement</div>
-              <div className="text-xs text-muted-foreground">Auto-rejected - Student advised to update</div>
+              <div className="text-xs text-muted-foreground">
+                Auto-rejected - Student advised to update
+              </div>
             </div>
           </div>
         </div>

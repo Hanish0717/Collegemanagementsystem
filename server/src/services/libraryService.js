@@ -1,5 +1,6 @@
-import Book from '../models/Book.js';
+import { supabase } from '../config/supabase.js';
 
 export const getBookById = async (id) => {
-  return await Book.findById(id);
+  const { data } = await supabase.from('books').select('*').eq('id', id).maybeSingle();
+  return data;
 };

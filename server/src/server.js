@@ -1,3 +1,4 @@
+import './create_missing_tables.js';
 import app from './app.js';
 import dotenv from 'dotenv';
 

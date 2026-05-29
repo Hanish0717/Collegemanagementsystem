@@ -11,19 +11,18 @@ import { authorizeRoles } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
 
-// Secure all student routes with JWT and Admin/Super-Admin authorization
+// Secure student routes with role authorization
 router.use(protect);
-router.use(authorizeRoles('admin', 'super-admin'));
 
 router
   .route('/')
-  .get(getStudents)
-  .post(createStudent);
+  .get(authorizeRoles('admin', 'super-admin', 'librarian'), getStudents)
+  .post(authorizeRoles('admin', 'super-admin'), createStudent);
 
 router
   .route('/:id')
-  .get(getStudentById)
-  .put(updateStudent)
-  .delete(deleteStudent);
+  .get(authorizeRoles('admin', 'super-admin', 'librarian'), getStudentById)
+  .put(authorizeRoles('admin', 'super-admin'), updateStudent)
+  .delete(authorizeRoles('admin', 'super-admin'), deleteStudent);
 
 export default router;

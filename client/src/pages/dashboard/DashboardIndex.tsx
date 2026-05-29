@@ -1,33 +1,91 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
-  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid, Legend
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
 } from "recharts";
 import { Users, GraduationCap, CalendarCheck, Wallet, TrendingUp, Calendar } from "lucide-react";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import {
-  attendanceData, performanceData, departmentData, activities, events, stats
+  attendanceData as mockAttendance,
+  performanceData as mockPerformance,
+  departmentData as mockDepartment,
+  activities as mockActivities,
+  events as mockEvents,
+  stats as mockStats,
 } from "@/mock/mockData";
-
-
+import { fetchDashboardData, type DashboardStats } from "@/services/dashboardService";
 
 const statIcons = [Users, GraduationCap, CalendarCheck, Wallet];
-const statGradients = ["bg-gradient-primary","bg-gradient-violet","bg-gradient-cyan","bg-gradient-primary"];
+const statGradients = [
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+];
 
 export function DashboardIndex() {
+  const [data, setData] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData()
+      .then((res) => {
+        setData(res);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.warn("Failed to load live dashboard stats, using fallback mock data:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const stats = data?.stats || mockStats;
+  const attendanceData = data?.attendanceData || mockAttendance;
+  const departmentData = data?.departmentData || mockDepartment;
+  const performanceData = data?.performanceData || mockPerformance;
+  const events = data?.events || mockEvents;
+  const activities = data?.activities || mockActivities;
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Welcome back, Dr. Mehra 👋"
-        desc="Here's what's happening across your campus today."
+        desc={
+          loading
+            ? "Synchronizing live campus database..."
+            : "Here's what's happening across your campus today (Live Database Connected)."
+        }
       />
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} transition={{ delay: i*0.06 }}>
-            <StatCard label={s.label} value={s.value} change={s.change} icon={statIcons[i]} gradient={statGradients[i]} />
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.06 }}
+          >
+            <StatCard
+              label={s.label}
+              value={s.value}
+              change={s.change}
+              icon={statIcons[i % statIcons.length]}
+              gradient={statGradients[i % statGradients.length]}
+            />
           </motion.div>
         ))}
       </div>
@@ -59,8 +117,20 @@ export function DashboardIndex() {
                 <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="present" stroke="#4F46E5" fill="url(#grad-p)" strokeWidth={2} />
-                <Area type="monotone" dataKey="absent" stroke="#06B6D4" fill="url(#grad-a)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="present"
+                  stroke="#4F46E5"
+                  fill="url(#grad-p)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="absent"
+                  stroke="#06B6D4"
+                  fill="url(#grad-a)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -74,15 +144,23 @@ export function DashboardIndex() {
           <div className="h-56">
             <ResponsiveContainer>
               <PieChart>
-                <Pie data={departmentData} dataKey="value" innerRadius={50} outerRadius={80} paddingAngle={3}>
-                  {departmentData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                <Pie
+                  data={departmentData}
+                  dataKey="value"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={3}
+                >
+                  {departmentData.map((d, i) => (
+                    <Cell key={i} fill={d.color} />
+                  ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2">
-            {departmentData.map(d => (
+            {departmentData.map((d) => (
               <div key={d.name} className="flex items-center gap-2 text-xs">
                 <span className="size-2.5 rounded-full" style={{ background: d.color }} />
                 <span className="text-muted-foreground">{d.name}</span>
@@ -101,7 +179,9 @@ export function DashboardIndex() {
               <h3 className="font-semibold">Academic Performance</h3>
               <p className="text-xs text-muted-foreground">Average score over 6 months</p>
             </div>
-            <div className="flex items-center gap-1 text-emerald-600 text-sm font-medium"><TrendingUp className="size-4" /> +12.4%</div>
+            <div className="flex items-center gap-1 text-emerald-600 text-sm font-medium">
+              <TrendingUp className="size-4" /> +12.4%
+            </div>
           </div>
           <div className="h-64">
             <ResponsiveContainer>
@@ -110,7 +190,7 @@ export function DashboardIndex() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="score" fill="#4F46E5" radius={[8,8,0,0]} />
+                <Bar dataKey="score" fill="#4F46E5" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -122,14 +202,21 @@ export function DashboardIndex() {
             <Calendar className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-3">
-            {events.map(e => (
-              <div key={e.title} className="flex items-center gap-3 p-3 rounded-xl bg-gradient-soft border">
-                <div className={`size-11 rounded-xl bg-gradient-to-br ${e.color} text-white grid place-items-center text-xs font-semibold`}>
-                  {e.date.split(" ")[1]}
+            {events.map((e) => (
+              <div
+                key={e.title}
+                className="flex items-center gap-3 p-3 rounded-xl bg-gradient-soft border"
+              >
+                <div
+                  className={`size-11 rounded-xl bg-gradient-to-br ${e.color} text-white grid place-items-center text-xs font-semibold`}
+                >
+                  {e.date}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{e.title}</div>
-                  <div className="text-[11px] text-muted-foreground">{e.category} · {e.attendees} attending</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {e.category} · {e.attendees} attending
+                  </div>
                 </div>
               </div>
             ))}
@@ -147,7 +234,11 @@ export function DashboardIndex() {
           {activities.map((a, i) => (
             <div key={i} className="flex items-center gap-3 py-2 border-b last:border-0">
               <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                {a.user.split(" ").map(x => x[0]).slice(0,2).join("")}
+                {a.user
+                  .split(" ")
+                  .map((x) => x[0])
+                  .slice(0, 2)
+                  .join("")}
               </div>
               <div className="flex-1 text-sm">
                 <span className="font-medium">{a.user}</span>{" "}

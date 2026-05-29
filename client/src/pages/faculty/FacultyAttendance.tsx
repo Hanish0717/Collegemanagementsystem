@@ -6,7 +6,7 @@ import { attendanceStudents, weeklyAttendance } from "@/mock/facultyData";
 import api from "@/lib/api";
 
 export function FacultyAttendance() {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [selectedSubject, setSelectedSubject] = useState("Data Structures");
   const [students, setStudents] = useState<any[]>(attendanceStudents);
   const [studentDbId, setStudentDbId] = useState<string>("");
@@ -152,7 +152,9 @@ export function FacultyAttendance() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Today</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Today
+            </Badge>
           </Card>
         ))}
       </div>
@@ -173,7 +175,12 @@ export function FacultyAttendance() {
           </select>
           <div className="flex items-center gap-2">
             <Calendar className="size-4 text-muted-foreground" />
-            <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm" />
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm"
+            />
           </div>
         </div>
       </Card>
@@ -188,9 +195,16 @@ export function FacultyAttendance() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Student ID", "Student Name", "Department", "Attendance Status", "Remarks"].map(column => (
-                    <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
-                  ))}
+                  {["Student ID", "Student Name", "Department", "Attendance Status", "Remarks"].map(
+                    (column) => (
+                      <th
+                        key={column}
+                        className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                      >
+                        {column}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -198,7 +212,9 @@ export function FacultyAttendance() {
                   <tr key={student.id} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4 font-medium text-xs">{student.id}</td>
                     <td className="py-3 px-4 font-medium">{student.name}</td>
-                    <td className="py-3 px-4"><Badge tone="info">{student.department}</Badge></td>
+                    <td className="py-3 px-4">
+                    <Badge tone="info">{student.department}</Badge>
+                    </td>
                     <td className="py-3 px-4">
                       <select 
                         value={student.status} 
@@ -258,7 +274,7 @@ export function FacultyAttendance() {
       <Card>
         <h3 className="font-semibold mb-4">Attendance Analytics</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {weeklyAttendance.map(day => (
+          {weeklyAttendance.map((day) => (
             <div key={day.day} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="text-xs text-muted-foreground">{day.day}</div>
               <div className="text-2xl font-bold mt-2">{day.percentage}%</div>

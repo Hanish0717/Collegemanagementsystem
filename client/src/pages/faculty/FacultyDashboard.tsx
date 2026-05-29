@@ -2,25 +2,52 @@ import { useState, useEffect } from "react";
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import {
-  Activity, Bell, BookOpen, Calendar, CheckCircle, Clock, FileText,
-  GraduationCap, Users, Video
+  Activity,
+  Bell,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  FileText,
+  GraduationCap,
+  Users,
+  Video,
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  assignmentSubmissions, facultyActivities, facultyNotifications, facultyStats,
-  studentPerformance, weeklyAttendance
+  assignmentSubmissions,
+  facultyActivities,
+  facultyNotifications,
+  facultyStats,
+  studentPerformance,
+  weeklyAttendance,
 } from "@/mock/facultyData";
 import api from "@/lib/api";
 
 const statIcons = [BookOpen, Users, FileText, Calendar, GraduationCap, Bell, CheckCircle, Video];
 const statGradients = [
-  "bg-gradient-primary", "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary",
-  "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary", "bg-gradient-violet",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
 ];
 
 export function FacultyDashboard() {
@@ -99,7 +126,13 @@ export function FacultyDashboard() {
                 <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="percentage" stroke="#4F46E5" fill="url(#faculty-present)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="percentage"
+                  stroke="#4F46E5"
+                  fill="url(#faculty-present)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -116,8 +149,11 @@ export function FacultyDashboard() {
               { label: "Upload Assignment", tone: "success" as const },
               { label: "Enter Marks", tone: "warn" as const },
               { label: "Start Online Class", tone: "info" as const },
-            ].map(item => (
-              <button key={item.label} className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition">
+            ].map((item) => (
+              <button
+                key={item.label}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition"
+              >
                 <span className="text-sm font-medium">{item.label}</span>
                 <Badge tone={item.tone}>Action</Badge>
               </button>
@@ -155,11 +191,13 @@ export function FacultyDashboard() {
             <h3 className="font-semibold">Student Performance</h3>
           </div>
           <div className="space-y-3">
-            {studentPerformance.slice(0, 4).map(student => (
+            {studentPerformance.slice(0, 4).map((student) => (
               <div key={student.student} className="p-3 rounded-xl bg-gradient-soft border">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{student.student}</span>
-                  <Badge tone={student.marks >= 85 ? "success" : student.marks >= 75 ? "info" : "warn"}>
+                  <Badge
+                    tone={student.marks >= 85 ? "success" : student.marks >= 75 ? "info" : "warn"}
+                  >
                     {student.marks}%
                   </Badge>
                 </div>
@@ -202,14 +240,25 @@ export function FacultyDashboard() {
             <Bell className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            {facultyNotifications.map(notification => (
-              <div key={notification.id} className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}>
+            {facultyNotifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}
+              >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{notification.title}</div>
                   <div className="text-xs text-muted-foreground">{notification.time}</div>
                 </div>
-                <Badge tone={notification.type === "Alert" ? "danger" : notification.type === "Request" ? "warn" : "info"}>
+                <Badge
+                  tone={
+                    notification.type === "Alert"
+                      ? "danger"
+                      : notification.type === "Request"
+                        ? "warn"
+                        : "info"
+                  }
+                >
                   {notification.type}
                 </Badge>
               </div>

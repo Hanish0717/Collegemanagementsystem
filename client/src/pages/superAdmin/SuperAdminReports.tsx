@@ -1,10 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Download, Filter } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { departmentDistribution, reportFilters, systemAnalytics, userActivityData } from "@/mock/superAdminData";
-
-
+import {
+  departmentDistribution,
+  reportFilters,
+  systemAnalytics,
+  userActivityData,
+} from "@/mock/superAdminData";
 
 export function SuperAdminReports() {
   return (
@@ -22,7 +37,10 @@ export function SuperAdminReports() {
       <Card>
         <div className="flex flex-wrap gap-2">
           {reportFilters.map((filter, index) => (
-            <button key={filter} className={`px-4 py-2 rounded-xl text-sm font-medium transition ${index === 0 ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}>
+            <button
+              key={filter}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${index === 0 ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}
+            >
               {filter}
             </button>
           ))}
@@ -38,11 +56,13 @@ export function SuperAdminReports() {
           { label: "Student Analytics", value: "12,480", tone: "info" as const },
           { label: "Faculty Analytics", value: "684", tone: "info" as const },
           { label: "Placement Statistics", value: "287 placed", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Available</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Available
+            </Badge>
           </Card>
         ))}
       </div>
@@ -57,7 +77,14 @@ export function SuperAdminReports() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="revenue" stroke="#4F46E5" fill="#4F46E5" fillOpacity={0.18} strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#4F46E5"
+                  fill="#4F46E5"
+                  fillOpacity={0.18}
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -98,8 +125,20 @@ export function SuperAdminReports() {
       <Card>
         <h3 className="font-semibold mb-4">Download Report Packs</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {["Revenue Report", "Student Report", "Faculty Report", "Placement Report", "Attendance Report", "Security Report", "Backup Report", "Department Report"].map(report => (
-            <button key={report} className="p-4 rounded-xl border text-left hover:border-primary hover:bg-accent/50 transition">
+          {[
+            "Revenue Report",
+            "Student Report",
+            "Faculty Report",
+            "Placement Report",
+            "Attendance Report",
+            "Security Report",
+            "Backup Report",
+            "Department Report",
+          ].map((report) => (
+            <button
+              key={report}
+              className="p-4 rounded-xl border text-left hover:border-primary hover:bg-accent/50 transition"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">{report}</div>

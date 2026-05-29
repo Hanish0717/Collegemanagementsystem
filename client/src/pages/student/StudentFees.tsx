@@ -93,7 +93,9 @@ export function StudentFees() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -104,8 +106,13 @@ export function StudentFees() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Fee Type", "Amount", "Due Date", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                {["Fee Type", "Amount", "Due Date", "Status"].map((column) => (
+                  <th
+                    key={column}
+                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {column}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -116,7 +123,15 @@ export function StudentFees() {
                   <td className="py-3 px-4 font-medium">{record.amount}</td>
                   <td className="py-3 px-4">{record.dueDate}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={record.status === "Paid" ? "success" : record.status === "Overdue" ? "danger" : "warn"}>
+                    <Badge
+                      tone={
+                        record.status === "Paid"
+                          ? "success"
+                          : record.status === "Overdue"
+                            ? "danger"
+                            : "warn"
+                      }
+                    >
                       {record.status}
                     </Badge>
                   </td>
@@ -134,7 +149,7 @@ export function StudentFees() {
             <h3 className="font-semibold">Make Payment</h3>
           </div>
           <form onSubmit={handlePayment} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
-            <select 
+            <select
               value={selectedFeeType}
               onChange={(e) => setSelectedFeeType(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -148,8 +163,8 @@ export function StudentFees() {
               <input required placeholder="CVV" className="rounded-lg border bg-background px-3 py-2 text-sm" />
               <input required placeholder="Cardholder name" className="rounded-lg border bg-background px-3 py-2 text-sm" />
             </div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={paymentLoading || !selectedFeeType}
               className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium disabled:opacity-50"
             >
@@ -169,8 +184,11 @@ export function StudentFees() {
               { method: "Debit Card", icon: "💳", status: "Active" },
               { method: "Net Banking", icon: "🏦", status: "Active" },
               { method: "UPI", icon: "📱", status: "Active" },
-            ].map(item => (
-              <div key={item.method} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
+            ].map((item) => (
+              <div
+                key={item.method}
+                className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{item.icon}</span>
                   <span className="text-sm font-medium">{item.method}</span>

@@ -2,12 +2,29 @@ import { useState, useEffect } from "react";
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import {
-  Activity, Bell, BookOpen, Calendar, CheckCircle, Clock, DollarSign,
-  GraduationCap, TrendingUp, User
+  Activity,
+  Bell,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  GraduationCap,
+  TrendingUp,
+  User,
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import {
@@ -17,8 +34,14 @@ import api from "@/lib/api";
 
 const statIcons = [GraduationCap, TrendingUp, DollarSign, Calendar, Bell, CheckCircle, User, Activity];
 const statGradients = [
-  "bg-gradient-primary", "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary",
-  "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary", "bg-gradient-violet",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
 ];
 
 export function ParentDashboard() {
@@ -115,7 +138,13 @@ export function ParentDashboard() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="percentage" stroke="#4F46E5" fill="url(#parent-attendance)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="percentage"
+                  stroke="#4F46E5"
+                  fill="url(#parent-attendance)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -132,8 +161,11 @@ export function ParentDashboard() {
               { label: "Check Marks", tone: "success" as const },
               { label: "Pay Fees", tone: "warn" as const },
               { label: "Contact Teacher", tone: "info" as const },
-            ].map(item => (
-              <button key={item.label} className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition">
+            ].map((item) => (
+              <button
+                key={item.label}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition"
+              >
                 <span className="text-sm font-medium">{item.label}</span>
                 <Badge tone={item.tone}>Action</Badge>
               </button>
@@ -193,8 +225,11 @@ export function ParentDashboard() {
             <Badge tone="info">Live</Badge>
           </div>
           <div className="space-y-3">
-            {parentActivities.map(activity => (
-              <div key={activity.actor + activity.time} className="flex items-center gap-3 py-2 border-b last:border-0">
+            {parentActivities.map((activity) => (
+              <div
+                key={activity.actor + activity.time}
+                className="flex items-center gap-3 py-2 border-b last:border-0"
+              >
                 <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {activity.actor.slice(0, 2).toUpperCase()}
                 </div>
@@ -216,14 +251,25 @@ export function ParentDashboard() {
             <Bell className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            {parentNotifications.map(notification => (
-              <div key={notification.id} className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}>
+            {parentNotifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}
+              >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{notification.title}</div>
                   <div className="text-xs text-muted-foreground">{notification.time}</div>
                 </div>
-                <Badge tone={notification.type === "Alert" ? "danger" : notification.type === "Exam" ? "warn" : "info"}>
+                <Badge
+                  tone={
+                    notification.type === "Alert"
+                      ? "danger"
+                      : notification.type === "Exam"
+                        ? "warn"
+                        : "info"
+                  }
+                >
                   {notification.type}
                 </Badge>
               </div>

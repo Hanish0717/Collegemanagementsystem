@@ -4,8 +4,6 @@ import { Plus, Sliders, Users, Check, X } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { students } from "@/mock/mockData";
 
-
-
 export function PlacementEligibility() {
   const [cgpaFilter, setCgpaFilter] = useState(6.0);
   const [backlogFilter, setBacklogFilter] = useState(0);
@@ -13,7 +11,15 @@ export function PlacementEligibility() {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
 
-  const departments = ["Computer Science", "Electronics", "Mechanical", "Business", "Design", "Physics", "Biotech"];
+  const departments = [
+    "Computer Science",
+    "Electronics",
+    "Mechanical",
+    "Business",
+    "Design",
+    "Physics",
+    "Biotech",
+  ];
   const years = [1, 2, 3, 4];
   const skills = ["Java", "React", "Python", "SQL", "Communication", "Data Analysis"];
   const studentSkills: Record<string, string[]> = {
@@ -37,7 +43,7 @@ export function PlacementEligibility() {
     STU008: 0,
   };
 
-  const eligibleStudents = students.filter(s => {
+  const eligibleStudents = students.filter((s) => {
     const meetsGPA = s.cgpa >= cgpaFilter;
     const meetsBacklog = studentBacklogs[s.id] <= backlogFilter;
     const meetsDept = !selectedDept || s.dept === selectedDept;
@@ -46,13 +52,25 @@ export function PlacementEligibility() {
     return meetsGPA && meetsBacklog && meetsDept && meetsYear && meetsSkill;
   });
 
-  const ineligibleStudents = students.filter(s => !eligibleStudents.find(e => e.id === s.id));
+  const ineligibleStudents = students.filter((s) => !eligibleStudents.find((e) => e.id === s.id));
 
   const eligibilityStats = [
     { label: "Total Students", value: students.length.toString(), gradient: "bg-gradient-cyan" },
-    { label: "Eligible", value: eligibleStudents.length.toString(), gradient: "bg-gradient-primary" },
-    { label: "Ineligible", value: ineligibleStudents.length.toString(), gradient: "bg-gradient-violet" },
-    { label: "Eligibility Rate", value: `${Math.round((eligibleStudents.length / students.length) * 100)}%`, gradient: "bg-gradient-emerald" },
+    {
+      label: "Eligible",
+      value: eligibleStudents.length.toString(),
+      gradient: "bg-gradient-primary",
+    },
+    {
+      label: "Ineligible",
+      value: ineligibleStudents.length.toString(),
+      gradient: "bg-gradient-violet",
+    },
+    {
+      label: "Eligibility Rate",
+      value: `${Math.round((eligibleStudents.length / students.length) * 100)}%`,
+      gradient: "bg-gradient-emerald",
+    },
   ];
 
   return (
@@ -69,9 +87,11 @@ export function PlacementEligibility() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {eligibilityStats.map(stat => (
+        {eligibilityStats.map((stat) => (
           <Card key={stat.label} className="text-center">
-            <div className={`size-12 rounded-xl ${stat.gradient} text-white grid place-items-center mx-auto mb-3 font-bold text-lg`}>
+            <div
+              className={`size-12 rounded-xl ${stat.gradient} text-white grid place-items-center mx-auto mb-3 font-bold text-lg`}
+            >
               {stat.value}
             </div>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -138,8 +158,10 @@ export function PlacementEligibility() {
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
               <option value="">All Departments</option>
-              {departments.map(dept => (
-                <option key={dept} value={dept}>{dept}</option>
+              {departments.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
               ))}
             </select>
           </div>
@@ -153,8 +175,10 @@ export function PlacementEligibility() {
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
               <option value="">All Years</option>
-              {years.map(year => (
-                <option key={year} value={year}>Year {year}</option>
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  Year {year}
+                </option>
               ))}
             </select>
           </div>
@@ -167,8 +191,10 @@ export function PlacementEligibility() {
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
               <option value="">All Skills</option>
-              {skills.map(skill => (
-                <option key={skill} value={skill}>{skill}</option>
+              {skills.map((skill) => (
+                <option key={skill} value={skill}>
+                  {skill}
+                </option>
               ))}
             </select>
           </div>
@@ -193,19 +219,29 @@ export function PlacementEligibility() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Student ID</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                  Student ID
+                </th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Name</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Department</th>
+                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                  Department
+                </th>
                 <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Year</th>
                 <th className="text-center py-3 px-4 font-semibold text-muted-foreground">CGPA</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Backlogs</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Backlogs
+                </th>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Skills</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Attendance</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Status</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Attendance
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Status
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {eligibleStudents.map(student => (
+              {eligibleStudents.map((student) => (
                 <tr key={student.id} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium text-xs">{student.id}</td>
                   <td className="py-3 px-4">{student.name}</td>
@@ -213,11 +249,13 @@ export function PlacementEligibility() {
                   <td className="py-3 px-4 text-center">
                     <Badge tone="info">Year {student.year}</Badge>
                   </td>
-                  <td className="py-3 px-4 text-center font-semibold text-emerald-600">{student.cgpa}</td>
+                  <td className="py-3 px-4 text-center font-semibold text-emerald-600">
+                    {student.cgpa}
+                  </td>
                   <td className="py-3 px-4 text-center">{studentBacklogs[student.id]}</td>
                   <td className="py-3 px-4">
                     <div className="flex flex-wrap gap-1">
-                      {studentSkills[student.id].slice(0, 2).map(skill => (
+                      {studentSkills[student.id].slice(0, 2).map((skill) => (
                         <Badge key={skill}>{skill}</Badge>
                       ))}
                     </div>
@@ -248,30 +286,38 @@ export function PlacementEligibility() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Student ID</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Student ID
+                  </th>
                   <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Department</th>
-                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">CGPA</th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Reason</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Department
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    CGPA
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Reason
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {ineligibleStudents.map(student => (
+                {ineligibleStudents.map((student) => (
                   <tr key={student.id} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4 font-medium text-xs">{student.id}</td>
                     <td className="py-3 px-4">{student.name}</td>
                     <td className="py-3 px-4 text-sm text-muted-foreground">{student.dept}</td>
-                  <td className="py-3 px-4 text-center font-semibold">{student.cgpa}</td>
-                  <td className="py-3 px-4 text-sm">
-                    {student.cgpa < cgpaFilter ? (
-                      <Badge tone="danger">CGPA below {cgpaFilter.toFixed(1)}</Badge>
-                    ) : studentBacklogs[student.id] > backlogFilter ? (
-                      <Badge tone="danger">{studentBacklogs[student.id]} backlogs</Badge>
-                    ) : selectedSkill && !studentSkills[student.id]?.includes(selectedSkill) ? (
-                      <Badge tone="warn">Missing {selectedSkill}</Badge>
-                    ) : (
-                      <Badge tone="warn">Does not meet criteria</Badge>
-                    )}
+                    <td className="py-3 px-4 text-center font-semibold">{student.cgpa}</td>
+                    <td className="py-3 px-4 text-sm">
+                      {student.cgpa < cgpaFilter ? (
+                        <Badge tone="danger">CGPA below {cgpaFilter.toFixed(1)}</Badge>
+                      ) : studentBacklogs[student.id] > backlogFilter ? (
+                        <Badge tone="danger">{studentBacklogs[student.id]} backlogs</Badge>
+                      ) : selectedSkill && !studentSkills[student.id]?.includes(selectedSkill) ? (
+                        <Badge tone="warn">Missing {selectedSkill}</Badge>
+                      ) : (
+                        <Badge tone="warn">Does not meet criteria</Badge>
+                      )}
                     </td>
                   </tr>
                 ))}

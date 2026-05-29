@@ -52,11 +52,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    childEmail: {
-      type: String,
-      trim: true,
-      lowercase: true,
-    },
     isVerified: {
       type: Boolean,
       default: false,

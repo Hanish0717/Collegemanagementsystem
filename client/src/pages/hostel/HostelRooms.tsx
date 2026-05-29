@@ -4,8 +4,6 @@ import { Bed, Plus, Search, Building2, User } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { roomAllocations, availableRooms, roomOccupancyData } from "@/mock/hostelData";
 
-
-
 export function HostelRooms() {
   return (
     <div className="space-y-6">
@@ -25,11 +23,13 @@ export function HostelRooms() {
           { label: "Occupied", value: "198", tone: "success" as const },
           { label: "Available", value: "52", tone: "warn" as const },
           { label: "Occupancy Rate", value: "79%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -38,16 +38,25 @@ export function HostelRooms() {
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input placeholder="Search by room number, student name..." className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm" />
+            <input
+              placeholder="Search by room number, student name..."
+              className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
+            />
           </div>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Floors", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"].map(f => <option key={f}>{f}</option>)}
+            {["All Floors", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"].map((f) => (
+              <option key={f}>{f}</option>
+            ))}
           </select>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Blocks", "Block A", "Block B", "Block C", "Block D"].map(b => <option key={b}>{b}</option>)}
+            {["All Blocks", "Block A", "Block B", "Block C", "Block D"].map((b) => (
+              <option key={b}>{b}</option>
+            ))}
           </select>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Status", "Occupied", "Available"].map(s => <option key={s}>{s}</option>)}
+            {["All Status", "Occupied", "Available"].map((s) => (
+              <option key={s}>{s}</option>
+            ))}
           </select>
         </div>
       </Card>
@@ -59,17 +68,38 @@ export function HostelRooms() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Room Number", "Student Name", "Department", "Floor", "Room Type", "Occupancy Status", "Actions"].map(column => (
-                    <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                  {[
+                    "Room Number",
+                    "Student Name",
+                    "Department",
+                    "Floor",
+                    "Room Type",
+                    "Occupancy Status",
+                    "Actions",
+                  ].map((column) => (
+                    <th
+                      key={column}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {column}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {roomAllocations.map(allocation => (
+                {roomAllocations.map((allocation) => (
                   <tr key={allocation.roomNumber} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4 font-medium">{allocation.roomNumber}</td>
-                    <td className="py-3 px-4">{allocation.studentName || <span className="text-muted-foreground">-</span>}</td>
-                    <td className="py-3 px-4">{allocation.department ? <Badge tone="info">{allocation.department}</Badge> : <span className="text-muted-foreground">-</span>}</td>
+                    <td className="py-3 px-4">
+                      {allocation.studentName || <span className="text-muted-foreground">-</span>}
+                    </td>
+                    <td className="py-3 px-4">
+                      {allocation.department ? (
+                        <Badge tone="info">{allocation.department}</Badge>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </td>
                     <td className="py-3 px-4 text-muted-foreground">{allocation.floor}</td>
                     <td className="py-3 px-4">{allocation.roomType}</td>
                     <td className="py-3 px-4">
@@ -78,7 +108,9 @@ export function HostelRooms() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4">
-                      <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">Details</button>
+                      <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
+                        Details
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -93,13 +125,18 @@ export function HostelRooms() {
             <h3 className="font-semibold">Available Rooms</h3>
           </div>
           <div className="space-y-2">
-            {availableRooms.map(room => (
-              <div key={room.roomNumber} className="p-3 rounded-xl border bg-gradient-soft hover:bg-accent/50 transition cursor-pointer">
+            {availableRooms.map((room) => (
+              <div
+                key={room.roomNumber}
+                className="p-3 rounded-xl border bg-gradient-soft hover:bg-accent/50 transition cursor-pointer"
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{room.roomNumber}</span>
                   <Badge tone="success">Available</Badge>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">{room.floor} • {room.roomType} • Capacity: {room.capacity}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {room.floor} • {room.roomType} • Capacity: {room.capacity}
+                </div>
               </div>
             ))}
           </div>
@@ -138,14 +175,22 @@ export function HostelRooms() {
               { student: "Amit Kumar", room: "A-103", date: "Jan 17, 2026", action: "Allocated" },
               { student: "Sneha Reddy", room: "A-105", date: "Jan 18, 2026", action: "Allocated" },
               { student: "Vikram Singh", room: "B-201", date: "Jan 19, 2026", action: "Allocated" },
-            ].map(history => (
-              <div key={history.student} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+            ].map((history) => (
+              <div
+                key={history.student}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {history.student.split(" ").map(n => n[0]).join("")}
+                  {history.student
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{history.student}</div>
-                  <div className="text-xs text-muted-foreground">{history.room} • {history.date}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {history.room} • {history.date}
+                  </div>
                 </div>
                 <Badge tone="success">{history.action}</Badge>
               </div>

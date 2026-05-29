@@ -100,7 +100,9 @@ export function ParentMarks() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -111,9 +113,16 @@ export function ParentMarks() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Subject", "Internal Marks", "External Marks", "Total", "Grade", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
-                ))}
+                {["Subject", "Internal Marks", "External Marks", "Total", "Grade", "Status"].map(
+                  (column) => (
+                    <th
+                      key={column}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {column}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -124,10 +133,14 @@ export function ParentMarks() {
                   <td className="py-3 px-4">{subject.external}</td>
                   <td className="py-3 px-4 font-medium">{subject.total}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={subject.grade.startsWith("A") ? "success" : "info"}>{subject.grade}</Badge>
+                    <Badge tone={subject.grade.startsWith("A") ? "success" : "info"}>
+                      {subject.grade}
+                    </Badge>
                   </td>
                   <td className="py-3 px-4">
-                    <Badge tone={subject.status === "Excellent" ? "success" : "info"}>{subject.status}</Badge>
+                    <Badge tone={subject.status === "Excellent" ? "success" : "info"}>
+                      {subject.status}
+                    </Badge>
                   </td>
                 </tr>
               ))}
@@ -161,12 +174,17 @@ export function ParentMarks() {
             <h3 className="font-semibold">Top Performance</h3>
           </div>
           <div className="space-y-2">
-            {subjectMarks.filter(s => s.status === "Excellent").map((subject, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
-                <span className="text-sm font-medium">{subject.subject}</span>
-                <Badge tone="success">{subject.total}%</Badge>
-              </div>
-            ))}
+            {subjectMarks
+              .filter((s) => s.status === "Excellent")
+              .map((subject, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
+                >
+                  <span className="text-sm font-medium">{subject.subject}</span>
+                  <Badge tone="success">{subject.total}%</Badge>
+                </div>
+              ))}
           </div>
         </Card>
       </div>

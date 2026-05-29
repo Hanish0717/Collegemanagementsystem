@@ -2,24 +2,51 @@ import { useState, useEffect } from "react";
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import {
-  Activity, Bell, BookOpen, Calendar, CheckCircle, Clock, DollarSign,
-  GraduationCap, MapPin, TrendingUp
+  Activity,
+  Bell,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  GraduationCap,
+  MapPin,
+  TrendingUp,
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  attendanceHistory, gpaHistory, studentActivities, studentNotifications, studentStats
+  attendanceHistory,
+  gpaHistory,
+  studentActivities,
+  studentNotifications,
+  studentStats,
 } from "@/mock/studentData";
 import api from "@/lib/api";
 
 const statIcons = [GraduationCap, TrendingUp, BookOpen, Calendar, DollarSign, CheckCircle, MapPin, Activity];
 const statGradients = [
-  "bg-gradient-primary", "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary",
-  "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary", "bg-gradient-violet",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
 ];
 
 const gradePoints: Record<string, number> = {
@@ -47,7 +74,7 @@ export function StudentDashboard() {
         const dashRes = await api.get("/api/student-module/dashboard");
         if (dashRes.data?.success && dashRes.data?.data) {
           const { stats: dbStats, activities: dbActivities } = dashRes.data.data;
-          
+
           // Update stats list
           const updatedStats = studentStats.map(mockStat => {
             const match = dbStats.find((s: any) => s.label === mockStat.label);
@@ -164,7 +191,13 @@ export function StudentDashboard() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="percentage" stroke="#4F46E5" fill="url(#student-attendance)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="percentage"
+                  stroke="#4F46E5"
+                  fill="url(#student-attendance)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -181,8 +214,11 @@ export function StudentDashboard() {
               { label: "Submit Assignment", tone: "success" as const },
               { label: "Pay Fees", tone: "warn" as const },
               { label: "Register Event", tone: "info" as const },
-            ].map(item => (
-              <button key={item.label} className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition">
+            ].map((item) => (
+              <button
+                key={item.label}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition"
+              >
                 <span className="text-sm font-medium">{item.label}</span>
                 <Badge tone={item.tone}>Action</Badge>
               </button>
@@ -264,14 +300,25 @@ export function StudentDashboard() {
             <Bell className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            {studentNotifications.map(notification => (
-              <div key={notification.id} className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}>
+            {studentNotifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}
+              >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{notification.title}</div>
                   <div className="text-xs text-muted-foreground">{notification.time}</div>
                 </div>
-                <Badge tone={notification.type === "Alert" ? "danger" : notification.type === "Assignment" ? "warn" : "info"}>
+                <Badge
+                  tone={
+                    notification.type === "Alert"
+                      ? "danger"
+                      : notification.type === "Assignment"
+                        ? "warn"
+                        : "info"
+                  }
+                >
                   {notification.type}
                 </Badge>
               </div>

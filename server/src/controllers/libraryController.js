@@ -95,7 +95,7 @@ export const addBook = async (req, res, next) => {
 export const getBooks = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, search, author, category, availability } = req.query;
-    
+
     let query = supabase.from('books').select('*', { count: 'exact' }).eq('is_active', true);
 
     if (search) {
@@ -186,7 +186,7 @@ export const updateBook = async (req, res, next) => {
     if (req.body.isbn) updateData.isbn = req.body.isbn;
     if (req.body.publisher) updateData.publisher = req.body.publisher;
     if (req.body.edition) updateData.edition = req.body.edition;
-    
+
     if (req.body.totalCopies !== undefined) {
       const total = Number(req.body.totalCopies);
       const available = Number(book.available_quantity || 0);

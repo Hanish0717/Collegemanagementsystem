@@ -1,9 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { FileText, Download, TrendingUp, Users, DollarSign, Utensils, AlertTriangle } from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  FileText,
+  Download,
+  TrendingUp,
+  Users,
+  DollarSign,
+  Utensils,
+  AlertTriangle,
+} from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-
-
 
 export function HostelReports() {
   const occupancyReport = [
@@ -59,11 +75,13 @@ export function HostelReports() {
           { label: "This Month", value: "5", tone: "success" as const },
           { label: "Pending", value: "2", tone: "warn" as const },
           { label: "Downloaded", value: "8", tone: "info" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -71,10 +89,14 @@ export function HostelReports() {
       <Card>
         <div className="flex flex-col lg:flex-row gap-3">
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["This Month", "Last Month", "This Quarter", "This Year", "Custom Range"].map(p => <option key={p}>{p}</option>)}
+            {["This Month", "Last Month", "This Quarter", "This Year", "Custom Range"].map((p) => (
+              <option key={p}>{p}</option>
+            ))}
           </select>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Reports", "Occupancy", "Fees", "Complaints", "Visitors", "Mess"].map(r => <option key={r}>{r}</option>)}
+            {["All Reports", "Occupancy", "Fees", "Complaints", "Visitors", "Mess"].map((r) => (
+              <option key={r}>{r}</option>
+            ))}
           </select>
           <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
             <Download className="size-4" /> Download All
@@ -100,7 +122,13 @@ export function HostelReports() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Line type="monotone" dataKey="occupancy" stroke="#4F46E5" strokeWidth={2} dot={{ fill: "#4F46E5" }} />
+                <Line
+                  type="monotone"
+                  dataKey="occupancy"
+                  stroke="#4F46E5"
+                  strokeWidth={2}
+                  dot={{ fill: "#4F46E5" }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -216,7 +244,13 @@ export function HostelReports() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Line type="monotone" dataKey="visitors" stroke="#4F46E5" strokeWidth={2} dot={{ fill: "#4F46E5" }} />
+                <Line
+                  type="monotone"
+                  dataKey="visitors"
+                  stroke="#4F46E5"
+                  strokeWidth={2}
+                  dot={{ fill: "#4F46E5" }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -287,7 +321,7 @@ export function HostelReports() {
             { label: "Fee Collection", value: "+12%", trend: "up" },
             { label: "Complaint Resolution", value: "+15%", trend: "up" },
             { label: "Mess Attendance", value: "+3%", trend: "up" },
-          ].map(metric => (
+          ].map((metric) => (
             <div key={metric.label} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="text-xs text-muted-foreground">{metric.label}</div>
               <div className="text-2xl font-bold mt-2 text-emerald-600">{metric.value}</div>

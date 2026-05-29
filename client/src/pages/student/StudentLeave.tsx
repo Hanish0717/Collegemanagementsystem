@@ -97,7 +97,9 @@ export function StudentLeave() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Available</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Available
+            </Badge>
           </Card>
         ))}
       </div>
@@ -108,8 +110,8 @@ export function StudentLeave() {
           <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Leave Type</label>
-              <select 
-                value={leaveType} 
+              <select
+                value={leaveType}
                 onChange={(e) => setLeaveType(e.target.value)}
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               >
@@ -119,38 +121,38 @@ export function StudentLeave() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">From Date</label>
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
-                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                   required
                 />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">To Date</label>
-                <input 
-                  type="date" 
+                <input
+                  type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
-                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                   required
                 />
               </div>
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Reason</label>
-              <textarea 
-                placeholder="Reason for leave..." 
-                rows={4} 
+              <textarea
+                placeholder="Reason for leave..."
+                rows={4}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                 required
               />
             </div>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2"
             >
@@ -194,8 +196,13 @@ export function StudentLeave() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Leave Type", "From", "To", "Days", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                {["Leave Type", "From", "To", "Days", "Status"].map((column) => (
+                  <th
+                    key={column}
+                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {column}
+                  </th>
                 ))}
               </tr>
             </thead>

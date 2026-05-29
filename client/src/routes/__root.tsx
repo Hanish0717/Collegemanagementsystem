@@ -44,10 +44,17 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">Something went wrong. Try again.</p>
         <div className="mt-6 flex gap-2 justify-center">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="rounded-md bg-gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-          >Try again</button>
-          <a href="/" className="rounded-md border px-4 py-2 text-sm">Home</a>
+          >
+            Try again
+          </button>
+          <a href="/" className="rounded-md border px-4 py-2 text-sm">
+            Home
+          </a>
         </div>
       </div>
     </div>
@@ -60,7 +67,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "College Management System — Premium Educational Platform" },
-      { name: "description", content: "A modern, beautiful college management system to run students, faculty, attendance, exams, fees, library and more." },
+      {
+        name: "description",
+        content:
+          "A modern, beautiful college management system to run students, faculty, attendance, exams, fees, library and more.",
+      },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
@@ -73,8 +84,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
     </html>
   );
 }

@@ -6,7 +6,7 @@ export const Route = createFileRoute("/register")({
   validateSearch: (search: Record<string, unknown>) => {
     return {
       role: search.role as string | undefined,
-    }
+    };
   },
   beforeLoad: () => {
     if (isAuthenticated()) {

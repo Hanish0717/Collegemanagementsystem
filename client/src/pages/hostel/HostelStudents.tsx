@@ -4,8 +4,6 @@ import { Users, Search, Phone, Mail, MapPin, Activity, GraduationCap } from "luc
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { hostelStudents } from "@/mock/hostelData";
 
-
-
 export function HostelStudents() {
   const studentAnalytics = [
     { department: "Computer Science", count: 120 },
@@ -33,11 +31,13 @@ export function HostelStudents() {
           { label: "Active", value: "350", tone: "success" as const },
           { label: "Warning", value: "38", tone: "warn" as const },
           { label: "Inactive", value: "8", tone: "danger" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -46,16 +46,32 @@ export function HostelStudents() {
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input placeholder="Search by student name, ID, department..." className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm" />
+            <input
+              placeholder="Search by student name, ID, department..."
+              className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
+            />
           </div>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Departments", "Computer Science", "Electronics", "Mechanical", "Business", "Biotechnology"].map(d => <option key={d}>{d}</option>)}
+            {[
+              "All Departments",
+              "Computer Science",
+              "Electronics",
+              "Mechanical",
+              "Business",
+              "Biotechnology",
+            ].map((d) => (
+              <option key={d}>{d}</option>
+            ))}
           </select>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Status", "Active", "Warning", "Inactive"].map(s => <option key={s}>{s}</option>)}
+            {["All Status", "Active", "Warning", "Inactive"].map((s) => (
+              <option key={s}>{s}</option>
+            ))}
           </select>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Floors", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"].map(f => <option key={f}>{f}</option>)}
+            {["All Floors", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"].map((f) => (
+              <option key={f}>{f}</option>
+            ))}
           </select>
         </div>
       </Card>
@@ -64,19 +80,27 @@ export function HostelStudents() {
         <Card className="lg:col-span-2">
           <h3 className="font-semibold mb-4">Hostel Student Cards</h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            {hostelStudents.map(student => (
-              <div key={student.id} className="p-4 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer">
+            {hostelStudents.map((student) => (
+              <div
+                key={student.id}
+                className="p-4 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="size-12 rounded-xl bg-gradient-primary text-white grid place-items-center text-sm font-semibold">
-                      {student.name.split(" ").map(n => n[0]).join("")}
+                      {student.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
                     </div>
                     <div>
                       <div className="font-medium">{student.name}</div>
                       <div className="text-xs text-muted-foreground">{student.department}</div>
                     </div>
                   </div>
-                  <Badge tone={student.status === "Active" ? "success" : "warn"}>{student.status}</Badge>
+                  <Badge tone={student.status === "Active" ? "success" : "warn"}>
+                    {student.status}
+                  </Badge>
                 </div>
                 <div className="mt-3 space-y-1">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -128,11 +152,21 @@ export function HostelStudents() {
               { student: "Priya Patel", activity: "Visitor checked out", time: "25 min ago" },
               { student: "Amit Kumar", activity: "Complaint resolved", time: "1 hour ago" },
               { student: "Sneha Reddy", activity: "Fee payment received", time: "2 hours ago" },
-              { student: "Vikram Singh", activity: "Room maintenance completed", time: "3 hours ago" },
-            ].map(activity => (
-              <div key={activity.student} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+              {
+                student: "Vikram Singh",
+                activity: "Room maintenance completed",
+                time: "3 hours ago",
+              },
+            ].map((activity) => (
+              <div
+                key={activity.student}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {activity.student.split(" ").map(n => n[0]).join("")}
+                  {activity.student
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{activity.student}</div>
@@ -150,8 +184,11 @@ export function HostelStudents() {
             <h3 className="font-semibold">Emergency Contacts</h3>
           </div>
           <div className="space-y-2">
-            {hostelStudents.slice(0, 5).map(student => (
-              <div key={student.id} className="flex items-center justify-between p-3 rounded-xl border bg-gradient-soft">
+            {hostelStudents.slice(0, 5).map((student) => (
+              <div
+                key={student.id}
+                className="flex items-center justify-between p-3 rounded-xl border bg-gradient-soft"
+              >
                 <div>
                   <div className="text-sm font-medium">{student.name}</div>
                   <div className="text-xs text-muted-foreground">{student.roomNumber}</div>
@@ -177,7 +214,7 @@ export function HostelStudents() {
             { label: "Room Occupancy", value: "79%", icon: "🏠" },
             { label: "Fee Compliance", value: "95%", icon: "💰" },
             { label: "Complaint Rate", value: "12%", icon: "📝" },
-          ].map(stat => (
+          ].map((stat) => (
             <div key={stat.label} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="text-2xl mb-2">{stat.icon}</div>
               <div className="text-xs text-muted-foreground">{stat.label}</div>

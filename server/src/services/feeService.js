@@ -1,5 +1,6 @@
-import Fee from '../models/Fee.js';
+import { supabase } from '../config/supabase.js';
 
 export const getFeeById = async (id) => {
-  return await Fee.findById(id);
+  const { data } = await supabase.from('fees').select('*').eq('id', id).maybeSingle();
+  return data;
 };

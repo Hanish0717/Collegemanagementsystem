@@ -85,7 +85,9 @@ export function StudentAssignments() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -110,7 +112,7 @@ export function StudentAssignments() {
                 </div>
               </div>
               {!assignment.submitted && (
-                <button 
+                <button
                   onClick={() => setSelectedId(assignment.id)}
                   className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-xs font-medium hover:opacity-90 transition"
                 >
@@ -127,7 +129,7 @@ export function StudentAssignments() {
         <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">Select Assignment</label>
-            <select 
+            <select
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -138,9 +140,9 @@ export function StudentAssignments() {
           </div>
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">Submission File Link / URL</label>
-            <input 
-              type="text" 
-              placeholder="https://example.com/your-submission-file.pdf" 
+            <input
+              type="text"
+              placeholder="https://example.com/your-submission-file.pdf"
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
@@ -148,12 +150,12 @@ export function StudentAssignments() {
           </div>
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">Submission Notes (Optional)</label>
-            <textarea 
-              placeholder="Assignment description or notes..." 
-              rows={3} 
+            <textarea
+              placeholder="Assignment description or notes..."
+              rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             />
           </div>
           <button type="submit" className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium">

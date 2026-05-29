@@ -41,7 +41,7 @@ export function StudentAttendance() {
             const overall = dbStats.percentage !== undefined ? `${dbStats.percentage}%` : "87.3%";
             const present = dbStats.present !== undefined ? String(dbStats.present) : "108";
             const absent = dbStats.absent !== undefined ? String(dbStats.absent) : "12";
-            
+
             setStats([
               { label: "Overall Attendance", value: overall, tone: "success" as const },
               { label: "Present Days", value: present, tone: "info" as const },
@@ -69,7 +69,9 @@ export function StudentAttendance() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -96,8 +98,13 @@ export function StudentAttendance() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Date", "Subject", "Time", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                {["Date", "Subject", "Time", "Status"].map((column) => (
+                  <th
+                    key={column}
+                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {column}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -105,10 +112,14 @@ export function StudentAttendance() {
               {records.map((record, index) => (
                 <tr key={index} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{record.date}</td>
-                  <td className="py-3 px-4"><Badge tone="info">{record.subject}</Badge></td>
+                  <td className="py-3 px-4">
+                    <Badge tone="info">{record.subject}</Badge>
+                  </td>
                   <td className="py-3 px-4 text-muted-foreground">{record.time}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={record.status === "Present" ? "success" : "danger"}>{record.status}</Badge>
+                    <Badge tone={record.status === "Present" ? "success" : "danger"}>
+                      {record.status}
+                    </Badge>
                   </td>
                 </tr>
               ))}

@@ -54,7 +54,9 @@ export function StudentTimetable() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">This Week</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              This Week
+            </Badge>
           </Card>
         ))}
       </div>
@@ -69,13 +71,18 @@ export function StudentTimetable() {
             <thead className="border-b">
               <tr>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Time</th>
-                {days.map(day => (
-                  <th key={day} className="text-center py-3 px-4 font-semibold text-muted-foreground">{day}</th>
+                {days.map((day) => (
+                  <th
+                    key={day}
+                    className="text-center py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {day}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y">
-              {timeSlots.map(time => (
+              {timeSlots.map((time) => (
                 <tr key={time}>
                   <td className="py-3 px-4 font-medium text-xs bg-gradient-soft">{time}</td>
                   {days.map(day => {
@@ -85,7 +92,9 @@ export function StudentTimetable() {
                         {slot ? (
                           <div className="p-2 rounded-lg bg-gradient-soft border">
                             <div className="text-xs font-medium">{slot.subject}</div>
-                            <div className="text-[10px] text-muted-foreground mt-1">{slot.faculty}</div>
+                            <div className="text-[10px] text-muted-foreground mt-1">
+                              {slot.faculty}
+                            </div>
                             <div className="text-[10px] text-muted-foreground flex items-center justify-center gap-1 mt-1">
                               <MapPin className="size-2.5" /> {slot.room}
                             </div>

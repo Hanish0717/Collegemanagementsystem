@@ -17,8 +17,8 @@ export const protect = async (req, res, next) => {
 
       // Find user and attach to request
       let user = null;
-      
-      const isUUID = typeof decoded.id === 'string' && 
+
+      const isUUID = typeof decoded.id === 'string' &&
         /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(decoded.id);
 
       if (isUUID) {
@@ -27,7 +27,7 @@ export const protect = async (req, res, next) => {
           .select('*')
           .eq('id', decoded.id)
           .single();
-        
+
         if (data && !error) {
           // Add a helper method to match MongoDB user schema structure in controllers
           user = {
@@ -39,7 +39,7 @@ export const protect = async (req, res, next) => {
             phoneNumber: data.phone_number,
             childEmail: data.child_email,
             // To ensure compatibility with req.user.toObject()
-            toObject: function() { return this; }
+            toObject: function () { return this; }
           };
         }
       }
@@ -71,3 +71,4 @@ export const protect = async (req, res, next) => {
     return next(error);
   }
 };
+

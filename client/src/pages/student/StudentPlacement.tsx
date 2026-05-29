@@ -75,7 +75,9 @@ export function StudentPlacement() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -89,7 +91,15 @@ export function StudentPlacement() {
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {placement.company.slice(0, 2)}
                 </div>
-                <Badge tone={placement.status === "Not Applied" ? "info" : placement.status === "Interview Scheduled" ? "warn" : "success"}>
+                <Badge
+                  tone={
+                    placement.status === "Not Applied"
+                      ? "info"
+                      : placement.status === "Interview Scheduled"
+                        ? "warn"
+                        : "success"
+                  }
+                >
                   {placement.status}
                 </Badge>
               </div>
@@ -102,7 +112,7 @@ export function StudentPlacement() {
                 </div>
               </div>
               {placement.status === "Not Applied" && (
-                <button 
+                <button
                   onClick={() => handleApply(placement.company)}
                   className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-xs font-medium hover:opacity-90 transition"
                 >
@@ -161,24 +171,24 @@ export function StudentPlacement() {
               <Upload className="size-4 text-muted-foreground" />
               <span className="text-sm">Upload updated resume</span>
             </label>
-            <input 
-              type="file" 
-              className="text-sm" 
+            <input
+              type="file"
+              className="text-sm"
               onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
             />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
-            <input 
-              placeholder="LinkedIn profile URL" 
+            <input
+              placeholder="LinkedIn profile URL"
               value={linkedin}
               onChange={(e) => setLinkedin(e.target.value)}
-              className="rounded-lg border bg-background px-3 py-2 text-sm" 
+              className="rounded-lg border bg-background px-3 py-2 text-sm"
             />
-            <input 
-              placeholder="Portfolio URL" 
+            <input
+              placeholder="Portfolio URL"
               value={portfolio}
               onChange={(e) => setPortfolio(e.target.value)}
-              className="rounded-lg border bg-background px-3 py-2 text-sm" 
+              className="rounded-lg border bg-background px-3 py-2 text-sm"
             />
           </div>
           <button type="submit" disabled={updating} className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
@@ -198,7 +208,7 @@ export function StudentPlacement() {
             { label: "Average Package", value: "$8.5L", icon: "💰" },
             { label: "Highest Package", value: "$25L", icon: "🚀" },
             { label: "Companies Visited", value: "45", icon: "🏢" },
-          ].map(item => (
+          ].map((item) => (
             <div key={item.label} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">{item.icon}</span>

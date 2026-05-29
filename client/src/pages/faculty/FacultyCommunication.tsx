@@ -3,8 +3,6 @@ import { MessageSquare, Paperclip, Send, Users } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { communications } from "@/mock/facultyData";
 
-
-
 export function FacultyCommunication() {
   return (
     <div className="space-y-6">
@@ -19,11 +17,13 @@ export function FacultyCommunication() {
           { label: "Unread", value: "3", tone: "warn" as const },
           { label: "Active Threads", value: "12", tone: "success" as const },
           { label: "Announcements", value: "8", tone: "info" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -35,10 +35,16 @@ export function FacultyCommunication() {
             <h3 className="font-semibold">Recent Conversations</h3>
           </div>
           <div className="space-y-2">
-            {communications.map(comm => (
-              <div key={comm.id} className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${comm.unread ? "bg-blue-50 border-blue-200" : ""}`}>
+            {communications.map((comm) => (
+              <div
+                key={comm.id}
+                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${comm.unread ? "bg-blue-50 border-blue-200" : ""}`}
+              >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {comm.student.split(" ").map(n => n[0]).join("")}
+                  {comm.student
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
@@ -58,10 +64,26 @@ export function FacultyCommunication() {
           <h3 className="font-semibold mb-4">Send Message</h3>
           <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-              {["Select Student", "Rahul Sharma", "Priya Patel", "Amit Kumar", "Sneha Reddy", "Vikram Singh"].map(s => <option key={s}>{s}</option>)}
+              {[
+                "Select Student",
+                "Rahul Sharma",
+                "Priya Patel",
+                "Amit Kumar",
+                "Sneha Reddy",
+                "Vikram Singh",
+              ].map((s) => (
+                <option key={s}>{s}</option>
+              ))}
             </select>
-            <input placeholder="Subject" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
-            <textarea placeholder="Type your message..." rows={4} className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+            <input
+              placeholder="Subject"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+            />
+            <textarea
+              placeholder="Type your message..."
+              rows={4}
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+            />
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
                 <Paperclip className="size-4 text-muted-foreground" />
@@ -83,10 +105,26 @@ export function FacultyCommunication() {
         </div>
         <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
           <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-            {["Select Audience", "All Students", "Data Structures", "Algorithms", "Database Systems", "Web Technologies"].map(a => <option key={a}>{a}</option>)}
+            {[
+              "Select Audience",
+              "All Students",
+              "Data Structures",
+              "Algorithms",
+              "Database Systems",
+              "Web Technologies",
+            ].map((a) => (
+              <option key={a}>{a}</option>
+            ))}
           </select>
-          <input placeholder="Announcement title" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
-          <textarea placeholder="Announcement content..." rows={4} className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+          <input
+            placeholder="Announcement title"
+            className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+          />
+          <textarea
+            placeholder="Announcement content..."
+            rows={4}
+            className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+          />
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" defaultChecked />
@@ -107,18 +145,43 @@ export function FacultyCommunication() {
         <h3 className="font-semibold mb-4">Recent Announcements</h3>
         <div className="space-y-2">
           {[
-            { title: "Mid-term exam schedule released", audience: "All Students", time: "2d ago", status: "Sent" },
-            { title: "Assignment deadline extended", audience: "Data Structures", time: "3d ago", status: "Sent" },
-            { title: "Class rescheduled for Friday", audience: "Algorithms", time: "5d ago", status: "Sent" },
-            { title: "Study materials uploaded", audience: "Database Systems", time: "1w ago", status: "Sent" },
-          ].map(announcement => (
-            <div key={announcement.title} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+            {
+              title: "Mid-term exam schedule released",
+              audience: "All Students",
+              time: "2d ago",
+              status: "Sent",
+            },
+            {
+              title: "Assignment deadline extended",
+              audience: "Data Structures",
+              time: "3d ago",
+              status: "Sent",
+            },
+            {
+              title: "Class rescheduled for Friday",
+              audience: "Algorithms",
+              time: "5d ago",
+              status: "Sent",
+            },
+            {
+              title: "Study materials uploaded",
+              audience: "Database Systems",
+              time: "1w ago",
+              status: "Sent",
+            },
+          ].map((announcement) => (
+            <div
+              key={announcement.title}
+              className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+            >
               <div className="size-10 rounded-lg bg-gradient-cyan text-white grid place-items-center">
                 <Users className="size-4" />
               </div>
               <div className="flex-1">
                 <div className="text-sm font-medium">{announcement.title}</div>
-                <div className="text-xs text-muted-foreground">{announcement.audience} • {announcement.time}</div>
+                <div className="text-xs text-muted-foreground">
+                  {announcement.audience} • {announcement.time}
+                </div>
               </div>
               <Badge tone="success">{announcement.status}</Badge>
             </div>

@@ -341,7 +341,7 @@ export const getAttendanceReport = async (req, res, next) => {
       .in('student', studentIds);
 
     if (subject) attendanceQuery = attendanceQuery.eq('subject', subject);
-    
+
     if (startDate || endDate) {
       if (startDate) {
         const startStr = new Date(startDate).toISOString().split('T')[0];
@@ -362,16 +362,16 @@ export const getAttendanceReport = async (req, res, next) => {
 
     const overallPercentage = total > 0 ? Math.round(((present + late) / total) * 100 * 10) / 10 : 100;
 
-    const lowAttendanceStudents = matchedStudents 
+    const lowAttendanceStudents = matchedStudents
       ? matchedStudents
-          .filter((s) => Number(s.attendance_percentage || 100) < 75)
-          .map(s => ({
-            ...s,
-            _id: s.id,
-            fullName: s.full_name,
-            rollNumber: s.roll_number,
-            attendancePercentage: s.attendance_percentage
-          }))
+        .filter((s) => Number(s.attendance_percentage || 100) < 75)
+        .map(s => ({
+          ...s,
+          _id: s.id,
+          fullName: s.full_name,
+          rollNumber: s.roll_number,
+          attendancePercentage: s.attendance_percentage
+        }))
       : [];
 
     return res.status(200).json({

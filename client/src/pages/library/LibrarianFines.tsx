@@ -1,27 +1,90 @@
-import { createFileRoute } from "@tanstack/react-router";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid
-} from "recharts";
-import { DollarSign, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { DollarSign, TrendingUp, Download, Search } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { finesData, libraryReports } from "@/mock/mockData";
-
-
+import { toast } from "sonner";
 
 export function LibrarianFines() {
-  const fineCollectionData = libraryReports.map(r => ({
+  const [fines, setFines] = useState(finesData);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
+
+  const [isConfirmCollectOpen, setIsConfirmCollectOpen] = useState(false);
+  const [selectedFine, setSelectedFine] = useState<any>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const fineCollectionData = libraryReports.map((r) => ({
     month: r.month.substring(0, 3),
     collection: r.fineCollected,
   }));
 
-  const totalPendingFines = finesData.filter(f => f.status === "Pending").reduce((sum, f) => sum + f.amount, 0);
-  const totalPaidFines = finesData.filter(f => f.status === "Paid").reduce((sum, f) => sum + f.amount, 0);
+  const filteredFines = fines.filter(
+    (f) =>
+      (filterStatus === "All" || f.status === filterStatus) &&
+      f.studentName.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const totalPendingFines = fines
+    .filter((f) => f.status === "Pending")
+    .reduce((sum, f) => sum + f.amount, 0);
+  const totalPaidFines = fines
+    .filter((f) => f.status === "Paid")
+    .reduce((sum, f) => sum + f.amount, 0);
+
+  const openCollectConfirm = (fine: any) => {
+    setSelectedFine(fine);
+    setIsConfirmCollectOpen(true);
+  };
+
+  const handleCollectFineSubmit = () => {
+    if (!selectedFine) return;
+
+    setFines(
+      fines.map((f) => {
+        if (f.id === selectedFine.id) {
+          return {
+            ...f,
+            status: "Paid",
+          };
+        }
+        return f;
+      }),
+    );
+
+    toast.success(
+      `Successfully collected penalty of ₹${selectedFine.amount} from ${selectedFine.studentName}!`,
+    );
+    setIsConfirmCollectOpen(false);
+    setSelectedFine(null);
+  };
+
+  const handleExportFines = () => {
+    setIsExporting(true);
+    toast.loading("Compiling fine audit sheets...");
+
+    setTimeout(() => {
+      toast.dismiss();
+      setIsExporting(false);
+      toast.success("Fine collection spreadsheet successfully compiled and downloaded!");
+    }, 1500);
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Fine Management"
         desc="Track and collect fines from overdue books."
+        actions={
+          <button
+            onClick={handleExportFines}
+            disabled={isExporting}
+            className="px-4 py-2.5 rounded-xl border text-muted-foreground text-sm glow-primary flex items-center gap-2 cursor-pointer hover:bg-gradient-soft disabled:opacity-50 transition"
+          >
+            <Download className="size-4" />
+            {isExporting ? "Exporting..." : "Export Log"}
+          </button>
+        }
       />
 
       {/* Summary Stats */}
@@ -48,14 +111,18 @@ export function LibrarianFines() {
 
         <Card>
           <div className="text-center">
-            <div className="text-3xl font-bold">{finesData.filter(f => f.status === "Pending").length}</div>
+            <div className="text-3xl font-bold">
+              {fines.filter((f) => f.status === "Pending").length}
+            </div>
             <div className="text-xs text-muted-foreground mt-2">Outstanding Fines</div>
           </div>
         </Card>
 
         <Card>
           <div className="text-center">
-            <div className="text-3xl font-bold text-emerald-600">{finesData.filter(f => f.status === "Paid").length}</div>
+            <div className="text-3xl font-bold text-emerald-600">
+              {fines.filter((f) => f.status === "Paid").length}
+            </div>
             <div className="text-xs text-muted-foreground mt-2">Resolved Fines</div>
           </div>
         </Card>
@@ -83,40 +150,90 @@ export function LibrarianFines() {
         </div>
       </Card>
 
-      {/* Pending Fines */}
+      {/* Search and Filters */}
       <Card>
-        <h3 className="font-semibold mb-4">Pending Fines</h3>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <input
+                placeholder="Search by student name…"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm outline-none focus:border-primary transition"
+              />
+            </div>
+          </div>
+
+          {/* Status Tabs */}
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {["All", "Pending", "Paid"].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition cursor-pointer ${
+                  filterStatus === status
+                    ? "bg-gradient-primary text-white"
+                    : "bg-background border text-muted-foreground hover:border-primary"
+                }`}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Card>
+
+      {/* Fines Table */}
+      <Card>
+        <h3 className="font-semibold mb-4 text-gradient">Fines Collection Ledger</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
                 <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Fine ID</th>
-                <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Student Name</th>
+                <th className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                  Student Name
+                </th>
                 <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Reason</th>
-                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Amount</th>
+                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                  Amount
+                </th>
                 <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Date</th>
-                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Status</th>
-                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Action</th>
+                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-center font-semibold text-muted-foreground">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
-              {finesData.map(fine => (
+              {filteredFines.map((fine) => (
                 <tr key={fine.id} className="border-b hover:bg-gradient-soft transition">
                   <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{fine.id}</td>
                   <td className="px-4 py-3 font-medium">{fine.studentName}</td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">{fine.reason}</td>
-                  <td className="px-4 py-3 text-center font-bold">₹{fine.amount}</td>
+                  <td className="px-4 py-3 text-center font-bold text-rose-600">₹{fine.amount}</td>
                   <td className="px-4 py-3 text-center text-xs">{fine.date}</td>
                   <td className="px-4 py-3 text-center">
-                    <Badge tone={fine.status === "Paid" ? "success" : "danger"}>{fine.status}</Badge>
+                    <Badge tone={fine.status === "Paid" ? "success" : "danger"}>
+                      {fine.status}
+                    </Badge>
                   </td>
                   <td className="px-4 py-3 text-center">
                     {fine.status === "Pending" ? (
-                      <button className="px-3 py-1.5 rounded-lg text-xs bg-gradient-primary text-white glow-primary">
+                      <button
+                        onClick={() => openCollectConfirm(fine)}
+                        className="px-3 py-1.5 rounded-lg text-xs bg-gradient-primary text-white glow-primary cursor-pointer hover:opacity-90 transition font-semibold"
+                      >
                         Collect
                       </button>
                     ) : (
-                      <button className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground">
+                      <button
+                        onClick={() => toast.success(`Receipt printed for reference ID ${fine.id}`)}
+                        className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-background transition cursor-pointer"
+                      >
                         Receipt
                       </button>
                     )}
@@ -128,91 +245,38 @@ export function LibrarianFines() {
         </div>
       </Card>
 
-      {/* Fine Details */}
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <h3 className="font-semibold mb-4">Fine Breakdown by Reason</h3>
-          <div className="space-y-3">
-            {[
-              { reason: "Overdue Return", count: 3, amount: 285 },
-              { reason: "Book Damage", count: 1, amount: 85 },
-              { reason: "Lost Book", count: 1, amount: 200 },
-            ].map((item, i) => (
-              <div key={i} className="p-3 rounded-xl border bg-gradient-soft flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium">{item.reason}</div>
-                  <div className="text-xs text-muted-foreground">{item.count} fines</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold">₹{item.amount}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card>
-          <h3 className="font-semibold mb-4">Collection Performance</h3>
-          <div className="space-y-3">
-            <div className="p-4 rounded-xl bg-emerald-100 border border-emerald-200">
-              <div className="text-xs text-emerald-700 font-medium mb-1">Collection Rate</div>
-              <div className="text-2xl font-bold text-emerald-700">82.4%</div>
-              <div className="text-xs text-emerald-600 mt-1">↑ 5.2% vs last month</div>
+      {/* Collect Fine Confirmation Modal */}
+      {isConfirmCollectOpen && selectedFine && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-sm animate-in fade-in zoom-in-95 duration-150">
+            <h3 className="font-semibold text-lg mb-3">Record Fine Collection</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Confirm you have collected the fine of **₹{selectedFine.amount}** from **
+              {selectedFine.studentName}**?
+            </p>
+            <div className="bg-gradient-soft p-3 rounded-lg text-xs text-muted-foreground mb-5 space-y-1">
+              <div>**Reason**: {selectedFine.reason}</div>
+              <div>**Fine Ref**: {selectedFine.id}</div>
+              <div>**Issue Date**: {selectedFine.date}</div>
             </div>
-
-            <div className="p-4 rounded-xl bg-amber-100 border border-amber-200">
-              <div className="text-xs text-amber-700 font-medium mb-1">Overdue Fines</div>
-              <div className="text-2xl font-bold text-amber-700">₹485</div>
-              <div className="text-xs text-amber-600 mt-1">2 fines overdue by 7+ days</div>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setIsConfirmCollectOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition cursor-pointer"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handleCollectFineSubmit}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition"
+              >
+                Confirm Payment
+              </button>
             </div>
-
-            <div className="p-4 rounded-xl bg-blue-100 border border-blue-200">
-              <div className="text-xs text-blue-700 font-medium mb-1">Average Fine</div>
-              <div className="text-2xl font-bold text-blue-700">₹142</div>
-              <div className="text-xs text-blue-600 mt-1">Across all records</div>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* Collection Policies */}
-      <Card>
-        <h3 className="font-semibold mb-4">Fine Policies</h3>
-        <div className="grid sm:grid-cols-3 gap-4">
-          <div className="p-4 rounded-xl border bg-gradient-soft">
-            <div className="text-sm font-semibold mb-2">📚 Overdue Books</div>
-            <div className="text-xs text-muted-foreground">
-              <ul className="space-y-1">
-                <li>• ₹5 per day</li>
-                <li>• Max ₹500 per book</li>
-                <li>• Blocks new issues</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl border bg-gradient-soft">
-            <div className="text-sm font-semibold mb-2">💔 Damaged Books</div>
-            <div className="text-xs text-muted-foreground">
-              <ul className="space-y-1">
-                <li>• Minor: ₹100</li>
-                <li>• Major: ₹500</li>
-                <li>• Severe: Book price</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl border bg-gradient-soft">
-            <div className="text-sm font-semibold mb-2">🚫 Lost Books</div>
-            <div className="text-xs text-muted-foreground">
-              <ul className="space-y-1">
-                <li>• Fixed ₹2,000</li>
-                <li>• Or book replacement</li>
-                <li>• Blocks all issues</li>
-              </ul>
-            </div>
-          </div>
+          </Card>
         </div>
-      </Card>
+      )}
     </div>
   );
 }

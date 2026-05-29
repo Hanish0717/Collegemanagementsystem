@@ -5,8 +5,6 @@ import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { messMenu, messAttendanceData } from "@/mock/hostelData";
 import { useState } from "react";
 
-
-
 export function HostelMess() {
   const [activeTab, setActiveTab] = useState<"breakfast" | "lunch" | "dinner">("breakfast");
 
@@ -28,11 +26,13 @@ export function HostelMess() {
           { label: "Breakfast Attendance", value: "94%", tone: "success" as const },
           { label: "Lunch Attendance", value: "95%", tone: "success" as const },
           { label: "Dinner Attendance", value: "93%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Today</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Today
+            </Badge>
           </Card>
         ))}
       </div>
@@ -41,10 +41,15 @@ export function HostelMess() {
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input placeholder="Search menu items..." className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm" />
+            <input
+              placeholder="Search menu items..."
+              className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
+            />
           </div>
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["This Week", "Next Week", "This Month"].map(w => <option key={w}>{w}</option>)}
+            {["This Week", "Next Week", "This Month"].map((w) => (
+              <option key={w}>{w}</option>
+            ))}
           </select>
         </div>
       </Card>
@@ -57,7 +62,7 @@ export function HostelMess() {
               { key: "breakfast" as const, label: "Breakfast" },
               { key: "lunch" as const, label: "Lunch" },
               { key: "dinner" as const, label: "Dinner" },
-            ].map(tab => (
+            ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
@@ -72,8 +77,11 @@ export function HostelMess() {
             ))}
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
-            {messMenu[activeTab].map(item => (
-              <div key={item.item} className="p-4 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition">
+            {messMenu[activeTab].map((item) => (
+              <div
+                key={item.item}
+                className="p-4 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition"
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{item.item}</span>
                   <Badge tone="info">{item.calories}</Badge>
@@ -101,8 +109,11 @@ export function HostelMess() {
               { day: "Friday", special: "Special: South Indian Thali" },
               { day: "Saturday", special: "Weekend: Pizza Day" },
               { day: "Sunday", special: "Weekend: Ice Cream" },
-            ].map(schedule => (
-              <div key={schedule.day} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
+            ].map((schedule) => (
+              <div
+                key={schedule.day}
+                className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <span className="text-sm font-medium">{schedule.day}</span>
                 <span className="text-xs text-muted-foreground">{schedule.special}</span>
               </div>
@@ -143,7 +154,7 @@ export function HostelMess() {
               { student: "Priya Patel", rating: 4, comment: "Good variety, needs more options" },
               { student: "Amit Kumar", rating: 4, comment: "Timely service" },
               { student: "Sneha Reddy", rating: 5, comment: "Love the weekend specials" },
-            ].map(feedback => (
+            ].map((feedback) => (
               <div key={feedback.student} className="p-3 rounded-xl border bg-gradient-soft">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{feedback.student}</span>
@@ -173,13 +184,18 @@ export function HostelMess() {
             { student: "Rahul Sharma", request: "Gluten-free meals", status: "Approved" },
             { student: "Priya Patel", request: "Vegan options", status: "Pending" },
             { student: "Amit Kumar", request: "No spicy food", status: "Approved" },
-          ].map(request => (
-            <div key={request.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
+          ].map((request) => (
+            <div
+              key={request.student}
+              className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+            >
               <div>
                 <div className="text-sm font-medium">{request.student}</div>
                 <div className="text-xs text-muted-foreground">{request.request}</div>
               </div>
-              <Badge tone={request.status === "Approved" ? "success" : "warn"}>{request.status}</Badge>
+              <Badge tone={request.status === "Approved" ? "success" : "warn"}>
+                {request.status}
+              </Badge>
             </div>
           ))}
         </div>

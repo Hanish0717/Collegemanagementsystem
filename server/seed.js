@@ -39,7 +39,11 @@ const seedDatabase = async () => {
         });
         console.log(`Created user: ${u.email}`);
       } else {
-        console.log(`User already exists: ${u.email}`);
+        exists.isVerified = true;
+        exists.mobileVerified = true;
+        exists.isActive = true;
+        await exists.save();
+        console.log(`User updated & verified: ${u.email}`);
       }
     }
 

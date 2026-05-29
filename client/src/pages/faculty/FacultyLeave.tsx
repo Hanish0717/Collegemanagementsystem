@@ -97,7 +97,9 @@ export function FacultyLeave() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Available</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Available
+            </Badge>
           </Card>
         ))}
       </div>
@@ -166,6 +168,7 @@ export function FacultyLeave() {
           </div>
           <div className="space-y-3">
             {[
+            {[
               { type: "Sick Leave", total: 10, used: usedSick, remaining: remainingSick },
               { type: "Casual Leave", total: 8, used: usedCasual, remaining: remainingCasual },
               { type: "Earned Leave", total: 15, used: usedEarned, remaining: remainingEarned },
@@ -194,8 +197,13 @@ export function FacultyLeave() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Leave Type", "From", "To", "Days", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
+                {["Leave Type", "From", "To", "Days", "Status"].map((column) => (
+                  <th
+                    key={column}
+                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                  >
+                    {column}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -224,7 +232,7 @@ export function FacultyLeave() {
             { name: "Holi", date: "Mar 14, 2026" },
             { name: "Good Friday", date: "Apr 18, 2026" },
             { name: "Independence Day", date: "Aug 15, 2026" },
-          ].map(holiday => (
+          ].map((holiday) => (
             <div key={holiday.name} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="flex items-center gap-2 mb-2">
                 <Calendar className="size-4 text-primary" />

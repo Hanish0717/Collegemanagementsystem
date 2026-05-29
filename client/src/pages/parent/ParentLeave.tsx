@@ -100,7 +100,9 @@ export function ParentLeave() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -208,8 +210,8 @@ export function ParentLeave() {
                   <div className="text-xs text-muted-foreground">{leave.reason}</div>
                 </div>
                 <Badge tone="success">Approved</Badge>
-              </div>
-            ))}
+                </div>
+              ))}
           </div>
         </Card>
 
@@ -229,8 +231,8 @@ export function ParentLeave() {
                   <div className="text-xs text-muted-foreground">{leave.reason}</div>
                 </div>
                 <Badge tone="warn">Pending</Badge>
-              </div>
-            ))}
+                </div>
+              ))}
           </div>
         </Card>
       </div>

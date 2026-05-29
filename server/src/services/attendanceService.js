@@ -14,7 +14,7 @@ export const updateStudentAttendancePercentage = async (studentId) => {
       .in('status', ['Present', 'present', 'Late', 'late']);
 
     const percentage = (total && total > 0) ? Math.round(((attended || 0) / total) * 100 * 10) / 10 : 100;
-    
+
     await supabase
       .from('students')
       .update({ attendance_percentage: percentage })

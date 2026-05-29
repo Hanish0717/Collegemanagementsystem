@@ -1,9 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Brain, AlertTriangle, TrendingUp, FileText, Activity, MessageSquare, Target, Zap } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  Brain,
+  AlertTriangle,
+  TrendingUp,
+  FileText,
+  Activity,
+  MessageSquare,
+  Target,
+  Zap,
+} from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-
-
 
 export function AiDashboard() {
   const predictionData = [
@@ -39,7 +58,12 @@ export function AiDashboard() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "AI Predictions Generated", value: "1,245", icon: Brain, tone: "success" as const },
+          {
+            label: "AI Predictions Generated",
+            value: "1,245",
+            icon: Brain,
+            tone: "success" as const,
+          },
           { label: "Student Risk Alerts", value: "25", icon: AlertTriangle, tone: "warn" as const },
           { label: "Attendance Warnings", value: "18", icon: Activity, tone: "warn" as const },
           { label: "Smart Recommendations", value: "89", icon: TrendingUp, tone: "info" as const },
@@ -47,14 +71,16 @@ export function AiDashboard() {
           { label: "Active Insights", value: "67", icon: Target, tone: "info" as const },
           { label: "Chatbot Queries", value: "342", icon: MessageSquare, tone: "success" as const },
           { label: "System Accuracy", value: "94.5%", icon: Zap, tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="flex items-center justify-between">
               <div className="text-xs text-muted-foreground">{stat.label}</div>
               <stat.icon className="size-4 text-muted-foreground" />
             </div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Active</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Active
+            </Badge>
           </Card>
         ))}
       </div>
@@ -78,7 +104,13 @@ export function AiDashboard() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="predictions" stroke="#4F46E5" fill="url(#pred-gradient)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="predictions"
+                  stroke="#4F46E5"
+                  fill="url(#pred-gradient)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -129,7 +161,13 @@ export function AiDashboard() {
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Line type="monotone" dataKey="current" stroke="#4F46E5" strokeWidth={2.5} />
-                <Line type="monotone" dataKey="predicted" stroke="#06B6D4" strokeWidth={2.5} strokeDasharray="5 5" />
+                <Line
+                  type="monotone"
+                  dataKey="predicted"
+                  stroke="#06B6D4"
+                  strokeWidth={2.5}
+                  strokeDasharray="5 5"
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -139,13 +177,24 @@ export function AiDashboard() {
           <h3 className="font-semibold mb-4">AI Activity Timeline</h3>
           <div className="space-y-3">
             {[
-              { time: "10:30 AM", activity: "Generated 45 student risk predictions", type: "Prediction" },
+              {
+                time: "10:30 AM",
+                activity: "Generated 45 student risk predictions",
+                type: "Prediction",
+              },
               { time: "09:45 AM", activity: "Processed 12 attendance warnings", type: "Alert" },
               { time: "09:15 AM", activity: "Created 8 automated reports", type: "Report" },
-              { time: "08:30 AM", activity: "Analyzed 23 student performance trends", type: "Analysis" },
+              {
+                time: "08:30 AM",
+                activity: "Analyzed 23 student performance trends",
+                type: "Analysis",
+              },
               { time: "08:00 AM", activity: "System accuracy updated to 94.5%", type: "System" },
             ].map((item, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+              <div
+                key={index}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center">
                   <Activity className="size-4" />
                 </div>
@@ -165,20 +214,51 @@ export function AiDashboard() {
           <h3 className="font-semibold mb-4">Notifications Panel</h3>
           <div className="space-y-2">
             {[
-              { title: "High risk alert: John Smith", desc: "Attendance below 75% threshold", priority: "High" },
-              { title: "Performance drop detected", desc: "3 students showing declining trends", priority: "Medium" },
-              { title: "Report generated successfully", desc: "Monthly attendance report ready", priority: "Low" },
-              { title: "New insight available", desc: "Department performance analysis", priority: "Low" },
+              {
+                title: "High risk alert: John Smith",
+                desc: "Attendance below 75% threshold",
+                priority: "High",
+              },
+              {
+                title: "Performance drop detected",
+                desc: "3 students showing declining trends",
+                priority: "Medium",
+              },
+              {
+                title: "Report generated successfully",
+                desc: "Monthly attendance report ready",
+                priority: "Low",
+              },
+              {
+                title: "New insight available",
+                desc: "Department performance analysis",
+                priority: "Low",
+              },
             ].map((notification, index) => (
-              <div key={index} className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${notification.priority === "High" ? "bg-red-50 border-red-200" : ""}`}>
-                <div className={`size-10 rounded-lg ${notification.priority === "High" ? "bg-red-500" : notification.priority === "Medium" ? "bg-amber-500" : "bg-gradient-primary"} text-white grid place-items-center`}>
+              <div
+                key={index}
+                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${notification.priority === "High" ? "bg-red-50 border-red-200" : ""}`}
+              >
+                <div
+                  className={`size-10 rounded-lg ${notification.priority === "High" ? "bg-red-500" : notification.priority === "Medium" ? "bg-amber-500" : "bg-gradient-primary"} text-white grid place-items-center`}
+                >
                   <AlertTriangle className="size-4" />
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{notification.title}</div>
                   <div className="text-xs text-muted-foreground">{notification.desc}</div>
                 </div>
-                <Badge tone={notification.priority === "High" ? "warn" : notification.priority === "Medium" ? "info" : "success"}>{notification.priority}</Badge>
+                <Badge
+                  tone={
+                    notification.priority === "High"
+                      ? "warn"
+                      : notification.priority === "Medium"
+                        ? "info"
+                        : "success"
+                  }
+                >
+                  {notification.priority}
+                </Badge>
               </div>
             ))}
           </div>
@@ -193,8 +273,13 @@ export function AiDashboard() {
               { label: "Analyze Attendance", icon: Activity, color: "bg-gradient-cyan" },
               { label: "View Insights", icon: Target, color: "bg-gradient-primary" },
             ].map((action, index) => (
-              <button key={index} className="p-4 rounded-xl border hover:bg-accent/50 transition flex items-center gap-3">
-                <div className={`size-10 rounded-lg ${action.color} text-white grid place-items-center`}>
+              <button
+                key={index}
+                className="p-4 rounded-xl border hover:bg-accent/50 transition flex items-center gap-3"
+              >
+                <div
+                  className={`size-10 rounded-lg ${action.color} text-white grid place-items-center`}
+                >
                   <action.icon className="size-4" />
                 </div>
                 <span className="text-sm font-medium">{action.label}</span>

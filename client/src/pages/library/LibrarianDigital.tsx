@@ -1,29 +1,47 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Search, FileText, Download, Eye } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { eBooks } from "@/mock/mockData";
-
-
+import { toast } from "sonner";
 
 export function LibrarianDigital() {
+  const [localEBooks, setLocalEBooks] = useState(eBooks);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBook, setSelectedBook] = useState<any>(null);
 
   const categories = ["All", "Computer Science", "Business", "Mathematics", "Science"];
-  const filteredEbooks = eBooks.filter(e =>
-    (selectedCategory === "All" || e.category === selectedCategory) &&
-    (e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      e.author.toLowerCase().includes(searchTerm.toLowerCase()))
+
+  const filteredEbooks = localEBooks.filter(
+    (e) =>
+      (selectedCategory === "All" || e.category === selectedCategory) &&
+      (e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        e.author.toLowerCase().includes(searchTerm.toLowerCase())),
   );
+
+  const handleDownload = (bookId: string, title: string) => {
+    toast.loading(`Downloading "${title}"...`);
+
+    setTimeout(() => {
+      toast.dismiss();
+      setLocalEBooks((prev) =>
+        prev.map((e) => {
+          if (e.id === bookId) {
+            return {
+              ...e,
+              downloads: e.downloads + 1,
+            };
+          }
+          return e;
+        }),
+      );
+      toast.success(`Successfully downloaded "${title}"!`);
+    }, 1000);
+  };
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Digital Library"
-        desc="Access e-books, PDFs and digital resources."
-      />
+      <PageHeader title="Digital Library" desc="Access e-books, PDFs and digital resources." />
 
       {/* Search and Filter */}
       <Card>
@@ -35,18 +53,18 @@ export function LibrarianDigital() {
                 placeholder="Search e-books, PDFs or resources…"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
+                className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm outline-none focus:border-primary transition"
               />
             </div>
           </div>
 
           {/* Category Filter */}
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {categories.map(cat => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition cursor-pointer ${
                   selectedCategory === cat
                     ? "bg-gradient-primary text-white"
                     : "bg-background border text-muted-foreground hover:border-primary"
@@ -61,31 +79,36 @@ export function LibrarianDigital() {
 
       {/* E-books Grid */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredEbooks.map(ebook => (
-          <Card key={ebook.id} className="hover:-translate-y-1 transition flex flex-col">
-            <div className="aspect-[4/5] rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 text-white grid place-items-center mb-4 relative overflow-hidden">
-              <FileText className="size-20 opacity-80" />
-              <div className="absolute inset-0 grid-bg opacity-30" />
-              <div className="absolute top-2 right-2">
-                <Badge tone="info" className="text-xs">
-                  {ebook.format}
-                </Badge>
-              </div>
-            </div>
-
-            <div className="flex-1 mb-4">
-              <div className="font-semibold line-clamp-2">{ebook.title}</div>
-              <div className="text-xs text-muted-foreground mt-1">{ebook.author}</div>
-              <div className="text-xs text-muted-foreground">{ebook.category}</div>
-
-              <div className="mt-3 p-2 bg-gradient-soft rounded-lg">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Size:</span>
-                  <span className="font-medium">{ebook.size}</span>
+        {filteredEbooks.map((ebook) => (
+          <Card
+            key={ebook.id}
+            className="hover:-translate-y-1 transition flex flex-col justify-between"
+          >
+            <div>
+              <div className="aspect-[4/5] rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 text-white grid place-items-center mb-4 relative overflow-hidden">
+                <FileText className="size-20 opacity-80" />
+                <div className="absolute inset-0 grid-bg opacity-30" />
+                <div className="absolute top-2 right-2">
+                  <Badge tone="info" className="text-xs">
+                    {ebook.format}
+                  </Badge>
                 </div>
-                <div className="flex items-center justify-between text-xs mt-2">
-                  <span className="text-muted-foreground">Downloads:</span>
-                  <span className="font-bold text-emerald-600">{ebook.downloads}</span>
+              </div>
+
+              <div className="flex-1 mb-4">
+                <div className="font-semibold line-clamp-2">{ebook.title}</div>
+                <div className="text-xs text-muted-foreground mt-1">{ebook.author}</div>
+                <div className="text-xs text-muted-foreground">{ebook.category}</div>
+
+                <div className="mt-3 p-2 bg-gradient-soft rounded-lg">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Size:</span>
+                    <span className="font-medium">{ebook.size}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs mt-2">
+                    <span className="text-muted-foreground">Downloads:</span>
+                    <span className="font-bold text-emerald-600">{ebook.downloads}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -93,11 +116,14 @@ export function LibrarianDigital() {
             <div className="flex gap-2">
               <button
                 onClick={() => setSelectedBook(ebook)}
-                className="flex-1 px-3 py-2 rounded-xl border text-sm font-medium hover:bg-gradient-soft transition flex items-center justify-center gap-2"
+                className="flex-1 px-3 py-2 rounded-xl border text-sm font-medium hover:bg-gradient-soft transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Eye className="size-4" /> Preview
               </button>
-              <button className="flex-1 px-3 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium glow-primary flex items-center justify-center gap-2">
+              <button
+                onClick={() => handleDownload(ebook.id, ebook.title)}
+                className="flex-1 px-3 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium glow-primary flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 transition"
+              >
                 <Download className="size-4" /> Download
               </button>
             </div>
@@ -107,53 +133,68 @@ export function LibrarianDigital() {
 
       {/* Preview Modal */}
       {selectedBook && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-            <div className="flex items-start justify-between mb-6">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-start justify-between mb-6 border-b pb-3">
               <div>
-                <h3 className="text-2xl font-bold mb-2">{selectedBook.title}</h3>
-                <p className="text-muted-foreground">by {selectedBook.author}</p>
+                <h3 className="text-xl font-bold text-gradient">{selectedBook.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Written by: {selectedBook.author}
+                </p>
               </div>
               <button
                 onClick={() => setSelectedBook(null)}
-                className="px-4 py-2 rounded-lg border text-muted-foreground hover:bg-gradient-soft transition"
+                className="text-muted-foreground hover:text-foreground text-lg cursor-pointer"
               >
                 ✕ Close
               </button>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4 mb-6">
-              <div className="p-4 rounded-xl bg-gradient-soft border">
-                <div className="text-xs text-muted-foreground mb-1">Category</div>
+              <div className="p-3 rounded-xl bg-gradient-soft border text-sm">
+                <div className="text-xs text-muted-foreground mb-1">Resource Category</div>
                 <div className="font-semibold">{selectedBook.category}</div>
               </div>
-              <div className="p-4 rounded-xl bg-gradient-soft border">
-                <div className="text-xs text-muted-foreground mb-1">Format</div>
+              <div className="p-3 rounded-xl bg-gradient-soft border text-sm">
+                <div className="text-xs text-muted-foreground mb-1">File Format</div>
                 <div className="font-semibold">{selectedBook.format}</div>
               </div>
-              <div className="p-4 rounded-xl bg-gradient-soft border">
-                <div className="text-xs text-muted-foreground mb-1">File Size</div>
+              <div className="p-3 rounded-xl bg-gradient-soft border text-sm">
+                <div className="text-xs text-muted-foreground mb-1">Document Size</div>
                 <div className="font-semibold">{selectedBook.size}</div>
               </div>
-              <div className="p-4 rounded-xl bg-gradient-soft border">
+              <div className="p-3 rounded-xl bg-gradient-soft border text-sm">
                 <div className="text-xs text-muted-foreground mb-1">Total Downloads</div>
                 <div className="font-semibold text-emerald-600">{selectedBook.downloads}</div>
               </div>
             </div>
 
             <div className="p-4 rounded-xl bg-gradient-soft border mb-6">
-              <h4 className="font-semibold mb-2">Document Preview</h4>
-              <div className="aspect-video rounded-lg bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center">
-                <FileText className="size-20 text-white/50" />
+              <h4 className="font-semibold text-xs text-muted-foreground mb-2">
+                Simulated Document Preview
+              </h4>
+              <div className="aspect-video rounded-lg bg-gradient-to-br from-slate-600 to-slate-800 flex flex-col items-center justify-center text-white/50 text-center p-4">
+                <FileText className="size-16 mb-2" />
+                <div className="text-xs font-semibold">Pre-rendering pdf preview pages...</div>
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <button className="flex-1 px-4 py-3 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition">
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                onClick={() => setSelectedBook(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition cursor-pointer text-sm"
+              >
                 Cancel
               </button>
-              <button className="flex-1 px-4 py-3 rounded-xl bg-gradient-primary text-white font-medium glow-primary flex items-center justify-center gap-2">
-                <Download className="size-4" /> Download {selectedBook.title}
+              <button
+                onClick={() => {
+                  const b = selectedBook;
+                  setSelectedBook(null);
+                  handleDownload(b.id, b.title);
+                }}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 transition text-sm"
+              >
+                <Download className="size-4" /> Download PDF File
               </button>
             </div>
           </Card>
@@ -162,7 +203,7 @@ export function LibrarianDigital() {
 
       {/* Resource Categories */}
       <Card>
-        <h3 className="font-semibold mb-4">Popular Resources</h3>
+        <h3 className="font-semibold mb-4 text-gradient">Popular Digital Domains</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { title: "Python Programming", docs: 12, color: "from-blue-500" },
@@ -170,7 +211,10 @@ export function LibrarianDigital() {
             { title: "Data Science", docs: 15, color: "from-pink-500" },
             { title: "Business Management", docs: 9, color: "from-cyan-500" },
           ].map((cat, i) => (
-            <div key={i} className={`p-4 rounded-xl bg-gradient-to-br ${cat.color} to-transparent text-white border`}>
+            <div
+              key={i}
+              className={`p-4 rounded-xl bg-gradient-to-br ${cat.color} to-transparent text-white border`}
+            >
               <div className="text-sm font-semibold">{cat.title}</div>
               <div className="text-2xl font-bold mt-2">{cat.docs}</div>
               <div className="text-xs opacity-80 mt-1">Resources available</div>

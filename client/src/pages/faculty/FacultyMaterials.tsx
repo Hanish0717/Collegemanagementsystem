@@ -100,7 +100,9 @@ export function FacultyMaterials() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -132,7 +134,11 @@ export function FacultyMaterials() {
             <Card key={material.id} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-violet text-white grid place-items-center">
-                  {material.type === "Video" ? <Video className="size-5" /> : <FileText className="size-5" />}
+                  {material.type === "Video" ? (
+                    <Video className="size-5" />
+                  ) : (
+                    <FileText className="size-5" />
+                  )}
                 </div>
                 <Badge tone="info">{material.type}</Badge>
               </div>
@@ -197,11 +203,17 @@ export function FacultyMaterials() {
             {list.slice(0, 4).map(material => (
               <div key={material.id} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
                 <div className="size-10 rounded-lg bg-gradient-cyan text-white grid place-items-center">
-                  {material.type === "Video" ? <Video className="size-4" /> : <FileText className="size-4" />}
+                  {material.type === "Video" ? (
+                    <Video className="size-4" />
+                  ) : (
+                    <FileText className="size-4" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{material.title}</div>
-                  <div className="text-xs text-muted-foreground">{material.subject} • {material.uploads}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {material.subject} • {material.uploads}
+                  </div>
                 </div>
                 <Badge tone="info">{material.downloads} downloads</Badge>
               </div>

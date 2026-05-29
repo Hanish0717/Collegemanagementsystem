@@ -80,11 +80,13 @@ export function FacultyClasses() {
           { label: "Upcoming", value: classes.filter(c => c.status === "Scheduled").length.toString(), tone: "success" as const },
           { label: "Completed", value: "12", tone: "info" as const },
           { label: "Avg Attendance", value: "87%", tone: "success" as const },
-        ].map(stat => (
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">This Month</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              This Month
+            </Badge>
           </Card>
         ))}
       </div>
@@ -179,18 +181,43 @@ export function FacultyClasses() {
           <h3 className="font-semibold mb-4">Recent Class History</h3>
           <div className="space-y-2">
             {[
-              { title: "Data Structures Live Session", date: "2026-05-20", attendance: "42/45", status: "Completed" },
-              { title: "Algorithm Discussion", date: "2026-05-18", attendance: "38/45", status: "Completed" },
-              { title: "Database Q&A", date: "2026-05-15", attendance: "40/45", status: "Completed" },
-              { title: "Web Development Tutorial", date: "2026-05-12", attendance: "35/45", status: "Completed" },
-            ].map(cls => (
-              <div key={cls.title} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+              {
+                title: "Data Structures Live Session",
+                date: "2026-05-20",
+                attendance: "42/45",
+                status: "Completed",
+              },
+              {
+                title: "Algorithm Discussion",
+                date: "2026-05-18",
+                attendance: "38/45",
+                status: "Completed",
+              },
+              {
+                title: "Database Q&A",
+                date: "2026-05-15",
+                attendance: "40/45",
+                status: "Completed",
+              },
+              {
+                title: "Web Development Tutorial",
+                date: "2026-05-12",
+                attendance: "35/45",
+                status: "Completed",
+              },
+            ].map((cls) => (
+              <div
+                key={cls.title}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center">
                   <Video className="size-4" />
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{cls.title}</div>
-                  <div className="text-xs text-muted-foreground">{cls.date} • {cls.attendance}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {cls.date} • {cls.attendance}
+                  </div>
                 </div>
                 <Badge tone="success">{cls.status}</Badge>
               </div>

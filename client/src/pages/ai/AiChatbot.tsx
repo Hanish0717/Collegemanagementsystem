@@ -1,13 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
-import { Send, Search, User, Bot, Paperclip, Mic, Smile, X, Plus, MoreVertical, Clock, Lightbulb, AlertCircle, TrendingUp, Calendar, FileText, Sparkles } from "lucide-react";
+import {
+  Send,
+  Search,
+  User,
+  Bot,
+  Paperclip,
+  Mic,
+  Smile,
+  X,
+  Plus,
+  MoreVertical,
+  Clock,
+  Lightbulb,
+  AlertCircle,
+  TrendingUp,
+  Calendar,
+  FileText,
+  Sparkles,
+} from "lucide-react";
 import { Badge, Card } from "@/components/dashboard/ui";
 import { motion, AnimatePresence } from "framer-motion";
 
-
-
 export function AiChatbot() {
-  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string; time: string }>>([]);
+  const [messages, setMessages] = useState<
+    Array<{ role: "user" | "assistant"; content: string; time: string }>
+  >([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,26 +61,47 @@ export function AiChatbot() {
     scrollToBottom();
   }, [messages, isTyping]);
 
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
 
-    const userMessage = { role: "user" as const, content: inputValue, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-    setMessages([...messages, userMessage]);
+    const messageText = inputValue;
+    const userMessage = {
+      role: "user" as const,
+      content: messageText,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const responses = [
-        "Your current attendance is 84%. You are eligible for semester exams.",
-        "You have DBMS exam on 24th May and Operating Systems exam on 27th May.",
-        "You have ₹12,000 pending hostel fee due on 30th May.",
-        "Your CGPA is 8.2. You're performing well in all subjects.",
-        "Placement season starts next month. 92% of students got placed last year.",
-      ];
-      const botResponse = { role: "assistant" as const, content: responses[Math.floor(Math.random() * responses.length)], time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-      setMessages(prev => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 1500);
+    import("@/services/aiService").then(({ sendChatMessage }) => {
+      sendChatMessage(messageText, conversationId)
+        .then((res) => {
+          const botResponse = {
+            role: "assistant" as const,
+            content: res.response,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          };
+          setMessages((prev) => [...prev, botResponse]);
+          if (res.conversationId) {
+            setConversationId(res.conversationId);
+          }
+          setIsTyping(false);
+        })
+        .catch((err) => {
+          console.error("AI chat failed:", err);
+          const errorResponse = {
+            role: "assistant" as const,
+            content:
+              "Sorry, I encountered an error connecting to the campus network. Please check that the server is active.",
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          };
+          setMessages((prev) => [...prev, errorResponse]);
+          setIsTyping(false);
+        });
+    });
   };
 
   const handleSuggestedPrompt = (prompt: string) => {
@@ -71,6 +110,7 @@ export function AiChatbot() {
 
   const clearChat = () => {
     setMessages([]);
+    setConversationId(null);
   };
 
   return (
@@ -143,7 +183,9 @@ export function AiChatbot() {
                   className={`p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${alert.type === "Warning" ? "bg-amber-50 border-amber-200" : ""}`}
                 >
                   <div className="text-sm font-medium">{alert.alert}</div>
-                  <Badge tone={alert.type === "Warning" ? "warn" : "info"} className="mt-1">{alert.type}</Badge>
+                  <Badge tone={alert.type === "Warning" ? "warn" : "info"} className="mt-1">
+                    {alert.type}
+                  </Badge>
                 </div>
               ))}
             </div>
@@ -172,10 +214,17 @@ export function AiChatbot() {
                 <button className="p-2 rounded-lg hover:bg-accent transition" title="Search">
                   <Search className="size-4 text-muted-foreground" />
                 </button>
-                <button className="p-2 rounded-lg hover:bg-accent transition" title="Clear chat" onClick={clearChat}>
+                <button
+                  className="p-2 rounded-lg hover:bg-accent transition"
+                  title="Clear chat"
+                  onClick={clearChat}
+                >
                   <X className="size-4 text-muted-foreground" />
                 </button>
-                <button className="p-2 rounded-lg hover:bg-accent transition lg:hidden" title="Menu">
+                <button
+                  className="p-2 rounded-lg hover:bg-accent transition lg:hidden"
+                  title="Menu"
+                >
                   <MoreVertical className="size-4 text-muted-foreground" />
                 </button>
               </div>
@@ -228,7 +277,9 @@ export function AiChatbot() {
                         >
                           <div className="text-sm whitespace-pre-line">{message.content}</div>
                         </div>
-                        <span className="text-xs text-muted-foreground mt-1 ml-1">{message.time}</span>
+                        <span className="text-xs text-muted-foreground mt-1 ml-1">
+                          {message.time}
+                        </span>
                       </div>
                       {message.role === "user" && (
                         <div className="size-8 rounded-lg bg-gradient-violet text-white grid place-items-center flex-shrink-0">
@@ -252,8 +303,14 @@ export function AiChatbot() {
                           <div className="flex items-center gap-2">
                             <div className="flex gap-1">
                               <span className="size-2 rounded-full bg-muted-foreground animate-pulse" />
-                              <span className="size-2 rounded-full bg-muted-foreground animate-pulse" style={{ animationDelay: "150ms" }} />
-                              <span className="size-2 rounded-full bg-muted-foreground animate-pulse" style={{ animationDelay: "300ms" }} />
+                              <span
+                                className="size-2 rounded-full bg-muted-foreground animate-pulse"
+                                style={{ animationDelay: "150ms" }}
+                              />
+                              <span
+                                className="size-2 rounded-full bg-muted-foreground animate-pulse"
+                                style={{ animationDelay: "300ms" }}
+                              />
                             </div>
                           </div>
                         </div>
@@ -282,7 +339,10 @@ export function AiChatbot() {
                 </div>
               )}
               <div className="flex items-center gap-2">
-                <button className="p-2.5 rounded-lg border hover:bg-accent transition" title="Attach file">
+                <button
+                  className="p-2.5 rounded-lg border hover:bg-accent transition"
+                  title="Attach file"
+                >
                   <Paperclip className="size-4 text-muted-foreground" />
                 </button>
                 <input
@@ -292,10 +352,16 @@ export function AiChatbot() {
                   placeholder="Ask me anything about attendance, exams, fees..."
                   className="flex-1 rounded-xl border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
-                <button className="p-2.5 rounded-lg border hover:bg-accent transition lg:hidden" title="Voice input">
+                <button
+                  className="p-2.5 rounded-lg border hover:bg-accent transition lg:hidden"
+                  title="Voice input"
+                >
                   <Mic className="size-4 text-muted-foreground" />
                 </button>
-                <button className="p-2.5 rounded-lg border hover:bg-accent transition lg:hidden" title="Emoji">
+                <button
+                  className="p-2.5 rounded-lg border hover:bg-accent transition lg:hidden"
+                  title="Emoji"
+                >
                   <Smile className="size-4 text-muted-foreground" />
                 </button>
                 <button

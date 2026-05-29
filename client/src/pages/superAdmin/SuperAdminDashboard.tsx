@@ -1,33 +1,143 @@
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import {
-  Activity, Bell, Building2, CheckCircle, Clock, Database, GraduationCap,
-  ShieldCheck, Users, Wallet
+  Activity,
+  Bell,
+  Building2,
+  CheckCircle,
+  Clock,
+  Database,
+  GraduationCap,
+  ShieldCheck,
+  Users,
+  Wallet,
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import {
-  departmentDistribution, superAdminActivities, superAdminNotifications,
-  superAdminStats, systemAnalytics, userActivityData
+  departmentDistribution,
+  superAdminActivities,
+  superAdminNotifications,
+  systemAnalytics,
+  userActivityData,
 } from "@/mock/superAdminData";
+import { useSuperAdminStats } from "@/hooks/useSuperAdminStats";
+import { Skeleton } from "@/components/ui/skeleton";
 
-
-
-const statIcons = [Building2, Users, GraduationCap, ShieldCheck, Activity, CheckCircle, Wallet, Clock];
-const statGradients = [
-  "bg-gradient-primary", "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary",
-  "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary", "bg-gradient-violet",
+const statsConfig = [
+  {
+    label: "Total Colleges/Departments",
+    fallback: "18",
+    change: "+2.4%",
+    icon: Building2,
+    gradient: "bg-gradient-primary",
+  },
+  {
+    label: "Total Students",
+    fallback: "0",
+    icon: Users,
+    gradient: "bg-gradient-violet",
+  },
+  {
+    label: "Total Faculty",
+    fallback: "0",
+    icon: GraduationCap,
+    gradient: "bg-gradient-cyan",
+  },
+  {
+    label: "Total Admins",
+    fallback: "0",
+    icon: ShieldCheck,
+    gradient: "bg-gradient-primary",
+  },
+  {
+    label: "Active Users",
+    fallback: "0",
+    icon: Activity,
+    gradient: "bg-gradient-violet",
+  },
+  {
+    label: "System Health",
+    fallback: "99.8%",
+    change: "+0.3%",
+    icon: CheckCircle,
+    gradient: "bg-gradient-cyan",
+  },
+  {
+    label: "Revenue Overview",
+    fallback: "₹0",
+    icon: Wallet,
+    gradient: "bg-gradient-primary",
+  },
+  {
+    label: "Pending Approvals",
+    fallback: "0",
+    icon: Clock,
+    gradient: "bg-gradient-violet",
+  },
 ];
 
 export function SuperAdminDashboard() {
-  const path = useRouterState({ select: r => r.location.pathname });
+  const path = useRouterState({ select: (r) => r.location.pathname });
+  const { data: liveStats, isLoading } = useSuperAdminStats();
 
   if (path !== "/dashboard/super-admin") {
     return <Outlet />;
   }
+
+  const getStatValue = (label: string, fallback: string) => {
+    const isLiveKey = [
+      "Total Students",
+      "Total Faculty",
+      "Total Admins",
+      "Active Users",
+      "Pending Approvals",
+      "Revenue Overview",
+    ].includes(label);
+
+    if (isLiveKey && isLoading) {
+      return <Skeleton className="h-7 w-20 animate-pulse bg-muted-foreground/10" />;
+    }
+    if (!liveStats) return fallback;
+
+    switch (label) {
+      case "Total Students":
+        return liveStats.totalStudents.toLocaleString("en-IN");
+      case "Total Faculty":
+        return liveStats.totalFaculty.toLocaleString("en-IN");
+      case "Total Admins":
+        return liveStats.totalAdmins.toLocaleString("en-IN");
+      case "Active Users":
+        return liveStats.activeUsers.toLocaleString("en-IN");
+      case "Pending Approvals":
+        return liveStats.pendingApprovals.toLocaleString("en-IN");
+      case "Revenue Overview": {
+        const rev = liveStats.totalRevenue;
+        if (rev >= 10000000) {
+          return `₹${(rev / 10000000).toFixed(2)}Cr`;
+        } else if (rev >= 100000) {
+          return `₹${(rev / 100000).toFixed(2)}L`;
+        } else {
+          return `₹${rev.toLocaleString("en-IN")}`;
+        }
+      }
+      default:
+        return fallback;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -37,9 +147,20 @@ export function SuperAdminDashboard() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {superAdminStats.map((stat, i) => (
-          <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-            <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i]} gradient={statGradients[i]} />
+        {statsConfig.map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.04 }}
+          >
+            <StatCard
+              label={stat.label}
+              value={getStatValue(stat.label, stat.fallback)}
+              change={stat.change}
+              icon={stat.icon}
+              gradient={stat.gradient}
+            />
           </motion.div>
         ))}
       </div>
@@ -49,7 +170,9 @@ export function SuperAdminDashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold">System Analytics</h3>
-              <p className="text-xs text-muted-foreground">Users, revenue and support tickets across the institution</p>
+              <p className="text-xs text-muted-foreground">
+                Users, revenue and support tickets across the institution
+              </p>
             </div>
             <Badge tone="info">Academic Year</Badge>
           </div>
@@ -70,8 +193,20 @@ export function SuperAdminDashboard() {
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="users" stroke="#4F46E5" fill="url(#super-users)" strokeWidth={2} />
-                <Area type="monotone" dataKey="revenue" stroke="#06B6D4" fill="url(#super-revenue)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="users"
+                  stroke="#4F46E5"
+                  fill="url(#super-users)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#06B6D4"
+                  fill="url(#super-revenue)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -85,15 +220,23 @@ export function SuperAdminDashboard() {
           <div className="h-56">
             <ResponsiveContainer>
               <PieChart>
-                <Pie data={departmentDistribution} dataKey="value" innerRadius={50} outerRadius={80} paddingAngle={3}>
-                  {departmentDistribution.map((d, i) => <Cell key={i} fill={d.color} />)}
+                <Pie
+                  data={departmentDistribution}
+                  dataKey="value"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={3}
+                >
+                  {departmentDistribution.map((d, i) => (
+                    <Cell key={i} fill={d.color} />
+                  ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2">
-            {departmentDistribution.map(d => (
+            {departmentDistribution.map((d) => (
               <div key={d.name} className="flex items-center gap-2 text-xs">
                 <span className="size-2.5 rounded-full" style={{ background: d.color }} />
                 <span className="text-muted-foreground">{d.name}</span>
@@ -138,8 +281,11 @@ export function SuperAdminDashboard() {
               { label: "Database Cluster", value: "Operational", tone: "success" as const },
               { label: "Email Gateway", value: "Monitoring", tone: "warn" as const },
               { label: "Backup Service", value: "Synced", tone: "info" as const },
-            ].map(item => (
-              <div key={item.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
+              >
                 <div className="text-sm font-medium">{item.label}</div>
                 <Badge tone={item.tone}>{item.value}</Badge>
               </div>
@@ -155,8 +301,11 @@ export function SuperAdminDashboard() {
             <Badge tone="info">Live</Badge>
           </div>
           <div className="space-y-3">
-            {superAdminActivities.map(activity => (
-              <div key={activity.actor + activity.time} className="flex items-center gap-3 py-2 border-b last:border-0">
+            {superAdminActivities.map((activity) => (
+              <div
+                key={activity.actor + activity.time}
+                className="flex items-center gap-3 py-2 border-b last:border-0"
+              >
                 <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {activity.actor.slice(0, 2).toUpperCase()}
                 </div>
@@ -178,14 +327,25 @@ export function SuperAdminDashboard() {
             <Bell className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            {superAdminNotifications.map(notification => (
-              <div key={notification.id} className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}>
+            {superAdminNotifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}
+              >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{notification.title}</div>
                   <div className="text-xs text-muted-foreground">{notification.time}</div>
                 </div>
-                <Badge tone={notification.type === "Security" ? "danger" : notification.type === "Approval" ? "warn" : "info"}>
+                <Badge
+                  tone={
+                    notification.type === "Security"
+                      ? "danger"
+                      : notification.type === "Approval"
+                        ? "warn"
+                        : "info"
+                  }
+                >
                   {notification.type}
                 </Badge>
               </div>

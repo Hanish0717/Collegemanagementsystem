@@ -65,7 +65,9 @@ export function FacultyPerformance() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -137,7 +139,9 @@ export function FacultyPerformance() {
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {student.student.split(" ").map((n: string) => n[0]).join("")}
                 </div>
-                <Badge tone={student.overall >= 85 ? "success" : student.overall >= 75 ? "info" : "warn"}>
+                <Badge
+                  tone={student.overall >= 85 ? "success" : student.overall >= 75 ? "info" : "warn"}
+                >
                   {student.overall}%
                 </Badge>
               </div>

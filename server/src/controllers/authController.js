@@ -167,28 +167,31 @@ export const register = async (req, res, next) => {
   }
 };
 
-// @desc    Authenticate a user & get token (Email + Password — direct login, no OTP)
-// @route   POST /api/auth/login
-// @access  Public
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, admissionNumber, password } = req.body;
 
-    if (!email || !password) {
-      const error = new Error('Please provide email and password');
+    if ((!email && !admissionNumber) || !password) {
+      const error = new Error('Please provide email/admission number and password');
       error.statusCode = 400;
       return next(error);
     }
 
-    const cleanEmail = email.toLowerCase().trim();
+    const cleanEmail = email ? email.toLowerCase().trim() : null;
     const cleanPassword = password.trim();
 
-    // Find user by email
-    let { data: user } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', cleanEmail)
-      .maybeSingle();
+    let user = null;
+
+    if (cleanEmail) {
+      const { data: foundUser, error: selectErr } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', cleanEmail)
+        .maybeSingle();
+
+      if (selectErr) throw selectErr;
+      user = foundUser;
+    }
 
     let isMatch = false;
 
@@ -198,74 +201,22 @@ export const login = async (req, res, next) => {
         if (user.password) {
           isMatch = await bcrypt.compare(cleanPassword, user.password);
         }
-        if (!isMatch) {
-          // Check if child ID (rollNumber) matches entered password
+        if (!isMatch && admissionNumber) {
           const { data: student } = await supabase
             .from('students')
             .select('*')
+            .eq('roll_number', admissionNumber.toUpperCase().trim())
             .eq('parent_email', cleanEmail)
-            .eq('roll_number', cleanPassword.toUpperCase())
             .maybeSingle();
 
           if (student) {
             isMatch = true;
-            // Sync credentials / info
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(cleanPassword, salt);
-            const { data: updatedUser } = await supabase
-              .from('users')
-              .update({
-                password: hashedPassword, // saves as rollNumber
-                child_email: student.email,
-                full_name: student.parent_name,
-                phone_number: student.parent_phone,
-                mobile: student.parent_phone
-              })
-              .eq('id', user.id)
-              .select()
-              .single();
-            
-            user = updatedUser;
           }
         }
       } else {
-        // Normal password matching for non-parents
         if (user.password) {
           isMatch = await bcrypt.compare(cleanPassword, user.password);
         }
-      }
-    } else {
-      // User record not found. Check if this is a parent trying to login directly for the first time
-      const { data: student } = await supabase
-        .from('students')
-        .select('*')
-        .eq('parent_email', cleanEmail)
-        .eq('roll_number', cleanPassword.toUpperCase())
-        .maybeSingle();
-
-      if (student) {
-        // Create Parent user record on the fly
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(cleanPassword, salt);
-        const { data: newUser } = await supabase
-          .from('users')
-          .insert([{
-            name: student.parent_name || 'Parent',
-            full_name: student.parent_name || 'Parent',
-            email: cleanEmail,
-            password: hashedPassword, // rolls as password
-            role: 'parent',
-            child_email: student.email,
-            phone_number: student.parent_phone || '0000000000',
-            mobile: student.parent_phone || '0000000000',
-            is_verified: true,
-            is_active: true
-          }])
-          .select()
-          .single();
-
-        user = newUser;
-        isMatch = true;
       }
     }
 
@@ -343,7 +294,7 @@ export const googleAuth = async (req, res, next) => {
           .eq('id', user.id)
           .select()
           .single();
-        
+
         user = updatedUser;
       }
       if (!user.is_active) {

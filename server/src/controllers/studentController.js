@@ -130,6 +130,7 @@ export const createStudent = async (req, res, next) => {
     const {
       fullName,
       rollNumber,
+      admissionNumber,
       email,
       phoneNumber,
       gender,
@@ -140,8 +141,8 @@ export const createStudent = async (req, res, next) => {
       section,
       address,
       parentName,
-      parentPhone,
       parentEmail,
+      parentPhone,
       cgpa,
       attendancePercentage,
       profileImage,

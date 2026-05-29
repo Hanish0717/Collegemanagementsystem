@@ -29,7 +29,7 @@ export function ResetPassword() {
       setError("Passwords do not match");
       return;
     }
-    
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters long");
       return;
@@ -100,7 +100,7 @@ export function ResetPassword() {
               <input
                 type="text"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="000000"
                 required
                 className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring text-center tracking-widest text-lg font-semibold"
@@ -122,7 +122,7 @@ export function ResetPassword() {
               />
             </div>
           </div>
-          
+
           <div>
             <label className="text-xs font-medium">Confirm New Password</label>
             <div className="mt-1 relative">

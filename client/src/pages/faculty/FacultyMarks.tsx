@@ -74,7 +74,9 @@ export function FacultyMarks() {
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">Current</Badge>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
           </Card>
         ))}
       </div>
@@ -108,9 +110,16 @@ export function FacultyMarks() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Student ID", "Student Name", "Subject", "Internal Marks", "Grade", "Status"].map(column => (
-                  <th key={column} className="text-left py-3 px-4 font-semibold text-muted-foreground">{column}</th>
-                ))}
+                {["Student ID", "Student Name", "Subject", "Internal Marks", "Grade", "Status"].map(
+                  (column) => (
+                    <th
+                      key={column}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {column}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -129,10 +138,22 @@ export function FacultyMarks() {
                     />
                   </td>
                   <td className="py-3 px-4">
-                    <Badge tone={mark.grade.startsWith("A") ? "success" : mark.grade.startsWith("B") ? "info" : "warn"}>{mark.grade}</Badge>
+                    <Badge
+                      tone={
+                        mark.grade.startsWith("A")
+                          ? "success"
+                          : mark.grade.startsWith("B")
+                            ? "info"
+                            : "warn"
+                      }
+                    >
+                      {mark.grade}
+                    </Badge>
                   </td>
                   <td className="py-3 px-4">
-                    <Badge tone={mark.status === "Submitted" ? "success" : "warn"}>{mark.status}</Badge>
+                    <Badge tone={mark.status === "Submitted" ? "success" : "warn"}>
+                      {mark.status}
+                    </Badge>
                   </td>
                 </tr>
               ))}
@@ -176,8 +197,11 @@ export function FacultyMarks() {
               { grade: "B+ (70-79)", count: marks.filter(m => m.grade === "B+").length, percentage: `${Math.round(marks.filter(m => m.grade === "B+").length / marks.length * 100)}%` },
               { grade: "B (60-69)", count: marks.filter(m => m.grade === "B").length, percentage: `${Math.round(marks.filter(m => m.grade === "B").length / marks.length * 100)}%` },
               { grade: "C (Below 60)", count: marks.filter(m => m.grade === "C").length, percentage: `${Math.round(marks.filter(m => m.grade === "C").length / marks.length * 100)}%` },
-            ].map(item => (
-              <div key={item.grade} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
+            ].map((item) => (
+              <div
+                key={item.grade}
+                className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
+              >
                 <span className="text-sm font-medium">{item.grade}</span>
                 <div className="flex items-center gap-3">
                   <span className="text-sm">{item.count} students</span>

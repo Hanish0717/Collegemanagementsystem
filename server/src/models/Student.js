@@ -79,11 +79,6 @@ const studentSchema = new mongoose.Schema(
       required: [true, 'Parent contact number is required'],
       trim: true,
     },
-    parentEmail: {
-      type: String,
-      trim: true,
-      lowercase: true,
-    },
     cgpa: {
       type: Number,
       min: [0, 'CGPA cannot be less than 0'],

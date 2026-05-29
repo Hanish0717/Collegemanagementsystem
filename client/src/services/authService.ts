@@ -1,6 +1,5 @@
 import api from "../lib/api";
 import type { RoleId } from "../lib/roles";
-
 import type { AuthUser, LoginPayload, LoginResponse } from "@/types/auth";
 
 // ── Role Mapping (backend ↔ frontend) ───────────────────
@@ -82,9 +81,7 @@ export async function login(payload: LoginPayload): Promise<any> {
 
 /** Fetch the currently authenticated user from backend. */
 export async function fetchCurrentUser(): Promise<AuthUser> {
-  const { data } = await api.get<{ success: boolean; user: AuthUser }>(
-    "/api/auth/me",
-  );
+  const { data } = await api.get<{ success: boolean; user: AuthUser }>("/api/auth/me");
   localStorage.setItem(USER_KEY, JSON.stringify(data.user));
 
   // Keep role in sync

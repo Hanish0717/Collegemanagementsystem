@@ -1,13 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, CartesianGrid, Legend
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
 } from "recharts";
 import { Download, TrendingUp, Users, Briefcase } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { placementReports, departmentPlacementData, packageAnalyticsData } from "@/mock/mockData";
-
-
 
 export function PlacementReports() {
   const latestMonth = placementReports[placementReports.length - 1];
@@ -33,12 +42,14 @@ export function PlacementReports() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(stat => (
+        {stats.map((stat) => (
           <Card key={stat.label} className="text-center">
             <div className="text-2xl mb-2">{stat.icon}</div>
             <div className="text-2xl font-bold">{stat.value}</div>
             <div className="text-xs text-muted-foreground mt-1">{stat.label}</div>
-            <Badge tone="success" className="mt-2">{stat.change}</Badge>
+            <Badge tone="success" className="mt-2">
+              {stat.change}
+            </Badge>
           </Card>
         ))}
       </div>
@@ -67,8 +78,20 @@ export function PlacementReports() {
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Legend />
-                <Line type="monotone" dataKey="placed" stroke="#9333EA" strokeWidth={2.5} name="Placed Students" />
-                <Line type="monotone" dataKey="percentage" stroke="#06B6D4" strokeWidth={2} name="Placement %" />
+                <Line
+                  type="monotone"
+                  dataKey="placed"
+                  stroke="#9333EA"
+                  strokeWidth={2.5}
+                  name="Placed Students"
+                />
+                <Line
+                  type="monotone"
+                  dataKey="percentage"
+                  stroke="#06B6D4"
+                  strokeWidth={2}
+                  name="Placement %"
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -142,25 +165,41 @@ export function PlacementReports() {
             <thead className="border-b">
               <tr>
                 <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Month</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Placed</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Placement %</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Avg Package</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Highest</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Companies</th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Placed
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Placement %
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Avg Package
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Highest
+                </th>
+                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                  Companies
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y">
-              {placementReports.map(report => (
+              {placementReports.map((report) => (
                 <tr key={report.month} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{report.month}</td>
                   <td className="py-3 px-4 text-center font-bold">{report.placed}</td>
                   <td className="py-3 px-4 text-center">
-                    <span className={`font-bold ${report.percentage >= 50 ? "text-emerald-600" : report.percentage >= 40 ? "text-amber-600" : "text-rose-600"}`}>
+                    <span
+                      className={`font-bold ${report.percentage >= 50 ? "text-emerald-600" : report.percentage >= 40 ? "text-amber-600" : "text-rose-600"}`}
+                    >
                       {report.percentage}%
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-center font-semibold text-blue-600">{report.avgPackage} LPA</td>
-                  <td className="py-3 px-4 text-center font-semibold text-purple-600">{report.highestPackage} LPA</td>
+                  <td className="py-3 px-4 text-center font-semibold text-blue-600">
+                    {report.avgPackage} LPA
+                  </td>
+                  <td className="py-3 px-4 text-center font-semibold text-purple-600">
+                    {report.highestPackage} LPA
+                  </td>
                   <td className="py-3 px-4 text-center">{report.companyCount}</td>
                 </tr>
               ))}
@@ -188,7 +227,11 @@ export function PlacementReports() {
             <div>
               <div className="text-xs text-muted-foreground">Overall Avg Package</div>
               <div className="text-2xl font-bold mt-1">
-                {(placementReports.reduce((sum, r) => sum + r.avgPackage, 0) / placementReports.length).toFixed(1)} LPA
+                {(
+                  placementReports.reduce((sum, r) => sum + r.avgPackage, 0) /
+                  placementReports.length
+                ).toFixed(1)}{" "}
+                LPA
               </div>
             </div>
             <TrendingUp className="size-8 text-emerald-500 opacity-20" />
@@ -200,7 +243,7 @@ export function PlacementReports() {
             <div>
               <div className="text-xs text-muted-foreground">Highest Package</div>
               <div className="text-2xl font-bold mt-1">
-                {Math.max(...placementReports.map(r => r.highestPackage))} LPA
+                {Math.max(...placementReports.map((r) => r.highestPackage))} LPA
               </div>
             </div>
             <TrendingUp className="size-8 text-purple-500 opacity-20" />
@@ -212,7 +255,7 @@ export function PlacementReports() {
             <div>
               <div className="text-xs text-muted-foreground">Total Companies</div>
               <div className="text-2xl font-bold mt-1">
-                {Math.max(...placementReports.map(r => r.companyCount))}
+                {Math.max(...placementReports.map((r) => r.companyCount))}
               </div>
             </div>
             <Briefcase className="size-8 text-amber-500 opacity-20" />
@@ -229,7 +272,7 @@ export function PlacementReports() {
             { name: "Placement Stats", format: "Excel", size: "1.8 MB" },
             { name: "Student Data", format: "CSV", size: "892 KB" },
             { name: "Company Analytics", format: "PDF", size: "3.1 MB" },
-          ].map(report => (
+          ].map((report) => (
             <button
               key={report.name}
               className="p-4 rounded-lg border hover:border-primary hover:bg-accent/50 transition text-left"
@@ -237,7 +280,9 @@ export function PlacementReports() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">{report.name}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{report.format} • {report.size}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {report.format} • {report.size}
+                  </div>
                 </div>
                 <Download className="size-4 text-muted-foreground" />
               </div>
@@ -257,7 +302,10 @@ export function PlacementReports() {
             { company: "Goldman Sachs", placements: 8, avgPackage: 24.0 },
             { company: "Infosys", placements: 18, avgPackage: 10.5 },
           ].map((rec, idx) => (
-            <div key={rec.company} className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition">
+            <div
+              key={rec.company}
+              className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition"
+            >
               <div className="flex items-center gap-3">
                 <div className="size-8 rounded-lg bg-gradient-primary text-white grid place-items-center font-bold text-xs shrink-0">
                   {idx + 1}
@@ -283,9 +331,14 @@ export function PlacementReports() {
           {[
             { metric: "Placement Success Rate", value: "52%", target: "60%", status: "warning" },
             { metric: "Average Package Growth", value: "+8.2%", target: "+10%", status: "success" },
-            { metric: "Company Partnership Growth", value: "+16.7%", target: "+15%", status: "success" },
+            {
+              metric: "Company Partnership Growth",
+              value: "+16.7%",
+              target: "+15%",
+              status: "success",
+            },
             { metric: "Student Readiness Score", value: "78%", target: "85%", status: "warning" },
-          ].map(indicator => (
+          ].map((indicator) => (
             <div key={indicator.metric} className="p-3 rounded-lg border">
               <div className="text-xs text-muted-foreground mb-2">{indicator.metric}</div>
               <div className="flex items-end justify-between">

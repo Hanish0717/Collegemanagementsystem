@@ -1,7 +1,7 @@
 export const parentStats = [
   { label: "Child Attendance", value: "87.3%", change: "+2.1%" },
   { label: "Average Marks", value: "85.4%", change: "+1.8%" },
-  { label: "Pending Fees", value: "$1,250", change: "Due" },
+  { label: "Pending Fees", value: "₹45,000", change: "Due" },
   { label: "Upcoming Exams", value: "2", change: "This Week" },
   { label: "Notifications", value: "5", change: "Unread" },
   { label: "Leave Status", value: "Approved", change: "1 Request" },
@@ -24,17 +24,65 @@ export const marksPerformance = [
 ];
 
 export const parentActivities = [
-  { actor: "School", action: "sent attendance report for", target: "May 2026", time: "2h ago", type: "Attendance" },
-  { actor: "Teacher", action: "graded assignment in", target: "Data Structures", time: "5h ago", type: "Grade" },
-  { actor: "System", action: "reminded about", target: "Fee payment due date", time: "1d ago", type: "Reminder" },
-  { actor: "Admin", action: "approved leave request for", target: "May 25-26", time: "2d ago", type: "Leave" },
+  {
+    actor: "School",
+    action: "sent attendance report for",
+    target: "May 2026",
+    time: "2h ago",
+    type: "Attendance",
+  },
+  {
+    actor: "Teacher",
+    action: "graded assignment in",
+    target: "Data Structures",
+    time: "5h ago",
+    type: "Grade",
+  },
+  {
+    actor: "System",
+    action: "reminded about",
+    target: "Fee payment due date",
+    time: "1d ago",
+    type: "Reminder",
+  },
+  {
+    actor: "Admin",
+    action: "approved leave request for",
+    target: "May 25-26",
+    time: "2d ago",
+    type: "Leave",
+  },
 ];
 
 export const parentNotifications = [
-  { id: "PN-001", title: "Mid-term exam schedule released", type: "Exam", time: "1h ago", unread: true },
-  { id: "PN-002", title: "Fee payment deadline approaching", type: "Alert", time: "4h ago", unread: true },
-  { id: "PN-003", title: "Parent-teacher meeting scheduled", type: "Meeting", time: "1d ago", unread: false },
-  { id: "PN-004", title: "School annual day invitation", type: "Event", time: "2d ago", unread: false },
+  {
+    id: "PN-001",
+    title: "Mid-term exam schedule released",
+    type: "Exam",
+    time: "1h ago",
+    unread: true,
+  },
+  {
+    id: "PN-002",
+    title: "Fee payment deadline approaching",
+    type: "Alert",
+    time: "4h ago",
+    unread: true,
+  },
+  {
+    id: "PN-003",
+    title: "Parent-teacher meeting scheduled",
+    type: "Meeting",
+    time: "1d ago",
+    unread: false,
+  },
+  {
+    id: "PN-004",
+    title: "School annual day invitation",
+    type: "Event",
+    time: "2d ago",
+    unread: false,
+  },
 ];
 
 export const subjectAttendance = [
@@ -46,19 +94,71 @@ export const subjectAttendance = [
 ];
 
 export const subjectMarks = [
-  { subject: "Data Structures", internal: 88, external: 90, total: 89, grade: "A", status: "Excellent" },
+  {
+    subject: "Data Structures",
+    internal: 88,
+    external: 90,
+    total: 89,
+    grade: "A",
+    status: "Excellent",
+  },
   { subject: "Algorithms", internal: 85, external: 88, total: 86, grade: "A", status: "Excellent" },
-  { subject: "Database Systems", internal: 82, external: 85, total: 83, grade: "B+", status: "Good" },
-  { subject: "Web Technologies", internal: 90, external: 92, total: 91, grade: "A+", status: "Excellent" },
-  { subject: "Operating Systems", internal: 84, external: 86, total: 85, grade: "A", status: "Excellent" },
+  {
+    subject: "Database Systems",
+    internal: 82,
+    external: 85,
+    total: 83,
+    grade: "B+",
+    status: "Good",
+  },
+  {
+    subject: "Web Technologies",
+    internal: 90,
+    external: 92,
+    total: 91,
+    grade: "A+",
+    status: "Excellent",
+  },
+  {
+    subject: "Operating Systems",
+    internal: 84,
+    external: 86,
+    total: 85,
+    grade: "A",
+    status: "Excellent",
+  },
 ];
 
 export const feeRecords = [
-  { feeType: "Tuition Fee", amount: "$2,500", dueDate: "2026-06-01", status: "Pending", receipt: "-" },
-  { feeType: "Hostel Fee", amount: "$800", dueDate: "2026-05-25", status: "Overdue", receipt: "-" },
-  { feeType: "Lab Fee", amount: "$500", dueDate: "2026-06-15", status: "Pending", receipt: "-" },
-  { feeType: "Library Fee", amount: "$200", dueDate: "2026-05-30", status: "Pending", receipt: "-" },
-  { feeType: "Transport Fee", amount: "$300", dueDate: "2026-05-20", status: "Paid", receipt: "REC-001" },
+  {
+    feeType: "Tuition Fee",
+    amount: "₹45,000",
+    dueDate: "2026-06-01",
+    status: "Pending",
+    receipt: "-",
+  },
+  {
+    feeType: "Hostel Fee",
+    amount: "₹35,000",
+    dueDate: "2026-05-25",
+    status: "Overdue",
+    receipt: "-",
+  },
+  { feeType: "Lab Fee", amount: "₹8,500", dueDate: "2026-06-15", status: "Pending", receipt: "-" },
+  {
+    feeType: "Library Fee",
+    amount: "₹1,500",
+    dueDate: "2026-05-30",
+    status: "Pending",
+    receipt: "-",
+  },
+  {
+    feeType: "Transport Fee",
+    amount: "₹18,000",
+    dueDate: "2026-05-20",
+    status: "Paid",
+    receipt: "REC-001",
+  },
 ];
 
 export const parentNotificationItems = [
@@ -69,9 +169,27 @@ export const parentNotificationItems = [
 ];
 
 export const leaveHistory = [
-  { date: "2026-05-25", reason: "Medical appointment", appliedOn: "2026-05-20", status: "Approved", remarks: "Approved with medical certificate" },
-  { date: "2026-06-10", reason: "Family function", appliedOn: "2026-06-05", status: "Pending", remarks: "Awaiting approval" },
-  { date: "2026-07-15", reason: "Vacation", appliedOn: "2026-07-10", status: "Pending", remarks: "Awaiting approval" },
+  {
+    date: "2026-05-25",
+    reason: "Medical appointment",
+    appliedOn: "2026-05-20",
+    status: "Approved",
+    remarks: "Approved with medical certificate",
+  },
+  {
+    date: "2026-06-10",
+    reason: "Family function",
+    appliedOn: "2026-06-05",
+    status: "Pending",
+    remarks: "Awaiting approval",
+  },
+  {
+    date: "2026-07-15",
+    reason: "Vacation",
+    appliedOn: "2026-07-10",
+    status: "Pending",
+    remarks: "Awaiting approval",
+  },
 ];
 
 export const performanceData = [
@@ -83,7 +201,28 @@ export const performanceData = [
 ];
 
 export const communications = [
-  { id: "COM001", teacher: "Dr. Rajesh Kumar", subject: "Data Structures", message: "Student performing well in recent tests", time: "2h ago", unread: true },
-  { id: "COM002", teacher: "Prof. Emily Chen", subject: "Algorithms", message: "Assignment submission reminder", time: "5h ago", unread: false },
-  { id: "COM003", teacher: "Dr. Marco Rossi", subject: "Database Systems", message: "Project update discussion", time: "1d ago", unread: false },
+  {
+    id: "COM001",
+    teacher: "Dr. Rajesh Kumar",
+    subject: "Data Structures",
+    message: "Student performing well in recent tests",
+    time: "2h ago",
+    unread: true,
+  },
+  {
+    id: "COM002",
+    teacher: "Prof. Emily Chen",
+    subject: "Algorithms",
+    message: "Assignment submission reminder",
+    time: "5h ago",
+    unread: false,
+  },
+  {
+    id: "COM003",
+    teacher: "Dr. Marco Rossi",
+    subject: "Database Systems",
+    message: "Project update discussion",
+    time: "1d ago",
+    unread: false,
+  },
 ];
