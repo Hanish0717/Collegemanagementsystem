@@ -1,5 +1,11 @@
 import { supabase } from '../config/supabase.js';
 import bcrypt from 'bcryptjs';
+import generateOTP from '../utils/generateOTP.js';
+import sendEmail from '../utils/sendEmail.js';
+import { generateOTPTemplate } from '../utils/emailTemplates.js';
+import { hashOTP } from '../utils/otpUtils.js';
+import { OTP_EXPIRY_MINUTES } from '../../config.js';
+
 
 const formatFaculty = (f) => {
   if (!f) return null;
@@ -74,8 +80,9 @@ export const getFaculty = async (req, res, next) => {
 
     let query = supabase
       .from('faculty')
-      .select('*')
-      .eq('is_active', true);
+      .select('*, users!inner(is_verified)')
+      .eq('is_active', true)
+      .eq('users.is_verified', true);
 
     if (adminProfile && adminProfile.department) {
       query = query.eq('department', adminProfile.department);
@@ -135,11 +142,12 @@ export const createFaculty = async (req, res, next) => {
       designation,
       experience,
       gender,
-      phoneNumber
+      phoneNumber,
+      password
     } = req.body;
 
-    if (!fullName || !email || !employeeId || !department || !designation) {
-      const error = new Error('Please fill in all required fields');
+    if (!fullName || !email || !employeeId || !department || !designation || !password) {
+      const error = new Error('Please fill in all required fields (including Password)');
       error.statusCode = 400;
       throw error;
     }
@@ -162,11 +170,14 @@ export const createFaculty = async (req, res, next) => {
       }
     }
 
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanEmployeeId = employeeId.toUpperCase().trim();
+
     // Check duplicate email
     const { data: existingUser } = await supabase
       .from('users')
       .select('id')
-      .eq('email', email.toLowerCase().trim())
+      .eq('email', cleanEmail)
       .maybeSingle();
 
     if (existingUser) {
@@ -179,7 +190,7 @@ export const createFaculty = async (req, res, next) => {
     const { data: existingFaculty } = await supabase
       .from('faculty')
       .select('id')
-      .eq('employee_id', employeeId.toUpperCase().trim())
+      .eq('employee_id', cleanEmployeeId)
       .maybeSingle();
 
     if (existingFaculty) {
@@ -190,18 +201,19 @@ export const createFaculty = async (req, res, next) => {
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('password123', salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create user in users table
+    // Create user in users table (inactive/unverified)
     const { data: user, error: userErr } = await supabase
       .from('users')
       .insert([{
         name: fullName,
         full_name: fullName,
-        email: email.toLowerCase().trim(),
+        email: cleanEmail,
         role: 'faculty',
         password: hashedPassword,
-        is_verified: true,
+        temp_password: password, // Store temporarily until OTP verified
+        is_verified: false,
         is_active: true
       }])
       .select()
@@ -216,8 +228,8 @@ export const createFaculty = async (req, res, next) => {
       .insert([{
         user_id: user.id,
         full_name: fullName,
-        email: email.toLowerCase().trim(),
-        employee_id: employeeId.toUpperCase().trim(),
+        email: cleanEmail,
+        employee_id: cleanEmployeeId,
         department,
         designation,
         experience: experience ? Number(experience) : 0,
@@ -229,11 +241,39 @@ export const createFaculty = async (req, res, next) => {
       .select()
       .single();
 
-    if (facultyErr) throw facultyErr;
+    if (facultyErr) {
+      await supabase.from('users').delete().eq('id', createdUserId);
+      throw facultyErr;
+    }
+
+    // Generate 6-digit OTP
+    const otp = generateOTP();
+
+    // Ensure only one active OTP per email
+    await supabase.from('otps').delete().eq('email', cleanEmail);
+
+    // Store OTP in DB
+    await supabase.from('otps').insert([{
+      email: cleanEmail,
+      otp: hashOTP(otp),
+      type: 'email_verification',
+      expires_at: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000).toISOString(),
+      attempts: 0,
+      blocked_until: null,
+    }]);
+
+    console.log("OTP for registered faculty " + cleanEmail + ": " + otp);
+
+    // Send OTP via Email
+    await sendEmail({
+      to: cleanEmail,
+      subject: 'Verify Your Faculty Account Registration',
+      html: generateOTPTemplate(otp, 'Email Verification'),
+    });
 
     res.status(201).json({
       success: true,
-      message: 'Faculty created successfully',
+      message: 'Faculty registered successfully. OTP sent to faculty email for verification.',
       data: formatFaculty({
         ...facultyMember,
         user: { isActive: user.is_active, lastLoginAt: user.updated_at }

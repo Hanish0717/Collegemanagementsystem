@@ -1,4 +1,11 @@
 import { supabase } from '../config/supabase.js';
+import bcrypt from 'bcryptjs';
+import generateOTP from '../utils/generateOTP.js';
+import sendEmail from '../utils/sendEmail.js';
+import { generateOTPTemplate } from '../utils/emailTemplates.js';
+import { hashOTP } from '../utils/otpUtils.js';
+import { OTP_EXPIRY_MINUTES } from '../../config.js';
+
 
 // Helper to format student object keys
 const formatStudent = (s) => {
@@ -38,8 +45,9 @@ export const getStudents = async (req, res, next) => {
 
     let query = supabase
       .from('students')
-      .select('*', { count: 'exact' })
-      .eq('is_active', true);
+      .select('*, users!inner(is_verified)', { count: 'exact' })
+      .eq('is_active', true)
+      .eq('users.is_verified', true);
 
     if (search) {
       query = query.or(`full_name.ilike.%${search}%,roll_number.ilike.%${search}%`);
@@ -126,6 +134,7 @@ export const getStudentById = async (req, res, next) => {
 // @route   POST /api/students
 // @access  Private (admin, super-admin)
 export const createStudent = async (req, res, next) => {
+  let createdUserId = null;
   try {
     const {
       fullName,
@@ -143,6 +152,7 @@ export const createStudent = async (req, res, next) => {
       parentName,
       parentEmail,
       parentPhone,
+      password,
       cgpa,
       attendancePercentage,
       profileImage,
@@ -157,22 +167,41 @@ export const createStudent = async (req, res, next) => {
       !semester ||
       !section ||
       !parentName ||
-      !parentPhone
+      !parentPhone ||
+      !parentEmail ||
+      !password
     ) {
-      const error = new Error('Please fill in all required fields');
+      const error = new Error('Please fill in all required fields (including Parent Email and Password)');
       error.statusCode = 400;
       return next(error);
     }
 
-    // Check duplicate
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanRollNumber = rollNumber.toUpperCase().trim();
+    const cleanParentEmail = parentEmail.toLowerCase().trim();
+
+    // 1. Check duplicate user in users table
+    const { data: userExists } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (userExists) {
+      const error = new Error('User account with this email already exists in system');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // 2. Check duplicate in students profile
     const { data: duplicate } = await supabase
       .from('students')
       .select('*')
-      .or(`roll_number.eq.${rollNumber.toUpperCase().trim()},email.eq.${email.toLowerCase().trim()}`)
+      .or(`roll_number.eq.${cleanRollNumber},email.eq.${cleanEmail}`)
       .maybeSingle();
 
     if (duplicate) {
-      const isRollNumberDup = duplicate.roll_number === rollNumber.toUpperCase().trim();
+      const isRollNumberDup = duplicate.roll_number === cleanRollNumber;
       const error = new Error(
         isRollNumberDup
           ? 'Student with this roll number already exists'
@@ -182,13 +211,39 @@ export const createStudent = async (req, res, next) => {
       return next(error);
     }
 
-    // Create student
+    // 3. Create user in users table (inactive/unverified)
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const { data: user, error: userErr } = await supabase
+      .from('users')
+      .insert([{
+        name: fullName,
+        full_name: fullName,
+        email: cleanEmail,
+        password: hashedPassword,
+        temp_password: password, // Store temporarily until OTP verified
+        role: 'student',
+        phone_number: phoneNumber || null,
+        mobile: phoneNumber || null,
+        is_verified: false,
+        is_active: true
+      }])
+      .select()
+      .single();
+
+    if (userErr) throw userErr;
+    createdUserId = user.id;
+
+    // 4. Create Student profile
     const { data: student, error: createErr } = await supabase
       .from('students')
       .insert([{
+        user_id: user.id,
         full_name: fullName,
-        roll_number: rollNumber.toUpperCase().trim(),
-        email: email.toLowerCase().trim(),
+        roll_number: cleanRollNumber,
+        admission_number: admissionNumber ? admissionNumber.trim() : null,
+        email: cleanEmail,
         phone_number: phoneNumber,
         gender,
         date_of_birth: dateOfBirth ? new Date(dateOfBirth).toISOString() : null,
@@ -199,7 +254,7 @@ export const createStudent = async (req, res, next) => {
         address,
         parent_name: parentName,
         parent_phone: parentPhone,
-        parent_email: parentEmail,
+        parent_email: cleanParentEmail,
         cgpa: cgpa ? Number(cgpa) : null,
         attendance_percentage: attendancePercentage ? Number(attendancePercentage) : 100,
         profile_image: profileImage,
@@ -208,14 +263,45 @@ export const createStudent = async (req, res, next) => {
       .select()
       .single();
 
-    if (createErr) throw createErr;
+    if (createErr) {
+      await supabase.from('users').delete().eq('id', createdUserId);
+      throw createErr;
+    }
+
+    // 5. Generate 6-digit OTP
+    const otp = generateOTP();
+
+    // Ensure only one active OTP per email
+    await supabase.from('otps').delete().eq('email', cleanEmail);
+
+    // Store OTP in DB
+    await supabase.from('otps').insert([{
+      email: cleanEmail,
+      otp: hashOTP(otp),
+      type: 'email_verification',
+      expires_at: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000).toISOString(),
+      attempts: 0,
+      blocked_until: null,
+    }]);
+
+    console.log("OTP for registered student " + cleanEmail + ": " + otp);
+
+    // Send OTP via Email
+    await sendEmail({
+      to: cleanEmail,
+      subject: 'Verify Your Student Account Registration',
+      html: generateOTPTemplate(otp, 'Email Verification'),
+    });
 
     return res.status(201).json({
       success: true,
-      message: 'Student created successfully',
+      message: 'Student registered successfully. OTP sent to student email for verification.',
       data: formatStudent(student),
     });
   } catch (error) {
+    if (createdUserId) {
+      await supabase.from('users').delete().eq('id', createdUserId);
+    }
     next(error);
   }
 };

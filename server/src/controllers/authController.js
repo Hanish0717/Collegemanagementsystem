@@ -1,7 +1,12 @@
 import { generateToken } from '../services/authService.js';
 import generateOTP from '../utils/generateOTP.js';
 import sendEmail from '../utils/sendEmail.js';
-import { generateOTPTemplate } from '../utils/emailTemplates.js';
+import { 
+  generateOTPTemplate,
+  generateStudentWelcomeTemplate,
+  generateParentWelcomeTemplate,
+  generateFacultyWelcomeTemplate
+} from '../utils/emailTemplates.js';
 import { hashOTP, verifyOTPHash } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES, OTP_RESEND_COOLDOWN_SECONDS, OTP_MAX_ATTEMPTS, OTP_BLOCK_TIME_MINUTES } from '../../config.js';
 import bcrypt from 'bcryptjs';
@@ -19,10 +24,23 @@ export const register = async (req, res, next) => {
   try {
     const { name, fullName, email, mobile, phoneNumber, password, role, childEmail } = req.body;
 
+    if (!email) {
+      const error = new Error('Please fill in all required fields (Email is missing)');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
     const actualName = name || fullName;
     const actualMobile = mobile || phoneNumber;
 
-    if (!actualName || !email || !actualMobile || !password) {
+    if (role === 'student' || role === 'parent' || role === 'faculty') {
+      const error = new Error('Direct sign up is disabled for this role. Account credentials must be provided by the administrator.');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    if (!actualName || !cleanEmail || !actualMobile || !password) {
       const error = new Error('Please fill in all required fields');
       error.statusCode = 400;
       return next(error);
@@ -91,7 +109,7 @@ export const register = async (req, res, next) => {
     const { data: userExists } = await supabase
       .from('users')
       .select('*')
-      .eq('email', email)
+      .eq('email', cleanEmail)
       .maybeSingle();
 
     const salt = await bcrypt.genSalt(10);
@@ -115,7 +133,7 @@ export const register = async (req, res, next) => {
           role: role || 'student',
           child_email: role === 'parent' ? childEmail.toLowerCase().trim() : null
         })
-        .eq('email', email);
+        .eq('email', cleanEmail);
     } else {
       // Create user (inactive/unverified)
       await supabase
@@ -123,7 +141,7 @@ export const register = async (req, res, next) => {
         .insert([{
           name: actualName,
           full_name: actualName,
-          email,
+          email: cleanEmail,
           mobile: actualMobile,
           phone_number: actualMobile,
           password: hashedPassword,
@@ -137,11 +155,11 @@ export const register = async (req, res, next) => {
     const otp = generateOTP();
 
     // Ensure only one active OTP per email
-    await supabase.from('otps').delete().eq('email', email);
+    await supabase.from('otps').delete().eq('email', cleanEmail);
 
     // Store OTP in DB
     await supabase.from('otps').insert([{
-      email,
+      email: cleanEmail,
       otp: hashOTP(otp),
       type: 'email_verification',
       expires_at: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000).toISOString(),
@@ -149,11 +167,11 @@ export const register = async (req, res, next) => {
       blocked_until: null,
     }]);
 
-    console.log("OTP for " + email + ": " + otp);
+    console.log("OTP for " + cleanEmail + ": " + otp);
 
     // Send OTP via Email
     await sendEmail({
-      to: email,
+      to: cleanEmail,
       subject: 'Your College Management System OTP',
       html: generateOTPTemplate(otp, 'Email Verification'),
     });
@@ -171,6 +189,90 @@ export const login = async (req, res, next) => {
   try {
     const { email, admissionNumber, password } = req.body;
 
+    // 1. Parent Login (Passwordless: email and admissionNumber are provided, no password)
+    if (email && admissionNumber && !password) {
+      const cleanEmail = email.toLowerCase().trim();
+      const cleanAdmission = admissionNumber.toUpperCase().trim();
+
+      // Find student record with matching parent_email and (admission_number or roll_number)
+      const { data: student, error: studentErr } = await supabase
+        .from('students')
+        .select('*')
+        .eq('parent_email', cleanEmail)
+        .or(`admission_number.eq.${cleanAdmission},roll_number.eq.${cleanAdmission}`)
+        .maybeSingle();
+
+      if (studentErr) throw studentErr;
+
+      if (!student) {
+        const error = new Error('Invalid credentials: parent email or student admission ID mismatch');
+        error.statusCode = 401;
+        return next(error);
+      }
+
+      // Successfully matched parent email & student admission number!
+      // Now, let's find or create the parent user in users table
+      let parentUser = null;
+      const { data: foundParent, error: findParentErr } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', cleanEmail)
+        .eq('role', 'parent')
+        .maybeSingle();
+
+      if (findParentErr) throw findParentErr;
+
+      if (foundParent) {
+        parentUser = foundParent;
+      } else {
+        // Auto-provision parent account
+        const { data: newParent, error: createParentErr } = await supabase
+          .from('users')
+          .insert([{
+            name: student.parent_name || 'Parent',
+            full_name: student.parent_name || 'Parent',
+            email: cleanEmail,
+            role: 'parent',
+            phone_number: student.parent_phone || null,
+            mobile: student.parent_phone || null,
+            is_verified: true,
+            is_active: true,
+            child_email: student.email
+          }])
+          .select()
+          .single();
+
+        if (createParentErr) throw createParentErr;
+        parentUser = newParent;
+      }
+
+      if (!parentUser.is_active) {
+        const error = new Error('Account is deactivated. Please contact administration.');
+        error.statusCode = 401;
+        return next(error);
+      }
+
+      const token = generateToken(parentUser.id);
+      const userResponse = {
+        ...parentUser,
+        _id: parentUser.id,
+        fullName: parentUser.full_name,
+        phoneNumber: parentUser.phone_number,
+        childEmail: parentUser.child_email,
+        isVerified: parentUser.is_verified,
+        isActive: parentUser.is_active,
+        googleId: parentUser.google_id
+      };
+      delete userResponse.password;
+
+      return res.status(200).json({
+        success: true,
+        token,
+        user: userResponse,
+      });
+    }
+
+    // 2. Standard Login (requires email/admission number and password)
     if ((!email && !admissionNumber) || !password) {
       const error = new Error('Please provide email/admission number and password');
       error.statusCode = 400;
@@ -196,27 +298,8 @@ export const login = async (req, res, next) => {
     let isMatch = false;
 
     if (user) {
-      if (user.role === 'parent') {
-        // If parent, check password first, fallback to child ID matching
-        if (user.password) {
-          isMatch = await bcrypt.compare(cleanPassword, user.password);
-        }
-        if (!isMatch && admissionNumber) {
-          const { data: student } = await supabase
-            .from('students')
-            .select('*')
-            .eq('roll_number', admissionNumber.toUpperCase().trim())
-            .eq('parent_email', cleanEmail)
-            .maybeSingle();
-
-          if (student) {
-            isMatch = true;
-          }
-        }
-      } else {
-        if (user.password) {
-          isMatch = await bcrypt.compare(cleanPassword, user.password);
-        }
+      if (user.password) {
+        isMatch = await bcrypt.compare(cleanPassword, user.password);
       }
     }
 
@@ -230,6 +313,16 @@ export const login = async (req, res, next) => {
       const error = new Error('Account is deactivated. Please contact administration.');
       error.statusCode = 401;
       return next(error);
+    }
+
+    // If student or faculty account is not verified yet, block login and return needsVerification
+    if ((user.role === 'student' || user.role === 'faculty') && !user.is_verified) {
+      return res.status(200).json({
+        success: false,
+        needsVerification: true,
+        email: user.email,
+        message: 'Your account is not verified yet. Please enter the OTP sent to your email.'
+      });
     }
 
     const token = generateToken(user.id);
@@ -352,12 +445,13 @@ export const sendOtp = async (req, res, next) => {
     const { email, type } = req.body;
     if (!email) return res.status(400).json({ message: 'Email required' });
 
+    const cleanEmail = email.toLowerCase().trim();
     const otpType = type || 'email_verification';
 
     const { data: lastOtp } = await supabase
       .from('otps')
       .select('*')
-      .eq('email', email)
+      .eq('email', cleanEmail)
       .eq('type', otpType)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -375,11 +469,11 @@ export const sendOtp = async (req, res, next) => {
     const hashedOtp = hashOTP(otp);
 
     // Ensure only one active OTP per email
-    await supabase.from('otps').delete().eq('email', email);
+    await supabase.from('otps').delete().eq('email', cleanEmail);
 
     // Store OTP in DB
     await supabase.from('otps').insert([{
-      email,
+      email: cleanEmail,
       otp: hashedOtp,
       type: otpType,
       expires_at: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000).toISOString(),
@@ -387,10 +481,10 @@ export const sendOtp = async (req, res, next) => {
       blocked_until: null,
     }]);
 
-    console.log("OTP for " + email + ": " + otp);
+    console.log("OTP for " + cleanEmail + ": " + otp);
 
     await sendEmail({
-      to: email,
+      to: cleanEmail,
       subject: 'Your College Management System OTP',
       html: generateOTPTemplate(otp, otpType === 'email_verification' ? 'Email Verification' : 'OTP Code'),
     });
@@ -409,12 +503,13 @@ export const verifyOtp = async (req, res, next) => {
     const { email, otp, type } = req.body;
     if (!email) return res.status(400).json({ message: 'Email required' });
 
+    const cleanEmail = email.toLowerCase().trim();
     const otpType = type || 'email_verification';
 
     const { data: otpRecord } = await supabase
       .from('otps')
       .select('*')
-      .eq('email', email)
+      .eq('email', cleanEmail)
       .eq('type', otpType)
       .order('created_at', { ascending: false })
       .limit(1)
@@ -448,26 +543,28 @@ export const verifyOtp = async (req, res, next) => {
     }
 
     // Successful verification – delete all OTPs for this email
-    await supabase.from('otps').delete().eq('email', email);
+    await supabase.from('otps').delete().eq('email', cleanEmail);
 
     const { data: user } = await supabase
       .from('users')
       .select('*')
-      .eq('email', email)
+      .eq('email', cleanEmail)
       .maybeSingle();
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    const plainPassword = user.temp_password || 'password123';
+
     const { data: updatedUser } = await supabase
       .from('users')
-      .update({ is_verified: true })
+      .update({ is_verified: true, temp_password: null })
       .eq('id', user.id)
       .select()
       .single();
 
-    // Auto-create Student profile if role is student and doesn't exist
+    // Fallback: Auto-create Student profile if role is student and doesn't exist
     if (updatedUser.role === 'student') {
       const { data: existingProfile } = await supabase
         .from('students')
@@ -476,7 +573,7 @@ export const verifyOtp = async (req, res, next) => {
         .maybeSingle();
 
       if (!existingProfile) {
-        await supabase
+        const { data: newProfile } = await supabase
           .from('students')
           .insert([{
             full_name: updatedUser.full_name || updatedUser.name || 'New Student',
@@ -492,7 +589,62 @@ export const verifyOtp = async (req, res, next) => {
             cgpa: 3.5,
             attendance_percentage: 85,
             is_active: true
-          }]);
+          }])
+          .select()
+          .single();
+      }
+    }
+
+    // Welcome credentials email delivery
+    if (updatedUser.role === 'student') {
+      const { data: student } = await supabase
+        .from('students')
+        .select('*')
+        .eq('email', updatedUser.email)
+        .maybeSingle();
+
+      if (student) {
+        // Send email to Student
+        try {
+          await sendEmail({
+            to: student.email,
+            subject: 'Your Student Account Credentials',
+            html: generateStudentWelcomeTemplate(student, plainPassword)
+          });
+        } catch (err) {
+          console.error("Error sending student welcome email:", err);
+        }
+
+        // Send email to Parent
+        if (student.parent_email) {
+          try {
+            await sendEmail({
+              to: student.parent_email,
+              subject: 'College Student Onboarding: Parent Login Info',
+              html: generateParentWelcomeTemplate(student, student.parent_name)
+            });
+          } catch (err) {
+            console.error("Error sending parent welcome email:", err);
+          }
+        }
+      }
+    } else if (updatedUser.role === 'faculty') {
+      const { data: faculty } = await supabase
+        .from('faculty')
+        .select('*')
+        .eq('email', updatedUser.email)
+        .maybeSingle();
+
+      if (faculty) {
+        try {
+          await sendEmail({
+            to: faculty.email,
+            subject: 'Your Faculty Account Credentials',
+            html: generateFacultyWelcomeTemplate(faculty, plainPassword)
+          });
+        } catch (err) {
+          console.error("Error sending faculty welcome email:", err);
+        }
       }
     }
 
