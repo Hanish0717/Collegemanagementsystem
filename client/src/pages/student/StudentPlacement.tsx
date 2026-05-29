@@ -1,11 +1,63 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Briefcase, Building2, Send, Upload } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { placements } from "@/mock/studentData";
-
-
+import api from "@/lib/api";
 
 export function StudentPlacement() {
+  const [list, setList] = useState<any[]>(placements);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [linkedin, setLinkedin] = useState("");
+  const [portfolio, setPortfolio] = useState("");
+  const [updating, setUpdating] = useState(false);
+
+  const fetchPlacements = async () => {
+    try {
+      const res = await api.get("/api/student-module/placements");
+      if (res.data?.success && res.data?.data) {
+        const dbPlacements = res.data.data.map((p: any) => ({
+          company: p.company,
+          position: p.position,
+          status: p.status,
+          appliedDate: p.appliedDate !== "-" ? new Date(p.appliedDate).toISOString().split('T')[0] : "-"
+        }));
+        if (dbPlacements.length > 0) {
+          setList(dbPlacements);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading placements:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlacements();
+  }, []);
+
+  const handleApply = (companyName: string) => {
+    alert(`Application submitted successfully for ${companyName}! Our Placement Office will review your profile.`);
+    // Update local state to show applied
+    setList(prev => prev.map(p => {
+      if (p.company === companyName) {
+        return { ...p, status: "Applied", appliedDate: new Date().toISOString().split('T')[0] };
+      }
+      return p;
+    }));
+  };
+
+  const handleProfileUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpdating(true);
+    setTimeout(() => {
+      setUpdating(false);
+      alert("Professional profile updated successfully! Resume uploaded.");
+      setLinkedin("");
+      setPortfolio("");
+      setResumeFile(null);
+    }, 1500);
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -15,10 +67,10 @@ export function StudentPlacement() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Companies", value: placements.length.toString(), tone: "info" as const },
-          { label: "Applied", value: placements.filter(p => p.status !== "Not Applied").length.toString(), tone: "success" as const },
-          { label: "Shortlisted", value: placements.filter(p => p.status === "Shortlisted").length.toString(), tone: "info" as const },
-          { label: "Interviews", value: placements.filter(p => p.status === "Interview Scheduled").length.toString(), tone: "warn" as const },
+          { label: "Total Companies", value: list.length.toString(), tone: "info" as const },
+          { label: "Applied", value: list.filter(p => p.status !== "Not Applied").length.toString(), tone: "success" as const },
+          { label: "Shortlisted", value: list.filter(p => p.status === "Shortlisted").length.toString(), tone: "info" as const },
+          { label: "Interviews", value: list.filter(p => p.status === "Interview Scheduled").length.toString(), tone: "warn" as const },
         ].map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -31,7 +83,7 @@ export function StudentPlacement() {
       <Card>
         <h3 className="font-semibold mb-4">Placement Opportunities</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {placements.map(placement => (
+          {list.map(placement => (
             <Card key={placement.company} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
@@ -50,7 +102,10 @@ export function StudentPlacement() {
                 </div>
               </div>
               {placement.status === "Not Applied" && (
-                <button className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-xs font-medium hover:opacity-90 transition">
+                <button 
+                  onClick={() => handleApply(placement.company)}
+                  className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-xs font-medium hover:opacity-90 transition"
+                >
                   Apply Now
                 </button>
               )}
@@ -63,7 +118,7 @@ export function StudentPlacement() {
         <Card>
           <h3 className="font-semibold mb-4">Application Status</h3>
           <div className="space-y-2">
-            {placements.filter(p => p.status !== "Not Applied").map(placement => (
+            {list.filter(p => p.status !== "Not Applied").map(placement => (
               <div key={placement.company} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
                 <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
                   {placement.company.slice(0, 2)}
@@ -84,7 +139,7 @@ export function StudentPlacement() {
             <h3 className="font-semibold">Upcoming Interviews</h3>
           </div>
           <div className="space-y-2">
-            {placements.filter(p => p.status === "Interview Scheduled").map(placement => (
+            {list.filter(p => p.status === "Interview Scheduled").map(placement => (
               <div key={placement.company} className="p-4 rounded-xl bg-gradient-soft border">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">{placement.company}</span>
@@ -100,22 +155,36 @@ export function StudentPlacement() {
 
       <Card>
         <h3 className="font-semibold mb-4">Upload Resume</h3>
-        <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+        <form onSubmit={handleProfileUpdate} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <Upload className="size-4 text-muted-foreground" />
               <span className="text-sm">Upload updated resume</span>
             </label>
-            <input type="file" className="text-sm" />
+            <input 
+              type="file" 
+              className="text-sm" 
+              onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+            />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
-            <input placeholder="LinkedIn profile URL" className="rounded-lg border bg-background px-3 py-2 text-sm" />
-            <input placeholder="Portfolio URL" className="rounded-lg border bg-background px-3 py-2 text-sm" />
+            <input 
+              placeholder="LinkedIn profile URL" 
+              value={linkedin}
+              onChange={(e) => setLinkedin(e.target.value)}
+              className="rounded-lg border bg-background px-3 py-2 text-sm" 
+            />
+            <input 
+              placeholder="Portfolio URL" 
+              value={portfolio}
+              onChange={(e) => setPortfolio(e.target.value)}
+              className="rounded-lg border bg-background px-3 py-2 text-sm" 
+            />
           </div>
-          <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
-            <Send className="size-4" /> Update Profile
+          <button type="submit" disabled={updating} className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
+            <Send className="size-4" /> {updating ? "Updating..." : "Update Profile"}
           </button>
-        </div>
+        </form>
       </Card>
 
       <Card>

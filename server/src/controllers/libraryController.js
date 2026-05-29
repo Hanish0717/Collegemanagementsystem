@@ -1,19 +1,39 @@
-import Book from '../models/Book.js';
-import IssuedBook from '../models/IssuedBook.js';
-import Student from '../models/Student.js';
-import mongoose from 'mongoose';
+import { supabase } from '../config/supabase.js';
 
-// Helper: Update overdue status for all active issues
+// Helper: Format a book row from Supabase back to camelCase MongoDB structure
+const formatBook = (b) => {
+  if (!b) return null;
+  return {
+    id: b.id,
+    _id: b.id,
+    title: b.title,
+    author: b.author,
+    category: b.category,
+    isbn: b.isbn,
+    publisher: b.publisher || '',
+    edition: b.edition || '',
+    totalCopies: b.quantity || b.total_copies || 1,
+    availableCopies: b.available_quantity || b.available_copies || 0,
+    language: b.language || '',
+    shelfNumber: b.shelf_location || b.shelf_number || '',
+    description: b.description || '',
+    isActive: b.is_active !== undefined ? b.is_active : true,
+    createdAt: b.created_at
+  };
+};
+
+// Helper: Update overdue status for all active issues whose due date has passed
 const updateOverdueIssues = async () => {
-  const now = new Date();
-  await IssuedBook.updateMany(
-    {
-      status: { $in: ['issued'] },
-      dueDate: { $lt: now },
-      returnDate: null,
-    },
-    { $set: { status: 'overdue' } }
-  );
+  try {
+    const currentDate = new Date().toISOString().split('T')[0];
+    await supabase
+      .from('issued_books')
+      .update({ status: 'Overdue' })
+      .in('status', ['Issued', 'issued'])
+      .lt('due_date', currentDate);
+  } catch (error) {
+    console.error('Error updating overdue issues:', error);
+  }
 };
 
 /**
@@ -28,25 +48,42 @@ export const addBook = async (req, res, next) => {
       err.statusCode = 400;
       return next(err);
     }
-    const existing = await Book.findOne({ isbn });
+
+    // Check duplicate ISBN
+    const { data: existing } = await supabase
+      .from('books')
+      .select('*')
+      .eq('isbn', isbn)
+      .maybeSingle();
+
     if (existing) {
       const err = new Error('ISBN already exists');
       err.statusCode = 400;
       return next(err);
     }
-    const book = await Book.create({
-      title,
-      author,
-      category,
-      isbn,
-      publisher,
-      edition,
-      totalCopies,
-      language,
-      shelfNumber,
-      description,
-    });
-    res.status(201).json({ success: true, message: 'Book added', data: book });
+
+    const { data: book, error: createErr } = await supabase
+      .from('books')
+      .insert([{
+        title,
+        author,
+        category,
+        isbn,
+        publisher,
+        edition,
+        quantity: Number(totalCopies),
+        available_quantity: Number(totalCopies),
+        language,
+        shelf_location: shelfNumber,
+        description,
+        is_active: true
+      }])
+      .select()
+      .single();
+
+    if (createErr) throw createErr;
+
+    res.status(201).json({ success: true, message: 'Book added', data: formatBook(book) });
   } catch (error) {
     next(error);
   }
@@ -58,30 +95,41 @@ export const addBook = async (req, res, next) => {
 export const getBooks = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, search, author, category, availability } = req.query;
-    const query = { isActive: true };
+    
+    let query = supabase.from('books').select('*', { count: 'exact' }).eq('is_active', true);
+
     if (search) {
-      query.title = { $regex: search, $options: 'i' };
+      query = query.ilike('title', `%${search}%`);
     }
     if (author) {
-      query.author = { $regex: author, $options: 'i' };
+      query = query.ilike('author', `%${author}%`);
     }
     if (category) {
-      query.category = category;
+      query = query.eq('category', category);
     }
     if (availability === 'available') {
-      query.availableCopies = { $gt: 0 };
+      query = query.gt('available_quantity', 0);
     } else if (availability === 'unavailable') {
-      query.availableCopies = { $lte: 0 };
+      query = query.lte('available_quantity', 0);
     }
+
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.max(1, parseInt(limit));
-    const skip = (pageNum - 1) * limitNum;
-    const total = await Book.countDocuments(query);
-    const books = await Book.find(query).skip(skip).limit(limitNum).sort({ createdAt: -1 });
+    const from = (pageNum - 1) * limitNum;
+    const to = from + limitNum - 1;
+
+    const { data: booksData, count: total, error } = await query
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (error) throw error;
+
+    const formattedBooks = booksData ? booksData.map(formatBook) : [];
+
     res.status(200).json({
       success: true,
       message: 'Books fetched',
-      data: { books, pagination: { total, page: pageNum, limit: limitNum } },
+      data: { books: formattedBooks, pagination: { total: total || 0, page: pageNum, limit: limitNum } },
     });
   } catch (error) {
     next(error);
@@ -93,13 +141,22 @@ export const getBooks = async (req, res, next) => {
  */
 export const getBookById = async (req, res, next) => {
   try {
-    const book = await Book.findOne({ _id: req.params.id, isActive: true });
+    const { data: book, error } = await supabase
+      .from('books')
+      .select('*')
+      .eq('id', req.params.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (error) throw error;
+
     if (!book) {
       const err = new Error('Book not found');
       err.statusCode = 404;
       return next(err);
     }
-    res.status(200).json({ success: true, message: 'Book fetched', data: book });
+
+    res.status(200).json({ success: true, message: 'Book fetched', data: formatBook(book) });
   } catch (error) {
     next(error);
   }
@@ -110,28 +167,59 @@ export const getBookById = async (req, res, next) => {
  */
 export const updateBook = async (req, res, next) => {
   try {
-    const update = { ...req.body };
-    // If totalCopies is modified, ensure availableCopies <= totalCopies
-    if (update.totalCopies !== undefined) {
-      const book = await Book.findById(req.params.id);
-      if (!book) {
-        const err = new Error('Book not found');
-        err.statusCode = 404;
-        return next(err);
-      }
-      if (book.availableCopies > update.totalCopies) {
-        const err = new Error('Cannot reduce totalCopies below current availableCopies');
-        err.statusCode = 400;
-        return next(err);
-      }
-    }
-    const book = await Book.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true });
+    const { data: book, error: fetchErr } = await supabase
+      .from('books')
+      .select('*')
+      .eq('id', req.params.id)
+      .maybeSingle();
+
     if (!book) {
       const err = new Error('Book not found');
       err.statusCode = 404;
       return next(err);
     }
-    res.status(200).json({ success: true, message: 'Book updated', data: book });
+
+    const updateData = {};
+    if (req.body.title) updateData.title = req.body.title;
+    if (req.body.author) updateData.author = req.body.author;
+    if (req.body.category) updateData.category = req.body.category;
+    if (req.body.isbn) updateData.isbn = req.body.isbn;
+    if (req.body.publisher) updateData.publisher = req.body.publisher;
+    if (req.body.edition) updateData.edition = req.body.edition;
+    
+    if (req.body.totalCopies !== undefined) {
+      const total = Number(req.body.totalCopies);
+      const available = Number(book.available_quantity || 0);
+      if (available > total) {
+        const err = new Error('Cannot reduce totalCopies below current availableCopies');
+        err.statusCode = 400;
+        return next(err);
+      }
+      updateData.quantity = total;
+      // Adjust available quantity by copies delta
+      const delta = total - Number(book.quantity || 0);
+      updateData.available_quantity = available + delta;
+    }
+
+    if (req.body.availableCopies !== undefined) {
+      updateData.available_quantity = Number(req.body.availableCopies);
+    }
+
+    if (req.body.language) updateData.language = req.body.language;
+    if (req.body.shelfNumber) updateData.shelf_location = req.body.shelfNumber;
+    if (req.body.description) updateData.description = req.body.description;
+    if (req.body.isActive !== undefined) updateData.is_active = req.body.isActive;
+
+    const { data: updatedBook, error: updateErr } = await supabase
+      .from('books')
+      .update(updateData)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    res.status(200).json({ success: true, message: 'Book updated', data: formatBook(updatedBook) });
   } catch (error) {
     next(error);
   }
@@ -142,12 +230,19 @@ export const updateBook = async (req, res, next) => {
  */
 export const deleteBook = async (req, res, next) => {
   try {
-    const book = await Book.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
+    const { data: book, error: updateErr } = await supabase
+      .from('books')
+      .update({ is_active: false })
+      .eq('id', req.params.id)
+      .select()
+      .maybeSingle();
+
     if (!book) {
       const err = new Error('Book not found');
       err.statusCode = 404;
       return next(err);
     }
+
     res.status(200).json({ success: true, message: 'Book deactivated', data: null });
   } catch (error) {
     next(error);
@@ -165,46 +260,104 @@ export const issueBook = async (req, res, next) => {
       err.statusCode = 400;
       return next(err);
     }
-    // Validate student
-    const student = await Student.findOne({ _id: studentId, isActive: true });
-    if (!student) {
+
+    // Validate student (retrieve email to verify profile and map to users.id if needed)
+    const { data: studentRecord } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', studentId)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (!studentRecord) {
       const err = new Error('Student not found');
       err.statusCode = 404;
       return next(err);
     }
+
+    // Lookup user's ID in users table via email (since issued_books.user_id references users.id)
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', studentRecord.email)
+      .maybeSingle();
+
+    const targetUserId = userRecord ? userRecord.id : null;
+    if (!targetUserId) {
+      const err = new Error('Student user account not registered yet. Please have the student register first.');
+      err.statusCode = 400;
+      return next(err);
+    }
+
     // Validate book
-    const book = await Book.findOne({ _id: bookId, isActive: true });
+    const { data: book } = await supabase
+      .from('books')
+      .select('*')
+      .eq('id', bookId)
+      .eq('is_active', true)
+      .maybeSingle();
+
     if (!book) {
       const err = new Error('Book not found');
       err.statusCode = 404;
       return next(err);
     }
-    if (book.availableCopies <= 0) {
+
+    if (Number(book.available_quantity || 0) <= 0) {
       const err = new Error('No copies available for this book');
       err.statusCode = 400;
       return next(err);
     }
-    // Prevent duplicate active issue
-    const existingIssue = await IssuedBook.findOne({
-      student: studentId,
-      book: bookId,
-      status: { $in: ['issued', 'overdue'] },
-    });
+
+    // Prevent duplicate active issue (status is 'Issued' or 'Overdue')
+    const { data: existingIssue } = await supabase
+      .from('issued_books')
+      .select('*')
+      .eq('user_id', targetUserId)
+      .eq('book', bookId)
+      .in('status', ['Issued', 'Overdue', 'issued', 'overdue'])
+      .maybeSingle();
+
     if (existingIssue) {
       const err = new Error('Student already has an active issue for this book');
       err.statusCode = 400;
       return next(err);
     }
-    // Create issue record
-    const issued = await IssuedBook.create({
-      student: studentId,
-      book: bookId,
-      dueDate,
-    });
+
+    // Create issue record (saving standardized 'Issued' status)
+    const { data: issued, error: issueErr } = await supabase
+      .from('issued_books')
+      .insert([{
+        student: studentId, // also save studentId if needed
+        book: bookId,
+        user_id: targetUserId,
+        due_date: new Date(dueDate).toISOString().split('T')[0],
+        status: 'Issued'
+      }])
+      .select()
+      .single();
+
+    if (issueErr) throw issueErr;
+
     // Decrement available copies
-    book.availableCopies -= 1;
-    await book.save();
-    res.status(201).json({ success: true, message: 'Book issued', data: issued });
+    const { error: decrErr } = await supabase
+      .from('books')
+      .update({ available_quantity: Number(book.available_quantity) - 1 })
+      .eq('id', bookId);
+
+    if (decrErr) throw decrErr;
+
+    res.status(201).json({
+      success: true,
+      message: 'Book issued',
+      data: {
+        ...issued,
+        _id: issued.id,
+        status: 'issued', // lowercase compatibility
+        student: studentId,
+        book: bookId
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -216,32 +369,65 @@ export const issueBook = async (req, res, next) => {
 export const returnBook = async (req, res, next) => {
   try {
     const { issueId } = req.params;
-    const issue = await IssuedBook.findById(issueId).populate('book');
+
+    const { data: issue, error: fetchErr } = await supabase
+      .from('issued_books')
+      .select('*, book:books(*)')
+      .eq('id', issueId)
+      .maybeSingle();
+
     if (!issue) {
       const err = new Error('Issue record not found');
       err.statusCode = 404;
       return next(err);
     }
-    if (issue.status === 'returned') {
+
+    const currentStatus = String(issue.status).toLowerCase();
+    if (currentStatus === 'returned') {
       const err = new Error('Book already returned');
       err.statusCode = 400;
       return next(err);
     }
+
     const now = new Date();
     let fine = 0;
-    if (now > issue.dueDate) {
-      const daysLate = Math.ceil((now - issue.dueDate) / (1000 * 60 * 60 * 24));
-      fine = daysLate * 10; // $10 per day
+    const dueDate = new Date(issue.due_date);
+    if (now > dueDate) {
+      const daysLate = Math.ceil((now - dueDate) / (1000 * 60 * 60 * 24));
+      fine = daysLate * 10; // $10 per day fine
     }
-    issue.returnDate = now;
-    issue.fineAmount = fine;
-    issue.status = 'returned';
-    await issue.save();
+
+    const { data: updatedIssue, error: updateErr } = await supabase
+      .from('issued_books')
+      .update({
+        return_date: now.toISOString().split('T')[0],
+        fine_amount: fine,
+        status: 'Returned'
+      })
+      .eq('id', issueId)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+
     // Increment book copies
-    const book = await Book.findById(issue.book._id);
-    book.availableCopies += 1;
-    await book.save();
-    res.status(200).json({ success: true, message: 'Book returned', data: issue });
+    if (issue.book) {
+      await supabase
+        .from('books')
+        .update({ available_quantity: Number(issue.book.available_quantity || 0) + 1 })
+        .eq('id', issue.book.id);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Book returned',
+      data: {
+        ...updatedIssue,
+        _id: updatedIssue.id,
+        status: 'returned',
+        book: issue.book ? formatBook(issue.book) : null
+      }
+    });
   } catch (error) {
     next(error);
   }
@@ -254,14 +440,93 @@ export const getIssuedBooks = async (req, res, next) => {
   try {
     await updateOverdueIssues();
     const { status, studentId } = req.query;
-    const query = {};
-    if (status) query.status = status;
-    if (studentId) query.student = studentId;
-    const issues = await IssuedBook.find(query)
-      .populate('student', 'fullName rollNumber department')
-      .populate('book', 'title author')
-      .sort({ issueDate: -1 });
-    res.status(200).json({ success: true, message: 'Issued books fetched', data: issues });
+
+    let targetUserId = null;
+
+    // Resolve studentId to user_id if passed
+    if (studentId) {
+      const { data: studentRecord } = await supabase
+        .from('students')
+        .select('email')
+        .eq('id', studentId)
+        .maybeSingle();
+
+      if (studentRecord) {
+        const { data: userRecord } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', studentRecord.email)
+          .maybeSingle();
+        targetUserId = userRecord ? userRecord.id : null;
+      }
+    }
+
+    let query = supabase.from('issued_books').select('*, book:books(*), user:users(*)');
+
+    if (status) {
+      // Map lowercase client status to capitalized Postgres values
+      const mapStatus = {
+        'issued': 'Issued',
+        'returned': 'Returned',
+        'overdue': 'Overdue'
+      };
+      query = query.eq('status', mapStatus[status.toLowerCase()] || status);
+    }
+
+    if (studentId) {
+      if (targetUserId) {
+        query = query.eq('user_id', targetUserId);
+      } else {
+        // No user found, force empty return safely
+        return res.status(200).json({ success: true, message: 'Issued books fetched', data: [] });
+      }
+    }
+
+    const { data: issues, error } = await query.order('created_at', { ascending: false });
+    if (error) throw error;
+
+    // Cache students by email for joining details
+    const { data: students } = await supabase.from('students').select('*').eq('is_active', true);
+    const studentMap = {};
+    if (students) {
+      students.forEach(s => {
+        studentMap[s.email] = s;
+      });
+    }
+
+    const formattedIssues = issues ? issues.map(item => {
+      const userEmail = item.user?.email;
+      const childProfile = userEmail ? studentMap[userEmail] : null;
+
+      return {
+        id: item.id,
+        _id: item.id,
+        issueDate: item.issue_date,
+        dueDate: item.due_date,
+        returnDate: item.return_date,
+        status: String(item.status).toLowerCase(),
+        fineAmount: Number(item.fine_amount || 0),
+        book: item.book ? {
+          _id: item.book.id,
+          id: item.book.id,
+          title: item.book.title,
+          author: item.book.author
+        } : null,
+        student: childProfile ? {
+          _id: childProfile.id,
+          id: childProfile.id,
+          fullName: childProfile.full_name,
+          rollNumber: childProfile.roll_number,
+          department: childProfile.department
+        } : (item.user ? {
+          fullName: item.user.full_name || item.user.name,
+          rollNumber: 'N/A',
+          department: 'N/A'
+        } : null)
+      };
+    }) : [];
+
+    res.status(200).json({ success: true, message: 'Issued books fetched', data: formattedIssues });
   } catch (error) {
     next(error);
   }
@@ -273,54 +538,91 @@ export const getIssuedBooks = async (req, res, next) => {
 export const getLibraryReport = async (req, res, next) => {
   try {
     await updateOverdueIssues();
-    // Total books
-    const totalBooks = await Book.countDocuments({ isActive: true });
-    // Total issued (including overdue)
-    const totalIssued = await IssuedBook.countDocuments({ status: { $in: ['issued', 'overdue'] } });
-    // Overdue count
-    const overdueCount = await IssuedBook.countDocuments({ status: 'overdue' });
-    // Total fines collected (sum of fineAmount where status is returned)
-    const finesAgg = await IssuedBook.aggregate([
-      { $match: { status: 'returned' } },
-      { $group: { _id: null, totalFines: { $sum: '$fineAmount' } } },
-    ]);
-    const totalFines = finesAgg[0] ? finesAgg[0].totalFines : 0;
-    // Category analytics (books per category)
-    const categoryAgg = await Book.aggregate([
-      { $match: { isActive: true } },
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-    ]);
-    // Most issued books (top 5 by issue count)
-    const mostIssuedAgg = await IssuedBook.aggregate([
-      { $group: { _id: '$book', issueCount: { $sum: 1 } } },
-      { $sort: { issueCount: -1 } },
-      { $limit: 5 },
-      {
-        $lookup: {
-          from: 'books',
-          localField: '_id',
-          foreignField: '_id',
-          as: 'bookInfo',
-        },
-      },
-      { $unwind: '$bookInfo' },
-      {
-        $project: {
-          _id: 0,
-          bookId: '$_id',
-          title: '$bookInfo.title',
-          author: '$bookInfo.author',
-          issueCount: 1,
-        },
-      },
-    ]);
+
+    // 1. Total books
+    const { count: totalBooks } = await supabase
+      .from('books')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
+
+    // 2. Total active issues
+    const { count: totalIssued } = await supabase
+      .from('issued_books')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['Issued', 'Overdue']);
+
+    // 3. Overdue count
+    const { count: overdueCount } = await supabase
+      .from('issued_books')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'Overdue');
+
+    // 4. Total fine collected
+    const { data: fineData } = await supabase
+      .from('issued_books')
+      .select('fine_amount')
+      .eq('status', 'Returned');
+    const totalFines = fineData ? fineData.reduce((sum, item) => sum + Number(item.fine_amount || 0), 0) : 0;
+
+    // 5. Category analytics
+    const { data: allBooks } = await supabase.from('books').select('category').eq('is_active', true);
+    const categoryMap = {};
+    if (allBooks) {
+      allBooks.forEach(b => {
+        const cat = b.category || 'Uncategorized';
+        categoryMap[cat] = (categoryMap[cat] || 0) + 1;
+      });
+    }
+    const categoryAnalytics = Object.keys(categoryMap).map(cat => ({
+      _id: cat,
+      count: categoryMap[cat]
+    }));
+
+    // 6. Most issued books (top 5)
+    const { data: allIssues } = await supabase.from('issued_books').select('book');
+    const issueCounts = {};
+    if (allIssues) {
+      allIssues.forEach(i => {
+        if (i.book) {
+          issueCounts[i.book] = (issueCounts[i.book] || 0) + 1;
+        }
+      });
+    }
+
+    const topBookIds = Object.keys(issueCounts)
+      .sort((a, b) => issueCounts[b] - issueCounts[a])
+      .slice(0, 5);
+
+    const mostIssuedBooks = [];
+    if (topBookIds.length > 0) {
+      const { data: bookDetails } = await supabase.from('books').select('id, title, author').in('id', topBookIds);
+      if (bookDetails) {
+        topBookIds.forEach(id => {
+          const book = bookDetails.find(b => b.id === id);
+          if (book) {
+            mostIssuedBooks.push({
+              bookId: book.id,
+              title: book.title,
+              author: book.author,
+              issueCount: issueCounts[id]
+            });
+          }
+        });
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: 'Library report generated',
       data: {
-        totals: { totalBooks, totalIssued, overdueCount, totalFines },
-        categoryAnalytics: categoryAgg,
-        mostIssuedBooks: mostIssuedAgg,
+        totals: {
+          totalBooks: totalBooks || 0,
+          totalIssued: totalIssued || 0,
+          overdueCount: overdueCount || 0,
+          totalFines
+        },
+        categoryAnalytics,
+        mostIssuedBooks
       },
     });
   } catch (error) {

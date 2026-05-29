@@ -1,12 +1,62 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Calendar, QrCode } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { attendanceHistory, attendanceRecords } from "@/mock/studentData";
-
-
+import api from "@/lib/api";
 
 export function StudentAttendance() {
+  const [records, setRecords] = useState<any[]>(attendanceRecords);
+  const [stats, setStats] = useState([
+    { label: "Overall Attendance", value: "87.3%", tone: "success" as const },
+    { label: "Present Days", value: "108", tone: "info" as const },
+    { label: "Absent Days", value: "12", tone: "danger" as const },
+    { label: "This Month", value: "92%", tone: "success" as const },
+  ]);
+
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      try {
+        const profileStr = localStorage.getItem("cms_student_profile");
+        if (!profileStr) return;
+        const profile = JSON.parse(profileStr);
+        if (!profile || !profile._id) return;
+
+        const res = await api.get(`/api/attendance/student/${profile._id}`);
+        if (res.data?.success && res.data?.data) {
+          const { records: dbRecords, stats: dbStats } = res.data.data;
+
+          if (dbRecords && dbRecords.length > 0) {
+            const formatted = dbRecords.map((r: any) => ({
+              date: new Date(r.date).toISOString().split('T')[0],
+              subject: r.subject,
+              time: r.time || "09:00 AM",
+              status: r.status.charAt(0).toUpperCase() + r.status.slice(1)
+            }));
+            setRecords(formatted);
+          }
+
+          if (dbStats) {
+            const overall = dbStats.percentage !== undefined ? `${dbStats.percentage}%` : "87.3%";
+            const present = dbStats.present !== undefined ? String(dbStats.present) : "108";
+            const absent = dbStats.absent !== undefined ? String(dbStats.absent) : "12";
+            
+            setStats([
+              { label: "Overall Attendance", value: overall, tone: "success" as const },
+              { label: "Present Days", value: present, tone: "info" as const },
+              { label: "Absent Days", value: absent, tone: "danger" as const },
+              { label: "This Month", value: overall, tone: "success" as const },
+            ]);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading attendance records:", err);
+      }
+    };
+    fetchAttendance();
+  }, []);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -15,12 +65,7 @@ export function StudentAttendance() {
       />
 
       <div className="grid md:grid-cols-4 gap-4">
-        {[
-          { label: "Overall Attendance", value: "87.3%", tone: "success" as const },
-          { label: "Present Days", value: "108", tone: "info" as const },
-          { label: "Absent Days", value: "12", tone: "danger" as const },
-          { label: "This Month", value: "92%", tone: "success" as const },
-        ].map(stat => (
+        {stats.map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
@@ -57,7 +102,7 @@ export function StudentAttendance() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {attendanceRecords.map((record, index) => (
+              {records.map((record, index) => (
                 <tr key={index} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{record.date}</td>
                   <td className="py-3 px-4"><Badge tone="info">{record.subject}</Badge></td>

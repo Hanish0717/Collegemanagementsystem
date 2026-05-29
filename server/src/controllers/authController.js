@@ -1,22 +1,23 @@
-import User from '../models/User.js';
-import OTP from '../models/OTP.js';
-import PasswordReset from '../models/PasswordReset.js';
 import { generateToken } from '../services/authService.js';
 import generateOTP from '../utils/generateOTP.js';
 import sendEmail from '../utils/sendEmail.js';
-import { generateOTPTemplate, generatePasswordResetTemplate } from '../utils/emailTemplates.js';
+import { generateOTPTemplate } from '../utils/emailTemplates.js';
 import { hashOTP, verifyOTPHash } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES, OTP_RESEND_COOLDOWN_SECONDS, OTP_MAX_ATTEMPTS, OTP_BLOCK_TIME_MINUTES } from '../../config.js';
-
+import bcrypt from 'bcryptjs';
+import { supabase } from '../config/supabase.js';
 import { OAuth2Client } from 'google-auth-library';
+
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const isUUID = (str) => typeof str === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str);
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
 export const register = async (req, res, next) => {
   try {
-    const { name, fullName, email, mobile, phoneNumber, password, role } = req.body;
+    const { name, fullName, email, mobile, phoneNumber, password, role, childEmail } = req.body;
 
     const actualName = name || fullName;
     const actualMobile = mobile || phoneNumber;
@@ -27,51 +28,126 @@ export const register = async (req, res, next) => {
       return next(error);
     }
 
-    // Check if user already exists
-    const userExists = await User.findOne({ email });
+    // 1. Parent validation: ensure child exists in the database
+    if (role === 'parent') {
+      if (!childEmail) {
+        const error = new Error("Please provide your child's registered college email address.");
+        error.statusCode = 400;
+        return next(error);
+      }
+
+      const cleanChildEmail = childEmail.toLowerCase().trim();
+      let { data: studentExists } = await supabase
+        .from('students')
+        .select('*')
+        .eq('email', cleanChildEmail)
+        .maybeSingle();
+
+      // Fallback: If not found in Student collection, check if a User exists with role 'student'
+      if (!studentExists) {
+        const { data: childUser } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', cleanChildEmail)
+          .eq('role', 'student')
+          .maybeSingle();
+
+        if (childUser) {
+          // Auto-create Student profile record
+          const { data: newStudent, error: createStudentErr } = await supabase
+            .from('students')
+            .insert([{
+              full_name: childUser.full_name || childUser.name || 'New Student',
+              roll_number: 'CS' + (100000 + Math.floor(Math.random() * 900000)),
+              email: childUser.email,
+              phone_number: childUser.phone_number || childUser.mobile || '0000000000',
+              department: 'CSE',
+              year: 3,
+              semester: 5,
+              section: 'A',
+              parent_name: actualName,
+              parent_phone: actualMobile,
+              cgpa: 3.5,
+              attendance_percentage: 85,
+              is_active: true
+            }])
+            .select()
+            .single();
+
+          if (!createStudentErr) {
+            studentExists = newStudent;
+          }
+        }
+      }
+
+      if (!studentExists) {
+        const error = new Error("No student record found with the provided email. Registration is only permitted for parents of enrolled students.");
+        error.statusCode = 400;
+        return next(error);
+      }
+    }
+
+    // 2. Check if user already exists
+    const { data: userExists } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     if (userExists) {
-      if (userExists.isVerified) {
+      if (userExists.is_verified) {
         const error = new Error('An account with this email already exists. Please sign in instead.');
         error.statusCode = 400;
         return next(error);
       }
       // If not verified, we can let them update their password/details and generate a new OTP
-      userExists.name = actualName;
-      userExists.fullName = actualName;
-      userExists.mobile = actualMobile;
-      userExists.phoneNumber = actualMobile;
-      userExists.password = password;
-      userExists.role = role || 'student';
-      await userExists.save();
+      await supabase
+        .from('users')
+        .update({
+          name: actualName,
+          full_name: actualName,
+          mobile: actualMobile,
+          phone_number: actualMobile,
+          password: hashedPassword,
+          role: role || 'student',
+          child_email: role === 'parent' ? childEmail.toLowerCase().trim() : null
+        })
+        .eq('email', email);
     } else {
       // Create user (inactive/unverified)
-      await User.create({
-        name: actualName,
-        fullName: actualName,
-        email,
-        mobile: actualMobile,
-        phoneNumber: actualMobile,
-        password,
-        role: role || 'student',
-        isVerified: false,
-      });
+      await supabase
+        .from('users')
+        .insert([{
+          name: actualName,
+          full_name: actualName,
+          email,
+          mobile: actualMobile,
+          phone_number: actualMobile,
+          password: hashedPassword,
+          role: role || 'student',
+          child_email: role === 'parent' ? childEmail.toLowerCase().trim() : null,
+          is_verified: false
+        }]);
     }
 
-    // Generate 6-digit OTP
+    // 3. Generate 6-digit OTP
     const otp = generateOTP();
 
     // Ensure only one active OTP per email
-    await OTP.deleteMany({ email });
+    await supabase.from('otps').delete().eq('email', email);
 
     // Store OTP in DB
-    await OTP.create({
+    await supabase.from('otps').insert([{
       email,
       otp: hashOTP(otp),
       type: 'email_verification',
-      expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000),
+      expires_at: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000).toISOString(),
       attempts: 0,
-      blockedUntil: null,
-    });
+      blocked_until: null,
+    }]);
 
     console.log("OTP for " + email + ": " + otp);
 
@@ -82,7 +158,7 @@ export const register = async (req, res, next) => {
       html: generateOTPTemplate(otp, 'Email Verification'),
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: 'Registration successful. OTP sent to your email.',
     });
@@ -104,47 +180,126 @@ export const login = async (req, res, next) => {
       return next(error);
     }
 
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanPassword = password.trim();
+
+    // Find user by email
+    let { data: user } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    let isMatch = false;
+
+    if (user) {
+      if (user.role === 'parent') {
+        // If parent, check password first, fallback to child ID matching
+        if (user.password) {
+          isMatch = await bcrypt.compare(cleanPassword, user.password);
+        }
+        if (!isMatch) {
+          // Check if child ID (rollNumber) matches entered password
+          const { data: student } = await supabase
+            .from('students')
+            .select('*')
+            .eq('parent_email', cleanEmail)
+            .eq('roll_number', cleanPassword.toUpperCase())
+            .maybeSingle();
+
+          if (student) {
+            isMatch = true;
+            // Sync credentials / info
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(cleanPassword, salt);
+            const { data: updatedUser } = await supabase
+              .from('users')
+              .update({
+                password: hashedPassword, // saves as rollNumber
+                child_email: student.email,
+                full_name: student.parent_name,
+                phone_number: student.parent_phone,
+                mobile: student.parent_phone
+              })
+              .eq('id', user.id)
+              .select()
+              .single();
+            
+            user = updatedUser;
+          }
+        }
+      } else {
+        // Normal password matching for non-parents
+        if (user.password) {
+          isMatch = await bcrypt.compare(cleanPassword, user.password);
+        }
+      }
+    } else {
+      // User record not found. Check if this is a parent trying to login directly for the first time
+      const { data: student } = await supabase
+        .from('students')
+        .select('*')
+        .eq('parent_email', cleanEmail)
+        .eq('roll_number', cleanPassword.toUpperCase())
+        .maybeSingle();
+
+      if (student) {
+        // Create Parent user record on the fly
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(cleanPassword, salt);
+        const { data: newUser } = await supabase
+          .from('users')
+          .insert([{
+            name: student.parent_name || 'Parent',
+            full_name: student.parent_name || 'Parent',
+            email: cleanEmail,
+            password: hashedPassword, // rolls as password
+            role: 'parent',
+            child_email: student.email,
+            phone_number: student.parent_phone || '0000000000',
+            mobile: student.parent_phone || '0000000000',
+            is_verified: true,
+            is_active: true
+          }])
+          .select()
+          .single();
+
+        user = newUser;
+        isMatch = true;
+      }
+    }
+
+    if (!user || !isMatch) {
       const error = new Error('Invalid credentials');
       error.statusCode = 401;
       return next(error);
     }
 
-    if (!user.isVerified) {
-      const error = new Error('Please verify your email address first.');
-      error.statusCode = 401;
-      return next(error);
-    }
-
-    if (!user.isActive) {
+    if (!user.is_active) {
       const error = new Error('Account is deactivated. Please contact administration.');
       error.statusCode = 401;
       return next(error);
     }
 
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      const error = new Error('Invalid credentials');
-      error.statusCode = 401;
-      return next(error);
-    }
-
-    // Direct login — no OTP required after signup verification
-    const token = generateToken(user._id);
-    const userResponse = user.toObject();
+    const token = generateToken(user.id);
+    const userResponse = {
+      ...user,
+      _id: user.id,
+      fullName: user.full_name,
+      phoneNumber: user.phone_number,
+      childEmail: user.child_email,
+      isVerified: user.is_verified,
+      isActive: user.is_active,
+      googleId: user.google_id
+    };
     delete userResponse.password;
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       token,
       user: userResponse,
     });
   } catch (error) {
-    if (error.message && error.message.includes('buffering timed out')) {
-      error.message = 'Database is temporarily unavailable. Please try again in a few seconds.';
-      error.statusCode = 503;
-    }
     next(error);
   }
 };
@@ -164,39 +319,71 @@ export const googleAuth = async (req, res, next) => {
 
     const { sub: googleId, email, name } = googleUserInfo;
 
-    // Find existing user by googleId or email
-    let user = await User.findOne({ $or: [{ googleId }, { email }] });
+    // Find existing user by googleId or email in Supabase
+    const { data: userByGoogle } = await supabase
+      .from('users')
+      .select('*')
+      .eq('google_id', googleId)
+      .maybeSingle();
+
+    const { data: userByEmail } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
+    let user = userByGoogle || userByEmail;
 
     if (user) {
       // Link Google account if not already linked
-      if (!user.googleId) {
-        user.googleId = googleId;
-        user.isVerified = true;
-        await user.save();
+      if (!user.google_id) {
+        const { data: updatedUser } = await supabase
+          .from('users')
+          .update({ google_id: googleId, is_verified: true })
+          .eq('id', user.id)
+          .select()
+          .single();
+        
+        user = updatedUser;
       }
-      if (!user.isActive) {
+      if (!user.is_active) {
         const error = new Error('Account is deactivated. Please contact administration.');
         error.statusCode = 401;
         return next(error);
       }
     } else {
       // Create new user via Google — auto-verified
-      user = await User.create({
-        name,
-        fullName: name,
-        email,
-        googleId,
-        role: role || 'student',
-        isVerified: true,
-        isActive: true,
-      });
+      const { data: newUser } = await supabase
+        .from('users')
+        .insert([{
+          name,
+          full_name: name,
+          email,
+          google_id: googleId,
+          role: role || 'student',
+          is_verified: true,
+          is_active: true,
+        }])
+        .select()
+        .single();
+
+      user = newUser;
     }
 
-    const token = generateToken(user._id);
-    const userResponse = user.toObject();
+    const token = generateToken(user.id);
+    const userResponse = {
+      ...user,
+      _id: user.id,
+      fullName: user.full_name,
+      phoneNumber: user.phone_number,
+      childEmail: user.child_email,
+      isVerified: user.is_verified,
+      isActive: user.is_active,
+      googleId: user.google_id
+    };
     delete userResponse.password;
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       token,
       user: userResponse,
@@ -215,10 +402,19 @@ export const sendOtp = async (req, res, next) => {
     if (!email) return res.status(400).json({ message: 'Email required' });
 
     const otpType = type || 'email_verification';
-    const lastOtp = await OTP.findOne({ email, type: otpType }).sort({ createdAt: -1 });
+
+    const { data: lastOtp } = await supabase
+      .from('otps')
+      .select('*')
+      .eq('email', email)
+      .eq('type', otpType)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
     if (lastOtp) {
       const cooldown = OTP_RESEND_COOLDOWN_SECONDS * 1000;
-      const timeElapsed = Date.now() - lastOtp.createdAt.getTime();
+      const timeElapsed = Date.now() - new Date(lastOtp.created_at).getTime();
       if (timeElapsed < cooldown) {
         return res.status(429).json({ message: `Please wait ${Math.ceil((cooldown - timeElapsed) / 1000)}s before requesting another OTP` });
       }
@@ -228,16 +424,17 @@ export const sendOtp = async (req, res, next) => {
     const hashedOtp = hashOTP(otp);
 
     // Ensure only one active OTP per email
-    await OTP.deleteMany({ email });
+    await supabase.from('otps').delete().eq('email', email);
 
-    await OTP.create({
+    // Store OTP in DB
+    await supabase.from('otps').insert([{
       email,
       otp: hashedOtp,
       type: otpType,
-      expiresAt: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000),
+      expires_at: new Date(Date.now() + OTP_EXPIRY_MINUTES * 60000).toISOString(),
       attempts: 0,
-      blockedUntil: null,
-    });
+      blocked_until: null,
+    }]);
 
     console.log("OTP for " + email + ": " + otp);
 
@@ -247,7 +444,7 @@ export const sendOtp = async (req, res, next) => {
       html: generateOTPTemplate(otp, otpType === 'email_verification' ? 'Email Verification' : 'OTP Code'),
     });
 
-    res.status(200).json({ success: true, message: 'OTP sent to email successfully' });
+    return res.status(200).json({ success: true, message: 'OTP sent to email successfully' });
   } catch (error) {
     next(error);
   }
@@ -262,35 +459,105 @@ export const verifyOtp = async (req, res, next) => {
     if (!email) return res.status(400).json({ message: 'Email required' });
 
     const otpType = type || 'email_verification';
-    const otpRecord = await OTP.findOne({ email, type: otpType }).sort({ createdAt: -1 });
+
+    const { data: otpRecord } = await supabase
+      .from('otps')
+      .select('*')
+      .eq('email', email)
+      .eq('type', otpType)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
     if (!otpRecord) {
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
+
     // Check block status
-    if (otpRecord.blockedUntil && otpRecord.blockedUntil > new Date()) {
+    const blockedUntilDate = otpRecord.blocked_until ? new Date(otpRecord.blocked_until) : null;
+    if (blockedUntilDate && blockedUntilDate > new Date()) {
       return res.status(429).json({ message: 'Too many invalid attempts. Try again later.' });
     }
-    const isValid = (await verifyOTPHash(String(otp), otpRecord.otp)) && otpRecord.expiresAt >= new Date();
+
+    const expiresAtDate = new Date(otpRecord.expires_at);
+    const isValid = (await verifyOTPHash(String(otp), otpRecord.otp)) && expiresAtDate >= new Date();
+
     if (!isValid) {
-      otpRecord.attempts += 1;
-      if (otpRecord.attempts >= OTP_MAX_ATTEMPTS) {
-        otpRecord.blockedUntil = new Date(Date.now() + OTP_BLOCK_TIME_MINUTES * 60000);
-      }
-      await otpRecord.save();
+      const nextAttempts = (otpRecord.attempts || 0) + 1;
+      const blockedUntil = nextAttempts >= OTP_MAX_ATTEMPTS
+        ? new Date(Date.now() + OTP_BLOCK_TIME_MINUTES * 60000).toISOString()
+        : null;
+
+      await supabase
+        .from('otps')
+        .update({ attempts: nextAttempts, blocked_until: blockedUntil })
+        .eq('id', otpRecord.id);
+
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
+
     // Successful verification – delete all OTPs for this email
-    await OTP.deleteMany({ email });
-    const user = await User.findOne({ email });
+    await supabase.from('otps').delete().eq('email', email);
+
+    const { data: user } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    user.isVerified = true;
-    await user.save();
-    const token = generateToken(user._id);
-    const userResponse = user.toObject();
+
+    const { data: updatedUser } = await supabase
+      .from('users')
+      .update({ is_verified: true })
+      .eq('id', user.id)
+      .select()
+      .single();
+
+    // Auto-create Student profile if role is student and doesn't exist
+    if (updatedUser.role === 'student') {
+      const { data: existingProfile } = await supabase
+        .from('students')
+        .select('*')
+        .eq('email', updatedUser.email)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        await supabase
+          .from('students')
+          .insert([{
+            full_name: updatedUser.full_name || updatedUser.name || 'New Student',
+            roll_number: 'CS' + (100000 + Math.floor(Math.random() * 900000)),
+            email: updatedUser.email,
+            phone_number: updatedUser.phone_number || updatedUser.mobile || '0000000000',
+            department: 'CSE',
+            year: 3,
+            semester: 5,
+            section: 'A',
+            parent_name: 'Parent',
+            parent_phone: '0000000000',
+            cgpa: 3.5,
+            attendance_percentage: 85,
+            is_active: true
+          }]);
+      }
+    }
+
+    const token = generateToken(updatedUser.id);
+    const userResponse = {
+      ...updatedUser,
+      _id: updatedUser.id,
+      fullName: updatedUser.full_name,
+      phoneNumber: updatedUser.phone_number,
+      childEmail: updatedUser.child_email,
+      isVerified: updatedUser.is_verified,
+      isActive: updatedUser.is_active,
+      googleId: updatedUser.google_id
+    };
     delete userResponse.password;
-    res.status(200).json({ success: true, token, user: userResponse });
+    return res.status(200).json({ success: true, token, user: userResponse });
   } catch (error) {
     next(error);
   }
@@ -302,22 +569,24 @@ export const verifyOtp = async (req, res, next) => {
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-    
+
+    const { data: user } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
     if (!user) {
-      // Don't leak whether the email exists for security reasons
       return res.status(200).json({ success: true, message: 'If that email exists, a reset link was sent.' });
     }
 
-    // Generate 6-digit OTP
     const otp = generateOTP();
-
-    await OTP.create({
+    await supabase.from('otps').insert([{
       email,
       otp,
       type: 'password_reset',
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
-    });
+      expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString()
+    }]);
 
     console.log(`\n\n========================================`);
     console.log(`🔐 PASSWORD RESET OTP FOR ${email}:`);
@@ -330,7 +599,7 @@ export const forgotPassword = async (req, res, next) => {
       html: generateOTPTemplate(otp, 'Password Reset'),
     });
 
-    res.status(200).json({ success: true, message: 'Password reset link sent to email' });
+    return res.status(200).json({ success: true, message: 'Password reset link sent to email' });
   } catch (error) {
     next(error);
   }
@@ -342,19 +611,21 @@ export const forgotPassword = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
   try {
     const { email, otp, password } = req.body;
-    
+
     if (!email || !otp || !password) {
       const error = new Error('Please provide email, OTP, and new password');
       error.statusCode = 400;
       return next(error);
     }
 
-    const validReset = await OTP.findOne({
-      email,
-      otp,
-      type: 'password_reset',
-      expiresAt: { $gt: new Date() },
-    });
+    const { data: validReset } = await supabase
+      .from('otps')
+      .select('*')
+      .eq('email', email)
+      .eq('otp', otp)
+      .eq('type', 'password_reset')
+      .gt('expires_at', new Date().toISOString())
+      .maybeSingle();
 
     if (!validReset) {
       const error = new Error('Invalid or expired OTP');
@@ -362,37 +633,108 @@ export const resetPassword = async (req, res, next) => {
       return next(error);
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const { data: user } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
     if (!user) {
       const error = new Error('User not found');
       error.statusCode = 404;
       return next(error);
     }
 
-    user.password = password;
-    await user.save();
-    
-    await OTP.deleteMany({ email, type: 'password_reset' });
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    res.status(200).json({ success: true, message: 'Password reset successfully' });
+    await supabase
+      .from('users')
+      .update({ password: hashedPassword })
+      .eq('email', email);
+
+    await supabase
+      .from('otps')
+      .delete()
+      .eq('email', email)
+      .eq('type', 'password_reset');
+
+    return res.status(200).json({ success: true, message: 'Password reset successfully' });
   } catch (error) {
     next(error);
   }
 };
-
-
 
 // @desc    Get current user profile
 // @route   GET /api/auth/me
 // @access  Private
 export const getMe = async (req, res, next) => {
   try {
-    const userResponse = req.user.toObject();
+    const userResponse = { ...req.user };
     delete userResponse.password;
 
     res.status(200).json({
       success: true,
       user: userResponse,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update current user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { fullName, phoneNumber } = req.body;
+    const user = req.user;
+
+    const updateData = {};
+    if (fullName) {
+      updateData.full_name = fullName;
+      updateData.name = fullName;
+    }
+    if (phoneNumber) {
+      updateData.phone_number = phoneNumber;
+      updateData.mobile = phoneNumber;
+    }
+
+    const { data: updatedUser } = await supabase
+      .from('users')
+      .update(updateData)
+      .eq('id', user.id || user._id)
+      .select()
+      .single();
+
+    if (user.role === 'student') {
+      const studentUpdate = {};
+      if (fullName) studentUpdate.full_name = fullName;
+      if (phoneNumber) studentUpdate.phone_number = phoneNumber;
+      await supabase.from('students').update(studentUpdate).eq('email', user.email);
+    } else if (user.role === 'parent' && user.child_email) {
+      const studentUpdate = {};
+      if (fullName) studentUpdate.parent_name = fullName;
+      if (phoneNumber) studentUpdate.parent_phone = phoneNumber;
+      await supabase.from('students').update(studentUpdate).eq('email', user.child_email);
+    }
+
+    const userResponse = {
+      ...updatedUser,
+      _id: updatedUser.id,
+      fullName: updatedUser.full_name,
+      phoneNumber: updatedUser.phone_number,
+      childEmail: updatedUser.child_email,
+      isVerified: updatedUser.is_verified,
+      isActive: updatedUser.is_active,
+      googleId: updatedUser.google_id
+    };
+    delete userResponse.password;
+
+    return res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: userResponse
     });
   } catch (error) {
     next(error);

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
@@ -10,10 +11,9 @@ import {
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import {
-  attendanceHistory, marksPerformance, parentActivities, parentNotifications, parentStats
+  attendanceHistory, marksPerformance, parentActivities, parentNotifications, parentStats as mockStats
 } from "@/mock/parentData";
-
-
+import api from "@/lib/api";
 
 const statIcons = [GraduationCap, TrendingUp, DollarSign, Calendar, Bell, CheckCircle, User, Activity];
 const statGradients = [
@@ -23,20 +23,70 @@ const statGradients = [
 
 export function ParentDashboard() {
   const path = useRouterState({ select: r => r.location.pathname });
+  const [stats, setStats] = useState<any[]>(mockStats);
+  const [childInfo, setChildInfo] = useState<any>(null);
+  const [parentName, setParentName] = useState("Parent");
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("cms_user");
+    if (userStr) {
+      try {
+        const u = JSON.parse(userStr);
+        setParentName(u.fullName || u.name || "Parent");
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const res = await api.get("/api/parent-module/student-data");
+        if (res.data?.success && res.data?.data) {
+          const dbData = res.data.data;
+          // Store in localStorage for sub-pages to use
+          localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
+          
+          setChildInfo(dbData);
+
+          // Map backend stats to the UI stats grid
+          const attendanceVal = dbData.stats.find((s: any) => s.label.includes("Attendance"))?.value || "87.3%";
+          const cgpaVal = dbData.stats.find((s: any) => s.label.includes("CGPA"))?.value || "3.6";
+          const feesVal = dbData.stats.find((s: any) => s.label.includes("Fees"))?.value || "$1,250";
+
+          setStats([
+            { label: "Child Attendance", value: attendanceVal, change: "Current" },
+            { label: "Child CGPA", value: cgpaVal, change: "Latest" },
+            { label: "Pending Fees", value: feesVal, change: "Due" },
+            { label: "Upcoming Exams", value: "2", change: "This Week" },
+            { label: "Notifications", value: "5", change: "Unread" },
+            { label: "Leave Status", value: "Approved", change: "1 Request" }
+          ]);
+        }
+      } catch (err) {
+        console.error("Error loading parent dashboard child data:", err);
+      }
+    };
+    fetchStudentData();
+  }, []);
 
   if (path !== "/dashboard/parent") {
     return <Outlet />;
   }
 
+  const attendancePctStr = stats[0]?.value || "87.3%";
+  const cgpaValueStr = stats[1]?.value || "3.6";
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Parent Dashboard"
-        desc="Monitor child's academic progress, attendance, fees, and school activities."
+        title={`Welcome, ${parentName}`}
+        desc={`Monitoring academic progress for your child: ${childInfo?.childName || "Loading..."} (${childInfo?.rollNumber || ""})`}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {parentStats.map((stat, i) => (
+        {stats.slice(0, 4).map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
             <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i]} gradient={statGradients[i]} />
           </motion.div>
@@ -50,7 +100,7 @@ export function ParentDashboard() {
               <h3 className="font-semibold">Child Attendance</h3>
               <p className="text-xs text-muted-foreground">Monthly attendance percentage</p>
             </div>
-            <Badge tone="success">87.3%</Badge>
+            <Badge tone="success">{attendancePctStr}</Badge>
           </div>
           <div className="h-72">
             <ResponsiveContainer>
@@ -121,14 +171,15 @@ export function ParentDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Current Semester", value: "Sem 5" },
-              { label: "Overall GPA", value: "3.6" },
-              { label: "Class Rank", value: "8/45" },
-              { label: "Attendance", value: "87.3%" },
+              { label: "Name", value: childInfo?.childName || "Student User" },
+              { label: "Roll Number", value: childInfo?.rollNumber || "CS2026101" },
+              { label: "Current Semester", value: childInfo ? `Sem ${childInfo.semester}` : "Sem 5" },
+              { label: "Overall GPA", value: cgpaValueStr },
+              { label: "Attendance", value: attendancePctStr },
             ].map(item => (
               <div key={item.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
                 <span className="text-sm text-muted-foreground">{item.label}</span>
-                <span className="font-bold">{item.value}</span>
+                <span className="font-bold text-xs max-w-[150px] truncate text-right">{item.value}</span>
               </div>
             ))}
           </div>

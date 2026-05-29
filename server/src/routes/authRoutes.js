@@ -4,6 +4,7 @@ import {
   login,
   googleAuth,
   getMe, 
+  updateProfile,
   sendOtp, 
   verifyOtp, 
   forgotPassword, 
@@ -18,6 +19,7 @@ router.post('/register', register);
 router.post('/login', login);
 router.post('/google', googleAuth);
 router.get('/me', protect, getMe);
+router.put('/profile', protect, updateProfile);
 
 // Email OTP Routes (primary authentication)
 router.post('/send-otp', sendOtp);

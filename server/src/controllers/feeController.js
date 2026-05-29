@@ -1,20 +1,39 @@
-import Fee from '../models/Fee.js';
-import Student from '../models/Student.js';
-import mongoose from 'mongoose';
+import { supabase } from '../config/supabase.js';
+
+// Helper: Format a fee row from Supabase back to the camelCase schema for frontend consumption
+const formatFee = (f) => {
+  if (!f) return null;
+  const amt = Number(f.amount || 0);
+  const paid = Number(f.paid_amount || 0);
+  return {
+    id: f.id,
+    _id: f.id,
+    student: f.student,
+    academicYear: f.academic_year,
+    semester: f.semester,
+    feeType: f.fee_type,
+    totalAmount: amt,
+    paidAmount: paid,
+    remainingAmount: amt - paid,
+    dueDate: f.due_date,
+    paymentStatus: f.status,
+    paymentMethod: f.payment_method,
+    transactionId: f.transaction_id,
+    remarks: f.remarks,
+    createdAt: f.created_at,
+    updatedAt: f.created_at // fallback
+  };
+};
 
 // Helper: Dynamically flag any pending/partial fees whose due date has passed as overdue
 const updateOverdueFees = async () => {
   try {
-    const currentDate = new Date();
-    await Fee.updateMany(
-      {
-        paymentStatus: { $in: ['pending', 'partial'] },
-        dueDate: { $lt: currentDate },
-      },
-      {
-        $set: { paymentStatus: 'overdue' },
-      }
-    );
+    const currentDate = new Date().toISOString().split('T')[0];
+    await supabase
+      .from('fees')
+      .update({ status: 'overdue' })
+      .in('status', ['pending', 'partial', 'Pending', 'Partial'])
+      .lt('due_date', currentDate);
   } catch (error) {
     console.error('Error updating overdue fees:', error);
   }
@@ -39,34 +58,48 @@ export const createFee = async (req, res, next) => {
       return next(error);
     }
 
-    const studentRecord = await Student.findOne({ _id: student, isActive: true });
+    // Verify student exists and is active
+    const { data: studentRecord, error: studentErr } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', student)
+      .eq('is_active', true)
+      .maybeSingle();
+
     if (!studentRecord) {
       const error = new Error('Student not found or inactive');
       error.statusCode = 404;
       return next(error);
     }
 
-    const fee = await Fee.create({
-      student,
-      academicYear,
-      semester,
-      feeType,
-      totalAmount,
-      dueDate,
-      remarks,
-    });
+    // Determine initial status based on due date
+    const formattedDueDate = new Date(dueDate).toISOString().split('T')[0];
+    const status = new Date(formattedDueDate) < new Date() ? 'overdue' : 'pending';
+
+    const { data: fee, error: createErr } = await supabase
+      .from('fees')
+      .insert([{
+        student,
+        academic_year: academicYear,
+        semester: Number(semester),
+        fee_type: feeType,
+        amount: Number(totalAmount),
+        paid_amount: 0,
+        due_date: formattedDueDate,
+        status,
+        remarks
+      }])
+      .select()
+      .single();
+
+    if (createErr) throw createErr;
 
     res.status(201).json({
       success: true,
       message: 'Fee record created successfully',
-      data: fee,
+      data: formatFee(fee),
     });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const err = new Error(Object.values(error.errors).map((val) => val.message).join(', '));
-      err.statusCode = 400;
-      return next(err);
-    }
     next(error);
   }
 };
@@ -88,47 +121,67 @@ export const getFees = async (req, res, next) => {
       limit = 10,
     } = req.query;
 
-    const query = {};
+    let studentIds = null;
 
     // Filter by student details (name, roll, or department)
     if (search || department) {
-      const studentMatch = { isActive: true };
-      if (department) studentMatch.department = department;
+      let studentQuery = supabase.from('students').select('id').eq('is_active', true);
+      if (department) studentQuery = studentQuery.eq('department', department);
       if (search) {
-        studentMatch.$or = [
-          { fullName: { $regex: search, $options: 'i' } },
-          { rollNumber: { $regex: search, $options: 'i' } },
-        ];
+        studentQuery = studentQuery.or(`full_name.ilike.%${search}%,roll_number.ilike.%${search}%`);
       }
-      const students = await Student.find(studentMatch).select('_id');
-      query.student = { $in: students.map((s) => s._id) };
+      const { data: students } = await studentQuery;
+      studentIds = students ? students.map(s => s.id) : [];
     }
 
-    // Direct filters
-    if (status) query.paymentStatus = status;
-    if (feeType) query.feeType = feeType;
-    if (semester) query.semester = Number(semester);
+    let query = supabase
+      .from('fees')
+      .select('*, student:students(*)', { count: 'exact' });
+
+    if (studentIds !== null) {
+      query = query.in('student', studentIds);
+    }
+
+    if (status) query = query.eq('status', status);
+    if (feeType) query = query.eq('fee_type', feeType);
+    if (semester) query = query.eq('semester', Number(semester));
 
     const pageNum = Math.max(1, parseInt(page, 10));
     const limitNum = Math.max(1, parseInt(limit, 10));
-    const skip = (pageNum - 1) * limitNum;
+    const from = (pageNum - 1) * limitNum;
+    const to = from + limitNum - 1;
 
-    const totalFees = await Fee.countDocuments(query);
-    const fees = await Fee.find(query)
-      .populate('student', 'fullName rollNumber department semester section')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum);
+    const { data: feesData, count: totalFees, error } = await query
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
-    const totalPages = Math.ceil(totalFees / limitNum);
+    if (error) throw error;
+
+    const formattedFees = feesData ? feesData.map(f => {
+      const formatted = formatFee(f);
+      if (f.student) {
+        formatted.student = {
+          _id: f.student.id,
+          id: f.student.id,
+          fullName: f.student.full_name,
+          rollNumber: f.student.roll_number,
+          department: f.student.department,
+          semester: f.student.semester,
+          section: f.student.section
+        };
+      }
+      return formatted;
+    }) : [];
+
+    const totalPages = Math.ceil((totalFees || 0) / limitNum);
 
     res.status(200).json({
       success: true,
       message: 'Fees retrieved successfully',
       data: {
-        fees,
+        fees: formattedFees,
         pagination: {
-          totalFees,
+          totalFees: totalFees || 0,
           totalPages,
           currentPage: pageNum,
           limit: limitNum,
@@ -147,13 +200,13 @@ export const getStudentFees = async (req, res, next) => {
   try {
     const { studentId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(studentId)) {
-      const error = new Error('Invalid student ID format');
-      error.statusCode = 400;
-      return next(error);
-    }
+    const { data: studentRecord, error: studentErr } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', studentId)
+      .eq('is_active', true)
+      .maybeSingle();
 
-    const studentRecord = await Student.findOne({ _id: studentId, isActive: true });
     if (!studentRecord) {
       const error = new Error('Student not found');
       error.statusCode = 404;
@@ -171,12 +224,20 @@ export const getStudentFees = async (req, res, next) => {
 
     await updateOverdueFees();
 
-    const fees = await Fee.find({ student: studentId }).sort({ dueDate: 1 });
+    const { data: feesData, error } = await supabase
+      .from('fees')
+      .select('*')
+      .eq('student', studentId)
+      .order('due_date', { ascending: true });
 
-    const totalDue = fees.reduce((sum, f) => sum + f.totalAmount, 0);
-    const totalPaid = fees.reduce((sum, f) => sum + f.paidAmount, 0);
-    const totalRemaining = fees.reduce((sum, f) => sum + f.remainingAmount, 0);
-    const overdueCount = fees.filter((f) => f.paymentStatus === 'overdue').length;
+    if (error) throw error;
+
+    const formattedFees = feesData ? feesData.map(formatFee) : [];
+
+    const totalDue = formattedFees.reduce((sum, f) => sum + f.totalAmount, 0);
+    const totalPaid = formattedFees.reduce((sum, f) => sum + f.paidAmount, 0);
+    const totalRemaining = formattedFees.reduce((sum, f) => sum + f.remainingAmount, 0);
+    const overdueCount = formattedFees.filter((f) => f.paymentStatus === 'overdue').length;
 
     res.status(200).json({
       success: true,
@@ -188,7 +249,7 @@ export const getStudentFees = async (req, res, next) => {
           totalRemaining,
           overdueCount,
         },
-        fees,
+        fees: formattedFees,
       },
     });
   } catch (error) {
@@ -203,7 +264,12 @@ export const updateFee = async (req, res, next) => {
   try {
     const { totalAmount, paidAmount, dueDate } = req.body;
 
-    const fee = await Fee.findById(req.params.id);
+    const { data: fee, error: fetchErr } = await supabase
+      .from('fees')
+      .select('*')
+      .eq('id', req.params.id)
+      .maybeSingle();
+
     if (!fee) {
       const error = new Error('Fee record not found');
       error.statusCode = 404;
@@ -211,8 +277,8 @@ export const updateFee = async (req, res, next) => {
     }
 
     // Validation
-    const nextTotal = totalAmount !== undefined ? totalAmount : fee.totalAmount;
-    const nextPaid = paidAmount !== undefined ? paidAmount : fee.paidAmount;
+    const nextTotal = totalAmount !== undefined ? Number(totalAmount) : Number(fee.amount);
+    const nextPaid = paidAmount !== undefined ? Number(paidAmount) : Number(fee.paid_amount);
 
     if (nextTotal < 0 || nextPaid < 0) {
       const error = new Error('Amounts cannot be negative');
@@ -226,24 +292,43 @@ export const updateFee = async (req, res, next) => {
       return next(error);
     }
 
-    // Apply updates manually to trigger pre-save hook properly
-    Object.keys(req.body).forEach((key) => {
-      fee[key] = req.body[key];
-    });
+    const remaining = nextTotal - nextPaid;
+    let status = 'pending';
+    if (nextPaid >= nextTotal) {
+      status = 'paid';
+    } else if (new Date(dueDate || fee.due_date) < new Date() && remaining > 0) {
+      status = 'overdue';
+    } else if (nextPaid > 0 && remaining > 0) {
+      status = 'partial';
+    }
 
-    const updatedFee = await fee.save();
+    const updateData = {
+      amount: nextTotal,
+      paid_amount: nextPaid,
+      status,
+    };
+
+    if (dueDate) updateData.due_date = new Date(dueDate).toISOString().split('T')[0];
+    if (req.body.remarks !== undefined) updateData.remarks = req.body.remarks;
+    if (req.body.academicYear !== undefined) updateData.academic_year = req.body.academicYear;
+    if (req.body.semester !== undefined) updateData.semester = Number(req.body.semester);
+    if (req.body.feeType !== undefined) updateData.fee_type = req.body.feeType;
+
+    const { data: updatedFee, error: updateErr } = await supabase
+      .from('fees')
+      .update(updateData)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
 
     res.status(200).json({
       success: true,
       message: 'Fee record updated successfully',
-      data: updatedFee,
+      data: formatFee(updatedFee),
     });
   } catch (error) {
-    if (error.name === 'CastError') {
-      const err = new Error('Invalid fee ID format');
-      err.statusCode = 400;
-      return next(err);
-    }
     next(error);
   }
 };
@@ -253,14 +338,24 @@ export const updateFee = async (req, res, next) => {
 // @access  Private (admin, super-admin)
 export const deleteFee = async (req, res, next) => {
   try {
-    const fee = await Fee.findById(req.params.id);
+    const { data: fee, error: fetchErr } = await supabase
+      .from('fees')
+      .select('*')
+      .eq('id', req.params.id)
+      .maybeSingle();
+
     if (!fee) {
       const error = new Error('Fee record not found');
       error.statusCode = 404;
       return next(error);
     }
 
-    await Fee.deleteOne({ _id: req.params.id });
+    const { error: deleteErr } = await supabase
+      .from('fees')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (deleteErr) throw deleteErr;
 
     res.status(200).json({
       success: true,
@@ -268,11 +363,6 @@ export const deleteFee = async (req, res, next) => {
       data: null,
     });
   } catch (error) {
-    if (error.name === 'CastError') {
-      const err = new Error('Invalid fee ID format');
-      err.statusCode = 400;
-      return next(err);
-    }
     next(error);
   }
 };
@@ -297,38 +387,64 @@ export const payFee = async (req, res, next) => {
       return next(error);
     }
 
-    const fee = await Fee.findById(req.params.id);
+    const { data: fee, error: fetchErr } = await supabase
+      .from('fees')
+      .select('*')
+      .eq('id', req.params.id)
+      .maybeSingle();
+
     if (!fee) {
       const error = new Error('Fee record not found');
       error.statusCode = 404;
       return next(error);
     }
 
-    if (fee.paidAmount + payAmount > fee.totalAmount) {
+    const currentPaid = Number(fee.paid_amount || 0);
+    const totalAmt = Number(fee.amount || 0);
+
+    if (currentPaid + payAmount > totalAmt) {
       const error = new Error('Payment amount exceeds remaining due amount');
       error.statusCode = 400;
       return next(error);
     }
 
-    // Apply payment transaction details
-    fee.paidAmount += payAmount;
-    fee.paymentMethod = paymentMethod;
-    if (transactionId) fee.transactionId = transactionId;
-    if (remarks) fee.remarks = remarks;
+    const newPaidAmount = currentPaid + payAmount;
+    const remaining = totalAmt - newPaidAmount;
 
-    const updatedFee = await fee.save();
+    let status = 'pending';
+    if (newPaidAmount >= totalAmt) {
+      status = 'paid';
+    } else if (new Date(fee.due_date) < new Date() && remaining > 0) {
+      status = 'overdue';
+    } else if (newPaidAmount > 0 && remaining > 0) {
+      status = 'partial';
+    }
+
+    const updateData = {
+      paid_amount: newPaidAmount,
+      status,
+      payment_method: paymentMethod,
+      payment_date: new Date().toISOString().split('T')[0]
+    };
+
+    if (transactionId) updateData.transaction_id = transactionId;
+    if (remarks) updateData.remarks = remarks;
+
+    const { data: updatedFee, error: updateErr } = await supabase
+      .from('fees')
+      .update(updateData)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
 
     res.status(200).json({
       success: true,
       message: 'Payment processed successfully',
-      data: updatedFee,
+      data: formatFee(updatedFee),
     });
   } catch (error) {
-    if (error.name === 'CastError') {
-      const err = new Error('Invalid fee ID format');
-      err.statusCode = 400;
-      return next(err);
-    }
     next(error);
   }
 };
@@ -342,34 +458,44 @@ export const getFeesReport = async (req, res, next) => {
 
     const { department, semester, academicYear } = req.query;
 
-    const query = {};
-    if (academicYear) query.academicYear = academicYear;
-    if (semester) query.semester = Number(semester);
-
+    let studentIds = null;
     if (department) {
-      const students = await Student.find({ department, isActive: true }).select('_id');
-      query.student = { $in: students.map((s) => s._id) };
+      const { data: students } = await supabase
+        .from('students')
+        .select('id')
+        .eq('department', department)
+        .eq('is_active', true);
+      studentIds = students ? students.map(s => s.id) : [];
     }
 
-    const fees = await Fee.find(query).populate('student', 'department');
+    let query = supabase.from('fees').select('*, student:students(department)');
 
-    const totalRevenue = fees.reduce((sum, f) => sum + f.totalAmount, 0);
-    const collectedFees = fees.reduce((sum, f) => sum + f.paidAmount, 0);
-    const pendingFees = fees.reduce((sum, f) => sum + f.remainingAmount, 0);
-    const overdueFees = fees
-      .filter((f) => f.paymentStatus === 'overdue')
-      .reduce((sum, f) => sum + f.remainingAmount, 0);
+    if (academicYear) query = query.eq('academic_year', academicYear);
+    if (semester) query = query.eq('semester', Number(semester));
+    if (studentIds !== null) query = query.in('student', studentIds);
+
+    const { data: feesData, error } = await query;
+    if (error) throw error;
+
+    const totalRevenue = feesData.reduce((sum, f) => sum + Number(f.amount || 0), 0);
+    const collectedFees = feesData.reduce((sum, f) => sum + Number(f.paid_amount || 0), 0);
+    const pendingFees = feesData.reduce((sum, f) => sum + (Number(f.amount || 0) - Number(f.paid_amount || 0)), 0);
+    const overdueFees = feesData
+      .filter((f) => f.status === 'overdue')
+      .reduce((sum, f) => sum + (Number(f.amount || 0) - Number(f.paid_amount || 0)), 0);
 
     // Department-wise collection details
     const deptStats = {};
-    fees.forEach((fee) => {
+    feesData.forEach((fee) => {
       const dept = fee.student?.department || 'Unknown';
       if (!deptStats[dept]) {
         deptStats[dept] = { total: 0, collected: 0, pending: 0 };
       }
-      deptStats[dept].total += fee.totalAmount;
-      deptStats[dept].collected += fee.paidAmount;
-      deptStats[dept].pending += fee.remainingAmount;
+      const amt = Number(fee.amount || 0);
+      const paid = Number(fee.paid_amount || 0);
+      deptStats[dept].total += amt;
+      deptStats[dept].collected += paid;
+      deptStats[dept].pending += (amt - paid);
     });
 
     const departmentWise = Object.keys(deptStats).map((dept) => ({
@@ -379,14 +505,16 @@ export const getFeesReport = async (req, res, next) => {
 
     // Fee type collection analytics
     const typeStats = {};
-    fees.forEach((fee) => {
-      const type = fee.feeType;
+    feesData.forEach((fee) => {
+      const type = fee.fee_type || 'miscellaneous';
       if (!typeStats[type]) {
         typeStats[type] = { total: 0, collected: 0, pending: 0 };
       }
-      typeStats[type].total += fee.totalAmount;
-      typeStats[type].collected += fee.paidAmount;
-      typeStats[type].pending += fee.remainingAmount;
+      const amt = Number(fee.amount || 0);
+      const paid = Number(fee.paid_amount || 0);
+      typeStats[type].total += amt;
+      typeStats[type].collected += paid;
+      typeStats[type].pending += (amt - paid);
     });
 
     const feeTypeWise = Object.keys(typeStats).map((type) => ({

@@ -1,13 +1,41 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin, User } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { timetableSlots } from "@/mock/studentData";
-
-
+import api from "@/lib/api";
 
 export function StudentTimetable() {
   const timeSlots = ["09:00 AM", "11:00 AM", "02:00 PM"];
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const todayDay = daysOfWeek[new Date().getDay()];
+  const currentDay = days.includes(todayDay) ? todayDay : "Monday";
+
+  const [slots, setSlots] = useState<any[]>(timetableSlots);
+
+  useEffect(() => {
+    const fetchTimetable = async () => {
+      try {
+        const res = await api.get("/api/student-module/timetable");
+        if (res.data?.success && res.data?.data) {
+          const dbSlots = res.data.data.map((s: any) => ({
+            ...s,
+            faculty: s.facultyName || s.faculty
+          }));
+          if (dbSlots.length > 0) {
+            setSlots(dbSlots);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading timetable:", err);
+      }
+    };
+    fetchTimetable();
+  }, []);
+
+  const todaySlots = slots.filter(s => s.day === currentDay);
 
   return (
     <div className="space-y-6">
@@ -18,10 +46,10 @@ export function StudentTimetable() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Classes", value: "15", tone: "info" as const },
-          { label: "Today's Classes", value: "4", tone: "success" as const },
-          { label: "Lab Sessions", value: "3", tone: "info" as const },
-          { label: "Free Periods", value: "2", tone: "warn" as const },
+          { label: "Total Classes", value: String(slots.length), tone: "info" as const },
+          { label: "Today's Classes", value: String(todaySlots.length), tone: "success" as const },
+          { label: "Lab Sessions", value: String(slots.filter(s => s.subject.toLowerCase().includes("lab")).length), tone: "info" as const },
+          { label: "Free Periods", value: String(Math.max(0, 15 - slots.length)), tone: "warn" as const },
         ].map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -51,7 +79,7 @@ export function StudentTimetable() {
                 <tr key={time}>
                   <td className="py-3 px-4 font-medium text-xs bg-gradient-soft">{time}</td>
                   {days.map(day => {
-                    const slot = timetableSlots.find(s => s.day === day && s.time === time);
+                    const slot = slots.find(s => s.day === day && s.time === time);
                     return (
                       <td key={day} className="py-2 px-2 text-center">
                         {slot ? (
@@ -78,25 +106,31 @@ export function StudentTimetable() {
       </Card>
 
       <Card>
-        <h3 className="font-semibold mb-4">Today's Schedule</h3>
+        <h3 className="font-semibold mb-4">Today's Schedule ({currentDay})</h3>
         <div className="space-y-2">
-          {timetableSlots.filter(s => s.day === "Monday").map(slot => (
-            <div key={slot.time} className="flex items-center gap-4 p-3 rounded-xl border hover:bg-accent/50 transition">
-              <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                {slot.time.slice(0, 2)}
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">{slot.subject}</div>
-                <div className="text-xs text-muted-foreground">{slot.faculty}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-medium">{slot.time}</div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                  <MapPin className="size-2.5" /> {slot.room}
+          {todaySlots.length > 0 ? (
+            todaySlots.map(slot => (
+              <div key={slot.time + slot.subject} className="flex items-center gap-4 p-3 rounded-xl border hover:bg-accent/50 transition">
+                <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
+                  {slot.time.slice(0, 2)}
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium">{slot.subject}</div>
+                  <div className="text-xs text-muted-foreground">{slot.faculty}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs font-medium">{slot.time}</div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="size-2.5" /> {slot.room}
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="p-4 rounded-xl border border-dashed text-center text-muted-foreground text-sm">
+              No classes scheduled for today. Enjoy your day!
             </div>
-          ))}
+          )}
         </div>
       </Card>
 
@@ -106,11 +140,11 @@ export function StudentTimetable() {
           <h3 className="font-semibold">Faculty Information</h3>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from(new Set(timetableSlots.map(s => s.faculty))).map(faculty => (
+          {Array.from(new Set(slots.filter(s => s.faculty).map(s => s.faculty))).map(faculty => (
             <div key={faculty} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="flex items-center gap-3">
                 <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
-                  {faculty.split(" ").map(n => n[0]).join("")}
+                  {faculty.split(" ").map((n: string) => n[0]).join("")}
                 </div>
                 <div>
                   <div className="text-sm font-medium">{faculty}</div>

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import { supabase } from '../config/supabase.js';
 
 export const protect = async (req, res, next) => {
   let token;
@@ -16,7 +16,33 @@ export const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Find user and attach to request
-      const user = await User.findById(decoded.id);
+      let user = null;
+      
+      const isUUID = typeof decoded.id === 'string' && 
+        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(decoded.id);
+
+      if (isUUID) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', decoded.id)
+          .single();
+        
+        if (data && !error) {
+          // Add a helper method to match MongoDB user schema structure in controllers
+          user = {
+            ...data,
+            _id: data.id,
+            isActive: data.is_active,
+            isVerified: data.is_verified,
+            fullName: data.full_name,
+            phoneNumber: data.phone_number,
+            childEmail: data.child_email,
+            // To ensure compatibility with req.user.toObject()
+            toObject: function() { return this; }
+          };
+        }
+      }
 
       if (!user) {
         const error = new Error('Not authorized, user not found');

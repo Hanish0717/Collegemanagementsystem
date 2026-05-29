@@ -1,14 +1,139 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { Calendar, QrCode, Save, Search } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { attendanceStudents, weeklyAttendance } from "@/mock/facultyData";
-
-
+import api from "@/lib/api";
 
 export function FacultyAttendance() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [selectedSubject, setSelectedSubject] = useState("Data Structures");
+  const [students, setStudents] = useState<any[]>(attendanceStudents);
+  const [studentDbId, setStudentDbId] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+
+  // Find the student profile ID of CS2026101 by checking seeded attendance records
+  useEffect(() => {
+    const findStudentId = async () => {
+      try {
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        const res = await api.get("/api/attendance/class", {
+          params: {
+            department: "CSE",
+            semester: 5,
+            section: "A",
+            subject: "Data Structures",
+            date: yesterday
+          }
+        });
+        if (res.data?.success && res.data?.data && res.data.data.length > 0) {
+          const record = res.data.data.find((r: any) => r.student?.rollNumber === "CS2026101");
+          if (record && record.student && record.student._id) {
+            setStudentDbId(record.student._id);
+          }
+        }
+      } catch (err) {
+        console.error("Error finding student profile ID:", err);
+      }
+    };
+    findStudentId();
+  }, []);
+
+  const fetchAttendance = async () => {
+    try {
+      const res = await api.get("/api/attendance/class", {
+        params: {
+          department: "CSE",
+          semester: 5,
+          section: "A",
+          subject: selectedSubject,
+          date: selectedDate
+        }
+      });
+      if (res.data?.success && res.data?.data) {
+        const records = res.data.data;
+        if (records.length > 0) {
+          const mapped = attendanceStudents.map(mockStudent => {
+            const match = records.find((r: any) => r.student?.rollNumber === mockStudent.id);
+            if (match) {
+              return {
+                ...mockStudent,
+                dbId: match._id,
+                studentId: match.student?._id,
+                status: match.status.charAt(0).toUpperCase() + match.status.slice(1),
+                remarks: match.remarks || ""
+              };
+            }
+            return mockStudent;
+          });
+          setStudents(mapped);
+        } else {
+          setStudents(attendanceStudents.map(s => ({ ...s, dbId: undefined })));
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching class attendance:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAttendance();
+  }, [selectedDate, selectedSubject]);
+
+  const handleStatusChange = (id: string, newStatus: string) => {
+    setStudents(prev => prev.map(s => s.id === id ? { ...s, status: newStatus } : s));
+  };
+
+  const handleRemarksChange = (id: string, newRemarks: string) => {
+    setStudents(prev => prev.map(s => s.id === id ? { ...s, remarks: newRemarks } : s));
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      for (const student of students) {
+        if (student.id === "CS2026101") {
+          const targetId = student.studentId || studentDbId;
+          if (targetId) {
+            if (student.dbId) {
+              await api.put(`/api/attendance/${student.dbId}`, {
+                status: student.status.toLowerCase(),
+                remarks: student.remarks
+              });
+            } else {
+              await api.post("/api/attendance/mark", {
+                student: targetId,
+                subject: selectedSubject,
+                date: selectedDate,
+                status: student.status.toLowerCase(),
+                department: "CSE",
+                semester: 5,
+                section: "A",
+                remarks: student.remarks
+              });
+            }
+          }
+        }
+      }
+      alert("Attendance saved successfully!");
+      fetchAttendance();
+    } catch (err: any) {
+      console.error("Error saving attendance:", err);
+      alert(err.response?.data?.message || "Failed to save attendance");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredStudents = students.filter(s => 
+    s.name.toLowerCase().includes(search.toLowerCase()) || 
+    s.id.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const presentCount = students.filter(s => s.status === "Present").length;
+  const absentCount = students.filter(s => s.status === "Absent").length;
+  const lateCount = students.filter(s => s.status === "Late").length;
 
   return (
     <div className="space-y-6">
@@ -19,10 +144,10 @@ export function FacultyAttendance() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Students", value: "45", tone: "info" as const },
-          { label: "Present", value: "42", tone: "success" as const },
-          { label: "Absent", value: "3", tone: "danger" as const },
-          { label: "Late", value: "0", tone: "warn" as const },
+          { label: "Total Students", value: students.length.toString(), tone: "info" as const },
+          { label: "Present", value: presentCount.toString(), tone: "success" as const },
+          { label: "Absent", value: absentCount.toString(), tone: "danger" as const },
+          { label: "Late", value: lateCount.toString(), tone: "warn" as const },
         ].map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -36,10 +161,15 @@ export function FacultyAttendance() {
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input placeholder="Search students..." className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm" />
+            <input 
+              placeholder="Search students..." 
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm" 
+            />
           </div>
           <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["Data Structures", "Algorithms", "Database Systems", "Web Technologies"].map(s => <option key={s}>{s}</option>)}
+            {["Data Structures", "Algorithms", "Database Systems", "Web Technologies"].map(s => <option key={s} value={s}>{s}</option>)}
           </select>
           <div className="flex items-center gap-2">
             <Calendar className="size-4 text-muted-foreground" />
@@ -64,18 +194,27 @@ export function FacultyAttendance() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {attendanceStudents.map(student => (
+                {filteredStudents.map(student => (
                   <tr key={student.id} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4 font-medium text-xs">{student.id}</td>
                     <td className="py-3 px-4 font-medium">{student.name}</td>
                     <td className="py-3 px-4"><Badge tone="info">{student.department}</Badge></td>
                     <td className="py-3 px-4">
-                      <select defaultValue={student.status} className="rounded-lg border bg-background px-3 py-1.5 text-xs">
-                        {["Present", "Absent", "Late"].map(s => <option key={s}>{s}</option>)}
+                      <select 
+                        value={student.status} 
+                        onChange={(e) => handleStatusChange(student.id, e.target.value)}
+                        className="rounded-lg border bg-background px-3 py-1.5 text-xs"
+                      >
+                        {["Present", "Absent", "Late"].map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </td>
                     <td className="py-3 px-4">
-                      <input defaultValue={student.remarks} placeholder="Add remarks" className="w-full rounded-lg border bg-background px-3 py-1.5 text-xs" />
+                      <input 
+                        value={student.remarks} 
+                        onChange={(e) => handleRemarksChange(student.id, e.target.value)}
+                        placeholder="Add remarks" 
+                        className="w-full rounded-lg border bg-background px-3 py-1.5 text-xs" 
+                      />
                     </td>
                   </tr>
                 ))}
@@ -83,8 +222,12 @@ export function FacultyAttendance() {
             </table>
           </div>
           <div className="mt-4 flex justify-end">
-            <button className="px-6 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium flex items-center gap-2 glow-primary">
-              <Save className="size-4" /> Save Attendance
+            <button 
+              onClick={handleSave}
+              disabled={loading}
+              className="px-6 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium flex items-center gap-2 glow-primary disabled:opacity-50"
+            >
+              <Save className="size-4" /> {loading ? "Saving..." : "Save Attendance"}
             </button>
           </div>
         </Card>

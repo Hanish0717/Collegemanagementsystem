@@ -245,22 +245,29 @@ function LoginForm() {
                   <Link to="/forgot-password" className="text-indigo hover:underline">Forgot password?</Link>
                 </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active.gradient} shadow-soft disabled:opacity-70`}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                <>
-                  Sign in as {active.name} <ArrowRight className="size-4" />
-                </>
-              )}
-            </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active.gradient} shadow-soft disabled:opacity-70`}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Signing in…
+                    </>
+                  ) : (
+                    <>
+                      Sign in as {active.name} <ArrowRight className="size-4" />
+                    </>
+                  )}
+                </button>
+                {/* New Sign‑up link */}
+                <p className="mt-4 text-center text-sm text-muted-foreground">
+                  Don't have an account?{' '}
+                  <Link to="/register" className="text-indigo hover:underline font-medium">
+                    Sign up
+                  </Link>
+                </p>
           </form>
 
           {/* Divider */}
@@ -290,13 +297,7 @@ function LoginForm() {
             {googleLoading ? 'Signing in…' : 'Continue with Google'}
           </button>
 
-          {/* Create Account link — shown for all roles */}
-          <p className="mt-5 text-center text-xs text-muted-foreground">
-            Don't have an account?{" "}
-            <Link to="/register" search={{ role: roleId }} className="text-indigo hover:underline font-medium">
-              Create account
-            </Link>
-          </p>
+          {/* Registration is disabled as accounts are pre-managed by admin */}
         </motion.div>
       </div>
     </div>

@@ -1,7 +1,5 @@
-import Attendance from '../models/Attendance.js';
-import Student from '../models/Student.js';
-import mongoose from 'mongoose';
 import { updateStudentAttendancePercentage } from '../services/attendanceService.js';
+import { supabase } from '../config/supabase.js';
 
 // @desc    Mark attendance for a student
 // @route   POST /api/attendance/mark
@@ -10,7 +8,6 @@ export const markAttendance = async (req, res, next) => {
   try {
     const { student, subject, date, status, department, semester, section, remarks } = req.body;
 
-    // Validate fields
     if (!student || !subject || !date || !status || !department || !semester || !section) {
       const error = new Error('Please fill in all required fields');
       error.statusCode = 400;
@@ -18,23 +15,29 @@ export const markAttendance = async (req, res, next) => {
     }
 
     // Verify student exists
-    const studentRecord = await Student.findOne({ _id: student, isActive: true });
+    const { data: studentRecord } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', student)
+      .eq('is_active', true)
+      .maybeSingle();
+
     if (!studentRecord) {
       const error = new Error('Student not found or inactive');
       error.statusCode = 404;
       return next(error);
     }
 
-    // Normalize date
-    const normalizedDate = new Date(date);
-    normalizedDate.setUTCHours(0, 0, 0, 0);
+    const dateStr = new Date(date).toISOString().split('T')[0];
 
     // Prevent duplicate attendance
-    const duplicate = await Attendance.findOne({
-      student,
-      date: normalizedDate,
-      subject,
-    });
+    const { data: duplicate } = await supabase
+      .from('attendance')
+      .select('*')
+      .eq('student', student)
+      .eq('date', dateStr)
+      .eq('subject', subject)
+      .maybeSingle();
 
     if (duplicate) {
       const error = new Error('Attendance already marked for this student, subject, and date');
@@ -43,32 +46,34 @@ export const markAttendance = async (req, res, next) => {
     }
 
     // Create record
-    const record = await Attendance.create({
-      student,
-      faculty: req.user._id,
-      subject,
-      department,
-      semester,
-      section,
-      date: normalizedDate,
-      status,
-      remarks,
-    });
+    const { data: record, error: createErr } = await supabase
+      .from('attendance')
+      .insert([{
+        student,
+        date: dateStr,
+        status,
+        subject,
+        remarks
+      }])
+      .select()
+      .single();
+
+    if (createErr) throw createErr;
 
     // Recalculate percentage
     await updateStudentAttendancePercentage(student);
 
-    res.status(201).json({
+    const formatted = {
+      ...record,
+      _id: record.id
+    };
+
+    return res.status(201).json({
       success: true,
       message: 'Attendance marked successfully',
-      data: record,
+      data: formatted,
     });
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      const err = new Error(Object.values(error.errors).map((val) => val.message).join(', '));
-      err.statusCode = 400;
-      return next(err);
-    }
     next(error);
   }
 };
@@ -80,13 +85,13 @@ export const getStudentAttendance = async (req, res, next) => {
   try {
     const { studentId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(studentId)) {
-      const error = new Error('Invalid student ID format');
-      error.statusCode = 400;
-      return next(error);
-    }
+    const { data: studentRecord } = await supabase
+      .from('students')
+      .select('*')
+      .eq('id', studentId)
+      .eq('is_active', true)
+      .maybeSingle();
 
-    const studentRecord = await Student.findOne({ _id: studentId, isActive: true });
     if (!studentRecord) {
       const error = new Error('Student not found');
       error.statusCode = 404;
@@ -94,49 +99,62 @@ export const getStudentAttendance = async (req, res, next) => {
     }
 
     // Fetch all records
-    const records = await Attendance.find({ student: studentId })
-      .populate('faculty', 'fullName')
-      .sort({ date: -1 });
+    const { data: records } = await supabase
+      .from('attendance')
+      .select('*')
+      .eq('student', studentId)
+      .order('date', { ascending: false });
 
-    const total = records.length;
-    const presentCount = records.filter((r) => r.status === 'present').length;
-    const lateCount = records.filter((r) => r.status === 'late').length;
-    const absentCount = records.filter((r) => r.status === 'absent').length;
+    const total = records ? records.length : 0;
+    const presentCount = records ? records.filter((r) => r.status.toLowerCase() === 'present').length : 0;
+    const lateCount = records ? records.filter((r) => r.status.toLowerCase() === 'late').length : 0;
+    const absentCount = records ? records.filter((r) => r.status.toLowerCase() === 'absent').length : 0;
 
     const overallPercentage = total > 0 ? Math.round(((presentCount + lateCount) / total) * 100 * 10) / 10 : 100;
 
     // Subject-wise calculation
-    const subjects = [...new Set(records.map((r) => r.subject))];
+    const subjects = records ? [...new Set(records.map((r) => r.subject))] : [];
     const subjectWise = subjects.map((subj) => {
       const subjRecords = records.filter((r) => r.subject === subj);
       const sTotal = subjRecords.length;
-      const sAttended = subjRecords.filter((r) => r.status === 'present' || r.status === 'late').length;
+      const sAttended = subjRecords.filter((r) => r.status.toLowerCase() === 'present' || r.status.toLowerCase() === 'late').length;
       return {
         subject: subj,
         total: sTotal,
-        present: subjRecords.filter((r) => r.status === 'present').length,
-        late: subjRecords.filter((r) => r.status === 'late').length,
-        absent: subjRecords.filter((r) => r.status === 'absent').length,
+        present: subjRecords.filter((r) => r.status.toLowerCase() === 'present').length,
+        late: subjRecords.filter((r) => r.status.toLowerCase() === 'late').length,
+        absent: subjRecords.filter((r) => r.status.toLowerCase() === 'absent').length,
         percentage: sTotal > 0 ? Math.round((sAttended / sTotal) * 100 * 10) / 10 : 100,
       };
     });
 
     // Monthly calculation
     const monthlyStats = {};
-    records.forEach((record) => {
-      const monthYear = record.date.toISOString().substring(0, 7); // YYYY-MM
-      if (!monthlyStats[monthYear]) {
-        monthlyStats[monthYear] = { present: 0, absent: 0, late: 0, total: 0 };
-      }
-      monthlyStats[monthYear][record.status]++;
-      monthlyStats[monthYear].total++;
-    });
+    if (records) {
+      records.forEach((record) => {
+        const monthYear = new Date(record.date).toISOString().substring(0, 7); // YYYY-MM
+        if (!monthlyStats[monthYear]) {
+          monthlyStats[monthYear] = { present: 0, absent: 0, late: 0, total: 0 };
+        }
+        const st = String(record.status).toLowerCase();
+        if (monthlyStats[monthYear][st] !== undefined) {
+          monthlyStats[monthYear][st]++;
+        }
+        monthlyStats[monthYear].total++;
+      });
+    }
 
     const monthly = Object.keys(monthlyStats).map((month) => ({
       month,
       ...monthlyStats[month],
       percentage: Math.round(((monthlyStats[month].present + monthlyStats[month].late) / monthlyStats[month].total) * 100 * 10) / 10,
     })).sort((a, b) => b.month.localeCompare(a.month));
+
+    const formattedRecords = records ? records.map(r => ({
+      ...r,
+      _id: r.id,
+      faculty: { fullName: "Faculty" }
+    })) : [];
 
     const response = {
       success: true,
@@ -146,17 +164,16 @@ export const getStudentAttendance = async (req, res, next) => {
         totals: { total, present: presentCount, absent: absentCount, late: lateCount },
         subjectWise,
         monthly,
-        records,
+        records: formattedRecords,
       },
     };
 
-    // Flag low attendance Warning
     if (overallPercentage < 75) {
       response.lowAttendance = true;
       response.warning = 'Attendance below 75%';
     }
 
-    res.status(200).json(response);
+    return res.status(200).json(response);
   } catch (error) {
     next(error);
   }
@@ -169,27 +186,49 @@ export const getClassAttendance = async (req, res, next) => {
   try {
     const { department, semester, section, subject, date } = req.query;
 
-    const query = {};
-    if (department) query.department = department;
-    if (semester) query.semester = Number(semester);
-    if (section) query.section = section;
-    if (subject) query.subject = subject;
+    let studentQuery = supabase
+      .from('students')
+      .select('id, full_name, roll_number')
+      .eq('is_active', true);
 
+    if (department) studentQuery = studentQuery.eq('department', department);
+    if (semester) studentQuery = studentQuery.eq('semester', Number(semester));
+    if (section) studentQuery = studentQuery.eq('section', section);
+
+    const { data: matchedStudents } = await studentQuery;
+    const studentIds = matchedStudents ? matchedStudents.map(s => s.id) : [];
+
+    let attendanceQuery = supabase
+      .from('attendance')
+      .select('*')
+      .in('student', studentIds);
+
+    if (subject) attendanceQuery = attendanceQuery.eq('subject', subject);
     if (date) {
-      const normalizedDate = new Date(date);
-      normalizedDate.setUTCHours(0, 0, 0, 0);
-      query.date = normalizedDate;
+      const dateStr = new Date(date).toISOString().split('T')[0];
+      attendanceQuery = attendanceQuery.eq('date', dateStr);
     }
 
-    const records = await Attendance.find(query)
-      .populate('student', 'fullName rollNumber')
-      .populate('faculty', 'fullName')
-      .sort({ date: -1 });
+    const { data: records } = await attendanceQuery;
 
-    res.status(200).json({
+    const studentMap = {};
+    if (matchedStudents) {
+      matchedStudents.forEach(s => {
+        studentMap[s.id] = { _id: s.id, fullName: s.full_name, rollNumber: s.roll_number };
+      });
+    }
+
+    const formatted = records ? records.map(r => ({
+      ...r,
+      _id: r.id,
+      student: studentMap[r.student] || { _id: r.student, fullName: 'Unknown Student', rollNumber: '' },
+      faculty: { fullName: "Faculty" }
+    })) : [];
+
+    return res.status(200).json({
       success: true,
       message: 'Class attendance records retrieved successfully',
-      data: records,
+      data: formatted,
     });
   } catch (error) {
     next(error);
@@ -203,32 +242,42 @@ export const updateAttendance = async (req, res, next) => {
   try {
     const { status, remarks } = req.body;
 
-    const record = await Attendance.findById(req.params.id);
+    const { data: record } = await supabase
+      .from('attendance')
+      .select('*')
+      .eq('id', req.params.id)
+      .maybeSingle();
+
     if (!record) {
       const error = new Error('Attendance record not found');
       error.statusCode = 404;
       return next(error);
     }
 
-    if (status) record.status = status;
-    if (remarks !== undefined) record.remarks = remarks;
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (remarks !== undefined) updateData.remarks = remarks;
 
-    const updatedRecord = await record.save();
+    const { data: updatedRecord } = await supabase
+      .from('attendance')
+      .update(updateData)
+      .eq('id', req.params.id)
+      .select()
+      .single();
 
-    // Recalculate percentage for the student
     await updateStudentAttendancePercentage(record.student);
 
-    res.status(200).json({
+    const formatted = {
+      ...updatedRecord,
+      _id: updatedRecord.id
+    };
+
+    return res.status(200).json({
       success: true,
       message: 'Attendance record updated successfully',
-      data: updatedRecord,
+      data: formatted,
     });
   } catch (error) {
-    if (error.name === 'CastError') {
-      const err = new Error('Invalid attendance ID format');
-      err.statusCode = 400;
-      return next(err);
-    }
     next(error);
   }
 };
@@ -238,29 +287,31 @@ export const updateAttendance = async (req, res, next) => {
 // @access  Private (faculty, admin, super-admin)
 export const deleteAttendance = async (req, res, next) => {
   try {
-    const record = await Attendance.findById(req.params.id);
+    const { data: record } = await supabase
+      .from('attendance')
+      .select('*')
+      .eq('id', req.params.id)
+      .maybeSingle();
+
     if (!record) {
       const error = new Error('Attendance record not found');
       error.statusCode = 404;
       return next(error);
     }
 
-    await Attendance.deleteOne({ _id: req.params.id });
+    await supabase
+      .from('attendance')
+      .delete()
+      .eq('id', req.params.id);
 
-    // Recalculate percentage for the student
     await updateStudentAttendancePercentage(record.student);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Attendance record deleted successfully',
       data: null,
     });
   } catch (error) {
-    if (error.name === 'CastError') {
-      const err = new Error('Invalid attendance ID format');
-      err.statusCode = 400;
-      return next(err);
-    }
     next(error);
   }
 };
@@ -272,37 +323,58 @@ export const getAttendanceReport = async (req, res, next) => {
   try {
     const { department, semester, section, subject, startDate, endDate } = req.query;
 
-    const query = {};
-    if (department) query.department = department;
-    if (semester) query.semester = Number(semester);
-    if (section) query.section = section;
-    if (subject) query.subject = subject;
+    let studentQuery = supabase
+      .from('students')
+      .select('id, full_name, roll_number, attendance_percentage')
+      .eq('is_active', true);
 
+    if (department) studentQuery = studentQuery.eq('department', department);
+    if (semester) studentQuery = studentQuery.eq('semester', Number(semester));
+    if (section) studentQuery = studentQuery.eq('section', section);
+
+    const { data: matchedStudents } = await studentQuery;
+    const studentIds = matchedStudents ? matchedStudents.map(s => s.id) : [];
+
+    let attendanceQuery = supabase
+      .from('attendance')
+      .select('*')
+      .in('student', studentIds);
+
+    if (subject) attendanceQuery = attendanceQuery.eq('subject', subject);
+    
     if (startDate || endDate) {
-      query.date = {};
-      if (startDate) query.date.$gte = new Date(new Date(startDate).setUTCHours(0, 0, 0, 0));
-      if (endDate) query.date.$lte = new Date(new Date(endDate).setUTCHours(23, 59, 59, 999));
+      if (startDate) {
+        const startStr = new Date(startDate).toISOString().split('T')[0];
+        attendanceQuery = attendanceQuery.gte('date', startStr);
+      }
+      if (endDate) {
+        const endStr = new Date(endDate).toISOString().split('T')[0];
+        attendanceQuery = attendanceQuery.lte('date', endStr);
+      }
     }
 
-    const records = await Attendance.find(query);
+    const { data: records } = await attendanceQuery;
 
-    const total = records.length;
-    const present = records.filter((r) => r.status === 'present').length;
-    const absent = records.filter((r) => r.status === 'absent').length;
-    const late = records.filter((r) => r.status === 'late').length;
+    const total = records ? records.length : 0;
+    const present = records ? records.filter((r) => r.status.toLowerCase() === 'present').length : 0;
+    const absent = records ? records.filter((r) => r.status.toLowerCase() === 'absent').length : 0;
+    const late = records ? records.filter((r) => r.status.toLowerCase() === 'late').length : 0;
 
     const overallPercentage = total > 0 ? Math.round(((present + late) / total) * 100 * 10) / 10 : 100;
 
-    // Get low attendance students (attendance < 75%)
-    const studentQuery = { isActive: true };
-    if (department) studentQuery.department = department;
-    if (semester) studentQuery.semester = Number(semester);
-    if (section) studentQuery.section = section;
+    const lowAttendanceStudents = matchedStudents 
+      ? matchedStudents
+          .filter((s) => Number(s.attendance_percentage || 100) < 75)
+          .map(s => ({
+            ...s,
+            _id: s.id,
+            fullName: s.full_name,
+            rollNumber: s.roll_number,
+            attendancePercentage: s.attendance_percentage
+          }))
+      : [];
 
-    const allStudents = await Student.find(studentQuery);
-    const lowAttendanceStudents = allStudents.filter((s) => s.attendancePercentage < 75);
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Attendance report generated successfully',
       data: {

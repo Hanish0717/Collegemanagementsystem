@@ -16,6 +16,7 @@ export function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
+  const [childEmail, setChildEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ export function Register() {
         mobile,
         password,
         role: active.id,
+        childEmail: active.id === "parent" ? childEmail : undefined,
       });
 
       // Redirect to OTP verification page with email
@@ -209,6 +211,23 @@ export function Register() {
                 />
               </div>
             </div>
+
+            {active.id === "parent" && (
+              <div>
+                <label className="text-xs font-medium">Child's College Email Address</label>
+                <div className="mt-1 relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <input
+                    type="email"
+                    value={childEmail}
+                    onChange={(e) => setChildEmail(e.target.value)}
+                    placeholder="student@college.com"
+                    required
+                    className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-3">
               <div>

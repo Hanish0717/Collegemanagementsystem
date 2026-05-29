@@ -1,11 +1,85 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, Send } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { leaveRequests } from "@/mock/studentData";
-
-
+import api from "@/lib/api";
 
 export function StudentLeave() {
+  const [history, setHistory] = useState<any[]>(leaveRequests);
+  const [leaveType, setLeaveType] = useState("Sick Leave");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [reason, setReason] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const fetchLeaves = async () => {
+    try {
+      const res = await api.get("/api/student-module/leave");
+      if (res.data?.success && res.data?.data) {
+        const dbLeaves = res.data.data.map((l: any) => ({
+          id: l._id,
+          type: l.type,
+          from: new Date(l.from).toISOString().split('T')[0],
+          to: new Date(l.to).toISOString().split('T')[0],
+          days: l.days,
+          status: l.status
+        }));
+        if (dbLeaves.length > 0) {
+          setHistory(dbLeaves);
+        }
+      }
+    } catch (err) {
+      console.error("Error loading leave requests:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaves();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fromDate || !toDate || !reason) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    const diffTime = Math.abs(new Date(toDate).getTime() - new Date(fromDate).getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    setLoading(true);
+    try {
+      const res = await api.post("/api/student-module/leave", {
+        type: leaveType,
+        from: fromDate,
+        to: toDate,
+        days: diffDays,
+        reason
+      });
+      if (res.data?.success) {
+        alert("Leave request submitted successfully!");
+        setFromDate("");
+        setToDate("");
+        setReason("");
+        fetchLeaves();
+      }
+    } catch (err: any) {
+      console.error("Error submitting leave request:", err);
+      alert(err.response?.data?.message || "Failed to submit leave request");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const usedSick = history.filter(l => l.type === "Sick Leave" && l.status === "Approved").reduce((sum, l) => sum + l.days, 0);
+  const usedCasual = history.filter(l => l.type === "Casual Leave" && l.status === "Approved").reduce((sum, l) => sum + l.days, 0);
+  const usedEarned = history.filter(l => l.type === "Earned Leave" && l.status === "Approved").reduce((sum, l) => sum + l.days, 0);
+
+  const remainingSick = Math.max(0, 5 - usedSick);
+  const remainingCasual = Math.max(0, 4 - usedCasual);
+  const remainingEarned = Math.max(0, 3 - usedEarned);
+  const totalRemaining = remainingSick + remainingCasual + remainingEarned;
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -15,10 +89,10 @@ export function StudentLeave() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Leave Balance", value: "5 days", tone: "info" as const },
-          { label: "Sick Leave", value: "2 days", tone: "info" as const },
-          { label: "Casual Leave", value: "2 days", tone: "info" as const },
-          { label: "Earned Leave", value: "1 day", tone: "info" as const },
+          { label: "Total Leave Balance", value: `${totalRemaining} days`, tone: "info" as const },
+          { label: "Sick Leave Available", value: `${remainingSick} days`, tone: "info" as const },
+          { label: "Casual Leave Available", value: `${remainingCasual} days`, tone: "info" as const },
+          { label: "Earned Leave Available", value: `${remainingEarned} day`, tone: "info" as const },
         ].map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -31,32 +105,58 @@ export function StudentLeave() {
       <div className="grid lg:grid-cols-2 gap-4">
         <Card>
           <h3 className="font-semibold mb-4">Apply for Leave</h3>
-          <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
-            <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-              {["Sick Leave", "Casual Leave", "Earned Leave"].map(t => <option key={t}>{t}</option>)}
-            </select>
+          <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Leave Type</label>
+              <select 
+                value={leaveType} 
+                onChange={(e) => setLeaveType(e.target.value)}
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              >
+                {["Sick Leave", "Casual Leave", "Earned Leave"].map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">From Date</label>
-                <input type="date" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+                <input 
+                  type="date" 
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+                  required
+                />
               </div>
               <div>
                 <label className="text-xs text-muted-foreground mb-1 block">To Date</label>
-                <input type="date" className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
+                <input 
+                  type="date" 
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+                  required
+                />
               </div>
             </div>
-            <textarea placeholder="Reason for leave..." rows={4} className="w-full rounded-lg border bg-background px-3 py-2 text-sm" />
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" />
-                <span className="text-sm">Attach medical certificate</span>
-              </label>
-              <input type="file" className="text-sm" />
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Reason</label>
+              <textarea 
+                placeholder="Reason for leave..." 
+                rows={4} 
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+                required
+              />
             </div>
-            <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
-              <Send className="size-4" /> Submit Request
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2"
+            >
+              <Send className="size-4" /> {loading ? "Submitting..." : "Submit Request"}
             </button>
-          </div>
+          </form>
         </Card>
 
         <Card>
@@ -66,21 +166,21 @@ export function StudentLeave() {
           </div>
           <div className="space-y-3">
             {[
-              { type: "Sick Leave", total: "5 days", used: "3 days", remaining: "2 days" },
-              { type: "Casual Leave", total: "4 days", used: "2 days", remaining: "2 days" },
-              { type: "Earned Leave", total: "3 days", used: "2 days", remaining: "1 day" },
+              { type: "Sick Leave", total: 5, used: usedSick, remaining: remainingSick },
+              { type: "Casual Leave", total: 4, used: usedCasual, remaining: remainingCasual },
+              { type: "Earned Leave", total: 3, used: usedEarned, remaining: remainingEarned },
             ].map(item => (
               <div key={item.type} className="p-4 rounded-xl border">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">{item.type}</span>
-                  <Badge tone="info">{item.remaining}</Badge>
+                  <Badge tone="info">{item.remaining} days remaining</Badge>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-gradient-primary h-2 rounded-full" style={{ width: `${(parseInt(item.used) / parseInt(item.total)) * 100}%` }} />
+                  <div className="bg-gradient-primary h-2 rounded-full" style={{ width: `${(item.used / item.total) * 100}%` }} />
                 </div>
                 <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                  <span>Used: {item.used}</span>
-                  <span>Total: {item.total}</span>
+                  <span>Used: {item.used} days</span>
+                  <span>Total: {item.total} days</span>
                 </div>
               </div>
             ))}
@@ -100,14 +200,14 @@ export function StudentLeave() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {leaveRequests.map(leave => (
-                <tr key={leave.id} className="hover:bg-accent/50 transition">
+              {history.map((leave, index) => (
+                <tr key={leave.id || index} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{leave.type}</td>
                   <td className="py-3 px-4">{leave.from}</td>
                   <td className="py-3 px-4">{leave.to}</td>
                   <td className="py-3 px-4 font-medium">{leave.days}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={leave.status === "Approved" ? "success" : "warn"}>{leave.status}</Badge>
+                    <Badge tone={leave.status === "Approved" ? "success" : leave.status === "Rejected" ? "danger" : "warn"}>{leave.status}</Badge>
                   </td>
                 </tr>
               ))}

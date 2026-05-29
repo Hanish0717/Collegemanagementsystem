@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
@@ -9,12 +10,12 @@ import {
   GraduationCap, Users, Video
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   assignmentSubmissions, facultyActivities, facultyNotifications, facultyStats,
   studentPerformance, weeklyAttendance
 } from "@/mock/facultyData";
-
-
+import api from "@/lib/api";
 
 const statIcons = [BookOpen, Users, FileText, Calendar, GraduationCap, Bell, CheckCircle, Video];
 const statGradients = [
@@ -24,6 +25,38 @@ const statGradients = [
 
 export function FacultyDashboard() {
   const path = useRouterState({ select: r => r.location.pathname });
+  const { user } = useAuth();
+
+  const [stats, setStats] = useState(facultyStats);
+  const [activities, setActivities] = useState(facultyActivities);
+
+  useEffect(() => {
+    if (path !== "/dashboard/faculty") return;
+    const fetchDashboardData = async () => {
+      try {
+        const res = await api.get("/api/faculty-module/dashboard");
+        if (res.data?.success && res.data?.data) {
+          const { stats: dbStats, activities: dbActivities } = res.data.data;
+          
+          const updatedStats = facultyStats.map(mockStat => {
+            const match = dbStats.find((s: any) => s.label === mockStat.label);
+            if (match) {
+              return { ...mockStat, value: match.value, change: match.change };
+            }
+            return mockStat;
+          });
+          setStats(updatedStats);
+
+          if (dbActivities && dbActivities.length > 0) {
+            setActivities(dbActivities);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading faculty dashboard:", err);
+      }
+    };
+    fetchDashboardData();
+  }, [path]);
 
   if (path !== "/dashboard/faculty") {
     return <Outlet />;
@@ -32,12 +65,12 @@ export function FacultyDashboard() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Faculty Dashboard"
+        title={`Welcome, ${user?.fullName || "Faculty"}`}
         desc="Manage classes, attendance, assignments, marks and student performance."
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {facultyStats.map((stat, i) => (
+        {stats.map((stat, i) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
             <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i]} gradient={statGradients[i]} />
           </motion.div>
@@ -146,7 +179,7 @@ export function FacultyDashboard() {
             <Badge tone="info">Live</Badge>
           </div>
           <div className="space-y-3">
-            {facultyActivities.map(activity => (
+            {activities.map(activity => (
               <div key={activity.actor + activity.time} className="flex items-center gap-3 py-2 border-b last:border-0">
                 <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {activity.actor.slice(0, 2).toUpperCase()}

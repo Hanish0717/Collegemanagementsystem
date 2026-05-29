@@ -1,12 +1,106 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Download, TrendingUp } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { gpaHistory, results } from "@/mock/studentData";
+import api from "@/lib/api";
 
-
+const gradePoints: Record<string, number> = {
+  "A+": 4.0, "A": 4.0, "A-": 3.7,
+  "B+": 3.3, "B": 3.0, "B-": 2.7,
+  "C+": 2.3, "C": 2.0, "C-": 1.7,
+  "D+": 1.3, "D": 1.0, "F": 0.0
+};
 
 export function StudentResults() {
+  const [resultsList, setResultsList] = useState<any[]>(results);
+  const [gpaData, setGpaData] = useState<any[]>(gpaHistory);
+  const [cgpa, setCgpa] = useState("3.6");
+  const [totalCredits, setTotalCredits] = useState("140");
+  const [gradeDist, setGradeDist] = useState<any[]>([
+    { grade: "A+", count: 8, percentage: "40%" },
+    { grade: "A", count: 6, percentage: "30%" },
+    { grade: "B+", count: 4, percentage: "20%" },
+    { grade: "B", count: 2, percentage: "10%" },
+  ]);
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        const res = await api.get("/api/student-module/results");
+        if (res.data?.success && res.data?.data && res.data.data.length > 0) {
+          const dbResults = res.data.data;
+          setResultsList(dbResults);
+
+          // Calculate grade points, CGPA, total credits
+          let totalPts = 0;
+          let totalCreds = 0;
+          const distMap: Record<string, number> = {};
+
+          dbResults.forEach((r: any) => {
+            const credits = r.credits || 3;
+            const grade = r.grade || "A";
+            const gp = gradePoints[grade] !== undefined ? gradePoints[grade] : 3.0;
+
+            totalPts += gp * credits;
+            totalCreds += credits;
+
+            distMap[grade] = (distMap[grade] || 0) + 1;
+          });
+
+          const calculatedCgpa = (totalPts / totalCreds).toFixed(2);
+          setCgpa(calculatedCgpa);
+          setTotalCredits(String(totalCreds));
+
+          // Grade distribution
+          const totalSubjects = dbResults.length;
+          const newGradeDist = Object.keys(distMap).map(grade => ({
+            grade,
+            count: distMap[grade],
+            percentage: `${Math.round((distMap[grade] / totalSubjects) * 100)}%`
+          })).sort((a, b) => b.grade.localeCompare(a.grade));
+          setGradeDist(newGradeDist);
+
+          // Group by semester and calculate average GPA
+          const semMap: Record<string, { totalPoints: number; totalCredits: number }> = {};
+          dbResults.forEach((r: any) => {
+            const sem = r.semester || "Sem 5";
+            const grade = r.grade || "A";
+            const credits = r.credits || 3;
+            const gp = gradePoints[grade] !== undefined ? gradePoints[grade] : 3.0;
+
+            if (!semMap[sem]) {
+              semMap[sem] = { totalPoints: 0, totalCredits: 0 };
+            }
+            semMap[sem].totalPoints += gp * credits;
+            semMap[sem].totalCredits += credits;
+          });
+
+          const newGpaHistory = Object.keys(semMap).map(sem => {
+            const gpa = Number((semMap[sem].totalPoints / semMap[sem].totalCredits).toFixed(2));
+            return {
+              semester: sem,
+              gpa,
+              credits: semMap[sem].totalCredits
+            };
+          }).sort((a, b) => a.semester.localeCompare(b.semester));
+
+          // Merge back with gpaHistory to ensure earlier semesters exist
+          const mergedGpaHistory = gpaHistory.map(mockSem => {
+            const match = newGpaHistory.find(h => h.semester === mockSem.semester);
+            return match ? match : mockSem;
+          });
+
+          setGpaData(mergedGpaHistory);
+        }
+      } catch (err) {
+        console.error("Error loading student results:", err);
+      }
+    };
+    fetchResults();
+  }, []);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -21,9 +115,9 @@ export function StudentResults() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Current GPA", value: "3.7", tone: "success" as const },
-          { label: "CGPA", value: "3.6", tone: "success" as const },
-          { label: "Total Credits", value: "140", tone: "info" as const },
+          { label: "Current GPA", value: gpaData[gpaData.length - 1]?.gpa || "3.7", tone: "success" as const },
+          { label: "CGPA", value: cgpa, tone: "success" as const },
+          { label: "Total Credits", value: totalCredits, tone: "info" as const },
           { label: "Class Rank", value: "12/45", tone: "info" as const },
         ].map(stat => (
           <Card key={stat.label}>
@@ -38,11 +132,11 @@ export function StudentResults() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">GPA Progress</h3>
-            <Badge tone="success">3.7</Badge>
+            <Badge tone="success">{cgpa}</Badge>
           </div>
           <div className="h-72">
             <ResponsiveContainer>
-              <LineChart data={gpaHistory}>
+              <LineChart data={gpaData}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
@@ -59,12 +153,7 @@ export function StudentResults() {
             <h3 className="font-semibold">Grade Distribution</h3>
           </div>
           <div className="space-y-3">
-            {[
-              { grade: "A+", count: 8, percentage: "40%" },
-              { grade: "A", count: 6, percentage: "30%" },
-              { grade: "B+", count: 4, percentage: "20%" },
-              { grade: "B", count: 2, percentage: "10%" },
-            ].map(item => (
+            {gradeDist.map(item => (
               <div key={item.grade} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
                 <span className="text-sm font-medium">{item.grade}</span>
                 <div className="flex items-center gap-3">
@@ -89,7 +178,7 @@ export function StudentResults() {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {results.map((result, index) => (
+              {resultsList.map((result, index) => (
                 <tr key={index} className="hover:bg-accent/50 transition">
                   <td className="py-3 px-4 font-medium">{result.subject}</td>
                   <td className="py-3 px-4">{result.credits}</td>
@@ -108,15 +197,9 @@ export function StudentResults() {
       <Card>
         <h3 className="font-semibold mb-4">Credits Summary</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: "Semester 1", credits: 24, gpa: 3.4 },
-            { label: "Semester 2", credits: 26, gpa: 3.6 },
-            { label: "Semester 3", credits: 28, gpa: 3.5 },
-            { label: "Semester 4", credits: 30, gpa: 3.7 },
-            { label: "Semester 5", credits: 32, gpa: 3.8 },
-          ].map(item => (
-            <div key={item.label} className="p-4 rounded-xl bg-gradient-soft border">
-              <div className="text-sm font-medium">{item.label}</div>
+          {gpaData.map(item => (
+            <div key={item.semester} className="p-4 rounded-xl bg-gradient-soft border">
+              <div className="text-sm font-medium">{item.semester}</div>
               <div className="flex items-center justify-between mt-2">
                 <span className="text-xs text-muted-foreground">{item.credits} credits</span>
                 <Badge tone="success">{item.gpa} GPA</Badge>

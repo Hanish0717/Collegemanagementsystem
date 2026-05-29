@@ -1,12 +1,48 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Download, Filter, TrendingDown, TrendingUp, AlertTriangle } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Download, Filter, TrendingUp, AlertTriangle } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { performanceData, studentPerformance } from "@/mock/facultyData";
-
-
+import { performanceData as mockPerformanceData } from "@/mock/facultyData";
+import api from "@/lib/api";
 
 export function FacultyPerformance() {
+  const [performance, setPerformance] = useState<any[]>(mockPerformanceData);
+  const [filterType, setFilterType] = useState("All Students");
+
+  useEffect(() => {
+    const fetchPerformance = async () => {
+      try {
+        const res = await api.get("/api/faculty-module/performance");
+        if (res.data?.success && res.data?.data && res.data.data.length > 0) {
+          setPerformance(res.data.data);
+        }
+      } catch (err) {
+        console.error("Error loading performance data:", err);
+      }
+    };
+    fetchPerformance();
+  }, []);
+
+  const topPerformers = performance.filter(s => s.overall >= 85);
+  const atRisk = performance.filter(s => s.overall < 80);
+  
+  const avgScore = performance.length > 0 
+    ? Math.round(performance.reduce((sum, s) => sum + s.overall, 0) / performance.length) 
+    : 83;
+    
+  const avgAttendance = performance.length > 0 
+    ? Math.round(performance.reduce((sum, s) => sum + s.attendance, 0) / performance.length) 
+    : 87;
+
+  // Filter students based on filterType
+  const filteredPerformance = performance.filter(student => {
+    if (filterType === "Top Performers") return student.overall >= 85;
+    if (filterType === "At Risk") return student.overall < 80;
+    if (filterType === "Improving") return student.overall >= 80 && student.overall < 85;
+    return true; // "All Students"
+  });
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -21,10 +57,10 @@ export function FacultyPerformance() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Top Performers", value: "12", tone: "success" as const },
-          { label: "At Risk", value: "5", tone: "danger" as const },
-          { label: "Average Score", value: "83%", tone: "info" as const },
-          { label: "Avg Attendance", value: "87%", tone: "success" as const },
+          { label: "Top Performers", value: String(topPerformers.length), tone: "success" as const },
+          { label: "At Risk", value: String(atRisk.length), tone: "danger" as const },
+          { label: "Average Score", value: `${avgScore}%`, tone: "info" as const },
+          { label: "Avg Attendance", value: `${avgAttendance}%`, tone: "success" as const },
         ].map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -36,14 +72,15 @@ export function FacultyPerformance() {
 
       <Card>
         <div className="flex flex-wrap gap-2">
-          {["All Students", "Top Performers", "At Risk", "Improving"].map((filter, index) => (
-            <button key={filter} className={`px-4 py-2 rounded-xl text-sm font-medium transition ${index === 0 ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}>
+          {["All Students", "Top Performers", "At Risk", "Improving"].map((filter) => (
+            <button 
+              key={filter} 
+              onClick={() => setFilterType(filter)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${filterType === filter ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}
+            >
               {filter}
             </button>
           ))}
-          <button className="px-4 py-2 rounded-xl border text-sm font-medium hover:bg-accent transition flex items-center gap-2">
-            <Filter className="size-4" /> More Filters
-          </button>
         </div>
       </Card>
 
@@ -52,13 +89,13 @@ export function FacultyPerformance() {
           <h3 className="font-semibold mb-4">Attendance vs Marks Correlation</h3>
           <div className="h-72">
             <ResponsiveContainer>
-              <LineChart data={studentPerformance}>
+              <LineChart data={performance}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="student" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
+                <XAxis dataKey="student" stroke="#64748B" fontSize={10} />
+                <YAxis stroke="#64748B" fontSize={10} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Line type="monotone" dataKey="attendance" stroke="#4F46E5" strokeWidth={2.5} />
-                <Line type="monotone" dataKey="marks" stroke="#06B6D4" strokeWidth={2.5} />
+                <Line type="monotone" name="Attendance (%)" dataKey="attendance" stroke="#4F46E5" strokeWidth={2.5} />
+                <Line type="monotone" name="Marks (%)" dataKey="overall" stroke="#06B6D4" strokeWidth={2.5} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -68,7 +105,7 @@ export function FacultyPerformance() {
           <h3 className="font-semibold mb-4">Overall Performance Distribution</h3>
           <div className="h-72">
             <ResponsiveContainer>
-              <AreaChart data={performanceData}>
+              <AreaChart data={performance}>
                 <defs>
                   <linearGradient id="perf-attendance" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
@@ -80,11 +117,11 @@ export function FacultyPerformance() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="student" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
+                <XAxis dataKey="student" stroke="#64748B" fontSize={10} />
+                <YAxis stroke="#64748B" fontSize={10} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area type="monotone" dataKey="attendance" stroke="#4F46E5" fill="url(#perf-attendance)" strokeWidth={2} />
-                <Area type="monotone" dataKey="assignments" stroke="#06B6D4" fill="url(#perf-marks)" strokeWidth={2} />
+                <Area type="monotone" name="Attendance" dataKey="attendance" stroke="#4F46E5" fill="url(#perf-attendance)" strokeWidth={2} />
+                <Area type="monotone" name="Assignments" dataKey="assignments" stroke="#06B6D4" fill="url(#perf-marks)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -94,11 +131,11 @@ export function FacultyPerformance() {
       <Card>
         <h3 className="font-semibold mb-4">Student Performance Cards</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {performanceData.map(student => (
+          {filteredPerformance.map(student => (
             <Card key={student.student} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {student.student.split(" ").map(n => n[0]).join("")}
+                  {student.student.split(" ").map((n: string) => n[0]).join("")}
                 </div>
                 <Badge tone={student.overall >= 85 ? "success" : student.overall >= 75 ? "info" : "warn"}>
                   {student.overall}%
@@ -131,7 +168,7 @@ export function FacultyPerformance() {
             <h3 className="font-semibold">Top Performers</h3>
           </div>
           <div className="space-y-2">
-            {performanceData.filter(s => s.overall >= 85).map(student => (
+            {topPerformers.map(student => (
               <div key={student.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
                 <span className="text-sm font-medium">{student.student}</span>
                 <Badge tone="success">{student.overall}%</Badge>
@@ -146,7 +183,7 @@ export function FacultyPerformance() {
             <h3 className="font-semibold">Low Performance Alerts</h3>
           </div>
           <div className="space-y-2">
-            {performanceData.filter(s => s.overall < 80).map(student => (
+            {atRisk.map(student => (
               <div key={student.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
                 <span className="text-sm font-medium">{student.student}</span>
                 <Badge tone="danger">{student.overall}%</Badge>
