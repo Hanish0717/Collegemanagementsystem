@@ -10,6 +10,7 @@ import {
   fetchDepartments,
 } from "@/services/adminService";
 import { toast } from "sonner";
+import api from "@/lib/api";
 
 export function AdminFaculty() {
   const queryClient = useQueryClient();
@@ -26,6 +27,13 @@ export function AdminFaculty() {
   const [experience, setExperience] = useState("");
   const [gender, setGender] = useState("Male");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+
+  // OTP Verification States
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [otpError, setOtpError] = useState<string | null>(null);
 
   // Queries
   const { data: facultyList = [], isLoading: isFacultyLoading } = useQuery({
@@ -41,15 +49,9 @@ export function AdminFaculty() {
   // Mutations
   const createFacultyMutation = useMutation({
     mutationFn: createFaculty,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["faculty"] });
-      toast.success("Faculty member registered successfully");
-      // Reset form
-      setFullName("");
-      setEmail("");
-      setEmployeeId("");
-      setExperience("");
-      setPhoneNumber("");
+    onSuccess: (data, variables) => {
+      setUnverifiedEmail(variables.email);
+      toast.success("Faculty member registered successfully. Please enter the OTP sent to their email to complete registration.");
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -113,8 +115,8 @@ export function AdminFaculty() {
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !email.trim() || !employeeId.trim() || !selectedDept) {
-      toast.error("Please fill in all required fields");
+    if (!fullName.trim() || !email.trim() || !employeeId.trim() || !selectedDept || !password.trim()) {
+      toast.error("Please fill in all required fields (including Password)");
       return;
     }
     createFacultyMutation.mutate({
@@ -126,7 +128,41 @@ export function AdminFaculty() {
       experience: experience ? Number(experience) : 0,
       gender,
       phoneNumber: phoneNumber || undefined,
+      password,
     });
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpCode.length < 6 || !unverifiedEmail) {
+      toast.error("Please enter a valid 6-digit OTP");
+      return;
+    }
+    setVerifyingOtp(true);
+    setOtpError(null);
+    try {
+      await api.post("/api/auth/verify-otp", {
+        email: unverifiedEmail,
+        otp: otpCode,
+        type: "email_verification",
+      });
+      toast.success("Faculty account successfully verified and registered!");
+      queryClient.invalidateQueries({ queryKey: ["faculty"] });
+      setUnverifiedEmail(null);
+      setOtpCode("");
+      // Reset form
+      setFullName("");
+      setEmail("");
+      setEmployeeId("");
+      setExperience("");
+      setPhoneNumber("");
+      setPassword("");
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message || "Verification failed. Please check the OTP.";
+      setOtpError(msg);
+    } finally {
+      setVerifyingOtp(false);
+    }
   };
 
   // Unique status list
@@ -339,132 +375,199 @@ export function AdminFaculty() {
         </Card>
 
         <Card>
-          <h3 className="font-semibold mb-4 text-gradient">Add New Faculty</h3>
-          <form
-            onSubmit={handleRegisterSubmit}
-            className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
-          >
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Faculty Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Dr. Ramesh Gupta"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Faculty ID (Employee) *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. FAC-CSE-023"
-                  value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="e.g. ramesh.gupta@college.edu"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Department Assignment *
-                </label>
-                <select
-                  required
-                  value={selectedDept}
-                  onChange={(e) => setSelectedDept(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
-                >
-                  <option value="">Select Department</option>
-                  {departments.map((dept) => (
-                    <option key={dept._id} value={dept._id}>
-                      {dept.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">Designation *</label>
-                <select
-                  value={designation}
-                  onChange={(e) => setDesignation(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
-                >
-                  <option value="Professor">Professor</option>
-                  <option value="Associate Professor">Associate Professor</option>
-                  <option value="Assistant Professor">Assistant Professor</option>
-                  <option value="Lecturer">Lecturer</option>
-                  <option value="Lab Instructor">Lab Instructor</option>
-                  <option value="HOD">HOD</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Experience (Years)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="e.g. 5"
-                  value={experience}
-                  onChange={(e) => setExperience(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">Gender</label>
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">Phone Number</label>
-                <input
-                  type="text"
-                  placeholder="e.g. 9876543210"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
-                />
-              </div>
-            </div>
-            <button
-              type="submit"
-              disabled={createFacultyMutation.isPending}
-              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-semibold glow-primary hover:opacity-95 transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+          <h3 className="font-semibold mb-4 text-gradient">
+            {unverifiedEmail ? "Verify Faculty Account" : "Add New Faculty"}
+          </h3>
+          {unverifiedEmail ? (
+            <form
+              onSubmit={handleOtpSubmit}
+              className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
             >
-              {createFacultyMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                "Register Faculty"
-              )}
-            </button>
-          </form>
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  An OTP verification code has been sent to{" "}
+                  <span className="font-semibold text-foreground">{unverifiedEmail}</span>.
+                  Please enter the 6-digit code to complete registration.
+                </p>
+                {otpError && (
+                  <div className="mb-4 px-4 py-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl text-left">
+                    {otpError}
+                  </div>
+                )}
+                <div className="max-w-[200px] mx-auto">
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="••••••"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                    className="w-full text-center px-4 py-3 rounded-xl border bg-background text-lg font-bold tracking-widest focus:border-primary outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUnverifiedEmail(null);
+                    setOtpCode("");
+                  }}
+                  className="flex-1 px-4 py-2 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={verifyingOtp}
+                  className="flex-1 px-4 py-2 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {verifyingOtp ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Verify & Complete"
+                  )}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form
+              onSubmit={handleRegisterSubmit}
+              className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
+            >
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Faculty Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Dr. Ramesh Gupta"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Faculty ID (Employee) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. FAC-CSE-023"
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="e.g. ramesh.gupta@college.edu"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Department Assignment *
+                  </label>
+                  <select
+                    required
+                    value={selectedDept}
+                    onChange={(e) => setSelectedDept(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="">Select Department</option>
+                    {departments.map((dept) => (
+                      <option key={dept._id} value={dept._id}>
+                        {dept.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Designation *</label>
+                  <select
+                    value={designation}
+                    onChange={(e) => setDesignation(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="Professor">Professor</option>
+                    <option value="Associate Professor">Associate Professor</option>
+                    <option value="Assistant Professor">Assistant Professor</option>
+                    <option value="Lecturer">Lecturer</option>
+                    <option value="Lab Instructor">Lab Instructor</option>
+                    <option value="HOD">HOD</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Experience (Years)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 5"
+                    value={experience}
+                    onChange={(e) => setExperience(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Gender</label>
+                  <select
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Phone Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 9876543210"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Password *</label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="Set faculty login password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={createFacultyMutation.isPending}
+                className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-semibold glow-primary hover:opacity-95 transition flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {createFacultyMutation.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Register Faculty"
+                )}
+              </button>
+            </form>
+          )}
         </Card>
       </div>
     </div>

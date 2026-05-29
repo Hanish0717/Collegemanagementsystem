@@ -67,6 +67,10 @@ const ROLE_KEY = "campusly.role"; // must match the key used in roles.ts
 export async function login(payload: LoginPayload): Promise<any> {
   const { data } = await api.post<any>("/api/auth/login", payload);
 
+  if (data.needsVerification) {
+    return data;
+  }
+
   const { token, user } = data;
 
   localStorage.setItem(TOKEN_KEY, token);

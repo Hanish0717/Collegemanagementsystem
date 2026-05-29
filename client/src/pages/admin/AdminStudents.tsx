@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Filter, Plus, Search, UserPlus, Trash2, Edit, Loader2, X } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { toast } from "sonner";
+import api from "@/lib/api";
 import {
   fetchStudents,
   createStudent,
@@ -37,6 +38,8 @@ export function AdminStudents() {
   const [section, setSection] = useState("A");
   const [parentName, setParentName] = useState("");
   const [parentPhone, setParentPhone] = useState("");
+  const [parentEmail, setParentEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   // Queries
   const { data: deptList = [] } = useQuery({
@@ -55,14 +58,17 @@ export function AdminStudents() {
 
   const studentsList = studentsData?.students || [];
 
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [otpError, setOtpError] = useState<string | null>(null);
+
   // Mutations
   const createStudentMutation = useMutation({
     mutationFn: createStudent,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast.success("Student registered successfully");
-      setIsAddModalOpen(false);
-      resetForm();
+    onSuccess: (data, variables) => {
+      setUnverifiedEmail(variables.email);
+      toast.success("Student account created. Please enter the OTP sent to their email to complete registration.");
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -110,6 +116,8 @@ export function AdminStudents() {
     setSection("A");
     setParentName("");
     setParentPhone("");
+    setParentEmail("");
+    setPassword("");
   };
 
   // Populate edit fields helper
@@ -131,6 +139,8 @@ export function AdminStudents() {
     setSection(student.section);
     setParentName(student.parentName);
     setParentPhone(student.parentPhone);
+    setParentEmail(student.parentEmail || "");
+    setPassword(""); // Registration password is not loaded/edited
   };
 
   // Submit handlers
@@ -142,9 +152,11 @@ export function AdminStudents() {
       !email.trim() ||
       !selectedDept ||
       !parentName.trim() ||
-      !parentPhone.trim()
+      !parentPhone.trim() ||
+      !parentEmail.trim() ||
+      !password.trim()
     ) {
-      toast.error("Please fill in all required fields");
+      toast.error("Please fill in all required fields (including Parent Email and Password)");
       return;
     }
 
@@ -161,7 +173,37 @@ export function AdminStudents() {
       section,
       parentName,
       parentPhone,
+      parentEmail,
+      password,
     });
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpCode.length < 6 || !unverifiedEmail) {
+      toast.error("Please enter a valid 6-digit OTP");
+      return;
+    }
+    setVerifyingOtp(true);
+    setOtpError(null);
+    try {
+      await api.post("/api/auth/verify-otp", {
+        email: unverifiedEmail,
+        otp: otpCode,
+        type: "email_verification",
+      });
+      toast.success("Student account successfully verified and registered!");
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      setIsAddModalOpen(false);
+      setUnverifiedEmail(null);
+      setOtpCode("");
+      resetForm();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message || "Verification failed. Please check the OTP.";
+      setOtpError(msg);
+    } finally {
+      setVerifyingOtp(false);
+    }
   };
 
   const handleEditSubmit = (e: React.FormEvent) => {
@@ -174,9 +216,10 @@ export function AdminStudents() {
       !email.trim() ||
       !selectedDept ||
       !parentName.trim() ||
-      !parentPhone.trim()
+      !parentPhone.trim() ||
+      !parentEmail.trim()
     ) {
-      toast.error("Please fill in all required fields");
+      toast.error("Please fill in all required fields (including Parent Email)");
       return;
     }
 
@@ -195,6 +238,7 @@ export function AdminStudents() {
         section,
         parentName,
         parentPhone,
+        parentEmail,
       },
     });
   };
@@ -467,190 +511,262 @@ export function AdminStudents() {
                 <X className="size-5" />
               </button>
             </div>
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Aman Sharma"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                  />
+            {unverifiedEmail ? (
+              <form onSubmit={handleOtpSubmit} className="space-y-4">
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    An OTP verification code has been sent to <span className="font-semibold text-foreground">{unverifiedEmail}</span>. Please enter the 6-digit code to verify the account and complete registration.
+                  </p>
+                  {otpError && (
+                    <div className="mb-4 px-4 py-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl text-left">
+                      {otpError}
+                    </div>
+                  )}
+                  <div className="max-w-[200px] mx-auto">
+                    <input
+                      type="text"
+                      required
+                      maxLength={6}
+                      placeholder="••••••"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                      className="w-full text-center px-4 py-3 rounded-xl border bg-background text-lg font-bold tracking-widest focus:border-primary outline-none"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Roll Number *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 21CS001"
-                    value={rollNumber}
-                    onChange={(e) => setRollNumber(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Admission No</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. ADM2026102"
-                    value={admissionNumber}
-                    onChange={(e) => setAdmissionNumber(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="e.g. aman@gmail.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Phone Number</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 9876543210"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Gender</label>
-                  <select
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                <div className="flex gap-3 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUnverifiedEmail(null);
+                      setIsAddModalOpen(false);
+                      resetForm();
+                    }}
+                    className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
                   >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-4 gap-2">
-                <div className="col-span-2">
-                  <label className="text-xs font-semibold text-muted-foreground">Department *</label>
-                  <select
-                    value={selectedDept}
-                    onChange={(e) => setSelectedDept(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={verifyingOtp}
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
-                    <option value="">Select Department</option>
-                    {deptList.map((dept) => (
-                      <option key={dept._id} value={dept._id}>
-                        {dept.name}
-                      </option>
-                    ))}
-                  </select>
+                    {verifyingOtp ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      "Verify & Complete"
+                    )}
+                  </button>
                 </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Year *</label>
-                  <select
-                    value={year}
-                    onChange={(e) => setYear(Number(e.target.value))}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
-                  >
-                    {[1, 2, 3, 4].map((y) => (
-                      <option key={y} value={y}>
-                        Year {y}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Sem *</label>
-                  <select
-                    value={semester}
-                    onChange={(e) => setSemester(Number(e.target.value))}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
-                      <option key={s} value={s}>
-                        Sem {s}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Section *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. A"
-                    value={section}
-                    onChange={(e) => setSection(e.target.value.toUpperCase())}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="border-t pt-3">
-                <h4 className="text-xs font-bold text-muted-foreground mb-3">Parent / Guardian Details</h4>
+              </form>
+            ) : (
+              <form onSubmit={handleRegisterSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground">Parent Name *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Full Name *</label>
                     <input
                       type="text"
                       required
-                      placeholder="Father/Mother name"
-                      value={parentName}
-                      onChange={(e) => setParentName(e.target.value)}
+                      placeholder="e.g. Aman Sharma"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
                       className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground">Parent Contact *</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Roll Number *</label>
                     <input
                       type="text"
                       required
-                      placeholder="Contact number"
-                      value={parentPhone}
-                      onChange={(e) => setParentPhone(e.target.value)}
+                      placeholder="e.g. 21CS001"
+                      value={rollNumber}
+                      onChange={(e) => setRollNumber(e.target.value)}
                       className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="flex gap-3 pt-4 border-t">
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createStudentMutation.isPending}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  {createStudentMutation.isPending ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Register Student"
-                  )}
-                </button>
-              </div>
-            </form>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Admission No</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. ADM2026102"
+                      value={admissionNumber}
+                      onChange={(e) => setAdmissionNumber(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. aman@gmail.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Phone Number</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 9876543210"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Gender</label>
+                    <select
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="col-span-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Department *</label>
+                    <select
+                      value={selectedDept}
+                      onChange={(e) => setSelectedDept(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                    >
+                      <option value="">Select Department</option>
+                      {deptList.map((dept) => (
+                        <option key={dept._id} value={dept._id}>
+                          {dept.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Year *</label>
+                    <select
+                      value={year}
+                      onChange={(e) => setYear(Number(e.target.value))}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                    >
+                      {[1, 2, 3, 4].map((y) => (
+                        <option key={y} value={y}>
+                          Year {y}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Sem *</label>
+                    <select
+                      value={semester}
+                      onChange={(e) => setSemester(Number(e.target.value))}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                        <option key={s} value={s}>
+                          Sem {s}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Section *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. A"
+                      value={section}
+                      onChange={(e) => setSection(e.target.value.toUpperCase())}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">Password *</label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="Set student login password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="border-t pt-3">
+                  <h4 className="text-xs font-bold text-muted-foreground mb-3">Parent / Guardian Details</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground">Parent Name *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Father/Mother name"
+                        value={parentName}
+                        onChange={(e) => setParentName(e.target.value)}
+                        className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground">Parent Contact *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Contact number"
+                        value={parentPhone}
+                        onChange={(e) => setParentPhone(e.target.value)}
+                        className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <label className="text-xs font-semibold text-muted-foreground">Parent Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="parent@gmail.com"
+                      value={parentEmail}
+                      onChange={(e) => setParentEmail(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddModalOpen(false)}
+                    className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createStudentMutation.isPending}
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  >
+                    {createStudentMutation.isPending ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      "Register Student"
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
@@ -820,6 +936,17 @@ export function AdminStudents() {
                       className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
                     />
                   </div>
+                </div>
+                <div className="mt-3">
+                  <label className="text-xs font-semibold text-muted-foreground">Parent Email Address *</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="parent@gmail.com"
+                    value={parentEmail}
+                    onChange={(e) => setParentEmail(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
                 </div>
               </div>
 

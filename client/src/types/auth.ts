@@ -12,7 +12,7 @@ export interface AuthUser {
 export interface LoginPayload {
   email?: string;
   admissionNumber?: string;
-  password: string;
+  password?: string;
 }
 
 export interface LoginResponse {

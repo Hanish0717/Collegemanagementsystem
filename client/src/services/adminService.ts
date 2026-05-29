@@ -150,6 +150,7 @@ export async function createFaculty(payload: {
   experience?: number;
   gender?: string;
   phoneNumber?: string;
+  password?: string;
 }): Promise<FacultyUser> {
   const { data } = await api.post<{ success: boolean; data: FacultyUser }>(
     "/api/admin/faculty",
@@ -266,6 +267,8 @@ export async function createStudent(payload: {
   section: string;
   parentName: string;
   parentPhone: string;
+  parentEmail?: string;
+  password?: string;
   cgpa?: number;
   attendancePercentage?: number;
 }): Promise<StudentItem> {

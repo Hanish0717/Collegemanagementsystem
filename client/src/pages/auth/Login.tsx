@@ -48,6 +48,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [admissionNumber, setAdmissionNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +59,21 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const result = await login({ email, password });
+      let result;
+      if (roleId === "parent") {
+        result = await login({ email, admissionNumber });
+      } else {
+        result = await login({ email, password });
+      }
+
+      if (result && result.needsVerification) {
+        navigate({
+          to: "/verify-otp",
+          search: { email: result.email, target: "email_verification" },
+        });
+        return;
+      }
+
       // Direct login — no OTP step
       const user = result;
       setActiveRole(toFrontendRole(user.role));
@@ -247,10 +262,10 @@ function LoginForm() {
 
             <div>
               <label className="text-xs font-medium">
-                {roleId === "student"
+                {roleId === "parent"
+                  ? "Parent Email"
+                  : roleId === "student"
                   ? "Email or Admission Number"
-                  : roleId === "parent"
-                  ? "Parent Email or Student Email"
                   : "Email"}
               </label>
               <div className="mt-1 relative">
@@ -260,10 +275,10 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={
-                    roleId === "student"
+                    roleId === "parent"
+                      ? "parent@example.com"
+                      : roleId === "student"
                       ? "you@university.edu or Admission Number"
-                      : roleId === "parent"
-                      ? "parent@example.com or student@example.com"
                       : "you@university.edu"
                   }
                   required
@@ -272,29 +287,50 @@ function LoginForm() {
                 />
               </div>
             </div>
-            <div>
-              <label className="text-xs font-medium">Password</label>
-              <div className="mt-1 relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  autoComplete="new-password"
-                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                />
+
+            {roleId !== "parent" ? (
+              <div>
+                <label className="text-xs font-medium">Password</label>
+                <div className="mt-1 relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    autoComplete="new-password"
+                    className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="rounded" /> Remember me
-              </label>
-              <Link to="/forgot-password" className="text-indigo hover:underline">
-                Forgot password?
-              </Link>
-            </div>
+            ) : (
+              <div>
+                <label className="text-xs font-medium">Student Admission ID (Admission No or Roll No) *</label>
+                <div className="mt-1 relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={admissionNumber}
+                    onChange={(e) => setAdmissionNumber(e.target.value)}
+                    placeholder="e.g. ADM2026102"
+                    required
+                    className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+            )}
+
+            {roleId !== "parent" && (
+              <div className="flex items-center justify-between text-xs">
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" defaultChecked className="rounded" /> Remember me
+                </label>
+                <Link to="/forgot-password" className="text-indigo hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+            )}
 
             <button
               type="submit"
@@ -353,18 +389,6 @@ function LoginForm() {
             )}
             {googleLoading ? "Signing in…" : "Continue with Google"}
           </button>
-
-          {/* Create Account link — shown for all roles */}
-          <p className="mt-5 text-center text-xs text-muted-foreground">
-            Don't have an account?{" "}
-            <Link
-              to="/register"
-              search={{ role: roleId || "student" }}
-              className="text-indigo hover:underline font-medium"
-            >
-              Create account
-            </Link>
-          </p>
         </motion.div>
       </div>
     </div>
