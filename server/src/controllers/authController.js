@@ -1,4 +1,5 @@
 import User from '../models/auth/User.js';
+import Student from '../models/student/Student.js';
 import OTP from '../models/OTP.js';
 import PasswordReset from '../models/PasswordReset.js';
 import { generateToken } from '../services/authService.js';
@@ -91,21 +92,62 @@ export const register = async (req, res, next) => {
   }
 };
 
-// @desc    Authenticate a user & get token (Email + Password — direct login, no OTP)
-// @route   POST /api/auth/login
-// @access  Public
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, admissionNumber, password } = req.body;
 
-    if (!email || !password) {
-      const error = new Error('Please provide email and password');
+    if ((!email && !admissionNumber) || !password) {
+      const error = new Error('Please provide email/admission number and password');
       error.statusCode = 400;
       return next(error);
     }
 
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
+    let searchEmail = email ? email.toLowerCase().trim() : '';
+
+    if (admissionNumber) {
+      const student = await Student.findOne({ admissionNumber: admissionNumber.toUpperCase().trim() });
+      if (!student) {
+        const error = new Error('Invalid admission number');
+        error.statusCode = 401;
+        return next(error);
+      }
+      searchEmail = student.email;
+    } else if (email && !email.includes('@')) {
+      // If entered email does not contain @, check if it's an admissionNumber or rollNumber
+      const student = await Student.findOne({
+        $or: [
+          { admissionNumber: email.toUpperCase().trim() },
+          { rollNumber: email.toUpperCase().trim() }
+        ]
+      });
+      if (student) {
+        searchEmail = student.email;
+      }
+    }
+
+    let user = await User.findOne({ email: searchEmail }).select('+password');
+    let isMatch = false;
+
+    if (user) {
+      isMatch = await user.matchPassword(password);
+    }
+
+    if (!isMatch) {
+      // Check if this is a student email and we can authenticate using the linked parent user credentials instead
+      const student = await Student.findOne({ email: searchEmail });
+      if (student && student.parent) {
+        const parentUser = await User.findById(student.parent).select('+password');
+        if (parentUser) {
+          const parentMatch = await parentUser.matchPassword(password);
+          if (parentMatch) {
+            user = parentUser;
+            isMatch = true;
+          }
+        }
+      }
+    }
+
+    if (!user || !isMatch) {
       const error = new Error('Invalid credentials');
       error.statusCode = 401;
       return next(error);
@@ -119,13 +161,6 @@ export const login = async (req, res, next) => {
 
     if (!user.isActive) {
       const error = new Error('Account is deactivated. Please contact administration.');
-      error.statusCode = 401;
-      return next(error);
-    }
-
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      const error = new Error('Invalid credentials');
       error.statusCode = 401;
       return next(error);
     }

@@ -246,14 +246,26 @@ function LoginForm() {
             </div>
 
             <div>
-              <label className="text-xs font-medium">Email</label>
+              <label className="text-xs font-medium">
+                {roleId === "student"
+                  ? "Email or Admission Number"
+                  : roleId === "parent"
+                  ? "Parent Email or Student Email"
+                  : "Email"}
+              </label>
               <div className="mt-1 relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                 <input
-                  type="email"
+                  type={roleId === "student" ? "text" : "email"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@university.edu"
+                  placeholder={
+                    roleId === "student"
+                      ? "you@university.edu or Admission Number"
+                      : roleId === "parent"
+                      ? "parent@example.com or student@example.com"
+                      : "you@university.edu"
+                  }
                   required
                   autoComplete="off"
                   className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"

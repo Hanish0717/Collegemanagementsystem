@@ -2,7 +2,7 @@ import Student from '../models/student/Student.js';
 import Admin from '../models/admin/Admin.js';
 import User from '../models/auth/User.js';
 import mongoose from 'mongoose';
-
+import Parent from '../models/parent/Parent.js';
 // @desc    Get all active students with pagination, search, filter, and sorting
 // @route   GET /api/students
 // @access  Private (admin, super-admin)
@@ -130,6 +130,10 @@ export const getStudentById = async (req, res, next) => {
 // @access  Private (admin, super-admin)
 export const createStudent = async (req, res, next) => {
   let createdUser = null;
+  let createdParentUser = null;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const {
       fullName,
@@ -145,125 +149,84 @@ export const createStudent = async (req, res, next) => {
       section,
       address,
       parentName,
+      parentEmail,
       parentPhone,
+      parentRelation,
       cgpa,
       attendancePercentage,
       profileImage,
     } = req.body;
 
-    // Validate required fields
-    if (
-      !fullName ||
-      !rollNumber ||
-      !email ||
-      !department ||
-      !year ||
-      !semester ||
-      !section ||
-      !parentName ||
-      !parentPhone
-    ) {
-      const error = new Error('Please fill in all required fields');
-      error.statusCode = 400;
-      throw error;
+    if (!fullName || !rollNumber || !email || !department || !year || !semester || !section || !parentName || !parentPhone) {
+      throw new Error('Please fill in all required fields');
     }
 
-    // Verify Admin department restriction
-    if (req.user && req.user.role === 'admin') {
-      const adminProfile = await Admin.findOne({ user: req.user._id });
-      if (adminProfile && adminProfile.department) {
-        if (adminProfile.department.toString() !== department.toString()) {
-          const error = new Error('Access denied: You can only register students in your assigned department');
-          error.statusCode = 403;
-          throw error;
-        }
-      }
-    }
+    // Check duplicate student
+    const duplicate = await Student.findOne({ $or: [{ rollNumber }, { email }] }).session(session);
+    if (duplicate) throw new Error('Student already exists');
 
-    // Check duplicate student in Student collection
-    const checkQueries = [
-      { rollNumber: rollNumber.toUpperCase().trim() },
-      { email: email.toLowerCase().trim() }
-    ];
-    if (admissionNumber) {
-      checkQueries.push({ admissionNumber: admissionNumber.toUpperCase().trim() });
-    }
-
-    const duplicate = await Student.findOne({
-      $or: checkQueries,
-    });
-
-    if (duplicate) {
-      const isRollNumberDup = duplicate.rollNumber === rollNumber.toUpperCase().trim();
-      const isAdmissionDup = admissionNumber && duplicate.admissionNumber === admissionNumber.toUpperCase().trim();
-      const error = new Error(
-        isRollNumberDup
-          ? 'Student with this roll number already exists'
-          : isAdmissionDup
-          ? 'Student with this admission number already exists'
-          : 'Student with this email already exists'
-      );
-      error.statusCode = 400;
-      throw error;
-    }
-
-    // Check duplicate email in User collection
-    const userDuplicate = await User.findOne({ email: email.toLowerCase().trim() });
-    if (userDuplicate) {
-      const error = new Error('User with this email already exists');
-      error.statusCode = 400;
-      throw error;
-    }
-
-    // Create User record
-    createdUser = await User.create({
+    // Create User record for student
+    const user = await User.create([{
       name: fullName,
-      fullName,
       email: email.toLowerCase().trim(),
       role: 'student',
       password: 'password123',
-      isVerified: true,
-      isActive: true,
-    });
+    }], { session });
+    createdUser = user[0];
 
-    // Create student
-    const student = await Student.create({
+    // Handle Parent
+    let parentDoc = await Parent.findOne({ phoneNumber: parentPhone }).session(session);
+    if (!parentDoc) {
+      const parentUser = await User.create([
+        {
+          name: parentName,
+          email: parentEmail ? parentEmail.toLowerCase().trim() : `parent_${parentPhone}@school.com`,
+          role: 'parent',
+          password: 'password123',
+        },
+      ], { session });
+      createdParentUser = parentUser[0];
+      parentDoc = await Parent.create(
+        {
+          user: createdParentUser._id,
+          fullName: parentName,
+          email: parentEmail ? parentEmail.toLowerCase().trim() : undefined,
+          phoneNumber: parentPhone,
+          relationship: parentRelation || 'Father',
+        },
+        { session }
+      );
+    }
+
+    // Create Student
+    const student = await Student.create([{
       user: createdUser._id,
       fullName,
-      rollNumber: rollNumber.toUpperCase().trim(),
-      admissionNumber: admissionNumber ? admissionNumber.toUpperCase().trim() : undefined,
+      rollNumber,
       email: email.toLowerCase().trim(),
+      department,
+      year,
+      semester,
+      section,
+      parent: parentDoc.user,
+      parentEmail: parentEmail ? parentEmail.toLowerCase().trim() : undefined,
+      parentRelation: parentRelation,
       phoneNumber,
       gender,
       dateOfBirth,
-      department,
-      year: Number(year),
-      semester: Number(semester),
-      section: section.toUpperCase().trim(),
       address,
-      parentName,
-      parentPhone,
-      cgpa: cgpa ? Number(cgpa) : 0,
-      attendancePercentage: attendancePercentage ? Number(attendancePercentage) : 100,
+      cgpa,
+      attendancePercentage,
       profileImage,
-      isActive: true,
-    });
+    }], { session });
 
-    res.status(201).json({
-      success: true,
-      message: 'Student created successfully',
-      data: student,
-    });
+    await session.commitTransaction();
+    res.status(201).json({ success: true, data: student[0] });
   } catch (error) {
-    if (createdUser) {
-      await User.findByIdAndDelete(createdUser._id);
-    }
-    if (error.name === 'ValidationError') {
-      const err = new Error(Object.values(error.errors).map((val) => val.message).join(', '));
-      err.statusCode = 400;
-      return next(err);
-    }
+    await session.abortTransaction();
     next(error);
+  } finally {
+    session.endSession();
   }
 };
 

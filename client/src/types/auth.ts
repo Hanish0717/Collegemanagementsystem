@@ -10,7 +10,8 @@ export interface AuthUser {
 }
 
 export interface LoginPayload {
-  email: string;
+  email?: string;
+  admissionNumber?: string;
   password: string;
 }
 
