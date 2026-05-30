@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
   Area,
@@ -7,8 +7,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -19,67 +17,100 @@ import {
   Bell,
   BookOpen,
   Calendar,
-  CheckCircle,
-  Clock,
   FileText,
   GraduationCap,
   Users,
-  Video,
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { useAuth } from "@/contexts/AuthContext";
-import {
-  assignmentSubmissions,
-  facultyActivities,
-  facultyNotifications,
-  facultyStats,
-  studentPerformance,
-  weeklyAttendance,
-} from "@/mock/facultyData";
 import api from "@/lib/api";
 
-const statIcons = [BookOpen, Users, FileText, Calendar, GraduationCap, Bell, CheckCircle, Video];
-const statGradients = [
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-];
+const getIcon = (label: string) => {
+  switch (label) {
+    case "Students Under Mentorship": return Users;
+    case "Assignments Posted": return FileText;
+    case "Study Materials Shared": return BookOpen;
+    case "Pending Leave Requests": return Calendar;
+    default: return GraduationCap;
+  }
+};
+
+const getGradient = (label: string) => {
+  switch (label) {
+    case "Students Under Mentorship": return "bg-gradient-primary";
+    case "Assignments Posted": return "bg-gradient-violet";
+    case "Study Materials Shared": return "bg-gradient-cyan";
+    case "Pending Leave Requests": return "bg-gradient-violet";
+    default: return "bg-gradient-primary";
+  }
+};
 
 export function FacultyDashboard() {
   const path = useRouterState({ select: r => r.location.pathname });
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const [stats, setStats] = useState(facultyStats);
-  const [activities, setActivities] = useState(facultyActivities);
+  const [stats, setStats] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [weeklyAttendanceData, setWeeklyAttendanceData] = useState<any[]>([]);
+  const [submissionsData, setSubmissionsData] = useState<any[]>([]);
+  const [performanceData, setPerformanceData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (path !== "/dashboard/faculty") return;
     const fetchDashboardData = async () => {
       try {
-        const res = await api.get("/api/faculty-module/dashboard");
-        if (res.data?.success && res.data?.data) {
-          const { stats: dbStats, activities: dbActivities } = res.data.data;
-          
-          const updatedStats = facultyStats.map(mockStat => {
-            const match = dbStats.find((s: any) => s.label === mockStat.label);
-            if (match) {
-              return { ...mockStat, value: match.value, change: match.change };
-            }
-            return mockStat;
-          });
-          setStats(updatedStats);
-
-          if (dbActivities && dbActivities.length > 0) {
-            setActivities(dbActivities);
+        setLoading(true);
+        const dashboardRes = await api.get("/api/faculty-module/dashboard");
+        if (dashboardRes.data?.success && dashboardRes.data?.data) {
+          const { stats: dbStats, activities: dbActivities, notifications: dbNotifs, weeklyAttendance: dbAtt, profile } = dashboardRes.data.data;
+          setStats(dbStats || []);
+          setActivities(dbActivities || []);
+          setNotifications(dbNotifs || []);
+          setWeeklyAttendanceData(dbAtt || []);
+          if (profile) {
+            localStorage.setItem("cms_faculty_profile", JSON.stringify(profile));
           }
+        }
+
+        // Fetch student performance
+        const performanceRes = await api.get("/api/faculty-module/performance");
+        if (performanceRes.data?.success && performanceRes.data?.data) {
+          // Map backend performance field names to frontend expected names
+          const mappedPerformance = performanceRes.data.data.map((p: any) => ({
+            student: p.student,
+            attendance: p.attendance,
+            marks: p.overall
+          }));
+          setPerformanceData(mappedPerformance);
+        }
+
+        // Fetch assignments to calculate submissions data
+        const assignmentsRes = await api.get("/api/faculty-module/assignments");
+        if (assignmentsRes.data?.success && assignmentsRes.data?.data) {
+          const list = assignmentsRes.data.data;
+          // Let's assume total student count is either students Count (first card value) or fallback to 45
+          const totalStudentsStr = dashboardRes.data?.data?.stats?.[0]?.value || "45";
+          const totalStudents = parseInt(totalStudentsStr, 10) || 45;
+
+          // For the chart, map assignments to: { name: title (short), submitted, pending }
+          const chartData = list.slice(0, 5).map((asg: any) => {
+            const submitted = asg.submissions ? asg.submissions.length : 0;
+            const pending = Math.max(0, totalStudents - submitted);
+            return {
+              name: asg.title.length > 12 ? asg.title.substring(0, 12) + "..." : asg.title,
+              submitted,
+              pending
+            };
+          });
+          setSubmissionsData(chartData);
         }
       } catch (err) {
         console.error("Error loading faculty dashboard:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchDashboardData();
@@ -97,11 +128,21 @@ export function FacultyDashboard() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
-          <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-            <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i]} gradient={statGradients[i]} />
-          </motion.div>
-        ))}
+        {loading ? (
+          [1, 2, 3, 4].map((n) => (
+            <Card key={n} className="h-28 animate-pulse bg-muted/40" />
+          ))
+        ) : stats.length > 0 ? (
+          stats.map((stat, i) => (
+            <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+              <StatCard label={stat.label} value={stat.value} change={stat.change} icon={getIcon(stat.label)} gradient={getGradient(stat.label)} />
+            </motion.div>
+          ))
+        ) : (
+          <div className="col-span-4 text-center py-8 text-sm text-muted-foreground border border-dashed rounded-xl">
+            No statistics available.
+          </div>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
@@ -111,30 +152,44 @@ export function FacultyDashboard() {
               <h3 className="font-semibold">Weekly Attendance</h3>
               <p className="text-xs text-muted-foreground">Daily attendance across all classes</p>
             </div>
-            <Badge tone="success">89.2%</Badge>
+            <Badge tone="success">
+              {weeklyAttendanceData.length > 0
+                ? `${Math.round(weeklyAttendanceData.reduce((acc, curr) => acc + curr.percentage, 0) / weeklyAttendanceData.length)}%`
+                : "N/A"}
+            </Badge>
           </div>
           <div className="h-72">
-            <ResponsiveContainer>
-              <AreaChart data={weeklyAttendance}>
-                <defs>
-                  <linearGradient id="faculty-present" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
-                    <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area
-                  type="monotone"
-                  dataKey="percentage"
-                  stroke="#4F46E5"
-                  fill="url(#faculty-present)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl animate-pulse">
+                Loading weekly attendance trend...
+              </div>
+            ) : weeklyAttendanceData.length > 0 ? (
+              <ResponsiveContainer>
+                <AreaChart data={weeklyAttendanceData}>
+                  <defs>
+                    <linearGradient id="faculty-present" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
+                      <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
+                  <YAxis stroke="#64748B" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Area
+                    type="monotone"
+                    dataKey="percentage"
+                    stroke="#4F46E5"
+                    fill="url(#faculty-present)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl">
+                No attendance records recorded yet.
+              </div>
+            )}
           </div>
         </Card>
 
@@ -145,16 +200,17 @@ export function FacultyDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Mark Attendance", tone: "default" as const },
-              { label: "Upload Assignment", tone: "success" as const },
-              { label: "Enter Marks", tone: "warn" as const },
-              { label: "Start Online Class", tone: "info" as const },
+              { label: "Mark Attendance", tone: "default" as const, to: "/dashboard/faculty/attendance" },
+              { label: "Upload Assignment", tone: "success" as const, to: "/dashboard/faculty/assignments" },
+              { label: "Enter Marks", tone: "warn" as const, to: "/dashboard/faculty/marks" },
+              { label: "Start Online Class", tone: "info" as const, to: "/dashboard/faculty/classes" },
             ].map((item) => (
               <button
                 key={item.label}
-                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition"
+                onClick={() => navigate({ to: item.to })}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer text-left font-medium"
               >
-                <span className="text-sm font-medium">{item.label}</span>
+                <span className="text-sm">{item.label}</span>
                 <Badge tone={item.tone}>Action</Badge>
               </button>
             ))}
@@ -167,21 +223,31 @@ export function FacultyDashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold">Assignment Submissions</h3>
-              <p className="text-xs text-muted-foreground">Weekly submission analytics</p>
+              <p className="text-xs text-muted-foreground">Active assignment submission metrics</p>
             </div>
-            <Badge tone="info">This Month</Badge>
+            <Badge tone="info">Submissions</Badge>
           </div>
           <div className="h-64">
-            <ResponsiveContainer>
-              <BarChart data={assignmentSubmissions}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="week" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="submitted" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="pending" fill="#06B6D4" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl animate-pulse">
+                Loading submission statistics...
+              </div>
+            ) : submissionsData.length > 0 ? (
+              <ResponsiveContainer>
+                <BarChart data={submissionsData}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
+                  <YAxis stroke="#64748B" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Bar dataKey="submitted" fill="#4F46E5" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="pending" fill="#06B6D4" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl">
+                No assignment submissions found.
+              </div>
+            )}
           </div>
         </Card>
 
@@ -191,21 +257,31 @@ export function FacultyDashboard() {
             <h3 className="font-semibold">Student Performance</h3>
           </div>
           <div className="space-y-3">
-            {studentPerformance.slice(0, 4).map((student) => (
-              <div key={student.student} className="p-3 rounded-xl bg-gradient-soft border">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{student.student}</span>
-                  <Badge
-                    tone={student.marks >= 85 ? "success" : student.marks >= 75 ? "info" : "warn"}
-                  >
-                    {student.marks}%
-                  </Badge>
+            {loading ? (
+              [1, 2, 3].map((n) => (
+                <div key={n} className="h-16 animate-pulse bg-muted/40 border rounded-xl" />
+              ))
+            ) : performanceData.length > 0 ? (
+              performanceData.slice(0, 4).map((student) => (
+                <div key={student.student} className="p-3 rounded-xl bg-gradient-soft border">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{student.student}</span>
+                    <Badge
+                      tone={student.marks >= 85 ? "success" : student.marks >= 75 ? "info" : "warn"}
+                    >
+                      {student.marks}%
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                    <span>Attendance: {student.attendance}%</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                  <span>Attendance: {student.attendance}%</span>
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-xs text-muted-foreground border border-dashed rounded-xl">
+                No student performance data.
               </div>
-            ))}
+            )}
           </div>
         </Card>
       </div>
@@ -217,20 +293,30 @@ export function FacultyDashboard() {
             <Badge tone="info">Live</Badge>
           </div>
           <div className="space-y-3">
-            {activities.map(activity => (
-              <div key={activity.actor + activity.time} className="flex items-center gap-3 py-2 border-b last:border-0">
-                <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {activity.actor.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="flex-1 text-sm">
-                  <span className="font-medium">{activity.actor}</span>{" "}
-                  <span className="text-muted-foreground">{activity.action}</span>{" "}
-                  <span className="font-medium">{activity.target}</span>
-                  <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
-                </div>
-                <Badge>{activity.type}</Badge>
+            {loading ? (
+              <div className="text-center py-8 text-xs text-muted-foreground animate-pulse">
+                Loading activities...
               </div>
-            ))}
+            ) : activities.length > 0 ? (
+              activities.map((activity, idx) => (
+                <div key={activity.actor + activity.time + idx} className="flex items-center gap-3 py-2 border-b last:border-0">
+                  <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
+                    {activity.actor.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex-1 text-sm">
+                    <span className="font-medium">{activity.actor}</span>{" "}
+                    <span className="text-muted-foreground">{activity.action}</span>{" "}
+                    <span className="font-medium">{activity.target}</span>
+                    <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
+                  </div>
+                  <Badge>{activity.type}</Badge>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-xs text-muted-foreground border border-dashed rounded-xl">
+                No recent activities found.
+              </div>
+            )}
           </div>
         </Card>
 
@@ -240,32 +326,43 @@ export function FacultyDashboard() {
             <Bell className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            {facultyNotifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}
-              >
-                <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium">{notification.title}</div>
-                  <div className="text-xs text-muted-foreground">{notification.time}</div>
-                </div>
-                <Badge
-                  tone={
-                    notification.type === "Alert"
-                      ? "danger"
-                      : notification.type === "Request"
-                        ? "warn"
-                        : "info"
-                  }
-                >
-                  {notification.type}
-                </Badge>
+            {loading ? (
+              <div className="text-center py-8 text-xs text-muted-foreground animate-pulse">
+                Loading notifications...
               </div>
-            ))}
+            ) : notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50" : "hover:bg-accent/50"}`}
+                >
+                  <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium">{notification.title}</div>
+                    <div className="text-xs text-muted-foreground">{notification.time}</div>
+                  </div>
+                  <Badge
+                    tone={
+                      notification.type === "Alert"
+                        ? "danger"
+                        : notification.type === "Request"
+                          ? "warn"
+                          : "info"
+                    }
+                  >
+                    {notification.type}
+                  </Badge>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-xs text-muted-foreground border border-dashed rounded-xl">
+                You are all caught up! No notifications.
+              </div>
+            )}
           </div>
         </Card>
       </div>
     </div>
   );
 }
+

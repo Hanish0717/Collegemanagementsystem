@@ -91,7 +91,7 @@ export const getStudentDashboard = async (req, res, next) => {
       { label: "Current GPA", value: String(cgpa), change: "Latest Semester" },
       { label: "Pending Assignments", value: String(pendingAssignments), change: "To submit" },
       { label: "Leave Balance", value: `${15 - approvedLeaveDays} days`, change: "Available" },
-      { label: "Fee Balance", value: `$${pendingFees}`, change: "Pending Payment" }
+      { label: "Fee Balance", value: `₹${pendingFees.toLocaleString('en-IN')}`, change: "Pending Payment" }
     ];
 
     // Fetch dynamic activities
@@ -140,11 +140,80 @@ export const getStudentDashboard = async (req, res, next) => {
       );
     }
 
+    // Generate dynamic notifications
+    const notifications = [];
+    let notifId = 1;
+
+    // 1. Pending Assignments
+    if (allCohortAsg) {
+      allCohortAsg.forEach(a => {
+        const submissions = Array.isArray(a.submissions) ? a.submissions : [];
+        const isSubmitted = submissions.some(s => String(s.student) === String(req.user.id || req.user._id));
+        if (!isSubmitted) {
+          notifications.push({
+            id: `DN-${notifId++}`,
+            title: `Assignment pending: ${a.title} for ${a.subject}`,
+            type: "Assignment",
+            time: a.due_date ? `Due ${new Date(a.due_date).toLocaleDateString()}` : "Upcoming",
+            unread: true
+          });
+        }
+      });
+    }
+
+    // 2. Unpaid/Partially paid fees
+    if (feeRecords) {
+      feeRecords.forEach(f => {
+        const s = String(f.status).toLowerCase();
+        if (s === 'unpaid' || s === 'partially_paid' || s === 'partially-paid') {
+          const balance = Number(f.amount || 0) - Number(f.paid_amount || 0);
+          notifications.push({
+            id: `DN-${notifId++}`,
+            title: `Fee payment pending: ${f.type} (Balance: ₹${balance.toLocaleString('en-IN')})`,
+            type: "Alert",
+            time: f.due_date ? `Due ${new Date(f.due_date).toLocaleDateString()}` : "Due",
+            unread: true
+          });
+        }
+      });
+    }
+
+    // 3. Leave Request Status
+    if (leaveRequests) {
+      leaveRequests.forEach(l => {
+        if (l.status !== 'Pending') {
+          notifications.push({
+            id: `DN-${notifId++}`,
+            title: `Leave request for ${l.days} day(s) has been ${l.status.toLowerCase()}`,
+            type: "Info",
+            time: l.created_at ? new Date(l.created_at).toLocaleDateString() : "Recent",
+            unread: false
+          });
+        }
+      });
+    }
+
+    // 4. Complaint Status Updates
+    if (complaints) {
+      complaints.forEach(c => {
+        if (c.status !== 'Pending') {
+          notifications.push({
+            id: `DN-${notifId++}`,
+            title: `Complaint '${c.title || c.subject}' status updated to ${c.status}`,
+            type: "Info",
+            time: c.created_at ? new Date(c.created_at).toLocaleDateString() : "Recent",
+            unread: false
+          });
+        }
+      });
+    }
+
     return res.status(200).json({
       success: true,
       data: {
         stats: dashboardStats,
         activities,
+        notifications,
         profile
       }
     });

@@ -206,6 +206,16 @@ export function DashboardLayout() {
     navigate({ to: "/login" });
   };
 
+  const handleNotificationClick = () => {
+    const notifRoute = role.nav.find((item) => item.label === "Notifications")?.to ?? "/dashboard/notifications";
+    navigate({ to: notifRoute });
+  };
+
+  const handleProfileClick = () => {
+    const settingsRoute = role.nav.find((item) => item.label === "Settings")?.to ?? "/dashboard/settings";
+    navigate({ to: settingsRoute });
+  };
+
   // Quick Action submits
   const handleQuickAddBook = (e: React.FormEvent) => {
     e.preventDefault();
@@ -462,24 +472,16 @@ export function DashboardLayout() {
               )}
             </div>
             <div className="ml-auto flex items-center gap-2">
-              <span className={`hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white bg-gradient-to-r ${role.gradient}`}>
-                <RoleIcon className="size-3" /> {role.name}
-              </span>
-              <button className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-primary text-primary-foreground text-sm font-medium glow-primary">
-                <Plus className="size-4" /> New
-              </button>
-              <button onClick={() => setDark(!dark)} className="p-2 rounded-lg hover:bg-accent">
-                {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-              </button>
-              <button className="relative p-2 rounded-lg hover:bg-accent">
+              <button onClick={handleNotificationClick} className="relative p-2 rounded-lg hover:bg-accent cursor-pointer">
                 <Bell className="size-4" />
                 <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-gradient-primary" />
               </button>
-              <button className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-accent">
-                <div className={`size-7 rounded-lg bg-gradient-to-br ${role.gradient}`} />
+              <button onClick={handleProfileClick} className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-accent cursor-pointer">
+                <div className={`size-7 rounded-lg bg-gradient-to-br ${role.gradient} flex items-center justify-center text-white text-xs font-bold`}>
+                  {displayName.charAt(0).toUpperCase()}
+                </div>
                 <div className="hidden md:block text-left leading-tight">
                   <div className="text-xs font-semibold">{displayName}</div>
-                  <div className="text-[10px] text-muted-foreground">{role.name}</div>
                 </div>
                 <ChevronDown className="size-3.5 text-muted-foreground" />
               </button>

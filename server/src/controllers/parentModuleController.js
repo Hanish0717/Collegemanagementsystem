@@ -141,10 +141,85 @@ export const getParentStudentData = async (req, res, next) => {
         .reduce((sum, f) => sum + (Number(f.amount || 0) - Number(f.paid_amount || 0)), 0);
     }
 
+    // Fetch dynamic activities
+    const activities = [];
+    if (childUserId) {
+      const { data: leaves } = await supabase
+        .from('leave_requests')
+        .select('*')
+        .eq('user_id', childUserId)
+        .order('created_at', { ascending: false })
+        .limit(2);
+      if (leaves) {
+        leaves.forEach(l => {
+          activities.push({
+            actor: child.fullName,
+            action: "applied for",
+            target: l.type,
+            time: "Recently",
+            type: "Leave"
+          });
+        });
+      }
+    }
+    if (activities.length === 0) {
+      activities.push({
+        actor: "System",
+        action: "loaded data for",
+        target: child.fullName,
+        time: "Just now",
+        type: "System"
+      });
+    }
+
+    // Generate dynamic notifications
+    const notifications = [];
+    let notifId = 1;
+
+    if (fees) {
+      fees.forEach(f => {
+        if (f.remainingAmount > 0) {
+          notifications.push({
+            id: `PN-${notifId++}`,
+            title: `Fee payment pending for ${child.fullName}: ${f.feeType || f.type} (Balance: ₹${f.remainingAmount.toLocaleString('en-IN')})`,
+            type: "Alert",
+            time: f.dueDate ? `Due ${new Date(f.dueDate).toLocaleDateString()}` : "Due",
+            unread: true
+          });
+        }
+      });
+    }
+
+    if (childUserId) {
+      const { data: leaveReqs } = await supabase
+        .from('leave_requests')
+        .select('*')
+        .eq('user_id', childUserId);
+      if (leaveReqs) {
+        leaveReqs.forEach(l => {
+          if (l.status !== 'Pending') {
+            notifications.push({
+              id: `PN-${notifId++}`,
+              title: `Leave request for ${child.fullName} has been ${l.status.toLowerCase()}`,
+              type: "Info",
+              time: "Recent",
+              unread: false
+            });
+          }
+        });
+      }
+    }
+
+    let pendingLeavesCount = 0;
+    if (childUserId && leaveReqs) {
+      pendingLeavesCount = leaveReqs.filter(l => l.status === 'Pending').length;
+    }
+
     const stats = [
       { label: "Child's Attendance", value: `${attendancePct}%`, change: "Current" },
       { label: "Child's CGPA", value: String(cgpa), change: "Latest" },
-      { label: "Pending Fees", value: `$${pendingFees}`, change: "Due" }
+      { label: "Pending Fees", value: `₹${pendingFees.toLocaleString('en-IN')}`, change: "Due" },
+      { label: "Pending Leaves", value: String(pendingLeavesCount), change: "Awaiting approval" }
     ];
 
     return res.status(200).json({
@@ -160,7 +235,9 @@ export const getParentStudentData = async (req, res, next) => {
         section: child.section,
         stats,
         results,
-        fees
+        fees,
+        activities,
+        notifications
       }
     });
   } catch (error) {

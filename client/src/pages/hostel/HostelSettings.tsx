@@ -1,258 +1,273 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { User, Bell, Shield, Lock, Building2, Save, Key } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Save, Github, Linkedin, Twitter, Globe, Pencil } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export function HostelSettings() {
+  const { user } = useAuth();
+
+  const fullName = user?.fullName || "Warden Member";
+  const email = user?.email || "";
+
+  const initials = fullName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+
+  // Edit mode state
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Form states
+  const [aboutMe, setAboutMe] = useState("");
+  const [socialLinks, setSocialLinks] = useState({
+    github: "",
+    linkedin: "",
+    twitter: "",
+    website: "",
+  });
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const role = "warden";
+    
+    const storedAbout = localStorage.getItem(`cms_${role}_about`);
+    setAboutMe(storedAbout || "Responsible for hostel administration, resident safety, dining operations, and facility coordination.");
+
+    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
+    if (storedSocials) {
+      setSocialLinks(JSON.parse(storedSocials));
+    } else {
+      setSocialLinks({ github: "", linkedin: "", twitter: "", website: "" });
+    }
+  }, []);
+
+  const handleSave = () => {
+    const role = "warden";
+    localStorage.setItem(`cms_${role}_about`, aboutMe);
+    localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
+    toast.success("Profile changes saved successfully!");
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    const role = "warden";
+    
+    const storedAbout = localStorage.getItem(`cms_${role}_about`);
+    setAboutMe(storedAbout || "Responsible for hostel administration, resident safety, dining operations, and facility coordination.");
+
+    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
+    setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
+    
+    toast.info("Changes discarded.");
+    setIsEditing(false);
+  };
+
+  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
+  const employeeId = user?.employeeId || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#4");
+
   return (
     <div className="space-y-6">
+      <div className="mb-2">
+        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+          Hostel Warden Settings
+        </span>
+        <h2 className="text-sm font-medium text-muted-foreground">
+          Hostel administration and safety
+        </h2>
+      </div>
+
       <PageHeader
-        title="Hostel Settings"
-        desc="Manage hostel admin profile, notifications, security, and preferences."
+        title="Profile"
+        desc="Manage your identity and public presence."
+        actions={
+          isEditing ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCancel}
+                className="flex items-center gap-1.5 px-4 py-2 border rounded-xl hover:bg-accent text-sm transition cursor-pointer font-medium"
+              >
+                <X className="size-4" /> Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium animate-in fade-in zoom-in-95 duration-150"
+              >
+                <Save className="size-4" /> Save Changes
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium"
+            >
+              <Pencil className="size-4" /> Edit Profile
+            </button>
+          )
+        }
       />
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-1">
-          <div className="flex items-center gap-2 mb-4">
-            <User className="size-5 text-indigo" />
-            <h3 className="font-semibold">Admin Profile</h3>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="size-20 rounded-full bg-gradient-primary text-white grid place-items-center text-2xl font-semibold mb-3">
-              WA
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1 space-y-6">
+          <Card className="text-center">
+            <div className="mx-auto size-32">
+              <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
+                {initials || "HW"}
+              </div>
             </div>
-            <div className="font-semibold text-lg">Warden Admin</div>
-            <div className="text-sm text-muted-foreground">Hostel Block A-D</div>
-            <Badge tone="success" className="mt-2">
-              Active
-            </Badge>
-          </div>
-          <div className="mt-4 space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Email:</span>
-              <span>warden@college.edu</span>
+            <div className="mt-4 font-bold text-lg">{fullName}</div>
+            <div className="text-xs text-muted-foreground tracking-wider uppercase font-semibold mt-1">
+              HOSTEL WARDEN
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Phone:</span>
-              <span>+91 98765 43210</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Since:</span>
-              <span>Jan 2020</span>
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        <Card className="lg:col-span-2">
-          <div className="flex items-center gap-2 mb-4">
-            <Bell className="size-5 text-indigo" />
-            <h3 className="font-semibold">Notification Settings</h3>
-          </div>
-          <div className="space-y-4">
-            {[
-              {
-                label: "Fee payment reminders",
-                description: "Get notified when fee payments are due",
-                enabled: true,
-              },
-              {
-                label: "Complaint alerts",
-                description: "Receive alerts for new and escalated complaints",
-                enabled: true,
-              },
-              {
-                label: "Visitor notifications",
-                description: "Get notified when visitors check in/out",
-                enabled: true,
-              },
-              {
-                label: "Mess updates",
-                description: "Receive updates about mess menu changes",
-                enabled: false,
-              },
-              {
-                label: "Emergency alerts",
-                description: "Critical emergency notifications",
-                enabled: true,
-              },
-              {
-                label: "Maintenance requests",
-                description: "Notifications for maintenance requests",
-                enabled: true,
-              },
-            ].map((setting) => (
-              <div
-                key={setting.label}
-                className="flex items-center justify-between p-3 rounded-xl border bg-gradient-soft"
-              >
-                <div>
-                  <div className="text-sm font-medium">{setting.label}</div>
-                  <div className="text-xs text-muted-foreground">{setting.description}</div>
-                </div>
-                <button
-                  className={`w-12 h-6 rounded-full transition-colors ${setting.enabled ? "bg-primary" : "bg-muted"}`}
-                >
-                  <div
-                    className={`size-5 rounded-full bg-white transition-transform ${setting.enabled ? "translate-x-6" : "translate-x-0.5"}`}
+          <Card>
+            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
+              Social Links
+            </h3>
+            {isEditing ? (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                <div className="flex items-center gap-3">
+                  <Github className="size-5 text-muted-foreground shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="GitHub URL"
+                    value={socialLinks.github}
+                    onChange={(e) => setSocialLinks({ ...socialLinks, github: e.target.value })}
+                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                   />
-                </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Linkedin className="size-5 text-muted-foreground shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="LinkedIn URL"
+                    value={socialLinks.linkedin}
+                    onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
+                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Twitter className="size-5 text-muted-foreground shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Twitter URL"
+                    value={socialLinks.twitter}
+                    onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })}
+                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Globe className="size-5 text-muted-foreground shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="Website URL"
+                    value={socialLinks.website}
+                    onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
+                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <div className="flex items-center gap-2 mb-4">
-            <Shield className="size-5 text-indigo" />
-            <h3 className="font-semibold">Security Settings</h3>
-          </div>
-          <div className="space-y-4">
-            <div className="p-4 rounded-xl border bg-gradient-soft">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Two-Factor Authentication</span>
-                <Badge tone="success">Enabled</Badge>
+            ) : (
+              <div className="space-y-3.5">
+                {[
+                  { icon: Github, value: socialLinks.github },
+                  { icon: Linkedin, value: socialLinks.linkedin },
+                  { icon: Twitter, value: socialLinks.twitter },
+                  { icon: Globe, value: socialLinks.website },
+                ].map((item, idx) => {
+                  const isLinked = !!item.value;
+                  const hrefVal = isLinked ? (item.value.startsWith("http") ? item.value : `https://${item.value}`) : undefined;
+                  
+                  return (
+                    <div key={idx} className="flex items-center gap-3">
+                      {isLinked ? (
+                        <a
+                          href={hrefVal}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 text-indigo-600 hover:text-indigo-800 transition"
+                        >
+                          <item.icon className="size-5 shrink-0" />
+                          <span className="text-sm hover:underline break-all">{item.value}</span>
+                        </a>
+                      ) : (
+                        <>
+                          <item.icon className="size-5 text-muted-foreground shrink-0" />
+                          <span className="text-sm text-muted-foreground/60 italic">Not linked</span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              <div className="text-xs text-muted-foreground">
-                Your account is protected with 2FA
-              </div>
-            </div>
-            <div className="p-4 rounded-xl border bg-gradient-soft">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Login Notifications</span>
-                <Badge tone="success">Enabled</Badge>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Get notified of new login attempts
-              </div>
-            </div>
-            <div className="p-4 rounded-xl border bg-gradient-soft">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Session Timeout</span>
-                <span className="text-sm">30 minutes</span>
-              </div>
-              <div className="text-xs text-muted-foreground">Auto-logout after inactivity</div>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-2 mb-4">
-            <Building2 className="size-5 text-indigo" />
-            <h3 className="font-semibold">Hostel Preferences</h3>
-          </div>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Default Room Type</label>
-              <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["Single Room", "Double Room", "Triple Room"].map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Check-in Time</label>
-              <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"].map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Check-out Time</label>
-              <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["05:00 PM", "06:00 PM", "07:00 PM", "08:00 PM"].map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Visitor Policy</label>
-              <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                {["Strict", "Moderate", "Flexible"].map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <Card>
-        <div className="flex items-center gap-2 mb-4">
-          <Lock className="size-5 text-indigo" />
-          <h3 className="font-semibold">Password Management</h3>
+            )}
+          </Card>
         </div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-4 p-4 rounded-xl border bg-gradient-soft">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Current Password</label>
-              <input
-                type="password"
-                placeholder="Enter current password"
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <h3 className="font-semibold mb-3 text-sm tracking-wider uppercase text-muted-foreground">
+              About Me
+            </h3>
+            {isEditing ? (
+              <textarea
+                value={aboutMe}
+                onChange={(e) => setAboutMe(e.target.value)}
+                placeholder="Tell us about yourself..."
+                rows={4}
+                className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary animate-in fade-in duration-200"
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">New Password</label>
-              <input
-                type="password"
-                placeholder="Enter new password"
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Confirm Password</label>
-              <input
-                type="password"
-                placeholder="Confirm new password"
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              />
-            </div>
-            <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
-              <Key className="size-4" /> Update Password
-            </button>
-          </div>
-          <div className="p-4 rounded-xl border bg-gradient-soft">
-            <h4 className="text-sm font-semibold mb-3">Password Requirements</h4>
-            <ul className="space-y-2 text-xs text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <div className="size-1.5 rounded-full bg-emerald-500" />
-                Minimum 8 characters
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="size-1.5 rounded-full bg-emerald-500" />
-                At least one uppercase letter
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="size-1.5 rounded-full bg-emerald-500" />
-                At least one lowercase letter
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="size-1.5 rounded-full bg-emerald-500" />
-                At least one number
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="size-1.5 rounded-full bg-emerald-500" />
-                At least one special character
-              </li>
-            </ul>
-            <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
-              <div className="text-xs text-amber-700">
-                <strong>Last changed:</strong> 30 days ago
+            ) : (
+              <div className="min-h-16 py-1">
+                {aboutMe ? (
+                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground/60 italic">
+                    No bio provided yet. Add one to let people know who you are!
+                  </p>
+                )}
+              </div>
+            )}
+          </Card>
+
+          <Card>
+            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
+              Account Details
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="p-3.5 border rounded-xl bg-gradient-soft">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Email Address
+                </label>
+                <div className="text-sm font-semibold mt-1 truncate">{email}</div>
+              </div>
+              <div className="p-3.5 border rounded-xl bg-gradient-soft">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Account Status
+                </label>
+                <div className="text-sm font-semibold mt-1 text-emerald-600 flex items-center gap-1.5">
+                  <div className="size-2 rounded-full bg-emerald-500" />
+                  Verified
+                </div>
+              </div>
+              <div className="p-3.5 border rounded-xl bg-gradient-soft">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Joined On
+                </label>
+                <div className="text-sm font-semibold mt-1">{joinedDate}</div>
+              </div>
+              <div className="p-3.5 border rounded-xl bg-gradient-soft">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Employee ID
+                </label>
+                <div className="text-sm font-semibold mt-1 font-mono">{employeeId}</div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
-      </Card>
-
-      <div className="flex justify-end gap-3">
-        <button className="px-6 py-2.5 rounded-xl border text-sm font-medium hover:bg-accent transition">
-          Cancel
-        </button>
-        <button className="px-6 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium glow-primary flex items-center gap-2">
-          <Save className="size-4" /> Save Changes
-        </button>
       </div>
     </div>
   );

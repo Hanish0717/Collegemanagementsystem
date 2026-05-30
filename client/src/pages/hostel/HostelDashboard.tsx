@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Outlet, useRouterState } from "@tanstack/react-router";
 import {
   Bar,
   BarChart,
@@ -34,6 +34,12 @@ import {
 } from "@/mock/hostelData";
 
 export function HostelDashboard() {
+  const path = useRouterState({ select: (r) => r.location.pathname });
+
+  if (path !== "/dashboard/hostel") {
+    return <Outlet />;
+  }
+
   const COLORS = ["#4F46E5", "#06B6D4", "#10B981", "#F59E0B"];
 
   return (

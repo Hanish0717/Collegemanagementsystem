@@ -38,13 +38,155 @@ export const getFacultyDashboard = async (req, res, next) => {
       { label: "Pending Leave Requests", value: String(pendingLeave), change: "Awaiting approval" }
     ];
 
+    // Fetch dynamic activities
+    const activities = [];
+    const { data: recentMaterials } = await supabase
+      .from('study_materials')
+      .select('*')
+      .eq('faculty', req.user.id || req.user._id)
+      .order('created_at', { ascending: false })
+      .limit(2);
+
+    if (recentMaterials) {
+      recentMaterials.forEach(m => {
+        activities.push({
+          actor: "You",
+          action: "uploaded study material",
+          target: m.title,
+          time: "Recently",
+          type: "Material"
+        });
+      });
+    }
+
+    const { data: recentAssignments } = await supabase
+      .from('assignments')
+      .select('*')
+      .eq('faculty', req.user.id || req.user._id)
+      .order('created_at', { ascending: false })
+      .limit(2);
+
+    if (recentAssignments) {
+      recentAssignments.forEach(a => {
+        activities.push({
+          actor: "You",
+          action: "posted assignment",
+          target: a.title,
+          time: "Recently",
+          type: "Assignment"
+        });
+      });
+    }
+
+    if (activities.length === 0) {
+      activities.push({
+        actor: "You",
+        action: "logged in to",
+        target: "Faculty Portal",
+        time: "Just now",
+        type: "System"
+      });
+    }
+
+    // Generate dynamic notifications
+    const notifications = [];
+    let notifId = 1;
+
+    if (leaveRequests) {
+      leaveRequests.forEach(l => {
+        if (l.status === 'Pending') {
+          notifications.push({
+            id: `FN-${notifId++}`,
+            title: `Leave request for ${l.days} day(s) is pending approval`,
+            type: "Request",
+            time: "Awaiting",
+            unread: true
+          });
+        } else {
+          notifications.push({
+            id: `FN-${notifId++}`,
+            title: `Your leave request has been ${l.status.toLowerCase()}`,
+            type: "Alert",
+            time: "Recent",
+            unread: false
+          });
+        }
+      });
+    }
+
+    const { data: allAsg } = await supabase
+      .from('assignments')
+      .select('*')
+      .eq('faculty', req.user.id || req.user._id);
+
+    if (allAsg) {
+      allAsg.forEach(a => {
+        const submissions = Array.isArray(a.submissions) ? a.submissions : [];
+        const ungradedCount = submissions.filter(s => !s.graded).length;
+        if (ungradedCount > 0) {
+          notifications.push({
+            id: `FN-${notifId++}`,
+            title: `${ungradedCount} ungraded submission(s) for ${a.title}`,
+            type: "Alert",
+            time: "Pending",
+            unread: true
+          });
+        }
+      });
+    }
+
+    // Calculate weekly attendance trend
+    const attendanceStats = [];
+    const { data: attRecords } = await supabase
+      .from('attendance')
+      .select('*')
+      .order('date', { ascending: false })
+      .limit(100);
+
+    if (attRecords && attRecords.length > 0) {
+      const dateGroups = {};
+      attRecords.forEach(r => {
+        const d = r.date;
+        if (!dateGroups[d]) dateGroups[d] = { present: 0, total: 0 };
+        if (r.status.toLowerCase() === 'present' || r.status.toLowerCase() === 'late') {
+          dateGroups[d].present++;
+        }
+        dateGroups[d].total++;
+      });
+
+      const sortedDates = Object.keys(dateGroups).sort();
+      sortedDates.forEach(d => {
+        const pct = Math.round((dateGroups[d].present / dateGroups[d].total) * 100);
+        const dayName = new Date(d).toLocaleDateString('en-US', { weekday: 'short' });
+        attendanceStats.push({ day: dayName, percentage: pct });
+      });
+    }
+
+    // 0. Get faculty profile
+    const { data: facultyMember } = await supabase
+      .from('faculty')
+      .select('*')
+      .eq('user_id', req.user.id || req.user._id)
+      .maybeSingle();
+
+    const profile = facultyMember ? {
+      ...facultyMember,
+      _id: facultyMember.id,
+      fullName: facultyMember.full_name,
+      employeeId: facultyMember.employee_id,
+      email: facultyMember.email,
+      phoneNumber: facultyMember.phone_number,
+      department: facultyMember.department_name || facultyMember.department
+    } : null;
+
     return res.status(200).json({
       success: true,
       data: {
         stats,
-        activities: [
-          { actor: "You", action: "logged in to", target: "Faculty Portal", time: "Just now", type: "System" }
-        ]
+        activities,
+        notifications,
+        weeklyAttendance: attendanceStats,
+        profile
       }
     });
   } catch (error) {

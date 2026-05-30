@@ -7,6 +7,8 @@ export interface AuthUser {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  rollNumber?: string;
+  employeeId?: string;
 }
 
 export interface LoginPayload {

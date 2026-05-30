@@ -17,6 +17,57 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const isUUID = (str) => typeof str === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str);
 
+const populateUserProfileInfo = async (userResponse) => {
+  const userId = userResponse.id || userResponse._id;
+  const role = userResponse.role;
+
+  try {
+    if (role === 'student') {
+      const { data: student } = await supabase
+        .from('students')
+        .select('roll_number')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (student) {
+        userResponse.rollNumber = student.roll_number;
+      }
+    } else if (role === 'faculty') {
+      const { data: fac } = await supabase
+        .from('faculty')
+        .select('employee_id')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (fac) {
+        userResponse.employeeId = fac.employee_id;
+      }
+    } else if (role === 'admin') {
+      const { data: adm } = await supabase
+        .from('admins')
+        .select('employee_id')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (adm) {
+        userResponse.employeeId = adm.employee_id;
+      }
+    } else if (role === 'parent') {
+      const childEmailVal = userResponse.child_email || userResponse.childEmail;
+      if (childEmailVal) {
+        const { data: child } = await supabase
+          .from('students')
+          .select('roll_number')
+          .eq('email', childEmailVal.toLowerCase().trim())
+          .maybeSingle();
+        if (child) {
+          userResponse.rollNumber = child.roll_number;
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error populating user profile info:', err);
+  }
+  return userResponse;
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -337,6 +388,7 @@ export const login = async (req, res, next) => {
       googleId: user.google_id
     };
     delete userResponse.password;
+    await populateUserProfileInfo(userResponse);
 
     return res.status(200).json({
       success: true,
@@ -426,6 +478,7 @@ export const googleAuth = async (req, res, next) => {
       googleId: user.google_id
     };
     delete userResponse.password;
+    await populateUserProfileInfo(userResponse);
 
     return res.status(200).json({
       success: true,
@@ -660,6 +713,7 @@ export const verifyOtp = async (req, res, next) => {
       googleId: updatedUser.google_id
     };
     delete userResponse.password;
+    await populateUserProfileInfo(userResponse);
     return res.status(200).json({ success: true, token, user: userResponse });
   } catch (error) {
     next(error);
@@ -775,6 +829,7 @@ export const getMe = async (req, res, next) => {
   try {
     const userResponse = { ...req.user };
     delete userResponse.password;
+    await populateUserProfileInfo(userResponse);
 
     res.status(200).json({
       success: true,
@@ -833,6 +888,7 @@ export const updateProfile = async (req, res, next) => {
       googleId: updatedUser.google_id
     };
     delete userResponse.password;
+    await populateUserProfileInfo(userResponse);
 
     return res.status(200).json({
       success: true,
