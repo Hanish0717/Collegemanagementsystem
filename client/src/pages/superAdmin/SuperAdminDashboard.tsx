@@ -27,13 +27,6 @@ import {
   Wallet,
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
-import {
-  departmentDistribution,
-  superAdminActivities,
-  superAdminNotifications,
-  systemAnalytics,
-  userActivityData,
-} from "@/mock/superAdminData";
 import { useSuperAdminStats } from "@/hooks/useSuperAdminStats";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -94,12 +87,19 @@ export function SuperAdminDashboard() {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const { data: liveStats, isLoading } = useSuperAdminStats();
 
+  const analyticsData = liveStats?.systemAnalytics || [];
+  const deptDistData = liveStats?.departmentDistribution || [];
+  const userActData = liveStats?.userActivityData || [];
+  const actLogs = liveStats?.superAdminActivities || [];
+  const notifyLogs = liveStats?.superAdminNotifications || [];
+
   if (path !== "/dashboard/super-admin") {
     return <Outlet />;
   }
 
   const getStatValue = (label: string, fallback: string) => {
     const isLiveKey = [
+      "Total Colleges/Departments",
       "Total Students",
       "Total Faculty",
       "Total Admins",
@@ -114,6 +114,8 @@ export function SuperAdminDashboard() {
     if (!liveStats) return fallback;
 
     switch (label) {
+      case "Total Colleges/Departments":
+        return liveStats.totalDepartments.toLocaleString("en-IN");
       case "Total Students":
         return liveStats.totalStudents.toLocaleString("en-IN");
       case "Total Faculty":
@@ -178,7 +180,7 @@ export function SuperAdminDashboard() {
           </div>
           <div className="h-72">
             <ResponsiveContainer>
-              <AreaChart data={systemAnalytics}>
+              <AreaChart data={analyticsData}>
                 <defs>
                   <linearGradient id="super-users" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
@@ -221,13 +223,13 @@ export function SuperAdminDashboard() {
             <ResponsiveContainer>
               <PieChart>
                 <Pie
-                  data={departmentDistribution}
+                  data={deptDistData}
                   dataKey="value"
                   innerRadius={50}
                   outerRadius={80}
                   paddingAngle={3}
                 >
-                  {departmentDistribution.map((d, i) => (
+                  {deptDistData.map((d, i) => (
                     <Cell key={i} fill={d.color} />
                   ))}
                 </Pie>
@@ -236,7 +238,7 @@ export function SuperAdminDashboard() {
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2">
-            {departmentDistribution.map((d) => (
+            {deptDistData.map((d) => (
               <div key={d.name} className="flex items-center gap-2 text-xs">
                 <span className="size-2.5 rounded-full" style={{ background: d.color }} />
                 <span className="text-muted-foreground">{d.name}</span>
@@ -258,7 +260,7 @@ export function SuperAdminDashboard() {
           </div>
           <div className="h-64">
             <ResponsiveContainer>
-              <BarChart data={userActivityData}>
+              <BarChart data={userActData}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
@@ -301,7 +303,7 @@ export function SuperAdminDashboard() {
             <Badge tone="info">Live</Badge>
           </div>
           <div className="space-y-3">
-            {superAdminActivities.map((activity) => (
+            {actLogs.map((activity) => (
               <div
                 key={activity.actor + activity.time}
                 className="flex items-center gap-3 py-2 border-b last:border-0"
@@ -327,7 +329,7 @@ export function SuperAdminDashboard() {
             <Bell className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            {superAdminNotifications.map((notification) => (
+            {notifyLogs.map((notification) => (
               <div
                 key={notification.id}
                 className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}

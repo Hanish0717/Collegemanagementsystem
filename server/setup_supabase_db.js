@@ -23,6 +23,19 @@ const client = new Client({
 const sqlSchema = `
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- 0. DEPARTMENTS Table
+CREATE TABLE IF NOT EXISTS departments (
+  code varchar(50) PRIMARY KEY,
+  name varchar(255) NOT NULL,
+  head_of_department varchar(255),
+  faculty_count integer DEFAULT 0,
+  student_count integer DEFAULT 0,
+  budget varchar(100) DEFAULT '₹10L',
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- 1. USERS Table
 CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -42,6 +55,7 @@ CREATE TABLE IF NOT EXISTS users (
   is_phone_verified boolean DEFAULT false,
   is_active boolean DEFAULT true,
   google_id varchar(255),
+  temp_password varchar(255),
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -51,6 +65,7 @@ CREATE TABLE IF NOT EXISTS students (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   full_name varchar(255) NOT NULL,
   roll_number varchar(50) UNIQUE NOT NULL,
+  admission_number varchar(100) UNIQUE,
   email varchar(255) UNIQUE NOT NULL,
   phone_number varchar(50),
   gender varchar(20) CHECK (gender IN ('Male', 'Female', 'Other')),
@@ -273,6 +288,35 @@ async function runSetup() {
         console.log(`ℹ️ User already exists: ${user.email}`);
       }
     }
+
+    // Seed Departments
+    const departmentsData = [
+      { code: 'CSE', name: 'Computer Science & Engineering', head: 'Dr. Anjali Mehra', faculty: 86, students: 2140, budget: '₹32L' },
+      { code: 'AIML', name: 'Artificial Intelligence & Machine Learning', head: 'Dr. Rajesh Kumar', faculty: 45, students: 1280, budget: '₹22L' },
+      { code: 'AIDS', name: 'Artificial Intelligence & Data Science', head: 'Dr. Vikram Rao', faculty: 38, students: 960, budget: '₹18L' },
+      { code: 'CYBERSECURITY', name: 'Cybersecurity', head: 'Prof. Sarah Lin', faculty: 32, students: 840, budget: '₹16L' },
+      { code: 'IT', name: 'Information Technology', head: 'Dr. Aisha Khan', faculty: 52, students: 1420, budget: '₹20L' },
+      { code: 'ECE', name: 'Electronics & Communication Engineering', head: 'Prof. Marco Rossi', faculty: 64, students: 1580, budget: '₹24L' },
+      { code: 'EEE', name: 'Electrical & Electronics Engineering', head: 'Dr. Ramana Rao', faculty: 42, students: 1100, budget: '₹18L' },
+      { code: 'MECH', name: 'Mechanical Engineering', head: 'Dr. Suresh Naidu', faculty: 58, students: 1350, budget: '₹22L' },
+      { code: 'CIVIL', name: 'Civil Engineering', head: 'Dr. K. Srinivasa Rao', faculty: 40, students: 980, budget: '₹15L' }
+    ];
+
+    console.log("Seeding Departments...");
+    for (const dept of departmentsData) {
+      await client.query(`
+        INSERT INTO departments (code, name, head_of_department, faculty_count, student_count, budget, is_active)
+        VALUES ($1, $2, $3, $4, $5, $6, true)
+        ON CONFLICT (code) DO UPDATE 
+        SET name = EXCLUDED.name,
+            head_of_department = EXCLUDED.head_of_department,
+            faculty_count = EXCLUDED.faculty_count,
+            student_count = EXCLUDED.student_count,
+            budget = EXCLUDED.budget,
+            updated_at = NOW();
+      `, [dept.code, dept.name, dept.head, dept.faculty, dept.students, dept.budget]);
+    }
+    console.log("✅ Departments seeded successfully.");
 
     // Seed student profile for student@college.com if it doesn't exist
     const studentCheck = await client.query("SELECT * FROM students WHERE email = $1", ['student@college.com']);

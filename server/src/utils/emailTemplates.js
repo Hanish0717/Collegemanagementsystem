@@ -212,3 +212,54 @@ export const generateFacultyWelcomeTemplate = (faculty, password) => {
   `;
 };
 
+export const generateAdminWelcomeTemplate = (admin, password) => {
+  return `
+    <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+      <div style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Welcome to College Management System</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0 0; font-size: 15px;">Administrator Registration Completed</p>
+      </div>
+      
+      <div style="padding: 40px 30px; background-color: #ffffff;">
+        <p style="margin: 0 0 15px 0; color: #334155; font-size: 16px; font-weight: 600;">Dear ${admin.full_name},</p>
+        <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; line-height: 1.6;">Your administrator account registration has been successfully verified. Your login credentials and assignment details are listed below:</p>
+        
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: 500; width: 40%;">Full Name</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${admin.full_name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Admin Employee ID</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${admin.employee_id}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Assigned Department</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${admin.department || 'All Departments'}</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 12px;"></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #4f46e5; font-weight: 600;">Login Email</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${admin.email}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #4f46e5; font-weight: 600;">Password</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600; font-family: monospace; font-size: 15px;">${password}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <p style="margin: 0 0 20px 0; color: #475569; font-size: 14px; line-height: 1.6;">You can log in at the system login page using your Login Email and Password.</p>
+        <p style="margin: 0; color: #64748b; font-size: 13px;">Please change your password after logging in for the first time to ensure account security.</p>
+      </div>
+      
+      <div style="padding: 24px 30px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p style="margin: 0; color: #94a3b8; font-size: 13px;">© ${new Date().getFullYear()} College Management System. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+};
+

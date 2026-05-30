@@ -7,6 +7,21 @@ import { hashOTP } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES } from '../../config.js';
 
 
+const DEPT_NAMES = {
+  'CSE': 'Computer Science & Engineering',
+  'AIML': 'Artificial Intelligence & Machine Learning',
+  'AIDS': 'Artificial Intelligence & Data Science',
+  'CYBERSECURITY': 'Cybersecurity',
+  'IT': 'Information Technology',
+  'ECE': 'Electronics & Communication Engineering',
+  'EEE': 'Electrical & Electronics Engineering',
+  'MECH': 'Mechanical Engineering',
+  'ME': 'Mechanical Engineering',
+  'CIVIL': 'Civil Engineering',
+  'CE': 'Civil Engineering',
+  'EE': 'Electrical & Electronics Engineering'
+};
+
 const formatFaculty = (f) => {
   if (!f) return null;
   
@@ -14,11 +29,7 @@ const formatFaculty = (f) => {
   const deptObj = f.department ? {
     _id: f.department,
     id: f.department,
-    name: f.department === 'CSE' ? 'Computer Science and Engineering' : 
-          f.department === 'ECE' ? 'Electronics and Communication Engineering' : 
-          f.department === 'ME' ? 'Mechanical Engineering' : 
-          f.department === 'CE' ? 'Civil Engineering' : 
-          f.department === 'EE' ? 'Electrical Engineering' : f.department,
+    name: DEPT_NAMES[f.department.toUpperCase()] || f.department,
     code: f.department
   } : null;
 

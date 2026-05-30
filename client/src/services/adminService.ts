@@ -231,6 +231,7 @@ export interface StudentItem {
   section: string;
   parentName: string;
   parentPhone: string;
+  parentEmail?: string;
   attendancePercentage?: number;
   cgpa?: number;
   isActive: boolean;

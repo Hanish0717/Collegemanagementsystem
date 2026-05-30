@@ -15,6 +15,7 @@ const getProfile = async (email) => {
       _id: data.id,
       fullName: data.full_name,
       rollNumber: data.roll_number,
+      admissionNumber: data.admission_number,
       phoneNumber: data.phone_number,
       dateOfBirth: data.date_of_birth,
       parentName: data.parent_name,

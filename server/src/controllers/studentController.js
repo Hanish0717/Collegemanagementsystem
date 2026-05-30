@@ -5,6 +5,7 @@ import sendEmail from '../utils/sendEmail.js';
 import { generateOTPTemplate } from '../utils/emailTemplates.js';
 import { hashOTP } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES } from '../../config.js';
+import { generateAdmissionNumber } from '../utils/admissionUtils.js';
 
 
 // Helper to format student object keys
@@ -15,6 +16,7 @@ const formatStudent = (s) => {
     _id: s.id,
     fullName: s.full_name,
     rollNumber: s.roll_number,
+    admissionNumber: s.admission_number,
     phoneNumber: s.phone_number,
     dateOfBirth: s.date_of_birth,
     parentName: s.parent_name,
@@ -236,34 +238,58 @@ export const createStudent = async (req, res, next) => {
     createdUserId = user.id;
 
     // 4. Create Student profile
-    const { data: student, error: createErr } = await supabase
-      .from('students')
-      .insert([{
-        user_id: user.id,
-        full_name: fullName,
-        roll_number: cleanRollNumber,
-        admission_number: admissionNumber ? admissionNumber.trim() : null,
-        email: cleanEmail,
-        phone_number: phoneNumber,
-        gender,
-        date_of_birth: dateOfBirth ? new Date(dateOfBirth).toISOString() : null,
-        department,
-        year: Number(year),
-        semester: Number(semester),
-        section,
-        address,
-        parent_name: parentName,
-        parent_phone: parentPhone,
-        parent_email: cleanParentEmail,
-        cgpa: cgpa ? Number(cgpa) : null,
-        attendance_percentage: attendancePercentage ? Number(attendancePercentage) : 100,
-        profile_image: profileImage,
-        is_active: true
-      }])
-      .select()
-      .single();
+    let studentInserted = false;
+    let student = null;
+    let createErr = null;
+    let retries = 3;
 
-    if (createErr) {
+    while (retries > 0 && !studentInserted) {
+      const generatedAdmissionNumber = await generateAdmissionNumber(department);
+      
+      const { data: insertedStudent, error: insertErr } = await supabase
+        .from('students')
+        .insert([{
+          user_id: user.id,
+          full_name: fullName,
+          roll_number: cleanRollNumber,
+          admission_number: generatedAdmissionNumber,
+          email: cleanEmail,
+          phone_number: phoneNumber,
+          gender,
+          date_of_birth: dateOfBirth ? new Date(dateOfBirth).toISOString() : null,
+          department,
+          year: Number(year),
+          semester: Number(semester),
+          section,
+          address,
+          parent_name: parentName,
+          parent_phone: parentPhone,
+          parent_email: cleanParentEmail,
+          cgpa: cgpa ? Number(cgpa) : null,
+          attendance_percentage: attendancePercentage ? Number(attendancePercentage) : 100,
+          profile_image: profileImage,
+          is_active: true
+        }])
+        .select()
+        .single();
+
+      if (insertErr) {
+        if (insertErr.code === '23505' && insertErr.message?.includes('admission_number')) {
+          console.warn(`Admission number duplicate collision. Retrying... (${retries} left)`);
+          retries--;
+          createErr = insertErr;
+          continue;
+        } else {
+          createErr = insertErr;
+          break;
+        }
+      } else {
+        student = insertedStudent;
+        studentInserted = true;
+      }
+    }
+
+    if (createErr && !studentInserted) {
       await supabase.from('users').delete().eq('id', createdUserId);
       throw createErr;
     }

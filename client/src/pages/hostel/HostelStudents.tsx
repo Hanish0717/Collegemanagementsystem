@@ -6,11 +6,14 @@ import { hostelStudents } from "@/mock/hostelData";
 
 export function HostelStudents() {
   const studentAnalytics = [
-    { department: "Computer Science", count: 120 },
-    { department: "Electronics", count: 95 },
-    { department: "Mechanical", count: 85 },
-    { department: "Business", count: 60 },
-    { department: "Biotechnology", count: 36 },
+    { department: "CSE", count: 120 },
+    { department: "AIML", count: 95 },
+    { department: "AIDS", count: 85 },
+    { department: "IT", count: 60 },
+    { department: "ECE", count: 52 },
+    { department: "EEE", count: 36 },
+    { department: "MECH", count: 42 },
+    { department: "CIVIL", count: 28 }
   ];
 
   return (
@@ -54,11 +57,15 @@ export function HostelStudents() {
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
             {[
               "All Departments",
-              "Computer Science",
-              "Electronics",
-              "Mechanical",
-              "Business",
-              "Biotechnology",
+              "Computer Science & Engineering",
+              "Artificial Intelligence & Machine Learning",
+              "Artificial Intelligence & Data Science",
+              "Cybersecurity",
+              "Information Technology",
+              "Electronics & Communication Engineering",
+              "Electrical & Electronics Engineering",
+              "Mechanical Engineering",
+              "Civil Engineering"
             ].map((d) => (
               <option key={d}>{d}</option>
             ))}

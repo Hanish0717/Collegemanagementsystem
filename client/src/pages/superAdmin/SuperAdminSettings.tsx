@@ -1,273 +1,342 @@
 import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { User, ShieldCheck, Lock, Bell, Save } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import {
+  fetchSystemSettings,
+  saveProfile,
+  saveSecuritySettings,
+  saveNotificationPrefs,
+  updatePassword
+} from "@/services/superAdminService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SuperAdminSettings() {
-  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  const fullName = user?.fullName || "Super Admin";
-  const email = user?.email || "";
-
-  const initials = fullName
-    .split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
-
-  // Edit mode state
-  const [isEditing, setIsEditing] = useState(false);
-
-  // Form states
-  const [aboutMe, setAboutMe] = useState("");
-  const [socialLinks, setSocialLinks] = useState({
-    github: "",
-    linkedin: "",
-    twitter: "",
-    website: "",
+  const { data, isLoading } = useQuery({
+    queryKey: ["superAdminSystemSettings"],
+    queryFn: fetchSystemSettings,
   });
 
-  // Load state from localStorage on mount
+  // Profile states
+  const [profileName, setProfileName] = useState("");
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [profileRole, setProfileRole] = useState("");
+  const [profileBio, setProfileBio] = useState("");
+
+  // Password states
+  const [currPassword, setCurrPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confPassword, setConfPassword] = useState("");
+
   useEffect(() => {
-    const role = "super-admin";
-    
-    const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "Responsible for global platform governance, institutional workflows and administrative security.");
-
-    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    if (storedSocials) {
-      setSocialLinks(JSON.parse(storedSocials));
-    } else {
-      setSocialLinks({ github: "", linkedin: "", twitter: "", website: "" });
+    if (data?.profile) {
+      setProfileName(data.profile.profileName || "");
+      setProfileEmail(data.profile.profileEmail || "");
+      setProfilePhone(data.profile.profilePhone || "");
+      setProfileRole(data.profile.profileRole || "");
+      setProfileBio(data.profile.profileBio || "");
     }
-  }, []);
+  }, [data]);
 
-  const handleSave = () => {
-    const role = "super-admin";
-    localStorage.setItem(`cms_${role}_about`, aboutMe);
-    localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
-    toast.success("Profile changes saved successfully!");
-    setIsEditing(false);
+  const securityOpts = data?.securityOpts || [true, false, true, true];
+  const notifOpts = data?.notifOpts || [true, true, true, true];
+
+  const profileMutation = useMutation({
+    mutationFn: saveProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["superAdminSystemSettings"] });
+      toast.success("Profile details saved successfully.");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || err.message || "Failed to save profile");
+    }
+  });
+
+  const securityMutation = useMutation({
+    mutationFn: saveSecuritySettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["superAdminSystemSettings"] });
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || err.message || "Failed to save security settings");
+    }
+  });
+
+  const notifPrefsMutation = useMutation({
+    mutationFn: saveNotificationPrefs,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["superAdminSystemSettings"] });
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || err.message || "Failed to save notification preferences");
+    }
+  });
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: updatePassword,
+    onSuccess: () => {
+      toast.success("Password updated successfully.");
+      setCurrPassword("");
+      setNewPassword("");
+      setConfPassword("");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || err.message || "Failed to update password");
+    }
+  });
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    profileMutation.mutate({ profileName, profileEmail, profilePhone, profileRole, profileBio });
   };
 
-  const handleCancel = () => {
-    const role = "super-admin";
-    
-    const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "Responsible for global platform governance, institutional workflows and administrative security.");
-
-    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
-    
-    toast.info("Changes discarded.");
-    setIsEditing(false);
+  const handleUpdatePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currPassword) {
+      toast.error("Please enter your current password");
+      return;
+    }
+    if (!newPassword || !confPassword) {
+      toast.error("Please fill in both new and confirm password fields");
+      return;
+    }
+    if (newPassword !== confPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long");
+      return;
+    }
+    updatePasswordMutation.mutate({ currentPassword: currPassword, newPassword });
   };
 
-  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
-  const userIdVal = user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#1";
+  const handleToggleSecurity = (index: number, name: string) => {
+    const updated = [...securityOpts];
+    updated[index] = !updated[index];
+    securityMutation.mutate(updated);
+    toast.success(`${name} is now ${updated[index] ? "enabled" : "disabled"}`);
+  };
+
+  const handleToggleNotifPref = (index: number, name: string) => {
+    const updated = [...notifOpts];
+    updated[index] = !updated[index];
+    notifPrefsMutation.mutate(updated);
+    toast.success(`${name} preferences updated`);
+  };
+
+  const securityNames = ["Two-factor authentication", "Session timeout", "IP monitoring", "Login alerts"];
+  const notifNames = ["Critical system alerts", "Approval requests", "Security warnings", "Weekly summaries"];
 
   return (
     <div className="space-y-6">
-      <div className="mb-2">
-        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-          Super Admin Settings
-        </span>
-        <h2 className="text-sm font-medium text-muted-foreground">
-          System control and security
-        </h2>
-      </div>
-
       <PageHeader
-        title="Profile"
-        desc="Manage your identity and public presence."
-        actions={
-          isEditing ? (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCancel}
-                className="flex items-center gap-1.5 px-4 py-2 border rounded-xl hover:bg-accent text-sm transition cursor-pointer font-medium"
-              >
-                <X className="size-4" /> Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium animate-in fade-in zoom-in-95 duration-150"
-              >
-                <Save className="size-4" /> Save Changes
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium"
-            >
-              <Pencil className="size-4" /> Edit Profile
-            </button>
-          )
-        }
+        title="Super Admin Settings"
+        desc="Manage profile, role permissions, password settings, security controls and notification preferences."
       />
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="text-center">
-            <div className="mx-auto size-32">
-              <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
-                {initials || "SA"}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card>
+          <div className="flex items-center gap-2 mb-4">
+            <User className="size-5 text-indigo" />
+            <h3 className="font-semibold">Super Admin Profile</h3>
+          </div>
+          {isLoading ? (
+            <div className="space-y-4 p-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : (
+            <form onSubmit={handleSaveProfile} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Full Name</label>
+                  <input
+                    value={profileName}
+                    onChange={(e) => setProfileName(e.target.value)}
+                    required
+                    className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Email Address</label>
+                  <input
+                    type="email"
+                    value={profileEmail}
+                    onChange={(e) => setProfileEmail(e.target.value)}
+                    required
+                    className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Contact Number</label>
+                  <input
+                    value={profilePhone}
+                    onChange={(e) => setProfilePhone(e.target.value)}
+                    required
+                    className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Role Designation</label>
+                  <input
+                    value={profileRole}
+                    onChange={(e) => setProfileRole(e.target.value)}
+                    required
+                    className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="mt-4 font-bold text-lg">{fullName}</div>
-            <div className="text-xs text-muted-foreground tracking-wider uppercase font-semibold mt-1">
-              SUPER ADMIN
-            </div>
-          </Card>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-muted-foreground uppercase">Governance Mandate / Bio</label>
+                <textarea
+                  value={profileBio}
+                  onChange={(e) => setProfileBio(e.target.value)}
+                  required
+                  rows={4}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={profileMutation.isPending}
+                className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition hover:opacity-95 disabled:opacity-50"
+              >
+                <Save className="size-4" /> Save Profile
+              </button>
+            </form>
+          )}
+        </Card>
 
-          <Card>
-            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
-              Social Links
-            </h3>
-            {isEditing ? (
-              <div className="space-y-3 animate-in fade-in duration-200">
-                <div className="flex items-center gap-3">
-                  <Github className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="GitHub URL"
-                    value={socialLinks.github}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, github: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <Linkedin className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="LinkedIn URL"
-                    value={socialLinks.linkedin}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <Twitter className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Twitter URL"
-                    value={socialLinks.twitter}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <Globe className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Website URL"
-                    value={socialLinks.website}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
+        <Card>
+          <div className="flex items-center gap-2 mb-4">
+            <ShieldCheck className="size-5 text-indigo" />
+            <h3 className="font-semibold">Role Permissions</h3>
+          </div>
+          <div className="space-y-3">
+            {[
+              "User management",
+              "System configuration",
+              "Financial reports",
+              "Security audit logs",
+              "Backup restore access",
+              "Automation controls",
+            ].map((permission, index) => (
+              <div
+                key={permission}
+                className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
+                <span className="text-sm font-medium">{permission}</span>
+                <Badge tone={index < 5 ? "success" : "warn"}>
+                  {index < 5 ? "Full Access" : "Approval"}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-4">
+        <Card>
+          <div className="flex items-center gap-2 mb-4">
+            <Lock className="size-5 text-indigo" />
+            <h3 className="font-semibold">Password Management</h3>
+          </div>
+          <form onSubmit={handleUpdatePassword} className="space-y-3">
+            <input
+              type="password"
+              placeholder="Current password"
+              value={currPassword}
+              onChange={(e) => setCurrPassword(e.target.value)}
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+            <input
+              type="password"
+              placeholder="New password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confPassword}
+              onChange={(e) => setConfPassword(e.target.value)}
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+            <button
+              type="submit"
+              disabled={updatePasswordMutation.isPending}
+              className="w-full px-4 py-2 rounded-lg bg-gradient-primary text-white text-sm font-semibold cursor-pointer transition hover:opacity-95 disabled:opacity-50"
+            >
+              Update Password
+            </button>
+          </form>
+        </Card>
+
+        <Card>
+          <h3 className="font-semibold mb-4">Security Settings</h3>
+          <div className="space-y-3">
+            {isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
               </div>
             ) : (
-              <div className="space-y-3.5">
-                {[
-                  { icon: Github, value: socialLinks.github },
-                  { icon: Linkedin, value: socialLinks.linkedin },
-                  { icon: Twitter, value: socialLinks.twitter },
-                  { icon: Globe, value: socialLinks.website },
-                ].map((item, idx) => {
-                  const isLinked = !!item.value;
-                  const hrefVal = isLinked ? (item.value.startsWith("http") ? item.value : `https://${item.value}`) : undefined;
-                  
-                  return (
-                    <div key={idx} className="flex items-center gap-3">
-                      {isLinked ? (
-                        <a
-                          href={hrefVal}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-indigo-600 hover:text-indigo-800 transition"
-                        >
-                          <item.icon className="size-5 shrink-0" />
-                          <span className="text-sm hover:underline break-all">{item.value}</span>
-                        </a>
-                      ) : (
-                        <>
-                          <item.icon className="size-5 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-muted-foreground/60 italic">Not linked</span>
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </Card>
-        </div>
-
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <h3 className="font-semibold mb-3 text-sm tracking-wider uppercase text-muted-foreground">
-              About Me
-            </h3>
-            {isEditing ? (
-              <textarea
-                value={aboutMe}
-                onChange={(e) => setAboutMe(e.target.value)}
-                placeholder="Tell us about yourself..."
-                rows={4}
-                className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary animate-in fade-in duration-200"
-              />
-            ) : (
-              <div className="min-h-16 py-1">
-                {aboutMe ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
-                ) : (
-                  <p className="text-sm text-muted-foreground/60 italic">
-                    No bio provided yet. Add one to let people know who you are!
-                  </p>
-                )}
-              </div>
-            )}
-          </Card>
-
-          <Card>
-            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
-              Account Details
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Email Address
-                </label>
-                <div className="text-sm font-semibold mt-1 truncate">{email}</div>
-              </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Account Status
-                </label>
-                <div className="text-sm font-semibold mt-1 text-emerald-600 flex items-center gap-1.5">
-                  <div className="size-2 rounded-full bg-emerald-500" />
-                  Verified
+              securityNames.map((setting, index) => (
+                <div
+                  key={setting}
+                  className="flex items-center justify-between p-3 rounded-xl border"
+                >
+                  <span className="text-sm">{setting}</span>
+                  <button
+                    onClick={() => handleToggleSecurity(index, setting)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${securityOpts[index] ? "bg-emerald-500" : "bg-muted"}`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${securityOpts[index] ? "translate-x-6" : "translate-x-1"}`}
+                    />
+                  </button>
                 </div>
+              ))
+            )}
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center gap-2 mb-4">
+            <Bell className="size-5 text-indigo" />
+            <h3 className="font-semibold">Notification Preferences</h3>
+          </div>
+          <div className="space-y-3">
+            {isLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
               </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Joined On
+            ) : (
+              notifNames.map((setting, index) => (
+                <label
+                  key={setting}
+                  className="flex items-center gap-2.5 p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={notifOpts[index]}
+                    onChange={() => handleToggleNotifPref(index, setting)}
+                    className="rounded border-muted-foreground text-primary focus:ring-primary cursor-pointer size-4"
+                  />
+                  <span className="text-sm font-medium">{setting}</span>
                 </label>
-                <div className="text-sm font-semibold mt-1">{joinedDate}</div>
-              </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Super Admin ID
-                </label>
-                <div className="text-sm font-semibold mt-1 font-mono">{userIdVal}</div>
-              </div>
-            </div>
-          </Card>
-        </div>
+              ))
+            )}
+          </div>
+        </Card>
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ export function StudentAssignments() {
         }));
         if (dbAssignments.length > 0) {
           setList(dbAssignments);
-          const firstPending = dbAssignments.find(a => !a.submitted);
+          const firstPending = dbAssignments.find((a: any) => !a.submitted);
           if (firstPending) {
             setSelectedId(firstPending.id);
           }

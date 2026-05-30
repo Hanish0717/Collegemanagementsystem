@@ -35,6 +35,7 @@ import { Route as DashboardAttendanceRouteImport } from './routes/dashboard/atte
 import { Route as DashboardAiRouteImport } from './routes/dashboard/ai'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as DashboardLibrarianIndexRouteImport } from './routes/dashboard/librarian/index'
+import { Route as DashboardSuperAdminUsersRouteImport } from './routes/dashboard/super-admin/users'
 import { Route as DashboardSuperAdminSettingsRouteImport } from './routes/dashboard/super-admin/settings'
 import { Route as DashboardSuperAdminSecurityRouteImport } from './routes/dashboard/super-admin/security'
 import { Route as DashboardSuperAdminReportsRouteImport } from './routes/dashboard/super-admin/reports'
@@ -252,6 +253,12 @@ const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
   path: '/librarian/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSuperAdminUsersRoute =
+  DashboardSuperAdminUsersRouteImport.update({
+    id: '/users',
+    path: '/users',
+    getParentRoute: () => DashboardSuperAdminRoute,
+  } as any)
 const DashboardSuperAdminSettingsRoute =
   DashboardSuperAdminSettingsRouteImport.update({
     id: '/settings',
@@ -845,6 +852,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/super-admin/reports': typeof DashboardSuperAdminReportsRoute
   '/dashboard/super-admin/security': typeof DashboardSuperAdminSecurityRoute
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
+  '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
 }
 export interface FileRoutesByTo {
@@ -958,6 +966,7 @@ export interface FileRoutesByTo {
   '/dashboard/super-admin/reports': typeof DashboardSuperAdminReportsRoute
   '/dashboard/super-admin/security': typeof DashboardSuperAdminSecurityRoute
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
+  '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
 }
 export interface FileRoutesById {
@@ -1073,6 +1082,7 @@ export interface FileRoutesById {
   '/dashboard/super-admin/reports': typeof DashboardSuperAdminReportsRoute
   '/dashboard/super-admin/security': typeof DashboardSuperAdminSecurityRoute
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
+  '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
 }
 export interface FileRouteTypes {
@@ -1189,6 +1199,7 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/reports'
     | '/dashboard/super-admin/security'
     | '/dashboard/super-admin/settings'
+    | '/dashboard/super-admin/users'
     | '/dashboard/librarian/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -1302,6 +1313,7 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/reports'
     | '/dashboard/super-admin/security'
     | '/dashboard/super-admin/settings'
+    | '/dashboard/super-admin/users'
     | '/dashboard/librarian'
   id:
     | '__root__'
@@ -1416,6 +1428,7 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/reports'
     | '/dashboard/super-admin/security'
     | '/dashboard/super-admin/settings'
+    | '/dashboard/super-admin/users'
     | '/dashboard/librarian/'
   fileRoutesById: FileRoutesById
 }
@@ -1612,6 +1625,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/librarian/'
       preLoaderRoute: typeof DashboardLibrarianIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/super-admin/users': {
+      id: '/dashboard/super-admin/users'
+      path: '/users'
+      fullPath: '/dashboard/super-admin/users'
+      preLoaderRoute: typeof DashboardSuperAdminUsersRouteImport
+      parentRoute: typeof DashboardSuperAdminRoute
     }
     '/dashboard/super-admin/settings': {
       id: '/dashboard/super-admin/settings'
@@ -2430,6 +2450,7 @@ interface DashboardSuperAdminRouteChildren {
   DashboardSuperAdminReportsRoute: typeof DashboardSuperAdminReportsRoute
   DashboardSuperAdminSecurityRoute: typeof DashboardSuperAdminSecurityRoute
   DashboardSuperAdminSettingsRoute: typeof DashboardSuperAdminSettingsRoute
+  DashboardSuperAdminUsersRoute: typeof DashboardSuperAdminUsersRoute
 }
 
 const DashboardSuperAdminRouteChildren: DashboardSuperAdminRouteChildren = {
@@ -2443,6 +2464,7 @@ const DashboardSuperAdminRouteChildren: DashboardSuperAdminRouteChildren = {
   DashboardSuperAdminReportsRoute: DashboardSuperAdminReportsRoute,
   DashboardSuperAdminSecurityRoute: DashboardSuperAdminSecurityRoute,
   DashboardSuperAdminSettingsRoute: DashboardSuperAdminSettingsRoute,
+  DashboardSuperAdminUsersRoute: DashboardSuperAdminUsersRoute,
 }
 
 const DashboardSuperAdminRouteWithChildren =

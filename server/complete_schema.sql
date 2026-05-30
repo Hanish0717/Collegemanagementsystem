@@ -2,6 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 2. Drop existing tables if they exist (clean setup)
+DROP TABLE IF EXISTS departments CASCADE;
 DROP TABLE IF EXISTS placements CASCADE;
 DROP TABLE IF EXISTS otps CASCADE;
 DROP TABLE IF EXISTS timetable CASCADE;
@@ -18,6 +19,19 @@ DROP TABLE IF EXISTS students CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 
 -- 3. Create Tables
+-- DEPARTMENTS Table
+CREATE TABLE departments (
+  code varchar(50) PRIMARY KEY,
+  name varchar(255) NOT NULL,
+  head_of_department varchar(255),
+  faculty_count integer DEFAULT 0,
+  student_count integer DEFAULT 0,
+  budget varchar(100) DEFAULT '₹10L',
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- USERS Table
 CREATE TABLE users (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -37,6 +51,7 @@ CREATE TABLE users (
   is_phone_verified boolean DEFAULT false,
   is_active boolean DEFAULT true,
   google_id varchar(255),
+  temp_password varchar(255),
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -46,6 +61,7 @@ CREATE TABLE students (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   full_name varchar(255) NOT NULL,
   roll_number varchar(50) UNIQUE NOT NULL,
+  admission_number varchar(100) UNIQUE,
   email varchar(255) UNIQUE NOT NULL,
   phone_number varchar(50),
   gender varchar(20) CHECK (gender IN ('Male', 'Female', 'Other')),
@@ -257,3 +273,16 @@ INSERT INTO students (full_name, roll_number, email, phone_number, gender, date_
 INSERT INTO placements (company, position, applied_students) VALUES
 ('Microsoft', 'Full Stack Developer', '[]'::jsonb),
 ('Google', 'Software Engineer', '[]'::jsonb);
+
+-- 7. Seed Departments
+INSERT INTO departments (code, name, head_of_department, faculty_count, student_count, budget, is_active) VALUES
+('CSE', 'Computer Science & Engineering', 'Dr. Anjali Mehra', 86, 2140, '₹32L', true),
+('AIML', 'Artificial Intelligence & Machine Learning', 'Dr. Rajesh Kumar', 45, 1280, '₹22L', true),
+('AIDS', 'Artificial Intelligence & Data Science', 'Dr. Vikram Rao', 38, 960, '₹18L', true),
+('CYBERSECURITY', 'Cybersecurity', 'Prof. Sarah Lin', 32, 840, '₹16L', true),
+('IT', 'Information Technology', 'Dr. Aisha Khan', 52, 1420, '₹20L', true),
+('ECE', 'Electronics & Communication Engineering', 'Prof. Marco Rossi', 64, 1580, '₹24L', true),
+('EEE', 'Electrical & Electronics Engineering', 'Dr. Ramana Rao', 42, 1100, '₹18L', true),
+('MECH', 'Mechanical Engineering', 'Dr. Suresh Naidu', 58, 1350, '₹22L', true),
+('CIVIL', 'Civil Engineering', 'Dr. K. Srinivasa Rao', 40, 980, '₹15L', true);
+

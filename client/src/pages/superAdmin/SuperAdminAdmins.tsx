@@ -10,6 +10,7 @@ import {
   fetchDepartments,
 } from "@/services/adminService";
 import { toast } from "sonner";
+import api from "@/lib/api";
 
 export function SuperAdminAdmins() {
   const queryClient = useQueryClient();
@@ -22,6 +23,12 @@ export function SuperAdminAdmins() {
   const [email, setEmail] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [selectedDept, setSelectedDept] = useState("");
+
+  // OTP Verification States
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [otpError, setOtpError] = useState<string | null>(null);
 
   // Queries
   const { data: admins = [], isLoading: isAdminsLoading } = useQuery({
@@ -37,15 +44,11 @@ export function SuperAdminAdmins() {
   // Mutations
   const createAdminMutation = useMutation({
     mutationFn: createAdmin,
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admins"] });
-      toast.success("Administrator account registered successfully");
+      setUnverifiedEmail(variables.email);
       setIsAddModalOpen(false);
-      // Reset fields
-      setFullName("");
-      setEmail("");
-      setEmployeeId("");
-      setSelectedDept("");
+      toast.success("Admin registered successfully. Please enter the OTP sent to their email to complete registration.");
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -119,6 +122,41 @@ export function SuperAdminAdmins() {
       employeeId,
       department: selectedDept || undefined,
     });
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpCode.length < 6 || !unverifiedEmail) {
+      toast.error("Please enter a valid 6-digit OTP");
+      return;
+    }
+    setVerifyingOtp(true);
+    setOtpError(null);
+    try {
+      await api.post("/api/auth/verify-otp", {
+        email: unverifiedEmail,
+        otp: otpCode,
+        type: "email_verification",
+      });
+      toast.success("Admin account successfully verified and registered!");
+      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      setUnverifiedEmail(null);
+      setOtpCode("");
+      // Reset fields
+      setFullName("");
+      setEmail("");
+      setEmployeeId("");
+      setSelectedDept("");
+    } catch (err: any) {
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        "Verification failed. Please check the OTP.";
+      setOtpError(msg);
+    } finally {
+      setVerifyingOtp(false);
+    }
   };
 
   return (
@@ -395,6 +433,73 @@ export function SuperAdminAdmins() {
                     <Loader2 className="size-4 animate-spin" />
                   ) : (
                     "Register Admin"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {unverifiedEmail && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <h3 className="font-bold text-base text-gradient">Verify Admin Account</h3>
+              <button
+                onClick={() => {
+                  setUnverifiedEmail(null);
+                  setOtpCode("");
+                  setOtpError(null);
+                }}
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <form onSubmit={handleOtpSubmit} className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                An OTP verification code has been sent to{" "}
+                <span className="font-semibold text-foreground">{unverifiedEmail}</span>.
+                Please enter the 6-digit code to complete registration.
+              </p>
+              {otpError && (
+                <div className="px-4 py-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
+                  {otpError}
+                </div>
+              )}
+              <div className="max-w-[200px] mx-auto">
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  placeholder="••••••"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                  className="w-full text-center px-4 py-3 rounded-xl border bg-background text-lg font-bold tracking-widest focus:border-primary outline-none"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUnverifiedEmail(null);
+                    setOtpCode("");
+                    setOtpError(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={verifyingOtp}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {verifyingOtp ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Verify & Complete"
                   )}
                 </button>
               </div>

@@ -69,6 +69,7 @@ export const ROLES: Record<RoleId, Role> = {
         icon: LayoutDashboard,
         exact: true,
       },
+      { to: "/dashboard/super-admin/users", label: "User Management", icon: Users },
       { to: "/dashboard/super-admin/admins", label: "Admin Management", icon: Users },
       { to: "/dashboard/super-admin/departments", label: "Departments", icon: Building2 },
       { to: "/dashboard/super-admin/courses", label: "Courses", icon: BookOpen },

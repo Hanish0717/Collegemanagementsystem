@@ -591,10 +591,10 @@ export function AdminStudents() {
                     <label className="text-xs font-semibold text-muted-foreground">Admission No</label>
                     <input
                       type="text"
-                      placeholder="e.g. ADM2026102"
+                      disabled
+                      placeholder="Auto-generated on save"
                       value={admissionNumber}
-                      onChange={(e) => setAdmissionNumber(e.target.value)}
-                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-muted text-muted-foreground text-sm outline-none cursor-not-allowed"
                     />
                   </div>
                   <div>
@@ -813,9 +813,9 @@ export function AdminStudents() {
                   <label className="text-xs font-semibold text-muted-foreground">Admission No</label>
                   <input
                     type="text"
+                    disabled
                     value={admissionNumber}
-                    onChange={(e) => setAdmissionNumber(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-muted text-muted-foreground text-sm outline-none cursor-not-allowed"
                   />
                 </div>
                 <div>

@@ -5,6 +5,21 @@ import { supabase } from '../config/supabase.js';
 
 const router = express.Router();
 
+const DEPT_NAMES = {
+  'CSE': 'Computer Science & Engineering',
+  'AIML': 'Artificial Intelligence & Machine Learning',
+  'AIDS': 'Artificial Intelligence & Data Science',
+  'CYBERSECURITY': 'Cybersecurity',
+  'IT': 'Information Technology',
+  'ECE': 'Electronics & Communication Engineering',
+  'EEE': 'Electrical & Electronics Engineering',
+  'MECH': 'Mechanical Engineering',
+  'ME': 'Mechanical Engineering',
+  'CIVIL': 'Civil Engineering',
+  'CE': 'Civil Engineering',
+  'EE': 'Electrical & Electronics Engineering'
+};
+
 router.use(protect);
 router.use(requireRole('faculty', 'super-admin'));
 
@@ -66,11 +81,7 @@ router.get('/students', async (req, res, next) => {
       cgpa: Number(s.cgpa) || 0,
       status: s.is_active ? 'Active' : 'Inactive',
       department: {
-        name: s.department === 'CSE' ? 'Computer Science and Engineering' : 
-              s.department === 'ECE' ? 'Electronics and Communication Engineering' : 
-              s.department === 'ME' ? 'Mechanical Engineering' : 
-              s.department === 'CE' ? 'Civil Engineering' : 
-              s.department === 'EE' ? 'Electrical Engineering' : s.department,
+        name: DEPT_NAMES[s.department.toUpperCase()] || s.department,
         code: s.department
       }
     }));

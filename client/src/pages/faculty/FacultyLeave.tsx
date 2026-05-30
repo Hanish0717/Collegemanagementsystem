@@ -168,7 +168,6 @@ export function FacultyLeave() {
           </div>
           <div className="space-y-3">
             {[
-            {[
               { type: "Sick Leave", total: 10, used: usedSick, remaining: remainingSick },
               { type: "Casual Leave", total: 8, used: usedCasual, remaining: remainingCasual },
               { type: "Earned Leave", total: 15, used: usedEarned, remaining: remainingEarned },

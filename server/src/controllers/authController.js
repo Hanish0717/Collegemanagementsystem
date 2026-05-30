@@ -5,9 +5,11 @@ import {
   generateOTPTemplate,
   generateStudentWelcomeTemplate,
   generateParentWelcomeTemplate,
-  generateFacultyWelcomeTemplate
+  generateFacultyWelcomeTemplate,
+  generateAdminWelcomeTemplate
 } from '../utils/emailTemplates.js';
 import { hashOTP, verifyOTPHash } from '../utils/otpUtils.js';
+import { generateAdmissionNumber } from '../utils/admissionUtils.js';
 import { OTP_EXPIRY_MINUTES, OTP_RESEND_COOLDOWN_SECONDS, OTP_MAX_ATTEMPTS, OTP_BLOCK_TIME_MINUTES } from '../../config.js';
 import bcrypt from 'bcryptjs';
 import { supabase } from '../config/supabase.js';
@@ -123,11 +125,13 @@ export const register = async (req, res, next) => {
 
         if (childUser) {
           // Auto-create Student profile record
+          const generatedAdmissionNumber = await generateAdmissionNumber('CSE');
           const { data: newStudent, error: createStudentErr } = await supabase
             .from('students')
             .insert([{
               full_name: childUser.full_name || childUser.name || 'New Student',
               roll_number: 'CS' + (100000 + Math.floor(Math.random() * 900000)),
+              admission_number: generatedAdmissionNumber,
               email: childUser.email,
               phone_number: childUser.phone_number || childUser.mobile || '0000000000',
               department: 'CSE',
@@ -626,11 +630,13 @@ export const verifyOtp = async (req, res, next) => {
         .maybeSingle();
 
       if (!existingProfile) {
+        const generatedAdmissionNumber = await generateAdmissionNumber('CSE');
         const { data: newProfile } = await supabase
           .from('students')
           .insert([{
             full_name: updatedUser.full_name || updatedUser.name || 'New Student',
             roll_number: 'CS' + (100000 + Math.floor(Math.random() * 900000)),
+            admission_number: generatedAdmissionNumber,
             email: updatedUser.email,
             phone_number: updatedUser.phone_number || updatedUser.mobile || '0000000000',
             department: 'CSE',
@@ -697,6 +703,24 @@ export const verifyOtp = async (req, res, next) => {
           });
         } catch (err) {
           console.error("Error sending faculty welcome email:", err);
+        }
+      }
+    } else if (updatedUser.role === 'admin') {
+      const { data: admin } = await supabase
+        .from('admins')
+        .select('*')
+        .eq('email', updatedUser.email)
+        .maybeSingle();
+
+      if (admin) {
+        try {
+          await sendEmail({
+            to: admin.email,
+            subject: 'Your Admin Account Credentials',
+            html: generateAdminWelcomeTemplate(admin, plainPassword)
+          });
+        } catch (err) {
+          console.error("Error sending admin welcome email:", err);
         }
       }
     }

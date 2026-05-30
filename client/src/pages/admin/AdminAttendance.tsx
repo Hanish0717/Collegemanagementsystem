@@ -41,11 +41,15 @@ export function AdminAttendance() {
           <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
             {[
               "All Departments",
-              "Computer Science",
-              "Electronics",
-              "Mechanical",
-              "Business",
-              "Biotechnology",
+              "Computer Science & Engineering",
+              "Artificial Intelligence & Machine Learning",
+              "Artificial Intelligence & Data Science",
+              "Cybersecurity",
+              "Information Technology",
+              "Electronics & Communication Engineering",
+              "Electrical & Electronics Engineering",
+              "Mechanical Engineering",
+              "Civil Engineering"
             ].map((d) => (
               <option key={d}>{d}</option>
             ))}
@@ -154,7 +158,17 @@ export function AdminAttendance() {
           <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <div className="grid sm:grid-cols-2 gap-4">
               <select className="rounded-lg border bg-background px-3 py-2 text-sm">
-                {["Computer Science", "Electronics", "Mechanical", "Business", "Biotechnology"].map(
+                {[
+                  "Computer Science & Engineering",
+                  "Artificial Intelligence & Machine Learning",
+                  "Artificial Intelligence & Data Science",
+                  "Cybersecurity",
+                  "Information Technology",
+                  "Electronics & Communication Engineering",
+                  "Electrical & Electronics Engineering",
+                  "Mechanical Engineering",
+                  "Civil Engineering"
+                ].map(
                   (d) => (
                     <option key={d}>{d}</option>
                   ),

@@ -1,14 +1,14 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchSuperAdminStats } from "../services/superAdminService";
+import { fetchReportsData } from "../services/superAdminService";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 
-export function useSuperAdminStats() {
+export function useSuperAdminAnalytics() {
   const queryClient = useQueryClient();
   const query = useQuery({
-    queryKey: ["superAdminStats"],
-    queryFn: fetchSuperAdminStats,
+    queryKey: ["superAdminReportsData"],
+    queryFn: fetchReportsData,
     refetchOnWindowFocus: false,
     retry: 1,
   });
@@ -18,19 +18,19 @@ export function useSuperAdminStats() {
   useEffect(() => {
     if (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to load super admin statistics.",
+        error instanceof Error ? error.message : "Failed to load system analytics.",
       );
     }
   }, [error]);
 
   useEffect(() => {
     const channel = supabase
-      .channel("stats-db-changes")
+      .channel("analytics-db-changes")
       .on(
         "postgres_changes",
         { event: "*", schema: "public" },
         () => {
-          queryClient.invalidateQueries({ queryKey: ["superAdminStats"] });
+          queryClient.invalidateQueries({ queryKey: ["superAdminReportsData"] });
         }
       )
       .subscribe();
