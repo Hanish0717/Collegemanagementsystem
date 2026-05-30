@@ -11,19 +11,13 @@ export const getFacultyDashboard = async (req, res, next) => {
       .select('*', { count: 'exact', head: true })
       .eq('is_active', true);
 
-    // 2. Get assignments count
-    const { count: assignmentsCount } = await supabase
-      .from('assignments')
-      .select('*', { count: 'exact', head: true })
-      .eq('faculty', req.user.id || req.user._id);
-
-    // 3. Get study materials count
+    // 2. Get study materials count
     const { count: materialsCount } = await supabase
       .from('study_materials')
       .select('*', { count: 'exact', head: true })
       .eq('faculty', req.user.id || req.user._id);
 
-    // 4. Get pending leave requests
+    // 3. Get pending leave requests
     const { data: leaveRequests } = await supabase
       .from('leave_requests')
       .select('*')
@@ -33,7 +27,6 @@ export const getFacultyDashboard = async (req, res, next) => {
 
     const stats = [
       { label: "Students Under Mentorship", value: String(studentsCount || 0), change: "Active" },
-      { label: "Assignments Posted", value: String(assignmentsCount || 0), change: "This Sem" },
       { label: "Study Materials Shared", value: String(materialsCount || 0), change: "All Subjects" },
       { label: "Pending Leave Requests", value: String(pendingLeave), change: "Awaiting approval" }
     ];
@@ -59,24 +52,6 @@ export const getFacultyDashboard = async (req, res, next) => {
       });
     }
 
-    const { data: recentAssignments } = await supabase
-      .from('assignments')
-      .select('*')
-      .eq('faculty', req.user.id || req.user._id)
-      .order('created_at', { ascending: false })
-      .limit(2);
-
-    if (recentAssignments) {
-      recentAssignments.forEach(a => {
-        activities.push({
-          actor: "You",
-          action: "posted assignment",
-          target: a.title,
-          time: "Recently",
-          type: "Assignment"
-        });
-      });
-    }
 
     if (activities.length === 0) {
       activities.push({
@@ -114,26 +89,6 @@ export const getFacultyDashboard = async (req, res, next) => {
       });
     }
 
-    const { data: allAsg } = await supabase
-      .from('assignments')
-      .select('*')
-      .eq('faculty', req.user.id || req.user._id);
-
-    if (allAsg) {
-      allAsg.forEach(a => {
-        const submissions = Array.isArray(a.submissions) ? a.submissions : [];
-        const ungradedCount = submissions.filter(s => !s.graded).length;
-        if (ungradedCount > 0) {
-          notifications.push({
-            id: `FN-${notifId++}`,
-            title: `${ungradedCount} ungraded submission(s) for ${a.title}`,
-            type: "Alert",
-            time: "Pending",
-            unread: true
-          });
-        }
-      });
-    }
 
     // Calculate weekly attendance trend
     const attendanceStats = [];

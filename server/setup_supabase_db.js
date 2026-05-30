@@ -348,6 +348,22 @@ async function runSetup() {
       console.log("ℹ️ Student profile already exists for student@college.com");
     }
 
+    // Seed sample study materials for faculty@college.com matching student cohort
+    const facultyUserRes = await client.query("SELECT id FROM users WHERE email = $1", ['faculty@college.com']);
+    if (facultyUserRes.rows.length > 0) {
+      const facultyId = facultyUserRes.rows[0].id;
+      const materialsCheck = await client.query("SELECT * FROM study_materials WHERE faculty = $1", [facultyId]);
+      if (materialsCheck.rows.length === 0) {
+        await client.query(`
+          INSERT INTO study_materials (title, subject, type, file_url, department, year, semester, faculty)
+          VALUES 
+          ('Algorithm Video Lecture', 'Algorithms', 'Video', 'https://example.com/materials/algo-lecture.mp4', 'CSE', 3, 5, $1),
+          ('Database Schema Examples', 'Database Systems', 'Document', 'https://example.com/materials/db-schema.docx', 'CSE', 3, 5, $1)
+        `, [facultyId]);
+        console.log("✅ Seeded sample study materials for faculty@college.com");
+      }
+    }
+
     console.log("\n🎉 Database setup and seeding complete!");
     console.log("👉 You can now log in using any of the demo accounts with password: 'password123'");
 

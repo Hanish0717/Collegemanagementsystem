@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -28,7 +26,6 @@ import api from "@/lib/api";
 const getIcon = (label: string) => {
   switch (label) {
     case "Students Under Mentorship": return Users;
-    case "Assignments Posted": return FileText;
     case "Study Materials Shared": return BookOpen;
     case "Pending Leave Requests": return Calendar;
     default: return GraduationCap;
@@ -38,7 +35,6 @@ const getIcon = (label: string) => {
 const getGradient = (label: string) => {
   switch (label) {
     case "Students Under Mentorship": return "bg-gradient-primary";
-    case "Assignments Posted": return "bg-gradient-violet";
     case "Study Materials Shared": return "bg-gradient-cyan";
     case "Pending Leave Requests": return "bg-gradient-violet";
     default: return "bg-gradient-primary";
@@ -54,7 +50,6 @@ export function FacultyDashboard() {
   const [activities, setActivities] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [weeklyAttendanceData, setWeeklyAttendanceData] = useState<any[]>([]);
-  const [submissionsData, setSubmissionsData] = useState<any[]>([]);
   const [performanceData, setPerformanceData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -86,27 +81,6 @@ export function FacultyDashboard() {
           }));
           setPerformanceData(mappedPerformance);
         }
-
-        // Fetch assignments to calculate submissions data
-        const assignmentsRes = await api.get("/api/faculty-module/assignments");
-        if (assignmentsRes.data?.success && assignmentsRes.data?.data) {
-          const list = assignmentsRes.data.data;
-          // Let's assume total student count is either students Count (first card value) or fallback to 45
-          const totalStudentsStr = dashboardRes.data?.data?.stats?.[0]?.value || "45";
-          const totalStudents = parseInt(totalStudentsStr, 10) || 45;
-
-          // For the chart, map assignments to: { name: title (short), submitted, pending }
-          const chartData = list.slice(0, 5).map((asg: any) => {
-            const submitted = asg.submissions ? asg.submissions.length : 0;
-            const pending = Math.max(0, totalStudents - submitted);
-            return {
-              name: asg.title.length > 12 ? asg.title.substring(0, 12) + "..." : asg.title,
-              submitted,
-              pending
-            };
-          });
-          setSubmissionsData(chartData);
-        }
       } catch (err) {
         console.error("Error loading faculty dashboard:", err);
       } finally {
@@ -124,7 +98,7 @@ export function FacultyDashboard() {
     <div className="space-y-6">
       <PageHeader
         title={`Welcome, ${user?.fullName || "Faculty"}`}
-        desc="Manage classes, attendance, assignments, marks and student performance."
+        desc="Manage classes, attendance, marks and student performance."
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -201,7 +175,6 @@ export function FacultyDashboard() {
           <div className="space-y-3">
             {[
               { label: "Mark Attendance", tone: "default" as const, to: "/dashboard/faculty/attendance" },
-              { label: "Upload Assignment", tone: "success" as const, to: "/dashboard/faculty/assignments" },
               { label: "Enter Marks", tone: "warn" as const, to: "/dashboard/faculty/marks" },
               { label: "Start Online Class", tone: "info" as const, to: "/dashboard/faculty/classes" },
             ].map((item) => (
@@ -219,46 +192,14 @@ export function FacultyDashboard() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold">Assignment Submissions</h3>
-              <p className="text-xs text-muted-foreground">Active assignment submission metrics</p>
-            </div>
-            <Badge tone="info">Submissions</Badge>
-          </div>
-          <div className="h-64">
-            {loading ? (
-              <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl animate-pulse">
-                Loading submission statistics...
-              </div>
-            ) : submissionsData.length > 0 ? (
-              <ResponsiveContainer>
-                <BarChart data={submissionsData}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
-                  <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                  <Bar dataKey="submitted" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="pending" fill="#06B6D4" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl">
-                No assignment submissions found.
-              </div>
-            )}
-          </div>
-        </Card>
-
-        <Card>
+        <Card className="lg:col-span-3">
           <div className="flex items-center gap-2 mb-4">
             <GraduationCap className="size-5 text-indigo" />
             <h3 className="font-semibold">Student Performance</h3>
           </div>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {loading ? (
-              [1, 2, 3].map((n) => (
+              [1, 2, 3, 4].map((n) => (
                 <div key={n} className="h-16 animate-pulse bg-muted/40 border rounded-xl" />
               ))
             ) : performanceData.length > 0 ? (
@@ -278,7 +219,7 @@ export function FacultyDashboard() {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-xs text-muted-foreground border border-dashed rounded-xl">
+              <div className="col-span-full text-center py-8 text-xs text-muted-foreground border border-dashed rounded-xl">
                 No student performance data.
               </div>
             )}

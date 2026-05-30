@@ -6,7 +6,7 @@ import { studyMaterials } from "@/mock/facultyData";
 import api from "@/lib/api";
 
 export function FacultyMaterials() {
-  const [list, setList] = useState<any[]>(studyMaterials);
+  const [list, setList] = useState<any[]>([]);
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("Data Structures");
   const [type, setType] = useState("PDF");
@@ -16,23 +16,21 @@ export function FacultyMaterials() {
   const [search, setSearch] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("All Subjects");
   const [typeFilter, setTypeFilter] = useState("All Types");
-
+ 
   const fetchMaterials = async () => {
     try {
       const res = await api.get("/api/faculty-module/materials");
       if (res.data?.success && res.data?.data) {
         const dbMaterials = res.data.data.map((m: any) => ({
-          id: m._id,
+          id: m._id || m.id,
           title: m.title,
           subject: m.subject,
           type: m.type,
-          uploads: new Date(m.createdAt || Date.now()).toISOString().split('T')[0],
+          uploads: new Date(m.created_at || m.createdAt || Date.now()).toISOString().split('T')[0],
           downloads: m.downloads || 0,
           fileUrl: m.fileUrl
         }));
-        if (dbMaterials.length > 0) {
-          setList(dbMaterials);
-        }
+        setList(dbMaterials);
       }
     } catch (err) {
       console.error("Error loading faculty materials:", err);

@@ -6,28 +6,26 @@ import { studyMaterials } from "@/mock/studentData";
 import api from "@/lib/api";
 
 export function StudentMaterials() {
-  const [materials, setMaterials] = useState<any[]>(studyMaterials);
+  const [materials, setMaterials] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("All Subjects");
   const [typeFilter, setTypeFilter] = useState("All Types");
-
+ 
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
         const res = await api.get("/api/student-module/materials");
         if (res.data?.success && res.data?.data) {
           const dbMaterials = res.data.data.map((m: any) => ({
-            id: m._id,
+            id: m._id || m.id,
             title: m.title,
             subject: m.subject,
             type: m.type,
-            uploaded: new Date(m.createdAt || Date.now()).toISOString().split('T')[0],
+            uploaded: new Date(m.created_at || m.createdAt || Date.now()).toISOString().split('T')[0],
             downloads: m.downloads || 0,
             fileUrl: m.fileUrl
           }));
-          if (dbMaterials.length > 0) {
-            setMaterials(dbMaterials);
-          }
+          setMaterials(dbMaterials);
         }
       } catch (err) {
         console.error("Error loading study materials:", err);

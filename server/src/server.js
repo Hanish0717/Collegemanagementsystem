@@ -17,10 +17,17 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
 
 // Startup database migration
 async function runMigrations() {
-  if (!process.env.DATABASE_URL) {
-    console.warn("⚠️ DATABASE_URL not set. Skipping DDL migrations.");
+  const isMockMode = !process.env.SUPABASE_URL || 
+                     process.env.SUPABASE_URL.includes('your-project') || 
+                     process.env.SUPABASE_URL.includes('placeholder') ||
+                     !process.env.DATABASE_URL ||
+                     process.env.DATABASE_URL.includes('your_supabase');
+
+  if (isMockMode) {
+    console.log("ℹ️ Running in DATABASE MOCK MODE. Skipping live DDL migrations.");
     return;
   }
+
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
