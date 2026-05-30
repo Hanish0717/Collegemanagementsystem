@@ -102,7 +102,6 @@ import { Route as DashboardFacultyLeaveRouteImport } from './routes/dashboard/fa
 import { Route as DashboardFacultyCommunicationRouteImport } from './routes/dashboard/faculty/communication'
 import { Route as DashboardFacultyClassesRouteImport } from './routes/dashboard/faculty/classes'
 import { Route as DashboardFacultyAttendanceRouteImport } from './routes/dashboard/faculty/attendance'
-import { Route as DashboardFacultyAssignmentsRouteImport } from './routes/dashboard/faculty/assignments'
 import { Route as DashboardAiSettingsRouteImport } from './routes/dashboard/ai/settings'
 import { Route as DashboardAiRiskRouteImport } from './routes/dashboard/ai/risk'
 import { Route as DashboardAiReportsRouteImport } from './routes/dashboard/ai/reports'
@@ -634,12 +633,6 @@ const DashboardFacultyAttendanceRoute =
     path: '/attendance',
     getParentRoute: () => DashboardFacultyRoute,
   } as any)
-const DashboardFacultyAssignmentsRoute =
-  DashboardFacultyAssignmentsRouteImport.update({
-    id: '/assignments',
-    path: '/assignments',
-    getParentRoute: () => DashboardFacultyRoute,
-  } as any)
 const DashboardAiSettingsRoute = DashboardAiSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -785,7 +778,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/ai/reports': typeof DashboardAiReportsRoute
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
-  '/dashboard/faculty/assignments': typeof DashboardFacultyAssignmentsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
@@ -899,7 +891,6 @@ export interface FileRoutesByTo {
   '/dashboard/ai/reports': typeof DashboardAiReportsRoute
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
-  '/dashboard/faculty/assignments': typeof DashboardFacultyAssignmentsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
@@ -1015,7 +1006,6 @@ export interface FileRoutesById {
   '/dashboard/ai/reports': typeof DashboardAiReportsRoute
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
-  '/dashboard/faculty/assignments': typeof DashboardFacultyAssignmentsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
@@ -1132,7 +1122,6 @@ export interface FileRouteTypes {
     | '/dashboard/ai/reports'
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
-    | '/dashboard/faculty/assignments'
     | '/dashboard/faculty/attendance'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
@@ -1246,7 +1235,6 @@ export interface FileRouteTypes {
     | '/dashboard/ai/reports'
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
-    | '/dashboard/faculty/assignments'
     | '/dashboard/faculty/attendance'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
@@ -1361,7 +1349,6 @@ export interface FileRouteTypes {
     | '/dashboard/ai/reports'
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
-    | '/dashboard/faculty/assignments'
     | '/dashboard/faculty/attendance'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
@@ -2095,13 +2082,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFacultyAttendanceRouteImport
       parentRoute: typeof DashboardFacultyRoute
     }
-    '/dashboard/faculty/assignments': {
-      id: '/dashboard/faculty/assignments'
-      path: '/assignments'
-      fullPath: '/dashboard/faculty/assignments'
-      preLoaderRoute: typeof DashboardFacultyAssignmentsRouteImport
-      parentRoute: typeof DashboardFacultyRoute
-    }
     '/dashboard/ai/settings': {
       id: '/dashboard/ai/settings'
       path: '/settings'
@@ -2297,7 +2277,6 @@ const DashboardAiRouteWithChildren = DashboardAiRoute._addFileChildren(
 )
 
 interface DashboardFacultyRouteChildren {
-  DashboardFacultyAssignmentsRoute: typeof DashboardFacultyAssignmentsRoute
   DashboardFacultyAttendanceRoute: typeof DashboardFacultyAttendanceRoute
   DashboardFacultyClassesRoute: typeof DashboardFacultyClassesRoute
   DashboardFacultyCommunicationRoute: typeof DashboardFacultyCommunicationRoute
@@ -2311,7 +2290,6 @@ interface DashboardFacultyRouteChildren {
 }
 
 const DashboardFacultyRouteChildren: DashboardFacultyRouteChildren = {
-  DashboardFacultyAssignmentsRoute: DashboardFacultyAssignmentsRoute,
   DashboardFacultyAttendanceRoute: DashboardFacultyAttendanceRoute,
   DashboardFacultyClassesRoute: DashboardFacultyClassesRoute,
   DashboardFacultyCommunicationRoute: DashboardFacultyCommunicationRoute,

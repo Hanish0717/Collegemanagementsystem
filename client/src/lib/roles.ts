@@ -114,7 +114,6 @@ export const ROLES: Record<RoleId, Role> = {
     nav: [
       base,
       { to: "/dashboard/faculty/attendance", label: "Attendance", icon: CalendarCheck },
-      { to: "/dashboard/faculty/assignments", label: "Assignments", icon: ClipboardList },
       { to: "/dashboard/faculty/materials", label: "Materials", icon: BookOpen },
       { to: "/dashboard/faculty/students", label: "Students", icon: Users },
       { to: "/dashboard/faculty/notifications", label: "Notifications", icon: Bell },

@@ -2,10 +2,12 @@ import { supabase } from '../config/supabase.js';
 
 // Helper to get student's profile by email
 const getProfile = async (email) => {
+  if (!email) return null;
+  const cleanEmail = email.toLowerCase().trim();
   const { data } = await supabase
     .from('students')
     .select('*')
-    .eq('email', email)
+    .ilike('email', cleanEmail)
     .eq('is_active', true)
     .maybeSingle();
 
@@ -395,13 +397,9 @@ export const submitAssignment = async (req, res, next) => {
 // @access  Private (student)
 export const getStudentMaterials = async (req, res, next) => {
   try {
-    const profile = await getProfile(req.user.email);
     const { data: materials } = await supabase
       .from('study_materials')
-      .select('*')
-      .eq('department', profile?.department || 'CSE')
-      .eq('year', Number(profile?.year || 1))
-      .eq('semester', Number(profile?.semester || 1));
+      .select('*');
 
     if (!materials) {
       return res.status(200).json({ success: true, data: [] });

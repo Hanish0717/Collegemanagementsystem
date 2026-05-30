@@ -25,17 +25,26 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+// Robust CORS middleware supporting dynamic localhost and 127.0.0.1 development ports
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:8080',
-  'http://127.0.0.1:8080'
+  'http://127.0.0.1:8080',
+  'http://localhost:5174',
+  'http://127.0.0.1:5174',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000'
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
+    // Dynamic CORS reflection in development to support localhost, 127.0.0.1, LAN IP, and mobile testing
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+
     if (!origin) return callback(null, true);
     
     // Check if origin is a local network IP address (e.g., http://192.168.x.x, http://10.x.x.x, http://172.x.x.x)
