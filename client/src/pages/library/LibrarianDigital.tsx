@@ -1,14 +1,80 @@
 import { useState } from "react";
 import { Search, FileText, Download, Eye } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { eBooks } from "@/mock/mockData";
 import { toast } from "sonner";
 
+interface EBookItem {
+  id: string;
+  title: string;
+  author: string;
+  category: string;
+  format: string;
+  size: string;
+  downloads: number;
+}
+
+const INITIAL_EBOOKS: EBookItem[] = [
+  {
+    id: "EBOOK-001",
+    title: "Python Programming",
+    author: "Guido van Rossum",
+    category: "Computer Science",
+    format: "PDF",
+    size: "45 MB",
+    downloads: 234,
+  },
+  {
+    id: "EBOOK-002",
+    title: "Data Science Handbook",
+    author: "Jake VanderPlas",
+    category: "Computer Science",
+    format: "PDF",
+    size: "78 MB",
+    downloads: 189,
+  },
+  {
+    id: "EBOOK-003",
+    title: "Web Development 2024",
+    author: "Mark Pilgrim",
+    category: "Computer Science",
+    format: "EPUB",
+    size: "52 MB",
+    downloads: 156,
+  },
+  {
+    id: "EBOOK-004",
+    title: "Modern Business Ethics",
+    author: "George Brenkert",
+    category: "Business",
+    format: "PDF",
+    size: "38 MB",
+    downloads: 98,
+  },
+  {
+    id: "EBOOK-005",
+    title: "Digital Marketing Guide",
+    author: "Neil Patel",
+    category: "Business",
+    format: "PDF",
+    size: "41 MB",
+    downloads: 142,
+  },
+  {
+    id: "EBOOK-006",
+    title: "AI & Machine Learning",
+    author: "Andrew Ng",
+    category: "Computer Science",
+    format: "PDF",
+    size: "89 MB",
+    downloads: 267,
+  },
+];
+
 export function LibrarianDigital() {
-  const [localEBooks, setLocalEBooks] = useState(eBooks);
+  const [localEBooks, setLocalEBooks] = useState<EBookItem[]>(INITIAL_EBOOKS);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedBook, setSelectedBook] = useState<EBookItem | null>(null);
 
   const categories = ["All", "Computer Science", "Business", "Mathematics", "Science"];
 
@@ -16,7 +82,7 @@ export function LibrarianDigital() {
     (e) =>
       (selectedCategory === "All" || e.category === selectedCategory) &&
       (e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        e.author.toLowerCase().includes(searchTerm.toLowerCase())),
+        e.author.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleDownload = (bookId: string, title: string) => {
@@ -33,14 +99,14 @@ export function LibrarianDigital() {
             };
           }
           return e;
-        }),
+        })
       );
       toast.success(`Successfully downloaded "${title}"!`);
     }, 1000);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-200">
       <PageHeader title="Digital Library" desc="Access e-books, PDFs and digital resources." />
 
       {/* Search and Filter */}

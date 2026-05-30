@@ -1,11 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AlertCircle, Clock, BookMarked, DollarSign, Plus, Archive, Send } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { libraryNotifications } from "@/mock/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { fetchIssuedBooks } from "@/services/libraryService";
 import { toast } from "sonner";
 
+interface NotifItem {
+  id: string;
+  title: string;
+  time: string;
+  type: string;
+  unread: boolean;
+  urgency: "high" | "medium" | "low";
+}
+
 export function LibrarianNotifications() {
-  const [notifications, setNotifications] = useState(libraryNotifications);
+  const { data: issuedBooks, isLoading } = useQuery({
+    queryKey: ["allIssuedBooks"],
+    queryFn: () => fetchIssuedBooks(),
+  });
+
+  const [notifications, setNotifications] = useState<NotifItem[]>([]);
   const [filterType, setFilterType] = useState("All");
   const [archivedCount, setArchivedCount] = useState(0);
 
@@ -15,6 +30,39 @@ export function LibrarianNotifications() {
   const [notifSubject, setNotifSubject] = useState("");
   const [notifMessage, setNotifMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
+
+  // Load database notifications (overdues) on query complete
+  useEffect(() => {
+    if (issuedBooks) {
+      const overdueAlerts: NotifItem[] = issuedBooks
+        .filter((issue) => issue.status === "overdue")
+        .map((issue, idx) => ({
+          id: `db-od-${idx}`,
+          title: `Book '${
+            typeof issue.book === "object" && issue.book ? issue.book.title : "Resource"
+          }' is overdue from student ${
+            typeof issue.student === "object" && issue.student ? issue.student.fullName : ""
+          }`,
+          time: issue.dueDate ? `Due since ${new Date(issue.dueDate).toLocaleDateString()}` : "Overdue",
+          type: "Overdue",
+          unread: true,
+          urgency: "high",
+        }));
+
+      // Combine with some standard helpful arrivals/payments notices if list is empty
+      if (overdueAlerts.length === 0) {
+        overdueAlerts.push({
+          id: "LN-003",
+          title: "New acquisitions available in Central Library",
+          time: "1 day ago",
+          type: "NewArrival",
+          unread: true,
+          urgency: "medium",
+        });
+      }
+      setNotifications(overdueAlerts);
+    }
+  }, [issuedBooks]);
 
   // Settings State
   const [settings, setSettings] = useState([
@@ -78,7 +126,7 @@ export function LibrarianNotifications() {
     setIsSending(true);
 
     setTimeout(() => {
-      const newNotif = {
+      const newNotif: NotifItem = {
         id: `LN-${String(notifications.length + 1).padStart(3, "0")}`,
         title: notifSubject,
         time: "Just now",
@@ -106,7 +154,7 @@ export function LibrarianNotifications() {
           };
         }
         return n;
-      }),
+      })
     );
     toast.success("Notification marked as read.");
   };
@@ -127,8 +175,21 @@ export function LibrarianNotifications() {
   const filteredNotifications =
     filterType === "All" ? notifications : notifications.filter((n) => n.type === filterType);
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-200">
+        <PageHeader title="Notifications" desc="Library alerts, reminders and system notifications." />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, idx) => (
+            <div key={idx} className="h-24 bg-muted animate-pulse rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-200">
       <PageHeader
         title="Notifications"
         desc="Library alerts, reminders and system notifications."
@@ -273,74 +334,80 @@ export function LibrarianNotifications() {
 
           {/* Notifications List */}
           <div className="space-y-3">
-            {filteredNotifications.map((notification) => {
-              const typeInfo =
-                notificationTypes[notification.type as keyof typeof notificationTypes];
-              const IconComponent = typeInfo?.icon || AlertCircle;
+            {filteredNotifications.length === 0 ? (
+              <Card className="text-center py-8 text-muted-foreground">
+                No active notifications found.
+              </Card>
+            ) : (
+              filteredNotifications.map((notification) => {
+                const typeInfo =
+                  notificationTypes[notification.type as keyof typeof notificationTypes];
+                const IconComponent = typeInfo?.icon || AlertCircle;
 
-              return (
-                <Card
-                  key={notification.id}
-                  className={`border-l-4 relative ${
-                    notification.urgency === "high"
-                      ? "border-l-rose-500"
-                      : notification.urgency === "medium"
-                        ? "border-l-amber-500"
-                        : "border-l-emerald-500"
-                  } hover:-translate-x-1 transition`}
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Icon */}
-                    <div
-                      className={`size-12 rounded-xl bg-gradient-to-br ${typeInfo?.color} to-transparent text-white grid place-items-center shrink-0`}
-                    >
-                      <IconComponent className="size-5" />
-                    </div>
-
-                    {/* Main Content */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm leading-snug">{notification.title}</h3>
-                      <p className="text-[11px] text-muted-foreground mt-1">{notification.time}</p>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons and Badge - Unified Container */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:gap-2 border-t pt-3">
-                    <button
-                      onClick={() => handleMarkRead(notification.id)}
-                      disabled={!notification.unread}
-                      className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-gradient-soft transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer"
-                    >
-                      {notification.unread ? "Mark Read" : "Read"}
-                    </button>
-
-                    {/* Badge + Status Indicator - Right aligned */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      {notification.unread && (
-                        <div className="size-2 rounded-full bg-gradient-primary" />
-                      )}
-                      <Badge
-                        tone={
-                          notification.urgency === "high"
-                            ? "danger"
-                            : notification.urgency === "medium"
-                              ? "warn"
-                              : "success"
-                        }
+                return (
+                  <Card
+                    key={notification.id}
+                    className={`border-l-4 relative ${
+                      notification.urgency === "high"
+                        ? "border-l-rose-500"
+                        : notification.urgency === "medium"
+                          ? "border-l-amber-500"
+                          : "border-l-emerald-500"
+                    } hover:-translate-x-1 transition`}
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Icon */}
+                      <div
+                        className={`size-12 rounded-xl bg-gradient-to-br ${typeInfo?.color || "from-slate-500"} to-transparent text-white grid place-items-center shrink-0`}
                       >
-                        {notification.urgency}
-                      </Badge>
+                        <IconComponent className="size-5" />
+                      </div>
+
+                      {/* Main Content */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm leading-snug">{notification.title}</h3>
+                        <p className="text-[11px] text-muted-foreground mt-1">{notification.time}</p>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons and Badge - Unified Container */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:gap-2 border-t pt-3">
                       <button
-                        onClick={() => handleArchive(notification.id)}
-                        className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-rose-100 transition shrink-0 ml-1 cursor-pointer"
+                        onClick={() => handleMarkRead(notification.id)}
+                        disabled={!notification.unread}
+                        className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-gradient-soft transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer"
                       >
-                        <Archive className="size-4" />
+                        {notification.unread ? "Mark Read" : "Read"}
                       </button>
+
+                      {/* Badge + Status Indicator - Right aligned */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {notification.unread && (
+                          <div className="size-2 rounded-full bg-gradient-primary" />
+                        )}
+                        <Badge
+                          tone={
+                            notification.urgency === "high"
+                              ? "danger"
+                              : notification.urgency === "medium"
+                                ? "warn"
+                                : "success"
+                          }
+                        >
+                          {notification.urgency}
+                        </Badge>
+                        <button
+                          onClick={() => handleArchive(notification.id)}
+                          className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-rose-100 transition shrink-0 ml-1 cursor-pointer"
+                        >
+                          <Archive className="size-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              );
-            })}
+                  </Card>
+                );
+              })
+            )}
           </div>
         </div>
 

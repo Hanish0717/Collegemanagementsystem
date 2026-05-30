@@ -443,8 +443,35 @@ export const getIssuedBooks = async (req, res, next) => {
 
     let targetUserId = null;
 
-    // Resolve studentId to user_id if passed
-    if (studentId) {
+    if (req.user.role === 'student') {
+      targetUserId = req.user.id;
+    } else if (req.user.role === 'parent') {
+      const childEmailVal = req.user.child_email || req.user.childEmail;
+      let childEmail = childEmailVal;
+      if (!childEmail) {
+        const { data: parentRecord } = await supabase
+          .from('parents')
+          .select('student_email')
+          .eq('email', req.user.email)
+          .maybeSingle();
+        childEmail = parentRecord?.student_email;
+      }
+      if (childEmail) {
+        const { data: studentRecord } = await supabase
+          .from('students')
+          .select('email')
+          .eq('email', childEmail.toLowerCase().trim())
+          .maybeSingle();
+        if (studentRecord) {
+          const { data: userRecord } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', studentRecord.email)
+            .maybeSingle();
+          targetUserId = userRecord ? userRecord.id : null;
+        }
+      }
+    } else if (studentId) {
       const { data: studentRecord } = await supabase
         .from('students')
         .select('email')
@@ -464,7 +491,6 @@ export const getIssuedBooks = async (req, res, next) => {
     let query = supabase.from('issued_books').select('*, book:books(*), user:users(*)');
 
     if (status) {
-      // Map lowercase client status to capitalized Postgres values
       const mapStatus = {
         'issued': 'Issued',
         'returned': 'Returned',
@@ -473,11 +499,10 @@ export const getIssuedBooks = async (req, res, next) => {
       query = query.eq('status', mapStatus[status.toLowerCase()] || status);
     }
 
-    if (studentId) {
+    if (studentId || req.user.role === 'student' || req.user.role === 'parent') {
       if (targetUserId) {
         query = query.eq('user_id', targetUserId);
       } else {
-        // No user found, force empty return safely
         return res.status(200).json({ success: true, message: 'Issued books fetched', data: [] });
       }
     }
@@ -485,18 +510,20 @@ export const getIssuedBooks = async (req, res, next) => {
     const { data: issues, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
 
-    // Cache students by email for joining details
+    // Cache students by email and ID for joining details
     const { data: students } = await supabase.from('students').select('*').eq('is_active', true);
     const studentMap = {};
+    const studentMapById = {};
     if (students) {
       students.forEach(s => {
         studentMap[s.email] = s;
+        studentMapById[s.id] = s;
       });
     }
 
     const formattedIssues = issues ? issues.map(item => {
       const userEmail = item.user?.email;
-      const childProfile = userEmail ? studentMap[userEmail] : null;
+      const childProfile = (item.student ? studentMapById[item.student] : null) || (userEmail ? studentMap[userEmail] : null);
 
       return {
         id: item.id,
@@ -549,19 +576,19 @@ export const getLibraryReport = async (req, res, next) => {
     const { count: totalIssued } = await supabase
       .from('issued_books')
       .select('*', { count: 'exact', head: true })
-      .in('status', ['Issued', 'Overdue']);
+      .in('status', ['Issued', 'issued', 'Overdue', 'overdue']);
 
     // 3. Overdue count
     const { count: overdueCount } = await supabase
       .from('issued_books')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'Overdue');
+      .in('status', ['Overdue', 'overdue']);
 
     // 4. Total fine collected
     const { data: fineData } = await supabase
       .from('issued_books')
       .select('fine_amount')
-      .eq('status', 'Returned');
+      .in('status', ['Returned', 'returned']);
     const totalFines = fineData ? fineData.reduce((sum, item) => sum + Number(item.fine_amount || 0), 0) : 0;
 
     // 5. Category analytics

@@ -22,6 +22,9 @@ router.use(protect);
 router.get('/books', getBooks);
 router.get('/books/:id', getBookById);
 
+// Issued books list - accessible to librarian/admin/super-admin/student/parent
+router.get('/issued', authorizeRoles('librarian', 'admin', 'super-admin', 'student', 'parent'), getIssuedBooks);
+
 // Book management - librarian/admin/super-admin only
 router.use(authorizeRoles('librarian', 'admin', 'super-admin'));
 router.post('/books', addBook);
@@ -32,10 +35,7 @@ router.delete('/books/:id', deleteBook);
 router.post('/issue', authorizeRoles('librarian', 'admin'), issueBook);
 router.post('/return/:issueId', authorizeRoles('librarian', 'admin'), returnBook);
 
-// Issued books list - accessible to librarian/admin/super-admin (students can be filtered via query, but access is limited by controller guard if needed)
-router.get('/issued', authorizeRoles('librarian', 'admin', 'super-admin'), getIssuedBooks);
-
 // Reporting - librarian/admin/super-admin
-router.get('/report', authorizeRoles('librarian', 'admin', 'super-admin'), getLibraryReport);
+router.get('/report', getLibraryReport);
 
 export default router;

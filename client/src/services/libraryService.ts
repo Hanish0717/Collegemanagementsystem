@@ -55,6 +55,8 @@ export async function fetchBooks(params?: {
   search?: string;
   category?: string;
   availability?: string;
+  limit?: number;
+  page?: number;
 }): Promise<BookItem[]> {
   const { data } = await api.get<{ success: boolean; data: { books: BookItem[] } }>(
     "/api/library/books",
