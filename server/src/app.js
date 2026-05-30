@@ -21,6 +21,7 @@ import superAdminRoutes from './routes/superAdminRoutes.js';
 import facultyRoutes from './routes/facultyRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import { supabase } from './config/supabase.js';
+import placementRoutes from './routes/placementRoutes.js';
 
 dotenv.config();
 
@@ -103,6 +104,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/placement', placementRoutes);
 
 // 404 handler
 app.use(notFound);

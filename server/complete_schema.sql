@@ -3,7 +3,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 2. Drop existing tables if they exist (clean setup)
 DROP TABLE IF EXISTS departments CASCADE;
+DROP TABLE IF EXISTS placement_interviews CASCADE;
+DROP TABLE IF EXISTS placement_notifications CASCADE;
 DROP TABLE IF EXISTS placements CASCADE;
+DROP TABLE IF EXISTS placement_companies CASCADE;
 DROP TABLE IF EXISTS otps CASCADE;
 DROP TABLE IF EXISTS timetable CASCADE;
 DROP TABLE IF EXISTS study_materials CASCADE;
@@ -254,14 +257,65 @@ CREATE TABLE timetable (
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- PLACEMENT_COMPANIES Table
+CREATE TABLE placement_companies (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name varchar(255) UNIQUE NOT NULL,
+  industry varchar(255) DEFAULT 'Technology',
+  hr_contact varchar(255) DEFAULT 'HR Manager',
+  email varchar(255) DEFAULT 'hr@company.com',
+  phone varchar(50) DEFAULT '9876543210',
+  package_amount varchar(100) DEFAULT '8.0 LPA',
+  previous_hires integer DEFAULT 0,
+  is_active boolean DEFAULT true,
+  logo text,
+  website text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- PLACEMENTS Table
 CREATE TABLE placements (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   company varchar(255) NOT NULL,
   position varchar(255) NOT NULL,
   applied_students jsonb DEFAULT '[]'::jsonb,
+  company_id uuid REFERENCES placement_companies(id) ON DELETE SET NULL,
+  drive_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  venue varchar(255) DEFAULT 'Virtual',
+  deadline timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  status varchar(50) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'ongoing', 'completed', 'cancelled')),
+  package_min numeric(10, 2) DEFAULT 0.00,
+  package_max numeric(10, 2) DEFAULT 0.00,
+  eligibility_min_cgpa numeric(4, 2) DEFAULT 0.00,
+  eligibility_departments jsonb DEFAULT '[]'::jsonb,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- PLACEMENT_INTERVIEWS Table
+CREATE TABLE placement_interviews (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  student uuid REFERENCES students(id) ON DELETE CASCADE,
+  student_name varchar(255) NOT NULL,
+  company_name varchar(255) NOT NULL,
+  drive_id uuid REFERENCES placements(id) ON DELETE CASCADE,
+  round varchar(100) NOT NULL,
+  date date NOT NULL,
+  time varchar(50) NOT NULL,
+  mode varchar(50) DEFAULT 'Online' CHECK (mode IN ('Online', 'In-Person')),
+  status varchar(50) DEFAULT 'Scheduled' CHECK (status IN ('Scheduled', 'Completed', 'Cancelled')),
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- PLACEMENT_NOTIFICATIONS Table
+CREATE TABLE placement_notifications (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title varchar(255) NOT NULL,
+  time varchar(100) NOT NULL,
+  type varchar(50) NOT NULL CHECK (type IN ('Drive', 'Interview', 'Offer', 'Deadline', 'Resume')),
+  unread boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- OTPS Table
