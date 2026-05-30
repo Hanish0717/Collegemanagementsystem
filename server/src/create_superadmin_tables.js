@@ -258,21 +258,15 @@ async function run() {
         [
           'config_toggles',
           JSON.stringify({
-            "SMTP server": true,
-            "Sender identity": true,
-            "Bounce handling": true,
-            "Email alerts": true,
-            "SMS alerts": true,
-            "Dashboard alerts": true,
-            "Term calendar": true,
-            "Exam windows": true,
-            "Holidays": true,
-            "Daily backup": true,
-            "Cloud sync": true,
-            "Retention policy": true,
-            "Default theme": true,
-            "Brand logo": true,
-            "Display density": true
+            "SMTP Configuration": true,
+            "SMS gateway Settings": true,
+            "Internal chat server": true,
+            "Attendance warnings": true,
+            "Auto back-up alerts": true,
+            "Holiday broadcast notices": true,
+            "Supabase auto-pruning": true,
+            "Query optimization cache": true,
+            "Weekly diagnostic logs": true
           })
         ]
       );

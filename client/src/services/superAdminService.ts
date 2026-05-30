@@ -48,6 +48,9 @@ export interface SuperAdminStats {
   userActivityData: UserActivityItem[];
   superAdminActivities: ActivityLogItem[];
   superAdminNotifications: NotificationItem[];
+  dbLatency?: string;
+  serviceUptime?: string;
+  systemStatus?: Array<{ label: string; value: string; tone: "success" | "warn" | "danger" | "info" }>;
 }
 
 export interface Department {
@@ -246,9 +249,16 @@ export async function saveNotificationCategories(categories: boolean[]): Promise
   await api.post("/api/super-admin/notifications/categories", { categories });
 }
 
+export interface SecurityAlert {
+  id: string;
+  title: string;
+  type: string;
+  time: string;
+}
+
 // Security Logs
-export async function fetchSecurityLogs(): Promise<SecurityLog[]> {
-  const { data } = await api.get<{ success: boolean; data: SecurityLog[] }>(
+export async function fetchSecurityLogs(): Promise<{ logs: SecurityLog[]; alerts: SecurityAlert[] }> {
+  const { data } = await api.get<{ success: boolean; data: { logs: SecurityLog[]; alerts: SecurityAlert[] } }>(
     "/api/super-admin/security-logs",
   );
   return data.data;
@@ -294,9 +304,11 @@ export async function saveConfigInstitution(institution: any): Promise<void> {
 }
 
 // Reports
-export async function fetchReportsData(): Promise<any> {
+export async function fetchReportsData(filter?: string): Promise<any> {
+  const params = filter ? { cycle: filter } : {};
   const { data } = await api.get<{ success: boolean; data: any }>(
     "/api/super-admin/reports/data",
+    { params }
   );
   return data.data;
 }
