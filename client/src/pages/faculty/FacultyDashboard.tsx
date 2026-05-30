@@ -104,7 +104,9 @@ export function FacultyDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading ? (
           [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-28 animate-pulse bg-muted/40" />
+            <Card key={n} className="h-28 animate-pulse bg-muted/40">
+              <div />
+            </Card>
           ))
         ) : stats.length > 0 ? (
           stats.map((stat, i) => (

@@ -197,9 +197,6 @@ export function SuperAdminAdmins() {
               </option>
             ))}
           </select>
-          <button className="px-4 py-2.5 rounded-xl border flex items-center gap-2 text-sm font-medium hover:bg-accent transition cursor-pointer">
-            <Filter className="size-4" /> Filters
-          </button>
         </div>
       </Card>
 
@@ -221,7 +218,6 @@ export function SuperAdminAdmins() {
                   {[
                     "Admin ID",
                     "Name & Email",
-                    "Role",
                     "Department Owner",
                     "Status",
                     "Actions",
@@ -244,9 +240,6 @@ export function SuperAdminAdmins() {
                     <td className="py-3 px-4">
                       <div className="font-semibold text-foreground">{admin.fullName}</div>
                       <div className="text-xs text-muted-foreground">{admin.email}</div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <Badge tone="info">Admin</Badge>
                     </td>
                     <td className="py-3 px-4">
                       <select
@@ -342,7 +335,7 @@ export function SuperAdminAdmins() {
             </div>
             <div className="p-3 border rounded-xl bg-gradient-soft">
               <div className="text-2xl font-bold text-gradient">
-                {admins.filter((a) => a.department).length}
+                {admins.filter((a) => a.department && a.department._id !== "Administration" && a.department._id !== "None" && a.department._id !== "").length}
               </div>
               <div className="text-[10px] text-muted-foreground mt-1">Departments Assigned</div>
             </div>

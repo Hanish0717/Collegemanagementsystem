@@ -4,11 +4,11 @@ import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 
-export function useSuperAdminAnalytics() {
+export function useSuperAdminAnalytics(filter?: string) {
   const queryClient = useQueryClient();
   const query = useQuery({
-    queryKey: ["superAdminReportsData"],
-    queryFn: fetchReportsData,
+    queryKey: ["superAdminReportsData", filter],
+    queryFn: () => fetchReportsData(filter),
     refetchOnWindowFocus: false,
     retry: 1,
   });

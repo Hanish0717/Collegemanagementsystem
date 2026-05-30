@@ -199,7 +199,9 @@ export function StudentDashboard() {
           ))
         ) : (
           [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-28 animate-pulse bg-muted/40" />
+            <Card key={n} className="h-28 animate-pulse bg-muted/40">
+              <div />
+            </Card>
           ))
         )}
       </div>
