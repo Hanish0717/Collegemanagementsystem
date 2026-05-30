@@ -95,6 +95,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/students", label: "Students", icon: Users },
       { to: "/dashboard/admin/faculty", label: "Faculty", icon: GraduationCap },
       { to: "/dashboard/admin/assignments", label: "Faculty Assignments", icon: ClipboardList },
+      { to: "/dashboard/admin/timetable", label: "Timetable", icon: CalendarCheck },
       { to: "/dashboard/admin/attendance", label: "Attendance", icon: CalendarCheck },
       { to: "/dashboard/admin/exams", label: "Exams", icon: BookOpen },
       { to: "/dashboard/admin/fees", label: "Fees", icon: Wallet },

@@ -33,11 +33,15 @@ export function FacultyAssignments() {
   // Mutation
   const assignMutation = useMutation({
     mutationFn: assignSectionsSubjects,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["faculty"] });
       toast.success("Faculty assignments updated & students auto-linked!");
       // Reset assignment UI state
       setCustomSection("");
+      if (data) {
+        setSections(data.assignedSections || []);
+        setSelectedSubjects(data.assignedSubjects?.map((s) => s._id) || []);
+      }
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -84,14 +88,17 @@ export function FacultyAssignments() {
   const handleSaveAssignments = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFacultyId) {
+      alert("Please select a faculty member from the left panel first.");
       toast.error("Please select a faculty member first");
       return;
     }
     if (sections.length === 0) {
+      alert("Please assign at least one teaching section (e.g. enter 'A' and click Add).");
       toast.error("Please assign at least one section");
       return;
     }
     if (selectedSubjects.length === 0) {
+      alert("Please select at least one subject from the 'Subjects Specialize' checklist by clicking on it.");
       toast.error("Please assign at least one subject");
       return;
     }
@@ -251,17 +258,25 @@ export function FacultyAssignments() {
                             onClick={() => handleToggleSubject(sub._id)}
                             className={`flex items-center justify-between p-3 rounded-xl border text-xs text-left cursor-pointer transition ${
                               isChecked
-                                ? "border-primary bg-primary/5 font-semibold"
-                                : "hover:bg-accent/40"
+                                ? "border-primary bg-primary/5 font-semibold text-primary"
+                                : "hover:bg-accent/40 border-muted"
                             }`}
                           >
-                            <div>
-                              <div>{sub.name}</div>
-                              <div className="text-[10px] text-muted-foreground mt-0.5">
-                                {sub.code}
+                            <div className="flex items-center gap-2.5">
+                              <div className={`size-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                                isChecked 
+                                  ? "border-primary bg-primary text-white" 
+                                  : "border-muted-foreground/30 bg-background"
+                              }`}>
+                                {isChecked && <span className="text-[9px] font-bold">✓</span>}
+                              </div>
+                              <div>
+                                <div className="font-medium text-foreground">{sub.name}</div>
+                                <div className="text-[10px] text-muted-foreground mt-0.5">
+                                  {sub.code}
+                                </div>
                               </div>
                             </div>
-                            {isChecked && <CheckCircle className="size-4 text-primary shrink-0" />}
                           </button>
                         );
                       })}

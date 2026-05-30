@@ -19,8 +19,24 @@ const client = new Client({
 async function run() {
   try {
     await client.connect();
-    const res = await client.query("SELECT a.id, a.date, a.status, a.subject, a.period, a.time, s.full_name as student_name FROM attendance a JOIN students s ON a.student = s.id ORDER BY a.date DESC");
-    console.log("QUERY RESULT:", JSON.stringify(res.rows, null, 2));
+    
+    // 1. Get columns of the faculty table
+    console.log("--- FACULTY TABLE COLUMNS ---");
+    const columnsRes = await client.query(
+      `SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'faculty'`
+    );
+    console.log("COLUMNS:", columnsRes.rows);
+
+    // 2. Get all records from faculty
+    console.log("\n--- FACULTY RECORDS ---");
+    const facultyRes = await client.query(`SELECT id, full_name, employee_id, department, assigned_sections, assigned_subjects FROM faculty`);
+    console.log("FACULTY:", JSON.stringify(facultyRes.rows, null, 2));
+
+    // 3. Get students count
+    console.log("\n--- STUDENTS COUNT ---");
+    const studentsRes = await client.query(`SELECT count(*), department, section FROM students GROUP BY department, section`);
+    console.log("STUDENTS:", studentsRes.rows);
+
   } catch (err) {
     console.error("DB Error:", err);
   } finally {

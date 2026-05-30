@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
@@ -27,14 +28,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
-import {
-  adminActivities,
-  adminNotifications,
-  adminStats,
-  attendanceMonitoring,
-  departmentDistributionAdmin,
-  studentAnalytics,
-} from "@/mock/adminData";
+import api from "@/lib/api";
 
 const statIcons = [Users, GraduationCap, BookOpen, CheckCircle, DollarSign, Clock, Calendar, Bell];
 const statGradients = [
@@ -51,8 +45,57 @@ const statGradients = [
 export function AdminDashboard() {
   const path = useRouterState({ select: (r) => r.location.pathname });
 
+  const [stats, setStats] = useState<any[]>([]);
+  const [studentAnalytics, setStudentAnalytics] = useState<any[]>([]);
+  const [deptDistribution, setDeptDistribution] = useState<any[]>([]);
+  const [attendanceData, setAttendanceData] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (path !== "/dashboard/admin") return;
+
+    const fetchDashboardData = async () => {
+      try {
+        const res = await api.get("/api/dashboard/stats");
+        if (res.data?.success && res.data?.data) {
+          const {
+            stats: dbStats,
+            departmentData,
+            attendanceMonitoring: dbAttendance,
+            studentAnalytics: dbAnalytics,
+            activities: dbActivities,
+            notifications: dbNotifications,
+          } = res.data.data;
+
+          setStats(dbStats || []);
+          setStudentAnalytics(dbAnalytics || []);
+          setDeptDistribution(departmentData || []);
+          setAttendanceData(dbAttendance || []);
+          setActivities(dbActivities || []);
+          setNotifications(dbNotifications || []);
+        }
+      } catch (err) {
+        console.error("Error loading admin dashboard statistics:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [path]);
+
   if (path !== "/dashboard/admin") {
     return <Outlet />;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
   }
 
   return (
@@ -63,7 +106,7 @@ export function AdminDashboard() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {adminStats.map((stat, i) => (
+        {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 10 }}
@@ -74,8 +117,8 @@ export function AdminDashboard() {
               label={stat.label}
               value={stat.value}
               change={stat.change}
-              icon={statIcons[i]}
-              gradient={statGradients[i]}
+              icon={statIcons[i % statIcons.length]}
+              gradient={statGradients[i % statGradients.length]}
             />
           </motion.div>
         ))}
@@ -112,6 +155,7 @@ export function AdminDashboard() {
                 <Area
                   type="monotone"
                   dataKey="enrolled"
+                  name="Enrolled Students"
                   stroke="#4F46E5"
                   fill="url(#admin-enrolled)"
                   strokeWidth={2}
@@ -119,6 +163,7 @@ export function AdminDashboard() {
                 <Area
                   type="monotone"
                   dataKey="fees"
+                  name="Fee Collection (₹)"
                   stroke="#06B6D4"
                   fill="url(#admin-fees)"
                   strokeWidth={2}
@@ -137,13 +182,13 @@ export function AdminDashboard() {
             <ResponsiveContainer>
               <PieChart>
                 <Pie
-                  data={departmentDistributionAdmin}
+                  data={deptDistribution}
                   dataKey="value"
                   innerRadius={50}
                   outerRadius={80}
                   paddingAngle={3}
                 >
-                  {departmentDistributionAdmin.map((d, i) => (
+                  {deptDistribution.map((d, i) => (
                     <Cell key={i} fill={d.color} />
                   ))}
                 </Pie>
@@ -151,11 +196,11 @@ export function AdminDashboard() {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {departmentDistributionAdmin.map((d) => (
+          <div className="grid grid-cols-2 gap-2 mt-2 max-h-[120px] overflow-y-auto">
+            {deptDistribution.map((d) => (
               <div key={d.name} className="flex items-center gap-2 text-xs">
                 <span className="size-2.5 rounded-full" style={{ background: d.color }} />
-                <span className="text-muted-foreground">{d.name}</span>
+                <span className="text-muted-foreground truncate max-w-[80px]">{d.name}</span>
                 <span className="ml-auto font-medium">{d.value}</span>
               </div>
             ))}
@@ -172,17 +217,16 @@ export function AdminDashboard() {
                 Daily attendance across all departments
               </p>
             </div>
-            <Badge tone="success">87.3%</Badge>
           </div>
           <div className="h-64">
             <ResponsiveContainer>
-              <BarChart data={attendanceMonitoring}>
+              <BarChart data={attendanceData}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="present" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="absent" fill="#06B6D4" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="present" name="Present" fill="#4F46E5" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="absent" name="Absent" fill="#06B6D4" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -202,7 +246,7 @@ export function AdminDashboard() {
             ].map((item) => (
               <button
                 key={item.label}
-                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition"
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer text-left"
               >
                 <span className="text-sm font-medium">{item.label}</span>
                 <Badge tone={item.tone}>Action</Badge>
@@ -218,10 +262,10 @@ export function AdminDashboard() {
             <h3 className="font-semibold">Recent Activities</h3>
             <Badge tone="info">Live</Badge>
           </div>
-          <div className="space-y-3">
-            {adminActivities.map((activity) => (
+          <div className="space-y-3 max-h-[380px] overflow-y-auto">
+            {activities.map((activity, idx) => (
               <div
-                key={activity.actor + activity.time}
+                key={activity.actor + activity.time + idx}
                 className="flex items-center gap-3 py-2 border-b last:border-0"
               >
                 <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
@@ -244,11 +288,11 @@ export function AdminDashboard() {
             <h3 className="font-semibold">Notifications Panel</h3>
             <Bell className="size-4 text-muted-foreground" />
           </div>
-          <div className="space-y-2">
-            {adminNotifications.map((notification) => (
+          <div className="space-y-2 max-h-[380px] overflow-y-auto">
+            {notifications.map((notification, idx) => (
               <div
-                key={notification.id}
-                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}
+                key={notification.id + idx}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50" : "hover:bg-accent/50"}`}
               >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
