@@ -8,48 +8,51 @@ import api from "@/lib/api";
 
 export function ParentAttendance() {
   const [records, setRecords] = useState<any[]>([]);
-  const [subjectAttendance, setSubjectAttendance] = useState<any[]>(mockSubjectAttendance);
+  const [subjectAttendance, setSubjectAttendance] = useState<any[]>([]);
   const [stats, setStats] = useState([
-    { label: "Overall Attendance", value: "87.3%", tone: "success" as const },
-    { label: "Present Days", value: "108", tone: "info" as const },
-    { label: "Absent Days", value: "12", tone: "danger" as const },
-    { label: "This Month", value: "92%", tone: "success" as const },
+    { label: "Overall Attendance", value: "0%", tone: "success" as const },
+    { label: "Present Days", value: "0", tone: "info" as const },
+    { label: "Absent Days", value: "0", tone: "danger" as const },
+    { label: "This Month", value: "0%", tone: "success" as const },
   ]);
+  const [attendanceHistoryData, setAttendanceHistoryData] = useState<any[]>([]);
 
   useEffect(() => {
     const loadAttendance = async () => {
       try {
-        let childUserId = "";
+        let childId = "";
         const cached = localStorage.getItem("cms_parent_child_data");
         if (cached) {
           const parsed = JSON.parse(cached);
-          childUserId = parsed.childUserId;
+          childId = parsed.childId;
         }
 
-        if (!childUserId) {
+        if (!childId) {
           const resProfile = await api.get("/api/parent-module/student-data");
           if (resProfile.data?.success && resProfile.data?.data) {
-            childUserId = resProfile.data.data.childUserId;
+            childId = resProfile.data.data.childId;
             localStorage.setItem("cms_parent_child_data", JSON.stringify(resProfile.data.data));
           }
         }
 
-        if (childUserId) {
-          const res = await api.get(`/api/attendance/student/${childUserId}`);
+        if (childId) {
+          const res = await api.get(`/api/attendance/student/${childId}`);
           if (res.data?.success && res.data?.data) {
             const { records: dbRecords, stats: dbStats } = res.data.data;
-            if (dbRecords && dbRecords.length > 0) {
-              setRecords(dbRecords);
-              
+            const activeRecords = dbRecords || [];
+            
+            setRecords(activeRecords);
+            
+            if (activeRecords.length > 0) {
               // Calculate subject wise stats
               const subjectMap: Record<string, { total: number, attended: number }> = {};
-              dbRecords.forEach((r: any) => {
+              activeRecords.forEach((r: any) => {
                 const sub = r.subject || "Data Structures";
                 if (!subjectMap[sub]) {
                   subjectMap[sub] = { total: 0, attended: 0 };
                 }
                 subjectMap[sub].total += 1;
-                if (r.status.toLowerCase() === "present") {
+                if (r.status.toLowerCase() === "present" || r.status.toLowerCase() === "late") {
                   subjectMap[sub].attended += 1;
                 }
               });
@@ -66,15 +69,48 @@ export function ParentAttendance() {
                 };
               });
 
-              if (computedSubjects.length > 0) {
-                setSubjectAttendance(computedSubjects);
+              setSubjectAttendance(computedSubjects);
+
+              // Calculate monthly history dynamically (last 5 months)
+              const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              const monthlyMap: Record<string, { present: number, absent: number }> = {};
+              
+              const today = new Date();
+              const last5Months: string[] = [];
+              for (let i = 4; i >= 0; i--) {
+                const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                const mName = months[d.getMonth()];
+                last5Months.push(mName);
+                monthlyMap[mName] = { present: 0, absent: 0 };
               }
+
+              activeRecords.forEach((r: any) => {
+                const recDate = new Date(r.date);
+                const mName = months[recDate.getMonth()];
+                if (monthlyMap[mName] !== undefined) {
+                  if (r.status.toLowerCase() === "present" || r.status.toLowerCase() === "late") {
+                    monthlyMap[mName].present += 1;
+                  } else if (r.status.toLowerCase() === "absent") {
+                    monthlyMap[mName].absent += 1;
+                  }
+                }
+              });
+
+              const computedHistory = last5Months.map(mName => ({
+                month: mName,
+                present: monthlyMap[mName].present,
+                absent: monthlyMap[mName].absent
+              }));
+              setAttendanceHistoryData(computedHistory);
+            } else {
+              setSubjectAttendance([]);
+              setAttendanceHistoryData([]);
             }
 
             if (dbStats) {
-              const overall = dbStats.percentage !== undefined ? `${dbStats.percentage}%` : "87.3%";
-              const present = dbStats.present !== undefined ? String(dbStats.present) : "108";
-              const absent = dbStats.absent !== undefined ? String(dbStats.absent) : "12";
+              const overall = dbStats.percentage !== undefined ? `${dbStats.percentage}%` : "0%";
+              const present = dbStats.present !== undefined ? String(dbStats.present) : "0";
+              const absent = dbStats.absent !== undefined ? String(dbStats.absent) : "0";
               
               setStats([
                 { label: "Overall Attendance", value: overall, tone: "success" as const },
@@ -120,7 +156,7 @@ export function ParentAttendance() {
         <h3 className="font-semibold mb-4">Monthly Attendance</h3>
         <div className="h-72">
           <ResponsiveContainer>
-            <BarChart data={attendanceHistory}>
+            <BarChart data={attendanceHistoryData}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
               <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
               <YAxis stroke="#64748B" fontSize={12} />

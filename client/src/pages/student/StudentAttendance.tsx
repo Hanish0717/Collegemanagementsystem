@@ -1,19 +1,25 @@
 import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Calendar, QrCode } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { attendanceHistory, attendanceRecords } from "@/mock/studentData";
 import api from "@/lib/api";
 
 export function StudentAttendance() {
-  const [records, setRecords] = useState<any[]>(attendanceRecords);
+  const [records, setRecords] = useState<any[]>([]);
   const [stats, setStats] = useState([
-    { label: "Overall Attendance", value: "87.3%", tone: "success" as const },
-    { label: "Present Days", value: "108", tone: "info" as const },
-    { label: "Absent Days", value: "12", tone: "danger" as const },
-    { label: "This Month", value: "92%", tone: "success" as const },
+    { label: "Overall Attendance", value: "0%", tone: "success" as const },
+    { label: "Present Days", value: "0", tone: "info" as const },
+    { label: "Absent Days", value: "0", tone: "danger" as const },
+    { label: "This Month", value: "0%", tone: "success" as const },
   ]);
+
+  // Current Month calculations
+  const [monthlyChartData, setMonthlyChartData] = useState<any[]>([
+    { name: "Present", count: 0, fill: "#10B981" },
+    { name: "Absent", count: 0, fill: "#EF4444" },
+    { name: "Late", count: 0, fill: "#F59E0B" }
+  ]);
+
+  const thisMonthName = new Date().toLocaleString("en-US", { month: "long" });
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -27,20 +33,47 @@ export function StudentAttendance() {
         if (res.data?.success && res.data?.data) {
           const { records: dbRecords, stats: dbStats } = res.data.data;
 
-          if (dbRecords && dbRecords.length > 0) {
-            const formatted = dbRecords.map((r: any) => ({
-              date: new Date(r.date).toISOString().split('T')[0],
-              subject: r.subject,
-              time: r.time || "09:00 AM",
-              status: r.status.charAt(0).toUpperCase() + r.status.slice(1)
-            }));
-            setRecords(formatted);
-          }
+          const activeRecords = dbRecords || [];
+          const formatted = activeRecords.map((r: any) => ({
+            date: new Date(r.date).toISOString().split('T')[0],
+            subject: r.subject,
+            period: r.period || null,
+            time: r.time || "09:00 AM",
+            status: r.status.charAt(0).toUpperCase() + r.status.slice(1)
+          }));
+
+          // Sort records descending by date, secondary descending by period
+          const sorted = [...formatted].sort((a: any, b: any) => {
+            const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime();
+            if (dateDiff !== 0) return dateDiff;
+            const pA = a.period ? Number(a.period) : 0;
+            const pB = b.period ? Number(b.period) : 0;
+            return pB - pA;
+          });
+          setRecords(sorted);
+
+          // Group current month records
+          const currentMonth = new Date().getMonth();
+          const currentYear = new Date().getFullYear();
+          const currentMonthRecords = formatted.filter((r: any) => {
+            const recDate = new Date(r.date);
+            return recDate.getMonth() === currentMonth && recDate.getFullYear() === currentYear;
+          });
+
+          const currentPresent = currentMonthRecords.filter((r: any) => r.status === "Present").length;
+          const currentAbsent = currentMonthRecords.filter((r: any) => r.status === "Absent").length;
+          const currentLate = currentMonthRecords.filter((r: any) => r.status === "Late").length;
+
+          setMonthlyChartData([
+            { name: "Present", count: currentPresent, fill: "#10B981" },
+            { name: "Absent", count: currentAbsent, fill: "#EF4444" },
+            { name: "Late", count: currentLate, fill: "#F59E0B" }
+          ]);
 
           if (dbStats) {
-            const overall = dbStats.percentage !== undefined ? `${dbStats.percentage}%` : "87.3%";
-            const present = dbStats.present !== undefined ? String(dbStats.present) : "108";
-            const absent = dbStats.absent !== undefined ? String(dbStats.absent) : "12";
+            const overall = dbStats.percentage !== undefined ? `${dbStats.percentage}%` : "0%";
+            const present = dbStats.present !== undefined ? String(dbStats.present) : "0";
+            const absent = dbStats.absent !== undefined ? String(dbStats.absent) : "0";
 
             setStats([
               { label: "Overall Attendance", value: overall, tone: "success" as const },
@@ -61,7 +94,7 @@ export function StudentAttendance() {
     <div className="space-y-6">
       <PageHeader
         title="Attendance Tracking"
-        desc="View your attendance history, monthly statistics, and QR-based attendance records."
+        desc="View your attendance history, monthly statistics, and records."
       />
 
       <div className="grid md:grid-cols-4 gap-4">
@@ -77,16 +110,19 @@ export function StudentAttendance() {
       </div>
 
       <Card>
-        <h3 className="font-semibold mb-4">Monthly Attendance</h3>
+        <h3 className="font-semibold mb-4">{thisMonthName} Attendance Summary</h3>
         <div className="h-72">
           <ResponsiveContainer>
-            <BarChart data={attendanceHistory}>
+            <BarChart data={monthlyChartData}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-              <YAxis stroke="#64748B" fontSize={12} />
+              <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
+              <YAxis stroke="#64748B" fontSize={12} allowDecimals={false} />
               <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-              <Bar dataKey="present" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="absent" fill="#06B6D4" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                {monthlyChartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -98,7 +134,7 @@ export function StudentAttendance() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Date", "Subject", "Time", "Status"].map((column) => (
+                {["Date", "Subject", "Period", "Time", "Status"].map((column) => (
                   <th
                     key={column}
                     className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -115,9 +151,12 @@ export function StudentAttendance() {
                   <td className="py-3 px-4">
                     <Badge tone="info">{record.subject}</Badge>
                   </td>
-                  <td className="py-3 px-4 text-muted-foreground">{record.time}</td>
+                  <td className="py-3 px-4 font-medium text-xs">
+                    {record.period ? `Period ${record.period}` : "N/A"}
+                  </td>
+                  <td className="py-3 px-4 text-muted-foreground">{record.time || "N/A"}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={record.status === "Present" ? "success" : "danger"}>
+                    <Badge tone={record.status === "Present" ? "success" : record.status === "Late" ? "warn" : "danger"}>
                       {record.status}
                     </Badge>
                   </td>
@@ -127,28 +166,12 @@ export function StudentAttendance() {
           </table>
         </div>
       </Card>
-
-      <Card>
-        <div className="flex items-center gap-2 mb-4">
-          <QrCode className="size-5 text-indigo" />
-          <h3 className="font-semibold">QR Attendance</h3>
-        </div>
-        <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
-          <div className="text-center">
-            <div className="w-32 h-32 mx-auto bg-white rounded-xl border-2 border-dashed border-primary flex items-center justify-center">
-              <QrCode className="size-16 text-muted-foreground" />
-            </div>
-            <div className="text-xs text-muted-foreground mt-2">Scan to mark attendance</div>
-          </div>
-          <div className="text-center text-sm">
-            <div className="font-medium">Today's Classes</div>
-            <div className="text-muted-foreground">Scan QR code in each class</div>
-          </div>
-          <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium">
-            View Today's QR Codes
-          </button>
-        </div>
-      </Card>
     </div>
   );
+}
+
+// Inline implementation of cell coloring if Cell is not directly imported
+function Cell(props: any) {
+  const { fill, ...rest } = props;
+  return <path fill={fill} {...rest} />;
 }

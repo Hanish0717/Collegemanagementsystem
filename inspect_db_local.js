@@ -19,7 +19,7 @@ const client = new Client({
 async function run() {
   try {
     await client.connect();
-    const res = await client.query("SELECT id, email, role, full_name, name FROM users WHERE email = 'sopetiyamini@gmail.com'");
+    const res = await client.query("SELECT a.id, a.date, a.status, a.subject, a.period, a.time, s.full_name as student_name FROM attendance a JOIN students s ON a.student = s.id ORDER BY a.date DESC");
     console.log("QUERY RESULT:", JSON.stringify(res.rows, null, 2));
   } catch (err) {
     console.error("DB Error:", err);
@@ -29,3 +29,4 @@ async function run() {
 }
 
 run();
+
