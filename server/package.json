@@ -18,7 +18,8 @@
     "seed:placement": "node src/seeders/seedPlacement.js",
     "seed:cms": "node src/seeders/seedCMS.js",
     "seed:ai": "node src/seeders/seedAI.js",
-    "seed:audit": "node src/seeders/seedAudit.js"
+    "seed:audit": "node src/seeders/seedAudit.js",
+    "inspect": "node ../inspect_db_local.js"
   },
   "keywords": [
     "college",

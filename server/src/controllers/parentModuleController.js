@@ -190,11 +190,13 @@ export const getParentStudentData = async (req, res, next) => {
       });
     }
 
+    let leaveReqs = null;
     if (childUserId) {
-      const { data: leaveReqs } = await supabase
+      const { data } = await supabase
         .from('leave_requests')
         .select('*')
         .eq('user_id', childUserId);
+      leaveReqs = data;
       if (leaveReqs) {
         leaveReqs.forEach(l => {
           if (l.status !== 'Pending') {

@@ -1,6 +1,7 @@
 import app from './app.js';
 import dotenv from 'dotenv';
 import pkg from 'pg';
+import { seedIfNeeded } from './seed_lightweight.js';
 
 dotenv.config();
 
@@ -42,6 +43,15 @@ async function runMigrations() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS temp_password varchar(255);
       ALTER TABLE faculty ADD COLUMN IF NOT EXISTS user_id uuid;
 
+      -- Add period and time columns to attendance if not exist
+      ALTER TABLE attendance ADD COLUMN IF NOT EXISTS period integer;
+      ALTER TABLE attendance ADD COLUMN IF NOT EXISTS time varchar(50);
+
+      -- Modify unique constraint on attendance table
+      ALTER TABLE attendance DROP CONSTRAINT IF EXISTS attendance_student_date_subject_key;
+      ALTER TABLE attendance DROP CONSTRAINT IF EXISTS attendance_student_date_subject_period_key;
+      ALTER TABLE attendance ADD CONSTRAINT attendance_student_date_subject_period_key UNIQUE(student, date, subject, period);
+
       -- Recreate foreign key constraints to ensure PostgREST can map relations without ambiguity
       ALTER TABLE students DROP CONSTRAINT IF EXISTS students_user_id_fkey;
       ALTER TABLE students DROP CONSTRAINT IF EXISTS fk_students_users;
@@ -69,11 +79,33 @@ async function runMigrations() {
 }
 
 // Start server after migrations
-runMigrations().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+runMigrations()
+  .then(() => seedIfNeeded())
+  .then(async () => {
+    try {
+      const client = new Client({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
+      });
+      await client.connect();
+      const res = await client.query("SELECT id, full_name, email, roll_number, department FROM students LIMIT 5");
+      console.log("\n🔑 LIVE STUDENTS IN SUPABASE DATABASE:");
+      if (res.rows.length === 0) {
+        console.log("   (No students found in the database!)");
+      } else {
+        res.rows.forEach(r => console.log(`   - ${r.full_name} (${r.roll_number}) | ${r.email} | Dept: ${r.department}`));
+      }
+      console.log("======================================\n");
+      await client.end();
+    } catch (err) {
+      console.error("❌ Live database verification query failed:", err);
+    }
+  })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    });
   });
-});
 
 
 

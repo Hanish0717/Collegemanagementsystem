@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   markAttendance,
+  bulkMarkAttendance,
   getStudentAttendance,
   getClassAttendance,
   updateAttendance,
@@ -17,6 +18,7 @@ router.use(protect);
 
 // Faculty & Admin access endpoints
 router.post('/mark', authorizeRoles('faculty', 'admin', 'super-admin'), markAttendance);
+router.post('/bulk-mark', authorizeRoles('faculty', 'admin', 'super-admin'), bulkMarkAttendance);
 router.get('/class', authorizeRoles('faculty', 'admin', 'super-admin'), getClassAttendance);
 
 router

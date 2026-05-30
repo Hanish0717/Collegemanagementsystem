@@ -165,6 +165,13 @@ export const getStudentAttendance = async (req, res, next) => {
         subjectWise,
         monthly,
         records: formattedRecords,
+        stats: {
+          percentage: overallPercentage,
+          present: presentCount,
+          absent: absentCount,
+          late: lateCount,
+          total: total
+        }
       },
     };
 
@@ -184,11 +191,11 @@ export const getStudentAttendance = async (req, res, next) => {
 // @access  Private (faculty, admin, super-admin)
 export const getClassAttendance = async (req, res, next) => {
   try {
-    const { department, semester, section, subject, date } = req.query;
+    const { department, semester, section, subject, date, period } = req.query;
 
     let studentQuery = supabase
       .from('students')
-      .select('id, full_name, roll_number')
+      .select('id, full_name, roll_number, department')
       .eq('is_active', true);
 
     if (department) studentQuery = studentQuery.eq('department', department);
@@ -208,22 +215,40 @@ export const getClassAttendance = async (req, res, next) => {
       const dateStr = new Date(date).toISOString().split('T')[0];
       attendanceQuery = attendanceQuery.eq('date', dateStr);
     }
+    if (period) {
+      attendanceQuery = attendanceQuery.eq('period', Number(period));
+    }
 
     const { data: records } = await attendanceQuery;
 
-    const studentMap = {};
-    if (matchedStudents) {
-      matchedStudents.forEach(s => {
-        studentMap[s.id] = { _id: s.id, fullName: s.full_name, rollNumber: s.roll_number };
+    const attendanceMap = {};
+    if (records) {
+      records.forEach(r => {
+        attendanceMap[r.student] = r;
       });
     }
 
-    const formatted = records ? records.map(r => ({
-      ...r,
-      _id: r.id,
-      student: studentMap[r.student] || { _id: r.student, fullName: 'Unknown Student', rollNumber: '' },
-      faculty: { fullName: "Faculty" }
-    })) : [];
+    const formatted = matchedStudents ? matchedStudents.map(s => {
+      const attRecord = attendanceMap[s.id];
+      return {
+        _id: attRecord ? attRecord.id : undefined,
+        id: attRecord ? attRecord.id : undefined,
+        student: {
+          _id: s.id,
+          id: s.id,
+          fullName: s.full_name,
+          rollNumber: s.roll_number,
+          department: s.department
+        },
+        status: attRecord ? attRecord.status : 'Present',
+        remarks: attRecord ? (attRecord.remarks || '') : '',
+        date: attRecord ? attRecord.date : (date ? new Date(date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]),
+        subject: attRecord ? attRecord.subject : subject,
+        period: attRecord ? attRecord.period : (period ? Number(period) : null),
+        time: attRecord ? attRecord.time : (req.query.time || null),
+        faculty: { fullName: "Faculty" }
+      };
+    }) : [];
 
     return res.status(200).json({
       success: true,
@@ -382,6 +407,118 @@ export const getAttendanceReport = async (req, res, next) => {
         overallPercentage,
         lowAttendanceStudents,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Bulk mark attendance for a class
+// @route   POST /api/attendance/bulk-mark
+// @access  Private (faculty, admin, super-admin)
+export const bulkMarkAttendance = async (req, res, next) => {
+  try {
+    const { subject, date, department, semester, section, period, time, records } = req.body;
+
+    if (!subject || !date || !records || !Array.isArray(records)) {
+      const error = new Error('Please fill in all required fields and provide records array');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const dateStr = new Date(date).toISOString().split('T')[0];
+    const results = [];
+
+    for (const record of records) {
+      const { studentId, status, remarks, attendanceId } = record;
+
+      if (!studentId || !status) continue;
+
+      const cleanStatus = status.toLowerCase();
+
+      // Check if student exists
+      const { data: studentRecord } = await supabase
+        .from('students')
+        .select('*')
+        .eq('id', studentId)
+        .maybeSingle();
+
+      if (!studentRecord) continue;
+
+      let savedRecord;
+      let existingRecord = null;
+
+      if (attendanceId) {
+        const { data } = await supabase
+          .from('attendance')
+          .select('*')
+          .eq('id', attendanceId)
+          .maybeSingle();
+        existingRecord = data;
+      } else {
+        const query = supabase
+          .from('attendance')
+          .select('*')
+          .eq('student', studentId)
+          .eq('date', dateStr)
+          .eq('subject', subject);
+        
+        if (period) {
+          query.eq('period', Number(period));
+        }
+
+        const { data } = await query.maybeSingle();
+        existingRecord = data;
+      }
+
+      if (existingRecord) {
+        // Update existing record
+        const { data, error: updateErr } = await supabase
+          .from('attendance')
+          .update({
+            status: cleanStatus,
+            remarks: remarks || '',
+            time: time || existingRecord.time
+          })
+          .eq('id', existingRecord.id)
+          .select()
+          .single();
+
+        if (updateErr) throw updateErr;
+        savedRecord = data;
+      } else {
+        // Create new record
+        const { data, error: createErr } = await supabase
+          .from('attendance')
+          .insert([{
+            student: studentId,
+            date: dateStr,
+            status: cleanStatus,
+            subject,
+            period: period ? Number(period) : null,
+            time: time || null,
+            remarks: remarks || ''
+          }])
+          .select()
+          .single();
+
+        if (createErr) throw createErr;
+        savedRecord = data;
+      }
+
+      // Recalculate percentage
+      await updateStudentAttendancePercentage(studentId);
+
+      results.push({
+        ...savedRecord,
+        _id: savedRecord.id
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Bulk attendance saved successfully',
+      data: results
     });
   } catch (error) {
     next(error);

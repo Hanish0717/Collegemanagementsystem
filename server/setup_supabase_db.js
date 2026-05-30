@@ -110,9 +110,11 @@ CREATE TABLE IF NOT EXISTS attendance (
   date date NOT NULL,
   status varchar(20) CHECK (status IN ('Present', 'Absent', 'Late', 'present', 'absent', 'late')),
   subject varchar(255) NOT NULL,
+  period integer,
+  time varchar(50),
   remarks text,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-  UNIQUE(student, date, subject)
+  UNIQUE(student, date, subject, period)
 );
 
 -- 5. BOOKS Table (Library)
