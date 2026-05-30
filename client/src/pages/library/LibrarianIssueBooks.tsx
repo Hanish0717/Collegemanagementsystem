@@ -39,9 +39,11 @@ export function LibrarianIssueBooks() {
     setLoading(true);
     try {
       const [booksData, historyData, studentsRes] = await Promise.all([
-        fetchBooks(),
+        fetchBooks({ limit: 1000 }),
         fetchIssuedBooks(),
-        api.get<{ success: boolean; data: { students: StudentListItem[] } }>("/api/students"),
+        api.get<{ success: boolean; data: { students: StudentListItem[] } }>("/api/students", {
+          params: { limit: 1000 },
+        }),
       ]);
       setBooks(booksData);
       setIssuedHistory(historyData);

@@ -38,16 +38,19 @@ export function LibrarianBooks() {
     "All",
     "Computer Science",
     "Software Engineering",
+    "Electronics",
+    "Electrical",
+    "Mechanical",
+    "Civil",
     "Mathematics",
     "Physics",
-    "Electronics",
     "Engineering",
     "General Knowledge",
   ];
 
   const loadBooks = () => {
     setLoading(true);
-    fetchBooks()
+    fetchBooks({ limit: 1000 })
       .then((data) => {
         setBooks(data);
         setLoading(false);

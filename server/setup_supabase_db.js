@@ -149,6 +149,25 @@ CREATE TABLE IF NOT EXISTS issued_books (
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 6b. LIBRARY_NOTIFICATIONS Table
+CREATE TABLE IF NOT EXISTS library_notifications (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title varchar(255) NOT NULL,
+  message text NOT NULL,
+  type varchar(50) NOT NULL,
+  unread boolean DEFAULT true,
+  urgency varchar(20) DEFAULT 'medium' CHECK (urgency IN ('high', 'medium', 'low')),
+  is_archived boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6c. LIBRARY_SETTINGS Table
+CREATE TABLE IF NOT EXISTS library_settings (
+  key varchar(255) PRIMARY KEY,
+  value jsonb NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 -- 7. COMPLAINTS Table
 CREATE TABLE IF NOT EXISTS complaints (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
