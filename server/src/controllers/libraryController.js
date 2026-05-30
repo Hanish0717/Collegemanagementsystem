@@ -591,19 +591,49 @@ export const getLibraryReport = async (req, res, next) => {
       .in('status', ['Returned', 'returned']);
     const totalFines = fineData ? fineData.reduce((sum, item) => sum + Number(item.fine_amount || 0), 0) : 0;
 
-    // 5. Category analytics
+    // 5. Category analytics (with checkouts)
     const { data: allBooks } = await supabase.from('books').select('category').eq('is_active', true);
+    const { data: allIssuesWithBooks } = await supabase
+      .from('issued_books')
+      .select('status, book:books(category)');
+
     const categoryMap = {};
     if (allBooks) {
       allBooks.forEach(b => {
         const cat = b.category || 'Uncategorized';
-        categoryMap[cat] = (categoryMap[cat] || 0) + 1;
+        if (!categoryMap[cat]) {
+          categoryMap[cat] = { totalBooks: 0, issued: 0, returned: 0, active: 0 };
+        }
+        categoryMap[cat].totalBooks += 1;
       });
     }
-    const categoryAnalytics = Object.keys(categoryMap).map(cat => ({
-      _id: cat,
-      count: categoryMap[cat]
-    }));
+
+    if (allIssuesWithBooks) {
+      allIssuesWithBooks.forEach(issue => {
+        const cat = issue.book?.category || 'Uncategorized';
+        if (!categoryMap[cat]) {
+          categoryMap[cat] = { totalBooks: 0, issued: 0, returned: 0, active: 0 };
+        }
+        categoryMap[cat].issued += 1;
+        const status = String(issue.status).toLowerCase();
+        if (status === 'returned') {
+          categoryMap[cat].returned += 1;
+        } else {
+          categoryMap[cat].active += 1;
+        }
+      });
+    }
+
+    const categoryAnalytics = Object.keys(categoryMap).map(cat => {
+      const data = categoryMap[cat];
+      return {
+        _id: cat,
+        count: data.totalBooks,
+        issued: data.issued,
+        returned: data.returned,
+        active: data.active
+      };
+    });
 
     // 6. Most issued books (top 5)
     const { data: allIssues } = await supabase.from('issued_books').select('book');
@@ -622,7 +652,7 @@ export const getLibraryReport = async (req, res, next) => {
 
     const mostIssuedBooks = [];
     if (topBookIds.length > 0) {
-      const { data: bookDetails } = await supabase.from('books').select('id, title, author').in('id', topBookIds);
+      const { data: bookDetails } = await supabase.from('books').select('id, title, author, available_quantity').in('id', topBookIds);
       if (bookDetails) {
         topBookIds.forEach(id => {
           const book = bookDetails.find(b => b.id === id);
@@ -631,6 +661,7 @@ export const getLibraryReport = async (req, res, next) => {
               bookId: book.id,
               title: book.title,
               author: book.author,
+              availableQuantity: Number(book.available_quantity || 0),
               issueCount: issueCounts[id]
             });
           }
@@ -651,6 +682,374 @@ export const getLibraryReport = async (req, res, next) => {
         categoryAnalytics,
         mostIssuedBooks
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Format ebook
+ */
+const formatEBook = (e) => {
+  if (!e) return null;
+  return {
+    id: e.id,
+    _id: e.id,
+    title: e.title,
+    author: e.author,
+    category: e.category,
+    format: e.format,
+    size: e.size,
+    downloads: e.downloads || 0,
+    fileUrl: e.file_url || '',
+    createdAt: e.created_at
+  };
+};
+
+/**
+ * @desc   Get all ebooks with optional search and category filters
+ */
+export const getEBooks = async (req, res, next) => {
+  try {
+    const { search, category } = req.query;
+    let query = supabase.from('ebooks').select('*');
+
+    if (category && category !== 'All') {
+      query = query.ilike('category', `%${category}%`);
+    }
+
+    const { data: ebooks, error } = await query.order('created_at', { ascending: false });
+    if (error) throw error;
+
+    let filtered = ebooks;
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      filtered = ebooks.filter(e => 
+        e.title.toLowerCase().includes(lowerSearch) ||
+        e.author.toLowerCase().includes(lowerSearch)
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'EBooks fetched successfully',
+      data: {
+        ebooks: filtered.map(formatEBook)
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Add a new ebook
+ */
+export const addEBook = async (req, res, next) => {
+  try {
+    const { title, author, category, format, size, fileUrl } = req.body;
+    if (!title || !author || !category || !size) {
+      const err = new Error('Missing required fields');
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    const { data: ebook, error } = await supabase
+      .from('ebooks')
+      .insert([{
+        title,
+        author,
+        category,
+        format: format || 'PDF',
+        size,
+        file_url: fileUrl || '',
+        downloads: 0
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      success: true,
+      message: 'EBook created successfully',
+      data: formatEBook(ebook)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Update an ebook
+ */
+export const updateEBook = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { title, author, category, format, size, fileUrl } = req.body;
+
+    const { data: ebook, error } = await supabase
+      .from('ebooks')
+      .update({
+        title,
+        author,
+        category,
+        format,
+        size,
+        file_url: fileUrl,
+        updated_at: new Date()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'EBook updated successfully',
+      data: formatEBook(ebook)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Delete an ebook
+ */
+export const deleteEBook = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase.from('ebooks').delete().eq('id', id);
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'EBook deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Increment download count for an ebook
+ */
+export const downloadEBook = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch current download count
+    const { data: current, error: fetchErr } = await supabase
+      .from('ebooks')
+      .select('downloads')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+    if (!current) {
+      const err = new Error('EBook not found');
+      err.statusCode = 404;
+      return next(err);
+    }
+
+    const newDownloads = (current.downloads || 0) + 1;
+
+    const { data: updated, error: updateErr } = await supabase
+      .from('ebooks')
+      .update({ downloads: newDownloads })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    res.status(200).json({
+      success: true,
+      message: 'EBook download counted',
+      data: formatEBook(updated)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Get all library notifications
+ * @route  GET /api/library/notifications
+ */
+export const getLibraryNotifications = async (req, res, next) => {
+  try {
+    const { data: notifications, error } = await supabase
+      .from('library_notifications')
+      .select('*')
+      .eq('is_archived', false)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      data: notifications
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Add a library notification
+ * @route  POST /api/library/notifications
+ */
+export const addLibraryNotification = async (req, res, next) => {
+  try {
+    const { title, message, type, urgency } = req.body;
+    if (!title || !message || !type) {
+      const err = new Error('Missing required fields');
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    const { data: notification, error } = await supabase
+      .from('library_notifications')
+      .insert([{
+        title,
+        message,
+        type,
+        urgency: urgency || 'medium',
+        unread: true,
+        is_archived: false
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      success: true,
+      message: 'Notification dispatched',
+      data: notification
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Mark a library notification as read
+ * @route  PUT /api/library/notifications/:id/read
+ */
+export const markNotificationRead = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { data: notification, error } = await supabase
+      .from('library_notifications')
+      .update({ unread: false })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'Notification marked as read',
+      data: notification
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Archive a library notification
+ * @route  PUT /api/library/notifications/:id/archive
+ */
+export const archiveNotification = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { data: notification, error } = await supabase
+      .from('library_notifications')
+      .update({ is_archived: true })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'Notification archived',
+      data: notification
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Get library settings
+ * @route  GET /api/library/settings
+ */
+export const getLibrarySettings = async (req, res, next) => {
+  try {
+    const { data: settings, error } = await supabase
+      .from('library_settings')
+      .select('*')
+      .eq('key', 'channel_preferences')
+      .maybeSingle();
+
+    if (error) throw error;
+
+    // Return default settings if none exist
+    const defaultSettings = [
+      { title: "Due Date Reminders", enabled: true, desc: "Get notified when books are due within 3 days" },
+      { title: "Overdue Alerts", enabled: true, desc: "Critical alerts for overdue books" },
+      { title: "New Arrivals", enabled: true, desc: "Notify about newly added books" },
+      { title: "Fine Reminders", enabled: true, desc: "Payment reminders for pending fines" },
+      { title: "System Updates", enabled: false, desc: "Maintenance and system notifications" }
+    ];
+
+    res.status(200).json({
+      success: true,
+      data: settings ? settings.value : defaultSettings
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc   Update library settings
+ * @route  PUT /api/library/settings
+ */
+export const updateLibrarySettings = async (req, res, next) => {
+  try {
+    const { settings } = req.body;
+    if (!settings) {
+      const err = new Error('Settings data required');
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    const { data: updated, error } = await supabase
+      .from('library_settings')
+      .upsert({
+        key: 'channel_preferences',
+        value: settings,
+        updated_at: new Date()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'Settings updated',
+      data: updated.value
     });
   } catch (error) {
     next(error);

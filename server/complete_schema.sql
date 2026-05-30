@@ -11,6 +11,8 @@ DROP TABLE IF EXISTS results CASCADE;
 DROP TABLE IF EXISTS fees CASCADE;
 DROP TABLE IF EXISTS leave_requests CASCADE;
 DROP TABLE IF EXISTS complaints CASCADE;
+DROP TABLE IF EXISTS library_notifications CASCADE;
+DROP TABLE IF EXISTS library_settings CASCADE;
 DROP TABLE IF EXISTS issued_books CASCADE;
 DROP TABLE IF EXISTS books CASCADE;
 DROP TABLE IF EXISTS attendance CASCADE;
@@ -143,6 +145,25 @@ CREATE TABLE issued_books (
   status varchar(20) DEFAULT 'Issued' CHECK (status IN ('Issued', 'Returned', 'Overdue', 'issued', 'returned', 'overdue')),
   fine_amount numeric(10, 2) DEFAULT 0.00,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- LIBRARY_NOTIFICATIONS Table
+CREATE TABLE library_notifications (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title varchar(255) NOT NULL,
+  message text NOT NULL,
+  type varchar(50) NOT NULL,
+  unread boolean DEFAULT true,
+  urgency varchar(20) DEFAULT 'medium' CHECK (urgency IN ('high', 'medium', 'low')),
+  is_archived boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- LIBRARY_SETTINGS Table
+CREATE TABLE library_settings (
+  key varchar(255) PRIMARY KEY,
+  value jsonb NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- COMPLAINTS Table

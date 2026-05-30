@@ -36,18 +36,30 @@ export function LibrarianFines() {
 
   const fines = issuedBooks
     ? issuedBooks
-        .filter((issue) => (issue.fineAmount || 0) > 0)
-        .map((issue) => ({
-          id: issue._id,
-          studentName:
-            typeof issue.student === "object" && issue.student
-              ? issue.student.fullName
-              : "Unknown Student",
-          amount: issue.fineAmount || 0,
-          status: issue.status === "returned" ? "Paid" : "Pending",
-          date: issue.issueDate,
-          reason: issue.status === "overdue" ? "Overdue return" : "Late return fine",
-        }))
+        .filter((issue) => (issue.fineAmount || 0) > 0 || issue.status === "overdue")
+        .map((issue) => {
+          let amt = issue.fineAmount || 0;
+          if (amt === 0 && issue.status === "overdue") {
+            const due = new Date(issue.dueDate);
+            const now = new Date();
+            if (now > due) {
+              const diffTime = Math.abs(now.getTime() - due.getTime());
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              amt = diffDays * 10;
+            }
+          }
+          return {
+            id: issue._id,
+            studentName:
+              typeof issue.student === "object" && issue.student
+                ? issue.student.fullName
+                : "Unknown Student",
+            amount: amt,
+            status: issue.status === "returned" ? "Paid" : "Pending",
+            date: issue.issueDate,
+            reason: issue.status === "overdue" ? "Overdue return" : "Late return fine",
+          };
+        })
     : [];
 
   const getMonthlyFineData = () => {
@@ -63,16 +75,6 @@ export function LibrarianFines() {
         chartData[mIdx].collection += issue.fineAmount || 0;
       }
     });
-
-    if (chartData.every((c) => c.collection === 0)) {
-      return [
-        { month: "Jan", collection: 2840 },
-        { month: "Feb", collection: 3120 },
-        { month: "Mar", collection: 3450 },
-        { month: "Apr", collection: 3890 },
-        { month: "May", collection: 4120 },
-      ];
-    }
 
     return chartData;
   };
@@ -103,14 +105,43 @@ export function LibrarianFines() {
   };
 
   const handleExportFines = () => {
+    if (!filteredFines || filteredFines.length === 0) {
+      toast.error("No fine records to export.");
+      return;
+    }
     setIsExporting(true);
     toast.loading("Compiling fine audit sheets...");
 
-    setTimeout(() => {
+    try {
+      const headers = ["Fine ID", "Student Name", "Reason", "Amount (INR)", "Date", "Status"];
+      const rows = filteredFines.map((f) => [
+        f.id,
+        f.studentName,
+        f.reason,
+        `₹${f.amount}`,
+        f.date,
+        f.status,
+      ]);
+
+      const csvContent = [headers, ...rows].map((e) => e.map((val) => `"${val}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `fine_collection_ledger_${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       toast.dismiss();
+      toast.success("Fine collection ledger successfully exported!");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to export ledger.");
+      console.error(err);
+    } finally {
       setIsExporting(false);
-      toast.success("Fine collection spreadsheet successfully compiled and downloaded!");
-    }, 1500);
+    }
   };
 
   if (isLoading) {
