@@ -1,32 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Legend,
-} from "recharts";
-import { Users, GraduationCap, CalendarCheck, Wallet, TrendingUp, Calendar } from "lucide-react";
+import { Users, GraduationCap, CalendarCheck, Wallet, Bus, Compass } from "lucide-react";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { supabase } from "@/lib/supabaseClient";
-import {
-  attendanceData as mockAttendance,
-  performanceData as mockPerformance,
-  departmentData as mockDepartment,
-  activities as mockActivities,
-  events as mockEvents,
-  stats as mockStats,
-} from "@/mock/mockData";
+import { stats as mockStats } from "@/mock/mockData";
 import { fetchDashboardData, type DashboardStats } from "@/services/dashboardService";
 
 const statIcons = [Users, GraduationCap, CalendarCheck, Wallet];
@@ -74,11 +51,7 @@ export function DashboardIndex() {
   }, []);
 
   const stats = data?.stats || mockStats;
-  const attendanceData = data?.attendanceData || mockAttendance;
-  const departmentData = data?.departmentData || mockDepartment;
-  const performanceData = data?.performanceData || mockPerformance;
-  const events = data?.events || mockEvents;
-  const activities = data?.activities || mockActivities;
+
 
   return (
     <div className="space-y-6">
@@ -111,166 +84,165 @@ export function DashboardIndex() {
         ))}
       </div>
 
-      {/* Charts row */}
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
+      {/* ═══════════════════════════════════════════════════════════════════
+           SMART FLEET & CAMPUS TRANSIT — FULL DETAILED SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
+      <div className="space-y-4 pt-2">
+
+        {/* Section Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="size-9 rounded-xl bg-indigo-50 border border-indigo-100 grid place-items-center text-indigo-600 shrink-0">
+              <Bus className="size-5" />
+            </div>
             <div>
-              <h3 className="font-semibold">Weekly Attendance</h3>
-              <p className="text-xs text-muted-foreground">Present vs absent across campus</p>
-            </div>
-            <Badge tone="info">This week</Badge>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer>
-              <AreaChart data={attendanceData}>
-                <defs>
-                  <linearGradient id="grad-p" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
-                    <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="grad-a" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#06B6D4" stopOpacity={0.5} />
-                    <stop offset="100%" stopColor="#06B6D4" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Area
-                  type="monotone"
-                  dataKey="present"
-                  stroke="#4F46E5"
-                  fill="url(#grad-p)"
-                  strokeWidth={2}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="absent"
-                  stroke="#06B6D4"
-                  fill="url(#grad-a)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Departments</h3>
-            <Badge>Live</Badge>
-          </div>
-          <div className="h-56">
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={departmentData}
-                  dataKey="value"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={3}
-                >
-                  {departmentData.map((d, i) => (
-                    <Cell key={i} fill={d.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {departmentData.map((d) => (
-              <div key={d.name} className="flex items-center gap-2 text-xs">
-                <span className="size-2.5 rounded-full" style={{ background: d.color }} />
-                <span className="text-muted-foreground">{d.name}</span>
-                <span className="ml-auto font-medium">{d.value}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      {/* Bottom row */}
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold">Academic Performance</h3>
-              <p className="text-xs text-muted-foreground">Average score over 6 months</p>
-            </div>
-            <div className="flex items-center gap-1 text-emerald-600 text-sm font-medium">
-              <TrendingUp className="size-4" /> +12.4%
+              <h3 className="font-bold text-slate-800 text-sm">Smart Fleet & Campus Transit Details</h3>
+              <p className="text-[10px] text-slate-500">Bus roster, student allocation, passenger counts &amp; route-wise fee breakdown.</p>
             </div>
           </div>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <BarChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="score" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Upcoming Events</h3>
-            <Calendar className="size-4 text-muted-foreground" />
-          </div>
-          <div className="space-y-3">
-            {events.map((e) => (
-              <div
-                key={e.title}
-                className="flex items-center gap-3 p-3 rounded-xl bg-gradient-soft border"
-              >
-                <div
-                  className={`size-11 rounded-xl bg-gradient-to-br ${e.color} text-white grid place-items-center text-xs font-semibold`}
-                >
-                  {e.date}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium truncate">{e.title}</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {e.category} · {e.attendees} attending
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      {/* Activity */}
-      <Card>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold">Recent Activity</h3>
-          <Badge tone="success">Live</Badge>
+          <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
+            <span className="size-1.5 bg-emerald-500 rounded-full animate-ping inline-block" />
+            Live Data
+          </span>
         </div>
-        <div className="space-y-3">
-          {activities.map((a, i) => (
-            <div key={i} className="flex items-center gap-3 py-2 border-b last:border-0">
-              <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                {a.user
-                  .split(" ")
-                  .map((x) => x[0])
-                  .slice(0, 2)
-                  .join("")}
+
+        {/* Top KPI Summary Row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { label: "Total Buses", value: "4", sub: "TS-09-UB Fleet", icon: Bus, color: "indigo" },
+            { label: "Total Students", value: "185", sub: "96.5% verified", icon: GraduationCap, color: "violet" },
+            { label: "Bus Passengers", value: "48", sub: "Active passes issued", icon: Users, color: "cyan" },
+            { label: "Monthly Revenue", value: "₹84,600", sub: "Across all 3 routes", icon: Wallet, color: "amber" },
+          ].map(({ label, value, sub, icon: Icon, color }) => (
+            <div key={label} className={`bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:shadow-md transition-all`}>
+              <div className={`absolute top-0 right-0 w-14 h-14 bg-${color}-50 rounded-full blur-xl pointer-events-none`} />
+              <div className={`size-8 rounded-lg bg-${color}-50 border border-${color}-100 grid place-items-center text-${color}-600 mb-2`}>
+                <Icon className="size-4" />
               </div>
-              <div className="flex-1 text-sm">
-                <span className="font-medium">{a.user}</span>{" "}
-                <span className="text-muted-foreground">{a.action}</span>{" "}
-                <span className="font-medium">{a.target}</span>
-              </div>
-              <span className="text-xs text-muted-foreground">{a.time}</span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">{label}</span>
+              <span className="font-bold text-slate-800 text-lg block leading-tight">{value}</span>
+              <span className="text-[9px] text-slate-500 mt-0.5 block">{sub}</span>
             </div>
           ))}
         </div>
-      </Card>
+
+        {/* Main Detail Grid: Bus Table + Route Fees */}
+        <div className="grid lg:grid-cols-5 gap-4">
+
+          {/* LEFT: Bus Details Table (col-span-3) */}
+          <Card className="lg:col-span-3 overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="font-bold text-slate-800 text-sm">Bus Fleet Details</h4>
+                <p className="text-[10px] text-slate-500">Vehicle, driver, route coverage &amp; passenger load</p>
+              </div>
+              <Badge tone="info">4 Active</Badge>
+            </div>
+            <div className="overflow-x-auto -mx-1">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100">
+                    <th className="text-left text-[10px] text-slate-400 font-bold uppercase tracking-wider pb-2 pl-1">Bus No.</th>
+                    <th className="text-left text-[10px] text-slate-400 font-bold uppercase tracking-wider pb-2">Route</th>
+                    <th className="text-left text-[10px] text-slate-400 font-bold uppercase tracking-wider pb-2">Driver</th>
+                    <th className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider pb-2">Capacity</th>
+                    <th className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider pb-2">Passengers</th>
+                    <th className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-wider pb-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {[
+                    { bus: "TS-09-UB-1001", route: "Rajam → Vizianagaram", driver: "Satish Kumar", capacity: 50, passengers: 18, status: "Active" },
+                    { bus: "TS-09-UB-1002", route: "Rajam → Palakonda", driver: "Mohammad Rafiq", capacity: 60, passengers: 14, status: "Active" },
+                    { bus: "TS-09-UB-1003", route: "Rajam → Srikakulam", driver: "Ramesh Yadav", capacity: 40, passengers: 16, status: "Active" },
+                    { bus: "TS-09-UB-1004", route: "Custom Route", driver: "To Be Assigned", capacity: 50, passengers: 0, status: "Standby" },
+                  ].map((row) => (
+                    <tr key={row.bus} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-2.5 pl-1">
+                        <span className="font-mono font-bold text-indigo-700 text-[11px]">{row.bus.split("-").pop()}</span>
+                      </td>
+                      <td className="py-2.5 pr-2">
+                        <span className="text-slate-700 font-medium text-[11px] block leading-tight max-w-[120px] truncate">{row.route}</span>
+                      </td>
+                      <td className="py-2.5 pr-2">
+                        <span className="text-slate-600 text-[11px]">{row.driver}</span>
+                      </td>
+                      <td className="py-2.5 text-center">
+                        <span className="text-slate-600 font-semibold">{row.capacity}</span>
+                      </td>
+                      <td className="py-2.5 text-center">
+                        <div className="flex flex-col items-center gap-0.5">
+                          <span className="font-bold text-slate-800">{row.passengers}</span>
+                          <div className="w-12 h-1 rounded-full bg-slate-100 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-indigo-500"
+                              style={{ width: `${Math.round((row.passengers / row.capacity) * 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-2.5 text-center">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                          row.status === "Active"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                            : "bg-amber-50 text-amber-700 border border-amber-100"
+                        }`}>
+                          <span className={`size-1.5 rounded-full ${row.status === "Active" ? "bg-emerald-500 animate-pulse" : "bg-amber-400"}`} />
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* RIGHT: Route-wise Fee Breakdown (col-span-2) */}
+          <Card className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h4 className="font-bold text-slate-800 text-sm">Route Section Fees</h4>
+                <p className="text-[10px] text-slate-500">Monthly fee per student, per route</p>
+              </div>
+              <Compass className="size-4 text-amber-500" />
+            </div>
+            <div className="space-y-3">
+              {[
+                { route: "Route 1", coverage: "Rajam → Vizianagaram", dist: "52 km", fare: 2200, passengers: 18, color: "indigo" },
+                { route: "Route 2", coverage: "Rajam → Palakonda", dist: "22 km", fare: 1500, passengers: 14, color: "cyan" },
+                { route: "Route 3", coverage: "Rajam → Srikakulam", dist: "55 km", fare: 1800, passengers: 16, color: "violet" },
+              ].map((r) => (
+                <div key={r.route} className={`p-3 rounded-xl bg-${r.color}-50 border border-${r.color}-100`}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className={`size-2 rounded-full bg-${r.color}-500`} />
+                      <span className={`text-[10px] font-bold text-${r.color}-700 uppercase tracking-wider`}>{r.route}</span>
+                    </div>
+                    <span className={`font-bold text-${r.color}-700 text-sm`}>₹{r.fare.toLocaleString()}<span className="text-[9px] font-normal opacity-70"> /mo</span></span>
+                  </div>
+                  <p className="text-[10px] text-slate-600 font-medium mb-2">{r.coverage}</p>
+                  <div className="flex items-center justify-between text-[9px] text-slate-500">
+                    <span>📍 {r.dist} road distance</span>
+                    <span>👤 {r.passengers} passengers</span>
+                    <span>💰 Total: ₹{(r.fare * r.passengers).toLocaleString()}/mo</span>
+                  </div>
+                </div>
+              ))}
+              {/* Total collection summary */}
+              <div className="mt-2 p-3 rounded-xl bg-slate-800 text-white">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">Total Monthly Collection</span>
+                  <span className="font-bold text-white text-base">₹84,600</span>
+                </div>
+                <p className="text-[9px] text-slate-400 mt-0.5">From 48 active bus pass holders across 3 routes</p>
+              </div>
+            </div>
+          </Card>
+
+
+        </div>
+      </div>
     </div>
   );
 }

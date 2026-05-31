@@ -867,119 +867,123 @@ export function DashboardLayout() {
               </div>
 
               {/* Plus/New Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNewActions(!showNewActions)}
-                  className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-primary text-primary-foreground text-sm font-medium glow-primary cursor-pointer hover:opacity-95 transition"
-                >
-                  <Plus className="size-4" /> New
-                </button>
-                {showNewActions && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowNewActions(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-56 bg-background border rounded-xl shadow-lg z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 text-left">
-                      <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">Quick Actions</div>
-                      {isWarden ? (
-                        <>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("allocateRoom");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <UserPlus className="size-3.5 text-violet-500" />
-                            <span>Allocate Room</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("registerVisitor");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <User className="size-3.5 text-indigo-500" />
-                            <span>Register Visitor</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("logComplaint");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <AlertTriangle className="size-3.5 text-amber-500" />
-                            <span>Log Complaint</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("sendWardenNotif");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <BellRing className="size-3.5 text-rose-500" />
-                            <span>Broadcast Announcement</span>
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("addBook");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <BookOpen className="size-3.5 text-violet-500" />
-                            <span>Quick Add Book</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("issueBook");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <History className="size-3.5 text-indigo-500" />
-                            <span>Issue Book Resource</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("addMember");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <UserPlus className="size-3.5 text-emerald-500" />
-                            <span>Register Member</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("addDigital");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <FileText className="size-3.5 text-amber-500" />
-                            <span>Upload Digital Resource</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              setActiveQuickAction("sendNotif");
-                              setShowNewActions(false);
-                            }}
-                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                          >
-                            <BellRing className="size-3.5 text-rose-500" />
-                            <span>Broadcast Alert</span>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
+              {(role.id === "warden" || role.id === "librarian") && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowNewActions(!showNewActions)}
+                    className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-primary text-primary-foreground text-sm font-medium glow-primary cursor-pointer hover:opacity-95 transition"
+                  >
+                    <Plus className="size-4" /> New
+                  </button>
+                  {showNewActions && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShowNewActions(false)} />
+                      <div className="absolute right-0 top-full mt-2 w-56 bg-background border rounded-xl shadow-lg z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 text-left">
+                        <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">Quick Actions</div>
+                        {isWarden ? (
+                          <>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("allocateRoom");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <UserPlus className="size-3.5 text-violet-500" />
+                              <span>Allocate Room</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("registerVisitor");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <User className="size-3.5 text-indigo-500" />
+                              <span>Register Visitor</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("logComplaint");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <AlertTriangle className="size-3.5 text-amber-500" />
+                              <span>Log Complaint</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("sendWardenNotif");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <BellRing className="size-3.5 text-rose-500" />
+                              <span>Broadcast Announcement</span>
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("addBook");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <BookOpen className="size-3.5 text-violet-500" />
+                              <span>Quick Add Book</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("issueBook");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <History className="size-3.5 text-indigo-500" />
+                              <span>Issue Book Resource</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("addMember");
+                                setShowNewActions(false);
+                                setActiveQuickAction("addMember");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <UserPlus className="size-3.5 text-emerald-500" />
+                              <span>Register Member</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("addDigital");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <FileText className="size-3.5 text-amber-500" />
+                              <span>Upload Digital Resource</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveQuickAction("sendNotif");
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <BellRing className="size-3.5 text-rose-500" />
+                              <span>Broadcast Alert</span>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Theme Toggle */}
               <button

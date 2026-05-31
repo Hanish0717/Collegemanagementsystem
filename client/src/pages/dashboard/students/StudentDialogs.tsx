@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Card } from "@/components/dashboard/ui";
-import type { DepartmentOption, StudentPayload, StudentRecord } from "@/services/studentService";
+import { fetchStudents, type DepartmentOption, type StudentPayload, type StudentRecord } from "@/services/studentService";
 import { fetchHostels, fetchHostelBlocks, fetchRoomsForBlock } from "@/services/hostelService";
 
 interface StudentFormModalProps {
@@ -75,7 +75,23 @@ const defaultForm = (student: any, departments: DepartmentOption[]) => ({
   status: student?.status ?? "Active",
 });
 
-const FormField = ({ label, required, type, value, onChange }: { label: string; required?: boolean; type: string; value: string; onChange: (val: string) => void }) => (
+const FormField = ({
+  label,
+  required,
+  type,
+  value,
+  onChange,
+  onBlur,
+  disabled
+}: {
+  label: string;
+  required?: boolean;
+  type: string;
+  value: string;
+  onChange: (val: string) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+}) => (
   <div>
     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
       {label}
@@ -86,9 +102,11 @@ const FormField = ({ label, required, type, value, onChange }: { label: string; 
       required={required}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+      disabled={disabled}
       placeholder={`Enter ${label.toLowerCase()}`}
       autoComplete="off"
-      className="w-full px-4 py-3 text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:focus:ring-blue-400 transition-all"
+      className="w-full px-4 py-3 text-base rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:focus:ring-blue-400 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
     />
   </div>
 );
@@ -134,10 +152,57 @@ export function StudentFormModal({
   const [hostelsList, setHostelsList] = useState<any[]>([]);
   const [blocksList, setBlocksList] = useState<any[]>([]);
   const [roomsList, setRoomsList] = useState<any[]>([]);
+  const [checkingRoll, setCheckingRoll] = useState(false);
+  const [rollStatus, setRollStatus] = useState<"idle" | "checking" | "found" | "not_found">("idle");
+
+  const checkRollNumber = async (roll: string) => {
+    if (!roll.trim() || mode !== "create") return;
+    
+    setCheckingRoll(true);
+    setRollStatus("checking");
+    try {
+      const response = await fetchStudents({ search: roll.trim(), limit: 10 });
+      const found = response.students.find(
+        (s) => s.rollNumber.toLowerCase() === roll.trim().toLowerCase()
+      );
+      
+      if (found) {
+        setRollStatus("found");
+        setForm((curr) => ({
+          ...curr,
+          fullName: found.fullName || curr.fullName,
+          department: found.department || curr.department,
+          admissionNumber: found.admissionNumber || curr.admissionNumber,
+          email: found.email || curr.email,
+          phoneNumber: found.phoneNumber || curr.phoneNumber,
+          gender: found.gender || curr.gender,
+          dateOfBirth: found.dateOfBirth || curr.dateOfBirth,
+          year: String(found.year ?? curr.year),
+          semester: String(found.semester ?? curr.semester),
+          section: found.section || curr.section,
+          parentName: found.parentName || curr.parentName,
+          parentPhone: found.parentPhone || curr.parentPhone,
+          parentEmail: found.parentEmail || curr.parentEmail,
+          attendancePercentage: String(found.attendancePercentage ?? curr.attendancePercentage),
+          cgpa: String(found.cgpa ?? curr.cgpa),
+        }));
+        toast.success(`Student details auto-filled from database for Roll Number: ${roll.trim()}`);
+      } else {
+        setRollStatus("not_found");
+      }
+    } catch (err) {
+      console.error("Error auto-checking roll number:", err);
+      setRollStatus("idle");
+    } finally {
+      setCheckingRoll(false);
+    }
+  };
 
   useEffect(() => {
     if (open) {
       setForm(defaultForm(student, departments));
+      setCheckingRoll(false);
+      setRollStatus("idle");
     }
   }, [open, student, departments]);
 
@@ -301,7 +366,32 @@ export function StudentFormModal({
               <SectionHeader title="👤 Personal Information" />
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-4">
                 <FormField label="Full Name" required type="text" value={form.fullName} onChange={(val) => updateField("fullName", val)} />
-                <FormField label="Roll Number" required type="text" value={form.rollNumber} onChange={(val) => updateField("rollNumber", val)} />
+                <div>
+                  <FormField
+                    label="Roll Number"
+                    required
+                    type="text"
+                    value={form.rollNumber}
+                    onChange={(val) => {
+                      updateField("rollNumber", val);
+                      if (rollStatus !== "idle") setRollStatus("idle");
+                    }}
+                    onBlur={(e) => checkRollNumber(e.target.value)}
+                  />
+                  {mode === "create" && (
+                    <div className="mt-1 min-h-[1.25rem]">
+                      {rollStatus === "checking" && (
+                        <span className="text-xs text-blue-500 animate-pulse font-medium">Checking database...</span>
+                      )}
+                      {rollStatus === "found" && (
+                        <span className="text-xs text-green-600 font-semibold font-mono">✓ Existing student found! Auto-filled details.</span>
+                      )}
+                      {rollStatus === "not_found" && (
+                        <span className="text-xs text-gray-500 font-medium">ℹ New roll number (will be registered).</span>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <FormField label="Admission Number" type="text" value={form.admissionNumber} onChange={(val) => updateField("admissionNumber", val)} />
                 <FormSelect label="Gender" value={form.gender} onChange={(val) => updateField("gender", val)}>
                   {['Male', 'Female', 'Other'].map((value) => (
@@ -325,8 +415,8 @@ export function StudentFormModal({
             <div>
               <SectionHeader title="🎓 Academic Details" />
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-4">
-                <FormSelect label="Department" required value={form.department} onChange={(val) => updateField("department", val)}>
-                  <option value="">Select Department</option>
+                <FormSelect label="Branch" required value={form.department} onChange={(val) => updateField("department", val)}>
+                  <option value="">Select Branch</option>
                   {(departments || []).map((department) => (
                     <option key={department.code} value={department.code}>
                       {department.name}
@@ -481,8 +571,8 @@ export function StudentFilterModal({
         {/* Filter content */}
         <div className="p-6 md:p-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <FilterFormSelect label="Department" value={filters.department} onChange={(val) => update("department", val)}>
-              <option value="All">All Departments</option>
+            <FilterFormSelect label="Branch" value={filters.department} onChange={(val) => update("department", val)}>
+              <option value="All">All Branches</option>
               {(departments || []).map((department) => (
                 <option key={department.code} value={department.code}>
                   {department.name}
@@ -571,5 +661,128 @@ export function StudentDeleteAlert({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  );
+}
+
+interface StudentVerifyModalProps {
+  open: boolean;
+  departments: DepartmentOption[];
+  onClose: () => void;
+  onVerify: (rollNumber: string, department: string) => Promise<any>;
+}
+
+export function StudentVerifyModal({
+  open,
+  departments,
+  onClose,
+  onVerify,
+}: StudentVerifyModalProps) {
+  const [rollNumber, setRollNumber] = useState("");
+  const [department, setDepartment] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [result, setResult] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      setRollNumber("");
+      setDepartment(departments[0]?.code ?? "");
+      setResult(null);
+    }
+  }, [open, departments]);
+
+  if (!open) return null;
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rollNumber.trim()) {
+      toast.error("Please enter a roll number");
+      return;
+    }
+    if (!department) {
+      toast.error("Please select a department");
+      return;
+    }
+
+    setVerifying(true);
+    setResult(null);
+    try {
+      const data = await onVerify(rollNumber, department);
+      setResult({ success: true, data });
+      toast.success("Success: Data is present and correct in the database!");
+    } catch (err: any) {
+      setResult({ success: false, error: err?.response?.data?.message || err.message || "Verification failed" });
+      toast.error("Student verification failed or not found");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-2 md:p-4 overflow-y-auto">
+      <div className="w-full max-w-md bg-white dark:bg-gray-950 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-300 overflow-hidden border border-gray-100 dark:border-gray-800">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-6">
+          <div className="flex justify-between items-start gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-white mb-1">Verify Student Data</h2>
+              <p className="text-blue-100 text-sm">
+                Check if a student exists in the database
+              </p>
+            </div>
+            <button onClick={onClose} className="p-1 hover:bg-white/20 rounded-lg transition text-white">
+              <X className="size-5" />
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleVerify} className="p-6">
+          <div className="space-y-4">
+            <FormField label="Roll Number" required type="text" value={rollNumber} onChange={setRollNumber} />
+            <FormSelect label="Branch" required value={department} onChange={setDepartment}>
+              <option value="">Select Branch</option>
+              {(departments || []).map((dep) => (
+                <option key={dep.code} value={dep.code}>{dep.name}</option>
+              ))}
+            </FormSelect>
+          </div>
+
+          {result && (
+            <div className={`mt-5 p-4 rounded-xl text-sm border ${result.success ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-950 dark:border-green-800 dark:text-green-300' : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-950 dark:border-red-800 dark:text-red-300'}`}>
+              {result.success ? (
+                <div>
+                  <div className="font-bold flex items-center gap-2 mb-1">
+                    ✅ Verification Successful
+                  </div>
+                  <p>Student <strong>{result.data?.fullName}</strong> is actively enrolled in {result.data?.department}.</p>
+                </div>
+              ) : (
+                <div>
+                  <div className="font-bold flex items-center gap-2 mb-1">
+                    ❌ Verification Failed
+                  </div>
+                  <p>{result.error}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-6 pt-5 border-t border-gray-200 dark:border-gray-800">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 rounded-lg border-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 transition"
+            >
+              Close
+            </button>
+            <button
+              type="submit"
+              disabled={verifying}
+              className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:opacity-90 transition disabled:opacity-60"
+            >
+              {verifying ? "Checking..." : "Verify"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

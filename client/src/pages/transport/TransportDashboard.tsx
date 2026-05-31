@@ -4,7 +4,7 @@ import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { buses as mockBuses } from "@/mock/mockData";
 import { 
   Bus, MapPin, User, Users, Search, ShieldCheck, Phone, ShieldAlert, Navigation, Lock,
-  Compass, Map, Layers, Activity, PlusCircle, ArrowRight, Eye, CheckCircle2 
+  Compass, Map, Layers, Activity, PlusCircle, ArrowRight, Eye 
 } from "lucide-react";
 import { 
   fetchTransportData, 
@@ -15,10 +15,18 @@ import {
   type StudentTransportDetails,
   type BusTelemetry
 } from "@/services/transportService";
+import { fetchDepartments, type DepartmentOption } from "@/services/studentService";
 
 export function TransportDashboard() {
   const [buses, setBuses] = useState<BusItem[]>([]);
   const [loadingBuses, setLoadingBuses] = useState(true);
+  const [departments, setDepartments] = useState<DepartmentOption[]>([
+    { code: "CSE", name: "Computer Science & Engineering" },
+    { code: "AIML", name: "Artificial Intelligence & Machine Learning" },
+    { code: "AIDS", name: "Artificial Intelligence & Data Science" },
+    { code: "ECE", name: "Electronics & Communication Engineering" },
+    { code: "EEE", name: "Electrical & Electronics Engineering" }
+  ]);
   
   // Verification states
   const [rollNumberInput, setRollNumberInput] = useState("");
@@ -42,7 +50,15 @@ export function TransportDashboard() {
   const routeCoordsRef = useRef<any[]>([]);
   const [routeCoordsForSnapping, setRouteCoordsForSnapping] = useState<any[]>([]);
 
-  const fixedRoutes = [
+  // New route form states
+  const [showNewRouteForm, setShowNewRouteForm] = useState(false);
+  const [newRouteStart, setNewRouteStart] = useState("");
+  const [newRouteEnd, setNewRouteEnd] = useState("");
+  const [savingRoute, setSavingRoute] = useState(false);
+  // Custom route coordinate store: { [routeId]: { start: [lat,lng], end: [lat,lng] } }
+  const [customRouteCoords, setCustomRouteCoords] = useState<Record<number, { start: number[]; end: number[] }>>({});
+
+  const defaultRoutes = [
     {
       id: 1,
       routeNumber: "Route 1",
@@ -96,6 +112,97 @@ export function TransportDashboard() {
     }
   ];
 
+  const [allRoutes, setAllRoutes] = useState(defaultRoutes);
+
+  // Geocode a place name to [lat, lng] using OpenStreetMap Nominatim
+  const geocodePlace = async (placeName: string): Promise<number[]> => {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(placeName)}&limit=1`
+    );
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+    }
+    throw new Error(`Could not find location: ${placeName}`);
+  };
+
+  // Handle saving a new custom route
+  const handleSaveNewRoute = async () => {
+    if (!newRouteStart.trim() || !newRouteEnd.trim()) return;
+    setSavingRoute(true);
+    try {
+      const [startCoords, endCoords] = await Promise.all([
+        geocodePlace(newRouteStart.trim()),
+        geocodePlace(newRouteEnd.trim())
+      ]);
+
+      // Direct OSRM Fetch to pre-populate distance, time, and fare instantly!
+      let distanceStr = "Calculating...";
+      let timeStr = "Calculating...";
+      let fareStr = "₹TBD / Month";
+
+      try {
+        const osrmRes = await fetch(
+          `https://router.project-osrm.org/route/v1/driving/${startCoords[1]},${startCoords[0]};${endCoords[1]},${endCoords[0]}?overview=false`
+        );
+        const osrmData = await osrmRes.json();
+        if (osrmData && osrmData.routes && osrmData.routes.length > 0) {
+          const summary = osrmData.routes[0];
+          const distanceKm = Math.round(summary.distance / 1000);
+          const timeMins = Math.round(summary.duration / 60);
+
+          distanceStr = `${distanceKm} km`;
+          
+          if (timeMins >= 60) {
+            const hrs = Math.floor(timeMins / 60);
+            const mins = timeMins % 60;
+            timeStr = `${hrs} hr ${mins > 0 ? `${mins} mins` : ""}`;
+          } else {
+            timeStr = `${timeMins} mins`;
+          }
+
+          const calculatedFare = Math.max(1200, Math.round(distanceKm * 40));
+          fareStr = `₹${calculatedFare.toLocaleString()} / Month`;
+        }
+      } catch (osrmErr) {
+        console.warn("Direct OSRM fetch failed, falling back to map calculation:", osrmErr);
+      }
+
+      const newId = allRoutes.length + 1;
+      const newRoute = {
+        id: newId,
+        routeNumber: `Route ${newId}`,
+        coverage: `${newRouteStart.trim()} to ${newRouteEnd.trim()}`,
+        startPoint: newRouteStart.trim(),
+        endPoint: newRouteEnd.trim(),
+        time: timeStr,
+        distance: distanceStr,
+        driverName: "To Be Assigned",
+        driverPhone: "—",
+        fare: fareStr,
+        busNumber: `TS-09-UB-${1000 + newId}`,
+        busDetails: "To Be Assigned",
+        stops: [newRouteStart.trim(), newRouteEnd.trim()]
+      };
+
+      setAllRoutes(prev => [...prev, newRoute]);
+      setCustomRouteCoords(prev => ({
+        ...prev,
+        [newId]: { start: startCoords, end: endCoords }
+      }));
+
+      // Auto-select the new route
+      setSelectedRouteId(newId);
+      setNewRouteStart("");
+      setNewRouteEnd("");
+      setShowNewRouteForm(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to geocode one of the locations. Please try a more specific name.");
+    } finally {
+      setSavingRoute(false);
+    }
+  };
+
 
 
   // Map settings and telemetry simulations
@@ -138,6 +245,10 @@ export function TransportDashboard() {
         setBuses(mockBuses as any);
         setLoadingBuses(false);
       });
+      
+    fetchDepartments()
+      .then((res) => setDepartments(res))
+      .catch((err) => console.warn("Failed to load departments:", err));
   }, []);
 
   // 1️⃣ Dynamic Asset Loader for Leaflet + Leaflet Routing Machine CSS & JS
@@ -370,7 +481,7 @@ export function TransportDashboard() {
   };
 
   // Confirm and Track chosen route in 3D Satellite projection
-  const handleConfirmRoute3D = (route: typeof fixedRoutes[0]) => {
+  const handleConfirmRoute3D = (route: typeof allRoutes[0]) => {
     if (!verifiedData) {
       setVerificationError("Access Denied: Please verify your student credentials in the Verification Portal above first to unlock live transit map tracking!");
       const portalElem = document.getElementById("verification-portal-card");
@@ -472,19 +583,29 @@ export function TransportDashboard() {
   // 4️⃣ Live Leaflet & OSRM Map Initialization
   useEffect(() => {
     if (!(window as any).L) return;
-    if (!verifiedData) return;
+    if (!selectedRouteId) return;
 
-    let routeKey = 'palakonda';
-    if (selectedBusNumber.includes('1001')) routeKey = 'vizianagaram';
-    else if (selectedBusNumber.includes('1002')) routeKey = 'palakonda';
-    else if (selectedBusNumber.includes('1003')) routeKey = 'srikakulam';
+    // Check if the selected route is a custom geocoded route
+    const customCoords = selectedRouteId ? customRouteCoords[selectedRouteId] : null;
 
-    const routeGPSPaths = {
-      vizianagaram: { start: [18.2778, 83.6631], end: [18.1162, 83.3986] },
-      palakonda: { start: [18.2778, 83.6631], end: [18.5990, 83.7604] },
-      srikakulam: { start: [18.2778, 83.6631], end: [18.3160, 83.8967] }
-    };
-    const endpoints = routeGPSPaths[routeKey as keyof typeof routeGPSPaths] || routeGPSPaths.vizianagaram;
+    let endpoints: any;
+
+    if (customCoords) {
+      // Use the geocoded coordinates for custom routes
+      endpoints = customCoords;
+    } else {
+      let routeKey = 'palakonda';
+      if (selectedBusNumber.includes('1001')) routeKey = 'vizianagaram';
+      else if (selectedBusNumber.includes('1002')) routeKey = 'palakonda';
+      else if (selectedBusNumber.includes('1003')) routeKey = 'srikakulam';
+
+      const routeGPSPaths = {
+        vizianagaram: { start: [18.2778, 83.6631], end: [18.1162, 83.3986] },
+        palakonda: { start: [18.2778, 83.6631], end: [18.5990, 83.7604] },
+        srikakulam: { start: [18.2778, 83.6631], end: [18.3160, 83.8967] }
+      };
+      endpoints = routeGPSPaths[routeKey as keyof typeof routeGPSPaths] || routeGPSPaths.vizianagaram;
+    }
 
     // Reset Leaflet DOM container
     const container = (window as any).L.DomUtil.get('leaflet-live-map');
@@ -520,8 +641,13 @@ export function TransportDashboard() {
       iconSize: [28, 28],
       iconAnchor: [14, 14]
     });
+    // Determine labels for start and end markers
+    const activeRouteForMap = selectedRouteId ? allRoutes.find(r => r.id === selectedRouteId) : null;
+    const startLabel = activeRouteForMap?.startPoint || "GMRIT Campus";
+    const endLabel = activeRouteForMap?.endPoint || "Destination";
+
     (window as any).L.marker(endpoints.start, { icon: campusIcon }).addTo(map)
-      .bindTooltip("GMRIT Campus", { permanent: true, direction: "top", className: "bg-indigo-600 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow border-none font-sans" });
+      .bindTooltip(startLabel, { permanent: true, direction: "top", className: "bg-indigo-600 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow border-none font-sans" });
 
     const destIcon = (window as any).L.divIcon({
       html: `
@@ -537,7 +663,7 @@ export function TransportDashboard() {
       iconAnchor: [16, 32]
     });
     (window as any).L.marker(endpoints.end, { icon: destIcon }).addTo(map)
-      .bindTooltip(`${routeKey.toUpperCase()} Station`, { permanent: true, direction: "right", className: "bg-slate-900 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow border-none font-sans" });
+      .bindTooltip(endLabel, { permanent: true, direction: "right", className: "bg-slate-900 text-white font-bold text-[9px] px-1.5 py-0.5 rounded shadow border-none font-sans" });
 
     // 2. Setup OSRM / Leaflet Routing Machine path
     let routeControl: any = null;
@@ -561,11 +687,42 @@ export function TransportDashboard() {
 
       // Listen to exact road shape coordinates computed by OSRM!
       routeControl.on('routesfound', (e: any) => {
-        const coords = e.routes[0].coordinates;
+        const routeData = e.routes[0];
+        const coords = routeData.coordinates;
         if (coords && coords.length > 0) {
           const formattedCoords = coords.map((c: any) => [c.lat, c.lng]);
           routeCoordsRef.current = formattedCoords;
           setRouteCoordsForSnapping(formattedCoords);
+        }
+
+        // Extract exact road distance & time to cover
+        if (routeData.summary) {
+          const distanceKm = Math.round(routeData.summary.totalDistance / 1000);
+          const timeMins = Math.round(routeData.summary.totalTime / 60);
+
+          if (selectedRouteId && selectedRouteId > 3) {
+            setAllRoutes(prev => prev.map(r => {
+              if (r.id === selectedRouteId && r.distance === "Calculating...") {
+                // Realistic fare calculation (e.g. ₹40 / km, minimum of ₹1200)
+                const calculatedFare = Math.max(1200, Math.round(distanceKm * 40));
+                
+                let timeStr = `${timeMins} mins`;
+                if (timeMins >= 60) {
+                  const hrs = Math.floor(timeMins / 60);
+                  const mins = timeMins % 60;
+                  timeStr = `${hrs} hr ${mins > 0 ? `${mins} mins` : ""}`;
+                }
+
+                return {
+                  ...r,
+                  distance: `${distanceKm} km`,
+                  time: timeStr,
+                  fare: `₹${calculatedFare.toLocaleString()} / Month`
+                };
+              }
+              return r;
+            }));
+          }
         }
       });
     }
@@ -625,7 +782,7 @@ export function TransportDashboard() {
       map.remove();
       markerRef.current = null;
     };
-  }, [leafletLoaded, selectedBusNumber, mapMode, verifiedData]);
+  }, [leafletLoaded, selectedBusNumber, mapMode, verifiedData, selectedRouteId, customRouteCoords]);
 
   // 5️⃣ Smooth Marker Translation (Zero Map Fluctuation)
   useEffect(() => {
@@ -647,7 +804,7 @@ export function TransportDashboard() {
   };
 
   // Dynamic computed route info based on grid selection or verified state
-  const activeSelectedRoute = fixedRoutes.find(r => r.id === selectedRouteId);
+  const activeSelectedRoute = allRoutes.find(r => r.id === selectedRouteId);
 
   const displayRouteNumber = activeSelectedRoute 
     ? activeSelectedRoute.routeNumber 
@@ -689,11 +846,11 @@ export function TransportDashboard() {
         desc="Real-time GPS Tracking, Live Database Verification, and Automated Route Coordination."
         actions={
           <Link
-            to="/"
+            to="/dashboard"
             className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 rounded-xl text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 flex items-center gap-1.5"
           >
             <ArrowRight className="size-3.5 rotate-180 text-indigo-500" />
-            Back to Home Portal
+            Back to Dashboard
           </Link>
         }
       />
@@ -733,14 +890,19 @@ export function TransportDashboard() {
 
               {/* Field 2: Branch Name / Department */}
               <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Branch Name (e.g. CSE, ECE)"
+                <select
                   value={branchNameInput}
                   onChange={(e) => setBranchNameInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleVerify()}
-                  className="flex-1 bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all duration-300"
-                />
+                  className="flex-1 bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all duration-300 cursor-pointer"
+                >
+                  <option value="" disabled className="text-slate-400">Select Branch</option>
+                  {(departments || []).map((dep) => (
+                    <option key={dep.code} value={dep.code}>
+                      {dep.name}
+                    </option>
+                  ))}
+                </select>
                 <button
                   onClick={() => handleVerify()}
                   disabled={verifying}
@@ -754,16 +916,16 @@ export function TransportDashboard() {
             <div className="md:col-span-3 flex flex-wrap gap-2 items-center justify-start md:justify-end text-xs text-slate-500">
               <span className="font-medium text-slate-450">Quick Demos:</span>
               <button
-                onClick={() => triggerQuickVerify("STU001", "Computer Science")}
+                onClick={() => triggerQuickVerify("CS2026101", "CSE")}
                 className="px-2.5 py-1 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-650 hover:text-indigo-600 rounded-md transition-all duration-200"
               >
-                Aarav (CS)
+                Hanish (CSE)
               </button>
               <button
-                onClick={() => triggerQuickVerify("STU002", "Electronics")}
+                onClick={() => triggerQuickVerify("AM2026102", "AIML")}
                 className="px-2.5 py-1 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-650 hover:text-indigo-600 rounded-md transition-all duration-200"
               >
-                Priya (ECE)
+                Bhavya (AIML)
               </button>
             </div>
           </div>
@@ -780,7 +942,7 @@ export function TransportDashboard() {
 
           {verifiedData && (
             <div className="mt-3 flex items-start gap-2.5 p-3 rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-700 text-xs animate-in fade-in duration-300">
-              <CheckCircle2 className="size-4 shrink-0 mt-0.5 text-emerald-600 animate-bounce" />
+              <ShieldCheck className="size-4 shrink-0 mt-0.5 text-emerald-600 animate-bounce" />
               <div className="flex-1 flex justify-between items-center flex-wrap gap-2">
                 <div>
                   <span className="font-bold">Access Granted:</span> Personalized route and tracking logs successfully synchronized for <span className="font-semibold text-emerald-800">{verifiedData.student.fullName}</span>!
@@ -814,10 +976,11 @@ export function TransportDashboard() {
             </div>
           </div>
 
-          {/* 3 Columns Grid for 3 routes */}
-          <div className="grid md:grid-cols-3 gap-4">
-            {fixedRoutes.map((route) => {
+          {/* Route Cards Grid */}
+          <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {allRoutes.map((route) => {
               const isActive = selectedRouteId === route.id;
+              const isCustom = route.id > 3;
               return (
                 <div
                   key={route.id}
@@ -832,16 +995,18 @@ export function TransportDashboard() {
                   className={`cursor-pointer rounded-2xl p-4 border transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-28 ${
                     isActive 
                       ? "border-indigo-600 bg-indigo-50/20 shadow-md ring-1 ring-indigo-500/10" 
-                      : "border-slate-250 bg-slate-50 hover:bg-white hover:border-slate-300 hover:shadow-sm"
+                      : isCustom
+                        ? "border-emerald-200 bg-emerald-50/30 hover:bg-emerald-50 hover:border-emerald-300 hover:shadow-sm"
+                        : "border-slate-250 bg-slate-50 hover:bg-white hover:border-slate-300 hover:shadow-sm"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full ${
-                      isActive ? "bg-indigo-600 text-white" : "bg-slate-200 text-slate-700"
+                      isActive ? "bg-indigo-600 text-white" : isCustom ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-700"
                     }`}>
-                      {route.routeNumber}
+                      {route.routeNumber}{isCustom ? " ★" : ""}
                     </span>
-                    <Bus className={`size-4 ${isActive ? "text-indigo-600 animate-pulse" : "text-slate-400"}`} />
+                    <Bus className={`size-4 ${isActive ? "text-indigo-600 animate-pulse" : isCustom ? "text-emerald-500" : "text-slate-400"}`} />
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-800 text-sm mb-1">{route.coverage}</h4>
@@ -850,11 +1015,76 @@ export function TransportDashboard() {
                 </div>
               );
             })}
+
+            {/* Add New Route Card */}
+            <div
+              onClick={() => setShowNewRouteForm(true)}
+              className={`cursor-pointer rounded-2xl p-4 border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center min-h-28 gap-2 ${
+                showNewRouteForm
+                  ? "border-emerald-400 bg-emerald-50"
+                  : "border-slate-300 bg-slate-50/50 hover:border-indigo-400 hover:bg-indigo-50/30"
+              }`}
+            >
+              <PlusCircle className="size-6 text-slate-400" />
+              <span className="text-xs font-bold text-slate-500">Add New Route</span>
+            </div>
           </div>
+
+          {/* New Route Form (appears below cards when toggled) */}
+          {showNewRouteForm && (
+            <div className="mt-5 p-5 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-2 mb-4">
+                <PlusCircle className="size-5 text-emerald-600" />
+                <h4 className="font-bold text-slate-800 text-sm">Create New Travel Route</h4>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">Starting Place</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Hyderabad, Visakhapatnam"
+                    value={newRouteStart}
+                    onChange={(e) => setNewRouteStart(e.target.value)}
+                    className="w-full bg-white border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">Destination Place</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Rajam, Srikakulam"
+                    value={newRouteEnd}
+                    onChange={(e) => setNewRouteEnd(e.target.value)}
+                    className="w-full bg-white border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 transition-all"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleSaveNewRoute}
+                  disabled={savingRoute || !newRouteStart.trim() || !newRouteEnd.trim()}
+                  className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {savingRoute ? (
+                    <><Activity className="size-3.5 animate-spin" /> Locating Places...</>
+                  ) : (
+                    <><ShieldCheck className="size-3.5" /> Save Route</>
+                  )}
+                </button>
+                <button
+                  onClick={() => { setShowNewRouteForm(false); setNewRouteStart(""); setNewRouteEnd(""); }}
+                  className="px-4 py-2.5 border border-slate-300 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Route Details expansion panel below */}
           {selectedRouteId && (() => {
-            const activeRoute = fixedRoutes.find(r => r.id === selectedRouteId)!;
+            const activeRoute = allRoutes.find(r => r.id === selectedRouteId);
+            if (!activeRoute) return null;
             return (
               <div className="mt-6 pt-5 border-t border-slate-100 animate-in fade-in duration-300">
                 <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
@@ -1273,7 +1503,7 @@ export function TransportDashboard() {
               <p className="text-xs text-slate-500 mb-4">Overview of all active route allocations currently operating in the fleet.</p>
               
               <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1 scrollbar-thin">
-                {fixedRoutes.map((route) => {
+                {allRoutes.map((route) => {
                   const status = getRouteFleetStatus(route.busNumber);
                   return (
                     <div 
@@ -1314,7 +1544,7 @@ export function TransportDashboard() {
             </div>
 
             <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 mt-6">
-              <span>Total Active Lines: {fixedRoutes.length}</span>
+              <span>Total Active Lines: {allRoutes.length}</span>
               <span className="flex items-center gap-1 text-[10px] text-emerald-600 font-semibold animate-pulse">
                 <span className="size-2 bg-emerald-500 rounded-full animate-ping" />
                 Live Feed Sync

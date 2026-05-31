@@ -13,6 +13,7 @@ import {
   Trash2,
   UserRound,
   Users,
+  CheckCircle,
 } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ import {
   StudentDeleteAlert,
   StudentFilterModal,
   StudentFormModal,
+  StudentVerifyModal,
 } from "./students/StudentDialogs";
 import {
   createStudent,
@@ -28,6 +30,7 @@ import {
   fetchStudents,
   getStudentDisplayStatus,
   updateStudent,
+  verifyStudent,
   type DepartmentOption,
   type StudentPayload,
   type StudentRecord,
@@ -77,6 +80,7 @@ export function StudentsPage() {
   const [page, setPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isVerifyOpen, setIsVerifyOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentRecord | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<StudentRecord | null>(null);
 
@@ -336,6 +340,12 @@ export function StudentsPage() {
               <Plus className="size-4" /> Add Student
             </button>
             <button
+              onClick={() => setIsVerifyOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm hover:opacity-90 transition"
+            >
+              <CheckCircle className="size-4" /> Verify Student
+            </button>
+            <button
               onClick={debugCreate}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm ml-2 bg-background/60"
               title="Create a debug student via REST"
@@ -440,7 +450,7 @@ export function StudentsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
                   <tr>
-                    {["ID", "Name", "Department", "Year", "Attendance", "CGPA", "Status", ""].map(
+                    {["ID", "Name", "Branch", "Year", "Attendance", "Status", ""].map(
                       (header) => (
                         <th key={header} className="text-left px-5 py-3 font-medium">
                           {header}
@@ -476,7 +486,6 @@ export function StudentsPage() {
                           <span className="text-xs">{student.attendancePercentage ?? 0}%</span>
                         </div>
                       </td>
-                      <td className="px-5 py-3 font-semibold">{(student.cgpa ?? 0).toFixed(2)}</td>
                       <td className="px-5 py-3">
                         <Badge
                           tone={
@@ -644,6 +653,13 @@ export function StudentsPage() {
           if (!deleteTarget) return;
           await deleteStudentMutation.mutateAsync(deleteTarget.id);
         }}
+      />
+
+      <StudentVerifyModal
+        open={isVerifyOpen}
+        departments={departments}
+        onClose={() => setIsVerifyOpen(false)}
+        onVerify={verifyStudent}
       />
     </div>
   );
