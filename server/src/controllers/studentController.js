@@ -42,7 +42,7 @@ export const getStudents = async (req, res, next) => {
       sortBy = 'createdAt',
       sortOrder = 'desc',
       page = 1,
-      limit = 10,
+      limit = 1000,
     } = req.query;
 
     let query = supabase

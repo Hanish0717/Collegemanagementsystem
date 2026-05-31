@@ -1,27 +1,317 @@
 import { useState, useEffect } from "react";
-import { Plus, Calendar, MapPin, Users, Clock, Loader2 } from "lucide-react";
+import { Plus, Calendar, MapPin, Users, Clock, Loader2, X } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchPlacementData, DriveItem } from "@/services/placementService";
+import { fetchPlacementData, createDrive, updateDrive, DriveItem, CompanyItem } from "@/services/placementService";
+import { getCompanyLogo } from "./PlacementCompanies";
 import { drives as mockDrives } from "@/mock/mockData";
+import { toast } from "sonner";
+
+const mergeDrives = (serverDrives: DriveItem[]): DriveItem[] => {
+  if (typeof window === "undefined") return serverDrives;
+  let list = [...serverDrives];
+  
+  const editedStr = localStorage.getItem("placement_edited_drives");
+  if (editedStr) {
+    try {
+      const editedMap = JSON.parse(editedStr);
+      list = list.map(item => {
+        if (editedMap[item.id]) {
+          return { ...item, ...editedMap[item.id] };
+        }
+        return item;
+      });
+    } catch (e) {
+      console.error("Error parsing placement_edited_drives:", e);
+    }
+  }
+
+  const customStr = localStorage.getItem("placement_custom_drives");
+  if (customStr) {
+    try {
+      const customList = JSON.parse(customStr);
+      const existingIds = new Set(list.map(i => i.id));
+      const filteredCustom = customList.filter((i: DriveItem) => !existingIds.has(i.id));
+      list = [...filteredCustom, ...list];
+    } catch (e) {
+      console.error("Error parsing placement_custom_drives:", e);
+    }
+  }
+  
+  return list;
+};
 
 export function PlacementDrives() {
-  const [drives, setDrives] = useState<DriveItem[]>(mockDrives);
+  const [drives, setDrives] = useState<DriveItem[]>(() => mergeDrives(mockDrives));
+  const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<"upcoming" | "ongoing" | "completed">("upcoming");
+
+  // Drive Modals & Saving state
+  const [isAddDriveModalOpen, setIsAddDriveModalOpen] = useState(false);
+  const [isViewDriveModalOpen, setIsViewDriveModalOpen] = useState(false);
+  const [isEditDriveModalOpen, setIsEditDriveModalOpen] = useState(false);
+  const [selectedDrive, setSelectedDrive] = useState<DriveItem | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Drive Form States
+  const [driveCompany, setDriveCompany] = useState("");
+  const [driveRole, setDriveRole] = useState("");
+  const [driveDate, setDriveDate] = useState("");
+  const [driveVenue, setDriveVenue] = useState("");
+  const [driveDeadline, setDriveDeadline] = useState("");
+  const [driveStatus, setDriveStatus] = useState("Upcoming");
+  const [drivePackageMin, setDrivePackageMin] = useState("6.0");
+  const [drivePackageMax, setDrivePackageMax] = useState("8.0");
+  const [driveMinCgpa, setDriveMinCgpa] = useState("7.0");
+  const [driveDepartments, setDriveDepartments] = useState<string[]>(["CSE", "ECE"]);
 
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
         if (res.drives && res.drives.length > 0) {
-          setDrives(res.drives);
+          setDrives(mergeDrives(res.drives));
+        }
+        if (res.companies && res.companies.length > 0) {
+          setCompanies(res.companies);
         }
         setLoading(false);
       })
       .catch((err) => {
         console.warn("Failed to fetch live drives list, using fallback mock data:", err);
+        setDrives(mergeDrives(mockDrives));
         setLoading(false);
       });
   }, []);
+
+  const resetDriveForm = () => {
+    setDriveCompany(companies[0]?.name || "");
+    setDriveRole("");
+    setDriveDate("");
+    setDriveVenue("");
+    setDriveDeadline("");
+    setDriveStatus("Upcoming");
+    setDrivePackageMin("6.0");
+    setDrivePackageMax("8.0");
+    setDriveMinCgpa("7.0");
+    setDriveDepartments(["CSE", "ECE"]);
+  };
+
+  const openViewDriveModal = (drive: DriveItem) => {
+    setSelectedDrive(drive);
+    setIsViewDriveModalOpen(true);
+  };
+
+  const openEditDriveModal = (drive: DriveItem) => {
+    setSelectedDrive(drive);
+    setDriveCompany(drive.company);
+    setDriveRole(drive.role);
+    setDriveDate(drive.date);
+    setDriveVenue(drive.venue);
+    setDriveDeadline(drive.applicationDeadline);
+    setDriveStatus(drive.status);
+    const comp = companies.find(c => c.name === drive.company);
+    const pAmt = comp?.package ? parseFloat(comp.package.replace(/[^0-9.]/g, "")) : 8.0;
+    setDrivePackageMin((pAmt * 0.75).toFixed(1));
+    setDrivePackageMax(pAmt.toFixed(1));
+    setDriveMinCgpa("7.0");
+    setDriveDepartments(["CSE", "ECE"]);
+    setIsEditDriveModalOpen(true);
+  };
+
+  const handleAddDrive = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!driveCompany || !driveRole.trim()) {
+      toast.error("Company and job role are required");
+      return;
+    }
+    setIsSaving(true);
+
+    const localId = `DRV_${Date.now()}`;
+    const fallbackNewDrive: DriveItem = {
+      id: localId,
+      company: driveCompany,
+      role: driveRole,
+      date: driveDate || new Date().toISOString().split("T")[0],
+      venue: driveVenue || "Virtual",
+      applicationDeadline: driveDeadline || new Date().toISOString().split("T")[0],
+      status: driveStatus,
+      studentCount: 0,
+      rounds: 3
+    };
+
+    try {
+      const newDrive = await createDrive({
+        company: driveCompany,
+        role: driveRole,
+        date: driveDate || new Date().toISOString().split("T")[0],
+        venue: driveVenue || "Virtual",
+        applicationDeadline: driveDeadline || new Date().toISOString().split("T")[0],
+        status: driveStatus,
+        packageMin: parseFloat(drivePackageMin) || 6.0,
+        packageMax: parseFloat(drivePackageMax) || 8.0,
+        eligibilityMinCgpa: parseFloat(driveMinCgpa) || 7.0,
+        eligibilityDepartments: driveDepartments
+      } as any);
+
+      if (typeof window !== "undefined") {
+        const customStr = localStorage.getItem("placement_custom_drives");
+        let customList: DriveItem[] = [];
+        if (customStr) {
+          try {
+            customList = JSON.parse(customStr);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        customList.unshift(newDrive);
+        localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
+      }
+
+      setDrives((prev) => [newDrive, ...prev]);
+      toast.success("Drive added successfully!");
+      setIsAddDriveModalOpen(false);
+      resetDriveForm();
+    } catch (err: any) {
+      console.warn("Failed to create drive on server, using local fallback:", err);
+      if (typeof window !== "undefined") {
+        const customStr = localStorage.getItem("placement_custom_drives");
+        let customList: DriveItem[] = [];
+        if (customStr) {
+          try {
+            customList = JSON.parse(customStr);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        customList.unshift(fallbackNewDrive);
+        localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
+      }
+      setDrives((prev) => [fallbackNewDrive, ...prev]);
+      toast.success("Drive added successfully (saved locally)!");
+      setIsAddDriveModalOpen(false);
+      resetDriveForm();
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleEditDrive = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedDrive) return;
+    if (!driveCompany || !driveRole.trim()) {
+      toast.error("Company and job role are required");
+      return;
+    }
+    setIsSaving(true);
+
+    const updatedFields = {
+      company: driveCompany,
+      role: driveRole,
+      date: driveDate,
+      venue: driveVenue,
+      applicationDeadline: driveDeadline,
+      status: driveStatus,
+      studentCount: selectedDrive.studentCount,
+      rounds: selectedDrive.rounds || 3
+    };
+
+    const localUpdate = {
+      ...selectedDrive,
+      ...updatedFields
+    };
+
+    try {
+      const updated = await updateDrive(selectedDrive.id, {
+        company: driveCompany,
+        role: driveRole,
+        date: driveDate,
+        venue: driveVenue,
+        applicationDeadline: driveDeadline,
+        status: driveStatus,
+        packageMin: parseFloat(drivePackageMin) || 6.0,
+        packageMax: parseFloat(drivePackageMax) || 8.0,
+        eligibilityMinCgpa: parseFloat(driveMinCgpa) || 7.0,
+        eligibilityDepartments: driveDepartments
+      } as any);
+
+      if (typeof window !== "undefined") {
+        const customStr = localStorage.getItem("placement_custom_drives");
+        let isCustom = false;
+        if (customStr) {
+          try {
+            let customList: DriveItem[] = JSON.parse(customStr);
+            const idx = customList.findIndex(d => d.id === selectedDrive.id);
+            if (idx !== -1) {
+              customList[idx] = updated;
+              localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
+              isCustom = true;
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        if (!isCustom) {
+          const editedStr = localStorage.getItem("placement_edited_drives");
+          let editedMap: Record<string, DriveItem> = {};
+          if (editedStr) {
+            try {
+              editedMap = JSON.parse(editedStr);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          editedMap[selectedDrive.id] = updated;
+          localStorage.setItem("placement_edited_drives", JSON.stringify(editedMap));
+        }
+      }
+
+      setDrives((prev) => prev.map((d) => (d.id === selectedDrive.id ? updated : d)));
+      toast.success("Drive updated successfully!");
+      setIsEditDriveModalOpen(false);
+      resetDriveForm();
+    } catch (err: any) {
+      console.warn("Failed to update drive on server, using local fallback:", err);
+      if (typeof window !== "undefined") {
+        const customStr = localStorage.getItem("placement_custom_drives");
+        let isCustom = false;
+        if (customStr) {
+          try {
+            let customList: DriveItem[] = JSON.parse(customStr);
+            const idx = customList.findIndex(d => d.id === selectedDrive.id);
+            if (idx !== -1) {
+              customList[idx] = localUpdate;
+              localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
+              isCustom = true;
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        if (!isCustom) {
+          const editedStr = localStorage.getItem("placement_edited_drives");
+          let editedMap: Record<string, DriveItem> = {};
+          if (editedStr) {
+            try {
+              editedMap = JSON.parse(editedStr);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          editedMap[selectedDrive.id] = localUpdate;
+          localStorage.setItem("placement_edited_drives", JSON.stringify(editedMap));
+        }
+      }
+
+      setDrives((prev) => prev.map((d) => (d.id === selectedDrive.id ? localUpdate : d)));
+      toast.success("Drive updated successfully (saved locally)!");
+      setIsEditDriveModalOpen(false);
+      resetDriveForm();
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const upcoming = drives.filter((d) => d.status.toLowerCase() === "upcoming");
   const ongoing = drives.filter((d) => d.status.toLowerCase() === "ongoing");
@@ -84,10 +374,16 @@ export function PlacementDrives() {
       </div>
 
       <div className="flex gap-2">
-        <button className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition">
+        <button 
+          onClick={() => openViewDriveModal(drive)}
+          className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
+        >
           Details
         </button>
-        <button className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition">
+        <button 
+          onClick={() => openEditDriveModal(drive)}
+          className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
+        >
           Edit
         </button>
       </div>
@@ -100,7 +396,10 @@ export function PlacementDrives() {
         title="Drive Management"
         desc="Manage recruitment drives, schedules and timelines."
         actions={
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
+          <button 
+            onClick={() => { resetDriveForm(); setIsAddDriveModalOpen(true); }}
+            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
+          >
             <Plus className="size-4" /> Create Drive
           </button>
         }
@@ -182,30 +481,84 @@ export function PlacementDrives() {
       {!loading && (
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">June Drive Schedule</h3>
+            <div>
+              <h3 className="font-semibold text-gradient">June 2026 Calendar Schedule</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Timezone-safe dynamic recruitment calendar</p>
+            </div>
             <Badge tone="info">
-              {drives.filter((d) => d.date.includes("-06-")).length} drives
+              {drives.filter((d) => {
+                if (!d.date || d.date === "TBD") return false;
+                const parts = d.date.split('-');
+                return parts.length === 3 && parseInt(parts[1], 10) === 6;
+              }).length} drives
             </Badge>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-            {Array.from({ length: 14 }, (_, i) => i + 10).map((day) => {
-              const dayDrives = drives.filter((d) => new Date(d.date).getDate() === day);
+
+          {/* Weekday Headers */}
+          <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-bold text-muted-foreground">
+            <div className="py-1 rounded bg-slate-50 border border-slate-100/50">Mon</div>
+            <div className="py-1 rounded bg-slate-50 border border-slate-100/50">Tue</div>
+            <div className="py-1 rounded bg-slate-50 border border-slate-100/50">Wed</div>
+            <div className="py-1 rounded bg-slate-50 border border-slate-100/50">Thu</div>
+            <div className="py-1 rounded bg-slate-50 border border-slate-100/50">Fri</div>
+            <div className="py-1 rounded bg-slate-50 border border-slate-100/50 text-indigo-600">Sat</div>
+            <div className="py-1 rounded bg-slate-50 border border-slate-100/50 text-indigo-600">Sun</div>
+          </div>
+
+          <div className="grid grid-cols-7 gap-2">
+            {Array.from({ length: 30 }, (_, i) => i + 1).map((day) => {
+              // Parse date strictly as YYYY-MM-DD to avoid timezone shifting
+              const dayDrives = drives.filter((d) => {
+                if (!d.date || d.date === "TBD" || d.date === "Closed") return false;
+                const parts = d.date.split('-');
+                if (parts.length === 3) {
+                  const year = parseInt(parts[0], 10);
+                  const month = parseInt(parts[1], 10);
+                  const dayVal = parseInt(parts[2], 10);
+                  return year === 2026 && month === 6 && dayVal === day;
+                }
+                const dateObj = new Date(d.date);
+                return dateObj.getUTCMonth() === 5 && dateObj.getUTCDate() === day;
+              });
+
+              const isWeekend = day % 7 === 6 || day % 7 === 0;
+
               return (
                 <div
                   key={day}
-                  className="min-h-28 rounded-xl border bg-background/60 p-2 hover:bg-accent/50 transition"
+                  className={`min-h-24 rounded-xl border p-2 transition flex flex-col justify-between ${
+                    dayDrives.length > 0
+                      ? "bg-indigo-50/20 border-indigo-200 shadow-sm"
+                      : isWeekend
+                        ? "bg-slate-50/50 border-slate-100/60"
+                        : "bg-background/60 border-slate-100 hover:bg-accent/50"
+                  }`}
                 >
-                  <div className="text-xs font-semibold text-muted-foreground mb-2">Jun {day}</div>
-                  <div className="space-y-1.5">
-                    {dayDrives.length === 0 && (
-                      <div className="text-[11px] text-muted-foreground">No drive</div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className={`text-[11px] font-bold ${
+                      dayDrives.length > 0
+                        ? "text-indigo-600"
+                        : isWeekend
+                          ? "text-muted-foreground/60"
+                          : "text-muted-foreground"
+                    }`}>
+                      {day}
+                    </span>
+                    {dayDrives.length > 0 && (
+                      <span className="size-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
                     )}
-                    {dayDrives.map((drive) => (
-                      <div key={drive.id} className="rounded-lg bg-gradient-soft border p-2">
-                        <div className="text-xs font-medium truncate">{drive.company}</div>
-                        <div className="text-[11px] text-muted-foreground truncate">{drive.role}</div>
-                      </div>
-                    ))}
+                  </div>
+                  <div className="space-y-1 flex-1 overflow-y-auto max-h-16 scrollbar-none">
+                    {dayDrives.length === 0 ? (
+                      <div className="text-[10px] text-muted-foreground/40 italic mt-1">No drives</div>
+                    ) : (
+                      dayDrives.map((drive) => (
+                        <div key={drive.id} className="rounded-lg bg-white border border-indigo-100 p-1.5 shadow-2xs hover:border-indigo-300 transition">
+                          <div className="text-[10px] font-bold text-slate-800 truncate">{drive.company}</div>
+                          <div className="text-[9px] text-muted-foreground truncate">{drive.role}</div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               );
@@ -286,6 +639,9 @@ export function PlacementDrives() {
                   <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                     Status
                   </th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -318,12 +674,419 @@ export function PlacementDrives() {
                         </Badge>
                       </div>
                     </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-1 justify-center">
+                        <button 
+                          onClick={() => openViewDriveModal(drive)}
+                          className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer"
+                        >
+                          View
+                        </button>
+                        <button 
+                          onClick={() => openEditDriveModal(drive)}
+                          className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </Card>
+      )}
+
+      {/* Add Drive Modal */}
+      {isAddDriveModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <h3 className="font-bold text-base text-gradient">Create Recruiting Drive</h3>
+              <button
+                onClick={() => setIsAddDriveModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <form onSubmit={handleAddDrive} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Select Company *</label>
+                <select
+                  value={driveCompany}
+                  onChange={(e) => setDriveCompany(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  {companies.map((c) => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Job Role / Position *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Full Stack Developer"
+                  value={driveRole}
+                  onChange={(e) => setDriveRole(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Drive Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={driveDate}
+                    onChange={(e) => setDriveDate(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Registration Deadline *</label>
+                  <input
+                    type="date"
+                    required
+                    value={driveDeadline}
+                    onChange={(e) => setDriveDeadline(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Venue *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Virtual or Audi-1"
+                    value={driveVenue}
+                    onChange={(e) => setDriveVenue(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Drive Status *</label>
+                  <select
+                    value={driveStatus}
+                    onChange={(e) => setDriveStatus(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Ongoing">Ongoing</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Min Package (LPA)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={drivePackageMin}
+                    onChange={(e) => setDrivePackageMin(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Max Package (LPA)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={drivePackageMax}
+                    onChange={(e) => setDrivePackageMax(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Min CGPA</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="10"
+                    value={driveMinCgpa}
+                    onChange={(e) => setDriveMinCgpa(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => setIsAddDriveModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {isSaving ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Create Drive"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Drive Modal */}
+      {isEditDriveModalOpen && selectedDrive && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <h3 className="font-bold text-base text-gradient">Edit Recruiting Drive</h3>
+              <button
+                onClick={() => setIsEditDriveModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <form onSubmit={handleEditDrive} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Select Company *</label>
+                <select
+                  value={driveCompany}
+                  onChange={(e) => setDriveCompany(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  {companies.map((c) => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Job Role / Position *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Full Stack Developer"
+                  value={driveRole}
+                  onChange={(e) => setDriveRole(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Drive Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={driveDate}
+                    onChange={(e) => setDriveDate(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Registration Deadline *</label>
+                  <input
+                    type="date"
+                    required
+                    value={driveDeadline}
+                    onChange={(e) => setDriveDeadline(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Venue *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Virtual or Audi-1"
+                    value={driveVenue}
+                    onChange={(e) => setDriveVenue(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Drive Status *</label>
+                  <select
+                    value={driveStatus}
+                    onChange={(e) => setDriveStatus(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Ongoing">Ongoing</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Min Package (LPA)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={drivePackageMin}
+                    onChange={(e) => setDrivePackageMin(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Max Package (LPA)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={drivePackageMax}
+                    onChange={(e) => setDrivePackageMax(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Min CGPA</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="10"
+                    value={driveMinCgpa}
+                    onChange={(e) => setDriveMinCgpa(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t">
+                <button
+                  type="button"
+                  onClick={() => setIsEditDriveModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  {isSaving ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Save Changes"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* View Drive Modal */}
+      {isViewDriveModalOpen && selectedDrive && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <h3 className="font-bold text-base text-gradient">Drive Details</h3>
+              <button
+                onClick={() => setIsViewDriveModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-soft border">
+                <div className="size-16 flex-shrink-0">
+                  {getCompanyLogo(selectedDrive.company)}
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg">{selectedDrive.company}</h4>
+                  <p className="text-sm font-semibold text-primary">{selectedDrive.role}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 border rounded-xl bg-background/50">
+                  <span className="text-xs text-muted-foreground block">Salary Package</span>
+                  <span className="font-bold text-sm text-emerald-600">
+                    {companies.find((c) => c.name === selectedDrive.company)?.package || "8.0 LPA"}
+                  </span>
+                </div>
+                <div className="p-3 border rounded-xl bg-background/50">
+                  <span className="text-xs text-muted-foreground block">Drive Status</span>
+                  <Badge tone={selectedDrive.status === "Upcoming" ? "info" : selectedDrive.status === "Ongoing" ? "warn" : "success"} className="mt-1">
+                    {selectedDrive.status}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="p-4 border rounded-xl bg-background/30 space-y-2.5">
+                <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Drive Logistics</h5>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-xs text-muted-foreground block">Drive Date</span>
+                    <span className="font-medium">{new Date(selectedDrive.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground block">Registration Deadline</span>
+                    <span className="font-medium">{new Date(selectedDrive.applicationDeadline).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-xs text-muted-foreground block">Venue</span>
+                    <span className="font-medium">{selectedDrive.venue}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 border rounded-xl bg-background/30 space-y-2.5">
+                <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Eligibility Criteria</h5>
+                <div className="flex gap-2 flex-wrap">
+                  <Badge tone="info">CGPA 7.0+</Badge>
+                  <Badge tone="info">No active backlogs</Badge>
+                  <Badge tone="info">CSE / AIML / AIDS / ECE</Badge>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 border rounded-xl text-center">
+                  <span className="text-xs text-muted-foreground block">Registered Applicants</span>
+                  <span className="font-bold text-base mt-1 block">{selectedDrive.studentCount}</span>
+                </div>
+                <div className="p-3 border rounded-xl text-center">
+                  <span className="text-xs text-muted-foreground block">Selection Rounds</span>
+                  <span className="font-bold text-base mt-1 block">{selectedDrive.rounds} Rounds</span>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t flex justify-end">
+                <button
+                  onClick={() => setIsViewDriveModalOpen(false)}
+                  className="px-5 py-2 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary cursor-pointer hover:opacity-95 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

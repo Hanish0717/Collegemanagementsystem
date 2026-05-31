@@ -684,7 +684,8 @@ async function seed() {
       { name: 'Google Bangalore', ind: 'Technology', pkg: 52.0, contact: 'Vikas Rao', email: 'jobs@google.com' },
       { name: 'TCS Hyderabad', ind: 'IT Services', pkg: 7.2, contact: 'Ramesh Reddy', email: 'recruiter@tcs.com' },
       { name: 'Infosys Ltd', ind: 'IT Services', pkg: 6.5, contact: 'Sunita Rao', email: 'hr@infosys.com' },
-      { name: 'Accenture India', ind: 'Consulting', pkg: 8.5, contact: 'Amit Varma', email: 'accenture@career.com' }
+      { name: 'Accenture India', ind: 'Consulting', pkg: 8.5, contact: 'Amit Varma', email: 'accenture@career.com' },
+      { name: 'Oracle', ind: 'Technology', pkg: 16.5, contact: 'Siddharth Sen', email: 'hr@oracle.com' }
     ];
 
     const companyIds = [];

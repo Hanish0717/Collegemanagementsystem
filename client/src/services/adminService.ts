@@ -297,11 +297,14 @@ export async function deleteStudent(id: string): Promise<void> {
 
 export interface TimetableSlot {
   _id: string;
+  id?: string;
   day: string;
   start_time: string;
-  end_time: string;
+  time?: string;
+  end_time?: string;
   subject: string;
   faculty_name: string;
+  faculty?: string;
   room: string;
   department: string;
   year: number;

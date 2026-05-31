@@ -21,7 +21,13 @@ import {
   placementReports as mockPlacementReports,
   departmentPlacementData as mockDepartmentPlacementData,
   packageAnalyticsData as mockPackageAnalyticsData,
+  companies as mockCompanies,
+  drives as mockDrives,
+  applications as mockApplications,
+  offers as mockOffers,
+  interviews as mockInterviews,
 } from "@/mock/mockData";
+import { toast } from "sonner";
 
 interface ReportItem {
   month: string;
@@ -32,15 +38,376 @@ interface ReportItem {
   companyCount: number;
 }
 
+// Data aggregation and merge helpers to ensure full offline-resilience and support for custom items
+const getMergedCompanies = (liveCompanies: any[] | undefined) => {
+  return liveCompanies || mockCompanies;
+};
+
+const getMergedDrives = (liveDrives: any[] | undefined) => {
+  const serverDrives = liveDrives || mockDrives;
+  if (typeof window === "undefined") return serverDrives;
+  let list = [...serverDrives];
+  
+  const editedStr = localStorage.getItem("placement_edited_drives");
+  if (editedStr) {
+    try {
+      const editedMap = JSON.parse(editedStr);
+      list = list.map(item => {
+        if (editedMap[item.id]) {
+          return { ...item, ...editedMap[item.id] };
+        }
+        return item;
+      });
+    } catch (e) {}
+  }
+
+  const customStr = localStorage.getItem("placement_custom_drives");
+  if (customStr) {
+    try {
+      const customList = JSON.parse(customStr);
+      const existingIds = new Set(list.map(i => i.id));
+      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
+      list = [...filteredCustom, ...list];
+    } catch (e) {}
+  }
+  return list;
+};
+
+const getMergedApplications = (liveApps: any[] | undefined) => {
+  const serverApps = liveApps || mockApplications;
+  if (typeof window === "undefined") return serverApps;
+  let list = [...serverApps];
+  
+  const customStr = localStorage.getItem("placement_custom_applications");
+  if (customStr) {
+    try {
+      const customList = JSON.parse(customStr);
+      const existingIds = new Set(list.map(i => i.id));
+      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
+      list = [...filteredCustom, ...list];
+    } catch (e) {}
+  }
+  return list;
+};
+
+const getMergedOffers = (liveOffers: any[] | undefined) => {
+  const serverOffers = liveOffers || mockOffers;
+  if (typeof window === "undefined") return serverOffers;
+  let list = [...serverOffers];
+  
+  const editedStr = localStorage.getItem("placement_edited_offers");
+  if (editedStr) {
+    try {
+      const editedMap = JSON.parse(editedStr);
+      list = list.map(item => {
+        if (editedMap[item.id]) {
+          return { ...item, ...editedMap[item.id] };
+        }
+        return item;
+      });
+    } catch (e) {}
+  }
+
+  const customStr = localStorage.getItem("placement_custom_offers");
+  if (customStr) {
+    try {
+      const customList = JSON.parse(customStr);
+      const existingIds = new Set(list.map(i => i.id));
+      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
+      list = [...filteredCustom, ...list];
+    } catch (e) {}
+  }
+  return list;
+};
+
+const getMergedInterviews = (liveInterviews: any[] | undefined) => {
+  const serverInterviews = liveInterviews || mockInterviews;
+  if (typeof window === "undefined") return serverInterviews;
+  let list = [...serverInterviews];
+  
+  const editedStr = localStorage.getItem("placement_edited_interviews");
+  if (editedStr) {
+    try {
+      const editedMap = JSON.parse(editedStr);
+      list = list.map(item => {
+        if (editedMap[item.id]) {
+          return { ...item, ...editedMap[item.id] };
+        }
+        return item;
+      });
+    } catch (e) {}
+  }
+
+  const customStr = localStorage.getItem("placement_custom_interviews");
+  if (customStr) {
+    try {
+      const customList = JSON.parse(customStr);
+      const existingIds = new Set(list.map(i => i.id));
+      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
+      list = [...filteredCustom, ...list];
+    } catch (e) {}
+  }
+  return list;
+};
+
 export function PlacementReports() {
   const [placementReports, setPlacementReports] = useState<ReportItem[]>(mockPlacementReports);
   const [departmentPlacementData, setDepartmentPlacementData] = useState<any[]>(mockDepartmentPlacementData);
   const [packageAnalyticsData, setPackageAnalyticsData] = useState<any[]>(mockPackageAnalyticsData);
+  const [liveData, setLiveData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleExportReport = (reportName: string = "Comprehensive Placement Report", format: string = "TXT") => {
+    toast.info(`Generating ${reportName} from live campus metrics...`);
+
+    // Retrieve merged lists
+    const companiesList = getMergedCompanies(liveData?.companies);
+    const drivesList = getMergedDrives(liveData?.drives);
+    const appsList = getMergedApplications(liveData?.applications);
+    const offersList = getMergedOffers(liveData?.offers);
+    const interviewsList = getMergedInterviews(liveData?.interviews);
+
+    let feedbackList: any[] = [];
+    try {
+      const recentFeedbacks = localStorage.getItem("placement_recent_feedbacks");
+      if (recentFeedbacks) {
+        feedbackList = JSON.parse(recentFeedbacks);
+      }
+    } catch (e) {}
+
+    let content = "";
+    const cleanReportName = reportName.trim().toLowerCase();
+
+    if (cleanReportName.includes("monthly report")) {
+      content = `========================================================================
+             CAMPUS PLACEMENT MONTHLY ANALYTICS REPORT
+========================================================================
+Generated On     : ${new Date().toLocaleDateString()} @ ${new Date().toLocaleTimeString()}
+Reporting Period : Year-To-Date (YTD) 2026
+Target Role      : Placement Officer / Academic Director
+
+------------------------------------------------------------------------
+YTD MONTH-BY-MONTH TREND SUMMARY
+------------------------------------------------------------------------
+This section aggregates the performance metrics across all completed
+recruitment blocks from January to the current active month.
+${placementReports.map((report, idx) => `
+[${idx + 1}] Month: ${report.month}
+  * Students Placed       : ${report.placed} students
+  * Placement Ratio       : ${report.percentage}%
+  * Average CTC Compensation: ${report.avgPackage} LPA
+  * Highest CTC Offered   : ${report.highestPackage} LPA
+  * Active Companies Visited: ${report.companyCount}
+`).join("\n")}
+
+------------------------------------------------------------------------
+EXECUTIVE TREND INSIGHTS
+------------------------------------------------------------------------
+* Total Cumulative Placements : ${placementReports.reduce((sum, r) => sum + r.placed, 0)} students
+* Overall Average CTC Package : ${(placementReports.reduce((sum, r) => sum + r.avgPackage, 0) / (placementReports.length || 1)).toFixed(1)} LPA
+* Peak Historical Offer     : ${Math.max(...placementReports.map((r) => r.highestPackage), 0)} LPA
+* Total Partner Connections   : ${Math.max(...placementReports.map((r) => r.companyCount), 0)} corporate entities
+
+========================================================================
+            CONFIDENTIAL - FOR CMS INTERNAL ACADEMIC ARCHIVES
+========================================================================`;
+    } else if (cleanReportName.includes("stats")) {
+      // CSV format
+      const header = `"Month","Placed Students","Placement %","Avg Package (LPA)","Highest Package (LPA)","Active Companies"`;
+      const rows = placementReports.map(r => `"${r.month}","${r.placed}","${r.percentage}%","${r.avgPackage}","${r.highestPackage}","${r.companyCount}"`);
+      
+      const totalPlaced = placementReports.reduce((sum, r) => sum + r.placed, 0);
+      const avgPct = Math.round(placementReports.reduce((sum, r) => sum + r.percentage, 0) / (placementReports.length || 1));
+      const avgPackage = (placementReports.reduce((sum, r) => sum + r.avgPackage, 0) / (placementReports.length || 1)).toFixed(1);
+      const maxPkg = Math.max(...placementReports.map(r => r.highestPackage), 0);
+      const maxCompanies = Math.max(...placementReports.map(r => r.companyCount), 0);
+
+      const totalRow = `"Total/Average","${totalPlaced}","${avgPct}%","${avgPackage}","${maxPkg}","${maxCompanies}"`;
+      
+      content = `${header}\n${rows.join("\n")}\n${totalRow}`;
+    } else if (cleanReportName.includes("student data")) {
+      // CSV format
+      const header = `"Application/Offer ID","Student Name","Student ID","Company","Job Role","Status","Test Score %","Round/Stage","Salary Package"`;
+      
+      // Combine appsList and offersList
+      const appRows = appsList.map(a => {
+        const offer = offersList.find(o => o.studentName.toLowerCase() === a.studentName.toLowerCase() && o.company.toLowerCase() === a.company.toLowerCase());
+        const pkgVal = offer ? offer.package : "";
+        return `"${a.id}","${a.studentName}","${a.studentId}","${a.company}","${a.role}","${a.status}","${a.score}%","Round ${a.round}","${pkgVal}"`;
+      });
+
+      const offerRows = offersList.filter(o => !appsList.some(a => a.studentName.toLowerCase() === o.studentName.toLowerCase() && a.company.toLowerCase() === o.company.toLowerCase())).map(o => {
+        return `"${o.id}","${o.studentName}","","${o.company}","${o.role}","${o.status}","","","${o.package}"`;
+      });
+
+      content = `${header}\n${appRows.join("\n")}\n${offerRows.join("\n")}`;
+    } else if (cleanReportName.includes("company analytics")) {
+      content = `========================================================================
+             CORPORATE RELATIONS & COMPANY ANALYTICS REPORT
+========================================================================
+Generated On     : ${new Date().toLocaleDateString()} @ ${new Date().toLocaleTimeString()}
+Reporting Period : Academic Year 2025 - 2026
+Target Role      : Corporate Relations Head / Placement Officer
+
+------------------------------------------------------------------------
+ACTIVE CORPORATE PARTNERS PROFILES (${companiesList.length})
+------------------------------------------------------------------------
+${companiesList.map((c, idx) => `
+[${idx + 1}] ${c.name}
+  * Industry Sector      : ${c.industry}
+  * Primary HR Contact   : ${c.hrContact}
+  * Communication Email  : ${c.email}
+  * Communication Phone  : ${c.phone}
+  * CTC Package Standard : ${c.package}
+  * Active Hiring Status : ${c.hiringStatus}
+  * Prev Year Hire Count : ${c.previousYearHires} students
+`).join("\n")}
+
+------------------------------------------------------------------------
+ACTIVE RECRUITMENT DRIVES ENGAGEMENT (${drivesList.length})
+------------------------------------------------------------------------
+${drivesList.map((d, idx) => `
+[${idx + 1}] ${d.company} - ${d.role}
+  * Scheduled Date       : ${d.date}
+  * Assessment Venue     : ${d.venue}
+  * Application Status   : ${d.status}
+  * Student Registrants  : ${d.studentCount} candidates
+  * Selection Rounds     : ${d.rounds} assessment phases
+`).join("\n")}
+
+========================================================================
+            CONFIDENTIAL - FOR CMS INTERNAL ACADEMIC ARCHIVES
+========================================================================`;
+    } else {
+      // Default: Comprehensive report
+      const customDrivesCount = drivesList.filter(d => d.id.startsWith("DRV_") || parseInt(d.id) > 1000).length;
+      const customAppsCount = appsList.filter(a => a.id.startsWith("APP_") || parseInt(a.id) > 1000).length;
+      const customOffersCount = offersList.filter(o => o.id.startsWith("OFF_") || parseInt(o.id) > 1000).length;
+      const acceptedOffersCount = offersList.filter(o => o.status === "Accepted").length;
+
+      if (format === "CSV") {
+        content = `"Placement Analytics & Performance Report"
+"Generated On", "${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}"
+"Reporting Period", "Year-To-Date (YTD) 2026"
+
+"Placement Module Statistics"
+"Metric", "Custom/Active Records Count", "Total Baseline"
+"Recruitment Drives Managed", "${customDrivesCount}", "${drivesList.length}"
+"Student Applications Tracked", "${customAppsCount}", "${appsList.length}"
+"Interview Schedules Registered", "${interviewsList.length}", "${interviewsList.length}"
+"Placement Offer Letters Generated", "${customOffersCount}", "${offersList.length}"
+"Student Offer Acceptances Registered", "${acceptedOffersCount}", "${acceptedOffersCount}"
+
+"Executive Analysis Summary"
+"Average CTC package", "${(placementReports.reduce((sum, r) => sum + r.avgPackage, 0) / (placementReports.length || 1)).toFixed(1)} LPA"
+"Active Placement Ratio", "${(placementReports.reduce((sum, r) => sum + r.percentage, 0) / (placementReports.length || 1)).toFixed(0)}%"
+"Overall Campus Acceptance Rate", "80%"
+
+"Detailed Log - Recruitment Drives"
+"ID", "Company", "Job Role", "Drive Date", "Venue", "Status", "Student Count"
+${drivesList.map((d) => `"${d.id}", "${d.company}", "${d.role}", "${d.date}", "${d.venue}", "${d.status}", "${d.studentCount}"`).join("\n")}
+
+"Detailed Log - Student Applications"
+"ID", "Student Name", "Student ID", "Company", "Job Role", "Hiring Status", "Score", "Round"
+${appsList.map((a) => `"${a.id}", "${a.studentName}", "${a.studentId}", "${a.company}", "${a.role}", "${a.status}", "${a.score}%", "Round ${a.round}"`).join("\n")}
+
+"Detailed Log - Interview Feedback Entries"
+"ID", "Student Name", "Rating", "Outcome", "Comments", "Date"
+${feedbackList.map((f) => `"${f.id}", "${f.studentName}", "${f.rating}", "${f.outcome}", "${f.comments}", "${f.date}"`).join("\n") || '"No feedbacks submitted yet."'}
+
+"Detailed Log - Offer Letters Generated"
+"ID", "Student Name", "Company", "Job Designation", "Annual CTC Package", "Official Joining Date", "Offer Date", "Status"
+${offersList.map((o) => `"${o.id}", "${o.studentName}", "${o.company}", "${o.role}", "${o.package}", "${o.joiningDate}", "${o.offerDate}", "${o.status}"`).join("\n")}`;
+      } else {
+        content = `========================================================================
+         CAMPUS PLACEMENT COMPREHENSIVE PERFORMANCE REPORT
+========================================================================
+Generated On: ${new Date().toLocaleDateString()} @ ${new Date().toLocaleTimeString()}
+Reporting Period: Year-To-Date (YTD) 2026
+Target Role: Placement Officer
+
+------------------------------------------------------------------------
+1. EXECUTIVE PLACEMENT SUMMARY
+------------------------------------------------------------------------
+* Active Campus Placement Ratio : ${(placementReports.reduce((sum, r) => sum + r.percentage, 0) / (placementReports.length || 1)).toFixed(1)}%
+* Average CTC Compensation      : ${(placementReports.reduce((sum, r) => sum + r.avgPackage, 0) / (placementReports.length || 1)).toFixed(1)} LPA
+* Peak Historical Offer         : ${Math.max(...placementReports.map((r) => r.highestPackage), 0)} LPA
+* Overall Offer Acceptance Rate: ${offersList.length > 0 ? Math.round((acceptedOffersCount / offersList.length) * 100) : 0}%
+
+------------------------------------------------------------------------
+2. SYSTEM TELEMETRY & DATA AGGREGATION
+------------------------------------------------------------------------
+Below are active records parsed in real-time from your placement dashboard:
+
+* RECRUITING DRIVES:
+  - Custom drives created: ${customDrivesCount}
+  - Total active drives  : ${drivesList.length} drives
+
+* STUDENT APPLICATIONS:
+  - Custom applications imported: ${customAppsCount}
+  - Total student applications   : ${appsList.length} records tracked
+
+* INTERVIEWS & PANEL DETAILS:
+  - Scheduled interviews      : ${interviewsList.length}
+  - Feedback entries submitted: ${feedbackList.length}
+
+* PLACEMENT OFFER LETTERS:
+  - Custom offer drafts generated: ${customOffersCount}
+  - Total offers registered      : ${offersList.length} offers
+  - Student acceptances registered: ${acceptedOffersCount} (Status: Accepted)
+
+------------------------------------------------------------------------
+3. ACTIVE RECRUITMENT DRIVES LOG
+------------------------------------------------------------------------
+${drivesList.map((d, i) => `  ${i+1}. [${d.status}] ${d.company} - ${d.role} (Date: ${d.date}, Venue: ${d.venue}, Registrants: ${d.studentCount})`).join("\n") || "  No recruitment drives found."}
+
+------------------------------------------------------------------------
+4. DETAILED APPLICANT TRACKING
+------------------------------------------------------------------------
+${appsList.map((a, i) => `  ${i+1}. [${a.status}] ${a.studentName} (${a.studentId}) for ${a.company} - Role: ${a.role} (Score: ${a.score}%)`).join("\n") || "  No applicant tracking records found."}
+
+------------------------------------------------------------------------
+5. FEEDBACK & INTERVIEWS BRIEF
+------------------------------------------------------------------------
+${feedbackList.map((f, i) => `  ${i+1}. [Rating: ${f.rating}/5 - ${f.outcome}] ${f.studentName}: "${f.comments}" (${f.date})`).join("\n") || "  No feedbacks submitted yet."}
+
+------------------------------------------------------------------------
+6. RECENT OFFER LETTERS LOG
+------------------------------------------------------------------------
+${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentName} for ${o.company} (${o.role}) at ${o.package} - Joining: ${o.joiningDate}`).join("\n") || "  No offer letters generated yet."}
+
+------------------------------------------------------------------------
+7. RECOMMENDATIONS & STRATEGIC INSIGHTS
+------------------------------------------------------------------------
+* Drive Acceleration: Increase registration deadline extensions for ongoing drives to support high-interest candidates.
+* Salary Distribution: Ensure packages above 12.0 LPA are prioritized in the upcoming software engineer interviews.
+* Ready Score: Boost mock tests to increase current student readiness metrics before upcoming online assessment blocks.
+
+========================================================================
+            CONFIDENTIAL - FOR CMS INTERNAL ACADEMIC ARCHIVES
+========================================================================`;
+      }
+    }
+
+    setTimeout(() => {
+      const filename = `${reportName.toLowerCase().replace(/[^a-z0-9]/g, "_")}.${format.toLowerCase()}`;
+      const blob = new Blob([content], { type: format === "CSV" ? "text/csv;charset=utf-8;" : "text/plain;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success(`${reportName} downloaded successfully as ${filename}!`);
+    }, 1200);
+  };
 
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
+        setLiveData(res);
         if (res.placementTrendData && res.placementTrendData.length > 0) {
           const mappedTrends = res.placementTrendData.map((t) => {
             const mockMatch = mockPlacementReports.find(
@@ -91,7 +458,10 @@ export function PlacementReports() {
         title="Reports & Analytics"
         desc="Comprehensive placement analytics and performance reports."
         actions={
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
+          <button 
+            onClick={() => handleExportReport("Comprehensive Placement Report", "TXT")}
+            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
+          >
             <Download className="size-4" /> Export Report
           </button>
         }
@@ -344,18 +714,19 @@ export function PlacementReports() {
         <h3 className="font-semibold mb-4">Download Reports</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { name: "Monthly Report", format: "PDF", size: "2.4 MB" },
-            { name: "Placement Stats", format: "Excel", size: "1.8 MB" },
-            { name: "Student Data", format: "CSV", size: "892 KB" },
-            { name: "Company Analytics", format: "PDF", size: "3.1 MB" },
+            { name: "Monthly Report", format: "PDF", size: "2.4 MB", ext: "TXT" },
+            { name: "Placement Stats", format: "Excel", size: "1.8 MB", ext: "CSV" },
+            { name: "Student Data", format: "CSV", size: "892 KB", ext: "CSV" },
+            { name: "Company Analytics", format: "PDF", size: "3.1 MB", ext: "TXT" },
           ].map((report) => (
             <button
               key={report.name}
-              className="p-4 rounded-lg border hover:border-primary hover:bg-accent/50 transition text-left"
+              onClick={() => handleExportReport(report.name, report.ext)}
+              className="p-4 rounded-lg border hover:border-primary hover:bg-accent/50 transition text-left cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-sm">{report.name}</div>
+                  <div className="font-medium text-sm text-slate-800">{report.name}</div>
                   <div className="text-xs text-muted-foreground mt-1">
                     {report.format} • {report.size}
                   </div>

@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { GraduationCap, Mail, Lock, ArrowRight, Check, Loader2 } from "lucide-react";
+import { GraduationCap, Mail, Lock, ArrowRight, Check, Loader2, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useGoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { toast } from "sonner";
 import { ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
 import { getDashboardForRole, toFrontendRole } from "@/services/authService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -44,6 +45,83 @@ function LoginForm() {
   }, []);
 
   const [roleId, setRoleId] = useState<RoleId | null>(null);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pin, setPin] = useState(["", "", "", ""]);
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [pinSuccess, setPinSuccess] = useState(false);
+
+  const handlePinChange = (val: string, index: number) => {
+    if (!/^\d*$/.test(val)) return;
+    const newPin = [...pin];
+    newPin[index] = val.slice(-1);
+    setPin(newPin);
+    setPinError(null);
+
+    if (val && index < 3) {
+      setTimeout(() => {
+        const nextInput = document.getElementById(`pin-input-${index + 1}`);
+        nextInput?.focus();
+      }, 10);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Backspace" && !pin[index] && index > 0) {
+      const prevInput = document.getElementById(`pin-input-${index - 1}`);
+      prevInput?.focus();
+      const newPin = [...pin];
+      newPin[index - 1] = "";
+      setPin(newPin);
+    }
+  };
+
+  const verifyPin = (enteredPin: string) => {
+    const credentialsMap: Record<string, { email: string; password?: string; admissionNumber?: string; role: RoleId; roleName: string }> = {
+      "1111": { email: "superadmin@college.com", password: "password123", role: "super_admin", roleName: "Super Admin" },
+      "2222": { email: "admin@college.com", password: "password123", role: "admin", roleName: "System Admin" },
+      "3333": { email: "srinivas.faculty@gmail.com", password: "password123", role: "faculty", roleName: "Faculty" },
+      "4444": { email: "hanish@gmail.com", password: "password123", role: "student", roleName: "Student" },
+      "5555": { email: "hanish.parent@gmail.com", admissionNumber: "CS2026101", role: "parent", roleName: "Parent" },
+      "6666": { email: "placement@college.com", password: "password123", role: "placement", roleName: "Placement Officer" },
+      "7777": { email: "librarian@college.com", password: "password123", role: "librarian", roleName: "Librarian" }
+    };
+
+    const match = credentialsMap[enteredPin];
+    if (match) {
+      setPinSuccess(true);
+      setTimeout(() => {
+        setRoleId(match.role);
+        setEmail(match.email);
+        if (match.password) setPassword(match.password);
+        if (match.admissionNumber) setAdmissionNumber(match.admissionNumber);
+        
+        setIsPinModalOpen(false);
+        setPin(["", "", "", ""]);
+        setPinSuccess(false);
+        setPinError(null);
+        toast.success(`Autofilled ${match.roleName} credentials! Press Sign In.`);
+      }, 800);
+    } else {
+      setPinError("Invalid PIN! Try 1111 (Super Admin), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian).");
+      setPin(["", "", "", ""]);
+      setTimeout(() => {
+        const firstInput = document.getElementById("pin-input-0");
+        firstInput?.focus();
+      }, 50);
+    }
+  };
+
+  const handleQuickPin = (enteredPin: string) => {
+    setPin(enteredPin.split(""));
+  };
+
+  useEffect(() => {
+    const entered = pin.join("");
+    if (entered.length === 4) {
+      verifyPin(entered);
+    }
+  }, [pin]);
+
   const active = roleId ? ROLE_LIST.find((r) => r.id === roleId) : null;
 
   const [email, setEmail] = useState("");
@@ -234,6 +312,8 @@ function LoginForm() {
             Enter your institutional credentials to access the campus management system
           </p>
 
+
+
           {/* Error message */}
           {error && (
             <div className="mt-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
@@ -389,6 +469,133 @@ function LoginForm() {
             )}
             {googleLoading ? "Signing in…" : "Continue with Google"}
           </button>
+
+          {/* PIN modal */}
+          {isPinModalOpen && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                transition={{ type: "spring", duration: 0.4 }}
+                className="bg-white border border-slate-100 shadow-2xl rounded-3xl w-full max-w-sm p-6 overflow-hidden relative"
+              >
+                {/* Ambient gradients */}
+                <div className="absolute -top-24 -left-24 size-48 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-24 -right-24 size-48 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none" />
+
+                <div className="relative">
+                  {/* Header */}
+                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                      <h3 className="font-bold text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">Demo Autofill Security Pin</h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsPinModalOpen(false);
+                        setPin(["", "", "", ""]);
+                        setPinError(null);
+                      }}
+                      className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+
+                  {/* Body */}
+                  <div className="mt-4 text-center">
+                    <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                      Enter your 4-digit security PIN to populate preset credentials.
+                    </p>
+
+                    {/* PIN inputs */}
+                    <div className="flex justify-center gap-3 my-5">
+                      {pin.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          id={`pin-input-${idx}`}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handlePinChange(e.target.value, idx)}
+                          onKeyDown={(e) => handleKeyDown(e, idx)}
+                          className={`size-11 rounded-xl text-center font-bold text-lg border-2 outline-none transition-all
+                            ${pinSuccess 
+                              ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                              : pinError
+                              ? "border-rose-500 bg-rose-50 text-rose-700"
+                              : digit
+                              ? "border-indigo-600 bg-indigo-50/50 text-indigo-700 shadow-sm"
+                              : "border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                            }`}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Status messages */}
+                    {pinError && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -5 }} 
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-[10px] font-medium text-rose-600 px-3 leading-tight mb-4"
+                      >
+                        {pinError}
+                      </motion.p>
+                    )}
+
+                    {pinSuccess && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }} 
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-600 mb-4"
+                      >
+                        <Check className="size-4 animate-bounce" /> PIN Verified! Autofilling...
+                      </motion.div>
+                    )}
+
+                    {/* Cheat Sheet / Helper */}
+                    <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-3 text-left">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Available Demo PINs (Click to fill):</span>
+                      <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-700">
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("1111")}>
+                          <span className="text-muted-foreground">Super Admin</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">1111</kbd>
+                        </div>
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("2222")}>
+                          <span className="text-muted-foreground">Admin</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">2222</kbd>
+                        </div>
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("3333")}>
+                          <span className="text-muted-foreground">Faculty</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">3333</kbd>
+                        </div>
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("4444")}>
+                          <span className="text-muted-foreground">Student</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">4444</kbd>
+                        </div>
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("5555")}>
+                          <span className="text-muted-foreground">Parent</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">5555</kbd>
+                        </div>
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("6666")}>
+                          <span className="text-muted-foreground">Placement</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">6666</kbd>
+                        </div>
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("7777")}>
+                          <span className="text-muted-foreground">Librarian</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">7777</kbd>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

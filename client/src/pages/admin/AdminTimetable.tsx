@@ -222,7 +222,7 @@ export function AdminTimetable() {
                               <button
                                 onClick={() => {
                                   if (confirm("Are you sure you want to delete this slot?")) {
-                                    deleteSlotMutation.mutate(slot._id || slot.id);
+                                    deleteSlotMutation.mutate(slot._id || slot.id || "");
                                   }
                                 }}
                                 className="absolute top-1 right-1 p-0.5 rounded-md hover:bg-rose-50 text-rose-500 hover:text-rose-600 transition opacity-0 group-hover:opacity-100 cursor-pointer"

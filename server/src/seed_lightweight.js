@@ -132,18 +132,33 @@ const seedPlacements = async (client) => {
     for (const stud of placementStudents) {
       const check = await client.query("SELECT id FROM students WHERE email = $1", [stud.email]);
       if (check.rows.length === 0) {
-        // Insert a user first (since student references user)
-        const userRes = await client.query(
-          `INSERT INTO users (name, full_name, email, password, role, is_verified, is_active)
-           VALUES ($1, $1, $2, $3, 'student', true, true) RETURNING id`,
-          [stud.full_name, stud.email, hashedPassword]
-        );
-        const userId = userRes.rows[0].id;
+        // Insert a user first (since student references user) - check if user already exists by email
+        let userId;
+        const userCheck = await client.query("SELECT id FROM users WHERE email = $1", [stud.email]);
+        if (userCheck.rows.length > 0) {
+          userId = userCheck.rows[0].id;
+        } else {
+          const userRes = await client.query(
+            `INSERT INTO users (name, full_name, email, password, role, is_verified, is_active)
+             VALUES ($1, $1, $2, $3, 'student', true, true) RETURNING id`,
+            [stud.full_name, stud.email, hashedPassword]
+          );
+          userId = userRes.rows[0].id;
+        }
 
         const insertRes = await client.query(
           `INSERT INTO students (user_id, full_name, roll_number, email, phone_number, gender, date_of_birth, department, year, semester, section, address, parent_name, parent_phone, parent_email, cgpa, attendance_percentage, is_active)
-           VALUES ($1, $2, $3, $4, '9876543210', 'Male', '2004-06-20', $5, 4, 7, 'A', '123 Campus Lane', 'Parent ' || $2, '9876543210', 'parent.' || $4, $6, 90.0, true) RETURNING id`,
-          [userId, stud.full_name, stud.roll_number, stud.email, stud.department, stud.cgpa]
+           VALUES ($1, $2, $3, $4, '9876543210', 'Male', '2004-06-20', $5, 4, 7, 'A', '123 Campus Lane', $7, '9876543210', $8, $6, 90.0, true) RETURNING id`,
+          [
+            userId,
+            stud.full_name,
+            stud.roll_number,
+            stud.email,
+            stud.department,
+            stud.cgpa,
+            `Parent ${stud.full_name}`,
+            `parent.${stud.email}`
+          ]
         );
         studentMap[stud.full_name] = insertRes.rows[0].id;
       } else {
@@ -158,7 +173,8 @@ const seedPlacements = async (client) => {
       { name: 'Goldman Sachs', industry: 'Investment Banking', hr: 'Sneha Rao', email: 'careers@gs.com', package: '16.0 LPA', hires: 8 },
       { name: 'Accenture', industry: 'Consulting', hr: 'Rahul Verma', email: 'careers@accenture.com', package: '11.0 LPA', hires: 22 },
       { name: 'TCS', industry: 'Consulting', hr: 'Komal Gupta', email: 'careers@tcs.com', package: '12.0 LPA', hires: 20 },
-      { name: 'Infosys', industry: 'IT Services', hr: 'Deepa Nair', email: 'careers@infosys.com', package: '10.5 LPA', hires: 18 }
+      { name: 'Infosys', industry: 'IT Services', hr: 'Deepa Nair', email: 'careers@infosys.com', package: '10.5 LPA', hires: 18 },
+      { name: 'Oracle', industry: 'Technology', hr: 'Siddharth Sen', email: 'careers@oracle.com', package: '16.5 LPA', hires: 14 }
     ];
     
     const companyMap = {};

@@ -916,6 +916,17 @@ export const companies = [
     hiringStatus: "Active",
     previousYearHires: 22,
   },
+  {
+    id: "COM008",
+    name: "Oracle",
+    industry: "Technology",
+    hrContact: "Siddharth Sen",
+    email: "hr@oracle.com",
+    phone: "9876543217",
+    package: "16.5 LPA",
+    hiringStatus: "Active",
+    previousYearHires: 14,
+  },
 ];
 
 export const drives = [

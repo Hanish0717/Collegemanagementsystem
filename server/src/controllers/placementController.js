@@ -8,7 +8,8 @@ const fallbackCompanies = [
   { id: "COM004", name: "Goldman Sachs", industry: "Investment Banking", hrContact: "Sneha Rao", email: "careers@gs.com", phone: "9876543210", package: "16.0 LPA", hiringStatus: "Active", previousYearHires: 8 },
   { id: "COM005", name: "Accenture", industry: "Consulting", hrContact: "Rahul Verma", email: "careers@accenture.com", phone: "9876543210", package: "11.0 LPA", hiringStatus: "Active", previousYearHires: 22 },
   { id: "COM006", name: "TCS", industry: "Consulting", hrContact: "Komal Gupta", email: "careers@tcs.com", phone: "9876543210", package: "12.0 LPA", hiringStatus: "Active", previousYearHires: 20 },
-  { id: "COM007", name: "Infosys", industry: "IT Services", hrContact: "Deepa Nair", email: "careers@infosys.com", phone: "9876543210", package: "10.5 LPA", hiringStatus: "Active", previousYearHires: 18 }
+  { id: "COM007", name: "Infosys", industry: "IT Services", hrContact: "Deepa Nair", email: "careers@infosys.com", phone: "9876543210", package: "10.5 LPA", hiringStatus: "Active", previousYearHires: 18 },
+  { id: "COM008", name: "Oracle", industry: "Technology", hrContact: "Siddharth Sen", email: "careers@oracle.com", phone: "9876543210", package: "16.5 LPA", hiringStatus: "Active", previousYearHires: 14 }
 ];
 
 const fallbackDrives = [
@@ -296,6 +297,261 @@ export const getPlacementDashboard = async (req, res, next) => {
         interviews,
         placementNotifications
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createCompany = async (req, res, next) => {
+  try {
+    const { name, industry, hrContact, email, phone, package: packageAmount, previousYearHires, hiringStatus } = req.body;
+
+    if (!name) {
+      const error = new Error('Company name is required');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const { data, error } = await supabase
+      .from('placement_companies')
+      .insert([{
+        name,
+        industry: industry || 'Technology',
+        hr_contact: hrContact || 'HR Manager',
+        email: email || `${name.toLowerCase().replace(/\s+/g, '')}@company.com`,
+        phone: phone || '9876543210',
+        package_amount: packageAmount || '8.0 LPA',
+        previous_hires: parseInt(previousYearHires) || 0,
+        is_active: hiringStatus === 'Inactive' ? false : true
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    const formatted = {
+      id: data.id,
+      name: data.name,
+      industry: data.industry,
+      hrContact: data.hr_contact,
+      email: data.email,
+      phone: data.phone,
+      package: data.package_amount,
+      hiringStatus: data.is_active ? 'Active' : 'Inactive',
+      previousYearHires: data.previous_hires
+    };
+
+    res.status(201).json({
+      success: true,
+      message: 'Company created successfully',
+      data: formatted
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCompany = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, industry, hrContact, email, phone, package: packageAmount, previousYearHires, hiringStatus } = req.body;
+
+    const { data: exists, error: checkErr } = await supabase
+      .from('placement_companies')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (checkErr) throw checkErr;
+    if (!exists) {
+      const error = new Error('Company not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (industry !== undefined) updateData.industry = industry;
+    if (hrContact !== undefined) updateData.hr_contact = hrContact;
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (packageAmount !== undefined) updateData.package_amount = packageAmount;
+    if (previousYearHires !== undefined) updateData.previous_hires = parseInt(previousYearHires) || 0;
+    if (hiringStatus !== undefined) updateData.is_active = hiringStatus === 'Inactive' ? false : true;
+
+    const { data, error } = await supabase
+      .from('placement_companies')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    const formatted = {
+      id: data.id,
+      name: data.name,
+      industry: data.industry,
+      hrContact: data.hr_contact,
+      email: data.email,
+      phone: data.phone,
+      package: data.package_amount,
+      hiringStatus: data.is_active ? 'Active' : 'Inactive',
+      previousYearHires: data.previous_hires
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Company updated successfully',
+      data: formatted
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createDrive = async (req, res, next) => {
+  try {
+    const { company, role, date, venue, applicationDeadline, status, packageMin, packageMax, eligibilityMinCgpa, eligibilityDepartments } = req.body;
+
+    if (!company || !role) {
+      const error = new Error('Company name and role are required');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Attempt to find company_id from name matching
+    const { data: comp } = await supabase
+      .from('placement_companies')
+      .select('id')
+      .eq('name', company)
+      .maybeSingle();
+
+    const companyId = comp ? comp.id : null;
+
+    const { data, error } = await supabase
+      .from('placements')
+      .insert([{
+        company,
+        position: role,
+        company_id: companyId,
+        drive_date: date || new Date().toISOString().split('T')[0],
+        venue: venue || 'Virtual',
+        deadline: applicationDeadline || new Date().toISOString().split('T')[0],
+        status: (status || 'upcoming').toLowerCase(),
+        package_min: parseFloat(packageMin) || 6.0,
+        package_max: parseFloat(packageMax) || 8.0,
+        eligibility_min_cgpa: parseFloat(eligibilityMinCgpa) || 7.0,
+        eligibility_departments: JSON.stringify(eligibilityDepartments || ['CSE', 'ECE']),
+        applied_students: JSON.stringify([])
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    let count = 0;
+    try {
+      const arr = typeof data.applied_students === 'string' ? JSON.parse(data.applied_students) : (data.applied_students || []);
+      count = Array.isArray(arr) ? arr.length : 0;
+    } catch (e) {
+      count = 0;
+    }
+
+    const formatted = {
+      id: data.id,
+      company: data.company,
+      role: data.position,
+      date: data.drive_date ? new Date(data.drive_date).toISOString().split('T')[0] : "TBD",
+      venue: data.venue || "Virtual",
+      applicationDeadline: data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : "Closed",
+      status: data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : "Upcoming",
+      studentCount: count,
+      rounds: 3
+    };
+
+    res.status(201).json({
+      success: true,
+      message: 'Drive created successfully',
+      data: formatted
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateDrive = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { company, role, date, venue, applicationDeadline, status, packageMin, packageMax, eligibilityMinCgpa, eligibilityDepartments } = req.body;
+
+    const { data: exists, error: checkErr } = await supabase
+      .from('placements')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (checkErr) throw checkErr;
+    if (!exists) {
+      const error = new Error('Drive not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const updateData = {};
+    if (company !== undefined) {
+      updateData.company = company;
+      const { data: comp } = await supabase
+        .from('placement_companies')
+        .select('id')
+        .eq('name', company)
+        .maybeSingle();
+      if (comp) updateData.company_id = comp.id;
+    }
+    if (role !== undefined) updateData.position = role;
+    if (date !== undefined) updateData.drive_date = date;
+    if (venue !== undefined) updateData.venue = venue;
+    if (applicationDeadline !== undefined) updateData.deadline = applicationDeadline;
+    if (status !== undefined) updateData.status = status.toLowerCase();
+    if (packageMin !== undefined) updateData.package_min = parseFloat(packageMin) || 6.0;
+    if (packageMax !== undefined) updateData.package_max = parseFloat(packageMax) || 8.0;
+    if (eligibilityMinCgpa !== undefined) updateData.eligibility_min_cgpa = parseFloat(eligibilityMinCgpa) || 7.0;
+    if (eligibilityDepartments !== undefined) updateData.eligibility_departments = JSON.stringify(eligibilityDepartments);
+
+    const { data, error } = await supabase
+      .from('placements')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    let count = 0;
+    try {
+      const arr = typeof data.applied_students === 'string' ? JSON.parse(data.applied_students) : (data.applied_students || []);
+      count = Array.isArray(arr) ? arr.length : 0;
+    } catch (e) {
+      count = 0;
+    }
+
+    const formatted = {
+      id: data.id,
+      company: data.company,
+      role: data.position,
+      date: data.drive_date ? new Date(data.drive_date).toISOString().split('T')[0] : "TBD",
+      venue: data.venue || "Virtual",
+      applicationDeadline: data.deadline ? new Date(data.deadline).toISOString().split('T')[0] : "Closed",
+      status: data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1) : "Upcoming",
+      studentCount: count,
+      rounds: 3
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Drive updated successfully',
+      data: formatted
     });
   } catch (error) {
     next(error);

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Calendar, Clock, MapPin, Video, Edit2, Plus, Loader2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Video, Edit2, Plus, Loader2, X, Star } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { fetchPlacementData } from "@/services/placementService";
 import { interviews as mockInterviews } from "@/mock/mockData";
+import { toast } from "sonner";
 
 interface InterviewItem {
   id: string;
@@ -17,20 +18,467 @@ interface InterviewItem {
   status: string;
 }
 
+const mergeInterviews = (serverInterviews: InterviewItem[]): InterviewItem[] => {
+  if (typeof window === "undefined") return serverInterviews;
+  let list = [...serverInterviews];
+  
+  const editedStr = localStorage.getItem("placement_edited_interviews");
+  if (editedStr) {
+    try {
+      const editedMap = JSON.parse(editedStr);
+      list = list.map(item => {
+        if (editedMap[item.id]) {
+          return { ...item, ...editedMap[item.id] };
+        }
+        return item;
+      });
+    } catch (e) {
+      console.error("Error parsing placement_edited_interviews:", e);
+    }
+  }
+
+  const customStr = localStorage.getItem("placement_custom_interviews");
+  if (customStr) {
+    try {
+      const customList = JSON.parse(customStr);
+      const existingIds = new Set(list.map(i => i.id));
+      const filteredCustom = customList.filter((i: InterviewItem) => !existingIds.has(i.id));
+      list = [...filteredCustom, ...list];
+    } catch (e) {
+      console.error("Error parsing placement_custom_interviews:", e);
+    }
+  }
+  
+  return list;
+};
+
 export function PlacementInterviews() {
-  const [interviews, setInterviews] = useState<InterviewItem[]>(mockInterviews);
+  const [interviews, setInterviews] = useState<InterviewItem[]>(() => mergeInterviews(mockInterviews));
   const [loading, setLoading] = useState(true);
+
+  // Calendar Verification States
+  const [calendarDate, setCalendarDate] = useState("");
+  const [calendarTime, setCalendarTime] = useState("09:00 AM");
+  const [slotCheckedResult, setSlotCheckedResult] = useState<{ checked: boolean; available: boolean; interview?: InterviewItem } | null>(null);
+
+  // Feedback Form States
+  const [feedbackStudent, setFeedbackStudent] = useState("");
+  const [feedbackRating, setFeedbackRating] = useState("");
+  const [feedbackOutcome, setFeedbackOutcome] = useState("");
+  const [feedbackText, setFeedbackText] = useState("");
+
+  interface FeedbackRecord {
+    id: string;
+    studentName: string;
+    rating: number;
+    outcome: string;
+    comments: string;
+    date: string;
+  }
+
+  const [recentFeedbacks, setRecentFeedbacks] = useState<FeedbackRecord[]>(() => {
+    if (typeof window !== "undefined") {
+      const local = localStorage.getItem("placement_recent_feedbacks");
+      if (local) {
+        try {
+          return JSON.parse(local);
+        } catch (e) {
+          console.error("Error parsing placement_recent_feedbacks:", e);
+        }
+      }
+    }
+    return [
+      {
+        id: "FB_1",
+        studentName: "Sofia Rodriguez",
+        rating: 5,
+        outcome: "Selected",
+        comments: "Excellent systems architecture design and deep database indexing knowledge. Perfect fit for the role.",
+        date: "2026-05-30"
+      },
+      {
+        id: "FB_2",
+        studentName: "Liam Chen",
+        rating: 3,
+        outcome: "Hold",
+        comments: "Good coding ability but struggled under pressure on the multi-threading questions. Recommended for second round review.",
+        date: "2026-05-31"
+      }
+    ];
+  });
+
+  const handleFeedbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!feedbackStudent.trim()) {
+      toast.error("Please specify a student name!");
+      return;
+    }
+    if (!feedbackRating) {
+      toast.error("Please select a rating!");
+      return;
+    }
+    if (!feedbackOutcome) {
+      toast.error("Please select an outcome!");
+      return;
+    }
+    if (!feedbackText.trim()) {
+      toast.error("Please write feedback comments!");
+      return;
+    }
+
+    const matchedInterview = interviews.find(
+      i => i.studentName.toLowerCase() === feedbackStudent.trim().toLowerCase()
+    );
+
+    if (matchedInterview) {
+      const newStatus = feedbackOutcome === "Hold" ? "Pending" : "Completed";
+      const updatedInterview = {
+        ...matchedInterview,
+        status: newStatus
+      };
+
+      setInterviews(prev => prev.map(item => item.id === matchedInterview.id ? updatedInterview : item));
+
+      if (typeof window !== "undefined") {
+        const editedStr = localStorage.getItem("placement_edited_interviews");
+        let editedMap: Record<string, InterviewItem> = {};
+        if (editedStr) {
+          try {
+            editedMap = JSON.parse(editedStr);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        editedMap[matchedInterview.id] = updatedInterview;
+        localStorage.setItem("placement_edited_interviews", JSON.stringify(editedMap));
+      }
+    }
+
+    const newFeedback: FeedbackRecord = {
+      id: `FB_${Date.now()}`,
+      studentName: feedbackStudent.trim(),
+      rating: parseInt(feedbackRating),
+      outcome: feedbackOutcome,
+      comments: feedbackText.trim(),
+      date: new Date().toISOString().split("T")[0]
+    };
+
+    setRecentFeedbacks(prev => {
+      const updated = [newFeedback, ...prev];
+      if (typeof window !== "undefined") {
+        localStorage.setItem("placement_recent_feedbacks", JSON.stringify(updated));
+      }
+      return updated;
+    });
+    
+    setFeedbackStudent("");
+    setFeedbackRating("");
+    setFeedbackOutcome("");
+    setFeedbackText("");
+
+    toast.success(`Feedback submitted successfully for ${newFeedback.studentName}!`);
+  };
+
+  const activeUncompletedInterviews = interviews.filter(
+    i => i.status.toLowerCase() === "scheduled" || i.status.toLowerCase() === "pending"
+  );
+
+  const handleFindSlots = () => {
+    if (!calendarDate) {
+      toast.error("Please select a date first!");
+      return;
+    }
+    const match = interviews.find(i => i.date === calendarDate && i.time === calendarTime);
+    if (match) {
+      setSlotCheckedResult({
+        checked: true,
+        available: false,
+        interview: match
+      });
+      toast.warning(`Slot is occupied by ${match.studentName}'s interview!`);
+    } else {
+      setSlotCheckedResult({
+        checked: true,
+        available: true
+      });
+      toast.success("Time slot is fully available!");
+    }
+  };
+
+  const handleBookFromCalendar = () => {
+    setFormStudentName("");
+    setFormCompany("Google India");
+    setFormRound("1");
+    setFormDate(calendarDate);
+    setFormTime(calendarTime);
+    setFormMode("Online");
+    setFormVenue("Video Call");
+    setFormPanelists("Dr. Rajesh Verma, Priya Sharma");
+    setFormStatus("Scheduled");
+    setIsScheduleModalOpen(true);
+  };
+
+  // Panelist State Machine
+  interface PanelistItem {
+    id: string;
+    name: string;
+    company: string;
+    role: string;
+    scheduledCount: number;
+    completedCount: number;
+  }
+
+  const [panelList, setPanelList] = useState<PanelistItem[]>(() => {
+    if (typeof window !== "undefined") {
+      const local = localStorage.getItem("placement_panel_list");
+      if (local) {
+        try {
+          return JSON.parse(local);
+        } catch (e) {
+          console.error("Error parsing placement_panel_list:", e);
+        }
+      }
+    }
+    return [
+      { id: "PAN_1", name: "Dr. Rajesh Verma", company: "Google India", role: "Technical Interviewer", scheduledCount: 3, completedCount: 2 },
+      { id: "PAN_2", name: "Priya Sharma", company: "Microsoft India", role: "HR Interviewer", scheduledCount: 2, completedCount: 1 }
+    ];
+  });
+
+  const [isPanelModalOpen, setIsPanelModalOpen] = useState(false);
+  const [isPanelEditMode, setIsPanelEditMode] = useState(false);
+  const [selectedPanelist, setSelectedPanelist] = useState<PanelistItem | null>(null);
+  
+  const [panelName, setPanelName] = useState("");
+  const [panelCompany, setPanelCompany] = useState("");
+  const [panelRole, setPanelRole] = useState("Technical Interviewer");
+
+  const openAddPanelModal = () => {
+    setIsPanelEditMode(false);
+    setSelectedPanelist(null);
+    setPanelName("");
+    setPanelCompany("");
+    setPanelRole("Technical Interviewer");
+    setIsPanelModalOpen(true);
+  };
+
+  const openEditPanelModal = (panelist: PanelistItem) => {
+    setIsPanelEditMode(true);
+    setSelectedPanelist(panelist);
+    setPanelName(panelist.name);
+    setPanelCompany(panelist.company);
+    setPanelRole(panelist.role);
+    setIsPanelModalOpen(true);
+  };
+
+  const handlePanelSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!panelName || !panelCompany || !panelRole) {
+      toast.error("Please fill in all required fields!");
+      return;
+    }
+
+    if (isPanelEditMode && selectedPanelist) {
+      setPanelList(prev => {
+        const updated = prev.map(item => item.id === selectedPanelist.id ? {
+          ...item,
+          name: panelName,
+          company: panelCompany,
+          role: panelRole
+        } : item);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("placement_panel_list", JSON.stringify(updated));
+        }
+        return updated;
+      });
+      toast.success(`Successfully updated panelist details for ${panelName}!`);
+    } else {
+      const newPanelist: PanelistItem = {
+        id: `PAN_${Date.now()}`,
+        name: panelName,
+        company: panelCompany,
+        role: panelRole,
+        scheduledCount: 0,
+        completedCount: 0
+      };
+      setPanelList(prev => {
+        const updated = [...prev, newPanelist];
+        if (typeof window !== "undefined") {
+          localStorage.setItem("placement_panel_list", JSON.stringify(updated));
+        }
+        return updated;
+      });
+      toast.success(`Successfully added ${panelName} to panels!`);
+    }
+
+    setIsPanelModalOpen(false);
+  };
+
+  // Modal Control States
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedInterview, setSelectedInterview] = useState<InterviewItem | null>(null);
+
+  // Form Fields States
+  const [formStudentName, setFormStudentName] = useState("");
+  const [formCompany, setFormCompany] = useState("");
+  const [formRound, setFormRound] = useState("1");
+  const [formDate, setFormDate] = useState("");
+  const [formTime, setFormTime] = useState("");
+  const [formMode, setFormMode] = useState("Online");
+  const [formVenue, setFormVenue] = useState("");
+  const [formPanelists, setFormPanelists] = useState("");
+  const [formStatus, setFormStatus] = useState("Scheduled");
+
+  const openScheduleModal = () => {
+    setFormStudentName("");
+    setFormCompany("");
+    setFormRound("1");
+    setFormDate(new Date().toISOString().split("T")[0]);
+    setFormTime("10:00 AM");
+    setFormMode("Online");
+    setFormVenue("Video Call");
+    setFormPanelists("Dr. Rajesh Verma, Priya Sharma");
+    setFormStatus("Scheduled");
+    setIsScheduleModalOpen(true);
+  };
+
+  const openViewModal = (interview: InterviewItem) => {
+    setSelectedInterview(interview);
+    setIsViewModalOpen(true);
+  };
+
+  const openEditModal = (interview: InterviewItem) => {
+    setSelectedInterview(interview);
+    setFormStudentName(interview.studentName);
+    setFormCompany(interview.company);
+    setFormRound(interview.round.toString());
+    setFormDate(interview.date);
+    setFormTime(interview.time);
+    setFormMode(interview.mode);
+    setFormVenue(interview.venue);
+    setFormPanelists(interview.panelists ? interview.panelists.join(", ") : "Dr. Rajesh Verma, Priya Sharma");
+    setFormStatus(interview.status);
+    setIsEditModalOpen(true);
+  };
+
+  const handleScheduleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formStudentName || !formCompany || !formDate || !formTime || !formVenue) {
+      toast.error("Please fill in all required fields!");
+      return;
+    }
+
+    const newInterview: InterviewItem = {
+      id: `INT_${Date.now()}`,
+      studentName: formStudentName,
+      company: formCompany,
+      round: parseInt(formRound) || 1,
+      date: formDate,
+      time: formTime,
+      mode: formMode,
+      venue: formVenue,
+      panelists: formPanelists.split(",").map(p => p.trim()).filter(Boolean),
+      status: formStatus
+    };
+
+    setInterviews(prev => {
+      const updated = [newInterview, ...prev];
+      if (typeof window !== "undefined") {
+        const customStr = localStorage.getItem("placement_custom_interviews");
+        let customList: InterviewItem[] = [];
+        if (customStr) {
+          try {
+            customList = JSON.parse(customStr);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        customList.unshift(newInterview);
+        localStorage.setItem("placement_custom_interviews", JSON.stringify(customList));
+      }
+      return updated;
+    });
+    setIsScheduleModalOpen(false);
+    toast.success(`Successfully scheduled interview for ${formStudentName}!`);
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formStudentName || !formCompany || !formDate || !formTime || !formVenue) {
+      toast.error("Please fill in all required fields!");
+      return;
+    }
+
+    const updatedFields = {
+      studentName: formStudentName,
+      company: formCompany,
+      round: parseInt(formRound) || 1,
+      date: formDate,
+      time: formTime,
+      mode: formMode,
+      venue: formVenue,
+      panelists: formPanelists.split(",").map(p => p.trim()).filter(Boolean),
+      status: formStatus
+    };
+
+    setInterviews(prev => {
+      const updated = prev.map(item => item.id === selectedInterview?.id ? {
+        ...item,
+        ...updatedFields
+      } : item);
+
+      if (selectedInterview && typeof window !== "undefined") {
+        const customStr = localStorage.getItem("placement_custom_interviews");
+        let isCustom = false;
+        if (customStr) {
+          try {
+            let customList: InterviewItem[] = JSON.parse(customStr);
+            const idx = customList.findIndex(i => i.id === selectedInterview.id);
+            if (idx !== -1) {
+              customList[idx] = { ...customList[idx], ...updatedFields };
+              localStorage.setItem("placement_custom_interviews", JSON.stringify(customList));
+              isCustom = true;
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        if (!isCustom) {
+          const editedStr = localStorage.getItem("placement_edited_interviews");
+          let editedMap: Record<string, InterviewItem> = {};
+          if (editedStr) {
+            try {
+              editedMap = JSON.parse(editedStr);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          editedMap[selectedInterview.id] = { ...selectedInterview, ...updatedFields };
+          localStorage.setItem("placement_edited_interviews", JSON.stringify(editedMap));
+        }
+      }
+
+      return updated;
+    });
+
+    setIsEditModalOpen(false);
+    toast.success(`Successfully updated interview details for ${formStudentName}!`);
+  };
 
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
         if (res.interviews && res.interviews.length > 0) {
-          setInterviews(res.interviews);
+          setInterviews(mergeInterviews(res.interviews));
         }
         setLoading(false);
       })
       .catch((err) => {
         console.warn("Failed to fetch live interviews, using fallback mock data:", err);
+        setInterviews(mergeInterviews(mockInterviews));
         setLoading(false);
       });
   }, []);
@@ -95,10 +543,16 @@ export function PlacementInterviews() {
       </div>
 
       <div className="flex gap-2">
-        <button className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition">
+        <button 
+          onClick={() => openViewModal(interview)}
+          className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent cursor-pointer transition"
+        >
           View
         </button>
-        <button className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition">
+        <button 
+          onClick={() => openEditModal(interview)}
+          className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent cursor-pointer transition"
+        >
           <Edit2 className="size-3 inline mr-1" /> Edit
         </button>
       </div>
@@ -106,12 +560,16 @@ export function PlacementInterviews() {
   );
 
   return (
-    <div className="space-y-6">
+    <>
+      <div className="space-y-6">
       <PageHeader
         title="Interview Scheduling"
         desc="Manage interview calendars, panel assignments and timelines."
         actions={
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
+          <button 
+            onClick={openScheduleModal}
+            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
+          >
             <Plus className="size-4" /> Schedule Interview
           </button>
         }
@@ -148,23 +606,71 @@ export function PlacementInterviews() {
           <h3 className="font-semibold mb-4">Interview Calendar</h3>
           <div className="grid sm:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Select Date</label>
-              <input type="date" className="w-full rounded-lg border bg-background px-3 py-2" />
+              <label className="text-sm font-medium mb-2 block text-left">Select Date</label>
+              <input 
+                type="date" 
+                value={calendarDate}
+                onChange={(e) => {
+                  setCalendarDate(e.target.value);
+                  setSlotCheckedResult(null);
+                }}
+                className="w-full rounded-lg border bg-background px-3 py-2 outline-none focus:border-indigo-500" 
+              />
             </div>
             <div>
-              <label className="text-sm font-medium mb-2 block">Select Time Slot</label>
-              <select className="w-full rounded-lg border bg-background px-3 py-2">
-                <option>09:00 AM</option>
-                <option>10:00 AM</option>
-                <option>11:00 AM</option>
-                <option>02:00 PM</option>
-                <option>03:00 PM</option>
+              <label className="text-sm font-medium mb-2 block text-left">Select Time Slot</label>
+              <select 
+                value={calendarTime}
+                onChange={(e) => {
+                  setCalendarTime(e.target.value);
+                  setSlotCheckedResult(null);
+                }}
+                className="w-full rounded-lg border bg-background px-3 py-2 outline-none focus:border-indigo-500 cursor-pointer"
+              >
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="02:00 PM">02:00 PM</option>
+                <option value="03:00 PM">03:00 PM</option>
               </select>
             </div>
           </div>
-          <button className="w-full px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium">
+          <button 
+            onClick={handleFindSlots}
+            className="w-full px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium glow-primary cursor-pointer hover:opacity-95 transition"
+          >
             Find Available Slots
           </button>
+
+          {/* Slot Check Result Banners */}
+          {slotCheckedResult && slotCheckedResult.checked && (
+            <div className="mt-4 p-4 rounded-xl border border-slate-100 bg-slate-50/20 animate-in fade-in slide-in-from-top-2 duration-200">
+              {slotCheckedResult.available ? (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-1 rounded-lg text-emerald-800">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
+                    <span className="text-xs font-semibold text-left">Slot is fully available on {new Date(calendarDate).toLocaleDateString()} @ {calendarTime}!</span>
+                  </div>
+                  <button 
+                    onClick={handleBookFromCalendar}
+                    className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs hover:shadow-md cursor-pointer flex items-center gap-1.5 shrink-0"
+                  >
+                    ⚡ Book Slot
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-1.5 text-rose-800 text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-rose-500 shrink-0"></span>
+                    <span className="text-xs font-semibold">Slot Occupied (Busy)</span>
+                  </div>
+                  <p className="text-[11px] text-rose-700/90 leading-relaxed pl-4">
+                    {slotCheckedResult.interview?.studentName} has a scheduled <strong>Round {slotCheckedResult.interview?.round}</strong> interview with <strong>{slotCheckedResult.interview?.company}</strong> at this time. Please pick another slot.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </Card>
       )}
 
@@ -256,30 +762,30 @@ export function PlacementInterviews() {
         <Card>
           <h3 className="font-semibold mb-4">Panel Management</h3>
           <div className="space-y-3">
-            <div className="p-4 rounded-lg border flex items-start justify-between hover:bg-accent/50 transition">
-              <div>
-                <div className="font-medium">Dr. Rajesh Verma</div>
-                <div className="text-xs text-muted-foreground">
-                  Google India • Technical Interviewer
+            {panelList.map((panelist) => (
+              <div key={panelist.id} className="p-4 rounded-lg border flex items-start justify-between hover:bg-accent/50 transition">
+                <div className="text-left">
+                  <div className="font-medium text-slate-800">{panelist.name}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {panelist.company} • {panelist.role}
+                  </div>
+                  <div className="text-xs mt-2 text-slate-500 font-medium">
+                    📅 {panelist.scheduledCount} interviews scheduled • ✓ {panelist.completedCount} completed
+                  </div>
                 </div>
-                <div className="text-xs mt-2">📅 3 interviews scheduled • ✓ 2 completed</div>
+                <button 
+                  onClick={() => openEditPanelModal(panelist)}
+                  className="px-3 py-1 rounded-lg text-xs text-blue-600 hover:bg-blue-50 font-semibold cursor-pointer transition font-semibold"
+                >
+                  Edit
+                </button>
               </div>
-              <button className="px-3 py-1 rounded text-xs text-blue-600 hover:bg-blue-50">
-                Edit
-              </button>
-            </div>
-            <div className="p-4 rounded-lg border flex items-start justify-between hover:bg-accent/50 transition">
-              <div>
-                <div className="font-medium">Priya Sharma</div>
-                <div className="text-xs text-muted-foreground">Microsoft India • HR Interviewer</div>
-                <div className="text-xs mt-2">📅 2 interviews scheduled • ✓ 1 completed</div>
-              </div>
-              <button className="px-3 py-1 rounded text-xs text-blue-600 hover:bg-blue-50">
-                Edit
-              </button>
-            </div>
+            ))}
           </div>
-          <button className="mt-3 w-full px-4 py-2 rounded-lg border text-sm font-medium hover:bg-accent transition flex items-center justify-center gap-2">
+          <button 
+            onClick={openAddPanelModal}
+            className="mt-3 w-full px-4 py-2.5 rounded-xl border text-sm font-semibold hover:bg-indigo-50/20 hover:border-indigo-200 hover:text-indigo-600 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+          >
             <Plus className="size-4" /> Add Panelist
           </button>
         </Card>
@@ -306,52 +812,608 @@ export function PlacementInterviews() {
         </div>
       </Card>
 
-      {/* Interview Feedback Template */}
-      <Card>
-        <h3 className="font-semibold mb-4">Interview Feedback Form</h3>
-        <div className="space-y-4 p-4 border rounded-lg bg-gradient-soft">
-          <div>
-            <label className="text-sm font-medium block mb-2">Student Name</label>
-            <input
-              placeholder="Enter student name"
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
+      {/* Interview Feedback Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column: Form */}
+        <Card>
+          <h3 className="font-semibold mb-4 text-left">Interview Feedback Form</h3>
+          <form onSubmit={handleFeedbackSubmit} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <div>
-              <label className="text-sm font-medium block mb-2">Rating (1-5)</label>
-              <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                <option>Select rating</option>
-                <option>1 - Poor</option>
-                <option>2 - Below Average</option>
-                <option>3 - Average</option>
-                <option>4 - Good</option>
-                <option>5 - Excellent</option>
-              </select>
+              <label className="text-sm font-medium block mb-2 text-left">Student Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="Enter student name"
+                value={feedbackStudent}
+                onChange={(e) => setFeedbackStudent(e.target.value)}
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-indigo-500"
+              />
+              {activeUncompletedInterviews.length > 0 && (
+                <div className="mt-2 text-left">
+                  <span className="text-[10px] text-muted-foreground block mb-1">Quick Select Active Candidate:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {activeUncompletedInterviews.map((i) => (
+                      <button
+                        key={i.id}
+                        type="button"
+                        onClick={() => setFeedbackStudent(i.studentName)}
+                        className="px-2 py-1 rounded-md text-[10px] bg-white hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-200 cursor-pointer transition border border-slate-200"
+                      >
+                        {i.studentName} ({i.company})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium block mb-2 text-left">Rating (1-5) *</label>
+                <select
+                  required
+                  value={feedbackRating}
+                  onChange={(e) => setFeedbackRating(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-indigo-500"
+                >
+                  <option value="">Select rating</option>
+                  <option value="1">1 - Poor</option>
+                  <option value="2">2 - Below Average</option>
+                  <option value="3">3 - Average</option>
+                  <option value="4">4 - Good</option>
+                  <option value="5">5 - Excellent</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium block mb-2 text-left">Outcome *</label>
+                <select
+                  required
+                  value={feedbackOutcome}
+                  onChange={(e) => setFeedbackOutcome(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-indigo-500"
+                >
+                  <option value="">Select outcome</option>
+                  <option value="Selected">Selected</option>
+                  <option value="Hold">Hold</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
             </div>
             <div>
-              <label className="text-sm font-medium block mb-2">Outcome</label>
-              <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-                <option>Select outcome</option>
-                <option>Selected</option>
-                <option>Hold</option>
-                <option>Rejected</option>
-              </select>
+              <label className="text-sm font-medium block mb-2 text-left">Feedback *</label>
+              <textarea
+                required
+                placeholder="Enter interview feedback details..."
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-indigo-500"
+                rows={4}
+              />
             </div>
+            <button
+              type="submit"
+              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium cursor-pointer hover:opacity-95 transition"
+            >
+              Submit Feedback
+            </button>
+          </form>
+        </Card>
+
+        {/* Right Column: Recent Feedbacks Log */}
+        <Card className="flex flex-col h-full">
+          <h3 className="font-semibold mb-4 text-left">Recent Feedback Submissions</h3>
+          <div className="space-y-3 overflow-y-auto flex-1 max-h-[460px] pr-1">
+            {recentFeedbacks.map((fb) => (
+              <div key={fb.id} className="p-4 rounded-xl border border-slate-100 bg-white shadow-2xs hover:shadow-xs transition duration-200 text-left">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-semibold text-sm text-slate-800">{fb.studentName}</h4>
+                    <span className="text-[10px] text-muted-foreground">{fb.date}</span>
+                  </div>
+                  <Badge tone={fb.outcome === "Selected" ? "success" : fb.outcome === "Hold" ? "warn" : "danger"}>
+                    {fb.outcome}
+                  </Badge>
+                </div>
+                
+                <div className="flex items-center gap-0.5 mb-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`size-3.5 ${star <= fb.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
+                    />
+                  ))}
+                </div>
+                
+                <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-50 italic leading-relaxed">
+                  "{fb.comments}"
+                </p>
+              </div>
+            ))}
+            {recentFeedbacks.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground text-sm">
+                No feedback submitted yet.
+              </div>
+            )}
           </div>
-          <div>
-            <label className="text-sm font-medium block mb-2">Feedback</label>
-            <textarea
-              placeholder="Enter interview feedback..."
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              rows={4}
-            />
-          </div>
-          <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium">
-            Submit Feedback
-          </button>
-        </div>
-      </Card>
+        </Card>
+      </div>
     </div>
+
+    {/* Schedule Interview Modal */}
+    {isScheduleModalOpen && (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
+          <div className="flex justify-between items-center border-b pb-3 mb-4">
+            <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">Schedule New Interview</h3>
+            <button
+              onClick={() => setIsScheduleModalOpen(false)}
+              className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+          <form onSubmit={handleScheduleSubmit} className="space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Student Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Aarav Sharma"
+                value={formStudentName}
+                onChange={(e) => setFormStudentName(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Company Name *</label>
+                <select
+                  value={formCompany}
+                  onChange={(e) => setFormCompany(e.target.value)}
+                  required
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="" disabled>Select Company</option>
+                  <option value="Google India">Google India</option>
+                  <option value="Microsoft India">Microsoft India</option>
+                  <option value="Amazon India">Amazon India</option>
+                  <option value="Goldman Sachs">Goldman Sachs</option>
+                  <option value="Accenture">Accenture</option>
+                  <option value="TCS">TCS</option>
+                  <option value="Infosys">Infosys</option>
+                  <option value="Oracle">Oracle</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Interview Round *</label>
+                <select
+                  value={formRound}
+                  onChange={(e) => setFormRound(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="1">Round 1 (Assessment)</option>
+                  <option value="2">Round 2 (Technical)</option>
+                  <option value="3">Round 3 (HR)</option>
+                  <option value="4">Round 4 (Final)</option>
+                  <option value="5">Round 5 (GD)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Date *</label>
+                <input
+                  type="date"
+                  required
+                  value={formDate}
+                  onChange={(e) => setFormDate(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Time Slot *</label>
+                <select
+                  value={formTime}
+                  onChange={(e) => setFormTime(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="09:00 AM">09:00 AM</option>
+                  <option value="10:00 AM">10:00 AM</option>
+                  <option value="11:00 AM">11:00 AM</option>
+                  <option value="02:00 PM">02:00 PM</option>
+                  <option value="03:00 PM">03:00 PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Interview Mode *</label>
+                <select
+                  value={formMode}
+                  onChange={(e) => {
+                    setFormMode(e.target.value);
+                    setFormVenue(e.target.value === "Online" ? "Video Call" : "Conference Hall A");
+                  }}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="Online">Online (Video Call)</option>
+                  <option value="In-Person">In-Person (On Campus)</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Venue / Link *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Video Call or Seminar Hall"
+                  value={formVenue}
+                  onChange={(e) => setFormVenue(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Assigned Panelists * (Comma-separated)</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Dr. Rajesh Verma, Priya Sharma"
+                value={formPanelists}
+                onChange={(e) => setFormPanelists(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Hiring Status *</label>
+              <select
+                value={formStatus}
+                onChange={(e) => setFormStatus(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+              >
+                <option value="Scheduled">Scheduled</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="button"
+                onClick={() => setIsScheduleModalOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                Schedule Interview
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+
+    {/* Edit Interview Modal */}
+    {isEditModalOpen && (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
+          <div className="flex justify-between items-center border-b pb-3 mb-4">
+            <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">Edit Interview Details</h3>
+            <button
+              onClick={() => setIsEditModalOpen(false)}
+              className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Student Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Aarav Sharma"
+                value={formStudentName}
+                onChange={(e) => setFormStudentName(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Company Name *</label>
+                <select
+                  value={formCompany}
+                  onChange={(e) => setFormCompany(e.target.value)}
+                  required
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="Google India">Google India</option>
+                  <option value="Microsoft India">Microsoft India</option>
+                  <option value="Amazon India">Amazon India</option>
+                  <option value="Goldman Sachs">Goldman Sachs</option>
+                  <option value="Accenture">Accenture</option>
+                  <option value="TCS">TCS</option>
+                  <option value="Infosys">Infosys</option>
+                  <option value="Oracle">Oracle</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Interview Round *</label>
+                <select
+                  value={formRound}
+                  onChange={(e) => setFormRound(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="1">Round 1 (Assessment)</option>
+                  <option value="2">Round 2 (Technical)</option>
+                  <option value="3">Round 3 (HR)</option>
+                  <option value="4">Round 4 (Final)</option>
+                  <option value="5">Round 5 (GD)</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Date *</label>
+                <input
+                  type="date"
+                  required
+                  value={formDate}
+                  onChange={(e) => setFormDate(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Time Slot *</label>
+                <select
+                  value={formTime}
+                  onChange={(e) => setFormTime(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="09:00 AM">09:00 AM</option>
+                  <option value="10:00 AM">10:00 AM</option>
+                  <option value="11:00 AM">11:00 AM</option>
+                  <option value="02:00 PM">02:00 PM</option>
+                  <option value="03:00 PM">03:00 PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Interview Mode *</label>
+                <select
+                  value={formMode}
+                  onChange={(e) => {
+                    setFormMode(e.target.value);
+                    setFormVenue(e.target.value === "Online" ? "Video Call" : "Conference Hall A");
+                  }}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="Online">Online (Video Call)</option>
+                  <option value="In-Person">In-Person (On Campus)</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Venue / Link *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Video Call or Seminar Hall"
+                  value={formVenue}
+                  onChange={(e) => setFormVenue(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Assigned Panelists * (Comma-separated)</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Dr. Rajesh Verma, Priya Sharma"
+                value={formPanelists}
+                onChange={(e) => setFormPanelists(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Hiring Status *</label>
+              <select
+                value={formStatus}
+                onChange={(e) => setFormStatus(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+              >
+                <option value="Scheduled">Scheduled</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+
+    {/* View Interview Modal */}
+    {isViewModalOpen && selectedInterview && (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
+          <div className="flex justify-between items-center border-b pb-3 mb-4">
+            <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">Interview Brief Overview</h3>
+            <button
+              onClick={() => setIsViewModalOpen(false)}
+              className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="font-bold text-lg text-slate-800">{selectedInterview.studentName}</h4>
+                <p className="text-xs text-muted-foreground font-medium mt-0.5">{selectedInterview.company}</p>
+              </div>
+              <Badge tone={selectedInterview.status.toLowerCase() === "scheduled" ? "success" : "warn"}>
+                {selectedInterview.status}
+              </Badge>
+            </div>
+
+            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-3">
+              <div className="flex items-center gap-3 text-sm">
+                <div className="size-8 rounded-lg bg-indigo-500/10 text-indigo-600 grid place-items-center font-bold text-xs shrink-0">
+                  {selectedInterview.round}
+                </div>
+                <div className="text-left">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Round Details</span>
+                  <span className="font-bold text-slate-700">Round {selectedInterview.round} • {selectedInterview.mode}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-sm">
+                <div className="size-8 rounded-lg bg-indigo-500/10 text-indigo-600 grid place-items-center shrink-0">
+                  <Calendar className="size-4" />
+                </div>
+                <div className="text-left">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Date & Time</span>
+                  <span className="font-bold text-slate-700">{new Date(selectedInterview.date).toLocaleDateString()} @ {selectedInterview.time}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-sm">
+                <div className="size-8 rounded-lg bg-indigo-500/10 text-indigo-600 grid place-items-center shrink-0">
+                  {selectedInterview.mode.toLowerCase() === "online" ? <Video className="size-4" /> : <MapPin className="size-4" />}
+                </div>
+                <div className="text-left">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Location / Platform</span>
+                  <span className="font-bold text-slate-700">{selectedInterview.venue}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl border border-slate-100 bg-gradient-soft space-y-2">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Assigned Panelists:</span>
+              <div className="flex flex-wrap gap-1.5">
+                {(selectedInterview.panelists || ["Technical Lead"]).map((p) => (
+                  <Badge key={p} tone="info">{p}</Badge>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setIsViewModalOpen(false);
+                openEditModal(selectedInterview);
+              }}
+              className="w-full px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary hover:opacity-95 transition cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <Edit2 className="size-3" /> Edit Interview Details
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Panelist Add/Edit Modal */}
+    {isPanelModalOpen && (
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
+          <div className="flex justify-between items-center border-b pb-3 mb-4">
+            <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+              {isPanelEditMode ? "Edit Panelist Details" : "Add New Panelist"}
+            </h3>
+            <button
+              onClick={() => setIsPanelModalOpen(false)}
+              className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+            >
+              <X className="size-5" />
+            </button>
+          </div>
+          <form onSubmit={handlePanelSubmit} className="space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Panelist Full Name *</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Dr. Rajesh Verma"
+                value={panelName}
+                onChange={(e) => setPanelName(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Affiliated Company / Institution *</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Google India or Microsoft"
+                value={panelCompany}
+                onChange={(e) => setPanelCompany(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Interviewing Role *</label>
+              <select
+                value={panelRole}
+                onChange={(e) => setPanelRole(e.target.value)}
+                className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+              >
+                <option value="Technical Interviewer">Technical Interviewer</option>
+                <option value="HR Interviewer">HR Interviewer</option>
+                <option value="System Architect">System Architect</option>
+                <option value="Interviewer Panel Lead">Interviewer Panel Lead</option>
+              </select>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t">
+              <button
+                type="button"
+                onClick={() => setIsPanelModalOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                {isPanelEditMode ? "Save Changes" : "Add Panelist"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

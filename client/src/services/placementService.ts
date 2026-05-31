@@ -43,3 +43,35 @@ export async function fetchPlacementData(): Promise<PlacementDashboardData> {
   );
   return data.data;
 }
+
+export async function createCompany(payload: Omit<CompanyItem, "id">): Promise<CompanyItem> {
+  const { data } = await api.post<{ success: boolean; data: CompanyItem }>(
+    "/api/placement/companies",
+    payload,
+  );
+  return data.data;
+}
+
+export async function updateCompany(id: string, payload: Partial<CompanyItem>): Promise<CompanyItem> {
+  const { data } = await api.put<{ success: boolean; data: CompanyItem }>(
+    `/api/placement/companies/${id}`,
+    payload,
+  );
+  return data.data;
+}
+
+export async function createDrive(payload: Omit<DriveItem, "id" | "studentCount" | "rounds">): Promise<DriveItem> {
+  const { data } = await api.post<{ success: boolean; data: DriveItem }>(
+    "/api/placement/drives",
+    payload,
+  );
+  return data.data;
+}
+
+export async function updateDrive(id: string, payload: Partial<DriveItem>): Promise<DriveItem> {
+  const { data } = await api.put<{ success: boolean; data: DriveItem }>(
+    `/api/placement/drives/${id}`,
+    payload,
+  );
+  return data.data;
+}
