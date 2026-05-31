@@ -175,31 +175,61 @@ export function getStudentDisplayStatus(student: Pick<StudentRecord, "status" | 
 }
 
 export async function fetchDepartments(): Promise<DepartmentOption[]> {
-  const { data, error } = await supabase
-    .from("departments")
-    .select("code, name")
-    .order("name", { ascending: true });
-
-  if (error) throw error;
-
-  // If departments table is empty, seed defaults and re-fetch
-  if (!data || data.length === 0) {
-    await seedDepartmentsIfEmpty();
-    const { data: seeded, error: seededErr } = await supabase
+  try {
+    const { data, error } = await supabase
       .from("departments")
       .select("code, name")
       .order("name", { ascending: true });
-    if (seededErr) throw seededErr;
-    return (seeded ?? []).map((department: any) => ({
+
+    if (error) {
+      console.warn("Database departments table error, using fallback defaults:", error.message);
+      return [
+        { code: "CSE", name: "Computer Science & Engineering" },
+        { code: "ECE", name: "Electronics & Communication Engineering" },
+        { code: "EEE", name: "Electrical & Electronics Engineering" },
+        { code: "MECH", name: "Mechanical Engineering" },
+        { code: "CIVIL", name: "Civil Engineering" },
+        { code: "IT", name: "Information Technology" },
+        { code: "AIDS", name: "Artificial Intelligence & Data Science" },
+        { code: "CSBS", name: "Computer Science & Business Systems" },
+        { code: "MBA", name: "Master of Business Administration" },
+        { code: "MCA", name: "Master of Computer Applications" },
+      ];
+    }
+
+    // If departments table is empty, seed defaults and re-fetch
+    if (!data || data.length === 0) {
+      await seedDepartmentsIfEmpty();
+      const { data: seeded, error: seededErr } = await supabase
+        .from("departments")
+        .select("code, name")
+        .order("name", { ascending: true });
+      if (seededErr) throw seededErr;
+      return (seeded ?? []).map((department: any) => ({
+        code: department.code,
+        name: department.name,
+      }));
+    }
+
+    return (data ?? []).map((department: any) => ({
       code: department.code,
       name: department.name,
     }));
+  } catch (err) {
+    console.error("Exception in fetchDepartments, using static fallbacks:", err);
+    return [
+      { code: "CSE", name: "Computer Science & Engineering" },
+      { code: "ECE", name: "Electronics & Communication Engineering" },
+      { code: "EEE", name: "Electrical & Electronics Engineering" },
+      { code: "MECH", name: "Mechanical Engineering" },
+      { code: "CIVIL", name: "Civil Engineering" },
+      { code: "IT", name: "Information Technology" },
+      { code: "AIDS", name: "Artificial Intelligence & Data Science" },
+      { code: "CSBS", name: "Computer Science & Business Systems" },
+      { code: "MBA", name: "Master of Business Administration" },
+      { code: "MCA", name: "Master of Computer Applications" },
+    ];
   }
-
-  return (data ?? []).map((department: any) => ({
-    code: department.code,
-    name: department.name,
-  }));
 }
 
 export async function fetchStudents(filters: StudentFilters = {}): Promise<StudentListResponse> {
