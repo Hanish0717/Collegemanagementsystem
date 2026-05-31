@@ -1,15 +1,43 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Calendar, Clock, MapPin, Users, Video, Edit2, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Calendar, Clock, MapPin, Video, Edit2, Plus, Loader2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { interviews } from "@/mock/mockData";
+import { fetchPlacementData } from "@/services/placementService";
+import { interviews as mockInterviews } from "@/mock/mockData";
+
+interface InterviewItem {
+  id: string;
+  studentName: string;
+  company: string;
+  round: number;
+  date: string;
+  time: string;
+  mode: string;
+  venue: string;
+  panelists: string[];
+  status: string;
+}
 
 export function PlacementInterviews() {
-  const [selectedRound, setSelectedRound] = useState<number | null>(null);
+  const [interviews, setInterviews] = useState<InterviewItem[]>(mockInterviews);
+  const [loading, setLoading] = useState(true);
 
-  const scheduled = interviews.filter((i) => i.status === "Scheduled");
-  const pending = interviews.filter((i) => i.status === "Pending");
-  const completed = interviews.filter((i) => i.status === "Completed");
+  useEffect(() => {
+    fetchPlacementData()
+      .then((res) => {
+        if (res.interviews && res.interviews.length > 0) {
+          setInterviews(res.interviews);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch live interviews, using fallback mock data:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const scheduled = interviews.filter((i) => i.status.toLowerCase() === "scheduled");
+  const pending = interviews.filter((i) => i.status.toLowerCase() === "pending");
+  const completed = interviews.filter((i) => i.status.toLowerCase() === "completed");
 
   const interviewStats = [
     { label: "Total Interviews", value: interviews.length, color: "bg-blue-500" },
@@ -18,14 +46,14 @@ export function PlacementInterviews() {
     { label: "Completed", value: completed.length, color: "bg-emerald-500" },
   ];
 
-  const InterviewCard = ({ interview }: { interview: (typeof interviews)[0] }) => (
+  const InterviewCard = ({ interview }: { interview: InterviewItem }) => (
     <Card className="hover:-translate-y-1 transition">
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="font-semibold text-sm">{interview.studentName}</h3>
           <p className="text-xs text-muted-foreground mt-1">{interview.company}</p>
         </div>
-        <Badge tone={interview.status === "Scheduled" ? "success" : "warn"}>
+        <Badge tone={interview.status.toLowerCase() === "scheduled" ? "success" : "warn"}>
           {interview.status}
         </Badge>
       </div>
@@ -41,14 +69,14 @@ export function PlacementInterviews() {
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Calendar className="size-4 text-muted-foreground" />
-          <span className="text-muted-foreground">{interview.date}</span>
+          <span className="text-muted-foreground">{new Date(interview.date).toLocaleDateString()}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Clock className="size-4 text-muted-foreground" />
           <span className="text-muted-foreground">{interview.time}</span>
         </div>
         <div className="flex items-center gap-2 text-sm">
-          {interview.mode === "Online" ? (
+          {interview.mode.toLowerCase() === "online" ? (
             <Video className="size-4 text-muted-foreground" />
           ) : (
             <MapPin className="size-4 text-muted-foreground" />
@@ -60,7 +88,7 @@ export function PlacementInterviews() {
       <div className="mb-3 p-2 bg-gradient-soft rounded-lg">
         <div className="text-xs text-muted-foreground mb-1">Panelists</div>
         <div className="text-xs font-medium space-y-0.5">
-          {interview.panelists.map((p) => (
+          {(interview.panelists || ["Technical Lead"]).map((p) => (
             <div key={p}>{p}</div>
           ))}
         </div>
@@ -89,56 +117,71 @@ export function PlacementInterviews() {
         }
       />
 
+      {loading && (
+        <Card className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="size-8 text-primary animate-spin" />
+            <span className="text-sm text-muted-foreground">Loading scheduled interviews...</span>
+          </div>
+        </Card>
+      )}
+
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {interviewStats.map((stat) => (
-          <Card key={stat.label} className="text-center">
-            <div
-              className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}
-            >
-              {stat.value}
-            </div>
-            <div className="text-xs text-muted-foreground">{stat.label}</div>
-          </Card>
-        ))}
-      </div>
-
-      {/* Interview Calendar */}
-      <Card>
-        <h3 className="font-semibold mb-4">Interview Calendar</h3>
-        <div className="grid sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">Select Date</label>
-            <input type="date" className="w-full rounded-lg border bg-background px-3 py-2" />
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">Select Time Slot</label>
-            <select className="w-full rounded-lg border bg-background px-3 py-2">
-              <option>09:00 AM</option>
-              <option>10:00 AM</option>
-              <option>11:00 AM</option>
-              <option>02:00 PM</option>
-              <option>03:00 PM</option>
-            </select>
-          </div>
-        </div>
-        <button className="w-full px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium">
-          Find Available Slots
-        </button>
-      </Card>
-
-      {/* Scheduled Interviews */}
-      <div>
-        <h3 className="font-semibold mb-4">Scheduled Interviews ({scheduled.length})</h3>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {scheduled.map((interview) => (
-            <InterviewCard key={interview.id} interview={interview} />
+      {!loading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {interviewStats.map((stat) => (
+            <Card key={stat.label} className="text-center">
+              <div
+                className={`size-12 rounded-xl ${stat.color} text-white grid place-items-center mx-auto mb-2 font-bold`}
+              >
+                {stat.value}
+              </div>
+              <div className="text-xs text-muted-foreground">{stat.label}</div>
+            </Card>
           ))}
         </div>
-      </div>
+      )}
+
+      {/* Interview Calendar */}
+      {!loading && (
+        <Card>
+          <h3 className="font-semibold mb-4">Interview Calendar</h3>
+          <div className="grid sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Select Date</label>
+              <input type="date" className="w-full rounded-lg border bg-background px-3 py-2" />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Select Time Slot</label>
+              <select className="w-full rounded-lg border bg-background px-3 py-2">
+                <option>09:00 AM</option>
+                <option>10:00 AM</option>
+                <option>11:00 AM</option>
+                <option>02:00 PM</option>
+                <option>03:00 PM</option>
+              </select>
+            </div>
+          </div>
+          <button className="w-full px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium">
+            Find Available Slots
+          </button>
+        </Card>
+      )}
+
+      {/* Scheduled Interviews */}
+      {!loading && scheduled.length > 0 && (
+        <div>
+          <h3 className="font-semibold mb-4">Scheduled Interviews ({scheduled.length})</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {scheduled.map((interview) => (
+              <InterviewCard key={interview.id} interview={interview} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Pending Interviews */}
-      {pending.length > 0 && (
+      {!loading && pending.length > 0 && (
         <div>
           <h3 className="font-semibold mb-4">Pending Interviews ({pending.length})</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -150,93 +193,97 @@ export function PlacementInterviews() {
       )}
 
       {/* Interview Details Table */}
-      <Card>
-        <h3 className="font-semibold mb-4">All Interviews Overview</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b">
-              <tr>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Student</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Round</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
-                  Date & Time
-                </th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Mode</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Venue</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {interviews.map((interview) => (
-                <tr key={interview.id} className="hover:bg-accent/50 transition">
-                  <td className="py-3 px-4 font-medium">{interview.studentName}</td>
-                  <td className="py-3 px-4">{interview.company}</td>
-                  <td className="py-3 px-4 text-center">
-                    <Badge tone="info">Round {interview.round}</Badge>
-                  </td>
-                  <td className="py-3 px-4 text-center text-sm text-muted-foreground">
-                    {interview.date} {interview.time}
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <Badge tone={interview.mode === "Online" ? "info" : "success"}>
-                      {interview.mode}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4 text-sm">{interview.venue}</td>
-                  <td className="py-3 px-4 text-center">
-                    <Badge
-                      tone={
-                        interview.status === "Scheduled"
-                          ? "success"
-                          : interview.status === "Pending"
-                            ? "warn"
-                            : "info"
-                      }
-                    >
-                      {interview.status}
-                    </Badge>
-                  </td>
+      {!loading && (
+        <Card>
+          <h3 className="font-semibold mb-4">All Interviews Overview</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b">
+                <tr>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Student</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Round</th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Date & Time
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Mode</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Venue</th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Status
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+              </thead>
+              <tbody className="divide-y">
+                {interviews.map((interview) => (
+                  <tr key={interview.id} className="hover:bg-accent/50 transition">
+                    <td className="py-3 px-4 font-medium">{interview.studentName}</td>
+                    <td className="py-3 px-4">{interview.company}</td>
+                    <td className="py-3 px-4 text-center">
+                      <Badge tone="info">Round {interview.round}</Badge>
+                    </td>
+                    <td className="py-3 px-4 text-center text-sm text-muted-foreground">
+                      {new Date(interview.date).toLocaleDateString()} {interview.time}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <Badge tone={interview.mode.toLowerCase() === "online" ? "info" : "success"}>
+                        {interview.mode}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4 text-sm">{interview.venue}</td>
+                    <td className="py-3 px-4 text-center">
+                      <Badge
+                        tone={
+                          interview.status.toLowerCase() === "scheduled"
+                            ? "success"
+                            : interview.status.toLowerCase() === "pending"
+                              ? "warn"
+                              : "info"
+                        }
+                      >
+                        {interview.status}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
       {/* Panel Management */}
-      <Card>
-        <h3 className="font-semibold mb-4">Panel Management</h3>
-        <div className="space-y-3">
-          <div className="p-4 rounded-lg border flex items-start justify-between hover:bg-accent/50 transition">
-            <div>
-              <div className="font-medium">Dr. Rajesh Verma</div>
-              <div className="text-xs text-muted-foreground">
-                Google India • Technical Interviewer
+      {!loading && (
+        <Card>
+          <h3 className="font-semibold mb-4">Panel Management</h3>
+          <div className="space-y-3">
+            <div className="p-4 rounded-lg border flex items-start justify-between hover:bg-accent/50 transition">
+              <div>
+                <div className="font-medium">Dr. Rajesh Verma</div>
+                <div className="text-xs text-muted-foreground">
+                  Google India • Technical Interviewer
+                </div>
+                <div className="text-xs mt-2">📅 3 interviews scheduled • ✓ 2 completed</div>
               </div>
-              <div className="text-xs mt-2">📅 3 interviews scheduled • ✓ 2 completed</div>
+              <button className="px-3 py-1 rounded text-xs text-blue-600 hover:bg-blue-50">
+                Edit
+              </button>
             </div>
-            <button className="px-3 py-1 rounded text-xs text-blue-600 hover:bg-blue-50">
-              Edit
-            </button>
-          </div>
-          <div className="p-4 rounded-lg border flex items-start justify-between hover:bg-accent/50 transition">
-            <div>
-              <div className="font-medium">Priya Sharma</div>
-              <div className="text-xs text-muted-foreground">Microsoft India • HR Interviewer</div>
-              <div className="text-xs mt-2">📅 2 interviews scheduled • ✓ 1 completed</div>
+            <div className="p-4 rounded-lg border flex items-start justify-between hover:bg-accent/50 transition">
+              <div>
+                <div className="font-medium">Priya Sharma</div>
+                <div className="text-xs text-muted-foreground">Microsoft India • HR Interviewer</div>
+                <div className="text-xs mt-2">📅 2 interviews scheduled • ✓ 1 completed</div>
+              </div>
+              <button className="px-3 py-1 rounded text-xs text-blue-600 hover:bg-blue-50">
+                Edit
+              </button>
             </div>
-            <button className="px-3 py-1 rounded text-xs text-blue-600 hover:bg-blue-50">
-              Edit
-            </button>
           </div>
-        </div>
-        <button className="mt-3 w-full px-4 py-2 rounded-lg border text-sm font-medium hover:bg-accent transition flex items-center justify-center gap-2">
-          <Plus className="size-4" /> Add Panelist
-        </button>
-      </Card>
+          <button className="mt-3 w-full px-4 py-2 rounded-lg border text-sm font-medium hover:bg-accent transition flex items-center justify-center gap-2">
+            <Plus className="size-4" /> Add Panelist
+          </button>
+        </Card>
+      )}
 
       {/* Interview Rounds */}
       <Card>

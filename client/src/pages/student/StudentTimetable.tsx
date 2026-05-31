@@ -13,7 +13,7 @@ export function StudentTimetable() {
   const todayDay = daysOfWeek[new Date().getDay()];
   const currentDay = days.includes(todayDay) ? todayDay : "Monday";
 
-  const [slots, setSlots] = useState<any[]>(timetableSlots);
+  const [slots, setSlots] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchTimetable = async () => {
@@ -22,11 +22,10 @@ export function StudentTimetable() {
         if (res.data?.success && res.data?.data) {
           const dbSlots = res.data.data.map((s: any) => ({
             ...s,
-            faculty: s.facultyName || s.faculty
+            faculty: s.faculty_name || s.facultyName || s.faculty,
+            time: s.start_time || s.time
           }));
-          if (dbSlots.length > 0) {
-            setSlots(dbSlots);
-          }
+          setSlots(dbSlots);
         }
       } catch (err) {
         console.error("Error loading timetable:", err);

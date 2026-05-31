@@ -78,36 +78,43 @@ export function PlacementDashboard() {
   const stats = data?.stats || mockPlacementStats;
   const drives = data?.drives || mockDrives;
   const companies = data?.companies || mockCompanies;
+  const trendData = data?.placementTrendData || placementTrendData;
+  const deptData = data?.departmentPlacementData || departmentPlacementData;
+  const pkgData = data?.packageAnalyticsData || packageAnalyticsData;
+  const appList = data?.applications || applications;
+  const offerList = data?.offers || offers;
+  const interviewList = data?.interviews || interviews;
+  const notifList = data?.placementNotifications || placementNotifications;
 
   const placementStatus = [
     {
       label: "Applied",
-      count: applications.filter((a) => a.status === "Applied").length,
+      count: appList.filter((a) => a.status === "Applied").length,
       tone: "info" as const,
     },
     {
       label: "Shortlisted",
-      count: applications.filter((a) => a.status === "Shortlisted").length,
+      count: appList.filter((a) => a.status === "Shortlisted").length,
       tone: "warn" as const,
     },
     {
       label: "Interview Scheduled",
-      count: applications.filter((a) => a.status === "Interview Scheduled").length,
+      count: appList.filter((a) => a.status === "Interview Scheduled").length,
       tone: "info" as const,
     },
     {
       label: "Selected",
-      count: applications.filter((a) => a.status === "Selected").length,
+      count: appList.filter((a) => a.status === "Selected").length,
       tone: "success" as const,
     },
     {
       label: "Offer Released",
-      count: applications.filter((a) => a.status === "Offer Released").length,
+      count: appList.filter((a) => a.status === "Offer Released").length,
       tone: "success" as const,
     },
     {
       label: "Rejected",
-      count: applications.filter((a) => a.status === "Rejected").length,
+      count: appList.filter((a) => a.status === "Rejected").length,
       tone: "danger" as const,
     },
   ];
@@ -155,7 +162,7 @@ export function PlacementDashboard() {
           </div>
           <div className="h-72">
             <ResponsiveContainer>
-              <LineChart data={placementTrendData}>
+              <LineChart data={trendData}>
                 <defs>
                   <linearGradient id="grad-placed" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor="#10B981" stopOpacity={0.55} />
@@ -204,7 +211,7 @@ export function PlacementDashboard() {
           </div>
           <div className="h-56">
             <ResponsiveContainer>
-              <BarChart data={departmentPlacementData}>
+              <BarChart data={deptData}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
@@ -228,7 +235,7 @@ export function PlacementDashboard() {
           </div>
           <div className="h-72">
             <ResponsiveContainer>
-              <BarChart data={packageAnalyticsData}>
+              <BarChart data={pkgData}>
                 <defs>
                   <linearGradient id="grad-pkg" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor="#9333EA" stopOpacity={0.8} />
@@ -327,7 +334,7 @@ export function PlacementDashboard() {
             <Badge tone="success">+4 this week</Badge>
           </div>
           <div className="space-y-2">
-            {offers.slice(0, 4).map((offer) => (
+            {offerList.slice(0, 4).map((offer) => (
               <div
                 key={offer.id}
                 className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
@@ -355,10 +362,10 @@ export function PlacementDashboard() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">Interview Schedules</h3>
-            <Badge>{interviews.filter((i) => i.status === "Scheduled").length} Scheduled</Badge>
+            <Badge>{interviewList.filter((i) => i.status === "Scheduled").length} Scheduled</Badge>
           </div>
           <div className="space-y-2">
-            {interviews.slice(0, 5).map((interview) => (
+            {interviewList.slice(0, 5).map((interview) => (
               <div
                 key={interview.id}
                 className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
@@ -385,10 +392,10 @@ export function PlacementDashboard() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">Placement Alerts</h3>
-            <Badge>{placementNotifications.filter((n) => n.unread).length} New</Badge>
+            <Badge>{notifList.filter((n) => n.unread).length} New</Badge>
           </div>
           <div className="space-y-2">
-            {placementNotifications.map((notif) => (
+            {notifList.map((notif) => (
               <div
                 key={notif.id}
                 className={`flex items-start gap-3 p-3 rounded-xl border transition ${notif.unread ? "bg-blue-50 border-blue-200" : ""}`}
@@ -440,11 +447,11 @@ export function PlacementDashboard() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">Student Placement Status</h3>
-            <Badge>{applications.length} tracked</Badge>
+            <Badge>{appList.length} tracked</Badge>
           </div>
           <div className="space-y-3">
             {placementStatus.map((status) => {
-              const width = Math.max(12, Math.round((status.count / applications.length) * 100));
+              const width = Math.max(12, Math.round((status.count / appList.length) * 100));
               return (
                 <div key={status.label} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Plus } from "lucide-react";
+import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Plus, User, Phone, Mail, GraduationCap } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -17,28 +17,22 @@ const getSubHeadline = (role: string) => {
 
 export function SettingsPage() {
   const { user } = useAuth();
-  
   const role = user?.role;
 
   // Get student profile if stored and role is student
   const profileStr = role === "student" ? localStorage.getItem("cms_student_profile") : null;
   const studentProfile = profileStr ? JSON.parse(profileStr) : null;
 
-  const fullName = (role === "student" ? studentProfile?.fullName : null) || user?.fullName || "User";
-  const email = (role === "student" ? studentProfile?.email : null) || user?.email || "";
-  const department = (role === "student" ? studentProfile?.department : null) || "N/A";
+  const defaultName = (role === "student" ? studentProfile?.fullName : null) || user?.fullName || "User";
+  const defaultEmail = (role === "student" ? studentProfile?.email : null) || user?.email || "";
+  const defaultDept = (role === "student" ? studentProfile?.department : null) || "Computer Science";
 
-  const initials = fullName
-    .split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
-
-  const formattedRole = user?.role
-    ? user.role.charAt(0).toUpperCase() + user.role.slice(1).replace("-", " ")
-    : "Member";
-
+  // Editable Profile States
+  const [fullNameVal, setFullNameVal] = useState(defaultName);
+  const [emailVal, setEmailVal] = useState(defaultEmail);
+  const [phoneVal, setPhoneVal] = useState("9876543210");
+  const [deptVal, setDeptVal] = useState(defaultDept);
+  
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
 
@@ -53,11 +47,23 @@ export function SettingsPage() {
     website: "",
   });
 
-  // Load state from localStorage on mount
+  // Load state from localStorage on mount and sync with user context
   useEffect(() => {
     if (!user) return;
     const role = user.role;
     
+    const storedName = localStorage.getItem(`cms_${role}_name`);
+    setFullNameVal(storedName || defaultName);
+
+    const storedEmail = localStorage.getItem(`cms_${role}_email`);
+    setEmailVal(storedEmail || defaultEmail);
+
+    const storedPhone = localStorage.getItem(`cms_${role}_phone`);
+    setPhoneVal(storedPhone || user?.phoneNumber || studentProfile?.phoneNumber || "9876543210");
+
+    const storedDept = localStorage.getItem(`cms_${role}_dept`);
+    setDeptVal(storedDept || defaultDept);
+
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
     setAboutMe(storedAbout || "");
 
@@ -74,7 +80,7 @@ export function SettingsPage() {
     } else {
       setSkills(role === "student" ? ["React", "TypeScript", "Node.js", "Python"] : []);
     }
-  }, [user]);
+  }, [user, defaultName, defaultEmail, defaultDept]);
 
   const handleAddSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
@@ -92,18 +98,48 @@ export function SettingsPage() {
   const handleSave = () => {
     if (!user) return;
     const role = user.role;
+    
+    // Save details to localStorage
+    localStorage.setItem(`cms_${role}_name`, fullNameVal);
+    localStorage.setItem(`cms_${role}_email`, emailVal);
+    localStorage.setItem(`cms_${role}_phone`, phoneVal);
+    localStorage.setItem(`cms_${role}_dept`, deptVal);
     localStorage.setItem(`cms_${role}_about`, aboutMe);
     localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
+    
     if (role === "student") {
       localStorage.setItem(`cms_${role}_skills`, JSON.stringify(skills));
+      
+      // Update primary student profile object for consistency in dashboard
+      const updatedProfile = {
+        ...(studentProfile || {}),
+        fullName: fullNameVal,
+        email: emailVal,
+        phoneNumber: phoneVal,
+        department: deptVal
+      };
+      localStorage.setItem("cms_student_profile", JSON.stringify(updatedProfile));
     }
-    toast.success("Profile changes saved successfully!");
+
+    toast.success("Profile details saved successfully!");
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     if (!user) return;
     const role = user.role;
+    
+    const storedName = localStorage.getItem(`cms_${role}_name`);
+    setFullNameVal(storedName || defaultName);
+
+    const storedEmail = localStorage.getItem(`cms_${role}_email`);
+    setEmailVal(storedEmail || defaultEmail);
+
+    const storedPhone = localStorage.getItem(`cms_${role}_phone`);
+    setPhoneVal(storedPhone || user?.phoneNumber || studentProfile?.phoneNumber || "9876543210");
+
+    const storedDept = localStorage.getItem(`cms_${role}_dept`);
+    setDeptVal(storedDept || defaultDept);
     
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
     setAboutMe(storedAbout || "");
@@ -112,11 +148,22 @@ export function SettingsPage() {
     setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
 
     const storedSkills = localStorage.getItem(`cms_${role}_skills`);
-    setSkills(storedSkills ? JSON.parse(storedSkills) : (role === "student" ? ["React", "TypeScript", "Node.js", "Python"] : []));
+    setSkills(storedSkills ? JSON.parse(storedSocials) : (role === "student" ? ["React", "TypeScript", "Node.js", "Python"] : []));
     
     toast.info("Changes discarded.");
     setIsEditing(false);
   };
+
+  const initials = fullNameVal
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+
+  const formattedRole = user?.role
+    ? user.role.charAt(0).toUpperCase() + user.role.slice(1).replace("-", " ")
+    : "Member";
 
   const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
   
@@ -138,111 +185,147 @@ export function SettingsPage() {
 
   const showSkills = user?.role === "student";
 
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-6xl mx-auto pb-12">
       <div className="mb-2">
-        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+        <span className="text-xs font-semibold tracking-wider text-indigo uppercase">
           {formattedRole} Settings
         </span>
-        <h2 className="text-sm font-medium text-muted-foreground">
+        <h2 className="text-sm font-medium text-slate-500 mt-0.5">
           {getSubHeadline(user?.role || "")}
         </h2>
       </div>
 
       <PageHeader
-        title="Profile"
-        desc="Manage your identity and public presence."
+        title="Settings & Profile Details"
+        desc="Manage your dynamic system identities, editable profile details, social handles, and preferences."
         actions={
           isEditing ? (
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCancel}
-                className="flex items-center gap-1.5 px-4 py-2 border rounded-xl hover:bg-accent text-sm transition cursor-pointer font-medium"
+                className="flex items-center gap-1.5 px-4 py-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-xs transition cursor-pointer font-bold text-slate-650 bg-white"
               >
                 <X className="size-4" /> Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium animate-in fade-in zoom-in-95 duration-150"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-xs hover:opacity-90 transition cursor-pointer font-bold shadow-md glow-primary animate-fade-in"
               >
-                <Save className="size-4" /> Save Changes
+                <Save className="size-4" /> Save Details
               </button>
             </div>
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-xs hover:opacity-90 transition cursor-pointer font-bold shadow-md glow-primary"
             >
-              <Pencil className="size-4" /> Edit Profile
+              <Pencil className="size-4" /> Edit Profile Details
             </button>
           )
         }
       />
 
       <div className="grid lg:grid-cols-3 gap-6">
+        {/* Profile Card left */}
         <div className="lg:col-span-1 space-y-6">
-          <Card className="text-center">
-            <div className="mx-auto size-32">
-              <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
+          <Card className="text-center p-6 border border-slate-100 bg-white shadow-sm relative overflow-hidden group">
+            <div className="absolute right-0 top-0 size-28 bg-indigo-50/50 rounded-bl-full -z-10 transition-transform duration-500 group-hover:scale-105" />
+            <div className="mx-auto size-28 relative">
+              <div className="size-full rounded-2xl bg-gradient-primary grid place-items-center text-white text-3xl font-bold shadow-md">
                 {initials || "US"}
               </div>
             </div>
-            <div className="mt-4 font-bold text-lg">{fullName}</div>
-            <div className="text-xs text-muted-foreground tracking-wider uppercase font-semibold mt-1">
-              {user?.role || "Member"} {department !== "N/A" && `· ${department}`}
-            </div>
+            
+            {isEditing ? (
+              <div className="mt-4 space-y-3 animate-fade-in">
+                <div className="space-y-1">
+                  <label className="text-[9px] uppercase font-bold text-slate-400 block text-left">Full Name</label>
+                  <div className="relative">
+                    <User className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Full Name"
+                      value={fullNameVal}
+                      onChange={(e) => setFullNameVal(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 bg-white pl-8 pr-3 py-1.5 text-xs outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[9px] uppercase font-bold text-slate-400 block text-left">Department</label>
+                  <div className="relative">
+                    <GraduationCap className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Department"
+                      value={deptVal}
+                      onChange={(e) => setDeptVal(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 bg-white pl-8 pr-3 py-1.5 text-xs outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="mt-4 font-bold text-slate-800 text-base">{fullNameVal}</div>
+                <div className="text-xs text-slate-400 tracking-wider uppercase font-semibold mt-1">
+                  {user?.role || "Member"} {deptVal !== "N/A" && `· ${deptVal}`}
+                </div>
+              </>
+            )}
           </Card>
 
-          <Card>
-            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
-              Social Links
+          {/* Social Links card */}
+          <Card className="p-6 border border-slate-100 bg-white shadow-sm">
+            <h3 className="font-bold mb-4 text-xs tracking-wider uppercase text-slate-400">
+              Social Handles
             </h3>
             {isEditing ? (
-              <div className="space-y-3 animate-in fade-in duration-200">
-                <div className="flex items-center gap-3">
-                  <Github className="size-5 text-muted-foreground shrink-0" />
+              <div className="space-y-3 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <Github className="size-4 text-slate-400 shrink-0" />
                   <input
                     type="text"
                     placeholder="GitHub URL"
                     value={socialLinks.github}
                     onChange={(e) => setSocialLinks({ ...socialLinks, github: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div className="flex items-center gap-3">
-                  <Linkedin className="size-5 text-muted-foreground shrink-0" />
+                <div className="flex items-center gap-2">
+                  <Linkedin className="size-4 text-slate-400 shrink-0" />
                   <input
                     type="text"
                     placeholder="LinkedIn URL"
                     value={socialLinks.linkedin}
                     onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div className="flex items-center gap-3">
-                  <Twitter className="size-5 text-muted-foreground shrink-0" />
+                <div className="flex items-center gap-2">
+                  <Twitter className="size-4 text-slate-400 shrink-0" />
                   <input
                     type="text"
                     placeholder="Twitter URL"
                     value={socialLinks.twitter}
                     onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500"
                   />
                 </div>
-                <div className="flex items-center gap-3">
-                  <Globe className="size-5 text-muted-foreground shrink-0" />
+                <div className="flex items-center gap-2">
+                  <Globe className="size-4 text-slate-400 shrink-0" />
                   <input
                     type="text"
                     placeholder="Website URL"
                     value={socialLinks.website}
                     onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
             ) : (
-              <div className="space-y-3.5">
+              <div className="space-y-3">
                 {[
                   { icon: Github, value: socialLinks.github },
                   { icon: Linkedin, value: socialLinks.linkedin },
@@ -259,15 +342,15 @@ export function SettingsPage() {
                           href={hrefVal}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-indigo-600 hover:text-indigo-800 transition"
+                          className="flex items-center gap-2.5 text-indigo hover:opacity-90 transition"
                         >
-                          <item.icon className="size-5 shrink-0" />
-                          <span className="text-sm hover:underline break-all">{item.value}</span>
+                          <item.icon className="size-4 shrink-0" />
+                          <span className="text-xs hover:underline break-all">{item.value}</span>
                         </a>
                       ) : (
                         <>
-                          <item.icon className="size-5 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-muted-foreground/60 italic">Not linked</span>
+                          <item.icon className="size-4 text-slate-400 shrink-0" />
+                          <span className="text-xs text-slate-400 italic">Not linked</span>
                         </>
                       )}
                     </div>
@@ -278,10 +361,11 @@ export function SettingsPage() {
           </Card>
         </div>
 
+        {/* Right editable profile cards */}
         <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <h3 className="font-semibold mb-3 text-sm tracking-wider uppercase text-muted-foreground">
-              About Me
+          <Card className="p-6 border border-slate-100 bg-white shadow-sm">
+            <h3 className="font-bold mb-3 text-xs tracking-wider uppercase text-slate-400">
+              Biography & Mandate
             </h3>
             {isEditing ? (
               <textarea
@@ -289,14 +373,14 @@ export function SettingsPage() {
                 onChange={(e) => setAboutMe(e.target.value)}
                 placeholder="Tell us about yourself..."
                 rows={4}
-                className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary animate-in fade-in duration-200"
+                className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs outline-none focus:border-indigo-500 animate-fade-in"
               />
             ) : (
               <div className="min-h-16 py-1">
                 {aboutMe ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
+                  <p className="text-xs text-slate-600 whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
                 ) : (
-                  <p className="text-sm text-muted-foreground/60 italic">
+                  <p className="text-xs text-slate-400 italic">
                     No bio provided yet. Add one to let people know who you are!
                   </p>
                 )}
@@ -305,12 +389,12 @@ export function SettingsPage() {
           </Card>
 
           {showSkills && (
-            <Card>
-              <h3 className="font-semibold mb-3 text-sm tracking-wider uppercase text-muted-foreground">
+            <Card className="p-6 border border-slate-100 bg-white shadow-sm">
+              <h3 className="font-bold mb-3 text-xs tracking-wider uppercase text-slate-400">
                 Skills & Expertise
               </h3>
               {isEditing ? (
-                <div className="space-y-4 animate-in fade-in duration-200">
+                <div className="space-y-4 animate-fade-in">
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -318,11 +402,11 @@ export function SettingsPage() {
                       value={newSkill}
                       onChange={(e) => setNewSkill(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
-                      className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500"
                     />
                     <button
                       onClick={handleAddSkill}
-                      className="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition cursor-pointer flex items-center gap-1 shrink-0"
+                      className="px-3 py-1.5 rounded-lg bg-indigo text-white text-xs font-bold hover:opacity-90 transition cursor-pointer flex items-center gap-1 shrink-0"
                     >
                       <Plus className="size-4" /> Add
                     </button>
@@ -330,7 +414,7 @@ export function SettingsPage() {
                   <div className="flex flex-wrap gap-2">
                     {skills.length > 0 ? (
                       skills.map((skill) => (
-                        <Badge key={skill} tone="info" className="flex items-center gap-1.5 px-3 py-1 rounded-xl">
+                        <Badge key={skill} tone="info" className="flex items-center gap-1 px-2.5 py-0.5 rounded-lg">
                           <span>{skill}</span>
                           <button onClick={() => handleRemoveSkill(skill)} className="hover:text-rose-500 cursor-pointer">
                             <X className="size-3" />
@@ -338,7 +422,7 @@ export function SettingsPage() {
                         </Badge>
                       ))
                     ) : (
-                      <span className="text-xs text-muted-foreground/60">No skills added yet.</span>
+                      <span className="text-[11px] text-slate-400">No skills added yet.</span>
                     )}
                   </div>
                 </div>
@@ -346,49 +430,77 @@ export function SettingsPage() {
                 <div className="flex flex-wrap gap-2 py-1">
                   {skills.length > 0 ? (
                     skills.map((skill) => (
-                      <Badge key={skill} tone="info" className="px-3 py-1 rounded-xl">
+                      <Badge key={skill} tone="info" className="px-2.5 py-0.5 rounded-lg">
                         {skill}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-sm text-muted-foreground/60 italic">No skills added yet.</span>
+                    <span className="text-xs text-slate-400 italic">No skills added yet.</span>
                   )}
                 </div>
               )}
             </Card>
           )}
 
-          <Card>
-            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
-              Account Details
+          {/* Account details card */}
+          <Card className="p-6 border border-slate-100 bg-white shadow-sm">
+            <h3 className="font-bold mb-4 text-xs tracking-wider uppercase text-slate-400">
+              Account Metadata
             </h3>
+            
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              {/* Email */}
+              <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
                   Email Address
                 </label>
-                <div className="text-sm font-semibold mt-1 truncate">{email}</div>
+                {isEditing ? (
+                  <div className="relative mt-1.5">
+                    <Mail className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-450" />
+                    <input
+                      type="email"
+                      value={emailVal}
+                      onChange={(e) => setEmailVal(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 bg-white pl-8 pr-2.5 py-1 text-xs outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-xs font-bold text-slate-700 mt-1 truncate">{emailVal}</div>
+                )}
               </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Account Status
+
+              {/* Phone */}
+              <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Contact Number
                 </label>
-                <div className="text-sm font-semibold mt-1 text-emerald-600 flex items-center gap-1.5">
-                  <div className="size-2 rounded-full bg-emerald-500" />
-                  Verified
-                </div>
+                {isEditing ? (
+                  <div className="relative mt-1.5">
+                    <Phone className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-450" />
+                    <input
+                      type="text"
+                      value={phoneVal}
+                      onChange={(e) => setPhoneVal(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 bg-white pl-8 pr-2.5 py-1 text-xs outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                ) : (
+                  <div className="text-xs font-bold text-slate-700 mt-1">{phoneVal}</div>
+                )}
               </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+
+              <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
                   Joined On
                 </label>
-                <div className="text-sm font-semibold mt-1">{joinedDate}</div>
+                <div className="text-xs font-bold text-slate-700 mt-1">{joinedDate}</div>
               </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+
+              <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
                   {idLabel}
                 </label>
-                <div className="text-sm font-semibold mt-1 font-mono">{idValue}</div>
+                <div className="text-xs font-bold text-slate-700 mt-1 font-mono">{idValue}</div>
               </div>
             </div>
           </Card>

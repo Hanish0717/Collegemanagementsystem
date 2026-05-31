@@ -6,7 +6,7 @@ import { onlineClasses } from "@/mock/facultyData";
 import api from "@/lib/api";
 
 export function FacultyClasses() {
-  const [classes, setClasses] = useState<any[]>(onlineClasses);
+  const [classes, setClasses] = useState<any[]>([]);
   const [title, setTitle] = useState("");
   const [subject, setSubject] = useState("Data Structures");
   const [date, setDate] = useState("");
@@ -25,12 +25,10 @@ export function FacultyClasses() {
             title: `${c.subject} Class (Sec ${c.section || 'A'})`,
             subject: c.subject,
             date: c.day || "Monday",
-            time: c.time,
+            time: c.start_time || c.time,
             status: "Scheduled"
           }));
-          if (dbClasses.length > 0) {
-            setClasses(dbClasses);
-          }
+          setClasses(dbClasses);
         }
       } catch (err) {
         console.error("Error loading faculty classes:", err);

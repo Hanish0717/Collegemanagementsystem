@@ -10,10 +10,13 @@ export function SuperAdminSecurity() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
 
-  const { data: logs = [], isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["superAdminSecurityLogs"],
     queryFn: fetchSecurityLogs,
   });
+
+  const logs = data?.logs || [];
+  const alerts = data?.alerts || [];
 
   const filtered = useMemo(
     () =>
@@ -21,20 +24,20 @@ export function SuperAdminSecurity() {
         (log) =>
           (status === "All" || log.status === status) &&
           [log.id, log.user, log.event, log.ip].some((value) =>
-            value.toLowerCase().includes(search.toLowerCase()),
-          ),
+            String(value || "").toLowerCase().includes(search.toLowerCase())
+          )
       ),
-    [logs, search, status],
+    [logs, search, status]
   );
 
   const stats = useMemo(() => {
     const total = logs.length;
-    const failed = logs.filter(l => l.status === "Failed").length;
-    const review = logs.filter(l => l.status === "Review").length;
+    const failed = logs.filter((l) => l.status === "Failed").length;
+    const review = logs.filter((l) => l.status === "Review").length;
     return {
       total,
       failed,
-      review
+      review,
     };
   }, [logs]);
 
@@ -189,23 +192,24 @@ export function SuperAdminSecurity() {
             <h3 className="font-semibold">Security Notifications</h3>
           </div>
           <div className="space-y-2">
-            {[
-              "New device login requires review",
-              "Failed login attempts exceeded threshold",
-              "Monthly audit log is ready",
-              "Permission changes pending approval",
-            ].map((item, index) => (
-              <div
-                key={item}
-                className="p-3 rounded-xl border hover:bg-accent/50 transition flex items-start justify-between gap-3"
-              >
-                <div>
-                  <div className="font-medium text-sm">{item}</div>
-                  <div className="text-xs text-muted-foreground">{index + 1}h ago</div>
-                </div>
-                <Badge tone={index === 1 ? "danger" : "warn"}>Alert</Badge>
+            {alerts.length === 0 ? (
+              <div className="p-3 text-center text-sm text-muted-foreground">
+                No security alerts or notifications.
               </div>
-            ))}
+            ) : (
+              alerts.map((item) => (
+                <div
+                  key={item.id}
+                  className="p-3 rounded-xl border hover:bg-accent/50 transition flex items-start justify-between gap-3"
+                >
+                  <div>
+                    <div className="font-medium text-sm">{item.title}</div>
+                    <div className="text-xs text-muted-foreground">{item.time}</div>
+                  </div>
+                  <Badge tone={item.type === "Critical" ? "danger" : "warn"}>Alert</Badge>
+                </div>
+              ))
+            )}
           </div>
         </Card>
       </div>

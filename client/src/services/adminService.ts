@@ -294,3 +294,52 @@ export async function updateStudent(
 export async function deleteStudent(id: string): Promise<void> {
   await api.delete(`/api/students/${id}`);
 }
+
+export interface TimetableSlot {
+  _id: string;
+  day: string;
+  start_time: string;
+  end_time: string;
+  subject: string;
+  faculty_name: string;
+  room: string;
+  department: string;
+  year: number;
+  semester: number;
+  section: string;
+}
+
+export async function fetchTimetableSlots(params?: {
+  department?: string;
+  year?: number;
+  semester?: number;
+  section?: string;
+}): Promise<TimetableSlot[]> {
+  const { data } = await api.get<{ success: boolean; data: TimetableSlot[] }>(
+    "/api/admin/timetable",
+    { params },
+  );
+  return data.data;
+}
+
+export async function createTimetableSlot(payload: {
+  day: string;
+  time: string;
+  subject: string;
+  facultyName: string;
+  room: string;
+  department: string;
+  year: number;
+  semester: number;
+  section: string;
+}): Promise<TimetableSlot> {
+  const { data } = await api.post<{ success: boolean; data: TimetableSlot }>(
+    "/api/admin/timetable",
+    payload,
+  );
+  return data.data;
+}
+
+export async function deleteTimetableSlot(id: string): Promise<void> {
+  await api.delete(`/api/admin/timetable/${id}`);
+}

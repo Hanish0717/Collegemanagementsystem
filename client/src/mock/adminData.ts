@@ -541,40 +541,40 @@ DO NOT:
 The Hostel Management module should look like a real enterprise College ERP hostel administration dashboard fully integrated into the existing College Management System UI.
 */
 export const adminStats = [
-  { label: "Total Students", value: "2,847", change: "+12.4%" },
-  { label: "Total Faculty", value: "156", change: "+3.2%" },
-  { label: "Active Departments", value: "8", change: "+0%" },
-  { label: "Attendance Percentage", value: "87.3%", change: "+2.1%" },
-  { label: "Fee Collection", value: "₹84.7L", change: "+8.7%" },
-  { label: "Pending Approvals", value: "34", change: "-5.2%" },
-  { label: "Upcoming Events", value: "12", change: "+2" },
-  { label: "Notifications", value: "18", change: "+4" },
+  { label: "Total Students", value: "25", change: "+8.3%" },
+  { label: "Total Faculty", value: "10", change: "+0%" },
+  { label: "Active Departments", value: "5", change: "+0%" },
+  { label: "Attendance Percentage", value: "92.0%", change: "+1.5%" },
+  { label: "Fee Collection", value: "₹12.5L", change: "+5.4%" },
+  { label: "Pending Approvals", value: "3", change: "-25.0%" },
+  { label: "Upcoming Events", value: "5", change: "+1" },
+  { label: "Notifications", value: "8", change: "+2" },
 ];
 
 export const studentAnalytics = [
-  { month: "Jan", enrolled: 2420, attendance: 85, fees: 720 },
-  { month: "Feb", enrolled: 2580, attendance: 86, fees: 780 },
-  { month: "Mar", enrolled: 2650, attendance: 84, fees: 810 },
-  { month: "Apr", enrolled: 2720, attendance: 87, fees: 840 },
-  { month: "May", enrolled: 2790, attendance: 88, fees: 870 },
-  { month: "Jun", enrolled: 2847, attendance: 87, fees: 890 },
+  { month: "Jan", enrolled: 18, attendance: 90, fees: 180 },
+  { month: "Feb", enrolled: 20, attendance: 91, fees: 200 },
+  { month: "Mar", enrolled: 22, attendance: 89, fees: 220 },
+  { month: "Apr", enrolled: 23, attendance: 92, fees: 230 },
+  { month: "May", enrolled: 24, attendance: 93, fees: 240 },
+  { month: "Jun", enrolled: 25, attendance: 92, fees: 250 },
 ];
 
 export const attendanceMonitoring = [
-  { day: "Mon", present: 2450, absent: 397, percentage: 86 },
-  { day: "Tue", present: 2520, absent: 327, percentage: 88 },
-  { day: "Wed", present: 2480, absent: 367, percentage: 87 },
-  { day: "Thu", present: 2560, absent: 287, percentage: 90 },
-  { day: "Fri", present: 2530, absent: 317, percentage: 89 },
-  { day: "Sat", present: 1680, absent: 1167, percentage: 59 },
+  { day: "Mon", present: 23, absent: 2, percentage: 92 },
+  { day: "Tue", present: 24, absent: 1, percentage: 96 },
+  { day: "Wed", present: 22, absent: 3, percentage: 88 },
+  { day: "Thu", present: 25, absent: 0, percentage: 100 },
+  { day: "Fri", present: 23, absent: 2, percentage: 92 },
+  { day: "Sat", present: 15, absent: 10, percentage: 60 },
 ];
 
 export const departmentDistributionAdmin = [
-  { name: "Computer Science", value: 820, color: "#4F46E5" },
-  { name: "Electronics", value: 640, color: "#9333EA" },
-  { name: "Mechanical", value: 580, color: "#06B6D4" },
-  { name: "Business", value: 420, color: "#2563EB" },
-  { name: "Biotechnology", value: 387, color: "#7C3AED" },
+  { name: "Computer Science", value: 9, color: "#4F46E5" },
+  { name: "Electronics", value: 5, color: "#9333EA" },
+  { name: "Mechanical", value: 4, color: "#06B6D4" },
+  { name: "Business", value: 4, color: "#2563EB" },
+  { name: "Biotechnology", value: 3, color: "#7C3AED" },
 ];
 
 export const adminActivities = [

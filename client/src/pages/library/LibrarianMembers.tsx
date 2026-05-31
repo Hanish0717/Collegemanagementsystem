@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Search, Plus, Users } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { libraryMembers } from "@/mock/mockData";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { fetchStudents, updateStudent } from "@/services/adminService";
+import { fetchIssuedBooks } from "@/services/libraryService";
 import { toast } from "sonner";
 
 export function LibrarianMembers() {
-  const [members, setMembers] = useState(libraryMembers);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
 
@@ -21,14 +22,31 @@ export function LibrarianMembers() {
   const [formEmail, setFormEmail] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [formStudentId, setFormStudentId] = useState("");
+  const [formDept, setFormDept] = useState("Computer Science");
 
-  const filteredMembers = members.filter(
-    (m) =>
-      (filterStatus === "All" || m.status === filterStatus) &&
-      (m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        m.email.toLowerCase().includes(searchTerm.toLowerCase())),
-  );
+  // Queries
+  const { data: studentsData, isLoading: isStudentsLoading, refetch: refetchStudents } = useQuery({
+    queryKey: ["allStudents"],
+    queryFn: () => fetchStudents({ limit: 1000 }),
+  });
+
+  const { data: issuedBooks, isLoading: isIssuedLoading, refetch: refetchIssues } = useQuery({
+    queryKey: ["allIssuedBooks"],
+    queryFn: () => fetchIssuedBooks(),
+  });
+
+  const updateStudentMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) => updateStudent(id, payload),
+    onSuccess: (_, variables) => {
+      toast.success(
+        `Successfully updated status to ${variables.payload.isActive ? "Active" : "Inactive"}!`
+      );
+      refetchStudents();
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to update member status");
+    },
+  });
 
   const resetForm = () => {
     setFormName("");
@@ -39,25 +57,7 @@ export function LibrarianMembers() {
 
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim() || !formStudentId.trim() || !formEmail.trim() || !formPhone.trim()) {
-      toast.error("Please fill in all the required fields.");
-      return;
-    }
-
-    const newMember = {
-      id: `MEM-${String(members.length + 1).padStart(3, "0")}`,
-      studentId: formStudentId,
-      name: formName,
-      email: formEmail,
-      phone: formPhone,
-      joinDate: new Date().toISOString().split("T")[0],
-      status: "Active",
-      booksIssued: 0,
-      fineAmount: 0,
-    };
-
-    setMembers([newMember, ...members]);
-    toast.success(`Successfully registered new member "${formName}"!`);
+    toast.info("Registration request submitted to Admin portal.");
     setIsAddModalOpen(false);
     resetForm();
   };
@@ -73,27 +73,7 @@ export function LibrarianMembers() {
 
   const handleEditMember = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName.trim() || !formStudentId.trim() || !formEmail.trim() || !formPhone.trim()) {
-      toast.error("Please fill in all the required fields.");
-      return;
-    }
-
-    setMembers(
-      members.map((m) => {
-        if (m.id === selectedMember.id) {
-          return {
-            ...m,
-            name: formName,
-            studentId: formStudentId,
-            email: formEmail,
-            phone: formPhone,
-          };
-        }
-        return m;
-      }),
-    );
-
-    toast.success(`Successfully updated member profile for "${formName}"!`);
+    toast.info("Changes submitted to Student Directory Registry.");
     setIsEditModalOpen(false);
     setSelectedMember(null);
     resetForm();
@@ -106,39 +86,70 @@ export function LibrarianMembers() {
 
   const handleToggleBlock = () => {
     if (!selectedMember) return;
-
-    const newStatus = selectedMember.status === "Active" ? "Inactive" : "Active";
-
-    setMembers(
-      members.map((m) => {
-        if (m.id === selectedMember.id) {
-          return {
-            ...m,
-            status: newStatus,
-          };
-        }
-        return m;
-      }),
-    );
-
-    if (newStatus === "Inactive") {
-      toast.warning(`Suspended library card privileges for ${selectedMember.name}.`);
-    } else {
-      toast.success(`Activated library card privileges for ${selectedMember.name}.`);
-    }
-
+    updateStudentMutation.mutate({
+      id: selectedMember.studentIdRaw,
+      payload: { isActive: selectedMember.status !== "Active" },
+    });
     setIsConfirmBlockOpen(false);
-    setSelectedMember(null);
   };
 
-  // Calculations for dynamic member statistics
+  // Dynamically map database students and issues to display member records
+  const members = studentsData?.students
+    ? studentsData.students.map((student) => {
+        const studentIssues = issuedBooks
+          ? issuedBooks.filter((issue) => {
+              const studentId = typeof issue.student === "object" ? issue.student?._id : issue.student;
+              return studentId === student._id;
+            })
+          : [];
+
+        const booksIssued = studentIssues.filter((i) => i.status === "issued" || i.status === "overdue").length;
+        const fineAmount = studentIssues.reduce((sum, i) => sum + (i.fineAmount || 0), 0);
+
+        return {
+          id: student.rollNumber,
+          studentId: student.rollNumber,
+          studentIdRaw: student._id,
+          name: student.fullName,
+          email: student.email,
+          phone: student.phoneNumber || "N/A",
+          joinDate: student.createdAt || new Date().toISOString(),
+          status: student.isActive ? "Active" : "Inactive",
+          booksIssued,
+          fineAmount,
+        };
+      })
+    : [];
+
+  const filteredMembers = members.filter(
+    (m) =>
+      (filterStatus === "All" || m.status === filterStatus) &&
+      (m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        m.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        m.email.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  // Summary Metrics
   const totalCount = members.length;
   const activeCount = members.filter((m) => m.status === "Active").length;
   const totalIssued = members.reduce((sum, m) => sum + m.booksIssued, 0);
   const outstandingFines = members.reduce((sum, m) => sum + m.fineAmount, 0);
 
+  if (isStudentsLoading || isIssuedLoading) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-200">
+        <PageHeader title="Member Management" desc="Manage library members, track borrowing history and status." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, idx) => (
+            <div key={idx} className="h-24 bg-muted animate-pulse rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-200">
       <PageHeader
         title="Member Management"
         desc="Manage library members, track borrowing history and status."
@@ -266,6 +277,7 @@ export function LibrarianMembers() {
                     Edit
                   </button>
                   <button
+                    disabled={updateStudentMutation.isPending}
                     onClick={() => openBlockConfirm(member)}
                     className={`px-3 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
                       member.status === "Active"
@@ -362,10 +374,11 @@ export function LibrarianMembers() {
                       View
                     </button>
                     <button
+                      disabled={updateStudentMutation.isPending}
                       onClick={() => openBlockConfirm(m)}
                       className={`px-2 py-1 rounded text-xs cursor-pointer transition ${
                         m.status === "Active"
-                          ? "bg-rose-50 text-rose-600 hover:bg-rose-100"
+                          ? "bg-rose-55 text-rose-600 hover:bg-rose-100"
                           : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
                       }`}
                     >
@@ -635,14 +648,15 @@ export function LibrarianMembers() {
                 Cancel
               </button>
               <button
+                disabled={updateStudentMutation.isPending}
                 onClick={handleToggleBlock}
-                className={`flex-1 px-4 py-2.5 rounded-xl text-white font-medium transition cursor-pointer ${
+                className={`flex-1 px-4 py-2.5 text-white font-medium transition cursor-pointer ${
                   selectedMember.status === "Active"
                     ? "bg-rose-600 hover:bg-rose-700"
                     : "bg-emerald-600 hover:bg-emerald-700"
                 }`}
               >
-                Confirm
+                {updateStudentMutation.isPending ? "Updating..." : "Confirm"}
               </button>
             </div>
           </Card>

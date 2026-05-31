@@ -63,16 +63,16 @@ const statsConfig = [
     gradient: "bg-gradient-violet",
   },
   {
-    label: "System Health",
-    fallback: "99.8%",
-    change: "+0.3%",
+    label: "Service Uptime",
+    fallback: "99.9%",
+    change: "+0.01%",
     icon: CheckCircle,
     gradient: "bg-gradient-cyan",
   },
   {
-    label: "Revenue Overview",
-    fallback: "₹0",
-    icon: Wallet,
+    label: "Database Latency",
+    fallback: "12 ms",
+    icon: Database,
     gradient: "bg-gradient-primary",
   },
   {
@@ -105,7 +105,8 @@ export function SuperAdminDashboard() {
       "Total Admins",
       "Active Users",
       "Pending Approvals",
-      "Revenue Overview",
+      "Service Uptime",
+      "Database Latency",
     ].includes(label);
 
     if (isLiveKey && isLoading) {
@@ -126,16 +127,10 @@ export function SuperAdminDashboard() {
         return liveStats.activeUsers.toLocaleString("en-IN");
       case "Pending Approvals":
         return liveStats.pendingApprovals.toLocaleString("en-IN");
-      case "Revenue Overview": {
-        const rev = liveStats.totalRevenue;
-        if (rev >= 10000000) {
-          return `₹${(rev / 10000000).toFixed(2)}Cr`;
-        } else if (rev >= 100000) {
-          return `₹${(rev / 100000).toFixed(2)}L`;
-        } else {
-          return `₹${rev.toLocaleString("en-IN")}`;
-        }
-      }
+      case "Service Uptime":
+        return liveStats.serviceUptime || fallback;
+      case "Database Latency":
+        return liveStats.dbLatency || fallback;
       default:
         return fallback;
     }
@@ -173,10 +168,10 @@ export function SuperAdminDashboard() {
             <div>
               <h3 className="font-semibold">System Analytics</h3>
               <p className="text-xs text-muted-foreground">
-                Users, revenue and support tickets across the institution
+                Active users and support tickets across the institution
               </p>
             </div>
-            <Badge tone="info">Academic Year</Badge>
+            <Badge tone="info">System Load</Badge>
           </div>
           <div className="h-72">
             <ResponsiveContainer>
@@ -186,9 +181,9 @@ export function SuperAdminDashboard() {
                     <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
                     <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="super-revenue" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#06B6D4" stopOpacity={0.5} />
-                    <stop offset="100%" stopColor="#06B6D4" stopOpacity={0} />
+                  <linearGradient id="super-tickets" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="#EF4444" stopOpacity={0.5} />
+                    <stop offset="100%" stopColor="#EF4444" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
@@ -204,9 +199,9 @@ export function SuperAdminDashboard() {
                 />
                 <Area
                   type="monotone"
-                  dataKey="revenue"
-                  stroke="#06B6D4"
-                  fill="url(#super-revenue)"
+                  dataKey="tickets"
+                  stroke="#EF4444"
+                  fill="url(#super-tickets)"
                   strokeWidth={2}
                 />
               </AreaChart>
@@ -278,18 +273,18 @@ export function SuperAdminDashboard() {
             <Database className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-3">
-            {[
+            {(liveStats?.systemStatus || [
               { label: "Application Server", value: "Operational", tone: "success" as const },
               { label: "Database Cluster", value: "Operational", tone: "success" as const },
               { label: "Email Gateway", value: "Monitoring", tone: "warn" as const },
               { label: "Backup Service", value: "Synced", tone: "info" as const },
-            ].map((item) => (
+            ]).map((item) => (
               <div
                 key={item.label}
                 className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
               >
                 <div className="text-sm font-medium">{item.label}</div>
-                <Badge tone={item.tone}>{item.value}</Badge>
+                <Badge tone={item.tone as any}>{item.value}</Badge>
               </div>
             ))}
           </div>

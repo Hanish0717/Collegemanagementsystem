@@ -8,22 +8,25 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const { Client } = pkg;
 
+// Check if we should run in Database Mock Mode
+const isMockMode = !process.env.SUPABASE_URL || 
+                   process.env.SUPABASE_URL.includes('your-project') || 
+                   process.env.SUPABASE_URL.includes('placeholder') ||
+                   !process.env.DATABASE_URL ||
+                   process.env.DATABASE_URL.includes('your_supabase') ||
+                   !process.env.SUPABASE_SERVICE_ROLE_KEY ||
+                   process.env.SUPABASE_SERVICE_ROLE_KEY.includes('placeholder') ||
+                   process.env.SUPABASE_SERVICE_ROLE_KEY.includes('your_supabase');
+
 // Validate Supabase config
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.error("❌ ERROR: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not defined in .env! Backend cannot run without Supabase.");
-  process.exit(1);
+if (isMockMode) {
+  console.log("🚀 Running backend in DATABASE MOCK MODE because no live Supabase credentials are configured.");
 } else {
   console.log("✅ Supabase credentials detected. Ready to process queries.");
 }
 
 // Startup database migration
 async function runMigrations() {
-  const isMockMode = !process.env.SUPABASE_URL || 
-                     process.env.SUPABASE_URL.includes('your-project') || 
-                     process.env.SUPABASE_URL.includes('placeholder') ||
-                     !process.env.DATABASE_URL ||
-                     process.env.DATABASE_URL.includes('your_supabase');
-
   if (isMockMode) {
     console.log("ℹ️ Running in DATABASE MOCK MODE. Skipping live DDL migrations.");
     return;
@@ -64,6 +67,56 @@ async function runMigrations() {
       -- Link legacy profiles to user records by email if not already linked
       UPDATE students SET user_id = users.id FROM users WHERE students.email = users.email AND students.user_id IS NULL;
       UPDATE faculty SET user_id = users.id FROM users WHERE faculty.email = users.email AND faculty.user_id IS NULL;
+
+      -- Placement Table Migrations
+      CREATE TABLE IF NOT EXISTS placement_companies (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name varchar(255) UNIQUE NOT NULL,
+        industry varchar(255) DEFAULT 'Technology',
+        hr_contact varchar(255) DEFAULT 'HR Manager',
+        email varchar(255) DEFAULT 'hr@company.com',
+        phone varchar(50) DEFAULT '9876543210',
+        package_amount varchar(100) DEFAULT '8.0 LPA',
+        previous_hires integer DEFAULT 0,
+        is_active boolean DEFAULT true,
+        logo text,
+        website text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS company_id uuid REFERENCES placement_companies(id) ON DELETE SET NULL;
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS drive_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL;
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS venue varchar(255) DEFAULT 'Virtual';
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS deadline timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL;
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS status varchar(50) DEFAULT 'upcoming';
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS package_min numeric(10, 2) DEFAULT 0.00;
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS package_max numeric(10, 2) DEFAULT 0.00;
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS eligibility_min_cgpa numeric(4, 2) DEFAULT 0.00;
+      ALTER TABLE placements ADD COLUMN IF NOT EXISTS eligibility_departments jsonb DEFAULT '[]'::jsonb;
+
+      CREATE TABLE IF NOT EXISTS placement_interviews (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student uuid REFERENCES students(id) ON DELETE CASCADE,
+        student_name varchar(255) NOT NULL,
+        company_name varchar(255) NOT NULL,
+        drive_id uuid REFERENCES placements(id) ON DELETE CASCADE,
+        round varchar(100) NOT NULL,
+        date date NOT NULL,
+        time varchar(50) NOT NULL,
+        mode varchar(50) DEFAULT 'Online',
+        status varchar(50) DEFAULT 'Scheduled',
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS placement_notifications (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        title varchar(255) NOT NULL,
+        time varchar(100) NOT NULL,
+        type varchar(50) NOT NULL,
+        unread boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
     `);
     
     // Reload PostgREST schema cache
@@ -82,6 +135,9 @@ async function runMigrations() {
 runMigrations()
   .then(() => seedIfNeeded())
   .then(async () => {
+    if (isMockMode) {
+      return;
+    }
     try {
       const client = new Client({
         connectionString: process.env.DATABASE_URL,
@@ -105,7 +161,7 @@ runMigrations()
     app.listen(PORT, () => {
       console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     });
-  });
+  }); // Hot-reload trigger comment
 
 
 

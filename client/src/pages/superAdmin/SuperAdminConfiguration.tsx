@@ -102,13 +102,16 @@ export function SuperAdminConfiguration() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {settingsGroups.map((group, index) => {
           const Icon = icons[index] || Settings;
+          const isGroupEnabled = group.items.some((item) => configs[item] !== false);
           return (
             <Card key={group.title} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center">
                   <Icon className="size-5" />
                 </div>
-                <Badge tone="success">Enabled</Badge>
+                <Badge tone={isGroupEnabled ? "success" : "default"}>
+                  {isGroupEnabled ? "Enabled" : "Disabled"}
+                </Badge>
               </div>
               <h3 className="font-semibold">{group.title}</h3>
               <div className="space-y-2 mt-4">

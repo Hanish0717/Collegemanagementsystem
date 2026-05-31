@@ -16,13 +16,13 @@ router.use(protect);
 
 router
   .route('/')
-  .get(authorizeRoles('admin', 'super-admin', 'librarian'), getStudents)
-  .post(authorizeRoles('admin', 'super-admin'), createStudent);
+  .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager'), getStudents)
+  .post(authorizeRoles('admin', 'super-admin', 'transport-manager'), createStudent);
 
 router
   .route('/:id')
-  .get(authorizeRoles('admin', 'super-admin', 'librarian'), getStudentById)
-  .put(authorizeRoles('admin', 'super-admin'), updateStudent)
-  .delete(authorizeRoles('admin', 'super-admin'), deleteStudent);
+  .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager'), getStudentById)
+  .put(authorizeRoles('admin', 'super-admin', 'transport-manager'), updateStudent)
+  .delete(authorizeRoles('admin', 'super-admin', 'transport-manager'), deleteStudent);
 
 export default router;

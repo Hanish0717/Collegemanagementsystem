@@ -2,11 +2,11 @@ import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { DollarSign, TrendingUp, Download, Search } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { finesData, libraryReports } from "@/mock/mockData";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { fetchIssuedBooks, returnBook } from "@/services/libraryService";
 import { toast } from "sonner";
 
 export function LibrarianFines() {
-  const [fines, setFines] = useState(finesData);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
 
@@ -14,15 +14,77 @@ export function LibrarianFines() {
   const [selectedFine, setSelectedFine] = useState<any>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const fineCollectionData = libraryReports.map((r) => ({
-    month: r.month.substring(0, 3),
-    collection: r.fineCollected,
-  }));
+  const { data: issuedBooks, isLoading, refetch } = useQuery({
+    queryKey: ["allIssuedBooks"],
+    queryFn: () => fetchIssuedBooks(),
+  });
+
+  const returnBookMutation = useMutation({
+    mutationFn: (issueId: string) => returnBook(issueId),
+    onSuccess: () => {
+      toast.success(
+        `Successfully collected penalty of ₹${selectedFine?.amount} and returned the book!`
+      );
+      setIsConfirmCollectOpen(false);
+      setSelectedFine(null);
+      refetch();
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to record fine collection");
+    },
+  });
+
+  const fines = issuedBooks
+    ? issuedBooks
+        .filter((issue) => (issue.fineAmount || 0) > 0 || issue.status === "overdue")
+        .map((issue) => {
+          let amt = issue.fineAmount || 0;
+          if (amt === 0 && issue.status === "overdue") {
+            const due = new Date(issue.dueDate);
+            const now = new Date();
+            if (now > due) {
+              const diffTime = Math.abs(now.getTime() - due.getTime());
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              amt = diffDays * 10;
+            }
+          }
+          return {
+            id: issue._id,
+            studentName:
+              typeof issue.student === "object" && issue.student
+                ? issue.student.fullName
+                : "Unknown Student",
+            amount: amt,
+            status: issue.status === "returned" ? "Paid" : "Pending",
+            date: issue.issueDate,
+            reason: issue.status === "overdue" ? "Overdue return" : "Late return fine",
+          };
+        })
+    : [];
+
+  const getMonthlyFineData = () => {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const chartData = months.map((m) => ({ month: m, collection: 0 }));
+
+    if (!issuedBooks) return chartData;
+
+    issuedBooks.forEach((issue) => {
+      if ((issue.fineAmount || 0) > 0 && issue.status === "returned" && issue.returnDate) {
+        const date = new Date(issue.returnDate);
+        const mIdx = date.getMonth();
+        chartData[mIdx].collection += issue.fineAmount || 0;
+      }
+    });
+
+    return chartData;
+  };
+
+  const fineCollectionData = getMonthlyFineData();
 
   const filteredFines = fines.filter(
     (f) =>
       (filterStatus === "All" || f.status === filterStatus) &&
-      f.studentName.toLowerCase().includes(searchTerm.toLowerCase()),
+      f.studentName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPendingFines = fines
@@ -39,39 +101,65 @@ export function LibrarianFines() {
 
   const handleCollectFineSubmit = () => {
     if (!selectedFine) return;
-
-    setFines(
-      fines.map((f) => {
-        if (f.id === selectedFine.id) {
-          return {
-            ...f,
-            status: "Paid",
-          };
-        }
-        return f;
-      }),
-    );
-
-    toast.success(
-      `Successfully collected penalty of ₹${selectedFine.amount} from ${selectedFine.studentName}!`,
-    );
-    setIsConfirmCollectOpen(false);
-    setSelectedFine(null);
+    returnBookMutation.mutate(selectedFine.id);
   };
 
   const handleExportFines = () => {
+    if (!filteredFines || filteredFines.length === 0) {
+      toast.error("No fine records to export.");
+      return;
+    }
     setIsExporting(true);
     toast.loading("Compiling fine audit sheets...");
 
-    setTimeout(() => {
+    try {
+      const headers = ["Fine ID", "Student Name", "Reason", "Amount (INR)", "Date", "Status"];
+      const rows = filteredFines.map((f) => [
+        f.id,
+        f.studentName,
+        f.reason,
+        `₹${f.amount}`,
+        f.date,
+        f.status,
+      ]);
+
+      const csvContent = [headers, ...rows].map((e) => e.map((val) => `"${val}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `fine_collection_ledger_${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       toast.dismiss();
+      toast.success("Fine collection ledger successfully exported!");
+    } catch (err) {
+      toast.dismiss();
+      toast.error("Failed to export ledger.");
+      console.error(err);
+    } finally {
       setIsExporting(false);
-      toast.success("Fine collection spreadsheet successfully compiled and downloaded!");
-    }, 1500);
+    }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-200">
+        <PageHeader title="Fine Management" desc="Track and collect fines from overdue books." />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, idx) => (
+            <div key={idx} className="h-28 bg-muted animate-pulse rounded-xl" />
+          ))}
+        </div>
+        <div className="h-72 bg-muted animate-pulse rounded-xl" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-200">
       <PageHeader
         title="Fine Management"
         desc="Track and collect fines from overdue books."
@@ -209,37 +297,46 @@ export function LibrarianFines() {
               </tr>
             </thead>
             <tbody>
-              {filteredFines.map((fine) => (
-                <tr key={fine.id} className="border-b hover:bg-gradient-soft transition">
-                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{fine.id}</td>
-                  <td className="px-4 py-3 font-medium">{fine.studentName}</td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">{fine.reason}</td>
-                  <td className="px-4 py-3 text-center font-bold text-rose-600">₹{fine.amount}</td>
-                  <td className="px-4 py-3 text-center text-xs">{fine.date}</td>
-                  <td className="px-4 py-3 text-center">
-                    <Badge tone={fine.status === "Paid" ? "success" : "danger"}>
-                      {fine.status}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {fine.status === "Pending" ? (
-                      <button
-                        onClick={() => openCollectConfirm(fine)}
-                        className="px-3 py-1.5 rounded-lg text-xs bg-gradient-primary text-white glow-primary cursor-pointer hover:opacity-90 transition font-semibold"
-                      >
-                        Collect
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => toast.success(`Receipt printed for reference ID ${fine.id}`)}
-                        className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-background transition cursor-pointer"
-                      >
-                        Receipt
-                      </button>
-                    )}
+              {filteredFines.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-8 text-muted-foreground">
+                    No fines recorded.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredFines.map((fine) => (
+                  <tr key={fine.id} className="border-b hover:bg-gradient-soft transition">
+                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{fine.id}</td>
+                    <td className="px-4 py-3 font-medium">{fine.studentName}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground">{fine.reason}</td>
+                    <td className="px-4 py-3 text-center font-bold text-rose-600">₹{fine.amount}</td>
+                    <td className="px-4 py-3 text-center text-xs">{fine.date}</td>
+                    <td className="px-4 py-3 text-center">
+                      <Badge tone={fine.status === "Paid" ? "success" : "danger"}>
+                        {fine.status}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {fine.status === "Pending" ? (
+                        <button
+                          disabled={returnBookMutation.isPending}
+                          onClick={() => openCollectConfirm(fine)}
+                          className="px-3 py-1.5 rounded-lg text-xs bg-gradient-primary text-white glow-primary cursor-pointer hover:opacity-90 transition font-semibold disabled:opacity-50"
+                        >
+                          Collect
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => toast.success(`Receipt printed for reference ID ${fine.id}`)}
+                          className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-background transition cursor-pointer"
+                        >
+                          Receipt
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -268,10 +365,11 @@ export function LibrarianFines() {
                 Go Back
               </button>
               <button
+                disabled={returnBookMutation.isPending}
                 onClick={handleCollectFineSubmit}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition disabled:opacity-50"
               >
-                Confirm Payment
+                {returnBookMutation.isPending ? "Confirming..." : "Confirm Payment"}
               </button>
             </div>
           </Card>

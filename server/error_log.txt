@@ -1,0 +1,10 @@
+[2026-05-30T19:55:34.730Z] [assignFaculty] Started with body: {"facultyId":"7b9977ac-0abf-430b-b177-b3a8998b9eea","assignedSections":["A"],"assignedSubjects":["CS501","CS502"]}
+[2026-05-30T19:55:34.742Z] [assignFaculty] Searching for faculty with ID: 7b9977ac-0abf-430b-b177-b3a8998b9eea
+[2026-05-30T19:55:34.873Z] [assignFaculty] Found faculty: Dr. Kumar Swamy, department: CSE
+[2026-05-30T19:55:34.978Z] [assignFaculty] Admin checks - isGlobalAdmin: true, adminProfileDept: Administration
+[2026-05-30T19:55:34.979Z] [assignFaculty] Sanitized sections: ["A"], subjects: ["CS501","CS502"]
+[2026-05-30T19:55:34.979Z] [assignFaculty] Querying students for department: CSE, sections: ["A"]
+[2026-05-30T19:55:35.112Z] [assignFaculty] Found matching student IDs: ["607d61f8-284a-4e6a-b3ee-db4dad29df65","7ca0f986-9720-44d1-8b15-741d0a110a42","0d575198-15f2-4eec-8555-4c721da2d2c0","df525db1-a6ce-4ffb-8515-2eb634e77ad3","5c0c66de-2b9c-46c0-a541-9fd0e3a1f538","7fef85b5-0229-4a9b-a6a3-0c7fe805324a","86c98ca7-a91d-44a2-8553-b6671be4b490","eb541574-fa15-463c-8929-ceab0076828c","39146267-dde8-4c21-a54e-82f3b3b10238","0cb80593-4688-4d45-8ce4-dc1d359bd8f4","104a9351-ae4f-40ca-9ea4-57d5c878ba95","6f516f60-0c63-452a-9c92-f8d245099423","ada2ac80-6e2e-4a5f-b7cd-778af4c92c0d","2e0e3223-3770-4214-90ae-fb6de70e9bb4","fd69f474-801b-443a-a270-760e318b6b94","f0a386a8-5138-4189-b45e-586ac9afc31f"]
+[2026-05-30T19:55:35.112Z] [assignFaculty] Updating faculty assignments in database...
+[2026-05-30T19:55:35.254Z] [assignFaculty] Faculty updated successfully: Dr. Kumar Swamy
+[2026-05-30T19:55:35.368Z] [assignFaculty] Formatting response and returning success...
