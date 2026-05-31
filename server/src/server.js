@@ -8,22 +8,25 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const { Client } = pkg;
 
+// Check if we should run in Database Mock Mode
+const isMockMode = !process.env.SUPABASE_URL || 
+                   process.env.SUPABASE_URL.includes('your-project') || 
+                   process.env.SUPABASE_URL.includes('placeholder') ||
+                   !process.env.DATABASE_URL ||
+                   process.env.DATABASE_URL.includes('your_supabase') ||
+                   !process.env.SUPABASE_SERVICE_ROLE_KEY ||
+                   process.env.SUPABASE_SERVICE_ROLE_KEY.includes('placeholder') ||
+                   process.env.SUPABASE_SERVICE_ROLE_KEY.includes('your_supabase');
+
 // Validate Supabase config
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.error("❌ ERROR: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not defined in .env! Backend cannot run without Supabase.");
-  process.exit(1);
+if (isMockMode) {
+  console.log("🚀 Running backend in DATABASE MOCK MODE because no live Supabase credentials are configured.");
 } else {
   console.log("✅ Supabase credentials detected. Ready to process queries.");
 }
 
 // Startup database migration
 async function runMigrations() {
-  const isMockMode = !process.env.SUPABASE_URL || 
-                     process.env.SUPABASE_URL.includes('your-project') || 
-                     process.env.SUPABASE_URL.includes('placeholder') ||
-                     !process.env.DATABASE_URL ||
-                     process.env.DATABASE_URL.includes('your_supabase');
-
   if (isMockMode) {
     console.log("ℹ️ Running in DATABASE MOCK MODE. Skipping live DDL migrations.");
     return;
@@ -82,6 +85,9 @@ async function runMigrations() {
 runMigrations()
   .then(() => seedIfNeeded())
   .then(async () => {
+    if (isMockMode) {
+      return;
+    }
     try {
       const client = new Client({
         connectionString: process.env.DATABASE_URL,

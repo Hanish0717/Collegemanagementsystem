@@ -20,6 +20,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import superAdminRoutes from './routes/superAdminRoutes.js';
 import facultyRoutes from './routes/facultyRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import transportRoutes from './routes/transportRoutes.js';
 
 dotenv.config();
 
@@ -93,6 +94,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/transport', transportRoutes);
 
 // 404 handler
 app.use(notFound);

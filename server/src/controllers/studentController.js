@@ -228,7 +228,7 @@ export const createStudent = async (req, res, next) => {
         role: 'student',
         phone_number: phoneNumber || null,
         mobile: phoneNumber || null,
-        is_verified: false,
+        is_verified: true, // Verified by default when created by Admin
         is_active: true
       }])
       .select()
