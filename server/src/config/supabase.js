@@ -128,6 +128,20 @@ if (isMockMode) {
       return this;
     }
 
+    lt(column, value) {
+      this._data = this._data.filter(item => Number(item[column]) < Number(value));
+      return this;
+    }
+
+    not(column, operator, value) {
+      if (operator === 'is' && value === null) {
+        this._data = this._data.filter(item => item[column] !== null && item[column] !== undefined);
+      } else {
+        this._data = this._data.filter(item => item[column] != value);
+      }
+      return this;
+    }
+
     in(column, values) {
       if (Array.isArray(values)) {
         this._data = this._data.filter(item => values.includes(item[column]) || values.includes(item.id) || values.includes(item._id));
@@ -272,6 +286,20 @@ if (isMockMode) {
       return this;
     }
 
+    lt(column, value) {
+      this.conditions.push({ column: `t.${column}`, operator: '<', value });
+      return this;
+    }
+
+    not(column, operator, value) {
+      if (operator === 'is' && value === null) {
+        this.conditions.push({ column: `t.${column}`, operator: 'IS NOT NULL', value: undefined });
+      } else {
+        this.conditions.push({ column: `t.${column}`, operator: '!=', value });
+      }
+      return this;
+    }
+
     in(column, values) {
       this.conditions.push({ column: `t.${column}`, operator: 'IN', value: values });
       return this;
@@ -334,6 +362,8 @@ if (isMockMode) {
               }).join(', ');
               parts.push(`${c.column} IN (${placeholders})`);
             }
+          } else if (c.operator === 'IS NOT NULL') {
+            parts.push(`${c.column} IS NOT NULL`);
           } else {
             params.push(c.value);
             parts.push(`${c.column} ${c.operator} $${paramCounter++}`);

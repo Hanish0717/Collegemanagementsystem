@@ -1,18 +1,57 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Users, GraduationCap, CalendarCheck, Wallet, Bus, Compass } from "lucide-react";
+import {
+  Users,
+  GraduationCap,
+  CalendarCheck,
+  Wallet,
+  Bus,
+  Compass,
+  Activity,
+  BookOpen,
+  Clock,
+  AlertTriangle,
+} from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { supabase } from "@/lib/supabaseClient";
 import { stats as mockStats } from "@/mock/mockData";
 import { fetchDashboardData, type DashboardStats } from "@/services/dashboardService";
 
-const statIcons = [Users, GraduationCap, CalendarCheck, Wallet];
-const statGradients = [
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-];
+const statIcons: Record<string, any> = {
+  "Total Students": Users,
+  "Total Faculty": GraduationCap,
+  "Active Departments": BookOpen,
+  "Attendance Percentage": Activity,
+  "Fee Collection": Wallet,
+  "Pending Approvals": CalendarCheck,
+  "Upcoming Events": Clock,
+  "Low Attendance Warning": AlertTriangle,
+};
+
+const statGradients: Record<string, string> = {
+  "Total Students": "bg-gradient-primary",
+  "Total Faculty": "bg-gradient-violet",
+  "Active Departments": "bg-gradient-cyan",
+  "Attendance Percentage": "bg-gradient-primary",
+  "Fee Collection": "bg-gradient-violet",
+  "Pending Approvals": "bg-gradient-cyan",
+  "Upcoming Events": "bg-gradient-primary",
+  "Low Attendance Warning": "bg-gradient-violet",
+};
 
 export function DashboardIndex() {
   const [data, setData] = useState<DashboardStats | null>(null);
@@ -50,8 +89,12 @@ export function DashboardIndex() {
     };
   }, []);
 
-  const stats = data?.stats || mockStats;
-
+  // Extraction of real-time data or fallback mocks
+  const stats = data?.stats || [];
+  const departmentData = data?.departmentData || [];
+  const attendanceData = (data as any)?.attendanceMonitoring || [];
+  const studentAnalytics = (data as any)?.studentAnalytics || [];
+  const activities = (data as any)?.activities || [];
 
   return (
     <div className="space-y-6">
@@ -64,31 +107,205 @@ export function DashboardIndex() {
         }
       />
 
-      {/* Stats */}
+      {/* Grid for Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-          >
-            <StatCard
-              label={s.label}
-              value={s.value}
-              change={s.change}
-              icon={statIcons[i % statIcons.length]}
-              gradient={statGradients[i % statGradients.length]}
-            />
-          </motion.div>
-        ))}
+        {stats.length > 0
+          ? stats.map((s, i) => {
+              const Icon = statIcons[s.label] || Users;
+              const gradient = statGradients[s.label] || "bg-gradient-primary";
+              return (
+                <motion.div
+                  key={s.label}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                >
+                  <StatCard
+                    label={s.label}
+                    value={s.value}
+                    change={s.change}
+                    icon={Icon}
+                    gradient={gradient}
+                  />
+                </motion.div>
+              );
+            })
+          : mockStats.map((s, i) => {
+              const icons = [Users, GraduationCap, CalendarCheck, Wallet];
+              const gradients = ["bg-gradient-primary", "bg-gradient-violet", "bg-gradient-cyan", "bg-gradient-primary"];
+              return (
+                <motion.div
+                  key={s.label}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                >
+                  <StatCard
+                    label={s.label}
+                    value={s.value}
+                    change={s.change}
+                    icon={icons[i % icons.length]}
+                    gradient={gradients[i % gradients.length]}
+                  />
+                </motion.div>
+              );
+            })}
       </div>
 
+      {/* College Analytics Charts */}
+      {(!loading || departmentData.length > 0) && (
+        <div className="grid lg:grid-cols-3 gap-4">
+          {/* Student Analytics Area Chart */}
+          <Card className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold">Student Analytics</h3>
+                <p className="text-xs text-muted-foreground">
+                  Enrollment and fee collection trends
+                </p>
+              </div>
+              <Badge tone="info">This Semester</Badge>
+            </div>
+            <div className="h-72">
+              <ResponsiveContainer>
+                <AreaChart data={studentAnalytics}>
+                  <defs>
+                    <linearGradient id="admin-enrolled" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
+                      <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="admin-fees" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#06B6D4" stopOpacity={0.5} />
+                      <stop offset="100%" stopColor="#06B6D4" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
+                  <YAxis stroke="#64748B" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Area
+                    type="monotone"
+                    dataKey="enrolled"
+                    name="Enrolled Students"
+                    stroke="#4F46E5"
+                    fill="url(#admin-enrolled)"
+                    strokeWidth={2}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="fees"
+                    name="Fee Collection (₹)"
+                    stroke="#06B6D4"
+                    fill="url(#admin-fees)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          {/* Department Distribution Pie Chart */}
+          <Card>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Department Distribution</h3>
+              <Badge>Live</Badge>
+            </div>
+            <div className="h-56">
+              <ResponsiveContainer>
+                <PieChart>
+                  <Pie
+                    data={departmentData}
+                    dataKey="value"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={3}
+                  >
+                    {departmentData.map((d: any, i: number) => (
+                      <Cell key={i} fill={d.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-2 max-h-[120px] overflow-y-auto">
+              {departmentData.map((d: any) => (
+                <div key={d.name} className="flex items-center gap-2 text-xs">
+                  <span className="size-2.5 rounded-full" style={{ background: d.color }} />
+                  <span className="text-muted-foreground truncate max-w-[80px]">{d.name}</span>
+                  <span className="ml-auto font-medium">{d.value}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Attendance Trends & Recent Campus Activities */}
+      {(!loading || attendanceData.length > 0) && (
+        <div className="grid lg:grid-cols-3 gap-4">
+          {/* Attendance Trends Bar Chart */}
+          <Card className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold">Attendance Trends</h3>
+                <p className="text-xs text-muted-foreground">
+                  Daily attendance status across departments
+                </p>
+              </div>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer>
+                <BarChart data={attendanceData}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
+                  <YAxis stroke="#64748B" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Bar dataKey="present" name="Present" fill="#4F46E5" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="absent" name="Absent" fill="#06B6D4" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          {/* Recent Campus Activities */}
+          <Card>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Recent Campus Activities</h3>
+              <Badge tone="info">Live</Badge>
+            </div>
+            <div className="space-y-3 max-h-[260px] overflow-y-auto">
+              {activities.length > 0 ? (
+                activities.map((activity: any, idx: number) => (
+                  <div
+                    key={(activity.actor || activity.user || "Actor") + activity.time + idx}
+                    className="flex items-start gap-2.5 py-1.5 border-b last:border-0 text-xs"
+                  >
+                    <div className="size-6 rounded-full bg-indigo-50 text-indigo-600 grid place-items-center text-[10px] font-bold shrink-0">
+                      {(activity.actor || activity.user || "AC").slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex-1">
+                      <span className="font-semibold text-slate-800">{activity.actor || activity.user}</span>{" "}
+                      <span className="text-slate-500">{activity.action}</span>{" "}
+                      <span className="font-semibold text-slate-700">{activity.target}</span>
+                      <div className="text-[10px] text-slate-400 mt-0.5">{activity.time}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-xs text-muted-foreground py-4 text-center">
+                  No recent campus activities logged.
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* ═══════════════════════════════════════════════════════════════════
-           SMART FLEET & CAMPUS TRANSIT — FULL DETAILED SECTION
+           SMART FLEET & CAMPUS TRANSIT — TRANSIT REMAINS ACCESSIBLE
       ═══════════════════════════════════════════════════════════════════ */}
       <div className="space-y-4 pt-2">
-
         {/* Section Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -106,29 +323,8 @@ export function DashboardIndex() {
           </span>
         </div>
 
-        {/* Top KPI Summary Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
-            { label: "Total Buses", value: "4", sub: "TS-09-UB Fleet", icon: Bus, color: "indigo" },
-            { label: "Total Students", value: "185", sub: "96.5% verified", icon: GraduationCap, color: "violet" },
-            { label: "Bus Passengers", value: "48", sub: "Active passes issued", icon: Users, color: "cyan" },
-            { label: "Monthly Revenue", value: "₹84,600", sub: "Across all 3 routes", icon: Wallet, color: "amber" },
-          ].map(({ label, value, sub, icon: Icon, color }) => (
-            <div key={label} className={`bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden group hover:shadow-md transition-all`}>
-              <div className={`absolute top-0 right-0 w-14 h-14 bg-${color}-50 rounded-full blur-xl pointer-events-none`} />
-              <div className={`size-8 rounded-lg bg-${color}-50 border border-${color}-100 grid place-items-center text-${color}-600 mb-2`}>
-                <Icon className="size-4" />
-              </div>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">{label}</span>
-              <span className="font-bold text-slate-800 text-lg block leading-tight">{value}</span>
-              <span className="text-[9px] text-slate-500 mt-0.5 block">{sub}</span>
-            </div>
-          ))}
-        </div>
-
         {/* Main Detail Grid: Bus Table + Route Fees */}
         <div className="grid lg:grid-cols-5 gap-4">
-
           {/* LEFT: Bus Details Table (col-span-3) */}
           <Card className="lg:col-span-3 overflow-hidden">
             <div className="flex items-center justify-between mb-4">
@@ -229,7 +425,6 @@ export function DashboardIndex() {
                   </div>
                 </div>
               ))}
-              {/* Total collection summary */}
               <div className="mt-2 p-3 rounded-xl bg-slate-800 text-white">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">Total Monthly Collection</span>
@@ -239,8 +434,6 @@ export function DashboardIndex() {
               </div>
             </div>
           </Card>
-
-
         </div>
       </div>
     </div>
