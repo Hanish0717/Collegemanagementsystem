@@ -1,24 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
+import pkg from 'pg';
 
 dotenv.config();
 
+const { Pool } = pkg;
+
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const databaseUrl = process.env.DATABASE_URL;
 
-// Check if we should run in Database Mock Mode
-const isMockMode = !supabaseUrl || 
-                   supabaseUrl.includes('your-project') || 
-                   supabaseUrl.includes('placeholder') ||
-                   !supabaseServiceRoleKey ||
-                   supabaseServiceRoleKey.includes('placeholder') ||
-                   supabaseServiceRoleKey.includes('your_supabase');
+// Determine if we should run in Database Mock Mode (only if no live PostgreSQL or Supabase credentials are configured)
+const isMockMode = (!databaseUrl || databaseUrl.includes('your_supabase_postgresql')) &&
+                   (!supabaseUrl || supabaseUrl.includes('your-project') || supabaseUrl.includes('placeholder'));
 
 let activeSupabaseClient;
 
 if (isMockMode) {
-  console.log("🚀 Running backend in DATABASE MOCK MODE because no live Supabase credentials are configured.");
+  console.log("🚀 Running backend in DATABASE MOCK MODE because no live database credentials are configured.");
   
   const hashedDefaultPassword = bcrypt.hashSync('password123', 10);
 
@@ -107,20 +107,14 @@ if (isMockMode) {
       this._error = null;
     }
 
-    select(columns, options = {}) {
-      return this;
-    }
+    select(columns, options = {}) { return this; }
 
     eq(column, value) {
       if (value === undefined || value === null) return this;
-      
       const cleanVal = typeof value === 'string' ? value.toLowerCase().trim() : value;
-      
       this._data = this._data.filter(item => {
         let fieldVal = item[column];
-        if (column === 'id' && item._id && !item.id) {
-          fieldVal = item._id;
-        }
+        if (column === 'id' && item._id && !item.id) { fieldVal = item._id; }
         if (typeof fieldVal === 'string') {
           return fieldVal.toLowerCase().trim() === cleanVal;
         }
@@ -131,6 +125,20 @@ if (isMockMode) {
 
     neq(column, value) {
       this._data = this._data.filter(item => item[column] != value);
+      return this;
+    }
+
+    lt(column, value) {
+      this._data = this._data.filter(item => Number(item[column]) < Number(value));
+      return this;
+    }
+
+    not(column, operator, value) {
+      if (operator === 'is' && value === null) {
+        this._data = this._data.filter(item => item[column] !== null && item[column] !== undefined);
+      } else {
+        this._data = this._data.filter(item => item[column] != value);
+      }
       return this;
     }
 
@@ -161,9 +169,7 @@ if (isMockMode) {
       return this;
     }
 
-    maybeSingle() {
-      return Promise.resolve({ data: this._data[0] || null, error: this._error });
-    }
+    maybeSingle() { return Promise.resolve({ data: this._data[0] || null, error: this._error }); }
 
     single() {
       if (this._data.length === 0) {
@@ -191,7 +197,6 @@ if (isMockMode) {
 
     update(values) {
       this._data.forEach(item => {
-        // Find in source db list and update
         const sourceItem = db[this.tableName].find(i => i.id === item.id || i._id === item.id);
         if (sourceItem) {
           Object.assign(sourceItem, values);
@@ -205,9 +210,7 @@ if (isMockMode) {
     delete() {
       this._data.forEach(item => {
         const idx = db[this.tableName].findIndex(i => i.id === item.id || i._id === item.id);
-        if (idx !== -1) {
-          db[this.tableName].splice(idx, 1);
-        }
+        if (idx !== -1) { db[this.tableName].splice(idx, 1); }
       });
       this._data = [];
       return this;
@@ -224,32 +227,346 @@ if (isMockMode) {
 
   activeSupabaseClient = {
     from: (tableName) => {
-      if (!db[tableName]) {
-        db[tableName] = [];
-      }
+      if (!db[tableName]) { db[tableName] = []; }
       return new MockQueryBuilder(tableName, db[tableName]);
     },
     auth: {
-      signUp: async ({ email, password }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
+      signUp: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signInWithPassword: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signOut: async () => ({ error: null })
     }
   };
 } else {
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
-    console.warn("⚠️ Supabase URL or Service Role Key is missing from env variables. Database operations may fail.");
-  }
-  
-  activeSupabaseClient = createClient(
-    supabaseUrl || 'https://placeholder.supabase.co',
-    supabaseServiceRoleKey || 'placeholder_key',
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false
+  console.log("✅ LIVE POSTGRESQL / SUPABASE CONNECTION DETECTED. Query builder is online.");
+
+  const pool = new Pool({
+    connectionString: databaseUrl,
+    ssl: { rejectUnauthorized: false }
+  });
+
+  class PostgresQueryBuilder {
+    constructor(tableName) {
+      this.tableName = tableName;
+      this.selectString = '*';
+      this.conditions = [];
+      this.orderByField = null;
+      this.orderByAsc = true;
+      this.limitVal = null;
+      this.offsetVal = null;
+      this.action = 'select';
+      this.actionData = null;
+      this.joinUsers = false;
+      this.joinUsersInner = false;
+      this.orConditions = [];
+    }
+
+    select(columns = '*', options = {}) {
+      this.selectString = columns;
+      if (columns.includes('users!inner')) {
+        this.joinUsers = true;
+        this.joinUsersInner = true;
+      } else if (columns.includes('users')) {
+        this.joinUsers = true;
+      }
+      return this;
+    }
+
+    eq(column, value) {
+      if (value === undefined || value === null) return this;
+      if (column.startsWith('users.')) {
+        this.conditions.push({ column: `users.${column.split('.')[1]}`, operator: '=', value });
+      } else {
+        this.conditions.push({ column: `t.${column}`, operator: '=', value });
+      }
+      return this;
+    }
+
+    neq(column, value) {
+      this.conditions.push({ column: `t.${column}`, operator: '!=', value });
+      return this;
+    }
+
+    lt(column, value) {
+      this.conditions.push({ column: `t.${column}`, operator: '<', value });
+      return this;
+    }
+
+    not(column, operator, value) {
+      if (operator === 'is' && value === null) {
+        this.conditions.push({ column: `t.${column}`, operator: 'IS NOT NULL', value: undefined });
+      } else {
+        this.conditions.push({ column: `t.${column}`, operator: '!=', value });
+      }
+      return this;
+    }
+
+    in(column, values) {
+      this.conditions.push({ column: `t.${column}`, operator: 'IN', value: values });
+      return this;
+    }
+
+    or(queryString) {
+      this.orConditions.push(queryString);
+      return this;
+    }
+
+    order(column, { ascending = true } = {}) {
+      this.orderByField = column;
+      this.orderByAsc = ascending;
+      return this;
+    }
+
+    limit(num) {
+      this.limitVal = num;
+      return this;
+    }
+
+    range(from, to) {
+      this.offsetVal = from;
+      this.limitVal = to - from + 1;
+      return this;
+    }
+
+    insert(rows) {
+      this.action = 'insert';
+      this.actionData = Array.isArray(rows) ? rows : [rows];
+      return this;
+    }
+
+    update(values) {
+      this.action = 'update';
+      this.actionData = values;
+      return this;
+    }
+
+    delete() {
+      this.action = 'delete';
+      return this;
+    }
+
+    async execute() {
+      let sql = '';
+      const params = [];
+      let paramCounter = 1;
+
+      const buildWhere = () => {
+        const parts = [];
+        this.conditions.forEach(c => {
+          if (c.operator === 'IN') {
+            if (!Array.isArray(c.value) || c.value.length === 0) {
+              parts.push('FALSE');
+            } else {
+              const placeholders = c.value.map(v => {
+                params.push(v);
+                return `$${paramCounter++}`;
+              }).join(', ');
+              parts.push(`${c.column} IN (${placeholders})`);
+            }
+          } else if (c.operator === 'IS NOT NULL') {
+            parts.push(`${c.column} IS NOT NULL`);
+          } else {
+            params.push(c.value);
+            parts.push(`${c.column} ${c.operator} $${paramCounter++}`);
+          }
+        });
+
+        this.orConditions.forEach(orStr => {
+          const clauses = orStr.split(',').map(clause => {
+            const match = clause.match(/^([^.]+)\.([^.]+)\.(.+)$/);
+            if (match) {
+              const [, col, operator, val] = match;
+              let cleanVal = val;
+              if (cleanVal.startsWith('%') && cleanVal.endsWith('%')) {
+                cleanVal = cleanVal.slice(1, -1);
+              }
+              params.push(`%${cleanVal}%`);
+              return `t."${col}" ILIKE $${paramCounter++}`;
+            }
+            return 'FALSE';
+          });
+          if (clauses.length > 0) {
+            parts.push(`(${clauses.join(' OR ')})`);
+          }
+        });
+
+        if (parts.length === 0) return '';
+        return ' WHERE ' + parts.join(' AND ');
+      };
+
+      if (this.action === 'select') {
+        let selectFields = 't.*';
+        if (this.joinUsers) {
+          selectFields = 't.*, u.is_verified as "user_is_verified", u.email as "user_email", u.role as "user_role"';
+        }
+
+        sql = `SELECT ${selectFields} FROM "${this.tableName}" t`;
+        
+        if (this.joinUsers) {
+          const joinType = this.joinUsersInner ? 'INNER JOIN' : 'LEFT JOIN';
+          sql += ` ${joinType} "users" u ON t.user_id = u.id`;
+        }
+
+        this.conditions = this.conditions.map(c => {
+          if (c.column.startsWith('users.')) {
+            return { ...c, column: `u.${c.column.split('.')[1]}` };
+          }
+          return c;
+        });
+
+        const whereClause = buildWhere();
+        sql += whereClause;
+
+        if (this.orderByField) {
+          sql += ` ORDER BY t."${this.orderByField}" ${this.orderByAsc ? 'ASC' : 'DESC'}`;
+        }
+
+        let totalCount = null;
+        if (this.limitVal !== null || this.offsetVal !== null) {
+          const countSql = `SELECT COUNT(*) FROM "${this.tableName}" t ${this.joinUsers ? `${this.joinUsersInner ? 'INNER JOIN' : 'LEFT JOIN'} "users" u ON t.user_id = u.id` : ''} ${whereClause}`;
+          try {
+            const countRes = await pool.query(countSql, params);
+            totalCount = parseInt(countRes.rows[0].count, 10);
+          } catch (e) {
+            console.error("Count query error:", e.message);
+          }
+        }
+
+        if (this.limitVal !== null) {
+          sql += ` LIMIT ${this.limitVal}`;
+        }
+        if (this.offsetVal !== null) {
+          sql += ` OFFSET ${this.offsetVal}`;
+        }
+
+        try {
+          const res = await pool.query(sql, params);
+          let rows = res.rows;
+
+          if (this.joinUsers) {
+            rows = rows.map(r => {
+              const { user_is_verified, user_email, user_role, ...rest } = r;
+              return {
+                ...rest,
+                users: {
+                  is_verified: user_is_verified,
+                  email: user_email,
+                  role: user_role
+                }
+              };
+            });
+          }
+
+          if (this.selectString.includes(':')) {
+            const relations = [];
+            const matches = this.selectString.matchAll(/(\w+):(\w+)\(\*\)/g);
+            for (const m of matches) {
+              relations.push({ fieldName: m[1], relationTable: m[2] });
+            }
+
+            for (const rel of relations) {
+              const ids = rows.map(r => r[rel.fieldName] || r[`${rel.fieldName}_id`]).filter(Boolean);
+              if (ids.length > 0) {
+                const relRes = await pool.query(`SELECT * FROM "${rel.relationTable}" WHERE id IN (${ids.map((_, i) => `$${i+1}`).join(', ')})`, ids);
+                const relMap = new Map(relRes.rows.map(r => [r.id, r]));
+                rows.forEach(r => {
+                  const foreignId = r[rel.fieldName] || r[`${rel.fieldName}_id`];
+                  r[rel.fieldName] = relMap.get(foreignId) || null;
+                });
+              }
+            }
+          }
+
+          return { data: rows, error: null, count: totalCount !== null ? totalCount : rows.length };
+        } catch (err) {
+          console.error(`❌ [PostgresQueryBuilder Error] table: "${this.tableName}", sql: "${sql}", params: ${JSON.stringify(params)}, error: ${err.message}`);
+          return { data: null, error: err };
+        }
+      } else if (this.action === 'insert') {
+        const rows = this.actionData;
+        if (rows.length === 0) return { data: [], error: null };
+        
+        const columns = Object.keys(rows[0]);
+        const valuePlaceholders = rows.map(row => {
+          const rowPlaceholders = columns.map(col => {
+            params.push(row[col]);
+            return `$${paramCounter++}`;
+          });
+          return `(${rowPlaceholders.join(', ')})`;
+        }).join(', ');
+
+        sql = `INSERT INTO "${this.tableName}" (${columns.map(c => `"${c}"`).join(', ')}) VALUES ${valuePlaceholders} RETURNING *`;
+        
+        try {
+          const res = await pool.query(sql, params);
+          return { data: res.rows, error: null };
+        } catch (err) {
+          console.error(`❌ [PostgresQueryBuilder Insert Error] table: "${this.tableName}", sql: "${sql}", params: ${JSON.stringify(params)}, error: ${err.message}`);
+          return { data: null, error: err };
+        }
+      } else if (this.action === 'update') {
+        const updates = [];
+        for (const [col, val] of Object.entries(this.actionData)) {
+          params.push(val);
+          updates.push(`"${col}" = $${paramCounter++}`);
+        }
+        sql = `UPDATE "${this.tableName}" t SET ${updates.join(', ')}`;
+        sql += buildWhere();
+        sql += ' RETURNING *';
+
+        try {
+          const res = await pool.query(sql, params);
+          return { data: res.rows, error: null };
+        } catch (err) {
+          console.error(`❌ [PostgresQueryBuilder Update Error] table: "${this.tableName}", sql: "${sql}", params: ${JSON.stringify(params)}, error: ${err.message}`);
+          return { data: null, error: err };
+        }
+      } else if (this.action === 'delete') {
+        sql = `DELETE FROM "${this.tableName}" t`;
+        sql += buildWhere();
+        sql += ' RETURNING *';
+
+        try {
+          const res = await pool.query(sql, params);
+          return { data: res.rows, error: null };
+        } catch (err) {
+          console.error(`❌ [PostgresQueryBuilder Delete Error] table: "${this.tableName}", sql: "${sql}", params: ${JSON.stringify(params)}, error: ${err.message}`);
+          return { data: null, error: err };
+        }
       }
     }
-  );
+
+    async maybeSingle() {
+      const { data, error } = await this.execute();
+      return { data: data && data.length > 0 ? data[0] : null, error };
+    }
+
+    async single() {
+      const { data, error } = await this.execute();
+      if (error) return { data: null, error };
+      if (!data || data.length === 0) {
+        return { data: null, error: { message: "No rows found" } };
+      }
+      return { data: data[0], error: null };
+    }
+
+    then(onfulfilled, onrejected) {
+      if (!this._promise) {
+        this._promise = this.execute();
+      }
+      return this._promise.then(onfulfilled, onrejected);
+    }
+  }
+
+  activeSupabaseClient = {
+    from: (tableName) => {
+      return new PostgresQueryBuilder(tableName);
+    },
+    auth: {
+      signUp: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
+      signInWithPassword: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
+      signOut: async () => ({ error: null })
+    }
+  };
 }
 
 export const supabase = activeSupabaseClient;

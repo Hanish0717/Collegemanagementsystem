@@ -1,334 +1,430 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useState, useMemo, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
-  Bar,
   BarChart,
-  CartesianGrid,
-  Line,
-  LineChart,
+  Bar,
   ResponsiveContainer,
-  Tooltip,
+  CartesianGrid,
   XAxis,
   YAxis,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import {
-  FileText,
   Download,
-  TrendingUp,
+  Loader2,
+  Printer,
+  Search,
+  Filter,
+  ChevronDown,
+  AlertCircle,
   Users,
   DollarSign,
-  Utensils,
-  AlertTriangle,
+  Home,
+  Bed,
+  TrendingUp,
+  FileDown,
 } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 
+import {
+  fetchResidentReport,
+  fetchOccupancyReport,
+  fetchBlockReport,
+  fetchFeeReport,
+  fetchAvailableRoomsReport,
+  fetchDashboardAnalytics,
+  exportResidentPDF,
+  exportResidentExcel,
+  exportOccupancyPDF,
+  exportOccupancyExcel,
+  exportFeePDF,
+  exportFeeExcel,
+  exportAvailableRoomsExcel,
+  exportBlocksExcel,
+} from "@/services/hostelReportService";
+
+// ── CSV Export Helper ──────────────────────────────────────────────────────────
+function downloadCSV(rows: Record<string, any>[], filename: string) {
+  if (!rows || rows.length === 0) {
+    toast.error("No data available to export.");
+    return;
+  }
+  const headers = Object.keys(rows[0]);
+  const csvContent = [
+    headers.join(","),
+    ...rows.map((row) =>
+      headers
+        .map((h) => {
+          const val = row[h] ?? "";
+          return typeof val === "string" && val.includes(",") ? `"${val}"` : String(val);
+        })
+        .join(",")
+    ),
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  toast.success(`${filename} exported successfully!`);
+}
+
+// ── Aggregation helpers ────────────────────────────────────────────────────────
+function buildOccupancyChartData(rooms: any[]) {
+  const byBlock: Record<string, { occupied: number; available: number }> = {};
+  rooms.forEach((r) => {
+    if (!byBlock[r.block]) byBlock[r.block] = { occupied: 0, available: 0 };
+    byBlock[r.block].occupied += r.occupants;
+    byBlock[r.block].available += r.available;
+  });
+  return Object.entries(byBlock).map(([block, v]) => ({ block, ...v }));
+}
+
+function buildFeeChartData(fees: any[]) {
+  const byStatus: Record<string, number> = { Paid: 0, Pending: 0, Overdue: 0 };
+  fees.forEach((f) => {
+    if (byStatus[f.status] !== undefined) byStatus[f.status] += f.totalAmount;
+  });
+  return Object.entries(byStatus).map(([status, amount]) => ({ status, amount }));
+}
+
+function buildComplaintChartData(complaints: any[]) {
+  const byStatus: Record<string, number> = { "Pending": 0, "In-Progress": 0, "Resolved": 0 };
+  complaints.forEach((c) => {
+    if (byStatus[c.status] !== undefined) byStatus[c.status]++;
+  });
+  return Object.entries(byStatus).map(([status, count]) => ({ status, count }));
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 export function HostelReports() {
-  const occupancyReport = [
-    { month: "Jan", occupancy: 72, newAdmissions: 25, departures: 5 },
-    { month: "Feb", occupancy: 74, newAdmissions: 18, departures: 8 },
-    { month: "Mar", occupancy: 76, newAdmissions: 22, departures: 6 },
-    { month: "Apr", occupancy: 78, newAdmissions: 20, departures: 7 },
-    { month: "May", occupancy: 79, newAdmissions: 15, departures: 4 },
-  ];
+  const [activeReport, setActiveReport] = useState<
+    | "residents"
+    | "occupancy"
+    | "block"
+    | "fees"
+    | "available-rooms"
+  >("residents");
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedFilters, setExpandedFilters] = useState(false);
+  const [exporting, setExporting] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const feeCollectionReport = [
-    { month: "Jan", collected: 75000, target: 80000, percentage: 94 },
-    { month: "Feb", collected: 78000, target: 80000, percentage: 98 },
-    { month: "Mar", collected: 82000, target: 80000, percentage: 102 },
-    { month: "Apr", collected: 85000, target: 80000, percentage: 106 },
-    { month: "May", collected: 89500, target: 80000, percentage: 112 },
-  ];
+  const { data: residentData, isLoading: residentLoading } = useQuery({
+    queryKey: ["hostel-report-residents", filters, searchTerm, sortBy, sortOrder],
+    queryFn: () => fetchResidentReport({ ...filters, search: searchTerm, sortBy, order: sortOrder }),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const complaintAnalytics = [
-    { month: "Jan", resolved: 28, pending: 12, escalated: 2 },
-    { month: "Feb", resolved: 32, pending: 10, escalated: 1 },
-    { month: "Mar", resolved: 35, pending: 8, escalated: 2 },
-    { month: "Apr", resolved: 30, pending: 15, escalated: 3 },
-    { month: "May", resolved: 31, pending: 14, escalated: 2 },
-  ];
+  const { data: occupancyData, isLoading: occupancyLoading } = useQuery({
+    queryKey: ["hostel-report-occupancy", filters],
+    queryFn: () => fetchOccupancyReport(filters),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const visitorAnalytics = [
-    { month: "Jan", visitors: 180, avgDuration: "1.5h" },
-    { month: "Feb", visitors: 195, avgDuration: "1.4h" },
-    { month: "Mar", visitors: 210, avgDuration: "1.6h" },
-    { month: "Apr", visitors: 225, avgDuration: "1.5h" },
-    { month: "May", visitors: 240, avgDuration: "1.5h" },
-  ];
+  const { data: blockData, isLoading: blockLoading } = useQuery({
+    queryKey: ["hostel-report-blocks", filters],
+    queryFn: () => fetchBlockReport(filters),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  const messAttendanceReport = [
-    { month: "Jan", breakfast: 92, lunch: 94, dinner: 91 },
-    { month: "Feb", breakfast: 93, lunch: 95, dinner: 92 },
-    { month: "Mar", breakfast: 94, lunch: 96, dinner: 93 },
-    { month: "Apr", breakfast: 93, lunch: 95, dinner: 92 },
-    { month: "May", breakfast: 94, lunch: 95, dinner: 93 },
-  ];
+  const { data: feeData, isLoading: feeLoading } = useQuery({
+    queryKey: ["hostel-report-fees", filters],
+    queryFn: () => fetchFeeReport(filters),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: availableRoomsData, isLoading: availableRoomsLoading } = useQuery({
+    queryKey: ["hostel-report-available-rooms", filters],
+    queryFn: () => fetchAvailableRoomsReport(filters),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+    queryKey: ["hostel-analytics"],
+    queryFn: fetchDashboardAnalytics,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const handleExport = useCallback(async (format: "pdf" | "excel", type: string) => {
+    setExporting(`${type}-${format}`);
+    try {
+      if (type === "residents") {
+        format === "pdf" ? await exportResidentPDF(filters) : await exportResidentExcel(filters);
+      } else if (type === "occupancy") {
+        format === "pdf" ? await exportOccupancyPDF(filters) : await exportOccupancyExcel(filters);
+      } else if (type === "fees") {
+        format === "pdf" ? await exportFeePDF(filters) : await exportFeeExcel(filters);
+      } else if (type === "available-rooms") {
+        await exportAvailableRoomsExcel(filters);
+      } else if (type === "block") {
+        await exportBlocksExcel(filters);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setExporting(null);
+    }
+  }, [filters]);
+
+  const handlePrint = () => window.print();
+
+  const occupancyChartData = useMemo(() => {
+    if (!occupancyData?.byBlock) return [];
+    return occupancyData.byBlock.map((b: any) => ({
+      name: b.blockName,
+      occupied: b.occupiedBeds,
+      available: b.availableBeds,
+      occupancyRate: b.occupancyPercentage,
+    }));
+  }, [occupancyData]);
+
+  const feeChartData = useMemo(() => {
+    if (!feeData?.summary) return [];
+    return [
+      { name: "Paid", value: feeData.summary.paidAmount },
+      { name: "Pending", value: feeData.summary.pendingAmount },
+      { name: "Overdue", value: 0 },
+    ];
+  }, [feeData]);
+
+  const blockChartData = useMemo(() => {
+    if (!blockData?.data) return [];
+    return blockData.data.map((b: any) => ({ name: b.blockName, beds: b.capacity, occupied: b.occupiedBeds, available: b.availableBeds }));
+  }, [blockData]);
+
+  const getStatusTone = (status: string) => {
+    if (!status) return "info";
+    const s = status.toLowerCase();
+    if (s === "paid" || s === "active" || s === "available" || s === "occupied") return "success";
+    if (s === "pending" || s === "partial") return "warn";
+    return "danger";
+  };
+
+  const formatCurrency = (amt: number) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 }).format(amt || 0);
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Hostel Reports"
-        desc="View comprehensive reports on occupancy, fees, complaints, visitors, and mess attendance."
-      />
+      <PageHeader title="Hostel Reports & Analytics" desc="Reports, exports, and dashboard metrics" />
 
-      <div className="grid md:grid-cols-4 gap-4">
-        {[
-          { label: "Total Reports", value: "12", tone: "info" as const },
-          { label: "This Month", value: "5", tone: "success" as const },
-          { label: "Pending", value: "2", tone: "warn" as const },
-          { label: "Downloaded", value: "8", tone: "info" as const },
-        ].map((stat) => (
-          <Card key={stat.label}>
-            <div className="text-xs text-muted-foreground">{stat.label}</div>
-            <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">
-              Current
-            </Badge>
+      {!analyticsLoading && analyticsData && (
+        <div className="grid md:grid-cols-4 gap-4">
+          <Card>
+            <div className="text-xs text-muted-foreground flex items-center gap-1"><Users className="size-4" /> Total Residents</div>
+            <div className="text-3xl font-bold mt-2">{analyticsData.totalResidents}</div>
           </Card>
-        ))}
-      </div>
+          <Card>
+            <div className="text-xs text-muted-foreground flex items-center gap-1"><Bed className="size-4" /> Total Rooms</div>
+            <div className="text-3xl font-bold mt-2">{analyticsData.totalRooms}</div>
+            <div className="text-xs text-muted-foreground mt-2">{analyticsData.occupiedRooms} occupied</div>
+          </Card>
+          <Card>
+            <div className="text-xs text-muted-foreground flex items-center gap-1"><DollarSign className="size-4" /> Total Revenue</div>
+            <div className="text-2xl font-bold mt-2">{formatCurrency(analyticsData.totalRevenue)}</div>
+          </Card>
+          <Card>
+            <div className="text-xs text-muted-foreground flex items-center gap-1"><TrendingUp className="size-4" /> Occupancy Rate</div>
+            <div className="text-3xl font-bold mt-2 text-indigo-600">{analyticsData.occupancyRate}%</div>
+          </Card>
+        </div>
+      )}
 
       <Card>
-        <div className="flex flex-col lg:flex-row gap-3">
-          <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["This Month", "Last Month", "This Quarter", "This Year", "Custom Range"].map((p) => (
-              <option key={p}>{p}</option>
+        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-6">
+          <div className="flex gap-2 flex-wrap">
+            {[{ id: 'residents', label: 'Residents' }, { id: 'occupancy', label: 'Occupancy' }, { id: 'block', label: 'Blocks' }, { id: 'fees', label: 'Fees' }, { id: 'available-rooms', label: 'Available Rooms' }].map((tab) => (
+              <button key={tab.id} onClick={() => setActiveReport(tab.id as any)} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition ${activeReport === tab.id ? 'bg-primary text-white' : 'border border-slate-200 dark:border-slate-700 hover:bg-accent'}`}>
+                {tab.label}
+              </button>
             ))}
-          </select>
-          <select className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm">
-            {["All Reports", "Occupancy", "Fees", "Complaints", "Visitors", "Mess"].map((r) => (
-              <option key={r}>{r}</option>
-            ))}
-          </select>
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
-            <Download className="size-4" /> Download All
-          </button>
-        </div>
-      </Card>
+          </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Users className="size-5 text-indigo" />
-              <h3 className="font-semibold">Occupancy Report</h3>
+          <div className="flex gap-2">
+            <button onClick={() => setExpandedFilters(!expandedFilters)} className="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-sm hover:bg-accent transition flex items-center gap-2"><Filter className="size-4" /> Filters</button>
+            <button onClick={handlePrint} className="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-sm hover:bg-accent transition flex items-center gap-2"><Printer className="size-4" /> Print</button>
+            <div className="relative group">
+              <button className="px-4 py-2.5 rounded-lg bg-primary text-white text-sm hover:opacity-95 transition flex items-center gap-2"><FileDown className="size-4" /> Export <ChevronDown className="size-4" /></button>
+              <div className="absolute right-0 mt-2 w-48 bg-background border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg hidden group-hover:block z-10">
+                <button onClick={() => handleExport('pdf', activeReport)} disabled={exporting === `${activeReport}-pdf`} className="block w-full text-left px-4 py-2 hover:bg-accent text-sm transition disabled:opacity-50">{exporting === `${activeReport}-pdf` ? <>Exporting...</> : 'Export as PDF'}</button>
+                <button onClick={() => handleExport('excel', activeReport)} disabled={exporting === `${activeReport}-excel`} className="block w-full text-left px-4 py-2 hover:bg-accent text-sm transition disabled:opacity-50">{exporting === `${activeReport}-excel` ? <>Exporting...</> : 'Export as Excel'}</button>
+              </div>
             </div>
-            <button className="text-xs text-muted-foreground hover:text-foreground transition flex items-center gap-1">
-              <Download className="size-3" /> Download
-            </button>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <LineChart data={occupancyReport}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Line
-                  type="monotone"
-                  dataKey="occupancy"
-                  stroke="#4F46E5"
-                  strokeWidth={2}
-                  dot={{ fill: "#4F46E5" }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold">79%</div>
-              <div className="text-xs text-muted-foreground">Current Occupancy</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">100</div>
-              <div className="text-xs text-muted-foreground">New Admissions</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">30</div>
-              <div className="text-xs text-muted-foreground">Departures</div>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <DollarSign className="size-5 text-indigo" />
-              <h3 className="font-semibold">Fee Collection Report</h3>
-            </div>
-            <button className="text-xs text-muted-foreground hover:text-foreground transition flex items-center gap-1">
-              <Download className="size-3" /> Download
-            </button>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <BarChart data={feeCollectionReport}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="collected" fill="#10B981" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="target" fill="#E5E7EB" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold">$409.5K</div>
-              <div className="text-xs text-muted-foreground">Total Collected</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">102%</div>
-              <div className="text-xs text-muted-foreground">Collection Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">$4.5K</div>
-              <div className="text-xs text-muted-foreground">Pending</div>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="size-5 text-indigo" />
-              <h3 className="font-semibold">Complaint Analytics</h3>
-            </div>
-            <button className="text-xs text-muted-foreground hover:text-foreground transition flex items-center gap-1">
-              <Download className="size-3" /> Download
-            </button>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <BarChart data={complaintAnalytics}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="resolved" fill="#10B981" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="pending" fill="#F59E0B" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="escalated" fill="#EF4444" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold">156</div>
-              <div className="text-xs text-muted-foreground">Resolved</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">67%</div>
-              <div className="text-xs text-muted-foreground">Resolution Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">10</div>
-              <div className="text-xs text-muted-foreground">Escalated</div>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Users className="size-5 text-indigo" />
-              <h3 className="font-semibold">Visitor Analytics</h3>
-            </div>
-            <button className="text-xs text-muted-foreground hover:text-foreground transition flex items-center gap-1">
-              <Download className="size-3" /> Download
-            </button>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <LineChart data={visitorAnalytics}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Line
-                  type="monotone"
-                  dataKey="visitors"
-                  stroke="#4F46E5"
-                  strokeWidth={2}
-                  dot={{ fill: "#4F46E5" }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold">1,050</div>
-              <div className="text-xs text-muted-foreground">Total Visitors</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">210</div>
-              <div className="text-xs text-muted-foreground">Avg/Month</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold">1.5h</div>
-              <div className="text-xs text-muted-foreground">Avg Duration</div>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <Card>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Utensils className="size-5 text-indigo" />
-            <h3 className="font-semibold">Mess Attendance Report</h3>
-          </div>
-          <button className="text-xs text-muted-foreground hover:text-foreground transition flex items-center gap-1">
-            <Download className="size-3" /> Download
-          </button>
-        </div>
-        <div className="h-64">
-          <ResponsiveContainer>
-            <BarChart data={messAttendanceReport}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-              <YAxis stroke="#64748B" fontSize={12} />
-              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-              <Bar dataKey="breakfast" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="lunch" fill="#06B6D4" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="dinner" fill="#10B981" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="grid grid-cols-3 gap-4 mt-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold">94%</div>
-            <div className="text-xs text-muted-foreground">Breakfast Avg</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">95%</div>
-            <div className="text-xs text-muted-foreground">Lunch Avg</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">92%</div>
-            <div className="text-xs text-muted-foreground">Dinner Avg</div>
           </div>
         </div>
+
+        {expandedFilters && (
+          <div className="border-t pt-4 mb-4">
+            <div className="grid md:grid-cols-4 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Hostel Block</label>
+                <input placeholder="Block ID" value={filters.blockId || ''} onChange={(e) => setFilters({ ...filters, blockId: e.target.value || undefined })} className="w-full mt-1 px-3 py-2 rounded-lg border" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Room Type</label>
+                <select value={filters.roomType || ''} onChange={(e) => setFilters({ ...filters, roomType: e.target.value || undefined })} className="w-full mt-1 px-3 py-2 rounded-lg border">
+                  <option value="">All Types</option>
+                  <option value="single">Single</option>
+                  <option value="double">Double</option>
+                  <option value="triple">Triple</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">AC/Non-AC</label>
+                <select value={filters.acType || ''} onChange={(e) => setFilters({ ...filters, acType: e.target.value || undefined })} className="w-full mt-1 px-3 py-2 rounded-lg border">
+                  <option value="">All</option>
+                  <option value="AC">AC</option>
+                  <option value="Non-AC">Non-AC</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Status</label>
+                <select value={filters.status || ''} onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })} className="w-full mt-1 px-3 py-2 rounded-lg border">
+                  <option value="">All</option>
+                  <option value="paid">Paid</option>
+                  <option value="pending">Pending</option>
+                  <option value="overdue">Overdue</option>
+                </select>
+              </div>
+            </div>
+            <button onClick={() => setFilters({})} className="text-xs text-muted-foreground hover:text-foreground transition">Clear Filters</button>
+          </div>
+        )}
       </Card>
 
       <Card>
-        <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="size-5 text-indigo" />
-          <h3 className="font-semibold">Performance Analytics</h3>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: "Occupancy Growth", value: "+7%", trend: "up" },
-            { label: "Fee Collection", value: "+12%", trend: "up" },
-            { label: "Complaint Resolution", value: "+15%", trend: "up" },
-            { label: "Mess Attendance", value: "+3%", trend: "up" },
-          ].map((metric) => (
-            <div key={metric.label} className="p-4 rounded-xl bg-gradient-soft border">
-              <div className="text-xs text-muted-foreground">{metric.label}</div>
-              <div className="text-2xl font-bold mt-2 text-emerald-600">{metric.value}</div>
-              <div className="text-xs text-muted-foreground mt-1">vs last month</div>
+        {activeReport === 'residents' && (
+          <div>
+            <div className="flex gap-3 mb-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
+                <input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search residents" className="w-full pl-10 py-2.5 rounded-lg border" />
+              </div>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="px-4 py-2.5 rounded-lg border">
+                <option value="name">Sort by Name</option>
+                <option value="registrationNumber">Sort by Reg No</option>
+                <option value="roomNumber">Sort by Room</option>
+              </select>
+              <button onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')} className="px-4 py-2.5 rounded-lg border">{sortOrder === 'asc' ? '↑ Asc' : '↓ Desc'}</button>
             </div>
-          ))}
-        </div>
+
+            {residentLoading ? (
+              <div className="flex items-center justify-center py-12 gap-2"><Loader2 className="size-5 animate-spin text-primary" /><span>Loading residents...</span></div>
+            ) : residentData?.data && residentData.data.length ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-b">
+                    <tr>
+                      <th className="text-left px-4 py-3">Name</th>
+                      <th className="text-left px-4 py-3">Reg No</th>
+                      <th className="text-left px-4 py-3">Block</th>
+                      <th className="text-left px-4 py-3">Room</th>
+                      <th className="text-left px-4 py-3">Check-In</th>
+                      <th className="text-left px-4 py-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {residentData.data.map((r: any, i: number) => (
+                      <tr key={i} className="border-b hover:bg-muted/30">
+                        <td className="px-4 py-3 font-medium">{r.name}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{r.registrationNumber}</td>
+                        <td className="px-4 py-3">{r.hostelBlock}</td>
+                        <td className="px-4 py-3 font-medium">{r.roomNumber}</td>
+                        <td className="px-4 py-3">{r.checkInDate ? new Date(r.checkInDate).toLocaleDateString('en-IN') : '—'}</td>
+                        <td className="px-4 py-3"><Badge tone={getStatusTone(r.status)}>{r.status}</Badge></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-8 text-sm text-muted-foreground"><AlertCircle className="mr-2" /> No residents found</div>
+            )}
+          </div>
+        )}
+
+        {activeReport === 'occupancy' && (
+          <div>
+            {occupancyLoading ? (
+              <div className="flex items-center justify-center py-12 gap-2"><Loader2 className="size-5 animate-spin text-primary" /><span>Loading occupancy...</span></div>
+            ) : (
+              <>
+                <div className="grid md:grid-cols-4 gap-4 mb-4">
+                  <Card><div className="text-xs text-muted-foreground">Total Rooms</div><div className="text-2xl font-bold mt-2">{occupancyData?.summary?.totalRooms}</div></Card>
+                  <Card><div className="text-xs text-muted-foreground">Total Beds</div><div className="text-2xl font-bold mt-2">{occupancyData?.summary?.totalBeds}</div></Card>
+                  <Card><div className="text-xs text-muted-foreground">Available Beds</div><div className="text-2xl font-bold mt-2 text-emerald-600">{occupancyData?.summary?.totalAvailableBeds}</div></Card>
+                  <Card><div className="text-xs text-muted-foreground">Occupancy Rate</div><div className="text-2xl font-bold mt-2 text-indigo-600">{occupancyData?.summary?.totalBeds ? Math.round((occupancyData.summary.totalOccupiedBeds / occupancyData.summary.totalBeds) * 100) : 0}%</div></Card>
+                </div>
+
+                <Card>
+                  <h4 className="font-semibold mb-4">Block-wise Occupancy</h4>
+                  {occupancyChartData.length > 0 ? (
+                    <div className="h-80"><ResponsiveContainer><BarChart data={occupancyChartData}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" /><YAxis /><Tooltip /><Legend /><Bar dataKey="occupied" fill="#4F46E5" /><Bar dataKey="available" fill="#06B6D4" /></BarChart></ResponsiveContainer></div>
+                  ) : <div className="h-64 flex items-center justify-center text-muted-foreground">No occupancy data</div>}
+                </Card>
+              </>
+            )}
+          </div>
+        )}
+
+        {activeReport === 'fees' && (
+          <div>
+            {feeLoading ? <div className="flex items-center justify-center py-12 gap-2"><Loader2 className="size-5 animate-spin text-primary" /><span>Loading fees...</span></div> : (
+              <>
+                <div className="grid md:grid-cols-4 gap-4 mb-4">
+                  <Card><div className="text-xs text-muted-foreground">Total Records</div><div className="text-2xl font-bold mt-2">{feeData?.summary?.totalRecords}</div></Card>
+                  <Card><div className="text-xs text-muted-foreground">Total Amount</div><div className="text-2xl font-bold mt-2">{formatCurrency(feeData?.summary?.totalAmount || 0)}</div></Card>
+                  <Card><div className="text-xs text-muted-foreground">Collected</div><div className="text-2xl font-bold mt-2 text-emerald-600">{formatCurrency(feeData?.summary?.paidAmount || 0)}</div></Card>
+                  <Card><div className="text-xs text-muted-foreground">Pending</div><div className="text-2xl font-bold mt-2 text-amber-600">{formatCurrency(feeData?.summary?.pendingAmount || 0)}</div></Card>
+                </div>
+
+                <Card>
+                  <h4 className="font-semibold mb-4">Payment Status</h4>
+                  {feeChartData.length > 0 ? (<div className="h-64"><ResponsiveContainer><PieChart><Pie data={feeChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>{feeChartData.map((_, i) => <Cell key={i} fill={["#4F46E5","#06B6D4","#10B981"][i % 3]} />)}</Pie><Tooltip formatter={(v: any) => formatCurrency(v)} /></PieChart></ResponsiveContainer></div>) : <div className="h-64 flex items-center justify-center text-muted-foreground">No fee data</div>}
+                </Card>
+              </>
+            )}
+          </div>
+        )}
+
+        {activeReport === 'block' && (
+          <div>
+            {blockLoading ? <div className="flex items-center justify-center py-12 gap-2"><Loader2 className="size-5 animate-spin text-primary" /><span>Loading blocks...</span></div> : (
+              <>
+                <Card>
+                  <h4 className="font-semibold mb-4">Block Overview</h4>
+                  <div className="overflow-x-auto"><table className="w-full text-sm"><thead className="border-b"><tr><th className="px-4 py-3 text-left">Block</th><th className="px-4 py-3 text-left">Rooms</th><th className="px-4 py-3 text-left">AC Rooms</th><th className="px-4 py-3 text-left">Capacity</th><th className="px-4 py-3 text-left">Occupied</th><th className="px-4 py-3 text-left">Available</th><th className="px-4 py-3 text-left">Occupancy %</th></tr></thead><tbody>{blockData?.data?.map((b: any, i: number) => (<tr key={i} className="border-b hover:bg-muted/30"><td className="px-4 py-3 font-medium">{b.blockName}</td><td className="px-4 py-3">{b.totalRooms}</td><td className="px-4 py-3">{b.acRooms}</td><td className="px-4 py-3">{b.capacity}</td><td className="px-4 py-3 font-medium">{b.occupiedBeds}</td><td className="px-4 py-3 text-emerald-600">{b.availableBeds}</td><td className="px-4 py-3"><Badge tone={b.occupancyRate >= 80 ? 'warn' : 'info'}>{b.occupancyRate}%</Badge></td></tr>))}</tbody></table></div>
+                </Card>
+              </>
+            )}
+          </div>
+        )}
+
+        {activeReport === 'available-rooms' && (
+          <div>
+            {availableRoomsLoading ? <div className="flex items-center justify-center py-12 gap-2"><Loader2 className="size-5 animate-spin text-primary" /><span>Loading rooms...</span></div> : (
+              <>
+                <div className="grid md:grid-cols-3 gap-4 mb-4"><Card><div className="text-xs text-muted-foreground">Total Available</div><div className="text-2xl font-bold mt-2">{availableRoomsData?.total}</div></Card><Card><div className="text-xs text-muted-foreground">Available Beds</div><div className="text-2xl font-bold mt-2 text-emerald-600">{availableRoomsData?.data?.reduce((s: any, r: any) => s + r.availableBeds, 0) || 0}</div></Card></div>
+                <Card>
+                  <h4 className="font-semibold mb-4">Available Rooms</h4>
+                  <div className="overflow-x-auto"><table className="w-full text-sm"><thead className="border-b"><tr><th className="px-4 py-3 text-left">Block</th><th className="px-4 py-3 text-left">Room</th><th className="px-4 py-3 text-left">Type</th><th className="px-4 py-3 text-left">Capacity</th><th className="px-4 py-3 text-left">Current</th><th className="px-4 py-3 text-left">Available</th><th className="px-4 py-3 text-left">AC/Non-AC</th></tr></thead><tbody>{availableRoomsData?.data?.map((r: any, i: number) => (<tr key={i} className="border-b hover:bg-muted/30"><td className="px-4 py-3 font-medium">{r.hostelBlock}</td><td className="px-4 py-3 font-semibold">{r.roomNumber}</td><td className="px-4 py-3">{r.roomType}</td><td className="px-4 py-3">{r.capacity}</td><td className="px-4 py-3">{r.currentOccupancy}</td><td className="px-4 py-3 text-emerald-600">{r.availableBeds}</td><td className="px-4 py-3"><Badge tone={r.acType === 'AC' ? 'info' : 'warn'}>{r.acType}</Badge></td></tr>))}</tbody></table></div>
+                </Card>
+              </>
+            )}
+          </div>
+        )}
       </Card>
     </div>
   );

@@ -8,1561 +8,248 @@
 [2026-05-30T19:55:35.112Z] [assignFaculty] Updating faculty assignments in database...
 [2026-05-30T19:55:35.254Z] [assignFaculty] Faculty updated successfully: Dr. Kumar Swamy
 [2026-05-30T19:55:35.368Z] [assignFaculty] Formatting response and returning success...
-[2026-05-31T02:22:32.296Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T02:22:32.400Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T02:23:34.674Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T02:23:34.812Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T02:42:09.817Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T02:42:09.943Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T02:53:37.802Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+[2026-05-31T04:39:51.522Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
 Stack: Error: Invalid credentials
-    at login (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
-Body: {"email":"placement@college.com","password":"passworr123"}
+    at login (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+Body: {"email":"warden@college.com","password":"passwprd123"}
 
-[2026-05-31T05:50:28.838Z] GET /api/auth/me - Status: 401 - Error: Not authorized, user not found
+[2026-05-31T05:30:50.141Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:50.960Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:51.805Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:52.226Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:54.418Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:55.238Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:31:01.511Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:31:01.573Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:48:50.949Z] GET /api/academic/departments - Status: 401 - Error: Not authorized, user not found
 Stack: Error: Not authorized, user not found
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
-[2026-05-31T05:57:21.358Z] GET /api/placement/dashboard - Status: 401 - Error: Not authorized, user not found
+[2026-05-31T05:48:51.428Z] GET /api/students?page=1&limit=1000 - Status: 401 - Error: Not authorized, user not found
 Stack: Error: Not authorized, user not found
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
-[2026-05-31T05:57:21.486Z] GET /api/placement/dashboard - Status: 401 - Error: Not authorized, user not found
+[2026-05-31T05:48:51.454Z] GET /api/students?page=1&limit=8 - Status: 401 - Error: Not authorized, user not found
 Stack: Error: Not authorized, user not found
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
-[2026-05-31T05:57:46.779Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
-Stack: Error: Invalid credentials
-    at login (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {"email":"placemnt@college.com","password":"password123"}
-
-[2026-05-31T05:57:55.889Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T05:57:56.000Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:07:57.479Z] GET /api/auth/me - Status: 401 - Error: Not authorized, user not found
+[2026-05-31T05:55:39.002Z] GET /api/transport/telemetry?busNumber=TS-09-UB-1002 - Status: 401 - Error: Not authorized, user not found
 Stack: Error: Not authorized, user not found
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
-[2026-05-31T06:17:53.058Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
-Stack: Error: Invalid credentials
-    at login (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+[2026-05-31T06:46:22.677Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {"email":"placemnt@college.com","password":"password123"}
-
-[2026-05-31T06:25:31.794Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
-Stack: Error: Invalid credentials
-    at login (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
-Body: {"email":"placement@college.com","password":"password13"}
-
-[2026-05-31T06:35:30.406Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:35:30.516Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:37:36.368Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:37:36.485Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:38:20.689Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:38:20.698Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:38:57.455Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:38:57.465Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:39:07.119Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:39:07.127Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:41:02.687Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:41:02.694Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:41:03.050Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:41:03.055Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:41:04.414Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:41:04.419Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
-Stack: Error: Not Found - /api/transport/dashboard
-    at notFound (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at logger (C:\CMS\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-Body: {}
-
-[2026-05-31T06:42:42.934Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:42:43.042Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:44:48.446Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:44:48.554Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:46:01.128Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:46:01.237Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:49:22.318Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T06:49:22.434Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at trim_prefix (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:00:04.212Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:00:04.326Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:00:20.363Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:00:20.481Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:01:47.204Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:01:47.323Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:04:39.224Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:04:39.324Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:04:43.055Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:04:43.144Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:12:12.020Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:12:12.128Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:15:34.129Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:15:34.265Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:17:58.928Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:17:59.031Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:18:28.032Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:18:28.141Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:19:47.693Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:19:47.790Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:19:48.147Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:19:48.248Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:19:48.967Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:19:49.062Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:21:04.369Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:21:04.469Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:24:04.064Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:24:04.198Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:24:08.832Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:24:08.934Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:26:47.139Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:26:47.682Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:26:58.009Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:26:58.122Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:29:08.094Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:29:08.223Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:29:19.368Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:29:19.474Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:29:32.767Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:29:32.908Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:32:22.787Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:32:22.933Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:33:49.413Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:33:49.558Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:34:50.962Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:34:51.110Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:35:39.639Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:35:39.795Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:48:02.299Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T07:48:02.449Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T12:31:41.748Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T12:31:41.874Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T12:34:05.695Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T12:34:05.942Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T12:42:17.317Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T12:42:17.454Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T15:59:08.257Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T15:59:08.396Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:14:03.150Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:14:03.281Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:14:53.852Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:14:53.998Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:15:08.153Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:15:08.299Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:15:16.189Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:15:16.318Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:15:43.299Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:15:43.429Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:17:20.253Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:17:20.384Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:17:35.203Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:17:35.334Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:33:23.461Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:33:23.639Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:37:02.431Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:37:02.576Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-Body: {}
-
-[2026-05-31T16:39:12.846Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
-[2026-05-31T16:39:12.974Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
-    at file:///C:/CMS/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
-    at Route.dispatch (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
-    at Layer.handle [as handle_request] (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
-    at C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
-    at router.process_params (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
-    at next (C:\CMS\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+[2026-05-31T06:46:23.312Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
-[2026-05-31T16:43:57.218Z] GET /api/auth/me - Status: 401 - Error: Not authorized, user not found
+[2026-05-31T06:52:18.669Z] GET /api/auth/me - Status: 401 - Error: Not authorized, user not found
 Stack: Error: Not authorized, user not found
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
-[2026-05-31T16:54:09.473Z] GET /api/auth/me - Status: 401 - Error: Not authorized, user not found
-Stack: Error: Not authorized, user not found
-    at protect (file:///C:/CMS/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+[2026-05-31T07:06:20.495Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T07:06:21.590Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T07:06:25.714Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T07:06:28.073Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T08:26:58.678Z] GET /favicon.ico - Status: 404 - Error: Not Found - /favicon.ico
+Stack: Error: Not Found - /favicon.ico
+    at notFound (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
+    at Layer.handle [as handle_request] (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at logger (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+Body: {}
+
+[2026-05-31T09:16:30.412Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:16:30.985Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:16:40.278Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:16:40.880Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:24:11.141Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:24:11.705Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:25:59.823Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:26:00.467Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:26:52.043Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:26:52.599Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:27:07.210Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:27:07.878Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:32:41.085Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:32:41.999Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:53:28.806Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:53:29.547Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 

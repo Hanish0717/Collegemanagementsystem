@@ -127,6 +127,400 @@ CREATE TABLE IF NOT EXISTS hostel_fees (
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+ALTER TABLE hostel_fees
+  ADD COLUMN IF NOT EXISTS block_id uuid REFERENCES hostel_blocks(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS room_id uuid REFERENCES hostel_rooms(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS fee_structure_id uuid,
+  ADD COLUMN IF NOT EXISTS resident_category varchar(100),
+  ADD COLUMN IF NOT EXISTS academic_year varchar(50),
+  ADD COLUMN IF NOT EXISTS resident_name varchar(255),
+  ADD COLUMN IF NOT EXISTS registration_number varchar(100),
+  ADD COLUMN IF NOT EXISTS room_number varchar(50),
+  ADD COLUMN IF NOT EXISTS room_type varchar(50),
+  ADD COLUMN IF NOT EXISTS ac_type varchar(20),
+  ADD COLUMN IF NOT EXISTS monthly_hostel_fee numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS mess_fee numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS electricity_fee numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS maintenance_fee numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS security_deposit numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS late_fee numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS other_charges numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS total_fee numeric(10, 2),
+  ADD COLUMN IF NOT EXISTS amount_paid numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS pending_amount numeric(10, 2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS payment_status varchar(50) DEFAULT 'Pending',
+  ADD COLUMN IF NOT EXISTS payment_date timestamp with time zone,
+  ADD COLUMN IF NOT EXISTS transaction_id varchar(100),
+  ADD COLUMN IF NOT EXISTS effective_from date,
+  ADD COLUMN IF NOT EXISTS effective_to date;
+
+ALTER TABLE hostel_fees DROP CONSTRAINT IF EXISTS hostel_fees_status_check;
+ALTER TABLE hostel_fees ADD CONSTRAINT hostel_fees_status_check CHECK (
+  status IN (
+    'Paid',
+    'Unpaid',
+    'Partially-Paid',
+    'Paid',
+    'Pending',
+    'Partially Paid',
+    'Overdue',
+    'pending',
+    'partial',
+    'overdue'
+  )
+);
+
+CREATE INDEX IF NOT EXISTS idx_hostel_fees_block_year_status ON hostel_fees (block_id, academic_year, status);
+CREATE INDEX IF NOT EXISTS idx_hostel_fees_room_resident ON hostel_fees (room_number, registration_number);
+CREATE INDEX IF NOT EXISTS idx_hostel_fees_due_date ON hostel_fees (due_date);
+
+CREATE TABLE IF NOT EXISTS fee_structures (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  fee_structure_code varchar(100) UNIQUE NOT NULL,
+  hostel_block_id uuid REFERENCES hostel_blocks(id) ON DELETE CASCADE,
+  academic_year varchar(50) NOT NULL,
+  fee_category varchar(100) NOT NULL,
+  room_type varchar(50) NOT NULL,
+  ac_type varchar(20) NOT NULL CHECK (ac_type IN ('AC', 'Non-AC')),
+  resident_category varchar(100) NOT NULL,
+  monthly_hostel_fee numeric(10, 2) NOT NULL DEFAULT 0,
+  mess_fee numeric(10, 2) NOT NULL DEFAULT 0,
+  electricity_fee numeric(10, 2) NOT NULL DEFAULT 0,
+  maintenance_fee numeric(10, 2) NOT NULL DEFAULT 0,
+  security_deposit numeric(10, 2) NOT NULL DEFAULT 0,
+  late_fee numeric(10, 2) NOT NULL DEFAULT 0,
+  other_charges numeric(10, 2) NOT NULL DEFAULT 0,
+  total_fee numeric(10, 2) NOT NULL DEFAULT 0,
+  effective_from date NOT NULL,
+  effective_to date,
+  status varchar(20) NOT NULL DEFAULT 'Active' CHECK (status IN ('Active', 'Inactive')),
+  notes text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE(hostel_block_id, academic_year, fee_category, room_type, ac_type, resident_category, effective_from)
+);
+
+CREATE INDEX IF NOT EXISTS idx_fee_structures_lookup ON fee_structures (hostel_block_id, academic_year, room_type, ac_type, resident_category, status);
+
+CREATE TABLE IF NOT EXISTS hostel_fee_payments (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  fee_id uuid REFERENCES hostel_fees(id) ON DELETE CASCADE,
+  student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+  hostel_block_id uuid REFERENCES hostel_blocks(id) ON DELETE SET NULL,
+  room_id uuid REFERENCES hostel_rooms(id) ON DELETE SET NULL,
+  resident_name varchar(255) NOT NULL,
+  registration_number varchar(100),
+  room_number varchar(50),
+  total_fee numeric(10, 2) NOT NULL DEFAULT 0,
+  amount_paid numeric(10, 2) NOT NULL DEFAULT 0,
+  pending_amount numeric(10, 2) NOT NULL DEFAULT 0,
+  payment_date timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  payment_method varchar(100),
+  transaction_id varchar(100) UNIQUE,
+  receipt_number varchar(100) UNIQUE,
+  payment_status varchar(50) NOT NULL DEFAULT 'Pending',
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_hostel_fee_payments_fee ON hostel_fee_payments (fee_id, payment_date);
+CREATE INDEX IF NOT EXISTS idx_hostel_fee_payments_status ON hostel_fee_payments (payment_status, payment_date);
+
+CREATE TABLE IF NOT EXISTS hostel_fee_receipts (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  fee_id uuid REFERENCES hostel_fees(id) ON DELETE CASCADE,
+  payment_id uuid REFERENCES hostel_fee_payments(id) ON DELETE CASCADE,
+  receipt_number varchar(100) UNIQUE NOT NULL,
+  college_name varchar(255) NOT NULL DEFAULT 'College Management System',
+  hostel_name varchar(255),
+  resident_name varchar(255) NOT NULL,
+  registration_number varchar(100),
+  hostel_block varchar(255),
+  room_number varchar(50),
+  fee_breakdown jsonb NOT NULL DEFAULT '{}'::jsonb,
+  payment_information jsonb NOT NULL DEFAULT '{}'::jsonb,
+  qr_code_url text,
+  generated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS fee_notifications (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  fee_id uuid REFERENCES hostel_fees(id) ON DELETE CASCADE,
+  notification_type varchar(100) NOT NULL,
+  title varchar(255) NOT NULL,
+  message text NOT NULL,
+  priority varchar(20) DEFAULT 'Medium' CHECK (priority IN ('Low', 'Medium', 'High')),
+  unread boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE OR REPLACE FUNCTION calculate_fee_structure_total()
+RETURNS trigger AS $$
+BEGIN
+  NEW.total_fee := COALESCE(NEW.monthly_hostel_fee, 0)
+    + COALESCE(NEW.mess_fee, 0)
+    + COALESCE(NEW.electricity_fee, 0)
+    + COALESCE(NEW.maintenance_fee, 0)
+    + COALESCE(NEW.other_charges, 0);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_fee_structure_total ON fee_structures;
+CREATE TRIGGER trg_fee_structure_total
+BEFORE INSERT OR UPDATE ON fee_structures
+FOR EACH ROW EXECUTE FUNCTION calculate_fee_structure_total();
+
+CREATE OR REPLACE FUNCTION sync_hostel_fee_snapshot()
+RETURNS trigger AS $$
+DECLARE
+  structure_record fee_structures%ROWTYPE;
+  effective_total numeric(10, 2);
+  effective_paid numeric(10, 2);
+  effective_pending numeric(10, 2);
+BEGIN
+  IF NEW.fee_structure_id IS NOT NULL THEN
+    SELECT * INTO structure_record
+    FROM fee_structures
+    WHERE id = NEW.fee_structure_id
+    LIMIT 1;
+
+    IF FOUND THEN
+      NEW.block_id := COALESCE(NEW.block_id, structure_record.hostel_block_id);
+      NEW.academic_year := COALESCE(NEW.academic_year, structure_record.academic_year);
+      NEW.fee_type := COALESCE(NEW.fee_type, structure_record.fee_category);
+      NEW.room_type := COALESCE(NEW.room_type, structure_record.room_type);
+      NEW.ac_type := COALESCE(NEW.ac_type, structure_record.ac_type);
+      NEW.resident_category := COALESCE(NEW.resident_category, structure_record.resident_category);
+      NEW.monthly_hostel_fee := COALESCE(NEW.monthly_hostel_fee, structure_record.monthly_hostel_fee);
+      NEW.mess_fee := COALESCE(NEW.mess_fee, structure_record.mess_fee);
+      NEW.electricity_fee := COALESCE(NEW.electricity_fee, structure_record.electricity_fee);
+      NEW.maintenance_fee := COALESCE(NEW.maintenance_fee, structure_record.maintenance_fee);
+      NEW.security_deposit := COALESCE(NEW.security_deposit, structure_record.security_deposit);
+      NEW.late_fee := COALESCE(NEW.late_fee, structure_record.late_fee);
+      NEW.other_charges := COALESCE(NEW.other_charges, structure_record.other_charges);
+      NEW.total_fee := COALESCE(NEW.total_fee, structure_record.total_fee);
+      NEW.effective_from := COALESCE(NEW.effective_from, structure_record.effective_from);
+      NEW.effective_to := COALESCE(NEW.effective_to, structure_record.effective_to);
+    END IF;
+  END IF;
+
+  effective_total := COALESCE(NEW.total_fee, NEW.total_amount, 0);
+  effective_paid := COALESCE(NEW.amount_paid, NEW.paid_amount, 0);
+  effective_pending := GREATEST(effective_total - effective_paid, 0);
+
+  NEW.total_amount := effective_total;
+  NEW.total_fee := effective_total;
+  NEW.amount_paid := effective_paid;
+  NEW.paid_amount := effective_paid;
+  NEW.pending_amount := effective_pending;
+
+  IF effective_paid <= 0 THEN
+    NEW.payment_status := 'Pending';
+    NEW.status := 'Pending';
+  ELSIF effective_pending <= 0 THEN
+    NEW.payment_status := 'Paid';
+    NEW.status := 'Paid';
+    IF NEW.payment_date IS NULL THEN
+      NEW.payment_date := timezone('utc'::text, now());
+    END IF;
+  ELSIF NEW.due_date < current_date THEN
+    NEW.payment_status := 'Overdue';
+    NEW.status := 'Overdue';
+  ELSE
+    NEW.payment_status := 'Partially Paid';
+    NEW.status := 'Partially-Paid';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_hostel_fee_snapshot ON hostel_fees;
+CREATE TRIGGER trg_hostel_fee_snapshot
+BEFORE INSERT OR UPDATE ON hostel_fees
+FOR EACH ROW EXECUTE FUNCTION sync_hostel_fee_snapshot();
+
+CREATE OR REPLACE FUNCTION sync_fee_payment_artifacts()
+RETURNS trigger AS $$
+DECLARE
+  generated_payment_id uuid;
+  block_name text;
+BEGIN
+  IF TG_OP = 'INSERT' OR COALESCE(NEW.amount_paid, 0) <> COALESCE(OLD.amount_paid, 0) THEN
+    SELECT name INTO block_name
+    FROM hostel_blocks
+    WHERE id = NEW.block_id
+    LIMIT 1;
+
+    INSERT INTO hostel_fee_payments (
+      fee_id,
+      student_id,
+      hostel_block_id,
+      room_id,
+      resident_name,
+      registration_number,
+      room_number,
+      total_fee,
+      amount_paid,
+      pending_amount,
+      payment_date,
+      payment_method,
+      transaction_id,
+      receipt_number,
+      payment_status
+    ) VALUES (
+      NEW.id,
+      NEW.student_id,
+      NEW.block_id,
+      NEW.room_id,
+      COALESCE(NEW.resident_name, 'Unknown'),
+      NEW.registration_number,
+      NEW.room_number,
+      COALESCE(NEW.total_fee, NEW.total_amount, 0),
+      COALESCE(NEW.amount_paid, NEW.paid_amount, 0),
+      COALESCE(NEW.pending_amount, 0),
+      COALESCE(NEW.payment_date, timezone('utc'::text, now())),
+      NEW.payment_method,
+      NEW.transaction_id,
+      NEW.receipt_number,
+      COALESCE(NEW.payment_status, NEW.status, 'Pending')
+    )
+    ON CONFLICT (transaction_id) DO UPDATE
+    SET amount_paid = EXCLUDED.amount_paid,
+        pending_amount = EXCLUDED.pending_amount,
+        payment_date = EXCLUDED.payment_date,
+        payment_method = EXCLUDED.payment_method,
+        receipt_number = EXCLUDED.receipt_number,
+        payment_status = EXCLUDED.payment_status
+    RETURNING id INTO generated_payment_id;
+
+    IF NEW.receipt_number IS NOT NULL THEN
+      INSERT INTO hostel_fee_receipts (
+        fee_id,
+        payment_id,
+        receipt_number,
+        college_name,
+        hostel_name,
+        resident_name,
+        registration_number,
+        hostel_block,
+        room_number,
+        fee_breakdown,
+        payment_information,
+        generated_at
+      ) VALUES (
+        NEW.id,
+        generated_payment_id,
+        NEW.receipt_number,
+        'College Management System',
+        NULL,
+        COALESCE(NEW.resident_name, 'Unknown'),
+        NEW.registration_number,
+        COALESCE(block_name, NEW.block_id::text),
+        NEW.room_number,
+        jsonb_build_object(
+          'monthlyHostelFee', COALESCE(NEW.monthly_hostel_fee, 0),
+          'messFee', COALESCE(NEW.mess_fee, 0),
+          'electricityFee', COALESCE(NEW.electricity_fee, 0),
+          'maintenanceFee', COALESCE(NEW.maintenance_fee, 0),
+          'securityDeposit', COALESCE(NEW.security_deposit, 0),
+          'lateFee', COALESCE(NEW.late_fee, 0),
+          'otherCharges', COALESCE(NEW.other_charges, 0),
+          'totalFee', COALESCE(NEW.total_fee, NEW.total_amount, 0)
+        ),
+        jsonb_build_object(
+          'amountPaid', COALESCE(NEW.amount_paid, NEW.paid_amount, 0),
+          'pendingAmount', COALESCE(NEW.pending_amount, 0),
+          'paymentMethod', NEW.payment_method,
+          'transactionId', NEW.transaction_id,
+          'paymentStatus', COALESCE(NEW.payment_status, NEW.status, 'Pending')
+        ),
+        COALESCE(NEW.payment_date, timezone('utc'::text, now()))
+      )
+      ON CONFLICT (receipt_number) DO UPDATE
+      SET payment_id = EXCLUDED.payment_id,
+          fee_breakdown = EXCLUDED.fee_breakdown,
+          payment_information = EXCLUDED.payment_information,
+          generated_at = EXCLUDED.generated_at;
+    END IF;
+
+    INSERT INTO fee_notifications (
+      fee_id,
+      notification_type,
+      title,
+      message,
+      priority,
+      unread
+    ) VALUES (
+      NEW.id,
+      CASE
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Paid' THEN 'Payment Received'
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Partially Paid' THEN 'Partial Payment'
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Overdue' THEN 'Overdue Fee'
+        ELSE 'Fee Update'
+      END,
+      CASE
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Paid' THEN 'Fee payment received'
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Partially Paid' THEN 'Partial fee payment received'
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Overdue' THEN 'Fee overdue'
+        ELSE 'Fee record updated'
+      END,
+      CASE
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Paid' THEN 'Resident fee has been collected successfully.'
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Partially Paid' THEN 'Resident fee has been partially paid.'
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Overdue' THEN 'Resident fee is overdue and needs attention.'
+        ELSE 'Resident fee details were updated.'
+      END,
+      CASE
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Overdue' THEN 'High'
+        WHEN COALESCE(NEW.payment_status, NEW.status) = 'Paid' THEN 'Medium'
+        ELSE 'Low'
+      END,
+      true
+    );
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_hostel_fee_artifacts ON hostel_fees;
+CREATE TRIGGER trg_hostel_fee_artifacts
+AFTER INSERT OR UPDATE ON hostel_fees
+FOR EACH ROW EXECUTE FUNCTION sync_fee_payment_artifacts();
+
+CREATE OR REPLACE FUNCTION notify_fee_structure_updates()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO fee_notifications (
+    fee_id,
+    notification_type,
+    title,
+    message,
+    priority,
+    unread
+  ) VALUES (
+    NULL,
+    'Fee Structure Updated',
+    CASE WHEN TG_OP = 'INSERT' THEN 'Fee structure created' ELSE 'Fee structure updated' END,
+    CASE WHEN TG_OP = 'INSERT' THEN 'A new fee structure is now active.' ELSE 'Existing fee structure values were updated.' END,
+    'Medium',
+    true
+  );
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_fee_structure_notifications ON fee_structures;
+CREATE TRIGGER trg_fee_structure_notifications
+AFTER INSERT OR UPDATE ON fee_structures
+FOR EACH ROW EXECUTE FUNCTION notify_fee_structure_updates();
+
+CREATE OR REPLACE VIEW resident_fees AS
+SELECT * FROM hostel_fees;
+
 CREATE TABLE IF NOT EXISTS hostel_complaints (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   student_id uuid REFERENCES students(id) ON DELETE CASCADE,

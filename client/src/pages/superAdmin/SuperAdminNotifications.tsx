@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Archive, Bell, CheckCircle, ShieldAlert, Wrench, Trash2, Check, Eye } from "lucide-react";
+import { Archive, Bell, CheckCircle, ShieldAlert, Wrench, Trash2, Check, Eye, GraduationCap, Building, DollarSign, Briefcase, Home, Shield, Cpu } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchNotifications,
   toggleNotificationRead,
@@ -14,61 +14,93 @@ import {
   NotificationItem
 } from "@/services/superAdminService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSuperAdminNotifications } from "@/hooks/useSuperAdminNotifications";
 
 const notificationTypes = [
   {
-    title: "System Alerts",
-    desc: "Platform health, uptime and service status messages.",
-    icon: Bell,
+    title: "Academic",
+    desc: "Attendance alerts and results alerts.",
+    icon: GraduationCap,
     tone: "info" as const,
-    key: "system",
+    key: "academic",
   },
   {
-    title: "Approval Notifications",
-    desc: "Admin access, course changes and department approval requests.",
-    icon: CheckCircle,
+    title: "Administration",
+    desc: "Faculty/Admin creation and approval requests.",
+    icon: Building,
     tone: "warn" as const,
-    key: "approval",
+    key: "administration",
   },
   {
-    title: "Security Warnings",
-    desc: "Failed login attempts, suspicious sessions and audit warnings.",
-    icon: ShieldAlert,
+    title: "Finance",
+    desc: "Fee collection updates and pending fees.",
+    icon: DollarSign,
+    tone: "success" as const,
+    key: "finance",
+  },
+  {
+    title: "Placement",
+    desc: "Recruitment drives and student selections.",
+    icon: Briefcase,
+    tone: "info" as const,
+    key: "placement",
+  },
+  {
+    title: "Hostel & Transport",
+    desc: "Occupancy metrics and route alerts.",
+    icon: Home,
+    tone: "warn" as const,
+    key: "hostel_transport",
+  },
+  {
+    title: "Security",
+    desc: "Login issues and security scans.",
+    icon: Shield,
     tone: "danger" as const,
     key: "security",
   },
   {
-    title: "Maintenance Notifications",
-    desc: "Planned maintenance windows and service updates.",
-    icon: Wrench,
+    title: "System",
+    desc: "System backup, maintenance, and rules.",
+    icon: Cpu,
     tone: "info" as const,
-    key: "maintenance",
-  },
-  {
-    title: "Automation Alerts",
-    desc: "Automation runs, trigger failures and workflow delivery reports.",
-    icon: Archive,
-    tone: "success" as const,
-    key: "automation",
+    key: "system",
   },
 ];
 
 export function SuperAdminNotifications() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["superAdminNotifications"],
-    queryFn: fetchNotifications,
-  });
+  const { data, isLoading } = useSuperAdminNotifications();
 
   const feed = data?.feed || [];
   const categories = (data?.categories as any) || {
-    system: true,
-    approval: true,
+    academic: true,
+    administration: true,
+    finance: true,
+    placement: true,
+    hostel_transport: true,
     security: true,
-    maintenance: true,
-    automation: true,
+    system: true,
   };
+
+  const getCategoryKey = (type: string) => {
+    const typeKey = type.toLowerCase();
+    if (typeKey === 'academic') return 'academic';
+    if (typeKey === 'administration' || typeKey === 'approval') return 'administration';
+    if (typeKey === 'finance') return 'finance';
+    if (typeKey === 'placement') return 'placement';
+    if (typeKey === 'hostel' || typeKey === 'transport' || typeKey === 'hostel & transport' || typeKey === 'hostel_transport') return 'hostel_transport';
+    if (typeKey === 'security') return 'security';
+    if (typeKey === 'system' || typeKey === 'maintenance' || typeKey === 'automation') return 'system';
+    return 'system';
+  };
+
+  const filteredFeed = feed.filter((n) => {
+    if (!n.unread) return false;
+    const catKey = getCategoryKey(n.type);
+    return categories[catKey] !== false;
+  });
 
   const toggleReadMutation = useMutation({
     mutationFn: ({ id, unread }: { id: string; unread: boolean }) => toggleNotificationRead(id, unread),
@@ -156,12 +188,13 @@ export function SuperAdminNotifications() {
     <div className="space-y-6">
       <PageHeader
         title="Super Admin Notifications"
-        desc="Review system alerts, approvals, security warnings, maintenance messages and automation alerts."
+        desc="Review academic summaries, admin updates, finance summaries, placements, transport alerts, and security scan status."
       />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {notificationTypes.map((item) => {
           const isEnabled = categories[item.key] !== false;
+          const count = feed.filter(n => getCategoryKey(n.type) === item.key && n.unread).length;
           return (
             <Card
               key={item.title}
@@ -173,9 +206,16 @@ export function SuperAdminNotifications() {
               </div>
               <h3 className="font-semibold text-sm">{item.title}</h3>
               <p className="text-xs text-muted-foreground mt-2">{item.desc}</p>
-              <Badge tone={isEnabled ? item.tone : "warn"} className="mt-4">
-                {isEnabled ? "Enabled" : "Muted"}
-              </Badge>
+              <div className="flex items-center justify-between mt-4">
+                <Badge tone={isEnabled ? item.tone : "warn"}>
+                  {isEnabled ? "Enabled" : "Muted"}
+                </Badge>
+                {isEnabled && count > 0 && (
+                  <span className="text-[10px] bg-indigo-500 text-white font-bold px-2 py-0.5 rounded-full animate-pulse">
+                    {count} New
+                  </span>
+                )}
+              </div>
             </Card>
           );
         })}
@@ -185,7 +225,7 @@ export function SuperAdminNotifications() {
         <div className="flex items-center justify-between border-b pb-3 mb-4">
           <h3 className="font-semibold">Notification Feed</h3>
           <div className="flex gap-2">
-            {feed.some((n) => n.unread) && (
+            {filteredFeed.some((n) => n.unread) && (
               <button
                 onClick={handleMarkAllRead}
                 disabled={markAllReadMutation.isPending}
@@ -194,7 +234,7 @@ export function SuperAdminNotifications() {
                 <Check className="size-3.5" /> Mark all read
               </button>
             )}
-            {feed.length > 0 && (
+            {filteredFeed.length > 0 && (
               <button
                 onClick={handleClearAll}
                 disabled={clearAllMutation.isPending}
@@ -212,12 +252,12 @@ export function SuperAdminNotifications() {
               <Skeleton className="h-14 w-full" />
               <Skeleton className="h-14 w-full" />
             </div>
-          ) : feed.length === 0 ? (
+          ) : filteredFeed.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground text-sm">
-              All caught up! No recent notifications found.
+              All caught up! No active notifications for the selected categories.
             </div>
           ) : (
-            feed.map((notification) => (
+            filteredFeed.map((notification) => (
               <div
                 key={notification.id}
                 className={`p-4 rounded-xl border hover:bg-accent/50 transition group ${notification.unread ? "bg-indigo-50/40 border-indigo-200 dark:bg-indigo-950/10 dark:border-indigo-950/40" : ""}`}
@@ -233,11 +273,11 @@ export function SuperAdminNotifications() {
                   <div className="flex items-center gap-2">
                     <Badge
                       tone={
-                        notification.type === "Security"
+                        notification.type.toLowerCase() === "security"
                           ? "danger"
-                          : notification.type === "Approval"
+                          : notification.type.toLowerCase() === "approval" || notification.type.toLowerCase() === "administration"
                             ? "warn"
-                            : notification.type === "Automation"
+                            : notification.type.toLowerCase() === "finance"
                               ? "success"
                               : "info"
                       }
@@ -272,3 +312,4 @@ export function SuperAdminNotifications() {
     </div>
   );
 }
+

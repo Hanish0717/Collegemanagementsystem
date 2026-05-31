@@ -228,7 +228,7 @@ export const createStudent = async (req, res, next) => {
         role: 'student',
         phone_number: phoneNumber || null,
         mobile: phoneNumber || null,
-        is_verified: false,
+        is_verified: true, // Verified by default when created by Admin
         is_active: true
       }])
       .select()
@@ -451,6 +451,48 @@ export const deleteStudent = async (req, res, next) => {
       success: true,
       message: 'Student soft-deleted successfully',
       data: formatStudent(deletedStudent),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Verify student by roll number and department
+// @route   POST /api/students/verify
+// @access  Private (any authenticated user)
+export const verifyStudent = async (req, res, next) => {
+  try {
+    const { rollNumber, department } = req.body;
+
+    if (!rollNumber || !department) {
+      const error = new Error('Please provide both rollNumber and department');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const cleanRollNumber = rollNumber.toUpperCase().trim();
+
+    const { data: student, error: fetchErr } = await supabase
+      .from('students')
+      .select('*')
+      .eq('roll_number', cleanRollNumber)
+      .eq('department', department)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'No active student found with this roll number and department.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Student verified successfully. Data is correct and present in the database.',
+      data: formatStudent(student),
     });
   } catch (error) {
     next(error);

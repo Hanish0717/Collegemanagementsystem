@@ -2,28 +2,25 @@ import app from './app.js';
 import dotenv from 'dotenv';
 import pkg from 'pg';
 import { seedIfNeeded } from './seed_lightweight.js';
-
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const { Client } = pkg;
 
+// Check if we should run in Database Mock Mode
+const isMockMode = !process.env.DATABASE_URL || 
+                   process.env.DATABASE_URL.includes('your_supabase') ||
+                   process.env.DATABASE_URL.includes('placeholder');
+
 // Validate Supabase config
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.error("❌ ERROR: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not defined in .env! Backend cannot run without Supabase.");
-  process.exit(1);
+if (isMockMode) {
+  console.log("🚀 Running backend in DATABASE MOCK MODE because no live database credentials are configured.");
 } else {
-  console.log("✅ Supabase credentials detected. Ready to process queries.");
+  console.log("✅ Live database credentials detected. Ready to process queries.");
 }
 
 // Startup database migration
 async function runMigrations() {
-  const isMockMode = !process.env.SUPABASE_URL || 
-                     process.env.SUPABASE_URL.includes('your-project') || 
-                     process.env.SUPABASE_URL.includes('placeholder') ||
-                     !process.env.DATABASE_URL ||
-                     process.env.DATABASE_URL.includes('your_supabase');
-
   if (isMockMode) {
     console.log("ℹ️ Running in DATABASE MOCK MODE. Skipping live DDL migrations.");
     return;
@@ -115,8 +112,207 @@ async function runMigrations() {
         unread boolean DEFAULT true,
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
+
+      -- Create broadcast_notifications table
+      CREATE TABLE IF NOT EXISTS broadcast_notifications (
+        id varchar(50) PRIMARY KEY,
+        title varchar(255) NOT NULL,
+        type varchar(100) NOT NULL,
+        audience varchar(255) NOT NULL,
+        time varchar(100) NOT NULL,
+        status varchar(50) NOT NULL,
+        content text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create admin_notifications table
+      CREATE TABLE IF NOT EXISTS admin_notifications (
+        id varchar(50) PRIMARY KEY,
+        title varchar(255) NOT NULL,
+        category varchar(100) NOT NULL,
+        time varchar(100) NOT NULL,
+        unread boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create faculty_notifications table
+      CREATE TABLE IF NOT EXISTS faculty_notifications (
+        id varchar(50) PRIMARY KEY,
+        title varchar(255) NOT NULL,
+        type varchar(100) NOT NULL,
+        priority varchar(50) NOT NULL,
+        time varchar(100) NOT NULL,
+        unread boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create faculty_notification_settings table
+      CREATE TABLE IF NOT EXISTS faculty_notification_settings (
+        id varchar(50) PRIMARY KEY,
+        label varchar(255) NOT NULL,
+        enabled boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create student_notifications table
+      CREATE TABLE IF NOT EXISTS student_notifications (
+        id varchar(50) PRIMARY KEY,
+        title varchar(255) NOT NULL,
+        type varchar(100) NOT NULL,
+        priority varchar(50) NOT NULL,
+        time varchar(100) NOT NULL,
+        unread boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+      
+      ALTER TABLE student_notifications ADD COLUMN IF NOT EXISTS student_id uuid REFERENCES students(id) ON DELETE CASCADE NULL;
+
+      -- Hostel Blocks Overview Extra Columns
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS type varchar(50) DEFAULT 'Boys';
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS capacity integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS ac_rooms integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS non_ac_rooms integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS occupants integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS contact_number varchar(50) DEFAULT '';
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS status varchar(50) DEFAULT 'Available';
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS image_url text DEFAULT '';
+
+      -- Room Management & Allocation Columns
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS room_type varchar(50) DEFAULT 'Double';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS ac_type varchar(50) DEFAULT 'Non-AC';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS room_status varchar(50) DEFAULT 'Vacant';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS description text DEFAULT '';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT timezone('utc'::text, now());
+
+      ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS allocation_date date DEFAULT CURRENT_DATE;
+      ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS check_in_date timestamp with time zone;
+      ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS check_out_date timestamp with time zone;
     `);
     
+    // Seed admin notifications
+    const adminNotifsCount = await client.query("SELECT COUNT(*) FROM admin_notifications");
+    if (parseInt(adminNotifsCount.rows[0].count) === 0) {
+      console.log("Seeding admin notifications...");
+      const adminNotifs = [
+        ['AN-001', '5 new student admissions today', 'Students', 'Just now', true],
+        ['AN-002', '3 student transfer requests pending', 'Students', '2 hours ago', true],
+        ['AN-003', '2 faculty leave requests pending', 'Faculty', '4 hours ago', true],
+        ['AN-004', 'New faculty assigned to AIML', 'Faculty', '1 day ago', false],
+        ['AN-005', '15 students below 75% attendance', 'Academic', '3 hours ago', true],
+        ['AN-006', '12 students have pending fees', 'Fees', '5 hours ago', true],
+        ['AN-007', '₹50,000 fees collected today', 'Fees', 'Just now', false],
+        ['AN-008', '3 hostel applications pending approval', 'Hostel', '1 day ago', true],
+        ['AN-009', '2 transport registrations pending', 'Transport', '1 day ago', true],
+        ['AN-010', 'New placement drive created: TCS', 'Placement', '2 days ago', false],
+        ['AN-011', '5 students shortlisted by Infosys', 'Placement', '2 days ago', true],
+        ['AN-012', 'Library books due reminder circular issued', 'Library', '6 hours ago', true],
+        ['AN-013', 'Mid-term exam schedule released', 'Academic', '1 day ago', false],
+        ['AN-014', 'Faculty meeting scheduled for tomorrow', 'Academic', '1 day ago', false]
+      ];
+      for (const n of adminNotifs) {
+        await client.query(
+          "INSERT INTO admin_notifications (id, title, category, time, unread) VALUES ($1, $2, $3, $4, $5)",
+          n
+        );
+      }
+    }
+
+    // Seed broadcast notifications
+    const broadcastsCount = await client.query("SELECT COUNT(*) FROM broadcast_notifications");
+    if (parseInt(broadcastsCount.rows[0].count) === 0) {
+      console.log("Seeding broadcast notifications...");
+      const broadcasts = [
+        ['B-001', 'Fee Payment Reminder', 'Email', 'All Students', '2 hours ago', 'Delivered', 'Dear student, your fee payment is due on {date}. Please ensure timely payment.'],
+        ['B-002', 'Low Attendance Alert', 'SMS', 'All Students', '5 hours ago', 'Delivered', 'Your attendance is below 75%. Please attend classes regularly.'],
+        ['B-003', 'Tech Fest 2026 Announcement', 'WhatsApp', 'All Students', '1 day ago', 'Delivered', 'Join us for Tech Fest on {date}. Register now!'],
+        ['B-004', 'Exam Schedule Update', 'Email', 'All Faculty', '2 days ago', 'Delivered', 'The mid-semester exam timetable is published. Please review.']
+      ];
+      for (const b of broadcasts) {
+        await client.query(
+          "INSERT INTO broadcast_notifications (id, title, type, audience, time, status, content) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+          b
+        );
+      }
+    }
+
+    // Seed faculty notifications
+    const facNotifsCount = await client.query("SELECT COUNT(*) FROM faculty_notifications");
+    if (parseInt(facNotifsCount.rows[0].count) === 0) {
+      console.log("Seeding faculty notifications...");
+      const facNotifs = [
+        ['FN-001', 'Assignment submission reminder', 'Assignment', 'High', '1h ago', true],
+        ['FN-002', 'Data Structures assignment graded', 'Assignment', 'Low', '1d ago', false],
+        ['FN-003', 'DBMS quiz submission due soon', 'Assignment', 'High', '2d ago', false],
+        ['FN-004', 'Compiler Design project guidelines updated', 'Assignment', 'Medium', '3d ago', false],
+        ['FN-005', 'AI midterm assignment deadline extended', 'Assignment', 'Medium', '4d ago', false],
+        ['FN-006', 'Class schedule change: DS Lecture moved to Room 402', 'Class', 'Medium', '3h ago', false],
+        ['FN-007', 'Extra class scheduled for Algorithms on Friday', 'Class', 'Medium', '2d ago', false],
+        ['FN-008', 'Practical lab session cancelled tomorrow', 'Class', 'Low', '4d ago', false],
+        ['FN-009', 'Department meeting tomorrow at 10 AM', 'Meeting', 'High', '5h ago', true],
+        ['FN-010', 'Faculty board meeting agenda shared', 'Meeting', 'Low', '3d ago', false],
+        ['FN-011', 'Security scan found no critical risks', 'System', 'Low', '3h ago', false],
+        ['FN-012', 'System maintenance schedule on Sunday', 'System', 'Medium', '1d ago', false],
+        ['FN-013', 'New policy rule updates published', 'System', 'Low', '2d ago', false],
+        ['FN-014', 'Database automatic backup completed successfully', 'System', 'Low', '3d ago', false]
+      ];
+      for (const n of facNotifs) {
+        await client.query(
+          "INSERT INTO faculty_notifications (id, title, type, priority, time, unread) VALUES ($1, $2, $3, $4, $5, $6)",
+          n
+        );
+      }
+    }
+
+    // Seed faculty settings
+    const facSettingsCount = await client.query("SELECT COUNT(*) FROM faculty_notification_settings");
+    if (parseInt(facSettingsCount.rows[0].count) === 0) {
+      console.log("Seeding faculty notification settings...");
+      const facSettings = [
+        ['settings-1', 'Assignment reminders', true],
+        ['settings-2', 'Class notifications', true],
+        ['settings-3', 'Meeting reminders', true],
+        ['settings-4', 'Student messages', false],
+        ['settings-5', 'System updates', true]
+      ];
+      for (const s of facSettings) {
+        await client.query(
+          "INSERT INTO faculty_notification_settings (id, label, enabled) VALUES ($1, $2, $3)",
+          s
+        );
+      }
+    }
+
+    // Seed student notifications
+    const studentNotifsCount = await client.query("SELECT COUNT(*) FROM student_notifications");
+    if (parseInt(studentNotifsCount.rows[0].count) === 0) {
+      console.log("Seeding student notifications...");
+      const studentNotifs = [
+        ['SN-001', 'Mid-term exam starts on 15 June', 'Academic', 'High', '1 day ago', true],
+        ['SN-002', 'DBMS assignment marks published', 'Academic', 'Low', '2 days ago', false],
+        ['SN-003', 'Semester results released', 'Academic', 'High', '3 days ago', false],
+        ['SN-004', 'Your attendance dropped to 72%', 'Attendance', 'High', '5 hours ago', true],
+        ['SN-005', 'Attendance updated for AIML class', 'Attendance', 'Low', '1 day ago', false],
+        ['SN-006', 'Fee payment due on 30 June', 'Fees', 'High', '2 hours ago', true],
+        ['SN-007', 'Payment received successfully', 'Fees', 'Low', '1 day ago', false],
+        ['SN-008', 'Book return due tomorrow', 'Library', 'High', '4 hours ago', true],
+        ['SN-009', '₹100 library fine pending', 'Library', 'Medium', '2 days ago', false],
+        ['SN-010', 'TCS drive registration opened', 'Placement', 'High', '1 day ago', true],
+        ['SN-011', 'You are shortlisted for Infosys interview', 'Placement', 'High', '3 days ago', false],
+        ['SN-012', 'Room allocation completed', 'Hostel', 'Low', '2 days ago', false],
+        ['SN-013', 'Hostel fee due', 'Hostel', 'High', '4 days ago', false],
+        ['SN-014', 'Route 3 timing updated', 'Transport', 'Medium', '1 day ago', false],
+        ['SN-015', 'Bus service unavailable tomorrow', 'Transport', 'High', '12 hours ago', true],
+        ['SN-016', 'Faculty uploaded study material', 'Faculty', 'Low', '6 hours ago', false],
+        ['SN-017', 'Class cancelled tomorrow', 'Faculty', 'High', '1 hour ago', true]
+      ];
+      for (const n of studentNotifs) {
+        await client.query(
+          "INSERT INTO student_notifications (id, title, type, priority, time, unread) VALUES ($1, $2, $3, $4, $5, $6)",
+          n
+        );
+      }
+    }
+
     // Reload PostgREST schema cache
     await client.query("NOTIFY pgrst, 'reload schema';");
     console.log("✅ PostgREST schema cache reload triggered.");
@@ -151,23 +347,29 @@ async function runMigrations() {
 runMigrations()
   .then(() => seedIfNeeded())
   .then(async () => {
+    if (isMockMode) {
+      return;
+    }
     try {
-      const client = new Client({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-      });
-      await client.connect();
-      const res = await client.query("SELECT id, full_name, email, roll_number, department FROM students LIMIT 5");
-      console.log("\n🔑 LIVE STUDENTS IN SUPABASE DATABASE:");
-      if (res.rows.length === 0) {
-        console.log("   (No students found in the database!)");
+      const { supabase } = await import('./config/supabase.js');
+      
+      console.log("⚡ Checking database query builder connectivity...");
+      const { data: students, count, error } = await supabase
+        .from('students')
+        .select('*, users!inner(is_verified)', { count: 'exact' })
+        .eq('is_active', true)
+        .eq('users.is_verified', true)
+        .range(0, 5);
+
+      if (error) {
+        console.error("❌ Supabase query builder error:", error);
       } else {
-        res.rows.forEach(r => console.log(`   - ${r.full_name} (${r.roll_number}) | ${r.email} | Dept: ${r.department}`));
+        console.log(`\n🔑 LIVE STUDENTS IN DATABASE (${count} total):`);
+        students.forEach(r => console.log(`   - ${r.full_name} (${r.roll_number}) | ${r.email} | Dept: ${r.department}`));
+        console.log("======================================\n");
       }
-      console.log("======================================\n");
-      await client.end();
     } catch (err) {
-      console.error("❌ Live database verification query failed:", err);
+      console.error("❌ Supabase verifier test failed:", err.message);
     }
   })
   .then(() => {

@@ -46,6 +46,7 @@ import { Route as DashboardSuperAdminConfigurationRouteImport } from './routes/d
 import { Route as DashboardSuperAdminBackupsRouteImport } from './routes/dashboard/super-admin/backups'
 import { Route as DashboardSuperAdminAutomationRouteImport } from './routes/dashboard/super-admin/automation'
 import { Route as DashboardSuperAdminAdminsRouteImport } from './routes/dashboard/super-admin/admins'
+import { Route as DashboardStudentsStudentIdRouteImport } from './routes/dashboard/students/$studentId'
 import { Route as DashboardStudentTimetableRouteImport } from './routes/dashboard/student/timetable'
 import { Route as DashboardStudentResultsRouteImport } from './routes/dashboard/student/results'
 import { Route as DashboardStudentPlacementRouteImport } from './routes/dashboard/student/placement'
@@ -118,6 +119,9 @@ import { Route as DashboardAdminEventsRouteImport } from './routes/dashboard/adm
 import { Route as DashboardAdminCalendarRouteImport } from './routes/dashboard/admin/calendar'
 import { Route as DashboardAdminAttendanceRouteImport } from './routes/dashboard/admin/attendance'
 import { Route as DashboardAdminAssignmentsRouteImport } from './routes/dashboard/admin/assignments'
+import { Route as DashboardHostelMessResidentsRouteImport } from './routes/dashboard/hostel/mess/residents'
+import { Route as DashboardHostelMessMenusRouteImport } from './routes/dashboard/hostel/mess/menus'
+import { Route as DashboardHostelMessFeesRouteImport } from './routes/dashboard/hostel/mess/fees'
 
 const VerifyOtpRoute = VerifyOtpRouteImport.update({
   id: '/verify-otp',
@@ -314,6 +318,12 @@ const DashboardSuperAdminAdminsRoute =
     id: '/admins',
     path: '/admins',
     getParentRoute: () => DashboardSuperAdminRoute,
+  } as any)
+const DashboardStudentsStudentIdRoute =
+  DashboardStudentsStudentIdRouteImport.update({
+    id: '/$studentId',
+    path: '/$studentId',
+    getParentRoute: () => DashboardStudentsRoute,
   } as any)
 const DashboardStudentTimetableRoute =
   DashboardStudentTimetableRouteImport.update({
@@ -711,6 +721,23 @@ const DashboardAdminAssignmentsRoute =
     path: '/assignments',
     getParentRoute: () => DashboardAdminRoute,
   } as any)
+const DashboardHostelMessResidentsRoute =
+  DashboardHostelMessResidentsRouteImport.update({
+    id: '/residents',
+    path: '/residents',
+    getParentRoute: () => DashboardHostelMessRoute,
+  } as any)
+const DashboardHostelMessMenusRoute =
+  DashboardHostelMessMenusRouteImport.update({
+    id: '/menus',
+    path: '/menus',
+    getParentRoute: () => DashboardHostelMessRoute,
+  } as any)
+const DashboardHostelMessFeesRoute = DashboardHostelMessFeesRouteImport.update({
+  id: '/fees',
+  path: '/fees',
+  getParentRoute: () => DashboardHostelMessRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -734,7 +761,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
-  '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -769,7 +796,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/faculty/students': typeof DashboardFacultyStudentsRoute
   '/dashboard/hostel/complaints': typeof DashboardHostelComplaintsRoute
   '/dashboard/hostel/fees': typeof DashboardHostelFeesRoute
-  '/dashboard/hostel/mess': typeof DashboardHostelMessRoute
+  '/dashboard/hostel/mess': typeof DashboardHostelMessRouteWithChildren
   '/dashboard/hostel/notifications': typeof DashboardHostelNotificationsRoute
   '/dashboard/hostel/reports': typeof DashboardHostelReportsRoute
   '/dashboard/hostel/rooms': typeof DashboardHostelRoomsRoute
@@ -810,6 +837,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
   '/dashboard/student/timetable': typeof DashboardStudentTimetableRoute
+  '/dashboard/students/$studentId': typeof DashboardStudentsStudentIdRoute
   '/dashboard/super-admin/admins': typeof DashboardSuperAdminAdminsRoute
   '/dashboard/super-admin/automation': typeof DashboardSuperAdminAutomationRoute
   '/dashboard/super-admin/backups': typeof DashboardSuperAdminBackupsRoute
@@ -822,6 +850,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
+  '/dashboard/hostel/mess/menus': typeof DashboardHostelMessMenusRoute
+  '/dashboard/hostel/mess/residents': typeof DashboardHostelMessResidentsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -844,7 +875,7 @@ export interface FileRoutesByTo {
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
-  '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -879,7 +910,7 @@ export interface FileRoutesByTo {
   '/dashboard/faculty/students': typeof DashboardFacultyStudentsRoute
   '/dashboard/hostel/complaints': typeof DashboardHostelComplaintsRoute
   '/dashboard/hostel/fees': typeof DashboardHostelFeesRoute
-  '/dashboard/hostel/mess': typeof DashboardHostelMessRoute
+  '/dashboard/hostel/mess': typeof DashboardHostelMessRouteWithChildren
   '/dashboard/hostel/notifications': typeof DashboardHostelNotificationsRoute
   '/dashboard/hostel/reports': typeof DashboardHostelReportsRoute
   '/dashboard/hostel/rooms': typeof DashboardHostelRoomsRoute
@@ -920,6 +951,7 @@ export interface FileRoutesByTo {
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
   '/dashboard/student/timetable': typeof DashboardStudentTimetableRoute
+  '/dashboard/students/$studentId': typeof DashboardStudentsStudentIdRoute
   '/dashboard/super-admin/admins': typeof DashboardSuperAdminAdminsRoute
   '/dashboard/super-admin/automation': typeof DashboardSuperAdminAutomationRoute
   '/dashboard/super-admin/backups': typeof DashboardSuperAdminBackupsRoute
@@ -932,6 +964,9 @@ export interface FileRoutesByTo {
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
+  '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
+  '/dashboard/hostel/mess/menus': typeof DashboardHostelMessMenusRoute
+  '/dashboard/hostel/mess/residents': typeof DashboardHostelMessResidentsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -956,7 +991,7 @@ export interface FileRoutesById {
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
-  '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -991,7 +1026,7 @@ export interface FileRoutesById {
   '/dashboard/faculty/students': typeof DashboardFacultyStudentsRoute
   '/dashboard/hostel/complaints': typeof DashboardHostelComplaintsRoute
   '/dashboard/hostel/fees': typeof DashboardHostelFeesRoute
-  '/dashboard/hostel/mess': typeof DashboardHostelMessRoute
+  '/dashboard/hostel/mess': typeof DashboardHostelMessRouteWithChildren
   '/dashboard/hostel/notifications': typeof DashboardHostelNotificationsRoute
   '/dashboard/hostel/reports': typeof DashboardHostelReportsRoute
   '/dashboard/hostel/rooms': typeof DashboardHostelRoomsRoute
@@ -1032,6 +1067,7 @@ export interface FileRoutesById {
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
   '/dashboard/student/timetable': typeof DashboardStudentTimetableRoute
+  '/dashboard/students/$studentId': typeof DashboardStudentsStudentIdRoute
   '/dashboard/super-admin/admins': typeof DashboardSuperAdminAdminsRoute
   '/dashboard/super-admin/automation': typeof DashboardSuperAdminAutomationRoute
   '/dashboard/super-admin/backups': typeof DashboardSuperAdminBackupsRoute
@@ -1044,6 +1080,9 @@ export interface FileRoutesById {
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
+  '/dashboard/hostel/mess/menus': typeof DashboardHostelMessMenusRoute
+  '/dashboard/hostel/mess/residents': typeof DashboardHostelMessResidentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1145,6 +1184,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/placement'
     | '/dashboard/student/results'
     | '/dashboard/student/timetable'
+    | '/dashboard/students/$studentId'
     | '/dashboard/super-admin/admins'
     | '/dashboard/super-admin/automation'
     | '/dashboard/super-admin/backups'
@@ -1157,6 +1197,9 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
     | '/dashboard/librarian/'
+    | '/dashboard/hostel/mess/fees'
+    | '/dashboard/hostel/mess/menus'
+    | '/dashboard/hostel/mess/residents'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1255,6 +1298,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/placement'
     | '/dashboard/student/results'
     | '/dashboard/student/timetable'
+    | '/dashboard/students/$studentId'
     | '/dashboard/super-admin/admins'
     | '/dashboard/super-admin/automation'
     | '/dashboard/super-admin/backups'
@@ -1267,6 +1311,9 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
     | '/dashboard/librarian'
+    | '/dashboard/hostel/mess/fees'
+    | '/dashboard/hostel/mess/menus'
+    | '/dashboard/hostel/mess/residents'
   id:
     | '__root__'
     | '/'
@@ -1366,6 +1413,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/placement'
     | '/dashboard/student/results'
     | '/dashboard/student/timetable'
+    | '/dashboard/students/$studentId'
     | '/dashboard/super-admin/admins'
     | '/dashboard/super-admin/automation'
     | '/dashboard/super-admin/backups'
@@ -1378,6 +1426,9 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
     | '/dashboard/librarian/'
+    | '/dashboard/hostel/mess/fees'
+    | '/dashboard/hostel/mess/menus'
+    | '/dashboard/hostel/mess/residents'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1650,6 +1701,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/super-admin/admins'
       preLoaderRoute: typeof DashboardSuperAdminAdminsRouteImport
       parentRoute: typeof DashboardSuperAdminRoute
+    }
+    '/dashboard/students/$studentId': {
+      id: '/dashboard/students/$studentId'
+      path: '/$studentId'
+      fullPath: '/dashboard/students/$studentId'
+      preLoaderRoute: typeof DashboardStudentsStudentIdRouteImport
+      parentRoute: typeof DashboardStudentsRoute
     }
     '/dashboard/student/timetable': {
       id: '/dashboard/student/timetable'
@@ -2155,6 +2213,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminAssignmentsRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/hostel/mess/residents': {
+      id: '/dashboard/hostel/mess/residents'
+      path: '/residents'
+      fullPath: '/dashboard/hostel/mess/residents'
+      preLoaderRoute: typeof DashboardHostelMessResidentsRouteImport
+      parentRoute: typeof DashboardHostelMessRoute
+    }
+    '/dashboard/hostel/mess/menus': {
+      id: '/dashboard/hostel/mess/menus'
+      path: '/menus'
+      fullPath: '/dashboard/hostel/mess/menus'
+      preLoaderRoute: typeof DashboardHostelMessMenusRouteImport
+      parentRoute: typeof DashboardHostelMessRoute
+    }
+    '/dashboard/hostel/mess/fees': {
+      id: '/dashboard/hostel/mess/fees'
+      path: '/fees'
+      fullPath: '/dashboard/hostel/mess/fees'
+      preLoaderRoute: typeof DashboardHostelMessFeesRouteImport
+      parentRoute: typeof DashboardHostelMessRoute
+    }
   }
 }
 
@@ -2245,10 +2324,25 @@ const DashboardFacultyRouteChildren: DashboardFacultyRouteChildren = {
 const DashboardFacultyRouteWithChildren =
   DashboardFacultyRoute._addFileChildren(DashboardFacultyRouteChildren)
 
+interface DashboardHostelMessRouteChildren {
+  DashboardHostelMessFeesRoute: typeof DashboardHostelMessFeesRoute
+  DashboardHostelMessMenusRoute: typeof DashboardHostelMessMenusRoute
+  DashboardHostelMessResidentsRoute: typeof DashboardHostelMessResidentsRoute
+}
+
+const DashboardHostelMessRouteChildren: DashboardHostelMessRouteChildren = {
+  DashboardHostelMessFeesRoute: DashboardHostelMessFeesRoute,
+  DashboardHostelMessMenusRoute: DashboardHostelMessMenusRoute,
+  DashboardHostelMessResidentsRoute: DashboardHostelMessResidentsRoute,
+}
+
+const DashboardHostelMessRouteWithChildren =
+  DashboardHostelMessRoute._addFileChildren(DashboardHostelMessRouteChildren)
+
 interface DashboardHostelRouteChildren {
   DashboardHostelComplaintsRoute: typeof DashboardHostelComplaintsRoute
   DashboardHostelFeesRoute: typeof DashboardHostelFeesRoute
-  DashboardHostelMessRoute: typeof DashboardHostelMessRoute
+  DashboardHostelMessRoute: typeof DashboardHostelMessRouteWithChildren
   DashboardHostelNotificationsRoute: typeof DashboardHostelNotificationsRoute
   DashboardHostelReportsRoute: typeof DashboardHostelReportsRoute
   DashboardHostelRoomsRoute: typeof DashboardHostelRoomsRoute
@@ -2260,7 +2354,7 @@ interface DashboardHostelRouteChildren {
 const DashboardHostelRouteChildren: DashboardHostelRouteChildren = {
   DashboardHostelComplaintsRoute: DashboardHostelComplaintsRoute,
   DashboardHostelFeesRoute: DashboardHostelFeesRoute,
-  DashboardHostelMessRoute: DashboardHostelMessRoute,
+  DashboardHostelMessRoute: DashboardHostelMessRouteWithChildren,
   DashboardHostelNotificationsRoute: DashboardHostelNotificationsRoute,
   DashboardHostelReportsRoute: DashboardHostelReportsRoute,
   DashboardHostelRoomsRoute: DashboardHostelRoomsRoute,
@@ -2351,6 +2445,17 @@ const DashboardStudentRouteChildren: DashboardStudentRouteChildren = {
 const DashboardStudentRouteWithChildren =
   DashboardStudentRoute._addFileChildren(DashboardStudentRouteChildren)
 
+interface DashboardStudentsRouteChildren {
+  DashboardStudentsStudentIdRoute: typeof DashboardStudentsStudentIdRoute
+}
+
+const DashboardStudentsRouteChildren: DashboardStudentsRouteChildren = {
+  DashboardStudentsStudentIdRoute: DashboardStudentsStudentIdRoute,
+}
+
+const DashboardStudentsRouteWithChildren =
+  DashboardStudentsRoute._addFileChildren(DashboardStudentsRouteChildren)
+
 interface DashboardSuperAdminRouteChildren {
   DashboardSuperAdminAdminsRoute: typeof DashboardSuperAdminAdminsRoute
   DashboardSuperAdminAutomationRoute: typeof DashboardSuperAdminAutomationRoute
@@ -2397,7 +2502,7 @@ interface DashboardRouteChildren {
   DashboardPlacementRoute: typeof DashboardPlacementRouteWithChildren
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStudentRoute: typeof DashboardStudentRouteWithChildren
-  DashboardStudentsRoute: typeof DashboardStudentsRoute
+  DashboardStudentsRoute: typeof DashboardStudentsRouteWithChildren
   DashboardSuperAdminRoute: typeof DashboardSuperAdminRouteWithChildren
   DashboardTransportRoute: typeof DashboardTransportRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -2428,7 +2533,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardPlacementRoute: DashboardPlacementRouteWithChildren,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStudentRoute: DashboardStudentRouteWithChildren,
-  DashboardStudentsRoute: DashboardStudentsRoute,
+  DashboardStudentsRoute: DashboardStudentsRouteWithChildren,
   DashboardSuperAdminRoute: DashboardSuperAdminRouteWithChildren,
   DashboardTransportRoute: DashboardTransportRoute,
   DashboardIndexRoute: DashboardIndexRoute,

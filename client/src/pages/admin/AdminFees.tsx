@@ -27,10 +27,10 @@ export function AdminFees() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Collected", value: "$847K", tone: "success" as const },
-          { label: "Pending Dues", value: "$125K", tone: "warn" as const },
-          { label: "Overdue", value: "$32K", tone: "danger" as const },
-          { label: "Scholarships", value: "$48K", tone: "info" as const },
+          { label: "Total Collected", value: "₹84.7L", tone: "success" as const },
+          { label: "Pending Dues", value: "₹12.5L", tone: "warn" as const },
+          { label: "Overdue", value: "₹3.2L", tone: "danger" as const },
+          { label: "Scholarships", value: "₹4.8L", tone: "info" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>

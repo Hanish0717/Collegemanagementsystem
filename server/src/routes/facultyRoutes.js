@@ -109,4 +109,95 @@ router.get('/students', async (req, res, next) => {
   }
 });
 
+// @desc    Get all faculty notifications
+// @route   GET /api/faculty/notifications
+// @access  Private (faculty)
+router.get('/notifications', async (req, res, next) => {
+  try {
+    const { data: notifications, error } = await supabase
+      .from('faculty_notifications')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data: notifications || [] });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Mark faculty notification as read
+// @route   PUT /api/faculty/notifications/:id/read
+// @access  Private (faculty)
+router.put('/notifications/:id/read', async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('faculty_notifications')
+      .update({ unread: false })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Mark all faculty notifications as read
+// @route   POST /api/faculty/notifications/mark-all-read
+// @access  Private (faculty)
+router.post('/notifications/mark-all-read', async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('faculty_notifications')
+      .update({ unread: false })
+      .eq('unread', true)
+      .select();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, count: data?.length || 0 });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Get all faculty notification settings
+// @route   GET /api/faculty/notification-settings
+// @access  Private (faculty)
+router.get('/notification-settings', async (req, res, next) => {
+  try {
+    const { data: settings, error } = await supabase
+      .from('faculty_notification_settings')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data: settings || [] });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// @desc    Update a faculty notification setting
+// @route   PUT /api/faculty/notification-settings/:id
+// @access  Private (faculty)
+router.put('/notification-settings/:id', async (req, res, next) => {
+  try {
+    const { enabled } = req.body;
+    const { data, error } = await supabase
+      .from('faculty_notification_settings')
+      .update({ enabled })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

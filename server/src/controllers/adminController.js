@@ -659,3 +659,175 @@ export const deleteTimetableSlot = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Get all admin operational notifications
+// @route   GET /api/admin/notifications
+// @access  Private (admin)
+export const getAdminNotifications = async (req, res, next) => {
+  try {
+    const { data: notifications, error } = await supabase
+      .from('admin_notifications')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data: notifications || [] });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark admin notification as read
+// @route   PUT /api/admin/notifications/:id/read
+// @access  Private (admin)
+export const markAdminNotificationRead = async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('admin_notifications')
+      .update({ unread: false })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark all admin notifications as read
+// @route   POST /api/admin/notifications/mark-all-read
+// @access  Private (admin)
+export const markAllAdminNotificationsRead = async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('admin_notifications')
+      .update({ unread: false })
+      .eq('unread', true)
+      .select();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, message: 'All notifications marked as read', count: data?.length || 0 });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete admin notification
+// @route   DELETE /api/admin/notifications/:id
+// @access  Private (admin)
+export const deleteAdminNotification = async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('admin_notifications')
+      .delete()
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, message: 'Notification deleted', data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get all broadcasts
+// @route   GET /api/admin/broadcasts
+// @access  Private (admin)
+export const getBroadcasts = async (req, res, next) => {
+  try {
+    const { data: broadcasts, error } = await supabase
+      .from('broadcast_notifications')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data: broadcasts || [] });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Create a new broadcast notification
+// @route   POST /api/admin/broadcasts
+// @access  Private (admin)
+export const createBroadcast = async (req, res, next) => {
+  try {
+    const { title, type, audience, content } = req.body;
+    if (!title || !type || !audience || !content) {
+      const error = new Error('Subject, type, audience, and content are required');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const id = `B-${Math.floor(1000 + Math.random() * 9000)}`;
+    const time = 'Just now';
+    
+    const { data: broadcast, error } = await supabase
+      .from('broadcast_notifications')
+      .insert([{
+        id,
+        title,
+        type,
+        audience,
+        time,
+        status: 'Delivered',
+        content
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, data: broadcast });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get counts of students and faculty for audience selection
+// @route   GET /api/admin/audience-counts
+// @access  Private (admin)
+export const getAudienceCounts = async (req, res, next) => {
+  try {
+    // Get total students
+    const { count: studentCount, error: stdErr } = await supabase
+      .from('students')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
+    if (stdErr) throw stdErr;
+
+    // Get total faculty
+    const { count: facultyCount, error: facErr } = await supabase
+      .from('faculty')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
+    if (facErr) throw facErr;
+
+    // Get counts per department
+    const depts = ['CSE', 'AIML', 'AIDS', 'CYBERSECURITY', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'];
+    const deptCounts = {};
+    
+    for (const dept of depts) {
+      const { count, error } = await supabase
+        .from('students')
+        .select('*', { count: 'exact', head: true })
+        .eq('department', dept)
+        .eq('is_active', true);
+      if (error) throw error;
+      deptCounts[dept] = count || 0;
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        students: studentCount || 0,
+        faculty: facultyCount || 0,
+        departments: deptCounts
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -21,7 +21,15 @@ import superAdminRoutes from './routes/superAdminRoutes.js';
 import facultyRoutes from './routes/facultyRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import { supabase } from './config/supabase.js';
+import transportRoutes from './routes/transportRoutes.js';
 import placementRoutes from './routes/placementRoutes.js';
+import reportRoutes from './routes/hostel/reportRoutes.js';
+import exportRoutes from './routes/hostel/exportRoutes.js';
+import hostelFeeRoutes from './routes/hostel/feeRoutes.js';
+import blockRoutes from './routes/hostel/blockRoutes.js';
+import roomRoutes from './routes/hostel/roomRoutes.js';
+import allocationRoutes from './routes/hostel/allocationRoutes.js';
+import messRoutes from './routes/hostel/messRoutes.js';
 
 dotenv.config();
 
@@ -104,7 +112,15 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/transport', transportRoutes);
 app.use('/api/placement', placementRoutes);
+app.use('/api/hostel/reports', reportRoutes);
+app.use('/api/hostel/exports', exportRoutes);
+app.use('/api/hostel/fees', hostelFeeRoutes);
+app.use('/api/hostel/blocks', blockRoutes);
+app.use('/api/hostel/rooms', roomRoutes);
+app.use('/api/hostel/allocations', allocationRoutes);
+app.use('/api/hostel/mess', messRoutes);
 
 // 404 handler
 app.use(notFound);
