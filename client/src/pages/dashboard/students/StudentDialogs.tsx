@@ -379,7 +379,7 @@ export function StudentFormModal({
                   <FormSelect label="Room" required value={form.roomId} onChange={(val) => updateField("roomId", val)}>
                     <option value="">Select Room</option>
                     {roomsList.map((r: any) => (
-                      <option key={r.id} value={r.id}>{r.roomNumber} ({r.type}, Occ: {r.occupants}/{r.capacity})</option>
+                      <option key={r.id} value={r.id}>{r.room_number || r.roomNumber} ({r.type}, Occ: {r.occupants}/{r.capacity})</option>
                     ))}
                   </FormSelect>
                   <FormSelect label="Bed Number" required value={form.bedNumber} onChange={(val) => updateField("bedNumber", val)}>

@@ -6,19 +6,26 @@ export interface ResidentRecord {
   studentId: string;
   fullName: string;
   rollNumber: string;
+  admissionNumber?: string;
   email: string;
   phoneNumber: string | null;
   gender: string | null;
+  dateOfBirth?: string;
   department: string;
   year: number;
   semester: number;
   section: string;
+  parentName?: string;
+  parentPhone?: string;
+  parentEmail?: string;
+  cgpa?: string;
   roomNumber: string;
   floor: number;
   roomType: string;
   status: "Active" | "Vacated" | "Suspended";
   emergencyContact: string;
   attendance: string;
+  attendancePercentage?: string;
   profileImage: string | null;
   hostelId: string;
   blockId: string;
@@ -126,11 +133,14 @@ export async function fetchResidents(filters: { search?: string; department?: st
       bed_number,
       academic_year,
       student_id,
+      hostel_id,
+      block_id,
+      room_id,
       hostel_rooms (
         id, room_number, floor, type
       ),
       students (
-        id, full_name, roll_number, email, phone_number, gender, department, year, semester, section, parent_phone, attendance_percentage, profile_image
+        id, full_name, roll_number, admission_number, email, phone_number, gender, date_of_birth, department, year, semester, section, parent_name, parent_phone, parent_email, cgpa, attendance_percentage, profile_image
       )
     `);
 
@@ -145,19 +155,26 @@ export async function fetchResidents(filters: { search?: string; department?: st
       studentId: row.student_id,
       fullName: s.full_name || "Unknown",
       rollNumber: s.roll_number || "",
+      admissionNumber: s.admission_number || "",
       email: s.email || "",
       phoneNumber: s.phone_number || null,
       gender: s.gender || null,
+      dateOfBirth: s.date_of_birth || "",
       department: s.department || "CSE",
       year: Number(s.year || 1),
       semester: Number(s.semester || 1),
       section: s.section || "A",
+      parentName: s.parent_name || "",
+      parentPhone: s.parent_phone || "",
+      parentEmail: s.parent_email || "",
+      cgpa: s.cgpa ? String(s.cgpa) : "",
       roomNumber: r.room_number || "Unallocated",
       floor: Number(r.floor || 1),
       roomType: r.type || "Non-AC",
       status: row.status as any,
       emergencyContact: s.parent_phone || "",
       attendance: s.attendance_percentage ? `${Math.round(s.attendance_percentage)}%` : "100%",
+      attendancePercentage: s.attendance_percentage ? String(s.attendance_percentage) : "100",
       profileImage: s.profile_image || null,
       hostelId: row.hostel_id || "",
       blockId: row.block_id || "",
@@ -192,14 +209,52 @@ export async function fetchResidents(filters: { search?: string; department?: st
 }
 
 export async function createResident(studentPayload: any, allocationPayload: { hostelId: string; blockId: string; roomId: string; bedNumber: number; academicYear: string }) {
-  // 1. Create or Find student record
-  let studentId = "";
+  // Check if student already exists by email and has an active room allocation
   const { data: existingStudent } = await supabase
     .from("students")
     .select("id")
     .eq("email", studentPayload.email)
     .maybeSingle();
 
+  if (existingStudent) {
+    const { data: activeAlloc } = await supabase
+      .from("hostel_allocations")
+      .select("id")
+      .eq("student_id", existingStudent.id)
+      .eq("status", "Active")
+      .maybeSingle();
+
+    if (activeAlloc) {
+      throw new Error("This student already has an active room allocation.");
+    }
+  }
+
+  // Check if the bed is already occupied in this room
+  const { data: occupiedBed } = await supabase
+    .from("hostel_allocations")
+    .select("id")
+    .eq("room_id", allocationPayload.roomId)
+    .eq("bed_number", allocationPayload.bedNumber)
+    .eq("status", "Active")
+    .maybeSingle();
+
+  if (occupiedBed) {
+    throw new Error(`Bed ${allocationPayload.bedNumber} in this room is already occupied.`);
+  }
+
+  // Check room capacity
+  const { data: room } = await supabase
+    .from("hostel_rooms")
+    .select("capacity, occupants")
+    .eq("id", allocationPayload.roomId)
+    .single();
+
+  if (room && room.occupants >= room.capacity) {
+    throw new Error("This room is already at full capacity.");
+  }
+
+  // 1. Create or Find student record
+  let studentId = "";
   if (existingStudent) {
     studentId = existingStudent.id;
     // Update student details
@@ -286,12 +341,47 @@ export async function updateResident(
   studentPayload: any,
   allocationPayload: { hostelId: string; blockId: string; roomId: string; bedNumber: number; academicYear: string; status: string }
 ) {
-  // Get old allocation to check room changes
+  // Get old allocation to check room / bed / status changes
   const { data: oldAlloc } = await supabase
     .from("hostel_allocations")
-    .select("room_id")
+    .select("room_id, bed_number, status")
     .eq("id", allocationId)
     .single();
+
+  if (oldAlloc) {
+    const isNewActive = allocationPayload.status === "Active";
+
+    // 1. Bed occupied validation check (only check if bed/room changed, and status is Active)
+    if (isNewActive && (oldAlloc.room_id !== allocationPayload.roomId || oldAlloc.bed_number !== allocationPayload.bedNumber || oldAlloc.status !== "Active")) {
+      const { data: occupiedBed } = await supabase
+        .from("hostel_allocations")
+        .select("id")
+        .eq("room_id", allocationPayload.roomId)
+        .eq("bed_number", allocationPayload.bedNumber)
+        .eq("status", "Active")
+        .neq("id", allocationId) // exclude ourselves
+        .maybeSingle();
+
+      if (occupiedBed) {
+        throw new Error(`Bed ${allocationPayload.bedNumber} in this room is already occupied by an active allocation.`);
+      }
+    }
+
+    // 2. Room capacity check (only check if room changed, or if status changed from inactive to Active, and new room is full)
+    const roomChanged = oldAlloc.room_id !== allocationPayload.roomId;
+    const activated = oldAlloc.status !== "Active" && isNewActive;
+    if (isNewActive && (roomChanged || activated)) {
+      const { data: room } = await supabase
+        .from("hostel_rooms")
+        .select("capacity, occupants")
+        .eq("id", allocationPayload.roomId)
+        .single();
+
+      if (room && room.occupants >= room.capacity) {
+        throw new Error("The target room is already at full capacity.");
+      }
+    }
+  }
 
   // 1. Update Student Profile
   await supabase
@@ -323,23 +413,47 @@ export async function updateResident(
     })
     .eq("id", allocationId);
 
-  // 3. If room changed, adjust occupants count
-  if (oldAlloc && oldAlloc.room_id !== allocationPayload.roomId) {
-    // Decrement old room
-    try {
-      const { data: rmOld } = await supabase.from("hostel_rooms").select("occupants").eq("id", oldAlloc.room_id).single();
-      if (rmOld && rmOld.occupants > 0) {
-        await supabase.from("hostel_rooms").update({ occupants: rmOld.occupants - 1 }).eq("id", oldAlloc.room_id);
-      }
-    } catch (e) {}
+  // 3. Adjust occupants count based on room and status changes
+  if (oldAlloc) {
+    const wasActive = oldAlloc.status === "Active";
+    const isActiveNow = allocationPayload.status === "Active";
+    const oldRoomId = oldAlloc.room_id;
+    const newRoomId = allocationPayload.roomId;
 
-    // Increment new room
-    try {
-      const { data: rmNew } = await supabase.from("hostel_rooms").select("occupants").eq("id", allocationPayload.roomId).single();
-      if (rmNew) {
-        await supabase.from("hostel_rooms").update({ occupants: (rmNew.occupants || 0) + 1 }).eq("id", allocationPayload.roomId);
-      }
-    } catch (e) {}
+    if (wasActive && !isActiveNow) {
+      // Decrement occupants in the old room
+      try {
+        const { data: rmOld } = await supabase.from("hostel_rooms").select("occupants").eq("id", oldRoomId).single();
+        if (rmOld && rmOld.occupants > 0) {
+          await supabase.from("hostel_rooms").update({ occupants: rmOld.occupants - 1 }).eq("id", oldRoomId);
+        }
+      } catch (e) {}
+    } else if (!wasActive && isActiveNow) {
+      // Increment occupants in the new room
+      try {
+        const { data: rmNew } = await supabase.from("hostel_rooms").select("occupants").eq("id", newRoomId).single();
+        if (rmNew) {
+          await supabase.from("hostel_rooms").update({ occupants: (rmNew.occupants || 0) + 1 }).eq("id", newRoomId);
+        }
+      } catch (e) {}
+    } else if (wasActive && isActiveNow && oldRoomId !== newRoomId) {
+      // Room changed while remaining active - adjust both
+      // Decrement old room
+      try {
+        const { data: rmOld } = await supabase.from("hostel_rooms").select("occupants").eq("id", oldRoomId).single();
+        if (rmOld && rmOld.occupants > 0) {
+          await supabase.from("hostel_rooms").update({ occupants: rmOld.occupants - 1 }).eq("id", oldRoomId);
+        }
+      } catch (e) {}
+
+      // Increment new room
+      try {
+        const { data: rmNew } = await supabase.from("hostel_rooms").select("occupants").eq("id", newRoomId).single();
+        if (rmNew) {
+          await supabase.from("hostel_rooms").update({ occupants: (rmNew.occupants || 0) + 1 }).eq("id", newRoomId);
+        }
+      } catch (e) {}
+    }
   }
 
   await logActivity("Warden", "updated profile details for", studentPayload.fullName, "Update");
@@ -347,17 +461,28 @@ export async function updateResident(
 }
 
 export async function deleteResident(allocationId: string, roomId: string, studentName: string) {
+  // Get allocation status first
+  const { data: alloc } = await supabase
+    .from("hostel_allocations")
+    .select("status")
+    .eq("id", allocationId)
+    .maybeSingle();
+
+  const isAllocActive = alloc?.status === "Active";
+
   // Delete allocation (vacating the student)
   const { error } = await supabase.from("hostel_allocations").delete().eq("id", allocationId);
   if (error) throw error;
 
-  // Decrement room occupants count
-  try {
-    const { data: rm } = await supabase.from("hostel_rooms").select("occupants").eq("id", roomId).single();
-    if (rm && rm.occupants > 0) {
-      await supabase.from("hostel_rooms").update({ occupants: rm.occupants - 1 }).eq("id", roomId);
-    }
-  } catch (e) {}
+  // Only decrement room occupants count if the deleted allocation was active
+  if (isAllocActive) {
+    try {
+      const { data: rm } = await supabase.from("hostel_rooms").select("occupants").eq("id", roomId).single();
+      if (rm && rm.occupants > 0) {
+        await supabase.from("hostel_rooms").update({ occupants: rm.occupants - 1 }).eq("id", roomId);
+      }
+    } catch (e) {}
+  }
 
   await logActivity("Warden", "removed room allocation for", studentName, "Removal");
   await createNotification(`Room Vacated: ${studentName} checked out.`, "Alert", "High");
