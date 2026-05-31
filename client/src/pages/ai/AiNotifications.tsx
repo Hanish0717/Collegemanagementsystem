@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import {
   Bell,
   AlertTriangle,
@@ -13,7 +14,7 @@ import {
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 
 export function AiNotifications() {
-  const notifications = [
+  const [items, setItems] = useState([
     {
       id: 1,
       title: "High Risk Alert: James Wilson",
@@ -86,13 +87,27 @@ export function AiNotifications() {
       time: "6 hours ago",
       read: true,
     },
-  ];
+  ]);
+
+  const handleMarkAllRead = () => {
+    setItems(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const handleMarkRead = (id: number) => {
+    setItems(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  };
+
+  const handleDismiss = (id: number) => {
+    setItems(prev => prev.filter(n => n.id !== id));
+  };
+
+  const unreadItems = items.filter(n => !n.read);
 
   const summaryStats = [
-    { label: "Total Notifications", value: "8", tone: "info" as const },
-    { label: "Unread", value: "3", tone: "warn" as const },
-    { label: "High Priority", value: "2", tone: "warn" as const },
-    { label: "Today", value: "8", tone: "success" as const },
+    { label: "Total Notifications", value: items.length.toString(), tone: "info" as const },
+    { label: "Unread", value: unreadItems.length.toString(), tone: "warn" as const },
+    { label: "High Priority", value: unreadItems.filter(n => n.priority === "High").length.toString(), tone: "warn" as const },
+    { label: "Today", value: items.length.toString(), tone: "success" as const },
   ];
 
   const notificationTypes = [
@@ -110,7 +125,10 @@ export function AiNotifications() {
         title="AI Notifications"
         desc="Prediction alerts, risk notifications, and smart reminders from AI system."
         actions={
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
+          <button
+            onClick={handleMarkAllRead}
+            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer"
+          >
             <Check className="size-4" /> Mark All as Read
           </button>
         }
@@ -193,67 +211,81 @@ export function AiNotifications() {
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Recent Notifications</h3>
-          <Badge tone="info">8 Notifications</Badge>
+          <Badge tone="info">{unreadItems.length} Notifications</Badge>
         </div>
         <div className="space-y-2">
-          {notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`flex items-start gap-3 p-4 rounded-xl border hover:bg-accent/50 transition ${!notification.read ? "bg-blue-50 border-blue-200" : ""}`}
-            >
+          {unreadItems.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground text-sm">
+              All caught up! No unread AI notifications.
+            </div>
+          ) : (
+            unreadItems.map((notification) => (
               <div
-                className={`size-10 rounded-lg ${
-                  notification.priority === "High"
-                    ? "bg-red-500"
-                    : notification.priority === "Medium"
-                      ? "bg-amber-500"
-                      : "bg-gradient-primary"
-                } text-white grid place-items-center flex-shrink-0`}
+                key={notification.id}
+                className="flex items-start gap-3 p-4 rounded-xl border hover:bg-accent/50 transition bg-blue-50 border-blue-200"
               >
-                {notification.type === "Risk" && <AlertTriangle className="size-4" />}
-                {notification.type === "Prediction" && <TrendingUp className="size-4" />}
-                {notification.type === "Attendance" && <Calendar className="size-4" />}
-                {notification.type === "Insight" && <Info className="size-4" />}
-                {notification.type === "Report" && <CheckCircle className="size-4" />}
-                {notification.type === "Recommendation" && <TrendingUp className="size-4" />}
-                {notification.type === "Analysis" && <Bell className="size-4" />}
-                {notification.type === "Reminder" && <Bell className="size-4" />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium">{notification.title}</span>
+                <div
+                  className={`size-10 rounded-lg ${
+                    notification.priority === "High"
+                      ? "bg-red-500"
+                      : notification.priority === "Medium"
+                        ? "bg-amber-500"
+                        : "bg-gradient-primary"
+                  } text-white grid place-items-center flex-shrink-0`}
+                >
+                  {notification.type === "Risk" && <AlertTriangle className="size-4" />}
+                  {notification.type === "Prediction" && <TrendingUp className="size-4" />}
+                  {notification.type === "Attendance" && <Calendar className="size-4" />}
+                  {notification.type === "Insight" && <Info className="size-4" />}
+                  {notification.type === "Report" && <CheckCircle className="size-4" />}
+                  {notification.type === "Recommendation" && <TrendingUp className="size-4" />}
+                  {notification.type === "Analysis" && <Bell className="size-4" />}
+                  {notification.type === "Reminder" && <Bell className="size-4" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium">{notification.title}</span>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        tone={
+                          notification.priority === "High"
+                            ? "warn"
+                            : notification.priority === "Medium"
+                              ? "info"
+                              : "success"
+                        }
+                      >
+                        {notification.priority}
+                      </Badge>
+                      {!notification.read && <div className="size-2 rounded-full bg-primary" />}
+                    </div>
+                  </div>
+                  <div className="text-xs text-muted-foreground mb-2">{notification.desc}</div>
                   <div className="flex items-center gap-2">
-                    <Badge
-                      tone={
-                        notification.priority === "High"
-                          ? "warn"
-                          : notification.priority === "Medium"
-                            ? "info"
-                            : "success"
-                      }
-                    >
-                      {notification.priority}
-                    </Badge>
-                    {!notification.read && <div className="size-2 rounded-full bg-primary" />}
+                    <span className="text-xs text-muted-foreground">{notification.type}</span>
+                    <span className="text-xs text-muted-foreground">•</span>
+                    <span className="text-xs text-muted-foreground">{notification.time}</span>
                   </div>
                 </div>
-                <div className="text-xs text-muted-foreground mb-2">{notification.desc}</div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">{notification.type}</span>
-                  <span className="text-xs text-muted-foreground">•</span>
-                  <span className="text-xs text-muted-foreground">{notification.time}</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleMarkRead(notification.id)}
+                    className="p-2 rounded-lg hover:bg-accent transition cursor-pointer"
+                    title="Mark as read"
+                  >
+                    <Check className="size-4 text-muted-foreground" />
+                  </button>
+                  <button
+                    onClick={() => handleDismiss(notification.id)}
+                    className="p-2 rounded-lg hover:bg-accent transition cursor-pointer"
+                    title="Dismiss"
+                  >
+                    <X className="size-4 text-muted-foreground" />
+                  </button>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button className="p-2 rounded-lg hover:bg-accent transition" title="Mark as read">
-                  <Check className="size-4 text-muted-foreground" />
-                </button>
-                <button className="p-2 rounded-lg hover:bg-accent transition" title="Dismiss">
-                  <X className="size-4 text-muted-foreground" />
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </Card>
 

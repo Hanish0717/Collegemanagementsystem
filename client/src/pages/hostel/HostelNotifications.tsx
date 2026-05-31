@@ -29,7 +29,7 @@ export function HostelNotifications() {
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState("All Types");
   const [selectedPriority, setSelectedPriority] = useState("All Priority");
-  const [selectedStatus, setSelectedStatus] = useState("All Status");
+  const [selectedStatus, setSelectedStatus] = useState("Unread");
 
   // Queries
   const {
@@ -52,7 +52,6 @@ export function HostelNotifications() {
     mutationFn: (id: string) => markNotificationRead(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      // Trigger update on layout bell as well
       queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
     },
   });
@@ -83,14 +82,6 @@ export function HostelNotifications() {
     return notificationsList.filter((n) => {
       const matchesSearch = n.title.toLowerCase().includes(search.toLowerCase());
       
-      const typeMap: Record<string, string> = {
-        "Fee": "Fee",
-        "Complaint": "Complaint",
-        "Policy": "Policy",
-        "Mess": "Mess",
-        "Emergency": "Emergency"
-      };
-      const mappedType = typeMap[selectedType] || "All";
       const matchesType = selectedType === "All Types" || n.type === selectedType || (selectedType === "Emergency" && n.type === "Alert");
 
       // In db we don't have explicit priority, we map based on type or let it match all
@@ -207,6 +198,7 @@ export function HostelNotifications() {
               </button>
             )}
           </div>
+          
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-2">
               <Loader2 className="size-8 text-primary animate-spin" />
@@ -266,7 +258,7 @@ export function HostelNotifications() {
                         </div>
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
-                        {notification.type} • {notification.time}
+                        {notification.type} • {notification.time || "Recently"}
                       </div>
                     </div>
                   </div>
@@ -352,7 +344,7 @@ export function HostelNotifications() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-sm font-medium text-rose-600">{alert.title}</div>
-                      <div className="text-xs text-muted-foreground">{alert.time}</div>
+                      <div className="text-xs text-muted-foreground">{alert.time || "Recently"}</div>
                     </div>
                     <Badge tone="danger">Alert</Badge>
                   </div>
@@ -384,7 +376,7 @@ export function HostelNotifications() {
               <div className="flex-1">
                 <div className="text-sm font-medium">{announcement.title}</div>
                 <div className="text-xs text-muted-foreground">
-                  {announcement.type} • {announcement.time}
+                  {announcement.type} • {announcement.time || "Recently"}
                 </div>
               </div>
               <Badge tone="info">{announcement.type}</Badge>

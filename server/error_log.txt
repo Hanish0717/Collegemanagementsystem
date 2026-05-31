@@ -8,3 +8,163 @@
 [2026-05-30T19:55:35.112Z] [assignFaculty] Updating faculty assignments in database...
 [2026-05-30T19:55:35.254Z] [assignFaculty] Faculty updated successfully: Dr. Kumar Swamy
 [2026-05-30T19:55:35.368Z] [assignFaculty] Formatting response and returning success...
+[2026-05-30T20:35:48.941Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-30T20:35:49.058Z] GET /api/admin/students - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T04:20:15.845Z] POST /api/super-admin/notifications/mark-all-read - Status: 500 - Error: UPDATE requires a WHERE clause
+Stack: undefined
+Body: {}
+
+[2026-05-31T04:20:18.831Z] POST /api/super-admin/notifications/mark-all-read - Status: 500 - Error: UPDATE requires a WHERE clause
+Stack: undefined
+Body: {}
+
+[2026-05-31T04:25:32.746Z] POST /api/super-admin/notifications/mark-all-read - Status: 500 - Error: UPDATE requires a WHERE clause
+Stack: undefined
+Body: {}
+
+[2026-05-31T04:42:43.583Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":false,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:42:44.159Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":true,"finance":true,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:42:44.196Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":false,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:42:44.211Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":true,"finance":true,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:42:44.220Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":true,"finance":false,"placement":true,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:42:50.636Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":true,"finance":false,"placement":true,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:42:57.755Z] POST /api/auth/login - Status: 500 - Error: TypeError: fetch failed
+Stack: undefined
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-05-31T04:43:47.867Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, no token provided
+Stack: Error: Not authorized, no token provided
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:69:19)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:175:3)
+    at router (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+Body: {"categories":{"academic":false,"administration":true,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:43:47.878Z] POST /api/super-admin/notifications/categories - Status: 401 - Error: Not authorized, no token provided
+Stack: Error: Not authorized, no token provided
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:69:19)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:175:3)
+    at router (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+Body: {"categories":{"academic":false,"administration":true,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T04:54:59.148Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
+Stack: Error: Not Found - /api/transport/dashboard
+    at notFound (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at logger (F:\Projects\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+Body: {}
+
+[2026-05-31T04:54:59.166Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
+Stack: Error: Not Found - /api/transport/dashboard
+    at notFound (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at logger (F:\Projects\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+Body: {}
+
+[2026-05-31T04:55:26.729Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
+Stack: Error: Not Found - /api/transport/dashboard
+    at notFound (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at logger (F:\Projects\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+Body: {}
+
+[2026-05-31T04:55:26.771Z] GET /api/transport/dashboard - Status: 404 - Error: Not Found - /api/transport/dashboard
+Stack: Error: Not Found - /api/transport/dashboard
+    at notFound (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at logger (F:\Projects\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+Body: {}
+

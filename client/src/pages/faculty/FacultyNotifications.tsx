@@ -1,9 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { Bell, Check, Filter } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { facultyNotificationItems } from "@/mock/facultyData";
 
 export function FacultyNotifications() {
+  const [notifications, setNotifications] = useState(() =>
+    facultyNotificationItems.map((n, idx) => ({
+      ...n,
+      unread: idx < 2
+    }))
+  );
+
+  const handleMarkAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
+
+  const handleMarkRead = (title: string) => {
+    setNotifications(prev => prev.map(n => n.title === title ? { ...n, unread: false } : n));
+  };
+
+  const unreadNotifications = notifications.filter(n => n.unread);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -15,11 +33,11 @@ export function FacultyNotifications() {
         {[
           {
             label: "Total Notifications",
-            value: facultyNotificationItems.length.toString(),
+            value: notifications.length.toString(),
             tone: "info" as const,
           },
-          { label: "Unread", value: "2", tone: "warn" as const },
-          { label: "High Priority", value: "2", tone: "danger" as const },
+          { label: "Unread", value: unreadNotifications.length.toString(), tone: "warn" as const },
+          { label: "High Priority", value: unreadNotifications.filter(n => n.priority === "High").length.toString(), tone: "danger" as const },
           { label: "This Week", value: "4", tone: "info" as const },
         ].map((stat) => (
           <Card key={stat.label}>
@@ -53,41 +71,55 @@ export function FacultyNotifications() {
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Notification Cards</h3>
-          <button className="text-sm text-primary hover:underline">Mark all as read</button>
+          <button
+            onClick={handleMarkAllRead}
+            className="text-sm text-primary hover:underline cursor-pointer"
+          >
+            Mark all as read
+          </button>
         </div>
         <div className="space-y-2">
-          {facultyNotificationItems.map((notification, index) => (
-            <div
-              key={notification.title}
-              className={`flex items-start gap-4 p-4 rounded-xl border hover:bg-accent/50 transition ${index < 2 ? "bg-blue-50 border-blue-200" : ""}`}
-            >
-              <div
-                className={`size-2 rounded-full mt-2 shrink-0 ${index < 2 ? "bg-primary" : "bg-muted"}`}
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium">{notification.title}</div>
-                  <Badge
-                    tone={
-                      notification.priority === "High"
-                        ? "danger"
-                        : notification.priority === "Medium"
-                          ? "warn"
-                          : "info"
-                    }
-                  >
-                    {notification.priority}
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {notification.type} • {notification.time}
-                </div>
-              </div>
-              <button className="px-3 py-1.5 rounded-lg border text-xs hover:bg-accent transition flex items-center gap-1">
-                <Check className="size-3" /> Mark Read
-              </button>
+          {unreadNotifications.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground text-sm">
+              All caught up! No unread notifications.
             </div>
-          ))}
+          ) : (
+            unreadNotifications.map((notification, index) => (
+              <div
+                key={notification.title}
+                className={`flex items-start gap-4 p-4 rounded-xl border hover:bg-accent/50 transition bg-blue-50 border-blue-200`}
+              >
+                <div
+                  className={`size-2 rounded-full mt-2 shrink-0 bg-primary`}
+                />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-medium">{notification.title}</div>
+                    <Badge
+                      tone={
+                        notification.priority === "High"
+                          ? "danger"
+                          : notification.priority === "Medium"
+                            ? "warn"
+                            : "info"
+                      }
+                    >
+                      {notification.priority}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {notification.type} • {notification.time}
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleMarkRead(notification.title)}
+                  className="px-3 py-1.5 rounded-lg border text-xs hover:bg-accent transition flex items-center gap-1 cursor-pointer"
+                >
+                  <Check className="size-3" /> Mark Read
+                </button>
+              </div>
+            ))
+          )}
         </div>
       </Card>
 
