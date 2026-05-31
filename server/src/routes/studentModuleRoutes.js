@@ -11,6 +11,10 @@ import {
   getStudentPlacements,
   getStudentComplaints,
   createStudentComplaint,
+  getStudentNotifications,
+  markStudentNotificationRead,
+  markAllStudentNotificationsRead,
+  deleteStudentNotification,
 } from '../controllers/studentModuleController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -33,5 +37,10 @@ router.get('/placements', getStudentPlacements);
 router.route('/complaints')
   .get(getStudentComplaints)
   .post(createStudentComplaint);
+
+router.get('/notifications', getStudentNotifications);
+router.put('/notifications/:id/read', markStudentNotificationRead);
+router.post('/notifications/mark-all-read', markAllStudentNotificationsRead);
+router.delete('/notifications/:id', deleteStudentNotification);
 
 export default router;

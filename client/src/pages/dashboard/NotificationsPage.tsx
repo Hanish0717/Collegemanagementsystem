@@ -3,51 +3,52 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import {
   Bell,
-  AlertTriangle,
-  Info,
-  CheckCircle2,
   Search,
   Trash2,
   Loader2,
   AlertCircle,
+  BookOpen,
+  Clock,
   DollarSign,
-  MessageSquare,
-  Shield,
+  BookMarked,
+  Briefcase,
+  Home,
+  Bus,
+  Award,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  fetchSystemNotifications,
-  markNotificationRead,
-  markAllNotificationsRead,
-  deleteNotification,
-} from "@/services/hostelService";
+  fetchStudentNotifications,
+  markStudentNotificationRead,
+  markAllStudentNotificationsRead,
+  deleteStudentNotification,
+} from "@/services/studentNotificationService";
 
 const TYPE_ICON: Record<string, any> = {
-  Fee: DollarSign,
-  Complaint: MessageSquare,
-  Policy: Shield,
-  Alert: AlertTriangle,
-  Emergency: AlertTriangle,
-  Exam: Info,
-  Library: Bell,
-  Events: Bell,
-  Faculty: Bell,
-  Info: Info,
-  Maintenance: AlertTriangle,
+  Academic: BookOpen,
+  Attendance: Clock,
+  Fees: DollarSign,
+  Library: BookMarked,
+  Placement: Briefcase,
+  Hostel: Home,
+  Transport: Bus,
+  Faculty: Award,
+  General: Bell,
 };
 
 const TYPE_TONE: Record<string, "info" | "warn" | "danger" | "success"> = {
-  Alert: "danger",
-  Emergency: "danger",
-  Fee: "warn",
-  Complaint: "warn",
-  Maintenance: "warn",
-  Exam: "info",
+  Academic: "info",
+  Attendance: "warn",
+  Fees: "danger",
   Library: "info",
-  Events: "info",
+  Placement: "success",
+  Hostel: "info",
+  Transport: "warn",
   Faculty: "info",
-  Policy: "info",
-  Info: "success",
+  General: "info",
 };
 
 export function NotificationsPage() {
@@ -62,33 +63,32 @@ export function NotificationsPage() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: fetchSystemNotifications,
+    queryKey: ["studentNotifications"],
+    queryFn: fetchStudentNotifications,
   });
 
   const readMutation = useMutation({
-    mutationFn: (id: string) => markNotificationRead(id),
+    mutationFn: (id: string) => markStudentNotificationRead(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["studentNotifications"] });
+      toast.success("Notification marked as read");
     },
+    onError: () => toast.error("Failed to update notification"),
   });
 
   const readAllMutation = useMutation({
-    mutationFn: markAllNotificationsRead,
+    mutationFn: markAllStudentNotificationsRead,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["studentNotifications"] });
       toast.success("All notifications marked as read!");
     },
     onError: () => toast.error("Failed to mark all as read"),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteNotification(id),
+    mutationFn: (id: string) => deleteStudentNotification(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["studentNotifications"] });
       toast.success("Notification deleted");
     },
     onError: (err: any) => toast.error(err.message || "Failed to delete"),
@@ -96,7 +96,7 @@ export function NotificationsPage() {
 
   const unreadCount = notificationsList.filter((n) => n.unread).length;
   const alertCount = notificationsList.filter(
-    (n) => n.type === "Alert" || n.type === "Emergency"
+    (n) => n.priority === "High" && n.unread
   ).length;
   const completedCount = notificationsList.filter((n) => !n.unread).length;
 
@@ -228,7 +228,7 @@ export function NotificationsPage() {
             {filteredNotifications.map((n) => {
               const IconComponent = TYPE_ICON[n.type] || Bell;
               const tone = TYPE_TONE[n.type] || "info";
-              const isHighPriority = n.type === "Alert" || n.type === "Emergency";
+              const isHighPriority = n.priority === "High";
               return (
                 <div
                   key={n.id}
@@ -255,7 +255,7 @@ export function NotificationsPage() {
                         {n.unread && (
                           <span className="size-2 rounded-full bg-indigo-500" />
                         )}
-                        <Badge tone={tone}>{n.type || "Info"}</Badge>
+                        <Badge tone={tone}>{n.type || "General"}</Badge>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

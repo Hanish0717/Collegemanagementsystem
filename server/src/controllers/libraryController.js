@@ -331,6 +331,7 @@ export const issueBook = async (req, res, next) => {
         student: studentId, // also save studentId if needed
         book: bookId,
         user_id: targetUserId,
+        issue_date: new Date().toISOString().split('T')[0],
         due_date: new Date(dueDate).toISOString().split('T')[0],
         status: 'Issued'
       }])
@@ -346,6 +347,20 @@ export const issueBook = async (req, res, next) => {
       .eq('id', bookId);
 
     if (decrErr) throw decrErr;
+
+    // Trigger notification for student
+    const notifId = `SN-LIB-${Date.now()}`;
+    await supabase
+      .from('student_notifications')
+      .insert([{
+        id: notifId,
+        title: `Book issued: '${book.title}' by ${book.author || 'Unknown'}. Due: ${new Date(dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}.`,
+        type: 'Library',
+        priority: 'Medium',
+        time: 'Just now',
+        unread: true,
+        student_id: studentId
+      }]);
 
     res.status(201).json({
       success: true,
@@ -417,6 +432,20 @@ export const returnBook = async (req, res, next) => {
         .update({ available_quantity: Number(issue.book.available_quantity || 0) + 1 })
         .eq('id', issue.book.id);
     }
+
+    // Trigger notification for student
+    const returnNotifId = `SN-LIB-RET-${Date.now()}`;
+    await supabase
+      .from('student_notifications')
+      .insert([{
+        id: returnNotifId,
+        title: `Book returned: '${issue.book?.title || 'Unknown'}'. Fine paid: ₹${fine}.`,
+        type: 'Library',
+        priority: 'Low',
+        time: 'Just now',
+        unread: true,
+        student_id: issue.student
+      }]);
 
     res.status(200).json({
       success: true,
@@ -528,7 +557,7 @@ export const getIssuedBooks = async (req, res, next) => {
       return {
         id: item.id,
         _id: item.id,
-        issueDate: item.issue_date,
+        issueDate: item.issue_date || (item.created_at ? new Date(item.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]),
         dueDate: item.due_date,
         returnDate: item.return_date,
         status: String(item.status).toLowerCase(),

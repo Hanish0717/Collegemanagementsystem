@@ -343,3 +343,78 @@ export async function createTimetableSlot(payload: {
 export async function deleteTimetableSlot(id: string): Promise<void> {
   await api.delete(`/api/admin/timetable/${id}`);
 }
+
+export interface AdminNotification {
+  id: string;
+  title: string;
+  category: string;
+  time: string;
+  unread: boolean;
+  created_at: string;
+}
+
+export interface BroadcastNotification {
+  id: string;
+  title: string;
+  type: string;
+  audience: string;
+  time: string;
+  status: string;
+  content: string;
+  created_at: string;
+}
+
+export interface AudienceCounts {
+  students: number;
+  faculty: number;
+  departments: Record<string, number>;
+}
+
+export async function fetchAdminNotifications(): Promise<AdminNotification[]> {
+  const { data } = await api.get<{ success: boolean; data: AdminNotification[] }>(
+    "/api/admin/notifications"
+  );
+  return data.data;
+}
+
+export async function markAdminNotificationRead(id: string): Promise<AdminNotification> {
+  const { data } = await api.put<{ success: boolean; data: AdminNotification }>(
+    `/api/admin/notifications/${id}/read`
+  );
+  return data.data;
+}
+
+export async function markAllAdminNotificationsRead(): Promise<void> {
+  await api.post("/api/admin/notifications/mark-all-read");
+}
+
+export async function deleteAdminNotification(id: string): Promise<void> {
+  await api.delete(`/api/admin/notifications/${id}`);
+}
+
+export async function fetchBroadcasts(): Promise<BroadcastNotification[]> {
+  const { data } = await api.get<{ success: boolean; data: BroadcastNotification[] }>(
+    "/api/admin/broadcasts"
+  );
+  return data.data;
+}
+
+export async function createBroadcast(payload: {
+  title: string;
+  type: string;
+  audience: string;
+  content: string;
+}): Promise<BroadcastNotification> {
+  const { data } = await api.post<{ success: boolean; data: BroadcastNotification }>(
+    "/api/admin/broadcasts",
+    payload
+  );
+  return data.data;
+}
+
+export async function fetchAudienceCounts(): Promise<AudienceCounts> {
+  const { data } = await api.get<{ success: boolean; data: AudienceCounts }>(
+    "/api/admin/audience-counts"
+  );
+  return data.data;
+}

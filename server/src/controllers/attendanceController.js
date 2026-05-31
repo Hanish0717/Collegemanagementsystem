@@ -385,7 +385,100 @@ export const getAttendanceReport = async (req, res, next) => {
     const absent = records ? records.filter((r) => r.status.toLowerCase() === 'absent').length : 0;
     const late = records ? records.filter((r) => r.status.toLowerCase() === 'late').length : 0;
 
-    const overallPercentage = total > 0 ? Math.round(((present + late) / total) * 100 * 10) / 10 : 100;
+    // Today's Stats
+    const todayStr = new Date().toISOString().split('T')[0];
+    const { data: todayRecords } = await supabase
+      .from('attendance')
+      .select('status')
+      .in('student', studentIds)
+      .eq('date', todayStr);
+
+    const presentToday = todayRecords ? todayRecords.filter(r => r.status.toLowerCase() === 'present' || r.status.toLowerCase() === 'late').length : 0;
+    const absentToday = todayRecords ? todayRecords.filter(r => r.status.toLowerCase() === 'absent').length : 0;
+
+    // Dynamic Daily Trends
+    const { data: dateRows } = await supabase
+      .from('attendance')
+      .select('date')
+      .in('student', studentIds)
+      .order('date', { ascending: false });
+
+    const uniqueDates = [...new Set(dateRows?.map(r => r.date) || [])]
+      .slice(0, 6)
+      .reverse();
+
+    let trends = [];
+    if (uniqueDates.length > 0) {
+      const { data: trendRecords } = await supabase
+        .from('attendance')
+        .select('date, status')
+        .in('student', studentIds)
+        .in('date', uniqueDates);
+
+      const trendsMap = {};
+      uniqueDates.forEach(d => {
+        trendsMap[d] = { present: 0, absent: 0 };
+      });
+
+      if (trendRecords) {
+        trendRecords.forEach(r => {
+          if (trendsMap[r.date]) {
+            const st = String(r.status).toLowerCase();
+            if (st === 'present' || st === 'late') {
+              trendsMap[r.date].present++;
+            } else if (st === 'absent') {
+              trendsMap[r.date].absent++;
+            }
+          }
+        });
+      }
+
+      const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      trends = uniqueDates.map(d => {
+        const dateObj = new Date(d);
+        const dayName = daysOfWeek[dateObj.getDay()];
+        const stats = trendsMap[d];
+        const dayTotal = stats.present + stats.absent;
+        return {
+          day: dayName,
+          date: d,
+          present: stats.present,
+          absent: stats.absent,
+          percentage: dayTotal > 0 ? Math.round((stats.present / dayTotal) * 100) : 100
+        };
+      });
+    }
+
+    // Dynamic department alerts
+    const { data: allStudents } = await supabase
+      .from('students')
+      .select('department, attendance_percentage')
+      .eq('is_active', true);
+
+    const deptMetrics = {};
+    if (allStudents) {
+      allStudents.forEach(s => {
+        const dept = s.department || 'Unknown';
+        if (!deptMetrics[dept]) {
+          deptMetrics[dept] = { total: 0, below75: 0 };
+        }
+        deptMetrics[dept].total++;
+        if (Number(s.attendance_percentage || 100) < 75) {
+          deptMetrics[dept].below75++;
+        }
+      });
+    }
+
+    const departmentAlerts = Object.keys(deptMetrics).map(dept => ({
+      department: dept,
+      studentsBelow75: deptMetrics[dept].below75,
+      totalStudents: deptMetrics[dept].total
+    }));
+
+    // Calculate Overall Attendance Percentage by averaging current students' attendance_percentage
+    const overallPercentage = matchedStudents && matchedStudents.length > 0
+      ? Math.round((matchedStudents.reduce((acc, s) => acc + Number(s.attendance_percentage || 100), 0) / matchedStudents.length) * 10) / 10
+      : 100;
 
     const lowAttendanceStudents = matchedStudents
       ? matchedStudents
@@ -404,9 +497,107 @@ export const getAttendanceReport = async (req, res, next) => {
       message: 'Attendance report generated successfully',
       data: {
         totals: { total, present, absent, late },
+        totalsToday: { present: presentToday, absent: absentToday },
         overallPercentage,
         lowAttendanceStudents,
+        trends,
+        departmentAlerts
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark attendance via QR Code scanning
+// @route   POST /api/attendance/scan-qr
+// @access  Private (student)
+export const markAttendanceViaQR = async (req, res, next) => {
+  try {
+    const { department, section, subject, date } = req.body;
+
+    if (!department || !section) {
+      const error = new Error('Department and Section are required to scan QR');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Find student profile matching logged in user's email
+    const cleanEmail = req.user.email.toLowerCase().trim();
+    const { data: studentRecord } = await supabase
+      .from('students')
+      .select('*')
+      .ilike('email', cleanEmail)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (!studentRecord) {
+      const error = new Error('Student profile not found for this user account');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    // Map department names to short code
+    let deptCode = department;
+    if (department.includes("Computer Science")) deptCode = "CSE";
+    else if (department.includes("Artificial Intelligence & Machine Learning")) deptCode = "AIML";
+    else if (department.includes("Data Science")) deptCode = "AIDS";
+    else if (department.includes("Cybersecurity")) deptCode = "CYBERSECURITY";
+    else if (department.includes("Information Technology")) deptCode = "IT";
+    else if (department.includes("Electronics")) deptCode = "ECE";
+    else if (department.includes("Electrical")) deptCode = "EEE";
+    else if (department.includes("Mechanical")) deptCode = "MECH";
+    else if (department.includes("Civil")) deptCode = "CIVIL";
+
+    // Validate student department and section match
+    if (studentRecord.department !== deptCode || studentRecord.section !== section) {
+      const error = new Error(`You do not belong to this class session (${deptCode} - ${section})`);
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const dateStr = date || new Date().toISOString().split('T')[0];
+    const finalSubject = subject || 'General Class';
+
+    // Check if attendance already marked
+    const { data: duplicate } = await supabase
+      .from('attendance')
+      .select('*')
+      .eq('student', studentRecord.id)
+      .eq('date', dateStr)
+      .eq('subject', finalSubject)
+      .maybeSingle();
+
+    if (duplicate) {
+      return res.status(200).json({
+        success: true,
+        message: 'Attendance already marked for this class today',
+        data: duplicate
+      });
+    }
+
+    // Insert attendance
+    const { data: record, error: createErr } = await supabase
+      .from('attendance')
+      .insert([{
+        student: studentRecord.id,
+        date: dateStr,
+        status: 'present',
+        subject: finalSubject,
+        remarks: 'Marked via QR Code Scan'
+      }])
+      .select()
+      .single();
+
+    if (createErr) throw createErr;
+
+    // Recalculate percentage
+    await updateStudentAttendancePercentage(studentRecord.id);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Attendance marked successfully via QR Code Scan!',
+      data: record
     });
   } catch (error) {
     next(error);

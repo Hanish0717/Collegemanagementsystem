@@ -1,9 +1,49 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Bell, Check, Filter } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, Check } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { parentNotificationItems } from "@/mock/parentData";
+import api from "@/lib/api";
 
 export function ParentNotifications() {
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filterType, setFilterType] = useState("All");
+
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/api/parent-module/student-data");
+      if (res.data?.success && res.data?.data?.notifications) {
+        setNotifications(res.data.data.notifications);
+      }
+    } catch (err) {
+      console.error("Error loading parent notifications:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const handleMarkAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
+
+  const handleMarkRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
+  };
+
+  const filteredNotifications = notifications.filter(n => {
+    if (filterType === "Unread") return n.unread;
+    if (filterType === "High Priority") return n.priority === "High";
+    if (filterType === "Medium Priority") return n.priority === "Medium";
+    if (filterType === "Low Priority") return n.priority === "Low" || n.priority === "Info";
+    return true;
+  });
+
+  const unreadNotifications = notifications.filter(n => n.unread);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -15,12 +55,12 @@ export function ParentNotifications() {
         {[
           {
             label: "Total Notifications",
-            value: parentNotificationItems.length.toString(),
+            value: loading ? "..." : notifications.length.toString(),
             tone: "info" as const,
           },
-          { label: "Unread", value: "2", tone: "warn" as const },
-          { label: "High Priority", value: "2", tone: "danger" as const },
-          { label: "This Week", value: "4", tone: "info" as const },
+          { label: "Unread", value: loading ? "..." : unreadNotifications.length.toString(), tone: "warn" as const },
+          { label: "High Priority", value: loading ? "..." : notifications.filter(n => n.priority === "High").length.toString(), tone: "danger" as const },
+          { label: "This Week", value: loading ? "..." : notifications.length.toString(), tone: "info" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -35,59 +75,79 @@ export function ParentNotifications() {
       <Card>
         <div className="flex flex-wrap gap-2">
           {["All", "Unread", "High Priority", "Medium Priority", "Low Priority"].map(
-            (filter, index) => (
+            (filter) => (
               <button
                 key={filter}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition ${index === 0 ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}
+                onClick={() => setFilterType(filter)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${filterType === filter ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}
               >
                 {filter}
               </button>
             ),
           )}
-          <button className="px-4 py-2 rounded-xl border text-sm font-medium hover:bg-accent transition flex items-center gap-2">
-            <Filter className="size-4" /> More Filters
-          </button>
         </div>
       </Card>
 
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Notification Cards</h3>
-          <button className="text-sm text-primary hover:underline">Mark all as read</button>
+          {unreadNotifications.length > 0 && (
+            <button
+              onClick={handleMarkAllRead}
+              className="text-sm text-primary hover:underline cursor-pointer"
+            >
+              Mark all as read
+            </button>
+          )}
         </div>
         <div className="space-y-2">
-          {parentNotificationItems.map((notification, index) => (
-            <div
-              key={notification.title}
-              className={`flex items-start gap-4 p-4 rounded-xl border hover:bg-accent/50 transition ${index < 2 ? "bg-blue-50 border-blue-200" : ""}`}
-            >
-              <div
-                className={`size-2 rounded-full mt-2 shrink-0 ${index < 2 ? "bg-primary" : "bg-muted"}`}
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium">{notification.title}</div>
-                  <Badge
-                    tone={
-                      notification.priority === "High"
-                        ? "danger"
-                        : notification.priority === "Medium"
-                          ? "warn"
-                          : "info"
-                    }
-                  >
-                    {notification.priority}
-                  </Badge>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  {notification.type} • {notification.time}
-                </div>
-              </div>
-              <button className="px-3 py-1.5 rounded-lg border text-xs hover:bg-accent transition flex items-center gap-1">
-                <Check className="size-3" /> Mark Read
-              </button>
+          {loading ? (
+            <div className="py-12 text-center text-muted-foreground text-sm animate-pulse">
+              Loading notifications...
             </div>
-          ))}
+          ) : filteredNotifications.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground text-sm">
+              All caught up! No notifications.
+            </div>
+          ) : (
+            filteredNotifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={`flex items-start gap-4 p-4 rounded-xl border hover:bg-accent/50 transition ${notification.unread ? "bg-blue-50 border-blue-200 dark:bg-blue-950/10 dark:border-blue-900/50" : "bg-white dark:bg-card"}`}
+              >
+                {notification.unread && (
+                  <div className="size-2 rounded-full mt-2 shrink-0 bg-primary" />
+                )}
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-medium">{notification.title}</div>
+                    <Badge
+                      tone={
+                        notification.priority === "High"
+                          ? "danger"
+                          : notification.priority === "Medium"
+                            ? "warn"
+                            : "info"
+                      }
+                    >
+                      {notification.priority || "Low"}
+                    </Badge>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {notification.type} • {notification.time}
+                  </div>
+                </div>
+                {notification.unread && (
+                  <button
+                    onClick={() => handleMarkRead(notification.id)}
+                    className="px-3 py-1.5 rounded-lg border text-xs hover:bg-accent transition flex items-center gap-1 cursor-pointer shrink-0"
+                  >
+                    <Check className="size-3" /> Mark Read
+                  </button>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </Card>
 
@@ -125,10 +185,10 @@ export function ParentNotifications() {
           <h3 className="font-semibold mb-4">Notification Categories</h3>
           <div className="space-y-2">
             {[
-              { category: "Exam", count: 5, unread: 1 },
-              { category: "Alert", count: 3, unread: 1 },
-              { category: "Meeting", count: 2, unread: 0 },
-              { category: "Event", count: 4, unread: 0 },
+              { category: "Alert", count: notifications.filter(n => n.type === "Alert").length, unread: notifications.filter(n => n.type === "Alert" && n.unread).length },
+              { category: "Fees", count: notifications.filter(n => n.type === "Fees").length, unread: notifications.filter(n => n.type === "Fees" && n.unread).length },
+              { category: "Academic", count: notifications.filter(n => n.type === "Academic").length, unread: notifications.filter(n => n.type === "Academic" && n.unread).length },
+              { category: "Attendance", count: notifications.filter(n => n.type === "Attendance").length, unread: notifications.filter(n => n.type === "Attendance" && n.unread).length },
             ].map((item) => (
               <div
                 key={item.category}
@@ -138,9 +198,10 @@ export function ParentNotifications() {
                   <span className="text-sm font-medium">{item.category}</span>
                   {item.unread > 0 && <div className="size-2 rounded-full bg-primary" />}
                 </div>
+                <div className="flex-1" />
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">{item.count} total</span>
-                  <Badge tone="warn">{item.unread} unread</Badge>
+                  <Badge tone={item.unread > 0 ? "warn" : "info"}>{item.unread} unread</Badge>
                 </div>
               </div>
             ))}

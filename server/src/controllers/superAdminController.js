@@ -7,6 +7,49 @@ import { generateOTPTemplate } from '../utils/emailTemplates.js';
 import sendEmail from '../utils/sendEmail.js';
 import { OTP_EXPIRY_MINUTES } from '../../config.js';
 
+const createSystemNotification = async (title, type) => {
+  const lowercaseTitle = title.toLowerCase();
+
+  // Block list for granular transaction alerts (like book borrowing or hostel entries)
+  const blocklist = [
+    'borrowed a book',
+    'returned a book',
+    'entered hostel',
+    'left hostel',
+    'entered the hostel',
+    'left the hostel'
+  ];
+
+  // Block granular payments (e.g. Student paid ₹500), but allow summaries (e.g. Total fee collections)
+  const isGranularPayment = (lowercaseTitle.includes('paid') || lowercaseTitle.includes('received')) && 
+                            /\d+/.test(lowercaseTitle) && 
+                            !lowercaseTitle.includes('total') && 
+                            !lowercaseTitle.includes('summary') && 
+                            !lowercaseTitle.includes('collection');
+
+  const isBlocked = blocklist.some(phrase => lowercaseTitle.includes(phrase)) || isGranularPayment;
+
+  if (isBlocked) {
+    console.log(`[Notification Filter] Blocked granular alert from Super Admin channel: "${title}"`);
+    return;
+  }
+
+  try {
+    const id = `SAN-${Math.floor(1000 + Math.random() * 9000)}`;
+    const time = 'Just now';
+    await supabase.from('system_notifications').insert([{
+      id,
+      title,
+      type,
+      time,
+      unread: true,
+      created_at: new Date()
+    }]);
+  } catch (err) {
+    console.error("Failed to create system notification:", err);
+  }
+};
+
 const DEPT_NAMES = {
   'CSE': 'Computer Science & Engineering',
   'AIML': 'Artificial Intelligence & Machine Learning',
@@ -571,6 +614,8 @@ export const createDepartment = async (req, res, next) => {
 
     if (error) throw error;
 
+    await createSystemNotification(`New department '${name}' created`, 'Approval');
+
     res.status(201).json({
       success: true,
       data: {
@@ -697,6 +742,7 @@ export const createCourse = async (req, res, next) => {
       .select()
       .single();
     if (error) throw error;
+    await createSystemNotification(`New course/subject '${name}' added`, 'Approval');
     res.status(201).json({
       success: true,
       data: {
@@ -823,6 +869,8 @@ export const createBackup = async (req, res, next) => {
       status: "Success"
     }]);
 
+    await createSystemNotification(`System Backup ${backupId} completed successfully`, 'System');
+
     res.status(201).json({ success: true, data });
   } catch (error) {
     next(error);
@@ -841,6 +889,8 @@ export const restoreBackup = async (req, res, next) => {
       time: new Date().toISOString(),
       status: "Success"
     }]);
+
+    await createSystemNotification(`System restored to backup point ${id}`, 'System');
 
     res.status(200).json({ success: true, message: `System successfully restored to backup point ${id}.` });
   } catch (error) {
@@ -979,6 +1029,7 @@ export const toggleAutomation = async (req, res, next) => {
       .select()
       .single();
     if (error) throw error;
+    await createSystemNotification(`Automation '${name}' status updated to ${enabled ? 'Enabled' : 'Disabled'}`, 'Automation');
     res.status(200).json({ success: true, data });
   } catch (error) {
     next(error);
@@ -1017,7 +1068,25 @@ export const getNotifications = async (req, res, next) => {
       .eq('key', 'notif_opts')
       .maybeSingle();
 
-    const categories = catRow ? catRow.value : [true, true, true, true];
+    let categories = {
+      academic: true,
+      administration: true,
+      finance: true,
+      placement: true,
+      hostel_transport: true,
+      security: true,
+      system: true
+    };
+
+    if (catRow && catRow.value) {
+      if (Array.isArray(catRow.value)) {
+        categories.system = catRow.value[0] !== false;
+        categories.administration = catRow.value[1] !== false;
+        categories.security = catRow.value[2] !== false;
+      } else if (typeof catRow.value === 'object') {
+        categories = { ...categories, ...catRow.value };
+      }
+    }
 
     res.status(200).json({
       success: true,
@@ -1587,6 +1656,8 @@ export const toggleUserStatus = async (req, res, next) => {
       time: new Date().toISOString(),
       status: "Success"
     }]);
+
+    await createSystemNotification(`User '${data.full_name || data.email}' status updated to ${isActive ? 'Active' : 'Inactive'}`, 'Security');
 
     res.status(200).json({
       success: true,

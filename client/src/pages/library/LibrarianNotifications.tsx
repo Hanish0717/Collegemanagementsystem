@@ -126,7 +126,7 @@ export function LibrarianNotifications() {
 
   const notifications = [
     ...overdueAlerts.filter((o) => !archivedOverdueIds.includes(o.id)),
-    ...broadcastAlerts,
+    ...broadcastAlerts.filter((b) => b.unread),
   ];
 
   const settings = dbSettings || [
