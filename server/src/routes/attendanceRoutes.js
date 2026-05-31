@@ -7,6 +7,7 @@ import {
   updateAttendance,
   deleteAttendance,
   getAttendanceReport,
+  markAttendanceViaQR,
 } from '../controllers/attendanceController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -31,5 +32,8 @@ router.get('/student/:studentId', getStudentAttendance);
 
 // Admin-only report generator access
 router.get('/report', authorizeRoles('admin', 'super-admin'), getAttendanceReport);
+
+// Student scan attendance QR Code access
+router.post('/scan-qr', authorizeRoles('student'), markAttendanceViaQR);
 
 export default router;

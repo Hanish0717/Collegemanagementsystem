@@ -100,7 +100,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/exams", label: "Exams", icon: BookOpen },
       { to: "/dashboard/admin/fees", label: "Fees", icon: Wallet },
       { to: "/dashboard/admin/events", label: "Events", icon: Sparkles },
-      notif,
+      { to: "/dashboard/admin/notifications", label: "Notifications", icon: Bell },
       { to: "/dashboard/admin/settings", label: "Settings", icon: Settings },
     ],
   },

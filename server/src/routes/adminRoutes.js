@@ -8,6 +8,13 @@ import {
   getTimetable,
   createTimetableSlot,
   deleteTimetableSlot,
+  getAdminNotifications,
+  markAdminNotificationRead,
+  markAllAdminNotificationsRead,
+  deleteAdminNotification,
+  getBroadcasts,
+  createBroadcast,
+  getAudienceCounts,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { requireRole } from '../middleware/rbacMiddleware.js';
@@ -37,5 +44,26 @@ router.route('/timetable')
 
 router.route('/timetable/:id')
   .delete(deleteTimetableSlot);
+
+// Operational Notifications
+router.route('/notifications')
+  .get(getAdminNotifications);
+
+router.route('/notifications/mark-all-read')
+  .post(markAllAdminNotificationsRead);
+
+router.route('/notifications/:id')
+  .delete(deleteAdminNotification);
+
+router.route('/notifications/:id/read')
+  .put(markAdminNotificationRead);
+
+// Broadcast routes
+router.route('/broadcasts')
+  .get(getBroadcasts)
+  .post(createBroadcast);
+
+router.route('/audience-counts')
+  .get(getAudienceCounts);
 
 export default router;

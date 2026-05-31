@@ -147,6 +147,50 @@ export const getStudentDashboard = async (req, res, next) => {
     const notifications = [];
     let notifId = 1;
 
+    // Fetch database notifications for this student
+    let isHostelStudent = false;
+    let isBusStudent = false;
+
+    if (profile) {
+      const { data: hostelAlloc } = await supabase
+        .from('hostel_allocations')
+        .select('id')
+        .eq('student_id', profile.id)
+        .eq('status', 'Active')
+        .maybeSingle();
+      if (hostelAlloc) isHostelStudent = true;
+
+      const { data: transportAlloc } = await supabase
+        .from('transport_allocations')
+        .select('id')
+        .eq('student_id', profile.id)
+        .eq('status', 'Active')
+        .maybeSingle();
+      if (transportAlloc) isBusStudent = true;
+
+      const { data: dbNotifications } = await supabase
+        .from('student_notifications')
+        .select('*')
+        .or(`student_id.is.null,student_id.eq.${profile.id}`)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (dbNotifications) {
+        dbNotifications.forEach(n => {
+          if (n.type === 'Hostel' && !isHostelStudent) return;
+          if (n.type === 'Transport' && !isBusStudent) return;
+
+          notifications.push({
+            id: n.id,
+            title: n.title,
+            type: n.type,
+            time: n.time || 'Recent',
+            unread: n.unread
+          });
+        });
+      }
+    }
+
     // 1. Pending Assignments
     if (allCohortAsg) {
       allCohortAsg.forEach(a => {
@@ -599,6 +643,119 @@ export const createStudentComplaint = async (req, res, next) => {
       message: 'Complaint filed successfully',
       data: formatted
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get student notifications
+// @route   GET /api/student-module/notifications
+// @access  Private (student)
+export const getStudentNotifications = async (req, res, next) => {
+  try {
+    const profile = await getProfile(req.user.email);
+    let isHostelStudent = false;
+    let isBusStudent = false;
+
+    if (profile) {
+      // Check hostel allocation
+      const { data: hostelAlloc } = await supabase
+        .from('hostel_allocations')
+        .select('id')
+        .eq('student_id', profile.id)
+        .eq('status', 'Active')
+        .maybeSingle();
+      
+      if (hostelAlloc) {
+        isHostelStudent = true;
+      }
+
+      // Check transport allocation
+      const { data: transportAlloc } = await supabase
+        .from('transport_allocations')
+        .select('id')
+        .eq('student_id', profile.id)
+        .eq('status', 'Active')
+        .maybeSingle();
+
+      if (transportAlloc) {
+        isBusStudent = true;
+      }
+    }
+
+    const { data: notifications, error } = await supabase
+      .from('student_notifications')
+      .select('*')
+      .or(`student_id.is.null,student_id.eq.${profile?.id || '00000000-0000-0000-0000-000000000000'}`)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const filtered = (notifications || []).filter((n) => {
+      if (n.type === 'Hostel' && !isHostelStudent) {
+        return false;
+      }
+      if (n.type === 'Transport' && !isBusStudent) {
+        return false;
+      }
+      return true;
+    });
+
+    res.status(200).json({ success: true, data: filtered });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark student notification as read
+// @route   PUT /api/student-module/notifications/:id/read
+// @access  Private (student)
+export const markStudentNotificationRead = async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('student_notifications')
+      .update({ unread: false })
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark all student notifications as read
+// @route   POST /api/student-module/notifications/mark-all-read
+// @access  Private (student)
+export const markAllStudentNotificationsRead = async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('student_notifications')
+      .update({ unread: false })
+      .eq('unread', true)
+      .select();
+
+    if (error) throw error;
+    res.status(200).json({ success: true, count: data?.length || 0 });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete a student notification
+// @route   DELETE /api/student-module/notifications/:id
+// @access  Private (student)
+export const deleteStudentNotification = async (req, res, next) => {
+  try {
+    const { error } = await supabase
+      .from('student_notifications')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.status(200).json({ success: true, message: 'Notification deleted successfully' });
   } catch (error) {
     next(error);
   }

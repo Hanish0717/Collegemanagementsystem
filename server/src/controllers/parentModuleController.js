@@ -184,7 +184,8 @@ export const getParentStudentData = async (req, res, next) => {
             title: `Fee payment pending for ${child.fullName}: ${f.feeType || f.type} (Balance: ₹${f.remainingAmount.toLocaleString('en-IN')})`,
             type: "Alert",
             time: f.dueDate ? `Due ${new Date(f.dueDate).toLocaleDateString()}` : "Due",
-            unread: true
+            unread: true,
+            priority: "High"
           });
         }
       });
@@ -205,11 +206,66 @@ export const getParentStudentData = async (req, res, next) => {
               title: `Leave request for ${child.fullName} has been ${l.status.toLowerCase()}`,
               type: "Info",
               time: "Recent",
-              unread: false
+              unread: false,
+              priority: "Low"
             });
           }
         });
       }
+    }
+
+    // Fetch child's student notifications
+    const { data: dbStudentNotifs } = await supabase
+      .from('student_notifications')
+      .select('*')
+      .or(`student_id.is.null,student_id.eq.${child?.id || '00000000-0000-0000-0000-000000000000'}`)
+      .order('created_at', { ascending: false });
+
+    // Determine child's hostel and transport status
+    let isHostelStudent = false;
+    let isBusStudent = false;
+
+    if (child) {
+      // Check hostel allocation
+      const { data: hostelAlloc } = await supabase
+        .from('hostel_allocations')
+        .select('id')
+        .eq('student_id', child.id || child._id)
+        .eq('status', 'Active')
+        .maybeSingle();
+      
+      if (hostelAlloc) {
+        isHostelStudent = true;
+      }
+
+      // Check transport allocation
+      const { data: transportAlloc } = await supabase
+        .from('transport_allocations')
+        .select('id')
+        .eq('student_id', child.id || child._id)
+        .eq('status', 'Active')
+        .maybeSingle();
+
+      if (transportAlloc) {
+        isBusStudent = true;
+      }
+    }
+
+    if (dbStudentNotifs) {
+      dbStudentNotifs.forEach(n => {
+        // Filter based on child allocation status
+        if (n.type === 'Hostel' && !isHostelStudent) return;
+        if (n.type === 'Transport' && !isBusStudent) return;
+
+        notifications.push({
+          id: n.id,
+          title: n.title,
+          type: n.type,
+          time: n.time,
+          unread: n.unread,
+          priority: n.priority
+        });
+      });
     }
 
     let pendingLeavesCount = 0;

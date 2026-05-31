@@ -1,10 +1,21 @@
 import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { AlertTriangle, QrCode, Search } from "lucide-react";
+import { AlertTriangle, QrCode, Search, Folder, ArrowLeft, RefreshCw, Download } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { attendanceAlerts, attendanceMonitoring, students } from "@/mock/adminData";
 import api from "@/lib/api";
+import { toast } from "sonner";
+
+const departmentsList = [
+  { code: "CSE", name: "Computer Science & Engineering", iconColor: "text-indigo-600 bg-indigo-50 border-indigo-100" },
+  { code: "AIML", name: "Artificial Intelligence & Machine Learning", iconColor: "text-cyan-600 bg-cyan-50 border-cyan-100" },
+  { code: "AIDS", name: "Artificial Intelligence & Data Science", iconColor: "text-purple-600 bg-purple-50 border-purple-100" },
+  { code: "ECE", name: "Electronics & Communication Engineering", iconColor: "text-amber-600 bg-amber-50 border-amber-100" },
+  { code: "EEE", name: "Electrical & Electronics Engineering", iconColor: "text-emerald-600 bg-emerald-50 border-emerald-100" },
+  { code: "CYBERSECURITY", name: "Cybersecurity", iconColor: "text-red-600 bg-red-50 border-red-100" },
+  { code: "IT", name: "Information Technology", iconColor: "text-pink-600 bg-pink-50 border-pink-100" },
+  { code: "MECH", name: "Mechanical Engineering", iconColor: "text-blue-600 bg-blue-50 border-blue-100" },
+  { code: "CIVIL", name: "Civil Engineering", iconColor: "text-slate-600 bg-slate-50 border-slate-100" }
+];
 
 export function AdminAttendance() {
   const [reportData, setReportData] = useState<any>(null);
@@ -12,6 +23,13 @@ export function AdminAttendance() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedDept, setSelectedDept] = useState("All Departments");
+  const [activeFolderDept, setActiveFolderDept] = useState<string | null>(null);
+
+  // QR Generator States
+  const [qrDept, setQrDept] = useState("Computer Science & Engineering");
+  const [qrClassSection, setQrClassSection] = useState("");
+  const [qrSubject, setQrSubject] = useState("");
+  const [generatedQr, setGeneratedQr] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAdminData = async () => {
@@ -64,14 +82,55 @@ export function AdminAttendance() {
     fetchAdminData();
   }, [selectedDept, search]);
 
-  const overall = reportData?.overallPercentage !== undefined ? `${reportData.overallPercentage}%` : "87.3%";
-  const presentCount = reportData?.totals?.present !== undefined ? String(reportData.totals.present) : "2,484";
-  const absentCount = reportData?.totals?.absent !== undefined ? String(reportData.totals.absent) : "363";
-  const lowCount = reportData?.lowAttendanceStudents ? String(reportData.lowAttendanceStudents.length) : "47";
+  const handleSelectDeptChange = (dept: string) => {
+    setSelectedDept(dept);
+    if (dept === "All Departments") {
+      setActiveFolderDept(null);
+    } else {
+      const found = departmentsList.find(d => d.name === dept);
+      if (found) {
+        setActiveFolderDept(found.code);
+      }
+    }
+  };
 
-  const alerts = reportData?.lowAttendanceStudents && reportData.lowAttendanceStudents.length > 0
-    ? reportData.lowAttendanceStudents.slice(0, 5)
+  const overall = reportData?.overallPercentage !== undefined ? `${reportData.overallPercentage}%` : "100%";
+  const presentCount = reportData?.totalsToday?.present !== undefined ? String(reportData.totalsToday.present) : "0";
+  const absentCount = reportData?.totalsToday?.absent !== undefined ? String(reportData.totalsToday.absent) : "0";
+  const lowCount = reportData?.lowAttendanceStudents ? String(reportData.lowAttendanceStudents.length) : "0";
+
+  const activeAlerts = reportData?.departmentAlerts
+    ? reportData.departmentAlerts.filter((a: any) => a.studentsBelow75 > 0)
     : [];
+
+  const trendData = reportData?.trends && reportData.trends.length > 0 ? reportData.trends : [];
+
+  const getDeptStudentCount = (code: string) => {
+    const found = reportData?.departmentAlerts?.find((d: any) => d.department === code);
+    return found ? found.totalStudents : 0;
+  };
+
+  const handleGenerateQr = () => {
+    if (!qrClassSection.trim()) {
+      toast.error("Please enter a class/section (e.g. A, B)");
+      return;
+    }
+    if (!qrSubject.trim()) {
+      toast.error("Please enter a subject name");
+      return;
+    }
+
+    const qrData = JSON.stringify({
+      department: qrDept,
+      section: qrClassSection.trim(),
+      subject: qrSubject.trim(),
+      date: new Date().toISOString().split('T')[0]
+    });
+
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
+    setGeneratedQr(qrUrl);
+    toast.success("QR Code generated successfully! Students can scan this to mark attendance.");
+  };
 
   return (
     <div className="space-y-6">
@@ -110,7 +169,7 @@ export function AdminAttendance() {
           </div>
           <select 
             value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
+            onChange={(e) => handleSelectDeptChange(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm focus:outline-none"
           >
             {[
@@ -134,17 +193,23 @@ export function AdminAttendance() {
       <div className="grid lg:grid-cols-3 gap-4">
         <Card className="lg:col-span-2">
           <h3 className="font-semibold mb-4">Daily Attendance Trends</h3>
-          <div className="h-72">
-            <ResponsiveContainer>
-              <BarChart data={attendanceMonitoring}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="present" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="absent" fill="#06B6D4" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="h-72 flex items-center justify-center relative">
+            {trendData.length > 0 ? (
+              <ResponsiveContainer>
+                <BarChart data={trendData}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
+                  <YAxis stroke="#64748B" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Bar dataKey="present" fill="#4F46E5" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="absent" fill="#06B6D4" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="text-sm text-muted-foreground text-center">
+                No attendance trend data available for the selected department.
+              </div>
+            )}
           </div>
         </Card>
 
@@ -154,117 +219,159 @@ export function AdminAttendance() {
             <h3 className="font-semibold">Low Attendance Alerts</h3>
           </div>
           <div className="space-y-2">
-            {alerts.length > 0 ? (
-              alerts.map((alert: any) => (
-                <div key={alert.id || alert._id} className="p-3 rounded-xl border bg-gradient-soft">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{alert.fullName}</span>
-                    <Badge tone="danger">{alert.attendancePercentage}%</Badge>
+            {activeAlerts.length > 0 ? (
+              activeAlerts.map((alert: any) => {
+                const deptInfo = departmentsList.find(d => d.code === alert.department);
+                return (
+                  <div key={alert.department} className="p-3 rounded-xl border bg-gradient-soft">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">{deptInfo?.name || alert.department}</span>
+                      <Badge tone="danger">{alert.studentsBelow75} below 75%</Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {alert.totalStudents} total students
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Roll No: {alert.rollNumber} | Dept: {alert.department}
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
-              attendanceAlerts.map((alert) => (
-                <div key={alert.department} className="p-3 rounded-xl border bg-gradient-soft">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{alert.department}</span>
-                    <Badge tone="danger">{alert.studentsBelow75} below 75%</Badge>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {alert.totalStudents} total students (Mock)
-                  </div>
-                </div>
-              ))
+              <div className="text-center text-sm text-muted-foreground py-8">
+                No low attendance alerts. All departments have good attendance.
+              </div>
             )}
           </div>
         </Card>
       </div>
 
       <Card>
-        <h3 className="font-semibold mb-4">Student Attendance Records</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b">
-              <tr>
-                {[
-                  "Student ID",
-                  "Name",
-                  "Department",
-                  "Year",
-                  "Attendance Percentage",
-                  "Status",
-                  "Actions",
-                ].map((column) => (
-                  <th
-                    key={column}
-                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
-                  >
-                    {column}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {studentList.length > 0 ? (
-                studentList.map((student) => (
-                  <tr key={student.id || student._id} className="hover:bg-accent/50 transition">
-                    <td className="py-3 px-4 font-medium text-xs">{student.rollNumber}</td>
-                    <td className="py-3 px-4 font-medium">{student.fullName}</td>
-                    <td className="py-3 px-4">
-                      <Badge tone="info">{typeof student.department === "object" ? student.department.code : student.department}</Badge>
-                    </td>
-                    <td className="py-3 px-4 text-muted-foreground">Year {student.year}</td>
-                    <td className="py-3 px-4 font-medium">{student.attendancePercentage || 100}%</td>
-                    <td className="py-3 px-4">
-                      <Badge tone={Number(student.attendancePercentage || 100) >= 75 ? "success" : "danger"}>
-                        {Number(student.attendancePercentage || 100) >= 75 ? "Good" : "Low"}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-4">
-                      <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
-                        Details
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                students.slice(0, 5).map((student) => (
-                  <tr key={student.id} className="hover:bg-accent/50 transition">
-                    <td className="py-3 px-4 font-medium text-xs">{student.id}</td>
-                    <td className="py-3 px-4 font-medium">{student.name}</td>
-                    <td className="py-3 px-4">
-                      <Badge tone="info">{student.department}</Badge>
-                    </td>
-                    <td className="py-3 px-4 text-muted-foreground">{student.year}</td>
-                    <td className="py-3 px-4 font-medium">{student.attendance}</td>
-                    <td className="py-3 px-4">
-                      <Badge tone="success">Good</Badge>
-                    </td>
-                    <td className="py-3 px-4">
-                      <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
-                        Details (Mock)
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="font-semibold text-lg">Student Attendance Records</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {activeFolderDept 
+                ? `Viewing students in ${departmentsList.find(d => d.code === activeFolderDept)?.name}`
+                : "Select a department folder to view student records"}
+            </p>
+          </div>
+          {activeFolderDept && (
+            <button
+              onClick={() => {
+                setActiveFolderDept(null);
+                setSelectedDept("All Departments");
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border hover:bg-accent text-xs font-medium transition cursor-pointer"
+            >
+              <ArrowLeft className="size-3.5" /> Back to Folders
+            </button>
+          )}
         </div>
+
+        {activeFolderDept === null ? (
+          /* Folder Directory View */
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-4">
+            {departmentsList.map((dept) => {
+              const studentCount = getDeptStudentCount(dept.code);
+              return (
+                <div
+                  key={dept.code}
+                  onClick={() => {
+                    setActiveFolderDept(dept.code);
+                    setSelectedDept(dept.name);
+                  }}
+                  className="flex items-center gap-4 p-4 rounded-2xl border bg-background hover:bg-accent/40 hover:border-accent-foreground/20 cursor-pointer transition shadow-soft group"
+                >
+                  <div className={`p-3 rounded-xl border ${dept.iconColor} shrink-0 group-hover:scale-105 transition duration-200`}>
+                    <Folder className="size-6 fill-current opacity-80" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-semibold truncate text-foreground group-hover:text-primary transition">
+                      {dept.name}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                      <span>{studentCount} Students</span>
+                      <span>•</span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-muted">
+                        {dept.code}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Table View for Active Folder */
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b">
+                <tr>
+                  {[
+                    "Student ID",
+                    "Name",
+                    "Department",
+                    "Year",
+                    "Attendance Percentage",
+                    "Status",
+                    "Actions",
+                  ].map((column) => (
+                    <th
+                      key={column}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {column}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {studentList.length > 0 ? (
+                  studentList.map((student) => (
+                    <tr key={student.id || student._id} className="hover:bg-accent/50 transition">
+                      <td className="py-3 px-4 font-medium text-xs">{student.rollNumber}</td>
+                      <td className="py-3 px-4 font-medium">{student.fullName}</td>
+                      <td className="py-3 px-4">
+                        <Badge tone="info">{typeof student.department === "object" ? student.department.code : student.department}</Badge>
+                      </td>
+                      <td className="py-3 px-4 text-muted-foreground">Year {student.year}</td>
+                      <td className="py-3 px-4 font-medium">{student.attendancePercentage || 100}%</td>
+                      <td className="py-3 px-4">
+                        <Badge tone={Number(student.attendancePercentage || 100) >= 75 ? "success" : "danger"}>
+                          {Number(student.attendancePercentage || 100) >= 75 ? "Good" : "Low"}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4">
+                        <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
+                          Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">
+                      No student records found in this folder.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
 
       <div className="grid lg:grid-cols-2 gap-4">
         <Card>
           <div className="flex items-center gap-2 mb-4">
             <QrCode className="size-5 text-indigo" />
-            <h3 className="font-semibold">QR Attendance</h3>
+            <h3 className="font-semibold">QR Attendance Generator</h3>
           </div>
           <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <div className="grid sm:grid-cols-2 gap-4">
-              <select className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none">
+              <select 
+                value={qrDept}
+                onChange={(e) => setQrDept(e.target.value)}
+                className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none"
+              >
                 {[
                   "Computer Science & Engineering",
                   "Artificial Intelligence & Machine Learning",
@@ -282,18 +389,68 @@ export function AdminAttendance() {
                 )}
               </select>
               <input
-                placeholder="Enter class/section"
+                placeholder="Enter class/section (e.g. A, B)"
+                value={qrClassSection}
+                onChange={(e) => setQrClassSection(e.target.value)}
                 className="rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none"
               />
             </div>
-            <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
+            <div>
+              <input
+                placeholder="Enter subject (e.g. Mathematics, Algorithms)"
+                value={qrSubject}
+                onChange={(e) => setQrSubject(e.target.value)}
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none"
+              />
+            </div>
+            <button 
+              onClick={handleGenerateQr}
+              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2 cursor-pointer hover:opacity-90 transition"
+            >
               <QrCode className="size-4" /> Generate QR Code
             </button>
             <div className="text-center text-xs text-muted-foreground">
-              Students can scan QR code to mark attendance
+              Students can scan this generated QR code using their device to mark their attendance.
             </div>
           </div>
         </Card>
+
+        {generatedQr && (
+          <Card className="flex flex-col items-center justify-center p-6 border rounded-xl bg-gradient-soft animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center gap-2 mb-4 self-start">
+              <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Active QR Code Session</span>
+            </div>
+            <div className="relative p-3 bg-white border rounded-2xl shadow-soft">
+              <img 
+                src={generatedQr} 
+                alt="Generated Attendance QR" 
+                className="size-48 object-contain"
+              />
+            </div>
+            <div className="text-center mt-4 space-y-1">
+              <h4 className="font-bold text-sm">{qrDept}</h4>
+              <p className="text-xs text-muted-foreground">Section: <span className="font-semibold text-foreground">{qrClassSection}</span> | Subject: <span className="font-semibold text-foreground">{qrSubject}</span></p>
+              <p className="text-[10px] text-muted-foreground italic">Generated on {new Date().toLocaleDateString()}</p>
+            </div>
+            <div className="flex gap-2.5 mt-5 w-full">
+              <button 
+                onClick={handleGenerateQr}
+                className="flex-1 py-2 border rounded-xl hover:bg-accent text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer"
+              >
+                <RefreshCw className="size-3.5" /> Regenerate
+              </button>
+              <a 
+                href={generatedQr} 
+                target="_blank" 
+                rel="noreferrer"
+                className="flex-1 py-2 bg-gradient-primary text-white rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 transition hover:opacity-90 cursor-pointer"
+              >
+                <Download className="size-3.5" /> View / Download
+              </a>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );
