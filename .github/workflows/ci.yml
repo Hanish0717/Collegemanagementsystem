@@ -1,0 +1,31 @@
+name: CI - Client Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-client:
+    name: Run client tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies (client)
+        working-directory: client
+        run: |
+          npm ci
+
+      - name: Run client tests
+        working-directory: client
+        run: |
+          npm run test -- --run

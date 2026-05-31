@@ -507,6 +507,7 @@ export function TransportDashboard() {
         startPoint: route.startPoint,
         endPoint: route.endPoint,
         stops: route.stops.map((stop, idx) => ({
+          id: String(idx + 1),
           name: stop,
           landmark: "Major Junction",
           fare: 1500,
@@ -808,19 +809,19 @@ export function TransportDashboard() {
 
   const displayRouteNumber = activeSelectedRoute 
     ? activeSelectedRoute.routeNumber 
-    : (verifiedData?.route?.routeNumber || verifiedData?.route?.route_number || "Route 2");
+    : (verifiedData?.route?.routeNumber || "Route 2");
     
   const displayStartPoint = activeSelectedRoute 
     ? activeSelectedRoute.startPoint 
-    : (verifiedData?.route?.startPoint || verifiedData?.route?.start_point || "Rajam Bypass");
+    : (verifiedData?.route?.startPoint || "Rajam Bypass");
     
   const displayEndPoint = activeSelectedRoute 
     ? activeSelectedRoute.endPoint 
-    : (verifiedData?.route?.endPoint || verifiedData?.route?.end_point || "Palakonda Bus Stand");
+    : (verifiedData?.route?.endPoint || "Palakonda Bus Stand");
 
   const displayDriverName = activeSelectedRoute
     ? activeSelectedRoute.driverName
-    : (verifiedData?.driver?.fullName || verifiedData?.driver?.name || "Mohammad Rafiq");
+    : (verifiedData?.driver?.fullName || "Mohammad Rafiq");
 
   const displayDriverPhone = activeSelectedRoute
     ? activeSelectedRoute.driverPhone

@@ -165,6 +165,27 @@ async function runMigrations() {
       );
       
       ALTER TABLE student_notifications ADD COLUMN IF NOT EXISTS student_id uuid REFERENCES students(id) ON DELETE CASCADE NULL;
+
+      -- Hostel Blocks Overview Extra Columns
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS type varchar(50) DEFAULT 'Boys';
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS capacity integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS ac_rooms integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS non_ac_rooms integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS occupants integer DEFAULT 0;
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS contact_number varchar(50) DEFAULT '';
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS status varchar(50) DEFAULT 'Available';
+      ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS image_url text DEFAULT '';
+
+      -- Room Management & Allocation Columns
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS room_type varchar(50) DEFAULT 'Double';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS ac_type varchar(50) DEFAULT 'Non-AC';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS room_status varchar(50) DEFAULT 'Vacant';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS description text DEFAULT '';
+      ALTER TABLE hostel_rooms ADD COLUMN IF NOT EXISTS updated_at timestamp with time zone DEFAULT timezone('utc'::text, now());
+
+      ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS allocation_date date DEFAULT CURRENT_DATE;
+      ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS check_in_date timestamp with time zone;
+      ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS check_out_date timestamp with time zone;
     `);
     
     // Seed admin notifications

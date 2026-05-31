@@ -21,6 +21,7 @@ import {
   UserPlus,
   BellRing,
   Info,
+  Sparkles,
   Check,
   Trash2,
   AlertTriangle,
@@ -71,6 +72,10 @@ export function DashboardLayout() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [helpActiveTab, setHelpActiveTab] = useState<"getting-started" | "role-guide" | "faqs" | "support">("getting-started");
+  // Sidebar submenu open state
+  const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>({});
 
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -542,7 +547,7 @@ export function DashboardLayout() {
   };
 
   const handleProfileClick = () => {
-    const settingsRoute = role.nav.find((item) => item.label === "Settings")?.to ?? "/dashboard/settings";
+    const settingsRoute = role.nav.find((item) => item.label.toLowerCase() === "settings")?.to ?? "/dashboard/settings";
     navigate({ to: settingsRoute });
   };
 
@@ -705,23 +710,105 @@ export function DashboardLayout() {
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
         {role.nav.map((item) => {
           const active = item.exact ? path === item.to : path.startsWith(item.to);
+          const isNotifItem = item.to.includes("notifications");
+          const hasUnread = isNotifItem && unreadCount > 0;
+
+          // If item has children, render collapsible group
+          if (item.children && (!collapsed || isMobile)) {
+            const isOpen = openSubmenus[item.to] !== undefined
+              ? openSubmenus[item.to]
+              : path.startsWith(item.to);
+            return (
+              <div key={item.to}>
+                <div className="flex items-center gap-2">
+                  <Link
+                    key={item.to + item.label}
+                    to={item.to}
+                    onClick={() => { if (isMobile) setMobileOpen(false); }}
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
+                      ${active
+                        ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
+                        : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+                      }`}
+                  >
+                    <span className="relative shrink-0">
+                      <item.icon className="size-4" />
+                      {hasUnread && (
+                        <span className="absolute -top-1 -right-1 flex size-2.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
+                        </span>
+                      )}
+                    </span>
+                    {(!collapsed || isMobile) && <span>{item.label}</span>}
+                    {active && (!collapsed || isMobile) && (
+                      <span className="ml-auto size-1.5 rounded-full bg-white/80" />
+                    )}
+                    {hasUnread && collapsed && !isMobile && (
+                      <span className="absolute top-1 right-1 size-2 rounded-full bg-emerald-500" />
+                    )}
+                  </Link>
+
+                  {(!collapsed || isMobile) && (
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenSubmenus(prev => ({ ...prev, [item.to]: !prev[item.to] })); }}
+                      aria-label={`Toggle ${item.label}`}
+                      className="p-2 rounded-full hover:bg-accent transition"
+                    >
+                      <ChevronDown className={`size-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                  )}
+                </div>
+
+                {isOpen && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {item.children.map((sub) => {
+                      const subActive = path.startsWith(sub.to);
+                      return (
+                        <Link
+                          key={sub.to}
+                          to={sub.to}
+                          onClick={() => { if (isMobile) setMobileOpen(false); }}
+                          className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition ${subActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'}`}
+                        >
+                          <span className="size-3.5">{sub.icon ? <sub.icon className="size-3" /> : null}</span>
+                          <span className="truncate">{sub.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          // Render main link (no children)
           return (
             <Link
               key={item.to + item.label}
               to={item.to}
-              onClick={() => {
-                if (isMobile) setMobileOpen(false);
-              }}
+              onClick={() => { if (isMobile) setMobileOpen(false); }}
               className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                 ${active
                   ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
                   : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
                 }`}
             >
-              <item.icon className="size-4 shrink-0" />
+              <span className="relative shrink-0">
+                <item.icon className="size-4" />
+                {hasUnread && (
+                  <span className="absolute -top-1 -right-1 flex size-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
+                  </span>
+                )}
+              </span>
               {(!collapsed || isMobile) && <span>{item.label}</span>}
               {active && (!collapsed || isMobile) && (
                 <span className="ml-auto size-1.5 rounded-full bg-white/80" />
+              )}
+              {hasUnread && collapsed && !isMobile && (
+                <span className="absolute top-1 right-1 size-2 rounded-full bg-emerald-500" />
               )}
             </Link>
           );
@@ -1073,18 +1160,21 @@ export function DashboardLayout() {
                         <div className="font-semibold text-xs text-foreground truncate">{displayName}</div>
                         <div className="text-[10px] text-muted-foreground truncate">{role.name}</div>
                       </div>
-                      <Link
-                        to={role.nav.find(item => item.label.toLowerCase() === "settings")?.to || "/dashboard/settings"}
-                        onClick={() => setShowProfileDropdown(false)}
-                        className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer transition mt-1"
+                      <button
+                        onClick={() => {
+                          setShowProfileDropdown(false);
+                          handleProfileClick();
+                        }}
+                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer text-left transition mt-1"
                       >
                         <Settings className="size-3.5" />
                         <span>Account Settings</span>
-                      </Link>
+                      </button>
                       <button
                         onClick={() => {
-                          toast.info("Accessing help documentation...");
                           setShowProfileDropdown(false);
+                          setShowHelpModal(true);
+                          setHelpActiveTab("getting-started");
                         }}
                         className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer text-left transition"
                       >
@@ -1805,6 +1895,262 @@ export function DashboardLayout() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Help & Documentation Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-4xl h-[600px] max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b p-4 px-6 bg-accent/20">
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <HelpCircle className="size-5 text-indigo-600" />
+                <span>Help & Documentation Center</span>
+              </h3>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-muted-foreground hover:text-foreground text-sm cursor-pointer w-7 h-7 rounded-full hover:bg-accent flex items-center justify-center transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body (Sidebar + Content Panel) */}
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+              {/* Sidebar Tabs */}
+              <div className="w-full md:w-56 border-b md:border-b-0 md:border-r bg-muted/20 p-3 flex flex-row md:flex-col gap-1 shrink-0 overflow-x-auto md:overflow-x-visible">
+                <button
+                  onClick={() => setHelpActiveTab("getting-started")}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-left cursor-pointer whitespace-nowrap md:w-full ${
+                    helpActiveTab === "getting-started"
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  <Info className="size-4" />
+                  <span>Getting Started</span>
+                </button>
+                <button
+                  onClick={() => setHelpActiveTab("role-guide")}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-left cursor-pointer whitespace-nowrap md:w-full ${
+                    helpActiveTab === "role-guide"
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  <Sparkles className="size-4" />
+                  <span>{role.name} Guide</span>
+                </button>
+                <button
+                  onClick={() => setHelpActiveTab("faqs")}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-left cursor-pointer whitespace-nowrap md:w-full ${
+                    helpActiveTab === "faqs"
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  <HelpCircle className="size-4" />
+                  <span>FAQs</span>
+                </button>
+                <button
+                  onClick={() => setHelpActiveTab("support")}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-left cursor-pointer whitespace-nowrap md:w-full ${
+                    helpActiveTab === "support"
+                      ? "bg-gradient-primary text-white shadow-soft"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  <User className="size-4" />
+                  <span>Contact Support</span>
+                </button>
+              </div>
+
+              {/* Main Contents Panel */}
+              <div className="flex-1 p-6 overflow-y-auto space-y-4">
+                {helpActiveTab === "getting-started" && (
+                  <div className="space-y-4 animate-in fade-in duration-150 text-left">
+                    <h4 className="font-bold text-sm text-foreground">Welcome to College Management System!</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Our platform is a state-of-the-art campus dashboard designed to integrate academic portals, 
+                      library inventories, hostel warden controls, financial records, and live transit monitoring.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                      <div className="p-3 border rounded-xl bg-accent/10 space-y-1">
+                        <span className="font-bold text-xs text-foreground block">🎨 Modern Dashboard Design</span>
+                        <span className="text-[11px] text-muted-foreground block">
+                          Uses custom-harmonized dark mode support, HSL palettes, and responsive side drawers.
+                        </span>
+                      </div>
+                      <div className="p-3 border rounded-xl bg-accent/10 space-y-1">
+                        <span className="font-bold text-xs text-foreground block">🛡️ Role-Based Scope Security</span>
+                        <span className="text-[11px] text-muted-foreground block">
+                          Access permissions are automatically sandboxed depending on your logged-in credentials.
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-3.5 bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded-xl text-[11px] leading-relaxed">
+                      <strong>💡 Quick Tip:</strong> Click the role badge with your name at the top-right corner to see a brief list of the features available to your account level.
+                    </div>
+                  </div>
+                )}
+
+                {helpActiveTab === "role-guide" && (
+                  <div className="space-y-4 animate-in fade-in duration-150 text-left">
+                    <h4 className="font-bold text-sm text-foreground">{role.name} Operations Manual</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Here is a tailored guide for your active role session in the system:
+                    </p>
+                    
+                    {role.id === "warden" && (
+                      <div className="space-y-3.5">
+                        <div className="border-l-2 border-teal-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">🔑 Room Allocations & Transfers</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Navigate to **Hostel** &rarr; **Rooms** or click **New** &rarr; **Allocate Room** to assign beds. 
+                            The system checks room capacity limits and prevents double-booking a resident in active rooms.
+                          </span>
+                        </div>
+                        <div className="border-l-2 border-teal-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">📋 Resident Directory Control</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Manage check-ins, check-outs, status updates (Active, Vacated), and resident profiles. 
+                            Only active resident profiles increment the occupied counts for rooms.
+                          </span>
+                        </div>
+                        <div className="border-l-2 border-teal-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">🛂 Visitor Registration</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Add detailed visitor records including name, student contact, relation, and time constraints. 
+                            You can mark a visitor checked-out when they leave.
+                          </span>
+                        </div>
+                        <div className="border-l-2 border-teal-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">💰 Fees & Payments ledger</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Keep track of unpaid dues, register paid receipts, and monitor financial transactions. 
+                            Always generate receipts with valid transaction IDs.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {role.id === "student" && (
+                      <div className="space-y-3.5">
+                        <div className="border-l-2 border-indigo-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">📊 Academics Hub</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Check class timetables, print grade cards, and monitor your cumulative GPA trends.
+                          </span>
+                        </div>
+                        <div className="border-l-2 border-indigo-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">📚 Borrowing Materials</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Browse physical book stocks or download digital PDFs from the e-library. 
+                            Return physical books before due dates to avoid library fines.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {role.id === "faculty" && (
+                      <div className="space-y-3.5">
+                        <div className="border-l-2 border-violet-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">📝 Attendance Records</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Click on the calendar classes to mark daily student presence. Ensure to submit records before midnight.
+                          </span>
+                        </div>
+                        <div className="border-l-2 border-violet-500 pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">📂 Files Broadcast</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Upload classroom lecture notes, assignment tasks, or event notices to your specific student courses.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {role.id !== "warden" && role.id !== "student" && role.id !== "faculty" && (
+                      <div className="space-y-3.5">
+                        <div className="border-l-2 border-primary pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">📈 Standard Operations Scope</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Use the sidebar navigation tabs to view registers, generate data tables, or download audit reports.
+                          </span>
+                        </div>
+                        <div className="border-l-2 border-primary pl-3 space-y-1">
+                          <span className="font-bold text-xs text-foreground block">✉️ Alerts Broadcaster</span>
+                          <span className="text-[11px] text-muted-foreground block">
+                            Check and send high priority notices to user groups under your designated system panel.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {helpActiveTab === "faqs" && (
+                  <div className="space-y-4 animate-in fade-in duration-150 text-left">
+                    <h4 className="font-bold text-sm text-foreground">Frequently Asked Questions</h4>
+                    
+                    <div className="space-y-3">
+                      <div className="p-3 border rounded-xl space-y-1 hover:bg-muted/10 transition">
+                        <span className="font-bold text-xs text-foreground block">Q: How do I switch my active role view?</span>
+                        <span className="text-[11px] text-muted-foreground block leading-relaxed">
+                          A: Since this is a demo sandbox environment, you can switch active roles using the role selectors or your profile profile. Click the user badge to view configurations.
+                        </span>
+                      </div>
+                      <div className="p-3 border rounded-xl space-y-1 hover:bg-muted/10 transition">
+                        <span className="font-bold text-xs text-foreground block">Q: What happens when a room reaches maximum capacity?</span>
+                        <span className="text-[11px] text-muted-foreground block leading-relaxed">
+                          A: The database validations will prevent further student assignments to that room and raise a warning notification message. You must transfer occupants or assign a vacant room.
+                        </span>
+                      </div>
+                      <div className="p-3 border rounded-xl space-y-1 hover:bg-muted/10 transition">
+                        <span className="font-bold text-xs text-foreground block">Q: Where can I review system logs and automation triggers?</span>
+                        <span className="text-[11px] text-muted-foreground block leading-relaxed">
+                          A: High-level automated system functions are accessible only to the Super Admin role scope under the AI Automation Control and Security panels.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {helpActiveTab === "support" && (
+                  <div className="space-y-4 animate-in fade-in duration-150 text-left">
+                    <h4 className="font-bold text-sm text-foreground">Reach IT Help & Support</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      If you encounter database timeouts, permission issues, or require custom features, 
+                      please contact our system administration team.
+                    </p>
+                    <div className="space-y-2.5 pt-2">
+                      <div className="flex items-center gap-3 p-3 border rounded-xl hover:bg-muted/10 transition">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold text-xs">@</div>
+                        <div>
+                          <span className="text-xs font-semibold text-foreground block">Tech Support Email</span>
+                          <span className="text-[11px] text-muted-foreground">support@collegemanage.edu</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 border rounded-xl hover:bg-muted/10 transition">
+                        <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-600 flex items-center justify-center font-bold text-xs">📞</div>
+                        <div>
+                          <span className="text-xs font-semibold text-foreground block">Admin Hotline</span>
+                          <span className="text-[11px] text-muted-foreground">+1 (555) 019-2834 (Ext. 204)</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 border rounded-xl hover:bg-muted/10 transition">
+                        <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center font-bold text-xs">🏢</div>
+                        <div>
+                          <span className="text-xs font-semibold text-foreground block">Operations Office</span>
+                          <span className="text-[11px] text-muted-foreground">Main Campus Building, Room 410A</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}

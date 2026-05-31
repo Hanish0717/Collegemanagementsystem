@@ -235,50 +235,7 @@ export function StudentsPage() {
     setIsFormOpen(true);
   };
 
-  const debugCreate = async () => {
-    try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/students`;
-      const anon = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      const payload = [{
-        full_name: 'Debug Student',
-        roll_number: `DBG${Date.now() % 100000}`,
-        email: `debug${Date.now() % 100000}@example.com`,
-        department: 'CSE',
-        year: 1,
-        semester: 1,
-        section: 'A',
-        parent_name: 'Debug Parent',
-        parent_phone: '9999999999',
-        parent_email: 'parent@debug.example',
-        attendance_percentage: 100,
-        cgpa: 0,
-      }];
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: anon,
-          Authorization: `Bearer ${anon}`,
-          Prefer: 'return=representation',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || `Status ${res.status}`);
-      }
-
-      const body = await res.json();
-      toast.success(`Debug created: ${body?.[0]?.email ?? 'ok'}`);
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
-    } catch (err) {
-      console.error('debugCreate error', err);
-      const msg = err instanceof Error ? err.message : String(err);
-      toast.error(msg || 'Debug create failed');
-    }
-  };
 
   const openEditModal = (student: StudentRecord) => {
     setEditingStudent(student);
@@ -344,13 +301,6 @@ export function StudentsPage() {
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm hover:opacity-90 transition"
             >
               <CheckCircle className="size-4" /> Verify Student
-            </button>
-            <button
-              onClick={debugCreate}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm ml-2 bg-background/60"
-              title="Create a debug student via REST"
-            >
-              Debug Create
             </button>
           </>
         }

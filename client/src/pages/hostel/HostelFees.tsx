@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
@@ -21,7 +21,9 @@ import {
   fetchHostelFees,
   payHostelFee,
   fetchDashboardCharts,
+  fetchFeePayments,
 } from "@/services/hostelService";
+import generateReceiptPdf from "@/lib/receiptPdf";
 
 export function HostelFees() {
   const queryClient = useQueryClient();
@@ -34,6 +36,10 @@ export function HostelFees() {
   // Modal / Interaction State
   const [paymentTarget, setPaymentTarget] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [historyTarget, setHistoryTarget] = useState<any>(null);
+  const [recentPayment, setRecentPayment] = useState<any>(null);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const receiptRef = useRef<HTMLDivElement | null>(null);
 
   // Queries
   const {
@@ -42,11 +48,12 @@ export function HostelFees() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["fees", search, selectedStatus],
+    queryKey: ["fees", search, selectedStatus, selectedTime],
     queryFn: () =>
       fetchHostelFees({
         search,
         status: selectedStatus,
+        timeRange: selectedTime,
       }),
   });
 
@@ -75,22 +82,80 @@ export function HostelFees() {
     };
   }, [queryClient]);
 
+  const { data: paymentHistory = [], isLoading: isHistoryLoading } = useQuery({
+    queryKey: ["fee-payments", historyTarget?.id],
+    queryFn: () => fetchFeePayments(historyTarget.id).then((r: any) => r.payments),
+    enabled: !!historyTarget,
+  });
+
   // Mutations
   const payMutation = useMutation({
     mutationFn: ({ feeId, amount, method }: { feeId: string; amount: number; method: string }) =>
       payHostelFee(feeId, amount, method),
-    onSuccess: () => {
+    // Optimistic update: update cached fee row immediately
+    onMutate: async ({ feeId, amount }) => {
+      await queryClient.cancelQueries({ queryKey: ["fees"] });
+      const previous = queryClient.getQueryData<any[]>(["fees", search, selectedStatus, selectedTime]);
+
+      queryClient.setQueriesData({ queryKey: ["fees"] }, (oldData: any) => {
+        if (!oldData) return oldData;
+        // oldData can be an array or an object, handle array case (list queries)
+        if (Array.isArray(oldData)) {
+          return oldData.map((f) => {
+            if (f.id !== feeId) return f;
+            const paid = Number(f.paidAmount || 0) + Number(amount || 0);
+            const raw = Number(f.rawAmount || 0);
+            const pending = Math.max(0, raw - paid);
+            const status = paid >= raw ? 'Paid' : paid > 0 ? 'Partially Paid' : 'Pending';
+            return {
+              ...f,
+              paidAmount: paid,
+              pendingAmount: pending,
+              paymentStatus: status,
+            };
+          });
+        }
+        return oldData;
+      });
+
+      return { previous };
+    },
+    onError: (err: any, variables, context: any) => {
+      // rollback
+      if (context?.previous) {
+        queryClient.setQueryData(["fees", search, selectedStatus, selectedTime], context.previous);
+      }
+      toast.error(err.message || "Failed to record payment");
+    },
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["fees"] });
       queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
       queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
       queryClient.invalidateQueries({ queryKey: ["hostel-dashboard-charts"] });
       queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      // If server returned the updated fee, merge it into cache for immediate consistency
+      const updatedFee = data?.data;
+      if (updatedFee) {
+        queryClient.setQueriesData({ queryKey: ["fees"] }, (oldData: any) => {
+          if (!oldData) return oldData;
+          if (Array.isArray(oldData)) {
+            return oldData.map((f) => (f.id === updatedFee.id ? { ...f, ...updatedFee } : f));
+          }
+          return oldData;
+        });
+      }
+      // show receipt modal if server returned payment
+      const payment = data?.payment || null;
+      if (payment) {
+        setRecentPayment(payment);
+        setShowReceiptModal(true);
+      }
       toast.success("Payment recorded successfully!");
       setPaymentTarget(null);
     },
-    onError: (err: any) => {
-      toast.error(err.message || "Failed to record payment");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["fees"] });
     },
   });
 
@@ -114,27 +179,32 @@ export function HostelFees() {
 
     feesList.forEach((f) => {
       collected += f.paidAmount;
-      const remains = Math.max(0, f.rawAmount - f.paidAmount);
+      pending += f.pendingAmount || 0;
       if (f.paymentStatus === "Paid") {
         paidC++;
       } else if (f.paymentStatus === "Overdue") {
         overdueC++;
-        overdueVal += remains;
+        overdueVal += f.pendingAmount || 0;
       } else {
         pendingC++;
-        pending += remains;
       }
     });
 
-    const totalStudents = feesList.length;
-    const rate = totalStudents > 0 ? `${Math.round((paidC / totalStudents) * 100)}%` : "100%";
+    const total = feesList.length;
+    const rate = total > 0 ? (collected / (collected + pending || 1)) * 100 : 0;
+
+    const formatter = new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    });
 
     return {
-      totalCollected: `₹${collected.toLocaleString("en-IN")}`,
-      pendingDues: `₹${pending.toLocaleString("en-IN")}`,
-      overdueCount: `₹${overdueVal.toLocaleString("en-IN")}`,
-      collectionRate: rate,
-      totalStudentsCount: totalStudents,
+      totalCollected: formatter.format(collected),
+      pendingDues: formatter.format(pending),
+      overdueCount: formatter.format(overdueVal),
+      collectionRate: `${rate.toFixed(1)}%`,
+      totalStudentsCount: total,
       paidStudentsCount: paidC,
       pendingStudentsCount: pendingC,
       overdueStudentsCount: overdueC,
@@ -245,6 +315,49 @@ export function HostelFees() {
       amount: paymentTarget.rawAmount,
       method: paymentMethod,
     });
+  };
+
+  const handlePrintPayment = (payment: any, fee?: any) => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    const studentName = fee?.studentName || payment.resident_name || "Resident";
+    const roomNumber = fee?.roomNumber || payment.room_number || "-";
+    const amountStr = `₹${Number(payment.amount_paid || payment.amount || 0).toLocaleString('en-IN')}`;
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Fee Receipt - ${payment.receiptNumber || payment.receipt_number || 'N/A'}</title>
+          <style>body{font-family:sans-serif;padding:30px;color:#333} .header{border-bottom:2px solid #4F46E5;padding-bottom:20px;margin-bottom:20px}.title{font-size:20px;font-weight:700;color:#4F46E5}</style>
+        </head>
+        <body>
+          <div class="header"><div class="title">COLLEGE MANAGEMENT SYSTEM</div><div style="font-size:13px;color:#666;margin-top:4px">Hostel Fee Payment Receipt</div></div>
+          <div><strong>Receipt:</strong> ${payment.receiptNumber || payment.receipt_number || 'N/A'}</div>
+          <div><strong>Student:</strong> ${studentName}</div>
+          <div><strong>Room:</strong> ${roomNumber}</div>
+          <div><strong>Amount Paid:</strong> ${amountStr}</div>
+          <div><strong>Payment Date:</strong> ${new Date(payment.payment_date || payment.paymentDate || Date.now()).toLocaleString()}</div>
+          <div style="margin-top:20px;font-size:12px;color:#777">Thank you for your payment.</div>
+          <script>window.onload=function(){window.print();window.close();}</script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  const handleViewReceipt = async (fee: any) => {
+    try {
+      const { payments } = await fetchFeePayments(fee.id, { page: 1, limit: 1 });
+      if (!payments || payments.length === 0) {
+        // Fallback: generate printable invoice from fee data if no payment history exists
+        handleDownloadInvoice(fee);
+        return;
+      }
+      const payment = payments[0];
+      setRecentPayment(payment);
+      setShowReceiptModal(true);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to load receipt');
+    }
   };
 
   const feeAnalyticsFallback = [
@@ -396,6 +509,12 @@ export function HostelFees() {
                               <Check className="size-3" /> Mark Paid
                             </button>
                           )}
+                          <button
+                            onClick={() => setHistoryTarget(fee)}
+                            className="px-2 py-1 rounded text-xs border hover:bg-accent transition flex items-center gap-1 cursor-pointer"
+                          >
+                            <Award className="size-3" /> History
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -587,6 +706,130 @@ export function HostelFees() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+      {/* Payment History Modal */}
+      {historyTarget && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4">
+          <div className="bg-background rounded-2xl border max-w-2xl w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b flex justify-between items-center bg-gradient-soft">
+              <h3 className="font-semibold text-base">Payment History — {historyTarget.studentName}</h3>
+              <button onClick={() => setHistoryTarget(null)} className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition cursor-pointer"><X className="size-4" /></button>
+            </div>
+            <div className="p-4">
+              {isHistoryLoading ? (
+                <div className="flex items-center justify-center py-12"><Loader2 className="size-8 text-primary animate-spin" /></div>
+              ) : paymentHistory.length === 0 ? (
+                <div className="py-8 text-center text-sm text-muted-foreground">No payments recorded for this fee.</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="border-b">
+                      <tr>
+                        {['Date', 'Amount', 'Method', 'Txn ID', 'Receipt', 'Action'].map((c) => (
+                          <th key={c} className="text-left py-3 px-4 font-semibold text-muted-foreground">{c}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {paymentHistory.map((p: any) => (
+                        <tr key={p.id} className="hover:bg-accent/50 transition">
+                          <td className="py-3 px-4">{new Date(p.paymentDate || p.payment_date || Date.now()).toLocaleString()}</td>
+                          <td className="py-3 px-4">₹{Number(p.amountPaid).toLocaleString('en-IN')}</td>
+                          <td className="py-3 px-4">{p.paymentMethod || p.payment_method || '—'}</td>
+                          <td className="py-3 px-4 text-xs text-muted-foreground">{p.transactionId || p.transaction_id || '—'}</td>
+                          <td className="py-3 px-4">{p.receiptNumber || p.receipt_number || '—'}</td>
+                          <td className="py-3 px-4">
+                            <div className="flex gap-2">
+                              <button onClick={() => handlePrintPayment(p, historyTarget)} className="px-2 py-1 rounded text-xs border hover:bg-accent transition">Print</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+            <div className="p-4 border-t flex justify-end">
+              <button onClick={() => setHistoryTarget(null)} className="px-4 py-2 rounded-xl border bg-background">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Receipt Modal (auto-open after payment) */}
+      {showReceiptModal && recentPayment && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4">
+          <div className="bg-background rounded-2xl border max-w-md w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-4 border-b flex justify-between items-center bg-gradient-soft">
+              <h3 className="font-semibold text-base">Payment Receipt</h3>
+              <button onClick={() => { setShowReceiptModal(false); setRecentPayment(null); }} className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition cursor-pointer"><X className="size-4" /></button>
+            </div>
+            <div ref={receiptRef} className="p-6 space-y-3">
+              <div className="text-sm text-muted-foreground">Receipt No</div>
+              <div className="text-lg font-semibold">{recentPayment.receipt_number || recentPayment.receiptNumber || 'N/A'}</div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-muted-foreground">Student</div>
+                  <div className="font-medium">{recentPayment.resident_name || recentPayment.student_name || 'Resident'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Amount</div>
+                  <div className="font-medium">₹{Number(recentPayment.amount_paid || recentPayment.amount || 0).toLocaleString('en-IN')}</div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm text-muted-foreground">Transaction ID</div>
+                  <div className="text-xs text-muted-foreground break-all">{recentPayment.transaction_id || recentPayment.transactionId || '—'}</div>
+                </div>
+                <div>
+                  <div className="text-sm text-muted-foreground">Payment Method</div>
+                  <div className="text-xs text-muted-foreground">{recentPayment.payment_method || recentPayment.paymentMethod || '—'}</div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => handlePrintPayment(recentPayment)}
+                  className="px-4 py-2 rounded-xl border hover:bg-accent"
+                >
+                  Print
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      const filename = `Hostel_Receipt_${recentPayment.receipt_number || recentPayment.receiptNumber || recentPayment.id}.pdf`;
+                      await generateReceiptPdf(receiptRef.current, filename);
+                      toast.success("PDF downloaded");
+                    } catch (err) {
+                      console.error(err);
+                      toast.error("Failed to generate PDF");
+                    }
+                  }}
+                  className="px-4 py-2 rounded-xl border hover:bg-accent flex items-center gap-2"
+                >
+                  <Download className="size-4" /> Download PDF
+                </button>
+                <button
+                  onClick={async () => {
+                    const text = recentPayment.transaction_id || recentPayment.transactionId || '';
+                    try {
+                      await navigator.clipboard.writeText(text);
+                      toast.success('Transaction ID copied');
+                    } catch (e) {
+                      toast.error('Copy failed');
+                    }
+                  }}
+                  className="px-4 py-2 rounded-xl bg-gradient-primary text-white"
+                >
+                  Copy Txn
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

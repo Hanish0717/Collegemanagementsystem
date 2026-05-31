@@ -36,6 +36,7 @@ export type NavItem = {
   label: string;
   icon: any;
   exact?: boolean;
+  children?: NavItem[];
 };
 
 export type Role = {
@@ -214,7 +215,16 @@ export const ROLES: Record<RoleId, Role> = {
     accent: "bg-teal-500",
     nav: [
       base,
-      { to: "/dashboard/hostel", label: "Hostel", icon: Building2 },
+      {
+        to: "/dashboard/hostel",
+        label: "Hostel",
+        icon: Building2,
+        children: [
+          { to: "/dashboard/hostel/mess/menus", label: "Mess Menus", icon: FileText },
+          { to: "/dashboard/hostel/mess/residents", label: "Mess Residents", icon: Users },
+          { to: "/dashboard/hostel/mess/fees", label: "Mess Fees", icon: Wallet },
+        ],
+      },
       { to: "/dashboard/students", label: "Residents", icon: Users },
       { to: "/dashboard/fees", label: "Fees", icon: Wallet },
       notif,
