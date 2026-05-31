@@ -1,33 +1,141 @@
 import { useState } from "react";
 import { AlertCircle, Clock, BookMarked, DollarSign, Plus, Archive, Send } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { libraryNotifications } from "@/mock/mockData";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import {
+  fetchIssuedBooks,
+  fetchLibraryNotifications,
+  createLibraryNotification,
+  markNotificationAsRead,
+  archiveLibraryNotification,
+  fetchLibrarySettings,
+  updateLibrarySettings,
+  LibrarySetting
+} from "@/services/libraryService";
 import { toast } from "sonner";
 
+interface NotifItem {
+  id: string;
+  title: string;
+  time: string;
+  type: string;
+  unread: boolean;
+  urgency: "high" | "medium" | "low";
+}
+
 export function LibrarianNotifications() {
-  const [notifications, setNotifications] = useState(libraryNotifications);
+  const { data: issuedBooks, isLoading: isIssuedLoading } = useQuery({
+    queryKey: ["allIssuedBooks"],
+    queryFn: () => fetchIssuedBooks(),
+  });
+
+  const { data: dbNotifications, isLoading: isNotifsLoading, refetch: refetchNotifs } = useQuery({
+    queryKey: ["libraryNotifications"],
+    queryFn: () => fetchLibraryNotifications(),
+  });
+
+  const { data: dbSettings, refetch: refetchSettings } = useQuery({
+    queryKey: ["librarySettings"],
+    queryFn: () => fetchLibrarySettings(),
+  });
+
   const [filterType, setFilterType] = useState("All");
   const [archivedCount, setArchivedCount] = useState(0);
+  const [archivedOverdueIds, setArchivedOverdueIds] = useState<string[]>([]);
 
   // New Notification Form state
   const [notifType, setNotifType] = useState("DueReminder");
   const [notifTemplate, setNotifTemplate] = useState("default");
   const [notifSubject, setNotifSubject] = useState("");
   const [notifMessage, setNotifMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
 
-  // Settings State
-  const [settings, setSettings] = useState([
-    {
-      title: "Due Date Reminders",
-      enabled: true,
-      desc: "Get notified when books are due within 3 days",
+  const addNotifMutation = useMutation({
+    mutationFn: (payload: { title: string; message: string; type: string; urgency: string }) =>
+      createLibraryNotification(payload),
+    onSuccess: () => {
+      toast.success("Broadcast alert dispatched to all active members successfully!");
+      setNotifSubject("");
+      setNotifMessage("");
+      setNotifTemplate("default");
+      refetchNotifs();
     },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to dispatch notification");
+    },
+  });
+
+  const isSending = addNotifMutation.isPending;
+
+  const markReadMutation = useMutation({
+    mutationFn: (id: string) => markNotificationAsRead(id),
+    onSuccess: () => {
+      toast.success("Notification marked as read.");
+      refetchNotifs();
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to mark read");
+    },
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: (id: string) => archiveLibraryNotification(id),
+    onSuccess: () => {
+      toast.success("Notification successfully archived.");
+      refetchNotifs();
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to archive notification");
+    },
+  });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (updatedSettings: LibrarySetting[]) => updateLibrarySettings(updatedSettings),
+    onSuccess: () => {
+      toast.success("Updated preferences successfully!");
+      refetchSettings();
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to update settings");
+    },
+  });
+
+  // Load database notifications (overdues)
+  const overdueAlerts: NotifItem[] = (issuedBooks || [])
+    .filter((issue) => issue.status === "overdue")
+    .map((issue) => ({
+      id: `db-od-${issue._id}`,
+      title: `Book '${
+        typeof issue.book === "object" && issue.book ? issue.book.title : "Resource"
+      }' is overdue from student ${
+        typeof issue.student === "object" && issue.student ? issue.student.fullName : ""
+      }`,
+      time: issue.dueDate ? `Due since ${new Date(issue.dueDate).toLocaleDateString()}` : "Overdue",
+      type: "Overdue",
+      unread: true,
+      urgency: "high",
+    }));
+
+  const broadcastAlerts: NotifItem[] = (dbNotifications || []).map((n) => ({
+    id: n.id,
+    title: n.title,
+    time: n.created_at ? new Date(n.created_at).toLocaleDateString() : "Recently",
+    type: n.type,
+    unread: n.unread,
+    urgency: n.urgency as "high" | "medium" | "low",
+  }));
+
+  const notifications = [
+    ...overdueAlerts.filter((o) => !archivedOverdueIds.includes(o.id)),
+    ...broadcastAlerts,
+  ];
+
+  const settings = dbSettings || [
+    { title: "Due Date Reminders", enabled: true, desc: "Get notified when books are due within 3 days" },
     { title: "Overdue Alerts", enabled: true, desc: "Critical alerts for overdue books" },
     { title: "New Arrivals", enabled: true, desc: "Notify about newly added books" },
     { title: "Fine Reminders", enabled: true, desc: "Payment reminders for pending fines" },
     { title: "System Updates", enabled: false, desc: "Maintenance and system notifications" },
-  ]);
+  ];
 
   const notificationTypes = {
     DueReminder: { label: "Due Reminders", icon: Clock, color: "from-amber-500" },
@@ -75,60 +183,60 @@ export function LibrarianNotifications() {
       return;
     }
 
-    setIsSending(true);
-
-    setTimeout(() => {
-      const newNotif = {
-        id: `LN-${String(notifications.length + 1).padStart(3, "0")}`,
-        title: notifSubject,
-        time: "Just now",
-        type: notifType,
-        unread: true,
-        urgency: notifType === "Overdue" ? "high" : notifType === "DueReminder" ? "medium" : "low",
-      };
-
-      setNotifications([newNotif, ...notifications]);
-      setIsSending(false);
-      toast.success("Broadcast alert dispatched to all active members successfully!");
-      setNotifSubject("");
-      setNotifMessage("");
-      setNotifTemplate("default");
-    }, 800);
+    addNotifMutation.mutate({
+      title: notifSubject,
+      message: notifMessage,
+      type: notifType,
+      urgency: notifType === "Overdue" ? "high" : notifType === "DueReminder" ? "medium" : "low",
+    });
   };
 
   const handleMarkRead = (id: string) => {
-    setNotifications(
-      notifications.map((n) => {
-        if (n.id === id) {
-          return {
-            ...n,
-            unread: false,
-          };
-        }
-        return n;
-      }),
-    );
-    toast.success("Notification marked as read.");
+    if (id.startsWith("db-od-")) {
+      toast.success("Overdue notices cannot be marked read directly.");
+    } else {
+      markReadMutation.mutate(id);
+    }
   };
 
   const handleArchive = (id: string) => {
-    setNotifications(notifications.filter((n) => n.id !== id));
-    setArchivedCount((prev) => prev + 1);
-    toast.success("Notification successfully archived.");
+    if (id.startsWith("db-od-")) {
+      setArchivedOverdueIds((prev) => [...prev, id]);
+      setArchivedCount((prev) => prev + 1);
+      toast.success("Notification successfully archived.");
+    } else {
+      archiveMutation.mutate(id);
+      setArchivedCount((prev) => prev + 1);
+    }
   };
 
   const handleToggleSetting = (index: number) => {
     const updated = [...settings];
     updated[index].enabled = !updated[index].enabled;
-    setSettings(updated);
-    toast.success(`Updated preferences for: ${updated[index].title}`);
+    updateSettingsMutation.mutate(updated);
   };
 
   const filteredNotifications =
     filterType === "All" ? notifications : notifications.filter((n) => n.type === filterType);
 
+  const isLoading = isIssuedLoading || isNotifsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-200">
+        <PageHeader title="Notifications" desc="Library alerts, reminders and system notifications." />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, idx) => (
+            <div key={idx} className="h-24 bg-muted animate-pulse rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-200">
       <PageHeader
         title="Notifications"
         desc="Library alerts, reminders and system notifications."
@@ -273,74 +381,80 @@ export function LibrarianNotifications() {
 
           {/* Notifications List */}
           <div className="space-y-3">
-            {filteredNotifications.map((notification) => {
-              const typeInfo =
-                notificationTypes[notification.type as keyof typeof notificationTypes];
-              const IconComponent = typeInfo?.icon || AlertCircle;
+            {filteredNotifications.length === 0 ? (
+              <Card className="text-center py-8 text-muted-foreground">
+                No active notifications found.
+              </Card>
+            ) : (
+              filteredNotifications.map((notification) => {
+                const typeInfo =
+                  notificationTypes[notification.type as keyof typeof notificationTypes];
+                const IconComponent = typeInfo?.icon || AlertCircle;
 
-              return (
-                <Card
-                  key={notification.id}
-                  className={`border-l-4 relative ${
-                    notification.urgency === "high"
-                      ? "border-l-rose-500"
-                      : notification.urgency === "medium"
-                        ? "border-l-amber-500"
-                        : "border-l-emerald-500"
-                  } hover:-translate-x-1 transition`}
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Icon */}
-                    <div
-                      className={`size-12 rounded-xl bg-gradient-to-br ${typeInfo?.color} to-transparent text-white grid place-items-center shrink-0`}
-                    >
-                      <IconComponent className="size-5" />
-                    </div>
-
-                    {/* Main Content */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm leading-snug">{notification.title}</h3>
-                      <p className="text-[11px] text-muted-foreground mt-1">{notification.time}</p>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons and Badge - Unified Container */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:gap-2 border-t pt-3">
-                    <button
-                      onClick={() => handleMarkRead(notification.id)}
-                      disabled={!notification.unread}
-                      className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-gradient-soft transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer"
-                    >
-                      {notification.unread ? "Mark Read" : "Read"}
-                    </button>
-
-                    {/* Badge + Status Indicator - Right aligned */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      {notification.unread && (
-                        <div className="size-2 rounded-full bg-gradient-primary" />
-                      )}
-                      <Badge
-                        tone={
-                          notification.urgency === "high"
-                            ? "danger"
-                            : notification.urgency === "medium"
-                              ? "warn"
-                              : "success"
-                        }
+                return (
+                  <Card
+                    key={notification.id}
+                    className={`border-l-4 relative ${
+                      notification.urgency === "high"
+                        ? "border-l-rose-500"
+                        : notification.urgency === "medium"
+                          ? "border-l-amber-500"
+                          : "border-l-emerald-500"
+                    } hover:-translate-x-1 transition`}
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Icon */}
+                      <div
+                        className={`size-12 rounded-xl bg-gradient-to-br ${typeInfo?.color || "from-slate-500"} to-transparent text-white grid place-items-center shrink-0`}
                       >
-                        {notification.urgency}
-                      </Badge>
+                        <IconComponent className="size-5" />
+                      </div>
+
+                      {/* Main Content */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-sm leading-snug">{notification.title}</h3>
+                        <p className="text-[11px] text-muted-foreground mt-1">{notification.time}</p>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons and Badge - Unified Container */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 mt-4 sm:gap-2 border-t pt-3">
                       <button
-                        onClick={() => handleArchive(notification.id)}
-                        className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-rose-100 transition shrink-0 ml-1 cursor-pointer"
+                        onClick={() => handleMarkRead(notification.id)}
+                        disabled={!notification.unread}
+                        className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-gradient-soft transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer"
                       >
-                        <Archive className="size-4" />
+                        {notification.unread ? "Mark Read" : "Read"}
                       </button>
+
+                      {/* Badge + Status Indicator - Right aligned */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {notification.unread && (
+                          <div className="size-2 rounded-full bg-gradient-primary" />
+                        )}
+                        <Badge
+                          tone={
+                            notification.urgency === "high"
+                              ? "danger"
+                              : notification.urgency === "medium"
+                                ? "warn"
+                                : "success"
+                          }
+                        >
+                          {notification.urgency}
+                        </Badge>
+                        <button
+                          onClick={() => handleArchive(notification.id)}
+                          className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-rose-100 transition shrink-0 ml-1 cursor-pointer"
+                        >
+                          <Archive className="size-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              );
-            })}
+                  </Card>
+                );
+              })
+            )}
           </div>
         </div>
 

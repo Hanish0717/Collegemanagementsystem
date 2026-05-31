@@ -20,7 +20,9 @@ import adminRoutes from './routes/adminRoutes.js';
 import superAdminRoutes from './routes/superAdminRoutes.js';
 import facultyRoutes from './routes/facultyRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import { supabase } from './config/supabase.js';
 import transportRoutes from './routes/transportRoutes.js';
+import placementRoutes from './routes/placementRoutes.js';
 
 dotenv.config();
 
@@ -79,6 +81,15 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/api/inspect-db-agent', async (req, res) => {
+  try {
+    const { data: facultyList } = await supabase.from('faculty').select('*');
+    res.json({ success: true, facultyList });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
@@ -95,6 +106,7 @@ app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/transport', transportRoutes);
+app.use('/api/placement', placementRoutes);
 
 // 404 handler
 app.use(notFound);

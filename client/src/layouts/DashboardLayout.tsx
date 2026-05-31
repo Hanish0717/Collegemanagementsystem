@@ -5,22 +5,12 @@ import {
   LogOut,
   Search,
   Menu,
-  Sun,
-  Moon,
-  ChevronDown,
-  Plus,
   Bell,
-  User,
-  Settings,
-  HelpCircle,
   History,
   BookOpen,
   FileText,
   UserPlus,
   BellRing,
-  Info,
-  Check,
-  Trash2,
 } from "lucide-react";
 import { getActiveRole, type Role } from "@/lib/roles";
 import { useAuth } from "@/contexts/AuthContext";
@@ -53,12 +43,9 @@ export function DashboardLayout() {
   const [role, setRole] = useState<Role>(() => getActiveRole());
   const path = useRouterState({ select: (r) => r.location.pathname });
   const displayName = user?.fullName ?? "Anjali Sharma";
+  const initialLetter = displayName.trim().charAt(0).toUpperCase();
 
   // Popover States
-  const [showRoleInfo, setShowRoleInfo] = useState(false);
-  const [showNewActions, setShowNewActions] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // Search State
@@ -472,222 +459,31 @@ export function DashboardLayout() {
               )}
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {/* Role Info */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowRoleInfo(!showRoleInfo)}
-                  className={`hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-90 transition`}
-                >
-                  <RoleIcon className="size-3" /> {role.name}
-                </button>
-                {showRoleInfo && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowRoleInfo(false)} />
-                    <div className="absolute right-0 lg:left-0 lg:right-auto top-full mt-2 w-64 bg-background border rounded-xl shadow-lg z-50 p-4 animate-in fade-in slide-in-from-top-2 duration-150 text-left">
-                      <div className="font-semibold text-sm">Role Scope: {role.name}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{role.description}</div>
-                      <div className="border-t pt-2 mt-2">
-                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Navigation Items</div>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {role.nav.map(n => (
-                            <Badge key={n.to} tone="info" className="text-[9px] py-0.5 px-1.5">{n.label}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Plus/New Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNewActions(!showNewActions)}
-                  className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-primary text-primary-foreground text-sm font-medium glow-primary cursor-pointer hover:opacity-95 transition"
-                >
-                  <Plus className="size-4" /> New
-                </button>
-                {showNewActions && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowNewActions(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-56 bg-background border rounded-xl shadow-lg z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 text-left">
-                      <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">Quick Actions</div>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("addBook");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <BookOpen className="size-3.5 text-violet-500" />
-                        <span>Quick Add Book</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("issueBook");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <History className="size-3.5 text-indigo-500" />
-                        <span>Issue Book Resource</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("addMember");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <UserPlus className="size-3.5 text-emerald-500" />
-                        <span>Register Member</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("addDigital");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <FileText className="size-3.5 text-amber-500" />
-                        <span>Upload Digital Resource</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("sendNotif");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <BellRing className="size-3.5 text-rose-500" />
-                        <span>Broadcast Alert</span>
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Theme Toggle */}
+              {/* Notifications Icon (Redirects to notifications) */}
               <button
-                onClick={() => setDark(!dark)}
-                className="p-2 rounded-lg hover:bg-accent cursor-pointer transition"
-                aria-label="Toggle Theme"
+                onClick={() => navigate({ to: "/dashboard/notifications" })}
+                className="relative p-2 rounded-lg hover:bg-accent cursor-pointer transition"
+                aria-label="View notifications"
               >
-                {dark ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
+                <Bell className="size-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-gradient-primary animate-pulse" />
+                )}
               </button>
 
-              {/* Notifications Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 rounded-lg hover:bg-accent cursor-pointer transition"
-                  aria-label="View notifications"
-                >
-                  <Bell className="size-4" />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-gradient-primary animate-pulse" />
-                  )}
-                </button>
-                {showNotifications && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-80 bg-background border rounded-xl shadow-lg z-50 p-3 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-normal">
-                      <div className="flex items-center justify-between border-b pb-2 mb-2">
-                        <span className="font-semibold text-xs">Alerts & Notifications</span>
-                        {unreadCount > 0 && (
-                          <button
-                            onClick={() => {
-                              markAllNotificationsRead();
-                              setShowNotifications(false);
-                            }}
-                            className="text-[10px] text-indigo-600 hover:underline cursor-pointer font-semibold"
-                          >
-                            Mark all read
-                          </button>
-                        )}
-                      </div>
-                      <div className="space-y-1.5 max-h-60 overflow-y-auto">
-                        {localNotifications.length === 0 ? (
-                          <div className="text-center py-6 text-xs text-muted-foreground">No new notifications</div>
-                        ) : (
-                          localNotifications.map((notif) => (
-                            <div
-                              key={notif.id}
-                              onClick={() => {
-                                markSingleRead(notif.id);
-                              }}
-                              className={`p-2 rounded-lg border text-xs cursor-pointer transition relative group ${notif.unread ? "bg-indigo-50/40 border-indigo-200 dark:bg-indigo-950/20 dark:border-indigo-900/40 font-medium" : "hover:bg-accent/40"}`}
-                            >
-                              <div className="flex justify-between items-start gap-2">
-                                <span className="pr-4">{notif.title}</span>
-                                <span className="text-[9px] text-muted-foreground whitespace-nowrap">{notif.time}</span>
-                              </div>
-                              {notif.unread && (
-                                <span className="absolute top-2 right-2 size-1.5 rounded-full bg-indigo-500" />
-                              )}
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Profile Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                  className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-accent cursor-pointer transition"
-                >
-                  <div className={`size-7 rounded-lg bg-gradient-to-br ${role.gradient}`} />
-                  <div className="hidden md:block text-left leading-tight">
-                    <div className="text-xs font-semibold">{displayName}</div>
-                    <div className="text-[10px] text-muted-foreground">{role.name}</div>
-                  </div>
-                  <ChevronDown className="size-3.5 text-muted-foreground" />
-                </button>
-                {showProfileDropdown && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowProfileDropdown(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-56 bg-background border rounded-xl shadow-lg z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-normal">
-                      <div className="px-2.5 py-2 border-b">
-                        <div className="font-semibold text-xs text-foreground truncate">{displayName}</div>
-                        <div className="text-[10px] text-muted-foreground truncate">{role.name}</div>
-                      </div>
-                      <Link
-                        to={role.nav.find(item => item.label.toLowerCase() === "settings")?.to || "/dashboard/settings"}
-                        onClick={() => setShowProfileDropdown(false)}
-                        className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer transition mt-1"
-                      >
-                        <Settings className="size-3.5" />
-                        <span>Account Settings</span>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          toast.info("Accessing help documentation...");
-                          setShowProfileDropdown(false);
-                        }}
-                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer text-left transition"
-                      >
-                        <HelpCircle className="size-3.5" />
-                        <span>Help & Documentation</span>
-                      </button>
-                      <div className="border-t my-1" />
-                      <button
-                        onClick={() => {
-                          setShowProfileDropdown(false);
-                          setShowLogoutConfirm(true);
-                        }}
-                        className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-xs hover:bg-rose-50 dark:hover:bg-rose-950/20 text-rose-600 cursor-pointer text-left transition"
-                      >
-                        <LogOut className="size-3.5" />
-                        <span>Sign Out</span>
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
+              {/* Profile Icon (Redirects to settings) */}
+              <button
+                onClick={() => navigate({ to: "/dashboard/settings" })}
+                className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-accent cursor-pointer transition"
+              >
+                <div className={`size-7 rounded-full bg-gradient-to-br ${role.gradient} text-white font-bold text-xs flex items-center justify-center`}>
+                  {initialLetter}
+                </div>
+                <div className="hidden md:block text-left leading-tight">
+                  <div className="text-xs font-semibold">{displayName}</div>
+                  <div className="text-[10px] text-muted-foreground">{role.name}</div>
+                </div>
+              </button>
             </div>
           </header>
 

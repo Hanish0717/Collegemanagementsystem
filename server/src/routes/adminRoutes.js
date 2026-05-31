@@ -5,6 +5,9 @@ import {
   updateFaculty,
   deleteFaculty,
   assignFaculty,
+  getTimetable,
+  createTimetableSlot,
+  deleteTimetableSlot,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { requireRole } from '../middleware/rbacMiddleware.js';
@@ -26,5 +29,13 @@ router.route('/faculty/:id')
 // Assignments
 router.route('/assignments')
   .post(assignFaculty);
+
+// Timetable routes
+router.route('/timetable')
+  .get(getTimetable)
+  .post(createTimetableSlot);
+
+router.route('/timetable/:id')
+  .delete(deleteTimetableSlot);
 
 export default router;

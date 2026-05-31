@@ -25,7 +25,7 @@ const reportFilters = ["AY 2026-27", "AY 2025-26", "All Cycles"];
 export function SuperAdminReports() {
   const [activeFilter, setActiveFilter] = useState(reportFilters[0]);
 
-  const { data, isLoading } = useSuperAdminAnalytics();
+  const { data, isLoading } = useSuperAdminAnalytics(activeFilter);
 
   const revenueStats = data?.revenueStats || [];
   const attendanceStats = data?.attendanceStats || [];

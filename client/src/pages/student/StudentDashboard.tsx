@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   Line,
   LineChart,
@@ -61,6 +63,7 @@ export function StudentDashboard() {
   const [activities, setActivities] = useState<any[]>([]);
   const [gpaData, setGpaData] = useState<any[]>([]);
   const [attendanceHistoryData, setAttendanceHistoryData] = useState<any[]>([]);
+  const [displayMonth, setDisplayMonth] = useState<string>(() => new Date().toLocaleString("en-US", { month: "long", year: "numeric" }));
   const [notifications, setNotifications] = useState<any[]>([]);
   const [currentCgpa, setCurrentCgpa] = useState("0.0");
   const [currentAttendance, setCurrentAttendance] = useState("0%");
@@ -123,14 +126,21 @@ export function StudentDashboard() {
 
             setEarnedCredits(totalCredits);
 
-            const newGpaHistory = Object.keys(semMap).map(sem => {
+            const sortedSemesters = Object.keys(semMap).sort((a, b) => a.localeCompare(b));
+            let runningPoints = 0;
+            let runningCredits = 0;
+            const newGpaHistory = sortedSemesters.map(sem => {
               const gpa = Number((semMap[sem].totalPoints / semMap[sem].totalCredits).toFixed(2));
+              runningPoints += semMap[sem].totalPoints;
+              runningCredits += semMap[sem].totalCredits;
+              const cgpa = Number((runningPoints / runningCredits).toFixed(2));
               return {
                 semester: sem,
                 gpa,
+                cgpa,
                 credits: semMap[sem].totalCredits
               };
-            }).sort((a, b) => a.semester.localeCompare(b.semester));
+            });
 
             setGpaData(newGpaHistory);
           }
@@ -148,18 +158,24 @@ export function StudentDashboard() {
           if (attRes.data?.success && attRes.data?.data) {
             const { monthly } = attRes.data.data;
             if (monthly && monthly.length > 0) {
-              const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-              const formatted = monthly.map((m: any) => {
-                const parts = m.month.split("-");
-                const year = Number(parts[0]);
-                const monthIdx = Number(parts[1]) - 1;
-                const date = new Date(year, monthIdx, 1);
-                return {
-                  month: monthNames[date.getMonth()],
-                  percentage: m.percentage
-                };
-              }).reverse();
-              setAttendanceHistoryData(formatted);
+              const curMonthStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+              let targetMonthRecord = monthly.find((m: any) => m.month === curMonthStr);
+              if (!targetMonthRecord) {
+                targetMonthRecord = monthly[0];
+              }
+
+              if (targetMonthRecord) {
+                setAttendanceHistoryData([
+                  { name: "Present", count: targetMonthRecord.present || 0, fill: "#10B981" },
+                  { name: "Absent", count: targetMonthRecord.absent || 0, fill: "#EF4444" },
+                  { name: "Late", count: targetMonthRecord.late || 0, fill: "#F59E0B" }
+                ]);
+                const parts = targetMonthRecord.month.split("-");
+                const date = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
+                setDisplayMonth(date.toLocaleString("en-US", { month: "long", year: "numeric" }));
+              } else {
+                setAttendanceHistoryData([]);
+              }
             }
           }
         }
@@ -192,14 +208,18 @@ export function StudentDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.length > 0 ? (
-          stats.map((stat, i) => (
-            <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-              <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i % statIcons.length]} gradient={statGradients[i % statGradients.length]} />
-            </motion.div>
-          ))
+          stats
+            .filter((stat) => stat.label !== "Pending Assignments")
+            .map((stat, i) => (
+              <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i % statIcons.length]} gradient={statGradients[i % statGradients.length]} />
+              </motion.div>
+            ))
         ) : (
           [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-28 animate-pulse bg-muted/40" />
+            <Card key={n} className="h-28 animate-pulse bg-muted/40">
+              <div />
+            </Card>
           ))
         )}
       </div>
@@ -208,33 +228,25 @@ export function StudentDashboard() {
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-semibold">Attendance History</h3>
-              <p className="text-xs text-muted-foreground">Monthly attendance percentage</p>
+              <h3 className="font-semibold">Attendance Summary</h3>
+              <p className="text-xs text-muted-foreground">{displayMonth} breakdown</p>
             </div>
             <Badge tone="success">{currentAttendance}</Badge>
           </div>
           <div className="h-72">
             {attendanceHistoryData.length > 0 ? (
               <ResponsiveContainer>
-                <AreaChart data={attendanceHistoryData}>
-                  <defs>
-                    <linearGradient id="student-attendance" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
-                      <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+                <BarChart data={attendanceHistoryData}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-                  <YAxis stroke="#64748B" fontSize={12} />
+                  <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
+                  <YAxis stroke="#64748B" fontSize={12} allowDecimals={false} />
                   <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                  <Area
-                    type="monotone"
-                    dataKey="percentage"
-                    stroke="#4F46E5"
-                    fill="url(#student-attendance)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
+                  <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                    {attendanceHistoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             ) : (
               <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl">
@@ -252,7 +264,6 @@ export function StudentDashboard() {
           <div className="space-y-3">
             {[
               { label: "View Timetable", tone: "info" as const, to: "/dashboard/student/timetable" },
-              { label: "Submit Assignment", tone: "success" as const, to: "/dashboard/student/assignments" },
               { label: "Pay Fees", tone: "warn" as const, to: "/dashboard/student/fees" },
               { label: "Register Event", tone: "info" as const, to: "/dashboard/student/events" },
             ].map((item) => (
@@ -273,8 +284,8 @@ export function StudentDashboard() {
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-semibold">GPA Progress</h3>
-              <p className="text-xs text-muted-foreground">Semester-wise GPA tracking</p>
+              <h3 className="font-semibold">GPA & CGPA Progress</h3>
+              <p className="text-xs text-muted-foreground">Semester-wise GPA and Cumulative CGPA tracking</p>
             </div>
             <Badge tone="success">{currentCgpa}</Badge>
           </div>
@@ -286,7 +297,8 @@ export function StudentDashboard() {
                   <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
                   <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                  <Line type="monotone" dataKey="gpa" stroke="#4F46E5" strokeWidth={2.5} />
+                  <Line type="monotone" dataKey="gpa" name="Semester GPA" stroke="#4F46E5" strokeWidth={2} />
+                  <Line type="monotone" dataKey="cgpa" name="CGPA" stroke="#10B981" strokeWidth={2.5} />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
@@ -383,4 +395,10 @@ export function StudentDashboard() {
       </div>
     </div>
   );
+}
+
+// Inline implementation of cell coloring if Cell is not directly imported
+function Cell(props: any) {
+  const { fill, ...rest } = props;
+  return <path fill={fill} {...rest} />;
 }

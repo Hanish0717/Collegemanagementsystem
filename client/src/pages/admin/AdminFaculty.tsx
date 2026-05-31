@@ -269,83 +269,96 @@ export function AdminFaculty() {
             No faculty members found. Fill out the form below to register a new faculty.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b">
-                <tr>
-                  {[
-                    "Faculty ID",
-                    "Name & Email",
-                    "Department",
-                    "Designation",
-                    "Exp (Yrs)",
-                    "Status",
-                    "Actions",
-                  ].map((column) => (
-                    <th
-                      key={column}
-                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
-                    >
-                      {column}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {filteredFaculty.map((fac) => (
-                  <tr key={fac._id} className="hover:bg-accent/50 transition">
-                    <td className="py-3 px-4 font-semibold text-xs text-primary">
-                      {fac.employeeId}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-foreground">{fac.fullName}</div>
-                      <div className="text-xs text-muted-foreground">{fac.email}</div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <Badge tone="info">{fac.department?.name || "Unassigned"}</Badge>
-                    </td>
-                    <td className="py-3 px-4 text-muted-foreground">{fac.designation}</td>
-                    <td className="py-3 px-4 font-medium">{fac.experience}</td>
-                    <td className="py-3 px-4">
-                      <select
-                        value={fac.status}
-                        onChange={(e) =>
-                          updateFacultyMutation.mutate({
-                            id: fac._id,
-                            payload: { status: e.target.value },
-                          })
-                        }
-                        className="rounded-lg border bg-background/50 px-2 py-1 text-xs outline-none focus:border-primary transition"
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="border-b">
+                  <tr>
+                    {[
+                      "Faculty ID",
+                      "Name & Email",
+                      "Department",
+                      "Designation",
+                      "Exp (Yrs)",
+                      "Status",
+                      "Actions",
+                    ].map((column) => (
+                      <th
+                        key={column}
+                        className="text-left py-3 px-4 font-semibold text-muted-foreground"
                       >
-                        <option value="active">Active</option>
-                        <option value="on-leave">On Leave</option>
-                        <option value="suspended">Suspended</option>
-                      </select>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => {
-                            if (
-                              confirm(
-                                `Are you sure you want to soft-delete faculty ${fac.fullName}?`,
-                              )
-                            ) {
-                              deleteFacultyMutation.mutate(fac._id);
-                            }
-                          }}
-                          className="p-1 rounded text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition cursor-pointer"
-                          title="Delete Faculty"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                    </td>
+                        {column}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y">
+                  {filteredFaculty.slice(0, 10).map((fac) => (
+                    <tr key={fac._id} className="hover:bg-accent/50 transition">
+                      <td className="py-3 px-4 font-semibold text-xs text-primary">
+                        {fac.employeeId}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-foreground">{fac.fullName}</div>
+                        <div className="text-xs text-muted-foreground">{fac.email}</div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <Badge tone="info">{fac.department?.name || "Unassigned"}</Badge>
+                      </td>
+                      <td className="py-3 px-4 text-muted-foreground">{fac.designation}</td>
+                      <td className="py-3 px-4 font-medium">{fac.experience}</td>
+                      <td className="py-3 px-4">
+                        <select
+                          value={fac.status}
+                          onChange={(e) =>
+                            updateFacultyMutation.mutate({
+                              id: fac._id,
+                              payload: { status: e.target.value },
+                            })
+                          }
+                          className="rounded-lg border bg-background/50 px-2 py-1 text-xs outline-none focus:border-primary transition"
+                        >
+                          <option value="active">Active</option>
+                          <option value="on-leave">On Leave</option>
+                          <option value="suspended">Suspended</option>
+                        </select>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  `Are you sure you want to soft-delete faculty ${fac.fullName}?`,
+                                )
+                              ) {
+                                deleteFacultyMutation.mutate(fac._id);
+                              }
+                            }}
+                            className="p-1 rounded text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition cursor-pointer"
+                            title="Delete Faculty"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {filteredFaculty.length > 10 && (
+              <div className="border-t px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 bg-muted/10 text-xs text-muted-foreground rounded-b-2xl">
+                <div>
+                  Showing <span className="font-semibold text-foreground">10</span> of{" "}
+                  <span className="font-semibold text-foreground">{filteredFaculty.length}</span> faculty members
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 font-semibold">
+                  <span>+{filteredFaculty.length - 10} more records exist</span>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </Card>
 

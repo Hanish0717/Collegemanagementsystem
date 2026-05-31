@@ -1,13 +1,33 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Search, Plus, Grid, List, Building2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Plus, Grid, List, Building2, Loader2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { companies, drives } from "@/mock/mockData";
+import { fetchPlacementData, CompanyItem, DriveItem } from "@/services/placementService";
+import { companies as mockCompanies, drives as mockDrives } from "@/mock/mockData";
 
 export function PlacementCompanies() {
+  const [companies, setCompanies] = useState<CompanyItem[]>(mockCompanies);
+  const [drives, setDrives] = useState<DriveItem[]>(mockDrives);
+  const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("All");
+
+  useEffect(() => {
+    fetchPlacementData()
+      .then((res) => {
+        if (res.companies && res.companies.length > 0) {
+          setCompanies(res.companies);
+        }
+        if (res.drives && res.drives.length > 0) {
+          setDrives(res.drives);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch live companies list, using fallback mock data:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const industries = ["All", "Technology", "Finance", "Consulting", "IT Services", "E-commerce"];
 
@@ -83,8 +103,17 @@ export function PlacementCompanies() {
         </div>
       </Card>
 
+      {loading && (
+        <Card className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="size-8 text-primary animate-spin" />
+            <span className="text-sm text-muted-foreground">Loading companies dataset...</span>
+          </div>
+        </Card>
+      )}
+
       {/* Grid View */}
-      {viewMode === "grid" && (
+      {!loading && viewMode === "grid" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredCompanies.map((company) => (
             <Card key={company.id} className="hover:-translate-y-1 transition flex flex-col">
@@ -139,7 +168,7 @@ export function PlacementCompanies() {
       )}
 
       {/* Table View */}
-      {viewMode === "table" && (
+      {!loading && viewMode === "table" && (
         <Card>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -212,74 +241,76 @@ export function PlacementCompanies() {
       )}
 
       {/* Drives Table */}
-      <Card>
-        <h3 className="font-semibold mb-4">Company Drives</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b">
-              <tr>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Role</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Package</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
-                  Eligibility
-                </th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Date</th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
-                  Applicants
-                </th>
-                <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Status</th>
-                <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {drives.map((drive) => (
-                <tr key={drive.id} className="hover:bg-accent/50 transition">
-                  <td className="py-3 px-4 font-medium">{drive.company}</td>
-                  <td className="py-3 px-4">{drive.role}</td>
-                  <td className="py-3 px-4">
-                    <span className="font-semibold text-emerald-600">
-                      {companies.find((c) => c.name === drive.company)?.package}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge tone="info">CGPA 7.0+, no backlogs</Badge>
-                  </td>
-                  <td className="py-3 px-4 text-sm text-muted-foreground">
-                    {new Date(drive.date).toLocaleDateString()}
-                  </td>
-                  <td className="py-3 px-4 font-medium">{drive.studentCount}</td>
-                  <td className="py-3 px-4">
-                    <Badge
-                      tone={
-                        drive.status === "Upcoming"
-                          ? "info"
-                          : drive.status === "Ongoing"
-                            ? "warn"
-                            : "success"
-                      }
-                    >
-                      {drive.status}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-1 justify-center">
-                      <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
-                        View
-                      </button>
-                      <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
-                        Edit
-                      </button>
-                    </div>
-                  </td>
+      {!loading && (
+        <Card>
+          <h3 className="font-semibold mb-4">Company Drives</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b">
+                <tr>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Company</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Role</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Package</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Eligibility
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Date</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Applicants
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Status</th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+              </thead>
+              <tbody className="divide-y">
+                {drives.map((drive) => (
+                  <tr key={drive.id} className="hover:bg-accent/50 transition">
+                    <td className="py-3 px-4 font-medium">{drive.company}</td>
+                    <td className="py-3 px-4">{drive.role}</td>
+                    <td className="py-3 px-4">
+                      <span className="font-semibold text-emerald-600">
+                        {companies.find((c) => c.name === drive.company)?.package || "8.0 LPA"}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge tone="info">CGPA 7.0+, no backlogs</Badge>
+                    </td>
+                    <td className="py-3 px-4 text-sm text-muted-foreground">
+                      {new Date(drive.date).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-4 font-medium">{drive.studentCount}</td>
+                    <td className="py-3 px-4">
+                      <Badge
+                        tone={
+                          drive.status === "Upcoming"
+                            ? "info"
+                            : drive.status === "Ongoing"
+                              ? "warn"
+                              : "success"
+                        }
+                      >
+                        {drive.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-1 justify-center">
+                        <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
+                          View
+                        </button>
+                        <button className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition">
+                          Edit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

@@ -95,7 +95,8 @@ export const getFaculty = async (req, res, next) => {
       .eq('is_active', true)
       .eq('users.is_verified', true);
 
-    if (adminProfile && adminProfile.department) {
+    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
+    if (!isGlobalAdmin && adminProfile.department) {
       query = query.eq('department', adminProfile.department);
     }
 
@@ -173,7 +174,8 @@ export const createFaculty = async (req, res, next) => {
       adminProfile = profile;
     }
 
-    if (adminProfile && adminProfile.department) {
+    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
+    if (!isGlobalAdmin && adminProfile.department) {
       if (adminProfile.department.toString() !== department.toString()) {
         const error = new Error('Access denied: You can only register faculty in your assigned department');
         error.statusCode = 403;
@@ -327,7 +329,8 @@ export const updateFaculty = async (req, res, next) => {
       adminProfile = profile;
     }
 
-    if (adminProfile && adminProfile.department) {
+    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
+    if (!isGlobalAdmin && adminProfile.department) {
       if (facultyMember.department && facultyMember.department.toString() !== adminProfile.department.toString()) {
         const error = new Error('Access denied: You can only update faculty in your assigned department');
         error.statusCode = 403;
@@ -400,7 +403,8 @@ export const deleteFaculty = async (req, res, next) => {
       adminProfile = profile;
     }
 
-    if (adminProfile && adminProfile.department) {
+    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
+    if (!isGlobalAdmin && adminProfile.department) {
       if (facultyMember.department && facultyMember.department.toString() !== adminProfile.department.toString()) {
         const error = new Error('Access denied: You can only delete faculty in your assigned department');
         error.statusCode = 403;
@@ -433,26 +437,46 @@ export const deleteFaculty = async (req, res, next) => {
 // @route   POST /api/admin/assignments
 // @access  Private (admin)
 export const assignFaculty = async (req, res, next) => {
+  const fs = await import('fs');
+  const log = (msg) => {
+    try {
+      fs.appendFileSync('error_log.txt', `[${new Date().toISOString()}] [assignFaculty] ${msg}\n`);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   try {
     const { facultyId, assignedSections, assignedSubjects } = req.body;
+    log(`Started with body: ${JSON.stringify(req.body)}`);
 
     if (!facultyId || !Array.isArray(assignedSections) || !Array.isArray(assignedSubjects)) {
+      log('Validation failed: facultyId or arrays missing');
       const error = new Error('Faculty ID, sections (array) and subjects (array) are required');
       error.statusCode = 400;
       throw error;
     }
 
+    log(`Searching for faculty with ID: ${facultyId}`);
     const { data: facultyMember, error: findErr } = await supabase
       .from('faculty')
       .select('*')
       .eq('id', facultyId)
       .maybeSingle();
 
-    if (findErr || !facultyMember) {
+    if (findErr) {
+      log(`Error finding faculty: ${findErr.message}`);
+      throw findErr;
+    }
+
+    if (!facultyMember) {
+      log(`Faculty member not found for ID: ${facultyId}`);
       const error = new Error('Faculty member not found');
       error.statusCode = 404;
       throw error;
     }
+
+    log(`Found faculty: ${facultyMember.full_name}, department: ${facultyMember.department}`);
 
     let adminProfile = null;
     if (req.user && req.user.role === 'admin') {
@@ -464,8 +488,11 @@ export const assignFaculty = async (req, res, next) => {
       adminProfile = profile;
     }
 
-    if (adminProfile && adminProfile.department) {
+    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
+    log(`Admin checks - isGlobalAdmin: ${isGlobalAdmin}, adminProfileDept: ${adminProfile?.department}`);
+    if (!isGlobalAdmin && adminProfile.department) {
       if (facultyMember.department && facultyMember.department.toString() !== adminProfile.department.toString()) {
+        log('Access denied: department mismatch');
         const error = new Error('Access denied: You can only assign faculty in your assigned department');
         error.statusCode = 403;
         throw error;
@@ -483,23 +510,32 @@ export const assignFaculty = async (req, res, next) => {
 
     // Sanitize subjects
     const sanitizedSubjects = assignedSubjects.filter((s) => typeof s === 'string');
+    log(`Sanitized sections: ${JSON.stringify(sanitizedSections)}, subjects: ${JSON.stringify(sanitizedSubjects)}`);
 
     // Find matching students in these sections and department
     let studentIds = [];
     if (sanitizedSections.length > 0) {
-      const { data: matchingStudents } = await supabase
+      log(`Querying students for department: ${facultyMember.department}, sections: ${JSON.stringify(sanitizedSections)}`);
+      const { data: matchingStudents, error: studentsErr } = await supabase
         .from('students')
         .select('id')
         .eq('department', facultyMember.department)
         .in('section', sanitizedSections)
         .eq('is_active', true);
       
+      if (studentsErr) {
+        log(`Error querying students: ${studentsErr.message}`);
+        throw studentsErr;
+      }
+
       if (matchingStudents) {
         studentIds = matchingStudents.map(s => s.id);
       }
     }
+    log(`Found matching student IDs: ${JSON.stringify(studentIds)}`);
 
     // Save assignments to Faculty profile
+    log('Updating faculty assignments in database...');
     const { data: updatedFaculty, error: updateErr } = await supabase
       .from('faculty')
       .update({
@@ -511,7 +547,12 @@ export const assignFaculty = async (req, res, next) => {
       .select()
       .single();
 
-    if (updateErr) throw updateErr;
+    if (updateErr) {
+      log(`Error updating faculty: ${updateErr.message}`);
+      throw updateErr;
+    }
+
+    log(`Faculty updated successfully: ${updatedFaculty.full_name}`);
 
     const { data: userAcc } = await supabase
       .from('users')
@@ -519,6 +560,7 @@ export const assignFaculty = async (req, res, next) => {
       .eq('id', updatedFaculty.user_id)
       .maybeSingle();
 
+    log('Formatting response and returning success...');
     res.status(200).json({
       success: true,
       message: 'Faculty assignments updated and students auto-linked successfully',
@@ -527,6 +569,92 @@ export const assignFaculty = async (req, res, next) => {
         user: userAcc ? { isActive: userAcc.is_active, lastLoginAt: userAcc.updated_at } : null
       }),
     });
+  } catch (error) {
+    log(`Catch block caught error: ${error.message}\nStack: ${error.stack}`);
+    next(error);
+  }
+};
+
+// @desc    Get weekly timetable slots with cohort filtering
+// @route   GET /api/admin/timetable
+// @access  Private (admin)
+export const getTimetable = async (req, res, next) => {
+  try {
+    const { department, year, semester, section } = req.query;
+    let query = supabase.from('timetable').select('*');
+    
+    if (department && department !== 'All') {
+      query = query.eq('department', department);
+    }
+    if (year) query = query.eq('year', Number(year));
+    if (semester) query = query.eq('semester', Number(semester));
+    if (section) query = query.eq('section', section);
+
+    const { data: slots, error } = await query;
+    if (error) throw error;
+
+    return res.status(200).json({ success: true, data: slots || [] });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Create a new timetable slot
+// @route   POST /api/admin/timetable
+// @access  Private (admin)
+export const createTimetableSlot = async (req, res, next) => {
+  try {
+    const { day, time, subject, facultyName, room, department, year, semester, section } = req.body;
+
+    if (!day || !time || !subject || !facultyName || !room || !department || !year || !semester || !section) {
+      const error = new Error('All fields are required');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Determine matching end time
+    const endTime = time === "09:00 AM" ? "11:00 AM" : time === "11:00 AM" ? "01:00 PM" : "04:00 PM";
+
+    const { data: slot, error } = await supabase
+      .from('timetable')
+      .insert([{
+        day,
+        start_time: time,
+        end_time: endTime,
+        subject,
+        faculty_name: facultyName,
+        room,
+        department,
+        year: Number(year),
+        semester: Number(semester),
+        section
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return res.status(201).json({ success: true, data: slot });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Delete a timetable slot
+// @route   DELETE /api/admin/timetable/:id
+// @access  Private (admin)
+export const deleteTimetableSlot = async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from('timetable')
+      .delete()
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return res.status(200).json({ success: true, message: 'Slot deleted successfully', data });
   } catch (error) {
     next(error);
   }

@@ -99,6 +99,261 @@ const STUDENTS_RAW = [
   { name: 'Sravani Reddy', email: 'sravani@gmail.com', roll: 'EE2026105', adm: '26EEE05', dept: 'EEE', type: 'Scholar' }
 ];
 
+const seedPlacements = async (client) => {
+  try {
+    // Check if companies exist
+    const compCheck = await client.query("SELECT COUNT(*) FROM placement_companies");
+    if (parseInt(compCheck.rows[0].count) > 0) {
+      console.log("ℹ️ placement_companies already seeded. Skipping placement seeding.");
+      return;
+    }
+
+    console.log("🚀 Seeding Placements module...");
+    
+    // Seed students for placements if they don't exist
+    const placementStudents = [
+      { full_name: 'Aarav Sharma', roll_number: 'CS100002', email: 'aarav@college.com', department: 'CSE', cgpa: 8.9 },
+      { full_name: 'Priya Patel', roll_number: 'CS100003', email: 'priya@college.com', department: 'CSE', cgpa: 9.1 },
+      { full_name: 'Ethan Walker', roll_number: 'CS100004', email: 'ethan@college.com', department: 'ECE', cgpa: 8.4 },
+      { full_name: 'Sofia Rodriguez', roll_number: 'CS100005', email: 'sofia@college.com', department: 'MECH', cgpa: 7.8 }
+    ];
+
+    const studentMap = {}; // mapping name -> id
+    
+    // First get student demo or existing students
+    const demoStudentRes = await client.query("SELECT id FROM students WHERE email = 'student@college.com'");
+    if (demoStudentRes.rows.length > 0) {
+      studentMap['Student Demo'] = demoStudentRes.rows[0].id;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash("password123", salt);
+
+    for (const stud of placementStudents) {
+      const check = await client.query("SELECT id FROM students WHERE email = $1", [stud.email]);
+      if (check.rows.length === 0) {
+        // Insert a user first (since student references user)
+        const userRes = await client.query(
+          `INSERT INTO users (name, full_name, email, password, role, is_verified, is_active)
+           VALUES ($1, $1, $2, $3, 'student', true, true) RETURNING id`,
+          [stud.full_name, stud.email, hashedPassword]
+        );
+        const userId = userRes.rows[0].id;
+
+        const insertRes = await client.query(
+          `INSERT INTO students (user_id, full_name, roll_number, email, phone_number, gender, date_of_birth, department, year, semester, section, address, parent_name, parent_phone, parent_email, cgpa, attendance_percentage, is_active)
+           VALUES ($1, $2, $3, $4, '9876543210', 'Male', '2004-06-20', $5, 4, 7, 'A', '123 Campus Lane', 'Parent ' || $2, '9876543210', 'parent.' || $4, $6, 90.0, true) RETURNING id`,
+          [userId, stud.full_name, stud.roll_number, stud.email, stud.department, stud.cgpa]
+        );
+        studentMap[stud.full_name] = insertRes.rows[0].id;
+      } else {
+        studentMap[stud.full_name] = check.rows[0].id;
+      }
+    }
+
+    const companiesData = [
+      { name: 'Google India', industry: 'Technology', hr: 'Anjali Sharma', email: 'careers-india@google.com', package: '22.5 LPA', hires: 12 },
+      { name: 'Microsoft India', industry: 'Technology', hr: 'Rohit Mehta', email: 'careers@microsoft.com', package: '20.0 LPA', hires: 15 },
+      { name: 'Amazon India', industry: 'E-commerce', hr: 'Sanjay Sen', email: 'careers@amazon.in', package: '18.5 LPA', hires: 18 },
+      { name: 'Goldman Sachs', industry: 'Investment Banking', hr: 'Sneha Rao', email: 'careers@gs.com', package: '16.0 LPA', hires: 8 },
+      { name: 'Accenture', industry: 'Consulting', hr: 'Rahul Verma', email: 'careers@accenture.com', package: '11.0 LPA', hires: 22 },
+      { name: 'TCS', industry: 'Consulting', hr: 'Komal Gupta', email: 'careers@tcs.com', package: '12.0 LPA', hires: 20 },
+      { name: 'Infosys', industry: 'IT Services', hr: 'Deepa Nair', email: 'careers@infosys.com', package: '10.5 LPA', hires: 18 }
+    ];
+    
+    const companyMap = {};
+    for (const comp of companiesData) {
+      const insertRes = await client.query(
+        `INSERT INTO placement_companies (name, industry, hr_contact, email, phone, package_amount, previous_hires, is_active)
+         VALUES ($1, $2, $3, $4, '9876543210', $5, $6, true) RETURNING id`,
+        [comp.name, comp.industry, comp.hr, comp.email, comp.package, comp.hires]
+      );
+      companyMap[comp.name] = insertRes.rows[0].id;
+    }
+
+    const aaravId = studentMap['Aarav Sharma'];
+    const priyaId = studentMap['Priya Patel'];
+    const ethanId = studentMap['Ethan Walker'];
+    const sofiaId = studentMap['Sofia Rodriguez'];
+    const demoStudentId = studentMap['Student Demo'];
+
+    const drivesData = [
+      {
+        company: 'Google India',
+        position: 'Software Engineer',
+        company_name: 'Google India',
+        drive_date: '2026-06-15',
+        venue: 'Main Auditorium',
+        deadline: '2026-06-10',
+        status: 'upcoming',
+        package_min: 15.0,
+        package_max: 22.5,
+        eligibility_min_cgpa: 7.5,
+        eligibility_departments: ['CSE', 'AIML', 'AIDS'],
+        applied_students: [
+          { student_id: aaravId, student_name: 'Aarav Sharma', status: 'Selected', applied_date: '2026-05-10', package: 22.5 },
+          { student_id: priyaId, student_name: 'Priya Patel', status: 'Shortlisted', applied_date: '2026-05-11' }
+        ]
+      },
+      {
+        company: 'Microsoft India',
+        position: 'SDE-II',
+        company_name: 'Microsoft India',
+        drive_date: '2026-06-20',
+        venue: 'Conference Hall A',
+        deadline: '2026-06-15',
+        status: 'upcoming',
+        package_min: 18.0,
+        package_max: 20.0,
+        eligibility_min_cgpa: 8.0,
+        eligibility_departments: ['CSE', 'AIML'],
+        applied_students: [
+          { student_id: priyaId, student_name: 'Priya Patel', status: 'Selected', applied_date: '2026-05-12', package: 20.0 },
+          { student_id: demoStudentId, student_name: 'Student Demo', status: 'Applied', applied_date: '2026-05-15' }
+        ]
+      },
+      {
+        company: 'Amazon India',
+        position: 'Associate',
+        company_name: 'Amazon India',
+        drive_date: '2026-06-08',
+        venue: 'Main Auditorium',
+        deadline: '2026-06-05',
+        status: 'ongoing',
+        package_min: 10.0,
+        package_max: 18.5,
+        eligibility_min_cgpa: 7.0,
+        eligibility_departments: ['CSE', 'AIML', 'AIDS', 'IT', 'ECE'],
+        applied_students: [
+          { student_id: ethanId, student_name: 'Ethan Walker', status: 'Selected', applied_date: '2026-05-08', package: 18.5 }
+        ]
+      },
+      {
+        company: 'Goldman Sachs',
+        position: 'Analyst',
+        company_name: 'Goldman Sachs',
+        drive_date: '2026-06-22',
+        venue: 'Finance Center',
+        deadline: '2026-06-18',
+        status: 'upcoming',
+        package_min: 12.0,
+        package_max: 16.0,
+        eligibility_min_cgpa: 7.5,
+        eligibility_departments: ['CSE', 'AIML', 'AIDS', 'IT'],
+        applied_students: [
+          { student_id: aaravId, student_name: 'Aarav Sharma', status: 'Applied', applied_date: '2026-05-18' }
+        ]
+      },
+      {
+        company: 'Accenture',
+        position: 'Consulting',
+        company_name: 'Accenture',
+        drive_date: '2026-01-15',
+        venue: 'Seminar Hall 1',
+        deadline: '2026-01-10',
+        status: 'completed',
+        package_min: 4.5,
+        package_max: 11.0,
+        eligibility_min_cgpa: 6.0,
+        eligibility_departments: ['CSE', 'AIML', 'ECE', 'EEE', 'MECH', 'CIVIL'],
+        applied_students: [
+          { student_id: demoStudentId, student_name: 'Student Demo', status: 'Selected', applied_date: '2026-01-11', package: 11.0 }
+        ]
+      },
+      {
+        company: 'TCS',
+        position: 'Consulting',
+        company_name: 'TCS',
+        drive_date: '2026-02-12',
+        venue: 'Campus Placement Block',
+        deadline: '2026-02-08',
+        status: 'completed',
+        package_min: 3.5,
+        package_max: 12.0,
+        eligibility_min_cgpa: 6.0,
+        eligibility_departments: ['CSE', 'ECE', 'MECH', 'CIVIL'],
+        applied_students: []
+      },
+      {
+        company: 'Infosys',
+        position: 'IT Services',
+        company_name: 'Infosys',
+        drive_date: '2026-03-10',
+        venue: 'Placement Block',
+        deadline: '2026-03-05',
+        status: 'completed',
+        package_min: 4.0,
+        package_max: 10.5,
+        eligibility_min_cgpa: 6.0,
+        eligibility_departments: ['CSE', 'ECE', 'MECH', 'CIVIL'],
+        applied_students: [
+          { student_id: sofiaId, student_name: 'Sofia Rodriguez', status: 'Selected', applied_date: '2026-03-06', package: 10.5 }
+        ]
+      }
+    ];
+
+    const driveMap = {};
+    for (const drive of drivesData) {
+      const companyId = companyMap[drive.company_name] || null;
+      const insertRes = await client.query(
+        `INSERT INTO placements (company, position, applied_students, company_id, drive_date, venue, deadline, status, package_min, package_max, eligibility_min_cgpa, eligibility_departments)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+        [
+          drive.company,
+          drive.position,
+          JSON.stringify(drive.applied_students),
+          companyId,
+          drive.drive_date,
+          drive.venue,
+          drive.deadline,
+          drive.status,
+          drive.package_min,
+          drive.package_max,
+          drive.eligibility_min_cgpa,
+          JSON.stringify(drive.eligibility_departments)
+        ]
+      );
+      driveMap[drive.company + " - " + drive.position] = insertRes.rows[0].id;
+    }
+
+    const interviewsData = [
+      { student_name: 'Aarav Sharma', company: 'Google India', drive_key: 'Google India - Software Engineer', round: 'Round 2', date: '2026-06-18', time: '10:00 AM', mode: 'Online', status: 'Scheduled' },
+      { student_name: 'Priya Patel', company: 'Microsoft India', drive_key: 'Microsoft India - SDE-II', round: 'Round 1', date: '2026-06-20', time: '02:00 PM', mode: 'In-Person', status: 'Scheduled' },
+      { student_name: 'Ethan Walker', company: 'Amazon India', drive_key: 'Amazon India - Associate', round: 'Round 3', date: '2026-06-25', time: '11:00 AM', mode: 'Online', status: 'Scheduled' },
+      { student_name: 'Sofia Rodriguez', company: 'Infosys', drive_key: 'Infosys - IT Services', round: 'Round 1', date: '2026-06-12', time: '09:00 AM', mode: 'In-Person', status: 'Scheduled' }
+    ];
+
+    for (const intv of interviewsData) {
+      const studentId = studentMap[intv.student_name] || null;
+      const driveId = driveMap[intv.drive_key] || null;
+      await client.query(
+        `INSERT INTO placement_interviews (student, student_name, company_name, drive_id, round, date, time, mode, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [studentId, intv.student_name, intv.company, driveId, intv.round, intv.date, intv.time, intv.mode, intv.status]
+      );
+    }
+
+    const notifsData = [
+      { title: 'New drive: Goldman Sachs Analyst', time: '2h ago', type: 'Drive', unread: true },
+      { title: 'Interview scheduled: Aarav Sharma - Google', time: '5h ago', type: 'Interview', unread: true },
+      { title: 'Offer received: Sofia Rodriguez - Infosys', time: '1d ago', type: 'Offer', unread: false },
+      { title: 'Application deadline tomorrow: Microsoft India', time: '2d ago', type: 'Deadline', unread: false },
+      { title: 'Resume verification required', time: '3d ago', type: 'Resume', unread: false }
+    ];
+
+    for (const notif of notifsData) {
+      await client.query(
+        `INSERT INTO placement_notifications (title, time, type, unread)
+         VALUES ($1, $2, $3, $4)`,
+         [notif.title, notif.time, notif.type, notif.unread]
+      );
+    }
+    console.log("✅ Seeded Placements module successfully.");
+  } catch (err) {
+    console.error("❌ Failed to seed placements:", err);
+  }
+};
+
 export const seedIfNeeded = async () => {
   if (!connectionString) {
     console.log("ℹ️ No DATABASE_URL found. Skipping lightweight seeding check.");
@@ -119,6 +374,7 @@ export const seedIfNeeded = async () => {
     
     if (count >= 25) {
       console.log(`ℹ️ Supabase already contains ${count} student records (>= 25). Skipping lightweight seed.`);
+      await seedPlacements(client);
       await client.end();
       return;
     }
@@ -308,6 +564,9 @@ export const seedIfNeeded = async () => {
     console.log(`- Subjects created: ${finalSub.rows[0].count} / 25`);
     console.log(`- Attendance records: ${finalAtt.rows[0].count}`);
     console.log("==================================================");
+    
+    await seedPlacements(client);
+    
     console.log("🎉 Lightweight Supabase ERP dataset seeded successfully!");
 
   } catch (err) {

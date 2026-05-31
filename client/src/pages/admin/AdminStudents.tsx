@@ -53,6 +53,7 @@ export function AdminStudents() {
       fetchStudents({
         search: search || undefined,
         department: deptFilter !== "All" ? deptFilter : undefined,
+        limit: 1000,
       }),
   });
 
@@ -272,12 +273,14 @@ export function AdminStudents() {
   const departmentDistribution = useMemo(() => {
     const counts: Record<string, number> = {};
     studentsList.forEach((s) => {
-      const deptName =
-        typeof s.department === "object" && s.department ? s.department.name : "Other";
+      const deptObj = typeof s.department === "object" && s.department
+        ? s.department
+        : deptList.find((d) => d.code === s.department || d._id === s.department);
+      const deptName = deptObj ? deptObj.name : (typeof s.department === "string" ? s.department : "Other");
       counts[deptName] = (counts[deptName] || 0) + 1;
     });
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
-  }, [studentsList]);
+  }, [studentsList, deptList]);
 
   return (
     <div className="space-y-6">
@@ -362,7 +365,8 @@ export function AdminStudents() {
             No active student records matching filters.
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
@@ -386,11 +390,11 @@ export function AdminStudents() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {filteredStudents.map((student) => {
-                  const deptName =
-                    typeof student.department === "object" && student.department
-                      ? student.department.name
-                      : "Other";
+                {filteredStudents.slice(0, 10).map((student) => {
+                  const deptObj = typeof student.department === "object" && student.department
+                    ? student.department
+                    : deptList.find((d) => d.code === student.department || d._id === student.department);
+                  const deptName = deptObj ? deptObj.name : (typeof student.department === "string" ? student.department : "Other");
                   const attendanceVal = student.attendancePercentage ?? 0;
                   const isWarning = attendanceVal < 75;
 
@@ -444,7 +448,19 @@ export function AdminStudents() {
                 })}
               </tbody>
             </table>
-          </div>
+            </div>
+            {filteredStudents.length > 10 && (
+              <div className="border-t px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 bg-muted/10 text-xs text-muted-foreground rounded-b-2xl">
+                <div>
+                  Showing <span className="font-semibold text-foreground">10</span> of{" "}
+                  <span className="font-semibold text-foreground">{filteredStudents.length}</span> students
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 font-semibold">
+                  <span>+{filteredStudents.length - 10} more records exist</span>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </Card>
 
