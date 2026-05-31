@@ -8,15 +8,15 @@ import api from "@/lib/api";
 export function StudentFees() {
   const [fees, setFees] = useState<any[]>(feeRecords);
   const [history, setHistory] = useState<any[]>([
-    { type: "Tuition Fee", amount: "$2,500", date: "2026-01-15", status: "Paid" },
-    { type: "Hostel Fee", amount: "$800", date: "2026-02-15", status: "Paid" },
-    { type: "Lab Fee", amount: "$500", date: "2026-03-15", status: "Paid" },
-    { type: "Library Fee", amount: "$200", date: "2026-04-15", status: "Paid" },
+    { type: "Tuition Fee", amount: "₹2,500", date: "2026-01-15", status: "Paid" },
+    { type: "Hostel Fee", amount: "₹800", date: "2026-02-15", status: "Paid" },
+    { type: "Lab Fee", amount: "₹500", date: "2026-03-15", status: "Paid" },
+    { type: "Library Fee", amount: "₹200", date: "2026-04-15", status: "Paid" },
   ]);
   const [stats, setStats] = useState([
-    { label: "Total Due", value: "$1,250", tone: "warn" as const },
-    { label: "Overdue", value: "$800", tone: "danger" as const },
-    { label: "Paid This Year", value: "$8,500", tone: "success" as const },
+    { label: "Total Due", value: "₹1,250", tone: "warn" as const },
+    { label: "Overdue", value: "₹800", tone: "danger" as const },
+    { label: "Paid This Year", value: "₹8,500", tone: "success" as const },
     { label: "Next Due", value: "May 25", tone: "info" as const },
   ]);
 
@@ -37,7 +37,7 @@ export function StudentFees() {
         if (dbFees && dbFees.length > 0) {
           const mappedFees = dbFees.map((f: any) => ({
             feeType: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + " Fee",
-            amount: `$${f.totalAmount}`,
+            amount: `₹${Number(f.totalAmount).toLocaleString('en-IN')}`,
             dueDate: new Date(f.dueDate).toISOString().split('T')[0],
             status: f.paymentStatus.charAt(0).toUpperCase() + f.paymentStatus.slice(1)
           }));
@@ -45,7 +45,7 @@ export function StudentFees() {
 
           const paidFees = dbFees.filter((f: any) => f.paidAmount > 0).map((f: any) => ({
             type: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + " Fee",
-            amount: `$${f.paidAmount}`,
+            amount: `₹${Number(f.paidAmount).toLocaleString('en-IN')}`,
             date: new Date(f.updatedAt || Date.now()).toISOString().split('T')[0],
             status: "Paid"
           }));
@@ -54,9 +54,9 @@ export function StudentFees() {
 
         if (summary) {
           setStats([
-            { label: "Total Due", value: `$${summary.totalRemaining}`, tone: "warn" as const },
-            { label: "Overdue", value: `$${summary.totalRemaining > 0 && summary.overdueCount > 0 ? summary.totalRemaining : 0}`, tone: "danger" as const },
-            { label: "Paid This Year", value: `$${summary.totalPaid}`, tone: "success" as const },
+            { label: "Total Due", value: `₹${Number(summary.totalRemaining).toLocaleString('en-IN')}`, tone: "warn" as const },
+            { label: "Overdue", value: `₹${Number(summary.totalRemaining > 0 && summary.overdueCount > 0 ? summary.totalRemaining : 0).toLocaleString('en-IN')}`, tone: "danger" as const },
+            { label: "Paid This Year", value: `₹${Number(summary.totalPaid).toLocaleString('en-IN')}`, tone: "success" as const },
             { label: "Next Due", value: dbFees.find((f: any) => f.paymentStatus !== "paid") ? new Date(dbFees.find((f: any) => f.paymentStatus !== "paid").dueDate).toLocaleDateString() : "None", tone: "info" as const },
           ]);
         }

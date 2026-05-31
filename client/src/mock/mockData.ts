@@ -216,23 +216,56 @@ export const exams = [
 ];
 
 export const fees = [
-  { id: "INV-2026-001", student: "Aarav Sharma", amount: 4800, status: "Paid", date: "2026-04-12" },
+  {
+    id: "INV-2026-001",
+    student: "Aarav Sharma",
+    amount: 10000,
+    status: "Paid",
+    date: "2026-04-12",
+    roomNumber: "A-101",
+    roomType: "1 Bed",
+    feeType: "Hostel Accommodation Fee",
+  },
   {
     id: "INV-2026-002",
     student: "Priya Patel",
-    amount: 4200,
+    amount: 6000,
     status: "Pending",
     date: "2026-05-01",
+    roomNumber: "A-102",
+    roomType: "2 Bed",
+    feeType: "Hostel Accommodation Fee",
   },
-  { id: "INV-2026-003", student: "Ethan Walker", amount: 5100, status: "Paid", date: "2026-03-22" },
+  {
+    id: "INV-2026-003",
+    student: "Ethan Walker",
+    amount: 4000,
+    status: "Paid",
+    date: "2026-03-22",
+    roomNumber: "B-203",
+    roomType: "3 Bed",
+    feeType: "Hostel Accommodation Fee",
+  },
   {
     id: "INV-2026-004",
     student: "Sofia Rodriguez",
-    amount: 3900,
+    amount: 6000,
     status: "Overdue",
     date: "2026-02-15",
+    roomNumber: "B-205",
+    roomType: "2 Bed",
+    feeType: "Hostel Accommodation Fee",
   },
-  { id: "INV-2026-005", student: "Liam Chen", amount: 4800, status: "Paid", date: "2026-04-30" },
+  {
+    id: "INV-2026-005",
+    student: "Liam Chen",
+    amount: 10000,
+    status: "Paid",
+    date: "2026-04-30",
+    roomNumber: "C-301",
+    roomType: "1 Bed",
+    feeType: "Hostel Accommodation Fee",
+  },
 ];
 
 export const books = [

@@ -46,6 +46,7 @@ import { Route as DashboardSuperAdminConfigurationRouteImport } from './routes/d
 import { Route as DashboardSuperAdminBackupsRouteImport } from './routes/dashboard/super-admin/backups'
 import { Route as DashboardSuperAdminAutomationRouteImport } from './routes/dashboard/super-admin/automation'
 import { Route as DashboardSuperAdminAdminsRouteImport } from './routes/dashboard/super-admin/admins'
+import { Route as DashboardStudentsStudentIdRouteImport } from './routes/dashboard/students/$studentId'
 import { Route as DashboardStudentTimetableRouteImport } from './routes/dashboard/student/timetable'
 import { Route as DashboardStudentResultsRouteImport } from './routes/dashboard/student/results'
 import { Route as DashboardStudentPlacementRouteImport } from './routes/dashboard/student/placement'
@@ -317,6 +318,12 @@ const DashboardSuperAdminAdminsRoute =
     id: '/admins',
     path: '/admins',
     getParentRoute: () => DashboardSuperAdminRoute,
+  } as any)
+const DashboardStudentsStudentIdRoute =
+  DashboardStudentsStudentIdRouteImport.update({
+    id: '/$studentId',
+    path: '/$studentId',
+    getParentRoute: () => DashboardStudentsRoute,
   } as any)
 const DashboardStudentTimetableRoute =
   DashboardStudentTimetableRouteImport.update({
@@ -755,7 +762,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
-  '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -834,6 +841,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
   '/dashboard/student/timetable': typeof DashboardStudentTimetableRoute
+  '/dashboard/students/$studentId': typeof DashboardStudentsStudentIdRoute
   '/dashboard/super-admin/admins': typeof DashboardSuperAdminAdminsRoute
   '/dashboard/super-admin/automation': typeof DashboardSuperAdminAutomationRoute
   '/dashboard/super-admin/backups': typeof DashboardSuperAdminBackupsRoute
@@ -868,7 +876,7 @@ export interface FileRoutesByTo {
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
-  '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -947,6 +955,7 @@ export interface FileRoutesByTo {
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
   '/dashboard/student/timetable': typeof DashboardStudentTimetableRoute
+  '/dashboard/students/$studentId': typeof DashboardStudentsStudentIdRoute
   '/dashboard/super-admin/admins': typeof DashboardSuperAdminAdminsRoute
   '/dashboard/super-admin/automation': typeof DashboardSuperAdminAutomationRoute
   '/dashboard/super-admin/backups': typeof DashboardSuperAdminBackupsRoute
@@ -983,7 +992,7 @@ export interface FileRoutesById {
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
-  '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -1062,6 +1071,7 @@ export interface FileRoutesById {
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
   '/dashboard/student/timetable': typeof DashboardStudentTimetableRoute
+  '/dashboard/students/$studentId': typeof DashboardStudentsStudentIdRoute
   '/dashboard/super-admin/admins': typeof DashboardSuperAdminAdminsRoute
   '/dashboard/super-admin/automation': typeof DashboardSuperAdminAutomationRoute
   '/dashboard/super-admin/backups': typeof DashboardSuperAdminBackupsRoute
@@ -1178,6 +1188,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/placement'
     | '/dashboard/student/results'
     | '/dashboard/student/timetable'
+    | '/dashboard/students/$studentId'
     | '/dashboard/super-admin/admins'
     | '/dashboard/super-admin/automation'
     | '/dashboard/super-admin/backups'
@@ -1291,6 +1302,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/placement'
     | '/dashboard/student/results'
     | '/dashboard/student/timetable'
+    | '/dashboard/students/$studentId'
     | '/dashboard/super-admin/admins'
     | '/dashboard/super-admin/automation'
     | '/dashboard/super-admin/backups'
@@ -1405,6 +1417,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/placement'
     | '/dashboard/student/results'
     | '/dashboard/student/timetable'
+    | '/dashboard/students/$studentId'
     | '/dashboard/super-admin/admins'
     | '/dashboard/super-admin/automation'
     | '/dashboard/super-admin/backups'
@@ -1689,6 +1702,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/super-admin/admins'
       preLoaderRoute: typeof DashboardSuperAdminAdminsRouteImport
       parentRoute: typeof DashboardSuperAdminRoute
+    }
+    '/dashboard/students/$studentId': {
+      id: '/dashboard/students/$studentId'
+      path: '/$studentId'
+      fullPath: '/dashboard/students/$studentId'
+      preLoaderRoute: typeof DashboardStudentsStudentIdRouteImport
+      parentRoute: typeof DashboardStudentsRoute
     }
     '/dashboard/student/timetable': {
       id: '/dashboard/student/timetable'
@@ -2417,6 +2437,17 @@ const DashboardStudentRouteChildren: DashboardStudentRouteChildren = {
 const DashboardStudentRouteWithChildren =
   DashboardStudentRoute._addFileChildren(DashboardStudentRouteChildren)
 
+interface DashboardStudentsRouteChildren {
+  DashboardStudentsStudentIdRoute: typeof DashboardStudentsStudentIdRoute
+}
+
+const DashboardStudentsRouteChildren: DashboardStudentsRouteChildren = {
+  DashboardStudentsStudentIdRoute: DashboardStudentsStudentIdRoute,
+}
+
+const DashboardStudentsRouteWithChildren =
+  DashboardStudentsRoute._addFileChildren(DashboardStudentsRouteChildren)
+
 interface DashboardSuperAdminRouteChildren {
   DashboardSuperAdminAdminsRoute: typeof DashboardSuperAdminAdminsRoute
   DashboardSuperAdminAutomationRoute: typeof DashboardSuperAdminAutomationRoute
@@ -2463,7 +2494,7 @@ interface DashboardRouteChildren {
   DashboardPlacementRoute: typeof DashboardPlacementRouteWithChildren
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStudentRoute: typeof DashboardStudentRouteWithChildren
-  DashboardStudentsRoute: typeof DashboardStudentsRoute
+  DashboardStudentsRoute: typeof DashboardStudentsRouteWithChildren
   DashboardSuperAdminRoute: typeof DashboardSuperAdminRouteWithChildren
   DashboardTransportRoute: typeof DashboardTransportRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -2494,7 +2525,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardPlacementRoute: DashboardPlacementRouteWithChildren,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStudentRoute: DashboardStudentRouteWithChildren,
-  DashboardStudentsRoute: DashboardStudentsRoute,
+  DashboardStudentsRoute: DashboardStudentsRouteWithChildren,
   DashboardSuperAdminRoute: DashboardSuperAdminRouteWithChildren,
   DashboardTransportRoute: DashboardTransportRoute,
   DashboardIndexRoute: DashboardIndexRoute,

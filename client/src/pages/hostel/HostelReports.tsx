@@ -172,7 +172,7 @@ export function HostelReports() {
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
             <div className="text-center">
-              <div className="text-2xl font-bold">$409.5K</div>
+              <div className="text-2xl font-bold">₹40.95L</div>
               <div className="text-xs text-muted-foreground">Total Collected</div>
             </div>
             <div className="text-center">
@@ -180,7 +180,7 @@ export function HostelReports() {
               <div className="text-xs text-muted-foreground">Collection Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold">$4.5K</div>
+              <div className="text-2xl font-bold">₹45,000</div>
               <div className="text-xs text-muted-foreground">Pending</div>
             </div>
           </div>

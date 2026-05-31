@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { Users, GraduationCap, CalendarCheck, Wallet, TrendingUp, Calendar } from "lucide-react";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
+import { supabase } from "@/lib/supabaseClient";
 import {
   attendanceData as mockAttendance,
   performanceData as mockPerformance,
@@ -40,16 +41,36 @@ export function DashboardIndex() {
   const [data, setData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const loadDashboardData = async () => {
+    try {
+      const res = await fetchDashboardData();
+      setData(res);
+    } catch (err) {
+      console.warn("Failed to load live dashboard stats, using fallback mock data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchDashboardData()
-      .then((res) => {
-        setData(res);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.warn("Failed to load live dashboard stats, using fallback mock data:", err);
-        setLoading(false);
-      });
+    loadDashboardData();
+  }, []);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("campus-dashboard-fee-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "fees" },
+        () => {
+          loadDashboardData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const stats = data?.stats || mockStats;

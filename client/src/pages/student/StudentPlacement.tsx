@@ -205,8 +205,8 @@ export function StudentPlacement() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: "Campus Placements", value: "85%", icon: "🎓" },
-            { label: "Average Package", value: "$8.5L", icon: "💰" },
-            { label: "Highest Package", value: "$25L", icon: "🚀" },
+            { label: "Average Package", value: "₹8.5L", icon: "💰" },
+            { label: "Highest Package", value: "₹25L", icon: "🚀" },
             { label: "Companies Visited", value: "45", icon: "🏢" },
           ].map((item) => (
             <div key={item.label} className="p-4 rounded-xl bg-gradient-soft border">

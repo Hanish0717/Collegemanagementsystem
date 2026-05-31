@@ -53,7 +53,7 @@ export function AdminReports() {
         {[
           { label: "Student Analytics", value: "2,847", tone: "info" as const },
           { label: "Faculty Analytics", value: "156", tone: "info" as const },
-          { label: "Revenue Reports", value: "$847K", tone: "success" as const },
+          { label: "Revenue Reports", value: "₹84.7L", tone: "success" as const },
           { label: "Attendance Reports", value: "87.3%", tone: "success" as const },
         ].map((stat) => (
           <Card key={stat.label}>
@@ -190,10 +190,10 @@ export function AdminReports() {
           <h3 className="font-semibold mb-4">Department-wise Revenue</h3>
           <div className="space-y-3">
             {[
-              { name: "Computer Science", revenue: "$320K", growth: "+12%" },
-              { name: "Electronics", revenue: "$240K", growth: "+8%" },
-              { name: "Mechanical", revenue: "$180K", growth: "+5%" },
-              { name: "Business", revenue: "$107K", growth: "+15%" },
+              { name: "Computer Science", revenue: "₹32L", growth: "+12%" },
+              { name: "Electronics", revenue: "₹24L", growth: "+8%" },
+              { name: "Mechanical", revenue: "₹18L", growth: "+5%" },
+              { name: "Business", revenue: "₹10.7L", growth: "+15%" },
             ].map((dept) => (
               <div
                 key={dept.name}

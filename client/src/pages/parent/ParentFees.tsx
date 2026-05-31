@@ -9,9 +9,9 @@ export function ParentFees() {
   const [fees, setFees] = useState<any[]>([]);
   const [feeRecords, setFeeRecords] = useState<any[]>(mockFeeRecords);
   const [stats, setStats] = useState([
-    { label: "Total Due", value: "$1,250", tone: "warn" as const },
-    { label: "Overdue", value: "$800", tone: "danger" as const },
-    { label: "Paid This Year", value: "$8,500", tone: "success" as const },
+    { label: "Total Due", value: "₹1,250", tone: "warn" as const },
+    { label: "Overdue", value: "₹800", tone: "danger" as const },
+    { label: "Paid This Year", value: "₹8,500", tone: "success" as const },
     { label: "Next Due", value: "May 25", tone: "info" as const },
   ]);
 
@@ -38,7 +38,7 @@ export function ParentFees() {
               const statusStr = f.paymentStatus === "paid" ? "Paid" : f.paymentStatus === "overdue" ? "Overdue" : "Pending";
               return {
                 feeType: capType,
-                amount: `$${f.totalAmount}`,
+                amount: `₹${Number(f.totalAmount).toLocaleString('en-IN')}`,
                 dueDate: new Date(f.dueDate).toISOString().split('T')[0],
                 status: statusStr,
                 receipt: f.transactionId || "-",
@@ -57,9 +57,9 @@ export function ParentFees() {
             const nextDueStr = nextDueItem ? new Date(nextDueItem.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "None";
 
             setStats([
-              { label: "Total Due", value: `$${totalDue}`, tone: "warn" as const },
-              { label: "Overdue", value: `$${totalOverdue}`, tone: "danger" as const },
-              { label: "Paid This Year", value: `$${totalPaid}`, tone: "success" as const },
+              { label: "Total Due", value: `₹${Number(totalDue).toLocaleString('en-IN')}`, tone: "warn" as const },
+              { label: "Overdue", value: `₹${Number(totalOverdue).toLocaleString('en-IN')}`, tone: "danger" as const },
+              { label: "Paid This Year", value: `₹${Number(totalPaid).toLocaleString('en-IN')}`, tone: "success" as const },
               { label: "Next Due", value: nextDueStr, tone: "info" as const },
             ]);
           }

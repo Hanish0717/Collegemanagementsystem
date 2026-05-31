@@ -42,7 +42,7 @@ export function LibrarianReturn() {
     const daysOverdue = Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
     if (daysOverdue <= 0) return 0;
 
-    let fine = daysOverdue * 10; // Rate is $10/day
+    let fine = daysOverdue * 10; // Rate is ₹10/day
     if (returnCondition === "damaged") fine += 500;
     if (returnCondition === "lost") fine = 2000;
 

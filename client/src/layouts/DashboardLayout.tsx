@@ -1,5 +1,7 @@
 import { Outlet, Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabaseClient";
 import {
   GraduationCap,
   LogOut,
@@ -21,12 +23,21 @@ import {
   Info,
   Check,
   Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { getActiveRole, type Role } from "@/lib/roles";
 import { useAuth } from "@/contexts/AuthContext";
 import { students, faculty, books, libraryNotifications } from "@/mock/mockData";
 import { toast } from "sonner";
 import { Badge } from "@/components/dashboard/ui";
+import { StudentFormModal } from "@/pages/dashboard/students/StudentDialogs";
+import {
+  createResident,
+  registerVisitor,
+  createComplaint,
+  createNotification,
+  fetchResidents,
+} from "@/services/hostelService";
 
 interface SearchSuggestion {
   type: string;
@@ -94,6 +105,205 @@ export function DashboardLayout() {
   const [notifSubject, setNotifSubject] = useState("");
   const [notifMessage, setNotifMessage] = useState("");
 
+  // ── Hostel Warden Quick Action Form Fields ──
+  const [vName, setVName] = useState("");
+  const [vPhone, setVPhone] = useState("");
+  const [vRelation, setVRelation] = useState("Parent");
+  const [vPurpose, setVPurpose] = useState("Family Visit");
+  const [vStudentId, setVStudentId] = useState("");
+  const [vIdType, setVIdType] = useState("Aadhaar Card");
+  const [vIdNumber, setVIdNumber] = useState("");
+
+  const [cTitle, setCTitle] = useState("");
+  const [cDesc, setCDesc] = useState("");
+  const [cCat, setCCat] = useState("Maintenance");
+  const [cPriority, setCPriority] = useState("Medium");
+  const [cStudentId, setCStudentId] = useState("");
+
+  const [annTitle, setAnnTitle] = useState("");
+  const [annType, setAnnType] = useState("Mess");
+  const [annUrgency, setAnnUrgency] = useState("Medium");
+
+  const queryClient = useQueryClient();
+  const isWarden = role?.name === "Hostel Warden";
+
+  // Queries for lookups
+  const { data: departments = [] } = useQuery({
+    queryKey: ["departments"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("departments").select("*");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: isWarden,
+  });
+
+  const { data: residents = [] } = useQuery({
+    queryKey: ["residents-lookup"],
+    queryFn: () => fetchResidents(),
+    enabled: isWarden,
+  });
+
+  // Mutations
+  const allocateRoomMutation = useMutation({
+    mutationFn: ({ student, allocation }: { student: any; allocation: any }) =>
+      createResident(student, allocation),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
+      toast.success("Resident added and room allocated successfully!");
+      setActiveQuickAction(null);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to allocate room");
+    }
+  });
+
+  const registerVisitorMutation = useMutation({
+    mutationFn: (payload: any) => registerVisitor(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["visitors"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      toast.success("Visitor checked-in successfully!");
+      setActiveQuickAction(null);
+      setVName("");
+      setVPhone("");
+      setVStudentId("");
+      setVIdNumber("");
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to register visitor");
+    }
+  });
+
+  const logComplaintMutation = useMutation({
+    mutationFn: (payload: any) => createComplaint(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["complaints"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
+      toast.success("Complaint logged successfully!");
+      setActiveQuickAction(null);
+      setCTitle("");
+      setCDesc("");
+      setCStudentId("");
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to log complaint");
+    }
+  });
+
+  const sendWardenNotifMutation = useMutation({
+    mutationFn: ({ title, type, urgency }: { title: string; type: string; urgency: string }) =>
+      createNotification(title, type, urgency),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      refetchNotifs();
+      toast.success("Announcement broadcasted successfully!");
+      setActiveQuickAction(null);
+      setAnnTitle("");
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to broadcast announcement");
+    }
+  });
+
+  const handleAllocateSubmit = (payload: any) => {
+    const studentData = {
+      fullName: payload.fullName,
+      rollNumber: payload.rollNumber,
+      admissionNumber: payload.admissionNumber,
+      email: payload.email,
+      phoneNumber: payload.phoneNumber,
+      gender: payload.gender,
+      dateOfBirth: payload.dateOfBirth,
+      department: payload.department,
+      year: payload.year,
+      semester: payload.semester,
+      section: payload.section,
+      parentName: payload.parentName,
+      parentPhone: payload.parentPhone,
+      parentEmail: payload.parentEmail,
+      attendancePercentage: payload.attendancePercentage,
+      cgpa: payload.cgpa,
+      profileImage: payload.profileImage,
+    };
+
+    const allocationData = {
+      hostelId: payload.hostelId,
+      blockId: payload.blockId,
+      roomId: payload.roomId,
+      bedNumber: payload.bedNumber,
+      academicYear: payload.academicYear,
+      status: payload.status,
+    };
+
+    allocateRoomMutation.mutate({ student: studentData, allocation: allocationData });
+  };
+
+  const handleQuickVisitorSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!vName.trim() || !vPhone.trim()) {
+      toast.error("Please enter visitor name and phone");
+      return;
+    }
+
+    const resi = residents.find(r => r.studentId === vStudentId);
+    const payload = {
+      visitor_name: vName,
+      visitor_phone: vPhone,
+      relationship: vRelation,
+      purpose: vPurpose,
+      student_id: vStudentId || null,
+      room_id: resi?.roomId || null,
+      hostel_id: resi?.hostelId || null,
+      id_type: vIdType,
+      id_number: vIdNumber || null,
+      check_in_time: new Date(),
+      status: "In",
+    };
+
+    registerVisitorMutation.mutate(payload);
+  };
+
+  const handleQuickComplaintSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cTitle.trim() || !cDesc.trim()) {
+      toast.error("Please enter title and description");
+      return;
+    }
+
+    const resi = residents.find(r => r.studentId === cStudentId);
+    const payload = {
+      student_id: cStudentId || null,
+      room_id: resi?.roomId || null,
+      hostel_id: resi?.hostelId || null,
+      title: cTitle,
+      description: cDesc,
+      category: cCat,
+      priority: cPriority,
+      status: "Pending",
+    };
+
+    logComplaintMutation.mutate(payload);
+  };
+
+  const handleQuickAnnouncementSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!annTitle.trim()) {
+      toast.error("Please enter announcement headline");
+      return;
+    }
+
+    sendWardenNotifMutation.mutate({
+      title: annTitle,
+      type: annType,
+      urgency: annUrgency,
+    });
+  };
+
   useEffect(() => {
     setRole(getActiveRole());
   }, []);
@@ -109,6 +319,48 @@ export function DashboardLayout() {
     }
   }, [dark]);
 
+  // ── Database System Notifications & Realtime ──
+  const { data: dbNotifications = [], refetch: refetchNotifs } = useQuery({
+    queryKey: ["system-notifications"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("system_notifications")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel("system_notifications_changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "system_notifications" },
+        (payload) => {
+          refetchNotifs();
+          if (payload.eventType === "INSERT") {
+            toast.info(`Notification: ${payload.new.title}`, {
+              action: {
+                label: "View",
+                onClick: () => navigate({ to: "/dashboard/hostel/notifications" }),
+              }
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, refetchNotifs, navigate]);
+
   // Debounced search logic
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -118,59 +370,137 @@ export function DashboardLayout() {
     }
 
     setIsSearching(true);
-    const timer = setTimeout(() => {
-      const q = searchQuery.toLowerCase();
+    const timer = setTimeout(async () => {
+      const q = searchQuery.trim();
       const results: SearchSuggestion[] = [];
+      const isWarden = role?.name === "Hostel Warden";
 
-      // 1. Search books
-      books.forEach((b) => {
-        if (b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q)) {
-          results.push({
-            type: "Book",
-            label: b.title,
-            subtitle: `by ${b.author}`,
-            category: b.category,
+      if (isWarden) {
+        try {
+          // 1. Search Students
+          const { data: dbStudents } = await supabase
+            .from("students")
+            .select("full_name, roll_number, department")
+            .or(`full_name.ilike.%${q}%,roll_number.ilike.%${q}%`)
+            .limit(3);
+
+          (dbStudents || []).forEach(s => {
+            results.push({
+              type: "Student",
+              label: s.full_name,
+              subtitle: `Roll No: ${s.roll_number} • Dept: ${s.department}`,
+              dept: s.department
+            });
           });
-        }
-      });
 
-      // 2. Search students
-      students.forEach((s) => {
-        if (s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q)) {
-          results.push({ type: "Student", label: s.name, subtitle: `ID: ${s.id}`, dept: s.dept });
-        }
-      });
+          // 2. Search Rooms
+          const { data: dbRooms } = await supabase
+            .from("hostel_rooms")
+            .select("room_number, floor, type")
+            .ilike("room_number", `%${q}%`)
+            .limit(3);
 
-      // 3. Search faculty
-      faculty.forEach((f) => {
-        if (f.name.toLowerCase().includes(q) || f.id.toLowerCase().includes(q)) {
-          results.push({ type: "Faculty", label: f.name, subtitle: `Dept: ${f.dept}` });
-        }
-      });
+          (dbRooms || []).forEach(r => {
+            results.push({
+              type: "Room",
+              label: `Room ${r.room_number}`,
+              subtitle: `Floor ${r.floor} • ${r.type}`,
+              category: r.type
+            });
+          });
 
-      // 4. Search departments
-      const depts = [
-        "Computer Science",
-        "Information Technology",
-        "Electronics & Communication",
-        "Mechanical Engineering",
-        "Electrical Engineering",
-        "Civil Engineering",
-        "Business Administration",
-      ];
-      depts.forEach((d) => {
-        if (d.toLowerCase().includes(q)) {
-          results.push({ type: "Department", label: d, subtitle: "Academic Department" });
-        }
-      });
+          // 3. Search Fees
+          const { data: dbFees } = await supabase
+            .from("hostel_fees")
+            .select("id, status, total_amount, students(full_name)")
+            .or(`status.ilike.%${q}%,students.full_name.ilike.%${q}%`)
+            .limit(3);
 
-      setSuggestions(results.slice(0, 7));
-      setIsSearching(false);
-      setActiveIndex(-1);
+          (dbFees || []).forEach(f => {
+            const studentName = (f.students as any)?.full_name || "Unknown";
+            results.push({
+              type: "Fee",
+              label: `Fee for ${studentName}`,
+              subtitle: `Amount: ₹${f.total_amount} • Status: ${f.status}`,
+              category: f.status
+            });
+          });
+
+          // 4. Search System Notifications
+          const { data: dbNotifs } = await supabase
+            .from("system_notifications")
+            .select("title, type")
+            .or(`title.ilike.%${q}%,type.ilike.%${q}%`)
+            .limit(3);
+
+          (dbNotifs || []).forEach(n => {
+            results.push({
+              type: "Notification",
+              label: n.title,
+              subtitle: `Category: ${n.type}`,
+              category: n.type
+            });
+          });
+
+          setSuggestions(results.slice(0, 7));
+        } catch (err) {
+          console.error("Global search error:", err);
+        } finally {
+          setIsSearching(false);
+          setActiveIndex(-1);
+        }
+      } else {
+        const queryLower = q.toLowerCase();
+        // 1. Search books
+        books.forEach((b) => {
+          if (b.title.toLowerCase().includes(queryLower) || b.author.toLowerCase().includes(queryLower)) {
+            results.push({
+              type: "Book",
+              label: b.title,
+              subtitle: `by ${b.author}`,
+              category: b.category,
+            });
+          }
+        });
+
+        // 2. Search students
+        students.forEach((s) => {
+          if (s.name.toLowerCase().includes(queryLower) || s.id.toLowerCase().includes(queryLower)) {
+            results.push({ type: "Student", label: s.name, subtitle: `ID: ${s.id}`, dept: s.dept });
+          }
+        });
+
+        // 3. Search faculty
+        faculty.forEach((f) => {
+          if (f.name.toLowerCase().includes(queryLower) || f.id.toLowerCase().includes(queryLower)) {
+            results.push({ type: "Faculty", label: f.name, subtitle: `Dept: ${f.dept}` });
+          }
+        });
+
+        // 4. Search departments
+        const depts = [
+          "Computer Science",
+          "Information Technology",
+          "Electronics & Communication",
+          "Mechanical Engineering",
+          "Electrical Engineering",
+          "Civil Engineering",
+          "Business Administration",
+        ];
+        depts.forEach((d) => {
+          if (d.toLowerCase().includes(queryLower)) {
+            results.push({ type: "Department", label: d, subtitle: "Academic Department" });
+          }
+        });
+
+        setSuggestions(results.slice(0, 7));
+        setIsSearching(false);
+        setActiveIndex(-1);
+      }
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, role?.name]);
 
   // Key navigation for search suggestions
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -288,17 +618,54 @@ export function DashboardLayout() {
     setActiveQuickAction(null);
   };
 
-  const unreadCount = localNotifications.filter((n) => n.unread).length;
+  const notificationsToShow = useMemo(() => {
+    const isWarden = role?.name === "Hostel Warden";
+    if (isWarden) {
+      return dbNotifications.map((n: any) => ({
+        id: n.id,
+        title: n.title,
+        time: n.time || "Just now",
+        type: n.type,
+        unread: n.unread,
+      }));
+    }
+    return localNotifications;
+  }, [role?.name, dbNotifications, localNotifications]);
 
-  const markAllNotificationsRead = () => {
-    setLocalNotifications(localNotifications.map((n) => ({ ...n, unread: false })));
-    toast.success("All alerts marked as read.");
+  const unreadCount = useMemo(() => {
+    const isWarden = role?.name === "Hostel Warden";
+    if (isWarden) {
+      return dbNotifications.filter((n: any) => n.unread).length;
+    }
+    return localNotifications.filter((n) => n.unread).length;
+  }, [role?.name, dbNotifications, localNotifications]);
+
+  const markAllNotificationsRead = async () => {
+    const isWarden = role?.name === "Hostel Warden";
+    if (isWarden) {
+      try {
+        await supabase.from("system_notifications").update({ unread: false }).eq("unread", true);
+        refetchNotifs();
+        toast.success("All alerts marked as read.");
+      } catch (e) {}
+    } else {
+      setLocalNotifications(localNotifications.map((n) => ({ ...n, unread: false })));
+      toast.success("All alerts marked as read.");
+    }
   };
 
-  const markSingleRead = (id: string) => {
-    setLocalNotifications(
-      localNotifications.map((n) => (n.id === id ? { ...n, unread: false } : n)),
-    );
+  const markSingleRead = async (id: string) => {
+    const isWarden = role?.name === "Hostel Warden";
+    if (isWarden) {
+      try {
+        await supabase.from("system_notifications").update({ unread: false }).eq("id", id);
+        refetchNotifs();
+      } catch (e) {}
+    } else {
+      setLocalNotifications(
+        localNotifications.map((n) => (n.id === id ? { ...n, unread: false } : n)),
+      );
+    }
   };
 
   const RoleIcon = role.icon;
@@ -512,56 +879,103 @@ export function DashboardLayout() {
                     <div className="fixed inset-0 z-40" onClick={() => setShowNewActions(false)} />
                     <div className="absolute right-0 top-full mt-2 w-56 bg-background border rounded-xl shadow-lg z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 text-left">
                       <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">Quick Actions</div>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("addBook");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <BookOpen className="size-3.5 text-violet-500" />
-                        <span>Quick Add Book</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("issueBook");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <History className="size-3.5 text-indigo-500" />
-                        <span>Issue Book Resource</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("addMember");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <UserPlus className="size-3.5 text-emerald-500" />
-                        <span>Register Member</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("addDigital");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <FileText className="size-3.5 text-amber-500" />
-                        <span>Upload Digital Resource</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveQuickAction("sendNotif");
-                          setShowNewActions(false);
-                        }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
-                      >
-                        <BellRing className="size-3.5 text-rose-500" />
-                        <span>Broadcast Alert</span>
-                      </button>
+                      {isWarden ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("allocateRoom");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <UserPlus className="size-3.5 text-violet-500" />
+                            <span>Allocate Room</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("registerVisitor");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <User className="size-3.5 text-indigo-500" />
+                            <span>Register Visitor</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("logComplaint");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <AlertTriangle className="size-3.5 text-amber-500" />
+                            <span>Log Complaint</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("sendWardenNotif");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <BellRing className="size-3.5 text-rose-500" />
+                            <span>Broadcast Announcement</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("addBook");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <BookOpen className="size-3.5 text-violet-500" />
+                            <span>Quick Add Book</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("issueBook");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <History className="size-3.5 text-indigo-500" />
+                            <span>Issue Book Resource</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("addMember");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <UserPlus className="size-3.5 text-emerald-500" />
+                            <span>Register Member</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("addDigital");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <FileText className="size-3.5 text-amber-500" />
+                            <span>Upload Digital Resource</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuickAction("sendNotif");
+                              setShowNewActions(false);
+                            }}
+                            className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                          >
+                            <BellRing className="size-3.5 text-rose-500" />
+                            <span>Broadcast Alert</span>
+                          </button>
+                        </>
+                      )}
                     </div>
                   </>
                 )}
@@ -607,10 +1021,10 @@ export function DashboardLayout() {
                         )}
                       </div>
                       <div className="space-y-1.5 max-h-60 overflow-y-auto">
-                        {localNotifications.length === 0 ? (
+                        {notificationsToShow.length === 0 ? (
                           <div className="text-center py-6 text-xs text-muted-foreground">No new notifications</div>
                         ) : (
-                          localNotifications.map((notif) => (
+                          notificationsToShow.map((notif) => (
                             <div
                               key={notif.id}
                               onClick={() => {
@@ -1074,6 +1488,316 @@ export function DashboardLayout() {
                   className="flex-1 px-3 py-2 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary cursor-pointer hover:opacity-90 transition"
                 >
                   Dispatch BroadCast
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Hostel Warden Quick Action Modals */}
+      {activeQuickAction === "allocateRoom" && (
+        <StudentFormModal
+          open={activeQuickAction === "allocateRoom"}
+          mode="create"
+          student={null}
+          departments={departments}
+          submitting={allocateRoomMutation.isPending}
+          isHostelWarden={true}
+          onClose={() => setActiveQuickAction(null)}
+          onSubmit={handleAllocateSubmit}
+        />
+      )}
+
+      {activeQuickAction === "registerVisitor" && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4">
+          <form
+            onSubmit={handleQuickVisitorSubmit}
+            className="bg-background rounded-2xl border max-w-lg w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150 text-left font-normal"
+          >
+            <div className="p-6 border-b flex justify-between items-center bg-gradient-soft">
+              <h3 className="font-semibold text-base">Register Visitor Entry</h3>
+              <button
+                type="button"
+                onClick={() => setActiveQuickAction(null)}
+                className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Visitor Name *</label>
+                  <input
+                    value={vName}
+                    onChange={(e) => setVName(e.target.value)}
+                    placeholder="Full Name"
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Visitor Phone *</label>
+                  <input
+                    value={vPhone}
+                    onChange={(e) => setVPhone(e.target.value)}
+                    placeholder="Phone Number"
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Relationship</label>
+                  <select
+                    value={vRelation}
+                    onChange={(e) => setVRelation(e.target.value)}
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
+                  >
+                    {["Parent", "Guardian", "Friend", "Sibling", "Local Guardian", "Other"].map((rel) => (
+                      <option key={rel} value={rel}>{rel}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Purpose of Visit</label>
+                  <input
+                    value={vPurpose}
+                    onChange={(e) => setVPurpose(e.target.value)}
+                    placeholder="e.g. Submitting laundry, meeting"
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">Visiting Resident Student</label>
+                <select
+                  value={vStudentId}
+                  onChange={(e) => setVStudentId(e.target.value)}
+                  className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
+                  required
+                >
+                  <option value="">-- Select Resident Student --</option>
+                  {residents.map((r: any) => (
+                    <option key={r.studentId} value={r.studentId}>
+                      {r.fullName} ({r.rollNumber}) - Room {r.roomNumber}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Verification ID Type</label>
+                  <select
+                    value={vIdType}
+                    onChange={(e) => setVIdType(e.target.value)}
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
+                  >
+                    {["Aadhaar Card", "PAN Card", "Driving License", "Student ID", "Passport", "Other"].map((idt) => (
+                      <option key={idt} value={idt}>{idt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Verification ID Number</label>
+                  <input
+                    value={vIdNumber}
+                    onChange={(e) => setVIdNumber(e.target.value)}
+                    placeholder="ID Reference Number"
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="p-6 bg-gradient-soft border-t flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveQuickAction(null)}
+                className="px-4 py-2 text-xs rounded-xl border bg-background hover:bg-accent cursor-pointer transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-xs rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-95 transition"
+                disabled={registerVisitorMutation.isPending}
+              >
+                {registerVisitorMutation.isPending ? "Registering..." : "Register Entry"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {activeQuickAction === "logComplaint" && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm grid place-items-center p-4">
+          <form
+            onSubmit={handleQuickComplaintSubmit}
+            className="bg-background rounded-2xl border max-w-lg w-full overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150 text-left font-normal"
+          >
+            <div className="p-6 border-b flex justify-between items-center bg-gradient-soft">
+              <h3 className="font-semibold text-base">Register New Complaint</h3>
+              <button
+                type="button"
+                onClick={() => setActiveQuickAction(null)}
+                className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">Select Resident Student</label>
+                <select
+                  value={cStudentId}
+                  onChange={(e) => setCStudentId(e.target.value)}
+                  className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
+                >
+                  <option value="">General / Warden Reported</option>
+                  {residents.map((r: any) => (
+                    <option key={r.studentId} value={r.studentId}>
+                      {r.fullName} ({r.rollNumber}) - Room {r.roomNumber}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Category</label>
+                  <select
+                    value={cCat}
+                    onChange={(e) => setCCat(e.target.value)}
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
+                  >
+                    {["Maintenance", "Mess", "Security", "Electrical", "Other"].map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Priority</label>
+                  <select
+                    value={cPriority}
+                    onChange={(e) => setCPriority(e.target.value)}
+                    className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
+                  >
+                    {["Low", "Medium", "High"].map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">Complaint Title</label>
+                <input
+                  value={cTitle}
+                  onChange={(e) => setCTitle(e.target.value)}
+                  placeholder="e.g. Water shortage in block A 2nd floor"
+                  className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">Detailed Description</label>
+                <textarea
+                  value={cDesc}
+                  onChange={(e) => setCDesc(e.target.value)}
+                  placeholder="Describe the issue in detail..."
+                  rows={4}
+                  className="w-full rounded-xl border bg-background px-3 py-2 text-sm outline-none focus:border-primary resize-none"
+                  required
+                />
+              </div>
+            </div>
+            <div className="p-6 bg-gradient-soft border-t flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveQuickAction(null)}
+                className="px-4 py-2 text-xs rounded-xl border bg-background hover:bg-accent cursor-pointer transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-xs rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-95 transition"
+                disabled={logComplaintMutation.isPending}
+              >
+                {logComplaintMutation.isPending ? "Submitting..." : "Submit Complaint"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {activeQuickAction === "sendWardenNotif" && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-5 animate-in fade-in zoom-in-95 duration-150 text-left font-normal">
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <h3 className="font-semibold text-base text-gradient flex items-center gap-2">
+                <BellRing className="size-5 text-violet-600" /> Broadcast Announcement
+              </h3>
+              <button
+                onClick={() => setActiveQuickAction(null)}
+                className="text-muted-foreground hover:text-foreground text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleQuickAnnouncementSubmit} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Announcement Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Mess timings changed / Power shutdown notice"
+                  value={annTitle}
+                  onChange={(e) => setAnnTitle(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Category</label>
+                  <select
+                    value={annType}
+                    onChange={(e) => setAnnType(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                  >
+                    <option value="Mess">Mess</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Security">Security</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">Urgency</label>
+                  <select
+                    value={annUrgency}
+                    onChange={(e) => setAnnUrgency(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex gap-3 pt-3 border-t">
+                <button
+                  type="button"
+                  onClick={() => setActiveQuickAction(null)}
+                  className="flex-1 px-3 py-2 rounded-xl border text-muted-foreground hover:bg-gradient-soft text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-3 py-2 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary cursor-pointer hover:opacity-90 transition"
+                  disabled={sendWardenNotifMutation.isPending}
+                >
+                  {sendWardenNotifMutation.isPending ? "Broadcasting..." : "Broadcast"}
                 </button>
               </div>
             </form>

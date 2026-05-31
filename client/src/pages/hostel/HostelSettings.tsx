@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil } from "lucide-react";
+import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Loader2 } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabaseClient";
 
 export function HostelSettings() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const fullName = user?.fullName || "Warden Member";
   const email = user?.email || "";
@@ -19,9 +20,12 @@ export function HostelSettings() {
 
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   // Form states
   const [aboutMe, setAboutMe] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [socialLinks, setSocialLinks] = useState({
     github: "",
     linkedin: "",
@@ -29,44 +33,138 @@ export function HostelSettings() {
     website: "",
   });
 
-  // Load state from localStorage on mount
+  // Load state from Supabase on mount
   useEffect(() => {
-    const role = "warden";
-    
-    const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "Responsible for hostel administration, resident safety, dining operations, and facility coordination.");
+    async function loadProfile() {
+      if (!email) return;
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from("users")
+          .select("about, social_links, avatar_url")
+          .eq("email", email)
+          .single();
 
-    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    if (storedSocials) {
-      setSocialLinks(JSON.parse(storedSocials));
-    } else {
-      setSocialLinks({ github: "", linkedin: "", twitter: "", website: "" });
+        if (error) throw error;
+
+        if (data) {
+          setAboutMe(data.about || "Responsible for hostel administration, resident safety, dining operations, and facility coordination.");
+          setAvatarUrl(data.avatar_url || "");
+          if (data.social_links) {
+            setSocialLinks({
+              github: data.social_links.github || "",
+              linkedin: data.social_links.linkedin || "",
+              twitter: data.social_links.twitter || "",
+              website: data.social_links.website || "",
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error loading profile from database, falling back:", err);
+      } finally {
+        setLoading(false);
+      }
     }
-  }, []);
+    loadProfile();
+  }, [email]);
 
-  const handleSave = () => {
-    const role = "warden";
-    localStorage.setItem(`cms_${role}_about`, aboutMe);
-    localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
-    toast.success("Profile changes saved successfully!");
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (!email) return;
+    try {
+      setSaving(true);
+      const { error } = await supabase
+        .from("users")
+        .update({
+          about: aboutMe,
+          social_links: socialLinks,
+        })
+        .eq("email", email);
+
+      if (error) throw error;
+
+      toast.success("Profile changes saved successfully!");
+      setIsEditing(false);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save profile changes");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleCancel = () => {
-    const role = "warden";
-    
-    const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "Responsible for hostel administration, resident safety, dining operations, and facility coordination.");
-
-    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
-    
+  const handleCancel = async () => {
+    // Reload original values
+    if (email) {
+      try {
+        const { data } = await supabase
+          .from("users")
+          .select("about, social_links")
+          .eq("email", email)
+          .single();
+        if (data) {
+          setAboutMe(data.about || "");
+          if (data.social_links) {
+            setSocialLinks({
+              github: data.social_links.github || "",
+              linkedin: data.social_links.linkedin || "",
+              twitter: data.social_links.twitter || "",
+              website: data.social_links.website || "",
+            });
+          }
+        }
+      } catch (e) {}
+    }
     toast.info("Changes discarded.");
     setIsEditing(false);
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !email) return;
+
+    const fileExt = file.name.split(".").pop();
+    const filePath = `warden-${email}-${Date.now()}.${fileExt}`;
+
+    const loadingToast = toast.loading("Uploading avatar...");
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ avatar_url: publicUrl })
+        .eq("email", email);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+      toast.success("Avatar updated successfully!", { id: loadingToast });
+      if (refreshUser) {
+        await refreshUser();
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to upload avatar", { id: loadingToast });
+    }
+  };
+
   const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
   const employeeId = user?.employeeId || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#4");
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 gap-2">
+        <Loader2 className="size-8 text-primary animate-spin" />
+        <span className="text-sm text-muted-foreground font-sans">Loading settings profile...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -88,14 +186,21 @@ export function HostelSettings() {
               <button
                 onClick={handleCancel}
                 className="flex items-center gap-1.5 px-4 py-2 border rounded-xl hover:bg-accent text-sm transition cursor-pointer font-medium"
+                disabled={saving}
               >
                 <X className="size-4" /> Cancel
               </button>
               <button
                 onClick={handleSave}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium animate-in fade-in zoom-in-95 duration-150"
+                disabled={saving}
               >
-                <Save className="size-4" /> Save Changes
+                {saving ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Save className="size-4" />
+                )}
+                Save Changes
               </button>
             </div>
           ) : (
@@ -111,11 +216,28 @@ export function HostelSettings() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1 space-y-6">
-          <Card className="text-center">
-            <div className="mx-auto size-32">
-              <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
-                {initials || "HW"}
-              </div>
+          <Card className="text-center relative">
+            <div className="mx-auto size-32 relative group">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={fullName}
+                  className="size-full rounded-3xl object-cover shadow-soft"
+                />
+              ) : (
+                <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
+                  {initials || "HW"}
+                </div>
+              )}
+              <label className="absolute -bottom-2 -right-2 p-2 bg-indigo text-white rounded-xl cursor-pointer hover:scale-105 transition shadow-md grid place-items-center">
+                <Pencil className="size-3.5" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+              </label>
             </div>
             <div className="mt-4 font-bold text-lg">{fullName}</div>
             <div className="text-xs text-muted-foreground tracking-wider uppercase font-semibold mt-1">
@@ -218,7 +340,7 @@ export function HostelSettings() {
                 onChange={(e) => setAboutMe(e.target.value)}
                 placeholder="Tell us about yourself..."
                 rows={4}
-                className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary animate-in fade-in duration-200"
+                className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary animate-in fade-in duration-200 resize-none"
               />
             ) : (
               <div className="min-h-16 py-1">
