@@ -8,3 +8,248 @@
 [2026-05-30T19:55:35.112Z] [assignFaculty] Updating faculty assignments in database...
 [2026-05-30T19:55:35.254Z] [assignFaculty] Faculty updated successfully: Dr. Kumar Swamy
 [2026-05-30T19:55:35.368Z] [assignFaculty] Formatting response and returning success...
+[2026-05-31T04:39:51.522Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+Body: {"email":"warden@college.com","password":"passwprd123"}
+
+[2026-05-31T05:30:50.141Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:50.960Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:51.805Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:52.226Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:54.418Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:30:55.238Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:31:01.511Z] GET /api/students?page=1&limit=1000 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:31:01.573Z] GET /api/students?page=1&limit=8 - Status: 500 - Error: bind message supplies 4 parameters, but prepared statement "" requires 2
+Stack: error: bind message supplies 4 parameters, but prepared statement "" requires 2
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/config/supabase.js:411:23)
+    at async getStudents (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/studentController.js:82:61)
+Body: {}
+
+[2026-05-31T05:48:50.949Z] GET /api/academic/departments - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T05:48:51.428Z] GET /api/students?page=1&limit=1000 - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T05:48:51.454Z] GET /api/students?page=1&limit=8 - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T05:55:39.002Z] GET /api/transport/telemetry?busNumber=TS-09-UB-1002 - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T06:46:22.677Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T06:46:23.312Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T06:52:18.669Z] GET /api/auth/me - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T07:06:20.495Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T07:06:21.590Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T07:06:25.714Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T07:06:28.073Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T08:26:58.678Z] GET /favicon.ico - Status: 404 - Error: Not Found - /favicon.ico
+Stack: Error: Not Found - /favicon.ico
+    at notFound (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/middleware/errorHandler.js:25:17)
+    at Layer.handle [as handle_request] (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at logger (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\morgan\index.js:144:5)
+    at Layer.handle [as handle_request] (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\ALL FILES\MINI PROJECT\INTESHIP\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+Body: {}
+
+[2026-05-31T09:16:30.412Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:16:30.985Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:16:40.278Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:16:40.880Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:24:11.141Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:24:11.705Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:25:59.823Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:26:00.467Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:26:52.043Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:26:52.599Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:27:07.210Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:27:07.878Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:32:41.085Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:32:41.999Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:53:28.806Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+
+[2026-05-31T09:53:29.547Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///D:/ALL%20FILES/MINI%20PROJECT/INTESHIP/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {}
+

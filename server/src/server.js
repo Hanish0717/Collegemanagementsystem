@@ -2,27 +2,21 @@ import app from './app.js';
 import dotenv from 'dotenv';
 import pkg from 'pg';
 import { seedIfNeeded } from './seed_lightweight.js';
-
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const { Client } = pkg;
 
 // Check if we should run in Database Mock Mode
-const isMockMode = !process.env.SUPABASE_URL || 
-                   process.env.SUPABASE_URL.includes('your-project') || 
-                   process.env.SUPABASE_URL.includes('placeholder') ||
-                   !process.env.DATABASE_URL ||
+const isMockMode = !process.env.DATABASE_URL || 
                    process.env.DATABASE_URL.includes('your_supabase') ||
-                   !process.env.SUPABASE_SERVICE_ROLE_KEY ||
-                   process.env.SUPABASE_SERVICE_ROLE_KEY.includes('placeholder') ||
-                   process.env.SUPABASE_SERVICE_ROLE_KEY.includes('your_supabase');
+                   process.env.DATABASE_URL.includes('placeholder');
 
 // Validate Supabase config
 if (isMockMode) {
-  console.log("🚀 Running backend in DATABASE MOCK MODE because no live Supabase credentials are configured.");
+  console.log("🚀 Running backend in DATABASE MOCK MODE because no live database credentials are configured.");
 } else {
-  console.log("✅ Supabase credentials detected. Ready to process queries.");
+  console.log("✅ Live database credentials detected. Ready to process queries.");
 }
 
 // Startup database migration
@@ -139,22 +133,25 @@ runMigrations()
       return;
     }
     try {
-      const client = new Client({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-      });
-      await client.connect();
-      const res = await client.query("SELECT id, full_name, email, roll_number, department FROM students LIMIT 5");
-      console.log("\n🔑 LIVE STUDENTS IN SUPABASE DATABASE:");
-      if (res.rows.length === 0) {
-        console.log("   (No students found in the database!)");
+      const { supabase } = await import('./config/supabase.js');
+      
+      console.log("⚡ Checking database query builder connectivity...");
+      const { data: students, count, error } = await supabase
+        .from('students')
+        .select('*, users!inner(is_verified)', { count: 'exact' })
+        .eq('is_active', true)
+        .eq('users.is_verified', true)
+        .range(0, 5);
+
+      if (error) {
+        console.error("❌ Supabase query builder error:", error);
       } else {
-        res.rows.forEach(r => console.log(`   - ${r.full_name} (${r.roll_number}) | ${r.email} | Dept: ${r.department}`));
+        console.log(`\n🔑 LIVE STUDENTS IN DATABASE (${count} total):`);
+        students.forEach(r => console.log(`   - ${r.full_name} (${r.roll_number}) | ${r.email} | Dept: ${r.department}`));
+        console.log("======================================\n");
       }
-      console.log("======================================\n");
-      await client.end();
     } catch (err) {
-      console.error("❌ Live database verification query failed:", err);
+      console.error("❌ Supabase verifier test failed:", err.message);
     }
   })
   .then(() => {

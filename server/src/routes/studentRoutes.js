@@ -5,6 +5,7 @@ import {
   createStudent,
   updateStudent,
   deleteStudent,
+  verifyStudent,
 } from '../controllers/studentController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -18,6 +19,10 @@ router
   .route('/')
   .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager'), getStudents)
   .post(authorizeRoles('admin', 'super-admin', 'transport-manager'), createStudent);
+
+router
+  .route('/verify')
+  .post(verifyStudent);
 
 router
   .route('/:id')

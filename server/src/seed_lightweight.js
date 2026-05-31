@@ -371,10 +371,8 @@ export const seedIfNeeded = async () => {
     // Check if students count is 0
     const checkRes = await client.query("SELECT COUNT(*) FROM students");
     const count = parseInt(checkRes.rows[0].count);
-    
-    if (count >= 25) {
-      console.log(`ℹ️ Supabase already contains ${count} student records (>= 25). Skipping lightweight seed.`);
-      await seedPlacements(client);
+    if (count > 0) {
+      console.log(`ℹ️ Supabase already contains ${count} student records. Skipping lightweight seed to preserve user data.`);
       await client.end();
       return;
     }

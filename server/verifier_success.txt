@@ -1,0 +1,33 @@
+--- SUPABASE QUERY VERIFICATION ---
+✅ Success! Loaded 6 students.
+Total Count in Database: 30
+First Student: {
+  "id": "607d61f8-284a-4e6a-b3ee-db4dad29df65",
+  "full_name": "Student Demo",
+  "roll_number": "CS100001",
+  "email": "student@college.com",
+  "phone_number": "1234567890",
+  "gender": "Male",
+  "date_of_birth": "2004-05-14T18:30:00.000Z",
+  "department": "CSE",
+  "year": 3,
+  "semester": 5,
+  "section": "A",
+  "address": "123 College Ave, Campus Town",
+  "parent_name": "Parent Demo",
+  "parent_phone": "0987654321",
+  "parent_email": "parent@college.com",
+  "cgpa": "8.50",
+  "attendance_percentage": "100.00",
+  "profile_image": null,
+  "is_active": true,
+  "created_at": "2026-05-30T15:41:34.888Z",
+  "updated_at": "2026-05-30T15:41:34.888Z",
+  "admission_number": null,
+  "user_id": "09de0ab9-e6f4-4667-96fb-c166f6cbff2e",
+  "users": {
+    "is_verified": true,
+    "email": "student@college.com",
+    "role": "student"
+  }
+}
