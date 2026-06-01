@@ -215,7 +215,7 @@ ${appsList.map((a) => `"${a.id}", "${a.studentName}", "${a.studentId}", "${a.com
 
 "Detailed Log - Interview Feedback Entries"
 "ID", "Student Name", "Rating", "Outcome", "Comments", "Date"
-${feedbackList.map((f) => `"${f.id}", "${f.studentName}", "${f.rating}", "${f.outcome}", "${f.comments}", "${f.date}"`).join("\n") || '"No feedbacks submitted yet."'}
+${feedbackList.map((f: any) => `"${f.id}", "${f.studentName}", "${f.rating}", "${f.outcome}", "${f.comments}", "${f.date}"`).join("\n") || '"No feedbacks submitted yet."'}
 
 "Detailed Log - Offer Letters Generated"
 "ID", "Student Name", "Company", "Job Designation", "Annual CTC Package", "Official Joining Date", "Offer Date", "Status"
@@ -271,7 +271,7 @@ ${appsList.map((a, i) => `  ${i+1}. [${a.status}] ${a.studentName} (${a.studentI
 ------------------------------------------------------------------------
 5. FEEDBACK & INTERVIEWS BRIEF
 ------------------------------------------------------------------------
-${feedbackList.map((f, i) => `  ${i+1}. [Rating: ${f.rating}/5 - ${f.outcome}] ${f.studentName}: "${f.comments}" (${f.date})`).join("\n") || "  No feedbacks submitted yet."}
+${feedbackList.map((f: any, i: number) => `  ${i+1}. [Rating: ${f.rating}/5 - ${f.outcome}] ${f.studentName}: "${f.comments}" (${f.date})`).join("\n") || "  No feedbacks submitted yet."}
 
 ------------------------------------------------------------------------
 6. RECENT OFFER LETTERS LOG
