@@ -207,8 +207,8 @@ export const getPlacementDashboard = async (req, res, next) => {
               role: d.position,
               appliedDate: app.applied_date || "2026-06-01",
               status: app.status || "Applied",
-              score: app.status === 'Selected' ? 95 : 85,
-              round: app.status === 'Selected' ? 3 : 1
+              score: (app.score !== undefined && app.score !== null) ? app.score : (app.status === 'Selected' ? 95 : 85),
+              round: (app.round !== undefined && app.round !== null) ? app.round : (app.status === 'Selected' ? 3 : 1)
             });
 
             if (app.status === 'Selected' || app.status === 'Offer Released') {
@@ -218,8 +218,8 @@ export const getPlacementDashboard = async (req, res, next) => {
                 company: d.company,
                 role: d.position,
                 package: app.package ? `${app.package} LPA` : `${d.package_max || 8.0} LPA`,
-                joiningDate: "2026-07-15",
-                status: app.student_name === "Aarav Sharma" ? "Pending" : "Accepted",
+                joiningDate: app.joining_date || "2026-07-15",
+                status: app.offer_status || (app.status === 'Offer Released' ? 'Pending' : 'Accepted'),
                 offerDate: app.applied_date || "2026-06-01"
               });
             }

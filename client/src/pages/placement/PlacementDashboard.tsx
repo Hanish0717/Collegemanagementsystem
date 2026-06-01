@@ -28,18 +28,6 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
-import {
-  placementStats as mockPlacementStats,
-  placementTrendData,
-  departmentPlacementData,
-  packageAnalyticsData,
-  drives as mockDrives,
-  applications,
-  offers,
-  interviews,
-  placementNotifications,
-  companies as mockCompanies,
-} from "@/mock/mockData";
 import { fetchPlacementData, type PlacementDashboardData } from "@/services/placementService";
 
 const statIcons = [Briefcase, Sparkles, Users, TrendingUp, BarChart3, Calendar];
@@ -65,7 +53,7 @@ export function PlacementDashboard() {
           setLoading(false);
         })
         .catch((err) => {
-          console.warn("Failed to load live placement dashboard data, using mock fallback:", err);
+          console.warn("Failed to load live placement dashboard data:", err);
           setLoading(false);
         });
     }
@@ -75,16 +63,25 @@ export function PlacementDashboard() {
     return <Outlet />;
   }
 
-  const stats = data?.stats || mockPlacementStats;
-  const drives = data?.drives || mockDrives;
-  const companies = data?.companies || mockCompanies;
-  const trendData = data?.placementTrendData || placementTrendData;
-  const deptData = data?.departmentPlacementData || departmentPlacementData;
-  const pkgData = data?.packageAnalyticsData || packageAnalyticsData;
-  const appList = data?.applications || applications;
-  const offerList = data?.offers || offers;
-  const interviewList = data?.interviews || interviews;
-  const notifList = data?.placementNotifications || placementNotifications;
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3">
+        <div className="size-8 text-primary animate-spin border-2 border-primary border-t-transparent rounded-full" />
+        <span className="text-sm text-muted-foreground">Loading Placement Dashboard...</span>
+      </div>
+    );
+  }
+
+  const stats = data?.stats || [];
+  const drives = data?.drives || [];
+  const companies = data?.companies || [];
+  const trendData = data?.placementTrendData || [];
+  const deptData = data?.departmentPlacementData || [];
+  const pkgData = data?.packageAnalyticsData || [];
+  const appList = data?.applications || [];
+  const offerList = data?.offers || [];
+  const interviewList = data?.interviews || [];
+  const notifList = data?.placementNotifications || [];
 
   const placementStatus = [
     {
@@ -451,7 +448,7 @@ export function PlacementDashboard() {
           </div>
           <div className="space-y-3">
             {placementStatus.map((status) => {
-              const width = Math.max(12, Math.round((status.count / appList.length) * 100));
+              const width = appList.length > 0 ? Math.max(12, Math.round((status.count / appList.length) * 100)) : 0;
               return (
                 <div key={status.label} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">

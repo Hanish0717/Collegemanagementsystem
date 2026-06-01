@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Plus, Sliders, Check, X, Loader2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import api from "@/lib/api";
-import { students as mockStudents } from "@/mock/mockData";
 import { toast } from "sonner";
 
 interface StudentItem {
@@ -125,26 +124,13 @@ export function PlacementEligibility() {
             attendance: parseFloat(s.attendancePercentage || s.attendance_percentage) || 90,
             section: s.section || "A"
           }));
-          if (mapped.length > 0) {
-            setStudents(mapped);
-          } else {
-            // Fallback to mock if empty response
-            const mappedMock = mockStudents.map((s: any) => ({
-              ...s,
-              section: s.section || "A"
-            }));
-            setStudents(mappedMock);
-          }
+          setStudents(mapped);
         }
         setLoading(false);
       })
       .catch((err) => {
-        console.warn("Could not query live students, falling back to mock:", err);
-        const mappedMock = mockStudents.map((s: any) => ({
-          ...s,
-          section: s.section || "A"
-        }));
-        setStudents(mappedMock);
+        console.error("Could not query live students:", err);
+        setStudents([]);
         setLoading(false);
       });
   }, []);

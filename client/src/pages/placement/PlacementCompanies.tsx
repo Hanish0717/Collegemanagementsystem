@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Search, Plus, Grid, List, Loader2, X } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { fetchPlacementData, createCompany, updateCompany, CompanyItem, DriveItem } from "@/services/placementService";
-import { companies as mockCompanies, drives as mockDrives } from "@/mock/mockData";
 import { toast } from "sonner";
 
 // Helper to return beautiful vector SVG logos for top companies
@@ -131,8 +130,8 @@ export const getCompanyLogo = (name: string) => {
 };
 
 export function PlacementCompanies() {
-  const [companies, setCompanies] = useState<CompanyItem[]>(mockCompanies);
-  const [drives, setDrives] = useState<DriveItem[]>(mockDrives);
+  const [companies, setCompanies] = useState<CompanyItem[]>([]);
+  const [drives, setDrives] = useState<DriveItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,16 +161,12 @@ export function PlacementCompanies() {
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
-        if (res.companies && res.companies.length > 0) {
-          setCompanies(res.companies);
-        }
-        if (res.drives && res.drives.length > 0) {
-          setDrives(res.drives);
-        }
+        setCompanies(res.companies || []);
+        setDrives(res.drives || []);
         setLoading(false);
       })
       .catch((err) => {
-        console.warn("Failed to fetch live companies list, using fallback mock data:", err);
+        console.warn("Failed to fetch live companies list:", err);
         setLoading(false);
       });
   }, []);

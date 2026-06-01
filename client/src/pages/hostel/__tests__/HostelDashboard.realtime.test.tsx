@@ -23,6 +23,21 @@ vi.mock('@/lib/supabaseClient', () => {
   return { supabase };
 });
 
+// Mock @tanstack/react-router to bypass router context requirement
+vi.mock('@tanstack/react-router', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@tanstack/react-router')>();
+  return {
+    ...original,
+    useRouterState: (options?: any) => {
+      if (options?.select) {
+        return options.select({ location: { pathname: '/dashboard/hostel' } });
+      }
+      return { location: { pathname: '/dashboard/hostel' } };
+    },
+    useNavigate: () => vi.fn(),
+  };
+});
+
 import { supabase } from '@/lib/supabaseClient';
 import { HostelDashboard } from '../HostelDashboard';
 

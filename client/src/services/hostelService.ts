@@ -1160,7 +1160,7 @@ export async function fetchStats() {
   const { count: visitorsCount } = await supabase.from("hostel_visitors").select("id", { count: "exact", head: true });
 
   return [
-    { label: "Total Rooms", value: String(totalRooms || 250), tone: "info" as const },
+    { label: "Total Rooms", value: String(totalRoomsCount === null && !blocksData ? 250 : totalRooms), tone: "info" as const },
     { label: "Occupied Rooms", value: String(occupiedCount), tone: "success" as const },
     { label: "Available Rooms", value: String(availableCount), tone: "warn" as const },
     { label: "Hostel Students", value: String(studentCount), tone: "info" as const },

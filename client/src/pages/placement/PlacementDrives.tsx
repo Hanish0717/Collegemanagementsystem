@@ -3,45 +3,10 @@ import { Plus, Calendar, MapPin, Users, Clock, Loader2, X } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { fetchPlacementData, createDrive, updateDrive, DriveItem, CompanyItem } from "@/services/placementService";
 import { getCompanyLogo } from "./PlacementCompanies";
-import { drives as mockDrives } from "@/mock/mockData";
 import { toast } from "sonner";
 
-const mergeDrives = (serverDrives: DriveItem[]): DriveItem[] => {
-  if (typeof window === "undefined") return serverDrives;
-  let list = [...serverDrives];
-  
-  const editedStr = localStorage.getItem("placement_edited_drives");
-  if (editedStr) {
-    try {
-      const editedMap = JSON.parse(editedStr);
-      list = list.map(item => {
-        if (editedMap[item.id]) {
-          return { ...item, ...editedMap[item.id] };
-        }
-        return item;
-      });
-    } catch (e) {
-      console.error("Error parsing placement_edited_drives:", e);
-    }
-  }
-
-  const customStr = localStorage.getItem("placement_custom_drives");
-  if (customStr) {
-    try {
-      const customList = JSON.parse(customStr);
-      const existingIds = new Set(list.map(i => i.id));
-      const filteredCustom = customList.filter((i: DriveItem) => !existingIds.has(i.id));
-      list = [...filteredCustom, ...list];
-    } catch (e) {
-      console.error("Error parsing placement_custom_drives:", e);
-    }
-  }
-  
-  return list;
-};
-
 export function PlacementDrives() {
-  const [drives, setDrives] = useState<DriveItem[]>(() => mergeDrives(mockDrives));
+  const [drives, setDrives] = useState<DriveItem[]>([]);
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<"upcoming" | "ongoing" | "completed">("upcoming");
@@ -68,17 +33,12 @@ export function PlacementDrives() {
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
-        if (res.drives && res.drives.length > 0) {
-          setDrives(mergeDrives(res.drives));
-        }
-        if (res.companies && res.companies.length > 0) {
-          setCompanies(res.companies);
-        }
+        setDrives(res.drives || []);
+        setCompanies(res.companies || []);
         setLoading(false);
       })
       .catch((err) => {
-        console.warn("Failed to fetch live drives list, using fallback mock data:", err);
-        setDrives(mergeDrives(mockDrives));
+        console.warn("Failed to fetch live drives list:", err);
         setLoading(false);
       });
   }, []);
@@ -126,21 +86,8 @@ export function PlacementDrives() {
     }
     setIsSaving(true);
 
-    const localId = `DRV_${Date.now()}`;
-    const fallbackNewDrive: DriveItem = {
-      id: localId,
-      company: driveCompany,
-      role: driveRole,
-      date: driveDate || new Date().toISOString().split("T")[0],
-      venue: driveVenue || "Virtual",
-      applicationDeadline: driveDeadline || new Date().toISOString().split("T")[0],
-      status: driveStatus,
-      studentCount: 0,
-      rounds: 3
-    };
-
     try {
-      const newDrive = await createDrive({
+      await createDrive({
         company: driveCompany,
         role: driveRole,
         date: driveDate || new Date().toISOString().split("T")[0],
@@ -153,43 +100,15 @@ export function PlacementDrives() {
         eligibilityDepartments: driveDepartments
       } as any);
 
-      if (typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_drives");
-        let customList: DriveItem[] = [];
-        if (customStr) {
-          try {
-            customList = JSON.parse(customStr);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        customList.unshift(newDrive);
-        localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
-      }
+      const res = await fetchPlacementData();
+      setDrives(res.drives || []);
 
-      setDrives((prev) => [newDrive, ...prev]);
       toast.success("Drive added successfully!");
       setIsAddDriveModalOpen(false);
       resetDriveForm();
     } catch (err: any) {
-      console.warn("Failed to create drive on server, using local fallback:", err);
-      if (typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_drives");
-        let customList: DriveItem[] = [];
-        if (customStr) {
-          try {
-            customList = JSON.parse(customStr);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        customList.unshift(fallbackNewDrive);
-        localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
-      }
-      setDrives((prev) => [fallbackNewDrive, ...prev]);
-      toast.success("Drive added successfully (saved locally)!");
-      setIsAddDriveModalOpen(false);
-      resetDriveForm();
+      console.error("Failed to create drive:", err);
+      toast.error(err.message || "Failed to create drive.");
     } finally {
       setIsSaving(false);
     }
@@ -204,24 +123,8 @@ export function PlacementDrives() {
     }
     setIsSaving(true);
 
-    const updatedFields = {
-      company: driveCompany,
-      role: driveRole,
-      date: driveDate,
-      venue: driveVenue,
-      applicationDeadline: driveDeadline,
-      status: driveStatus,
-      studentCount: selectedDrive.studentCount,
-      rounds: selectedDrive.rounds || 3
-    };
-
-    const localUpdate = {
-      ...selectedDrive,
-      ...updatedFields
-    };
-
     try {
-      const updated = await updateDrive(selectedDrive.id, {
+      await updateDrive(selectedDrive.id, {
         company: driveCompany,
         role: driveRole,
         date: driveDate,
@@ -234,80 +137,15 @@ export function PlacementDrives() {
         eligibilityDepartments: driveDepartments
       } as any);
 
-      if (typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_drives");
-        let isCustom = false;
-        if (customStr) {
-          try {
-            let customList: DriveItem[] = JSON.parse(customStr);
-            const idx = customList.findIndex(d => d.id === selectedDrive.id);
-            if (idx !== -1) {
-              customList[idx] = updated;
-              localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
-              isCustom = true;
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }
+      const res = await fetchPlacementData();
+      setDrives(res.drives || []);
 
-        if (!isCustom) {
-          const editedStr = localStorage.getItem("placement_edited_drives");
-          let editedMap: Record<string, DriveItem> = {};
-          if (editedStr) {
-            try {
-              editedMap = JSON.parse(editedStr);
-            } catch (e) {
-              console.error(e);
-            }
-          }
-          editedMap[selectedDrive.id] = updated;
-          localStorage.setItem("placement_edited_drives", JSON.stringify(editedMap));
-        }
-      }
-
-      setDrives((prev) => prev.map((d) => (d.id === selectedDrive.id ? updated : d)));
       toast.success("Drive updated successfully!");
       setIsEditDriveModalOpen(false);
       resetDriveForm();
     } catch (err: any) {
-      console.warn("Failed to update drive on server, using local fallback:", err);
-      if (typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_drives");
-        let isCustom = false;
-        if (customStr) {
-          try {
-            let customList: DriveItem[] = JSON.parse(customStr);
-            const idx = customList.findIndex(d => d.id === selectedDrive.id);
-            if (idx !== -1) {
-              customList[idx] = localUpdate;
-              localStorage.setItem("placement_custom_drives", JSON.stringify(customList));
-              isCustom = true;
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }
-
-        if (!isCustom) {
-          const editedStr = localStorage.getItem("placement_edited_drives");
-          let editedMap: Record<string, DriveItem> = {};
-          if (editedStr) {
-            try {
-              editedMap = JSON.parse(editedStr);
-            } catch (e) {
-              console.error(e);
-            }
-          }
-          editedMap[selectedDrive.id] = localUpdate;
-          localStorage.setItem("placement_edited_drives", JSON.stringify(editedMap));
-        }
-      }
-
-      setDrives((prev) => prev.map((d) => (d.id === selectedDrive.id ? localUpdate : d)));
-      toast.success("Drive updated successfully (saved locally)!");
-      setIsEditDriveModalOpen(false);
-      resetDriveForm();
+      console.error("Failed to update drive:", err);
+      toast.error(err.message || "Failed to update drive.");
     } finally {
       setIsSaving(false);
     }

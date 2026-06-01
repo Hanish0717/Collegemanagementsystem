@@ -1312,3 +1312,15 @@ Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to acce
     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
 Body: {}
 
+[2026-06-01T05:23:54.876Z] GET /api/placement/dashboard - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-06-01T05:23:54.888Z] GET /api/placement/dashboard - Status: 401 - Error: Not authorized, user not found
+Stack: Error: Not authorized, user not found
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:48:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+

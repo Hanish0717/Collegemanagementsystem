@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Calendar, Clock, MapPin, Video, Edit2, Plus, Loader2, X, Star } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { fetchPlacementData, createInterview, updateInterview } from "@/services/placementService";
-import { interviews as mockInterviews } from "@/mock/mockData";
 import { toast } from "sonner";
 
 interface InterviewItem {
@@ -18,42 +17,8 @@ interface InterviewItem {
   status: string;
 }
 
-const mergeInterviews = (serverInterviews: InterviewItem[]): InterviewItem[] => {
-  if (typeof window === "undefined") return serverInterviews;
-  let list = [...serverInterviews];
-  
-  const editedStr = localStorage.getItem("placement_edited_interviews");
-  if (editedStr) {
-    try {
-      const editedMap = JSON.parse(editedStr);
-      list = list.map(item => {
-        if (editedMap[item.id]) {
-          return { ...item, ...editedMap[item.id] };
-        }
-        return item;
-      });
-    } catch (e) {
-      console.error("Error parsing placement_edited_interviews:", e);
-    }
-  }
-
-  const customStr = localStorage.getItem("placement_custom_interviews");
-  if (customStr) {
-    try {
-      const customList = JSON.parse(customStr);
-      const existingIds = new Set(list.map(i => i.id));
-      const filteredCustom = customList.filter((i: InterviewItem) => !existingIds.has(i.id));
-      list = [...filteredCustom, ...list];
-    } catch (e) {
-      console.error("Error parsing placement_custom_interviews:", e);
-    }
-  }
-  
-  return list;
-};
-
 export function PlacementInterviews() {
-  const [interviews, setInterviews] = useState<InterviewItem[]>(() => mergeInterviews(mockInterviews));
+  const [interviews, setInterviews] = useState<InterviewItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Calendar Verification States
@@ -76,36 +41,7 @@ export function PlacementInterviews() {
     date: string;
   }
 
-  const [recentFeedbacks, setRecentFeedbacks] = useState<FeedbackRecord[]>(() => {
-    if (typeof window !== "undefined") {
-      const local = localStorage.getItem("placement_recent_feedbacks");
-      if (local) {
-        try {
-          return JSON.parse(local);
-        } catch (e) {
-          console.error("Error parsing placement_recent_feedbacks:", e);
-        }
-      }
-    }
-    return [
-      {
-        id: "FB_1",
-        studentName: "Sofia Rodriguez",
-        rating: 5,
-        outcome: "Selected",
-        comments: "Excellent systems architecture design and deep database indexing knowledge. Perfect fit for the role.",
-        date: "2026-05-30"
-      },
-      {
-        id: "FB_2",
-        studentName: "Liam Chen",
-        rating: 3,
-        outcome: "Hold",
-        comments: "Good coding ability but struggled under pressure on the multi-threading questions. Recommended for second round review.",
-        date: "2026-05-31"
-      }
-    ];
-  });
+  const [recentFeedbacks, setRecentFeedbacks] = useState<FeedbackRecord[]>([]);
 
   const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,26 +79,30 @@ export function PlacementInterviews() {
         feedbackRating: parseInt(feedbackRating)
       };
 
-      const updatedItem = await updateInterview(matchedInterview.id, payload);
-      setInterviews(prev => prev.map(item => item.id === matchedInterview.id ? updatedItem : item));
-
-      const newFeedback: FeedbackRecord = {
-        id: `FB_${Date.now()}`,
-        studentName: feedbackStudent.trim(),
-        rating: parseInt(feedbackRating),
-        outcome: feedbackOutcome,
-        comments: feedbackText.trim(),
-        date: new Date().toISOString().split("T")[0]
-      };
-
-      setRecentFeedbacks(prev => [newFeedback, ...prev]);
+      await updateInterview(matchedInterview.id, payload);
+      
+      const res = await fetchPlacementData();
+      if (res.interviews) {
+        setInterviews(res.interviews);
+        const derivedFeedbacks = res.interviews
+          .filter((i: any) => i.status === "Completed" && i.feedbackComments)
+          .map((i: any) => ({
+            id: `FB_${i.id}`,
+            studentName: i.studentName,
+            rating: i.feedbackRating || 5,
+            outcome: i.feedbackComments.toLowerCase().includes("select") ? "Selected" : "Hold",
+            comments: i.feedbackComments,
+            date: i.date || new Date().toISOString().split("T")[0]
+          }));
+        setRecentFeedbacks(derivedFeedbacks);
+      }
       
       setFeedbackStudent("");
       setFeedbackRating("");
       setFeedbackOutcome("");
       setFeedbackText("");
 
-      toast.success(`Feedback submitted successfully for ${newFeedback.studentName}!`);
+      toast.success(`Feedback submitted successfully for ${feedbackStudent.trim()}!`);
     } catch (err: any) {
       console.error("Error submitting feedback:", err);
       toast.error("Failed to submit feedback.");
@@ -218,22 +158,7 @@ export function PlacementInterviews() {
     completedCount: number;
   }
 
-  const [panelList, setPanelList] = useState<PanelistItem[]>(() => {
-    if (typeof window !== "undefined") {
-      const local = localStorage.getItem("placement_panel_list");
-      if (local) {
-        try {
-          return JSON.parse(local);
-        } catch (e) {
-          console.error("Error parsing placement_panel_list:", e);
-        }
-      }
-    }
-    return [
-      { id: "PAN_1", name: "Dr. Rajesh Verma", company: "Google India", role: "Technical Interviewer", scheduledCount: 3, completedCount: 2 },
-      { id: "PAN_2", name: "Priya Sharma", company: "Microsoft India", role: "HR Interviewer", scheduledCount: 2, completedCount: 1 }
-    ];
-  });
+  const [panelList, setPanelList] = useState<PanelistItem[]>([]);
 
   const [isPanelModalOpen, setIsPanelModalOpen] = useState(false);
   const [isPanelEditMode, setIsPanelEditMode] = useState(false);
@@ -269,18 +194,12 @@ export function PlacementInterviews() {
     }
 
     if (isPanelEditMode && selectedPanelist) {
-      setPanelList(prev => {
-        const updated = prev.map(item => item.id === selectedPanelist.id ? {
-          ...item,
-          name: panelName,
-          company: panelCompany,
-          role: panelRole
-        } : item);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("placement_panel_list", JSON.stringify(updated));
-        }
-        return updated;
-      });
+      setPanelList(prev => prev.map(item => item.id === selectedPanelist.id ? {
+        ...item,
+        name: panelName,
+        company: panelCompany,
+        role: panelRole
+      } : item));
       toast.success(`Successfully updated panelist details for ${panelName}!`);
     } else {
       const newPanelist: PanelistItem = {
@@ -291,13 +210,7 @@ export function PlacementInterviews() {
         scheduledCount: 0,
         completedCount: 0
       };
-      setPanelList(prev => {
-        const updated = [...prev, newPanelist];
-        if (typeof window !== "undefined") {
-          localStorage.setItem("placement_panel_list", JSON.stringify(updated));
-        }
-        return updated;
-      });
+      setPanelList(prev => [...prev, newPanelist]);
       toast.success(`Successfully added ${panelName} to panels!`);
     }
 
@@ -417,6 +330,40 @@ export function PlacementInterviews() {
       .then((res) => {
         if (res.interviews) {
           setInterviews(res.interviews);
+          
+          const derivedFeedbacks = res.interviews
+            .filter((i: any) => i.status === "Completed" && i.feedbackComments)
+            .map((i: any) => ({
+              id: `FB_${i.id}`,
+              studentName: i.studentName,
+              rating: i.feedbackRating || 5,
+              outcome: i.feedbackComments.toLowerCase().includes("select") ? "Selected" : "Hold",
+              comments: i.feedbackComments,
+              date: i.date || new Date().toISOString().split("T")[0]
+            }));
+          setRecentFeedbacks(derivedFeedbacks);
+
+          const panelistNames = new Set<string>();
+          res.interviews.forEach((i: any) => {
+            if (i.panelists) {
+              i.panelists.forEach((p: string) => panelistNames.add(p));
+            }
+          });
+
+          const derivedPanels = panelistNames.size > 0 
+            ? Array.from(panelistNames).map((name, idx) => ({
+                id: `PAN_${idx}`,
+                name,
+                company: "Recruiting Panel",
+                role: "Interviewer",
+                scheduledCount: res.interviews.filter((i: any) => i.panelists && i.panelists.includes(name) && i.status === "Scheduled").length,
+                completedCount: res.interviews.filter((i: any) => i.panelists && i.panelists.includes(name) && i.status === "Completed").length
+              }))
+            : [
+                { id: "PAN_1", name: "Dr. Rajesh Verma", company: "Google India", role: "Technical Interviewer", scheduledCount: res.interviews.filter((i: any) => i.status === "Scheduled").length, completedCount: res.interviews.filter((i: any) => i.status === "Completed").length },
+                { id: "PAN_2", name: "Priya Sharma", company: "Microsoft India", role: "HR Interviewer", scheduledCount: 0, completedCount: 0 }
+              ];
+          setPanelList(derivedPanels);
         }
         setLoading(false);
       })

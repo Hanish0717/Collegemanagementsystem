@@ -17,16 +17,6 @@ import {
 import { Download, TrendingUp, Users, Briefcase, Loader2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { fetchPlacementData } from "@/services/placementService";
-import {
-  placementReports as mockPlacementReports,
-  departmentPlacementData as mockDepartmentPlacementData,
-  packageAnalyticsData as mockPackageAnalyticsData,
-  companies as mockCompanies,
-  drives as mockDrives,
-  applications as mockApplications,
-  offers as mockOffers,
-  interviews as mockInterviews,
-} from "@/mock/mockData";
 import { toast } from "sonner";
 
 interface ReportItem {
@@ -40,120 +30,29 @@ interface ReportItem {
 
 // Data aggregation and merge helpers to ensure full offline-resilience and support for custom items
 const getMergedCompanies = (liveCompanies: any[] | undefined) => {
-  return liveCompanies || mockCompanies;
+  return liveCompanies || [];
 };
 
 const getMergedDrives = (liveDrives: any[] | undefined) => {
-  const serverDrives = liveDrives || mockDrives;
-  if (typeof window === "undefined") return serverDrives;
-  let list = [...serverDrives];
-  
-  const editedStr = localStorage.getItem("placement_edited_drives");
-  if (editedStr) {
-    try {
-      const editedMap = JSON.parse(editedStr);
-      list = list.map(item => {
-        if (editedMap[item.id]) {
-          return { ...item, ...editedMap[item.id] };
-        }
-        return item;
-      });
-    } catch (e) {}
-  }
-
-  const customStr = localStorage.getItem("placement_custom_drives");
-  if (customStr) {
-    try {
-      const customList = JSON.parse(customStr);
-      const existingIds = new Set(list.map(i => i.id));
-      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
-      list = [...filteredCustom, ...list];
-    } catch (e) {}
-  }
-  return list;
+  return liveDrives || [];
 };
 
 const getMergedApplications = (liveApps: any[] | undefined) => {
-  const serverApps = liveApps || mockApplications;
-  if (typeof window === "undefined") return serverApps;
-  let list = [...serverApps];
-  
-  const customStr = localStorage.getItem("placement_custom_applications");
-  if (customStr) {
-    try {
-      const customList = JSON.parse(customStr);
-      const existingIds = new Set(list.map(i => i.id));
-      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
-      list = [...filteredCustom, ...list];
-    } catch (e) {}
-  }
-  return list;
+  return liveApps || [];
 };
 
 const getMergedOffers = (liveOffers: any[] | undefined) => {
-  const serverOffers = liveOffers || mockOffers;
-  if (typeof window === "undefined") return serverOffers;
-  let list = [...serverOffers];
-  
-  const editedStr = localStorage.getItem("placement_edited_offers");
-  if (editedStr) {
-    try {
-      const editedMap = JSON.parse(editedStr);
-      list = list.map(item => {
-        if (editedMap[item.id]) {
-          return { ...item, ...editedMap[item.id] };
-        }
-        return item;
-      });
-    } catch (e) {}
-  }
-
-  const customStr = localStorage.getItem("placement_custom_offers");
-  if (customStr) {
-    try {
-      const customList = JSON.parse(customStr);
-      const existingIds = new Set(list.map(i => i.id));
-      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
-      list = [...filteredCustom, ...list];
-    } catch (e) {}
-  }
-  return list;
+  return liveOffers || [];
 };
 
 const getMergedInterviews = (liveInterviews: any[] | undefined) => {
-  const serverInterviews = liveInterviews || mockInterviews;
-  if (typeof window === "undefined") return serverInterviews;
-  let list = [...serverInterviews];
-  
-  const editedStr = localStorage.getItem("placement_edited_interviews");
-  if (editedStr) {
-    try {
-      const editedMap = JSON.parse(editedStr);
-      list = list.map(item => {
-        if (editedMap[item.id]) {
-          return { ...item, ...editedMap[item.id] };
-        }
-        return item;
-      });
-    } catch (e) {}
-  }
-
-  const customStr = localStorage.getItem("placement_custom_interviews");
-  if (customStr) {
-    try {
-      const customList = JSON.parse(customStr);
-      const existingIds = new Set(list.map(i => i.id));
-      const filteredCustom = customList.filter((i: any) => !existingIds.has(i.id));
-      list = [...filteredCustom, ...list];
-    } catch (e) {}
-  }
-  return list;
+  return liveInterviews || [];
 };
 
 export function PlacementReports() {
-  const [placementReports, setPlacementReports] = useState<ReportItem[]>(mockPlacementReports);
-  const [departmentPlacementData, setDepartmentPlacementData] = useState<any[]>(mockDepartmentPlacementData);
-  const [packageAnalyticsData, setPackageAnalyticsData] = useState<any[]>(mockPackageAnalyticsData);
+  const [placementReports, setPlacementReports] = useState<ReportItem[]>([]);
+  const [departmentPlacementData, setDepartmentPlacementData] = useState<any[]>([]);
+  const [packageAnalyticsData, setPackageAnalyticsData] = useState<any[]>([]);
   const [liveData, setLiveData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -167,13 +66,16 @@ export function PlacementReports() {
     const offersList = getMergedOffers(liveData?.offers);
     const interviewsList = getMergedInterviews(liveData?.interviews);
 
-    let feedbackList: any[] = [];
-    try {
-      const recentFeedbacks = localStorage.getItem("placement_recent_feedbacks");
-      if (recentFeedbacks) {
-        feedbackList = JSON.parse(recentFeedbacks);
-      }
-    } catch (e) {}
+    const feedbackList = (liveData?.interviews || [])
+      .filter((i: any) => i.status === "Completed" && i.feedbackComments)
+      .map((i: any) => ({
+        id: `FB_${i.id}`,
+        studentName: i.studentName,
+        rating: i.feedbackRating || 5,
+        outcome: i.feedbackComments.toLowerCase().includes("select") ? "Selected" : "Hold",
+        comments: i.feedbackComments,
+        date: i.date || new Date().toISOString().split("T")[0]
+      }));
 
     let content = "";
     const cleanReportName = reportName.trim().toLowerCase();
@@ -409,17 +311,26 @@ ${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentN
       .then((res) => {
         setLiveData(res);
         if (res.placementTrendData && res.placementTrendData.length > 0) {
-          const mappedTrends = res.placementTrendData.map((t) => {
-            const mockMatch = mockPlacementReports.find(
-              (m) => m.month.toLowerCase().startsWith(t.month.toLowerCase())
-            );
+          const mappedTrends = res.placementTrendData.map((t: any) => {
+            const monthOffers = (res.offers || []).filter((o: any) => {
+              const offerDate = o.offerDate ? new Date(o.offerDate) : null;
+              if (!offerDate) return false;
+              const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+              return months[offerDate.getMonth()].toLowerCase() === t.month.toLowerCase();
+            });
+
+            const packages = monthOffers.map((o: any) => parseFloat(o.package.replace(/[^0-9.]/g, ''))).filter((p: number) => !isNaN(p));
+            const avgPackage = packages.length > 0 ? parseFloat((packages.reduce((a: number, b: number) => a + b, 0) / packages.length).toFixed(1)) : 8.2;
+            const highestPackage = packages.length > 0 ? Math.max(...packages) : 24.5;
+            const companyCount = new Set(monthOffers.map((o: any) => o.company)).size || res.companies?.length || 0;
+
             return {
-              month: mockMatch ? mockMatch.month : t.month,
-              placed: t.placed || (mockMatch ? mockMatch.placed : 0),
-              percentage: mockMatch ? Math.round((t.placed / (t.applied || 1)) * 100) || mockMatch.percentage : 50,
-              avgPackage: mockMatch ? mockMatch.avgPackage : 8.2,
-              highestPackage: mockMatch ? mockMatch.highestPackage : 24.5,
-              companyCount: mockMatch ? mockMatch.companyCount : res.companies.length,
+              month: t.month,
+              placed: t.placed || 0,
+              percentage: t.applied ? Math.round((t.placed / t.applied) * 100) : 0,
+              avgPackage,
+              highestPackage,
+              companyCount
             };
           });
           setPlacementReports(mappedTrends);
@@ -433,16 +344,16 @@ ${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentN
         setLoading(false);
       })
       .catch((err) => {
-        console.warn("Failed to fetch live reports, using fallback mock data:", err);
+        console.warn("Failed to fetch live reports:", err);
         setLoading(false);
       });
   }, []);
 
   const latestMonth = placementReports[placementReports.length - 1] || {
-    placed: 287,
-    percentage: 52,
-    avgPackage: 8.2,
-    companyCount: 48,
+    placed: 0,
+    percentage: 0,
+    avgPackage: 0.0,
+    companyCount: 0,
   };
 
   const stats = [
@@ -459,18 +370,6 @@ ${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentN
   const dynamicRecruiters = (() => {
     const recruitersMap: Record<string, { company: string; placements: number; totalPackage: number }> = {};
     
-    const baselines = [
-      { company: "Google India", placements: 12, totalPackage: 12 * 22.5 },
-      { company: "Microsoft India", placements: 10, totalPackage: 10 * 20.0 },
-      { company: "Amazon India", placements: 15, totalPackage: 15 * 18.5 },
-      { company: "Goldman Sachs", placements: 8, totalPackage: 8 * 24.0 },
-      { company: "Infosys", placements: 18, totalPackage: 18 * 10.5 },
-    ];
-    
-    baselines.forEach(b => {
-      recruitersMap[b.company] = { ...b };
-    });
-
     offersList.forEach(offer => {
       if (offer.status === "Accepted" || offer.status === "Pending") {
         const pkgVal = parseFloat(offer.package.replace(/[^0-9.]/g, "")) || 8.0;
@@ -504,8 +403,8 @@ ${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentN
     : 78;
 
   const activeC = companiesList.length;
-  const partnershipGrowth = ((activeC - 15) / 15 * 100);
-  const avgPkgGrowth = ((latestMonth.avgPackage - 7.5) / 7.5 * 100);
+  const partnershipGrowth = activeC > 0 ? ((activeC - 5) / 5 * 100) : 0;
+  const avgPkgGrowth = latestMonth.avgPackage > 0 ? ((latestMonth.avgPackage - 6.0) / 6.0 * 100) : 0;
 
   const performanceIndicators = [
     { metric: "Placement Success Rate", value: `${latestMonth.percentage}%`, target: "60%", status: latestMonth.percentage >= 60 ? "success" : "warning" },

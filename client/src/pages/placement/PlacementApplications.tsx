@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Search, Plus, Filter, Loader2, Upload, X, Check, FileSpreadsheet } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { fetchPlacementData, createApplication } from "@/services/placementService";
-import { applications as mockApplications } from "@/mock/mockData";
 import { toast } from "sonner";
 
 interface ApplicationItem {
@@ -17,27 +16,8 @@ interface ApplicationItem {
   round: number;
 }
 
-const mergeApplications = (serverApplications: ApplicationItem[]): ApplicationItem[] => {
-  if (typeof window === "undefined") return serverApplications;
-  let list = [...serverApplications];
-  
-  const customStr = localStorage.getItem("placement_custom_applications");
-  if (customStr) {
-    try {
-      const customList = JSON.parse(customStr);
-      const existingIds = new Set(list.map(i => i.id));
-      const filteredCustom = customList.filter((i: ApplicationItem) => !existingIds.has(i.id));
-      list = [...filteredCustom, ...list];
-    } catch (e) {
-      console.error("Error parsing placement_custom_applications:", e);
-    }
-  }
-  
-  return list;
-};
-
 export function PlacementApplications() {
-  const [applications, setApplications] = useState<ApplicationItem[]>(() => mergeApplications(mockApplications));
+  const [applications, setApplications] = useState<ApplicationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -180,20 +160,13 @@ export function PlacementApplications() {
         status: manualStatus
       };
 
-      const newApp = await createApplication(payload);
-      const mappedApp: ApplicationItem = {
-        id: `APP_${Date.now()}`,
-        studentName: manualStudentName,
-        studentId: manualStudentId,
-        company: manualCompany,
-        role: manualRole,
-        appliedDate: new Date().toISOString(),
-        status: manualStatus,
-        score: parseInt(manualScore) || 80,
-        round: parseInt(manualRound) || 1
-      };
-
-      setApplications(prev => [mappedApp, ...prev]);
+      await createApplication(payload);
+      
+      const data = await fetchPlacementData();
+      if (data.applications) {
+        setApplications(data.applications);
+      }
+      
       setIsImportModalOpen(false);
       toast.success(`Successfully imported application for ${manualStudentName}!`);
 
@@ -603,7 +576,7 @@ export function PlacementApplications() {
                       <div className="text-left">
                         <span className="text-xs font-bold text-slate-800 block truncate max-w-[200px]">{csvFileName}</span>
                         <span className="text-[10px] text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
-                          <Check className="size-3" /> 3 records successfully parsed
+                          <Check className="size-3" /> {parsedRows.length} records successfully parsed
                         </span>
                       </div>
                     </div>
@@ -638,7 +611,7 @@ export function PlacementApplications() {
                     disabled={parsedRows.length === 0}
                     className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 disabled:opacity-50 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    Import 3 Records
+                    Import {parsedRows.length} Records
                   </button>
                 </div>
               </div>
