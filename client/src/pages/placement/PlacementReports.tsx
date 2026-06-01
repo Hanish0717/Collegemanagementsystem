@@ -452,6 +452,68 @@ ${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentN
     { label: "Active Companies", value: latestMonth.companyCount, change: "+2", icon: "🏢" },
   ];
 
+  const offersList = getMergedOffers(liveData?.offers);
+  const appsList = getMergedApplications(liveData?.applications);
+  const companiesList = getMergedCompanies(liveData?.companies);
+
+  const dynamicRecruiters = (() => {
+    const recruitersMap: Record<string, { company: string; placements: number; totalPackage: number }> = {};
+    
+    const baselines = [
+      { company: "Google India", placements: 12, totalPackage: 12 * 22.5 },
+      { company: "Microsoft India", placements: 10, totalPackage: 10 * 20.0 },
+      { company: "Amazon India", placements: 15, totalPackage: 15 * 18.5 },
+      { company: "Goldman Sachs", placements: 8, totalPackage: 8 * 24.0 },
+      { company: "Infosys", placements: 18, totalPackage: 18 * 10.5 },
+    ];
+    
+    baselines.forEach(b => {
+      recruitersMap[b.company] = { ...b };
+    });
+
+    offersList.forEach(offer => {
+      if (offer.status === "Accepted" || offer.status === "Pending") {
+        const pkgVal = parseFloat(offer.package.replace(/[^0-9.]/g, "")) || 8.0;
+        const compName = offer.company;
+        if (recruitersMap[compName]) {
+          recruitersMap[compName].placements += 1;
+          recruitersMap[compName].totalPackage += pkgVal;
+        } else {
+          recruitersMap[compName] = {
+            company: compName,
+            placements: 1,
+            totalPackage: pkgVal
+          };
+        }
+      }
+    });
+
+    return Object.values(recruitersMap)
+      .map(r => ({
+        company: r.company,
+        placements: r.placements,
+        avgPackage: parseFloat((r.totalPackage / (r.placements || 1)).toFixed(1))
+      }))
+      .sort((a, b) => b.placements - a.placements)
+      .slice(0, 5);
+  })();
+
+  const readinessScores = appsList.filter((a: any) => a.score > 0).map((a: any) => a.score);
+  const avgReadiness = readinessScores.length > 0
+    ? Math.round(readinessScores.reduce((sum, s) => sum + s, 0) / readinessScores.length)
+    : 78;
+
+  const activeC = companiesList.length;
+  const partnershipGrowth = ((activeC - 15) / 15 * 100);
+  const avgPkgGrowth = ((latestMonth.avgPackage - 7.5) / 7.5 * 100);
+
+  const performanceIndicators = [
+    { metric: "Placement Success Rate", value: `${latestMonth.percentage}%`, target: "60%", status: latestMonth.percentage >= 60 ? "success" : "warning" },
+    { metric: "Average Package Growth", value: `+${avgPkgGrowth.toFixed(1)}%`, target: "+10%", status: avgPkgGrowth >= 10 ? "success" : "warning" },
+    { metric: "Company Partnership Growth", value: `+${partnershipGrowth.toFixed(1)}%`, target: "+15%", status: partnershipGrowth >= 15 ? "success" : "warning" },
+    { metric: "Student Readiness Score", value: `${avgReadiness}%`, target: "85%", status: avgReadiness >= 85 ? "success" : "warning" },
+  ];
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -742,13 +804,7 @@ ${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentN
       <Card>
         <h3 className="font-semibold mb-4">Top Recruiting Companies</h3>
         <div className="space-y-2">
-          {[
-            { company: "Google India", placements: 12, avgPackage: 22.5 },
-            { company: "Microsoft India", placements: 10, avgPackage: 20.0 },
-            { company: "Amazon India", placements: 15, avgPackage: 18.5 },
-            { company: "Goldman Sachs", placements: 8, avgPackage: 24.0 },
-            { company: "Infosys", placements: 18, avgPackage: 10.5 },
-          ].map((rec, idx) => (
+          {dynamicRecruiters.map((rec, idx) => (
             <div
               key={rec.company}
               className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition"
@@ -775,17 +831,7 @@ ${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentN
       <Card>
         <h3 className="font-semibold mb-4">Performance Indicators</h3>
         <div className="grid sm:grid-cols-2 gap-3">
-          {[
-            { metric: "Placement Success Rate", value: "52%", target: "60%", status: "warning" },
-            { metric: "Average Package Growth", value: "+8.2%", target: "+10%", status: "success" },
-            {
-              metric: "Company Partnership Growth",
-              value: "+16.7%",
-              target: "+15%",
-              status: "success",
-            },
-            { metric: "Student Readiness Score", value: "78%", target: "85%", status: "warning" },
-          ].map((indicator) => (
+          {performanceIndicators.map((indicator) => (
             <div key={indicator.metric} className="p-3 rounded-lg border">
               <div className="text-xs text-muted-foreground mb-2">{indicator.metric}</div>
               <div className="flex items-end justify-between">

@@ -253,3 +253,1062 @@ Stack: TypeError: supabase.from(...).select(...).lt is not a function
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {}
 
+[2026-05-31T11:32:53.653Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:32:54.442Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:33:06.580Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:33:07.398Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:33:22.961Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:33:23.767Z] GET /api/dashboard/stats - Status: 500 - Error: supabase.from(...).select(...).lt is not a function
+Stack: TypeError: supabase.from(...).select(...).lt is not a function
+    at getDashboardStats (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/dashboardController.js:117:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:02.816Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:02.854Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:03.921Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:03.945Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:06.023Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:06.085Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:10.151Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:10.183Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:21.071Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:22.217Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:24.337Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:52:28.436Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:53:17.943Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:53:19.048Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:53:21.193Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:53:23.767Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:53:23.772Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:21.013Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:21.043Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:22.137Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:22.154Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:24.264Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:24.277Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:28.405Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:28.413Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:37.243Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:38.353Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:40.465Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:43.079Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:43.133Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:44.193Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:44.232Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:46.293Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:46.331Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:50.426Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:54:50.458Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:58:59.357Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:59:00.472Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:59:02.603Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T11:59:06.740Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T12:33:46.601Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapalli7@gmail.com","password":"hanish"}
+
+[2026-05-31T12:33:51.660Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapalli@gmail.com","password":"hanish"}
+
+[2026-05-31T12:34:00.918Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapalli@gmail.com","password":"hanish123"}
+
+[2026-05-31T12:34:07.679Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapalli7@gmail.com","password":"hanish123"}
+
+[2026-05-31T12:34:08.630Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapalli7@gmail.com","password":"hanish123"}
+
+[2026-05-31T12:35:28.755Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:35:32.412Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:35:34.312Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:35:36.275Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:35:37.660Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:35:39.227Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:35:47.200Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:35:48.658Z] POST /api/students - Status: 500 - Error: supabase.from(...).select(...).like is not a function
+Stack: TypeError: supabase.from(...).select(...).like is not a function
+    at generateAdmissionNumber (file:///F:/Projects/Collegemanagementsystem/server/src/utils/admissionUtils.js:50:6)
+    at createStudent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentController.js:247:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"Rakesh","rollNumber":"AIML-006","email":"hanishvavilapalli17@gmail.com","phoneNumber":"09652770191","gender":"Male","department":"AIDS","year":1,"semester":1,"section":"A","parentName":"NIRMALA","parentPhone":"8330963117","parentEmail":"hanishvavilapalli7@gmail.com","password":"password123"}
+
+[2026-05-31T12:39:38.477Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapall7@gmail.com","password":"PASSWORD123"}
+
+[2026-05-31T12:39:45.185Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapall17@gmail.com","password":"PASSWORD123"}
+
+[2026-05-31T12:39:47.567Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"hanishvavilapall17@gmail.com","password":"PASSWORD123"}
+
+[2026-05-31T12:39:59.613Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+Body: {"email":"hanishvavilapalli17@gmail.com","password":"PASSWORD123"}
+
+[2026-05-31T12:43:45.388Z] GET /api/student-module/notifications - Status: 500 - Error: operator does not exist: uuid ~~* unknown
+Stack: error: operator does not exist: uuid ~~* unknown
+    at F:\Projects\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:470:23)
+    at async getStudentNotifications (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentModuleController.js:686:44)
+Body: {}
+
+[2026-05-31T12:43:47.557Z] GET /api/student-module/notifications - Status: 500 - Error: operator does not exist: uuid ~~* unknown
+Stack: error: operator does not exist: uuid ~~* unknown
+    at F:\Projects\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:470:23)
+    at async getStudentNotifications (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentModuleController.js:686:44)
+Body: {}
+
+[2026-05-31T12:43:50.520Z] GET /api/student-module/notifications - Status: 500 - Error: operator does not exist: uuid ~~* unknown
+Stack: error: operator does not exist: uuid ~~* unknown
+    at F:\Projects\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:470:23)
+    at async getStudentNotifications (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentModuleController.js:686:44)
+Body: {}
+
+[2026-05-31T12:43:55.565Z] GET /api/student-module/notifications - Status: 500 - Error: operator does not exist: uuid ~~* unknown
+Stack: error: operator does not exist: uuid ~~* unknown
+    at F:\Projects\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:470:23)
+    at async getStudentNotifications (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/studentModuleController.js:686:44)
+Body: {}
+
+[2026-05-31T13:03:19.669Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T13:03:19.711Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T13:03:20.795Z] GET /api/students?page=1&limit=1000 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T13:03:20.812Z] GET /api/students?page=1&limit=8 - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T13:03:24.736Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T13:03:25.831Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T13:03:27.936Z] GET /api/student-module/notifications - Status: 403 - Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'hostel-warden' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T16:52:54.416Z] GET /api/events/stats - Status: 500 - Error: e.date.startsWith is not a function
+Stack: TypeError: e.date.startsWith is not a function
+    at file:///F:/Projects/Collegemanagementsystem/server/src/controllers/eventController.js:179:18
+    at Array.forEach (<anonymous>)
+    at getEventStats (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/eventController.js:168:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T16:53:18.123Z] POST /api/events - Status: 500 - Error: column "type" of relation "events" does not exist
+Stack: error: column "type" of relation "events" does not exist
+    at F:\Projects\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:616:23)
+    at async PostgresQueryBuilder.single (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:660:31)
+    at async createEvent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/eventController.js:272:39)
+Body: {"title":"Annual Symposium 2026","description":"A mock symposium for testing approval broadcast features.","type":"Event","date":"2026-09-15","time":"9:00 AM - 5:00 PM","venue":"Auditorium C","organizer":"R&D Cell","status":"Pending Approval"}
+
+[2026-05-31T16:54:21.819Z] POST /api/events - Status: 500 - Error: null value in column "category" of relation "events" violates not-null constraint
+Stack: error: null value in column "category" of relation "events" violates not-null constraint
+    at F:\Projects\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:616:23)
+    at async PostgresQueryBuilder.single (file:///F:/Projects/Collegemanagementsystem/server/src/config/supabase.js:660:31)
+    at async createEvent (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/eventController.js:272:39)
+Body: {"title":"Annual Symposium 2026","description":"A mock symposium for testing approval broadcast features.","type":"Event","date":"2026-09-15","time":"9:00 AM - 5:00 PM","venue":"Auditorium C","organizer":"R&D Cell","status":"Pending Approval"}
+
+[2026-05-31T17:05:16.541Z] GET /api/super-admin/reports/data?cycle=AY+2026-27 - Status: 500 - Error: placementsQuery.gte is not a function
+Stack: TypeError: placementsQuery.gte is not a function
+    at getReportsData (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:1415:41)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T17:05:22.526Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:1159:8)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T17:05:24.107Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:1159:8)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T17:05:25.694Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:1159:8)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T17:05:27.190Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:1159:8)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":false,"finance":false,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T17:05:29.425Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:1159:8)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":true,"finance":true,"placement":false,"hostel_transport":false,"security":false,"system":false}}
+
+[2026-05-31T17:12:11.468Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"student@college.com","password":"password123"}
+
+[2026-05-31T17:12:40.199Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"student@college.com","password":"password123"}
+
+[2026-05-31T17:13:29.115Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"student@college.com","password":"password123"}
+
+[2026-05-31T17:17:14.581Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"faculty@college.com","password":"password123"}
+
+[2026-05-31T17:17:20.399Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"faculty@college.com","password":"password123"}
+
+[2026-05-31T17:18:09.005Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"faculty@college.com","password":"password123"}
+
+[2026-05-31T17:18:10.199Z] POST /api/auth/login - Status: 401 - Error: Invalid credentials
+Stack: Error: Invalid credentials
+    at login (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/authController.js:362:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"email":"faculty@college.com","password":"password123"}
+
+[2026-05-31T17:23:22.199Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T17:23:22.285Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T17:31:10.824Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T17:31:10.932Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T17:38:00.272Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-05-31T17:38:00.372Z] GET /api/students?limit=1000 - Status: 403 - Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+Stack: Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource
+    at file:///F:/Projects/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:38:23
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+

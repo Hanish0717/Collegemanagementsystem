@@ -158,6 +158,7 @@ export const createStudent = async (req, res, next) => {
       cgpa,
       attendancePercentage,
       profileImage,
+      collegeFee,
     } = req.body;
 
     if (
@@ -292,6 +293,30 @@ export const createStudent = async (req, res, next) => {
     if (createErr && !studentInserted) {
       await supabase.from('users').delete().eq('id', createdUserId);
       throw createErr;
+    }
+
+    // Create initial fee record if student creation was successful
+    if (studentInserted && student) {
+      const feeAmount = collegeFee !== undefined && collegeFee !== null ? Number(collegeFee) : 80000;
+      const currentYear = new Date().getFullYear();
+      const academicYear = `${currentYear}-${currentYear + 1}`;
+      
+      const { error: feeErr } = await supabase
+        .from('fees')
+        .insert([{
+          student: student.id,
+          amount: feeAmount,
+          type: 'College Fee',
+          due_date: `${currentYear}-12-31`,
+          status: 'Unpaid',
+          paid_amount: 0.00,
+          academic_year: academicYear,
+          semester: Number(semester) || 1
+        }]);
+
+      if (feeErr) {
+        console.error('Error creating fee record for new student:', feeErr);
+      }
     }
 
     // 5. Generate 6-digit OTP

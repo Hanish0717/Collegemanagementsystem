@@ -441,9 +441,19 @@ export const submitAssignment = async (req, res, next) => {
 // @access  Private (student)
 export const getStudentMaterials = async (req, res, next) => {
   try {
-    const { data: materials } = await supabase
-      .from('study_materials')
-      .select('*');
+    const profile = await getProfile(req.user.email);
+    let query = supabase.from('study_materials').select('*');
+    
+    // Scoping to student's specific cohort if they have a student profile
+    if (profile) {
+      query = query
+        .eq('department', profile.department)
+        .eq('year', Number(profile.year))
+        .eq('semester', Number(profile.semester));
+    }
+
+    const { data: materials, error: queryErr } = await query;
+    if (queryErr) throw queryErr;
 
     if (!materials) {
       return res.status(200).json({ success: true, data: [] });
@@ -473,6 +483,51 @@ export const getStudentMaterials = async (req, res, next) => {
     }));
 
     return res.status(200).json({ success: true, data: formatted });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Track study material download (increment download counter)
+// @route   POST /api/student-module/materials/:id/download
+// @access  Private (student)
+export const trackMaterialDownload = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    const { data: material, error: fetchErr } = await supabase
+      .from('study_materials')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+    if (!material) {
+      const error = new Error('Study material not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const newDownloads = (Number(material.downloads) || 0) + 1;
+
+    const { data: updatedMaterial, error: updateErr } = await supabase
+      .from('study_materials')
+      .update({ downloads: newDownloads })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    return res.status(200).json({
+      success: true,
+      message: 'Downloads count incremented successfully',
+      data: {
+        ...updatedMaterial,
+        _id: updatedMaterial.id,
+        fileUrl: updatedMaterial.file_url
+      }
+    });
   } catch (error) {
     next(error);
   }

@@ -109,6 +109,22 @@ if (isMockMode) {
 
     select(columns, options = {}) { return this; }
 
+    like(column, value) {
+      if (value === undefined || value === null) return this;
+      const regexStr = '^' + String(value).replace(/%/g, '.*') + '$';
+      const regex = new RegExp(regexStr);
+      this._data = this._data.filter(item => regex.test(item[column] || ''));
+      return this;
+    }
+
+    ilike(column, value) {
+      if (value === undefined || value === null) return this;
+      const regexStr = '^' + String(value).replace(/%/g, '.*') + '$';
+      const regex = new RegExp(regexStr, 'i');
+      this._data = this._data.filter(item => regex.test(item[column] || ''));
+      return this;
+    }
+
     eq(column, value) {
       if (value === undefined || value === null) return this;
       const cleanVal = typeof value === 'string' ? value.toLowerCase().trim() : value;
@@ -146,6 +162,56 @@ if (isMockMode) {
       if (Array.isArray(values)) {
         this._data = this._data.filter(item => values.includes(item[column]) || values.includes(item.id) || values.includes(item._id));
       }
+      return this;
+    }
+
+    or(queryString) {
+      if (!queryString) return this;
+      const clauses = queryString.split(',').map(c => c.trim());
+      
+      this._data = this._data.filter(item => {
+        return clauses.some(clause => {
+          if (clause.endsWith('.is.null')) {
+            const col = clause.slice(0, -8);
+            const val = item[col];
+            return val === null || val === undefined;
+          }
+          if (clause.endsWith('.is.not.null')) {
+            const col = clause.slice(0, -12);
+            const val = item[col];
+            return val !== null && val !== undefined;
+          }
+
+          const match = clause.match(/^(.+?)\.(eq|ilike|like|neq|in)\.(.+)$/);
+          if (match) {
+            const [, col, op, val] = match;
+            const itemVal = item[col];
+            
+            if (op === 'in') {
+              const cleanedVal = val.replace(/^\(|\)$/g, '');
+              const vals = cleanedVal.split(',').map(v => v.trim().toLowerCase());
+              const cleanItemVal = String(itemVal || '').trim().toLowerCase();
+              return vals.includes(cleanItemVal);
+            }
+
+            const cleanValStr = String(val).toLowerCase().trim();
+            const cleanItemValStr = String(itemVal || '').toLowerCase().trim();
+
+            if (op === 'eq') {
+              return cleanItemValStr === cleanValStr;
+            }
+            if (op === 'neq') {
+              return cleanItemValStr !== cleanValStr;
+            }
+            if (op === 'ilike' || op === 'like') {
+              const regexStr = '^' + String(val).replace(/%/g, '.*') + '$';
+              const regex = new RegExp(regexStr, 'i');
+              return regex.test(String(itemVal || ''));
+            }
+          }
+          return false;
+        });
+      });
       return this;
     }
 
@@ -281,6 +347,18 @@ if (isMockMode) {
       return this;
     }
 
+    like(column, value) {
+      if (value === undefined || value === null) return this;
+      this.conditions.push({ column: `t.${column}`, operator: 'LIKE', value });
+      return this;
+    }
+
+    ilike(column, value) {
+      if (value === undefined || value === null) return this;
+      this.conditions.push({ column: `t.${column}`, operator: 'ILIKE', value });
+      return this;
+    }
+
     neq(column, value) {
       this.conditions.push({ column: `t.${column}`, operator: '!=', value });
       return this;
@@ -372,18 +450,56 @@ if (isMockMode) {
 
         this.orConditions.forEach(orStr => {
           const clauses = orStr.split(',').map(clause => {
-            const match = clause.match(/^([^.]+)\.([^.]+)\.(.+)$/);
-            if (match) {
-              const [, col, operator, val] = match;
-              let cleanVal = val;
-              if (cleanVal.startsWith('%') && cleanVal.endsWith('%')) {
-                cleanVal = cleanVal.slice(1, -1);
-              }
-              params.push(`%${cleanVal}%`);
-              return `t."${col}" ILIKE $${paramCounter++}`;
+            const trimmed = clause.trim();
+            
+            // 1. IS NULL or IS NOT NULL
+            if (trimmed.endsWith('.is.null')) {
+              const col = trimmed.slice(0, -8);
+              const colName = col.startsWith('users.') ? `u."${col.split('.')[1]}"` : `t."${col}"`;
+              return `${colName} IS NULL`;
             }
+            if (trimmed.endsWith('.is.not.null')) {
+              const col = trimmed.slice(0, -12);
+              const colName = col.startsWith('users.') ? `u."${col.split('.')[1]}"` : `t."${col}"`;
+              return `${colName} IS NOT NULL`;
+            }
+
+            // 2. Standard Operators
+            const match = trimmed.match(/^(.+?)\.(eq|ilike|like|neq|in)\.(.+)$/);
+            if (match) {
+              const [, col, op, val] = match;
+              const colName = col.startsWith('users.') ? `u."${col.split('.')[1]}"` : `t."${col}"`;
+              
+              if (op === 'in') {
+                const cleanedVal = val.replace(/^\(|\)$/g, '');
+                const vals = cleanedVal.split(',').map(v => v.trim());
+                if (vals.length === 0) return 'FALSE';
+                const placeholders = vals.map(v => {
+                  params.push(v);
+                  return `$${paramCounter++}`;
+                }).join(', ');
+                return `${colName} IN (${placeholders})`;
+              }
+
+              let operator = '=';
+              let finalVal = val;
+              if (op === 'neq') operator = '!=';
+              else if (op === 'ilike') {
+                operator = 'ILIKE';
+                if (!val.includes('%')) finalVal = `%${val}%`;
+              }
+              else if (op === 'like') {
+                operator = 'LIKE';
+                if (!val.includes('%')) finalVal = `%${val}%`;
+              }
+
+              params.push(finalVal);
+              return `${colName} ${operator} $${paramCounter++}`;
+            }
+
             return 'FALSE';
           });
+          
           if (clauses.length > 0) {
             parts.push(`(${clauses.join(' OR ')})`);
           }

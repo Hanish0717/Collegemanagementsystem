@@ -104,6 +104,22 @@ async function runMigrations() {
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
 
+      ALTER TABLE placement_interviews ADD COLUMN IF NOT EXISTS feedback_comments text;
+      ALTER TABLE placement_interviews ADD COLUMN IF NOT EXISTS feedback_rating integer;
+
+      CREATE TABLE IF NOT EXISTS placement_training (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name varchar(255) NOT NULL,
+        type varchar(100) NOT NULL,
+        date date NOT NULL,
+        time varchar(50) NOT NULL,
+        duration varchar(50) NOT NULL,
+        enrolled_students integer DEFAULT 0,
+        completed integer DEFAULT 0,
+        pass_percentage integer DEFAULT 0,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
       CREATE TABLE IF NOT EXISTS placement_notifications (
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
         title varchar(255) NOT NULL,
@@ -187,6 +203,93 @@ async function runMigrations() {
       ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS allocation_date date DEFAULT CURRENT_DATE;
       ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS check_in_date timestamp with time zone;
       ALTER TABLE hostel_allocations ADD COLUMN IF NOT EXISTS check_out_date timestamp with time zone;
+
+      -- Create exams table
+      CREATE TABLE IF NOT EXISTS exams (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name varchar(255) NOT NULL,
+        type varchar(50) NOT NULL,
+        department varchar(50) NOT NULL,
+        year integer NOT NULL,
+        semester integer NOT NULL,
+        start_date date NOT NULL,
+        end_date date NOT NULL,
+        status varchar(50) DEFAULT 'Upcoming',
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create exam_timetables table
+      CREATE TABLE IF NOT EXISTS exam_timetables (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        exam_id uuid REFERENCES exams(id) ON DELETE CASCADE,
+        subject varchar(255) NOT NULL,
+        date date NOT NULL,
+        time varchar(50) NOT NULL,
+        hall varchar(50) NOT NULL,
+        duration varchar(50) NOT NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create hall_tickets table
+      CREATE TABLE IF NOT EXISTS hall_tickets (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        exam_id uuid REFERENCES exams(id) ON DELETE CASCADE,
+        seat_number varchar(50),
+        status varchar(50) DEFAULT 'Pending',
+        approved_by uuid REFERENCES users(id) ON DELETE SET NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        UNIQUE(student_id, exam_id)
+      );
+
+      -- Add exam_id to results table
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_id uuid REFERENCES exams(id) ON DELETE SET NULL;
+      ALTER TABLE results DROP CONSTRAINT IF EXISTS results_student_subject_semester_key;
+      ALTER TABLE results DROP CONSTRAINT IF EXISTS results_student_subject_semester_exam_key;
+      ALTER TABLE results ADD CONSTRAINT results_student_subject_semester_exam_key UNIQUE (student, subject, semester, exam_id);
+
+      -- Create events table
+      CREATE TABLE IF NOT EXISTS events (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        title varchar(255) NOT NULL,
+        description text NOT NULL,
+        type varchar(50) NOT NULL,
+        date date NOT NULL,
+        time varchar(50),
+        venue varchar(255) NOT NULL,
+        organizer varchar(255),
+        status varchar(50) DEFAULT 'Pending Approval',
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Ensure type, venue, time, organizer exist in events table
+      ALTER TABLE events ADD COLUMN IF NOT EXISTS type varchar(50);
+      ALTER TABLE events ADD COLUMN IF NOT EXISTS venue varchar(255);
+      ALTER TABLE events ADD COLUMN IF NOT EXISTS time varchar(50);
+      ALTER TABLE events ADD COLUMN IF NOT EXISTS organizer varchar(255);
+
+      -- Populate defaults for legacy event rows
+      UPDATE events SET type = 'Event' WHERE type IS NULL;
+      UPDATE events SET venue = 'Main Campus' WHERE venue IS NULL;
+
+      -- Ensure study_materials table exists
+      CREATE TABLE IF NOT EXISTS study_materials (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        title varchar(255) NOT NULL,
+        subject varchar(255) NOT NULL,
+        type varchar(50) NOT NULL,
+        file_url text NOT NULL,
+        department varchar(255) NOT NULL,
+        year integer NOT NULL,
+        semester integer NOT NULL,
+        faculty uuid REFERENCES users(id) ON DELETE SET NULL,
+        downloads integer DEFAULT 0,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Ensure downloads column exists in study_materials
+      ALTER TABLE study_materials ADD COLUMN IF NOT EXISTS downloads integer DEFAULT 0;
     `);
     
     // Seed admin notifications

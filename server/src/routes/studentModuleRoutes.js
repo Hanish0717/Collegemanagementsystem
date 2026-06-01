@@ -6,6 +6,7 @@ import {
   getStudentAssignments,
   submitAssignment,
   getStudentMaterials,
+  trackMaterialDownload,
   getStudentLeaveRequests,
   createStudentLeaveRequest,
   getStudentPlacements,
@@ -30,6 +31,7 @@ router.get('/results', getStudentResults);
 router.get('/assignments', getStudentAssignments);
 router.post('/assignments/submit/:id', submitAssignment);
 router.get('/materials', getStudentMaterials);
+router.post('/materials/:id/download', trackMaterialDownload);
 router.route('/leave')
   .get(getStudentLeaveRequests)
   .post(createStudentLeaveRequest);

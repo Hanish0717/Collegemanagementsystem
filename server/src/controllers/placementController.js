@@ -557,3 +557,481 @@ export const updateDrive = async (req, res, next) => {
     next(error);
   }
 };
+
+export const createApplication = async (req, res, next) => {
+  try {
+    const { studentName, studentId, company, role, appliedDate, status, score, round, package: pkg, joiningDate } = req.body;
+
+    if (!studentName || !studentId || !company || !role) {
+      const error = new Error('Student Name, Student ID, Company, and Role are required');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // Try to find matching drive
+    const { data: drive } = await supabase
+      .from('placements')
+      .select('*')
+      .eq('company', company)
+      .eq('position', role)
+      .maybeSingle();
+
+    const newApp = {
+      student_name: studentName,
+      student_id: studentId,
+      applied_date: appliedDate || new Date().toISOString().split('T')[0],
+      status: status || 'Applied',
+      score: parseInt(score) || 0,
+      round: parseInt(round) || 1,
+      package: pkg || null,
+      joining_date: joiningDate || null
+    };
+
+    if (!drive) {
+      // Find company_id if exists
+      const { data: comp } = await supabase
+        .from('placement_companies')
+        .select('id')
+        .eq('name', company)
+        .maybeSingle();
+
+      const { data: newDrive, error: createErr } = await supabase
+        .from('placements')
+        .insert([{
+          company,
+          position: role,
+          company_id: comp ? comp.id : null,
+          drive_date: new Date().toISOString(),
+          venue: 'Virtual',
+          deadline: new Date().toISOString(),
+          status: 'upcoming',
+          applied_students: JSON.stringify([newApp])
+        }])
+        .select()
+        .single();
+
+      if (createErr) throw createErr;
+    } else {
+      let appliedList = [];
+      try {
+        appliedList = typeof drive.applied_students === 'string' ? JSON.parse(drive.applied_students) : (drive.applied_students || []);
+      } catch (e) {
+        appliedList = [];
+      }
+
+      const existingIdx = appliedList.findIndex(a => a.student_id === studentId);
+      if (existingIdx !== -1) {
+        appliedList[existingIdx] = { ...appliedList[existingIdx], ...newApp };
+      } else {
+        appliedList.push(newApp);
+      }
+
+      const { error: updateErr } = await supabase
+        .from('placements')
+        .update({ applied_students: JSON.stringify(appliedList) })
+        .eq('id', drive.id);
+
+      if (updateErr) throw updateErr;
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Application created successfully',
+      data: newApp
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateApplication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { company, role, studentId, status, score, round, package: pkg, joiningDate } = req.body;
+
+    let targetCompany = company;
+    let targetRole = role;
+    let targetStudentId = studentId || id;
+
+    if (id && id.includes('_')) {
+      const parts = id.split('_');
+      const driveId = parts[1];
+      const { data: d } = await supabase
+        .from('placements')
+        .select('*')
+        .eq('id', driveId)
+        .maybeSingle();
+      if (d) {
+        targetCompany = d.company;
+        targetRole = d.position;
+      }
+    }
+
+    if (!targetCompany || !targetRole) {
+      const error = new Error('Company and Role are required to locate the application');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const { data: drive } = await supabase
+      .from('placements')
+      .select('*')
+      .eq('company', targetCompany)
+      .eq('position', targetRole)
+      .maybeSingle();
+
+    if (!drive) {
+      const error = new Error('Application drive not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    let appliedList = [];
+    try {
+      appliedList = typeof drive.applied_students === 'string' ? JSON.parse(drive.applied_students) : (drive.applied_students || []);
+    } catch (e) {
+      appliedList = [];
+    }
+
+    const idx = appliedList.findIndex(a => 
+      (a.student_id && targetStudentId && a.student_id.toLowerCase() === targetStudentId.toLowerCase()) ||
+      (a.student_name && targetStudentId && a.student_name.toLowerCase() === targetStudentId.toLowerCase())
+    );
+
+    if (idx === -1) {
+      const error = new Error(`Student ${targetStudentId} not found in the applied list of drive ${targetCompany}`);
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    if (status !== undefined) appliedList[idx].status = status;
+    if (score !== undefined) appliedList[idx].score = parseInt(score);
+    if (round !== undefined) appliedList[idx].round = parseInt(round);
+    if (pkg !== undefined) appliedList[idx].package = pkg;
+    if (joiningDate !== undefined) appliedList[idx].joining_date = joiningDate;
+
+    const { error: updateErr } = await supabase
+      .from('placements')
+      .update({ applied_students: JSON.stringify(appliedList) })
+      .eq('id', drive.id);
+
+    if (updateErr) throw updateErr;
+
+    res.status(200).json({
+      success: true,
+      message: 'Application updated successfully',
+      data: appliedList[idx]
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createInterview = async (req, res, next) => {
+  try {
+    const { studentName, company, round, date, time, mode, venue, status } = req.body;
+
+    if (!studentName || !company) {
+      const error = new Error('Student name and Company are required');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const { data: stu } = await supabase
+      .from('students')
+      .select('id')
+      .ilike('full_name', studentName)
+      .maybeSingle();
+
+    const { data: drive } = await supabase
+      .from('placements')
+      .select('id')
+      .eq('company', company)
+      .limit(1)
+      .maybeSingle();
+
+    const { data, error } = await supabase
+      .from('placement_interviews')
+      .insert([{
+        student: stu ? stu.id : null,
+        student_name: studentName,
+        company_name: company,
+        drive_id: drive ? drive.id : null,
+        round: round ? round.toString() : '1',
+        date: date || new Date().toISOString().split('T')[0],
+        time: time || '10:00 AM',
+        mode: mode || 'Online',
+        venue: venue || 'Video Call',
+        status: status || 'Scheduled'
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      success: true,
+      message: 'Interview scheduled successfully',
+      data: {
+        id: data.id,
+        studentName: data.student_name,
+        company: data.company_name,
+        round: parseInt(data.round) || 1,
+        date: data.date,
+        time: data.time,
+        mode: data.mode,
+        venue: data.venue,
+        panelists: ["Dr. Rajesh Verma", "Priya Sharma"],
+        status: data.status
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateInterview = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { studentName, company, round, date, time, mode, venue, status, feedbackComments, feedbackRating } = req.body;
+
+    const { data: exists, error: checkErr } = await supabase
+      .from('placement_interviews')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (checkErr) throw checkErr;
+    if (!exists) {
+      const error = new Error('Interview not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const updateData = {};
+    if (studentName !== undefined) updateData.student_name = studentName;
+    if (company !== undefined) updateData.company_name = company;
+    if (round !== undefined) updateData.round = round.toString();
+    if (date !== undefined) updateData.date = date;
+    if (time !== undefined) updateData.time = time;
+    if (mode !== undefined) updateData.mode = mode;
+    if (venue !== undefined) updateData.venue = venue;
+    if (status !== undefined) updateData.status = status;
+    if (feedbackComments !== undefined) updateData.feedback_comments = feedbackComments;
+    if (feedbackRating !== undefined) updateData.feedback_rating = parseInt(feedbackRating);
+
+    const { data, error } = await supabase
+      .from('placement_interviews')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    if (status === 'Completed' || status === 'Cancelled' || feedbackComments) {
+      const { data: drive } = await supabase
+        .from('placements')
+        .select('*')
+        .eq('company', data.company_name)
+        .limit(1)
+        .maybeSingle();
+
+      if (drive) {
+        let appliedList = [];
+        try {
+          appliedList = typeof drive.applied_students === 'string' ? JSON.parse(drive.applied_students) : (drive.applied_students || []);
+        } catch (e) {
+          appliedList = [];
+        }
+
+        const idx = appliedList.findIndex(a => a.student_name.toLowerCase() === data.student_name.toLowerCase());
+        if (idx !== -1) {
+          if (status === 'Completed') {
+            appliedList[idx].status = 'Shortlisted';
+          }
+          if (feedbackComments) {
+            appliedList[idx].score = parseInt(feedbackRating) * 20 || appliedList[idx].score;
+          }
+          await supabase
+            .from('placements')
+            .update({ applied_students: JSON.stringify(appliedList) })
+            .eq('id', drive.id);
+        }
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Interview updated successfully',
+      data: {
+        id: data.id,
+        studentName: data.student_name,
+        company: data.company_name,
+        round: parseInt(data.round) || 1,
+        date: data.date,
+        time: data.time,
+        mode: data.mode,
+        venue: data.venue,
+        panelists: ["Dr. Rajesh Verma", "Priya Sharma"],
+        status: data.status,
+        feedbackComments: data.feedback_comments,
+        feedbackRating: data.feedback_rating
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTrainingPrograms = async (req, res, next) => {
+  try {
+    let { data, error } = await supabase
+      .from('placement_training')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Seed default programs if none exist
+    if (!data || data.length === 0) {
+      const defaults = [
+        { name: "Full Stack Web Development Boot Camp", type: "Training", date: "2026-06-10", time: "09:00 AM", duration: "120 min", enrolled_students: 150, completed: 140, pass_percentage: 95 },
+        { name: "Advanced Data Structures & Algorithms", type: "Training", date: "2026-06-15", time: "02:00 PM", duration: "90 min", enrolled_students: 200, completed: 180, pass_percentage: 90 },
+        { name: "SDE Mock Assessment - Coding Round", type: "Assessment", date: "2026-06-20", time: "10:00 AM", duration: "60 min", enrolled_students: 250, completed: 240, pass_percentage: 85 },
+        { name: "Technical Mock Interview Rounds", type: "Mock", date: "2026-06-25", time: "11:00 AM", duration: "45 min", enrolled_students: 120, completed: 110, pass_percentage: 92 }
+      ];
+      
+      const { data: inserted, error: seedErr } = await supabase
+        .from('placement_training')
+        .insert(defaults)
+        .select();
+
+      if (seedErr) throw seedErr;
+      data = inserted;
+    }
+
+    const formatted = (data || []).map(p => ({
+      id: p.id,
+      name: p.name,
+      type: p.type,
+      date: p.date ? new Date(p.date).toISOString().split('T')[0] : '',
+      time: p.time,
+      duration: p.duration,
+      enrolledStudents: p.enrolled_students || 0,
+      completed: p.completed || 0,
+      passPercentage: p.pass_percentage || 0
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formatted
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createTrainingProgram = async (req, res, next) => {
+  try {
+    const { name, type, date, time, duration, enrolledStudents, completed, passPercentage } = req.body;
+
+    if (!name || !date || !time) {
+      const error = new Error('Name, Date, and Time are required');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const { data, error } = await supabase
+      .from('placement_training')
+      .insert([{
+        name,
+        type: type || 'Training',
+        date,
+        time,
+        duration: duration || '60 min',
+        enrolled_students: parseInt(enrolledStudents) || 120,
+        completed: parseInt(completed) || 0,
+        pass_percentage: parseInt(passPercentage) || 0
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(201).json({
+      success: true,
+      message: 'Training program scheduled successfully',
+      data: {
+        id: data.id,
+        name: data.name,
+        type: data.type,
+        date: data.date ? new Date(data.date).toISOString().split('T')[0] : '',
+        time: data.time,
+        duration: data.duration,
+        enrolledStudents: data.enrolled_students || 0,
+        completed: data.completed || 0,
+        passPercentage: data.pass_percentage || 0
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTrainingProgram = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, type, date, time, duration, enrolledStudents, completed, passPercentage } = req.body;
+
+    const { data: exists, error: checkErr } = await supabase
+      .from('placement_training')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (checkErr) throw checkErr;
+    if (!exists) {
+      const error = new Error('Training program not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (type !== undefined) updateData.type = type;
+    if (date !== undefined) updateData.date = date;
+    if (time !== undefined) updateData.time = time;
+    if (duration !== undefined) updateData.duration = duration;
+    if (enrolledStudents !== undefined) updateData.enrolled_students = parseInt(enrolledStudents);
+    if (completed !== undefined) updateData.completed = parseInt(completed);
+    if (passPercentage !== undefined) updateData.pass_percentage = parseInt(passPercentage);
+
+    const { data, error } = await supabase
+      .from('placement_training')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.status(200).json({
+      success: true,
+      message: 'Training program updated successfully',
+      data: {
+        id: data.id,
+        name: data.name,
+        type: data.type,
+        date: data.date ? new Date(data.date).toISOString().split('T')[0] : '',
+        time: data.time,
+        duration: data.duration,
+        enrolledStudents: data.enrolled_students || 0,
+        completed: data.completed || 0,
+        passPercentage: data.pass_percentage || 0
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Plus, Filter, Loader2, Upload, X, Check, FileSpreadsheet } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchPlacementData } from "@/services/placementService";
+import { fetchPlacementData, createApplication } from "@/services/placementService";
 import { applications as mockApplications } from "@/mock/mockData";
 import { toast } from "sonner";
 
@@ -128,94 +128,99 @@ export function PlacementApplications() {
     });
   };
 
-  const handleImportCsvSubmit = () => {
+  const handleImportCsvSubmit = async () => {
     if (parsedRows.length === 0) return;
     
-    setApplications(prev => {
-      const updated = [ ...parsedRows, ...prev ];
-      if (typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_applications");
-        let customList: ApplicationItem[] = [];
-        if (customStr) {
-          try {
-            customList = JSON.parse(customStr);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        customList = [ ...parsedRows, ...customList ];
-        localStorage.setItem("placement_custom_applications", JSON.stringify(customList));
+    try {
+      toast.loading("Importing CSV records to database...");
+      for (const row of parsedRows) {
+        await createApplication({
+          studentName: row.studentName,
+          studentId: row.studentId,
+          company: row.company,
+          role: row.role,
+          score: row.score,
+          round: row.round,
+          status: row.status
+        });
       }
-      return updated;
-    });
+      toast.dismiss();
+      toast.success(`Successfully imported ${parsedRows.length} applications!`);
 
-    setIsImportModalOpen(false);
-    setCsvFileName(null);
-    setParsedRows([]);
-    toast.success(`Successfully imported 3 recruitment applications from ${csvFileName}!`);
+      const data = await fetchPlacementData();
+      if (data.applications) {
+        setApplications(data.applications);
+      }
+
+      setIsImportModalOpen(false);
+      setCsvFileName(null);
+      setParsedRows([]);
+    } catch (err: any) {
+      toast.dismiss();
+      console.error("Error importing CSV rows:", err);
+      toast.error("Failed to import CSV records. Some rows might have failed.");
+    }
   };
 
-  const handleManualImportSubmit = (e: React.FormEvent) => {
+  const handleManualImportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualStudentName || !manualStudentId || !manualCompany || !manualRole) {
       toast.error("Please fill in all required fields!");
       return;
     }
 
-    const newItem: ApplicationItem = {
-      id: `APP_${Date.now()}`,
-      studentName: manualStudentName,
-      studentId: manualStudentId,
-      company: manualCompany,
-      role: manualRole,
-      appliedDate: new Date().toISOString(),
-      status: manualStatus,
-      score: parseInt(manualScore) || 0,
-      round: parseInt(manualRound) || 0
-    };
+    try {
+      const payload = {
+        studentName: manualStudentName,
+        studentId: manualStudentId,
+        company: manualCompany,
+        role: manualRole,
+        score: parseInt(manualScore) || 80,
+        round: parseInt(manualRound) || 1,
+        status: manualStatus
+      };
 
-    setApplications(prev => {
-      const updated = [ newItem, ...prev ];
-      if (typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_applications");
-        let customList: ApplicationItem[] = [];
-        if (customStr) {
-          try {
-            customList = JSON.parse(customStr);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        customList.unshift(newItem);
-        localStorage.setItem("placement_custom_applications", JSON.stringify(customList));
-      }
-      return updated;
-    });
+      const newApp = await createApplication(payload);
+      const mappedApp: ApplicationItem = {
+        id: `APP_${Date.now()}`,
+        studentName: manualStudentName,
+        studentId: manualStudentId,
+        company: manualCompany,
+        role: manualRole,
+        appliedDate: new Date().toISOString(),
+        status: manualStatus,
+        score: parseInt(manualScore) || 80,
+        round: parseInt(manualRound) || 1
+      };
 
-    setIsImportModalOpen(false);
-    toast.success(`Successfully imported application for ${manualStudentName}!`);
+      setApplications(prev => [mappedApp, ...prev]);
+      setIsImportModalOpen(false);
+      toast.success(`Successfully imported application for ${manualStudentName}!`);
 
-    // Reset manual form fields
-    setManualStudentName("");
-    setManualStudentId("");
-    setManualCompany("");
-    setManualRole("");
-    setManualScore("80");
-    setManualRound("1");
-    setManualStatus("Applied");
+      setManualStudentName("");
+      setManualStudentId("");
+      setManualCompany("");
+      setManualRole("");
+      setManualScore("80");
+      setManualRound("1");
+      setManualStatus("Applied");
+    } catch (err: any) {
+      console.error("Error creating application:", err);
+      toast.error("Failed to import recruitment application.");
+    }
   };
 
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
-        if (res.applications && res.applications.length > 0) {
-          setApplications(mergeApplications(res.applications));
+        if (res.applications) {
+          setApplications(res.applications);
         }
         setLoading(false);
       })
       .catch((err) => {
-        console.warn("Failed to fetch live applications list, using fallback mock data:", err);
-        setApplications(mergeApplications(mockApplications));
+        console.error("Failed to fetch live applications list:", err);
+        toast.error("Failed to load applications registry.");
         setLoading(false);
       });
   }, []);

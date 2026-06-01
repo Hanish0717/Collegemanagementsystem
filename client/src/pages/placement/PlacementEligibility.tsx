@@ -12,6 +12,7 @@ interface StudentItem {
   year: number;
   cgpa: number;
   attendance: number;
+  section: string;
 }
 
 interface CriteriaTemplate {
@@ -25,18 +26,20 @@ interface CriteriaTemplate {
 }
 
 export function PlacementEligibility() {
-  const [students, setStudents] = useState<StudentItem[]>(mockStudents);
+  const [students, setStudents] = useState<StudentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [cgpaFilter, setCgpaFilter] = useState(6.0);
   const [backlogFilter, setBacklogFilter] = useState(0);
   const [selectedDept, setSelectedDept] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
 
   const [appliedCgpaFilter, setAppliedCgpaFilter] = useState(6.0);
   const [appliedBacklogFilter, setAppliedBacklogFilter] = useState(0);
   const [appliedSelectedDept, setAppliedSelectedDept] = useState<string | null>(null);
   const [appliedSelectedYear, setAppliedSelectedYear] = useState<number | null>(null);
+  const [appliedSelectedSection, setAppliedSelectedSection] = useState<string | null>(null);
   const [appliedSelectedSkill, setAppliedSelectedSkill] = useState<string | null>(null);
 
   const handleApplyChanges = () => {
@@ -44,6 +47,7 @@ export function PlacementEligibility() {
     setAppliedBacklogFilter(backlogFilter);
     setAppliedSelectedDept(selectedDept);
     setAppliedSelectedYear(selectedYear);
+    setAppliedSelectedSection(selectedSection);
     setAppliedSelectedSkill(selectedSkill);
     toast.success("Current eligibility criteria successfully applied to student registers!");
   };
@@ -68,12 +72,14 @@ export function PlacementEligibility() {
     setBacklogFilter(template.maxBacklogs);
     setSelectedDept(template.dept);
     setSelectedYear(template.year);
+    setSelectedSection(null);
     setSelectedSkill(template.skill);
 
     setAppliedCgpaFilter(template.minCgpa);
     setAppliedBacklogFilter(template.maxBacklogs);
     setAppliedSelectedDept(template.dept);
     setAppliedSelectedYear(template.year);
+    setAppliedSelectedSection(null);
     setAppliedSelectedSkill(template.skill);
 
     toast.success(`Applied '${template.name}' eligibility criteria template!`);
@@ -116,34 +122,55 @@ export function PlacementEligibility() {
             dept: s.department || "Computer Science",
             year: s.year || 4,
             cgpa: parseFloat(s.cgpa) || 8.0,
-            attendance: parseFloat(s.attendancePercentage || s.attendance_percentage) || 90
+            attendance: parseFloat(s.attendancePercentage || s.attendance_percentage) || 90,
+            section: s.section || "A"
           }));
-          if (mapped.length > 0) setStudents(mapped);
+          if (mapped.length > 0) {
+            setStudents(mapped);
+          } else {
+            // Fallback to mock if empty response
+            const mappedMock = mockStudents.map((s: any) => ({
+              ...s,
+              section: s.section || "A"
+            }));
+            setStudents(mappedMock);
+          }
         }
         setLoading(false);
       })
       .catch((err) => {
         console.warn("Could not query live students, falling back to mock:", err);
+        const mappedMock = mockStudents.map((s: any) => ({
+          ...s,
+          section: s.section || "A"
+        }));
+        setStudents(mappedMock);
         setLoading(false);
       });
   }, []);
 
-  const departments = [
-    "Computer Science & Engineering",
-    "Artificial Intelligence & Machine Learning",
-    "Artificial Intelligence & Data Science",
-    "Electronics & Communication Engineering",
-    "Electrical & Electronics Engineering",
-    "Mechanical Engineering",
-    "Civil Engineering",
-    "Computer Science",
-    "Electronics",
-    "Mechanical",
-    "Business",
-    "Design",
-    "Physics",
-    "Biotech",
-  ];
+  const normalizeDept = (dept: string) => {
+    const d = dept.toLowerCase().trim();
+    if (d === "computer science & engineering" || d === "computer science" || d === "cse") return "CSE";
+    if (d === "artificial intelligence & machine learning" || d === "aiml") return "AIML";
+    if (d === "artificial intelligence & data science" || d === "aids") return "AIDS";
+    if (d === "electronics & communication engineering" || d === "electronics" || d === "ece") return "ECE";
+    if (d === "electrical & electronics engineering" || d === "eee") return "EEE";
+    if (d === "mechanical engineering" || d === "mechanical" || d === "mech") return "MECH";
+    if (d === "civil engineering" || d === "civil") return "CIVIL";
+    if (d === "information technology" || d === "it") return "IT";
+    if (d === "cybersecurity") return "CYBERSECURITY";
+    return dept.toUpperCase();
+  };
+
+  const departments = students.length > 0
+    ? Array.from(new Set(students.map((s) => s.dept).filter(Boolean))).sort()
+    : ["CSE", "AIML", "AIDS", "ECE", "EEE", "MECH", "CIVIL", "IT", "CYBERSECURITY"];
+
+  const sections = students.length > 0
+    ? Array.from(new Set(students.map((s) => s.section).filter(Boolean))).sort()
+    : ["A", "B", "C"];
+
   const years = [1, 2, 3, 4];
   const skills = ["Java", "React", "Python", "SQL", "Communication", "Data Analysis"];
   
@@ -198,9 +225,10 @@ export function PlacementEligibility() {
   };
 
   const cohortStudents = students.filter((s) => {
-    const meetsDept = !appliedSelectedDept || s.dept.toLowerCase().includes(appliedSelectedDept.toLowerCase());
+    const meetsDept = !appliedSelectedDept || normalizeDept(s.dept) === normalizeDept(appliedSelectedDept);
     const meetsYear = !appliedSelectedYear || s.year === appliedSelectedYear;
-    return meetsDept && meetsYear;
+    const meetsSection = !appliedSelectedSection || s.section.toLowerCase() === appliedSelectedSection.toLowerCase();
+    return meetsDept && meetsYear && meetsSection;
   });
 
   const eligibleStudents = cohortStudents.filter((s) => {
@@ -284,7 +312,7 @@ export function PlacementEligibility() {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {/* CGPA Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Minimum CGPA</label>
@@ -333,7 +361,7 @@ export function PlacementEligibility() {
             <select
               value={selectedDept || ""}
               onChange={(e) => setSelectedDept(e.target.value || null)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
             >
               <option value="">All Departments</option>
               {departments.map((dept) => (
@@ -350,7 +378,7 @@ export function PlacementEligibility() {
             <select
               value={selectedYear || ""}
               onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
             >
               <option value="">All Years</option>
               {years.map((year) => (
@@ -361,12 +389,30 @@ export function PlacementEligibility() {
             </select>
           </div>
 
+          {/* Section Filter */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Section</label>
+            <select
+              value={selectedSection || ""}
+              onChange={(e) => setSelectedSection(e.target.value || null)}
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
+            >
+              <option value="">All Sections</option>
+              {sections.map((sec) => (
+                <option key={sec} value={sec}>
+                  Section {sec}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Required Skill */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Required Skill</label>
             <select
               value={selectedSkill || ""}
               onChange={(e) => setSelectedSkill(e.target.value || null)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
             >
               <option value="">All Skills</option>
               {skills.map((skill) => (
@@ -418,6 +464,7 @@ export function PlacementEligibility() {
                     Department
                   </th>
                   <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Year</th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Section</th>
                   <th className="text-center py-3 px-4 font-semibold text-muted-foreground">CGPA</th>
                   <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                     Backlogs
@@ -439,6 +486,9 @@ export function PlacementEligibility() {
                     <td className="py-3 px-4 text-sm text-muted-foreground">{student.dept}</td>
                     <td className="py-3 px-4 text-center">
                       <Badge tone="info">Year {student.year}</Badge>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <Badge tone="warn">{student.section}</Badge>
                     </td>
                     <td className="py-3 px-4 text-center font-semibold text-emerald-600">
                       {student.cgpa}
@@ -486,6 +536,9 @@ export function PlacementEligibility() {
                     Department
                   </th>
                   <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Section
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                     CGPA
                   </th>
                   <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
@@ -499,6 +552,9 @@ export function PlacementEligibility() {
                     <td className="py-3 px-4 font-medium text-xs">{student.id}</td>
                     <td className="py-3 px-4">{student.name}</td>
                     <td className="py-3 px-4 text-sm text-muted-foreground">{student.dept}</td>
+                    <td className="py-3 px-4 text-center">
+                      <Badge tone="warn">{student.section}</Badge>
+                    </td>
                     <td className="py-3 px-4 text-center font-semibold">{student.cgpa}</td>
                     <td className="py-3 px-4 text-sm">
                       {student.cgpa < appliedCgpaFilter ? (

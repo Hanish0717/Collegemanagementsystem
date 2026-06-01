@@ -7,6 +7,7 @@ import {
   deleteFee,
   payFee,
   getFeesReport,
+  sendFeeReminder,
 } from '../controllers/feeController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -28,6 +29,7 @@ router
   .get(getFees);
 
 router.get('/report', getFeesReport);
+router.post('/remind', sendFeeReminder);
 
 router.post('/pay/:id', payFee);
 

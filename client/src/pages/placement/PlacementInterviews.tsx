@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Calendar, Clock, MapPin, Video, Edit2, Plus, Loader2, X, Star } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchPlacementData } from "@/services/placementService";
+import { fetchPlacementData, createInterview, updateInterview } from "@/services/placementService";
 import { interviews as mockInterviews } from "@/mock/mockData";
 import { toast } from "sonner";
 
@@ -107,7 +107,7 @@ export function PlacementInterviews() {
     ];
   });
 
-  const handleFeedbackSubmit = (e: React.FormEvent) => {
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!feedbackStudent.trim()) {
       toast.error("Please specify a student name!");
@@ -130,53 +130,43 @@ export function PlacementInterviews() {
       i => i.studentName.toLowerCase() === feedbackStudent.trim().toLowerCase()
     );
 
-    if (matchedInterview) {
-      const newStatus = feedbackOutcome === "Hold" ? "Pending" : "Completed";
-      const updatedInterview = {
-        ...matchedInterview,
-        status: newStatus
-      };
-
-      setInterviews(prev => prev.map(item => item.id === matchedInterview.id ? updatedInterview : item));
-
-      if (typeof window !== "undefined") {
-        const editedStr = localStorage.getItem("placement_edited_interviews");
-        let editedMap: Record<string, InterviewItem> = {};
-        if (editedStr) {
-          try {
-            editedMap = JSON.parse(editedStr);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        editedMap[matchedInterview.id] = updatedInterview;
-        localStorage.setItem("placement_edited_interviews", JSON.stringify(editedMap));
-      }
+    if (!matchedInterview) {
+      toast.error("No scheduled interview found for this student!");
+      return;
     }
 
-    const newFeedback: FeedbackRecord = {
-      id: `FB_${Date.now()}`,
-      studentName: feedbackStudent.trim(),
-      rating: parseInt(feedbackRating),
-      outcome: feedbackOutcome,
-      comments: feedbackText.trim(),
-      date: new Date().toISOString().split("T")[0]
-    };
+    try {
+      const newStatus = feedbackOutcome === "Hold" ? "Pending" : "Completed";
+      const payload = {
+        status: newStatus,
+        feedbackComments: feedbackText.trim(),
+        feedbackRating: parseInt(feedbackRating)
+      };
 
-    setRecentFeedbacks(prev => {
-      const updated = [newFeedback, ...prev];
-      if (typeof window !== "undefined") {
-        localStorage.setItem("placement_recent_feedbacks", JSON.stringify(updated));
-      }
-      return updated;
-    });
-    
-    setFeedbackStudent("");
-    setFeedbackRating("");
-    setFeedbackOutcome("");
-    setFeedbackText("");
+      const updatedItem = await updateInterview(matchedInterview.id, payload);
+      setInterviews(prev => prev.map(item => item.id === matchedInterview.id ? updatedItem : item));
 
-    toast.success(`Feedback submitted successfully for ${newFeedback.studentName}!`);
+      const newFeedback: FeedbackRecord = {
+        id: `FB_${Date.now()}`,
+        studentName: feedbackStudent.trim(),
+        rating: parseInt(feedbackRating),
+        outcome: feedbackOutcome,
+        comments: feedbackText.trim(),
+        date: new Date().toISOString().split("T")[0]
+      };
+
+      setRecentFeedbacks(prev => [newFeedback, ...prev]);
+      
+      setFeedbackStudent("");
+      setFeedbackRating("");
+      setFeedbackOutcome("");
+      setFeedbackText("");
+
+      toast.success(`Feedback submitted successfully for ${newFeedback.studentName}!`);
+    } catch (err: any) {
+      console.error("Error submitting feedback:", err);
+      toast.error("Failed to submit feedback.");
+    }
   };
 
   const activeUncompletedInterviews = interviews.filter(
@@ -363,122 +353,76 @@ export function PlacementInterviews() {
     setIsEditModalOpen(true);
   };
 
-  const handleScheduleSubmit = (e: React.FormEvent) => {
+  const handleScheduleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formStudentName || !formCompany || !formDate || !formTime || !formVenue) {
       toast.error("Please fill in all required fields!");
       return;
     }
 
-    const newInterview: InterviewItem = {
-      id: `INT_${Date.now()}`,
-      studentName: formStudentName,
-      company: formCompany,
-      round: parseInt(formRound) || 1,
-      date: formDate,
-      time: formTime,
-      mode: formMode,
-      venue: formVenue,
-      panelists: formPanelists.split(",").map(p => p.trim()).filter(Boolean),
-      status: formStatus
-    };
+    try {
+      const payload = {
+        studentName: formStudentName,
+        company: formCompany,
+        round: parseInt(formRound) || 1,
+        date: formDate,
+        time: formTime,
+        mode: formMode,
+        venue: formVenue,
+        status: formStatus
+      };
 
-    setInterviews(prev => {
-      const updated = [newInterview, ...prev];
-      if (typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_interviews");
-        let customList: InterviewItem[] = [];
-        if (customStr) {
-          try {
-            customList = JSON.parse(customStr);
-          } catch (e) {
-            console.error(e);
-          }
-        }
-        customList.unshift(newInterview);
-        localStorage.setItem("placement_custom_interviews", JSON.stringify(customList));
-      }
-      return updated;
-    });
-    setIsScheduleModalOpen(false);
-    toast.success(`Successfully scheduled interview for ${formStudentName}!`);
+      const scheduledItem = await createInterview(payload);
+      setInterviews(prev => [scheduledItem, ...prev]);
+      setIsScheduleModalOpen(false);
+      toast.success(`Successfully scheduled interview for ${formStudentName}!`);
+    } catch (err: any) {
+      console.error("Error scheduling interview:", err);
+      toast.error("Failed to schedule interview.");
+    }
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedInterview) return;
     if (!formStudentName || !formCompany || !formDate || !formTime || !formVenue) {
       toast.error("Please fill in all required fields!");
       return;
     }
 
-    const updatedFields = {
-      studentName: formStudentName,
-      company: formCompany,
-      round: parseInt(formRound) || 1,
-      date: formDate,
-      time: formTime,
-      mode: formMode,
-      venue: formVenue,
-      panelists: formPanelists.split(",").map(p => p.trim()).filter(Boolean),
-      status: formStatus
-    };
+    try {
+      const payload = {
+        studentName: formStudentName,
+        company: formCompany,
+        round: parseInt(formRound) || 1,
+        date: formDate,
+        time: formTime,
+        mode: formMode,
+        venue: formVenue,
+        status: formStatus
+      };
 
-    setInterviews(prev => {
-      const updated = prev.map(item => item.id === selectedInterview?.id ? {
-        ...item,
-        ...updatedFields
-      } : item);
-
-      if (selectedInterview && typeof window !== "undefined") {
-        const customStr = localStorage.getItem("placement_custom_interviews");
-        let isCustom = false;
-        if (customStr) {
-          try {
-            let customList: InterviewItem[] = JSON.parse(customStr);
-            const idx = customList.findIndex(i => i.id === selectedInterview.id);
-            if (idx !== -1) {
-              customList[idx] = { ...customList[idx], ...updatedFields };
-              localStorage.setItem("placement_custom_interviews", JSON.stringify(customList));
-              isCustom = true;
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }
-
-        if (!isCustom) {
-          const editedStr = localStorage.getItem("placement_edited_interviews");
-          let editedMap: Record<string, InterviewItem> = {};
-          if (editedStr) {
-            try {
-              editedMap = JSON.parse(editedStr);
-            } catch (e) {
-              console.error(e);
-            }
-          }
-          editedMap[selectedInterview.id] = { ...selectedInterview, ...updatedFields };
-          localStorage.setItem("placement_edited_interviews", JSON.stringify(editedMap));
-        }
-      }
-
-      return updated;
-    });
-
-    setIsEditModalOpen(false);
-    toast.success(`Successfully updated interview details for ${formStudentName}!`);
+      const updatedItem = await updateInterview(selectedInterview.id, payload);
+      setInterviews(prev => prev.map(item => item.id === selectedInterview.id ? updatedItem : item));
+      setIsEditModalOpen(false);
+      toast.success(`Successfully updated interview details for ${formStudentName}!`);
+    } catch (err: any) {
+      console.error("Error updating interview:", err);
+      toast.error("Failed to update interview details.");
+    }
   };
 
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
-        if (res.interviews && res.interviews.length > 0) {
-          setInterviews(mergeInterviews(res.interviews));
+        if (res.interviews) {
+          setInterviews(res.interviews);
         }
         setLoading(false);
       })
       .catch((err) => {
-        console.warn("Failed to fetch live interviews, using fallback mock data:", err);
-        setInterviews(mergeInterviews(mockInterviews));
+        console.error("Failed to fetch live interviews:", err);
+        toast.error("Failed to fetch interviews list.");
         setLoading(false);
       });
   }, []);

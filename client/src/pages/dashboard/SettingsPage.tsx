@@ -148,7 +148,7 @@ export function SettingsPage() {
     setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
 
     const storedSkills = localStorage.getItem(`cms_${role}_skills`);
-    setSkills(storedSkills ? JSON.parse(storedSocials) : (role === "student" ? ["React", "TypeScript", "Node.js", "Python"] : []));
+    setSkills(storedSkills ? JSON.parse(storedSkills) : (role === "student" ? ["React", "TypeScript", "Node.js", "Python"] : []));
     
     toast.info("Changes discarded.");
     setIsEditing(false);

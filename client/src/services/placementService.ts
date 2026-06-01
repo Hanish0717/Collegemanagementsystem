@@ -75,3 +75,58 @@ export async function updateDrive(id: string, payload: Partial<DriveItem>): Prom
   );
   return data.data;
 }
+
+export async function createApplication(payload: any): Promise<any> {
+  const { data } = await api.post<{ success: boolean; data: any }>(
+    "/api/placement/applications",
+    payload,
+  );
+  return data.data;
+}
+
+export async function updateApplication(id: string, payload: any): Promise<any> {
+  const { data } = await api.put<{ success: boolean; data: any }>(
+    `/api/placement/applications/${id}`,
+    payload,
+  );
+  return data.data;
+}
+
+export async function createInterview(payload: any): Promise<any> {
+  const { data } = await api.post<{ success: boolean; data: any }>(
+    "/api/placement/interviews",
+    payload,
+  );
+  return data.data;
+}
+
+export async function updateInterview(id: string, payload: any): Promise<any> {
+  const { data } = await api.put<{ success: boolean; data: any }>(
+    `/api/placement/interviews/${id}`,
+    payload,
+  );
+  return data.data;
+}
+
+export async function fetchTrainingPrograms(): Promise<any[]> {
+  const { data } = await api.get<{ success: boolean; data: any[] }>(
+    "/api/placement/training"
+  );
+  return data.data;
+}
+
+export async function createTrainingProgram(payload: any): Promise<any> {
+  const { data } = await api.post<{ success: boolean; data: any }>(
+    "/api/placement/training",
+    payload
+  );
+  return data.data;
+}
+
+export async function updateTrainingProgram(id: string, payload: any): Promise<any> {
+  const { data } = await api.put<{ success: boolean; data: any }>(
+    `/api/placement/training/${id}`,
+    payload
+  );
+  return data.data;
+}

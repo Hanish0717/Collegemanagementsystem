@@ -200,8 +200,6 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/placement/eligibility", label: "Eligibility", icon: ClipboardList },
       { to: "/dashboard/placement/applications", label: "Applications", icon: FileText },
       { to: "/dashboard/placement/interviews", label: "Interview Scheduling", icon: CalendarCheck },
-      { to: "/dashboard/placement/offers", label: "Offers", icon: Wallet },
-      { to: "/dashboard/placement/training", label: "Training & Assessments", icon: Users },
       { to: "/dashboard/placement/reports", label: "Reports", icon: Activity },
     ],
   },

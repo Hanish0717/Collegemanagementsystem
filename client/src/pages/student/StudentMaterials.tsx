@@ -34,11 +34,33 @@ export function StudentMaterials() {
     fetchMaterials();
   }, []);
 
-  const handleDownload = (fileUrl: string) => {
-    if (fileUrl) {
-      window.open(fileUrl, "_blank");
-    } else {
+  const handleDownload = async (materialId: string, fileUrl: string) => {
+    if (!fileUrl) {
       alert("No download file link available");
+      return;
+    }
+    
+    try {
+      window.open(fileUrl, "_blank");
+      
+      const res = await api.post(`/api/student-module/materials/${materialId}/download`);
+      if (res.data?.success) {
+        const materialsRes = await api.get("/api/student-module/materials");
+        if (materialsRes.data?.success && materialsRes.data?.data) {
+          const dbMaterials = materialsRes.data.data.map((m: any) => ({
+            id: m._id || m.id,
+            title: m.title,
+            subject: m.subject,
+            type: m.type,
+            uploaded: new Date(m.created_at || m.createdAt || Date.now()).toISOString().split('T')[0],
+            downloads: m.downloads || 0,
+            fileUrl: m.fileUrl
+          }));
+          setMaterials(dbMaterials);
+        }
+      }
+    } catch (err) {
+      console.error("Error logging material download:", err);
     }
   };
 
@@ -129,7 +151,7 @@ export function StudentMaterials() {
                   </div>
                 </div>
                 <button
-                  onClick={() => handleDownload(material.fileUrl)}
+                  onClick={() => handleDownload(material.id, material.fileUrl)}
                   className="mt-4 w-full px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition flex items-center justify-center gap-1"
                 >
                   <Download className="size-3" /> Download

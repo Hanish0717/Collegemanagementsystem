@@ -40,6 +40,20 @@ export function AdminStudents() {
   const [parentPhone, setParentPhone] = useState("");
   const [parentEmail, setParentEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [collegeFee, setCollegeFee] = useState<number>(80000);
+
+  // Default fee mapping by department code
+  const defaultFeesByDept: Record<string, number> = {
+    CSE: 90000,
+    AIML: 95000,
+    AIDS: 95000,
+    CYBERSECURITY: 95000,
+    IT: 85000,
+    ECE: 80000,
+    EEE: 75000,
+    MECH: 70000,
+    CIVIL: 70000,
+  };
 
   // Queries
   const { data: deptList = [] } = useQuery({
@@ -67,9 +81,11 @@ export function AdminStudents() {
   // Mutations
   const createStudentMutation = useMutation({
     mutationFn: createStudent,
-    onSuccess: (data, variables) => {
-      setUnverifiedEmail(variables.email);
-      toast.success("Student account created. Please enter the OTP sent to their email to complete registration.");
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast.success("Student account created and registered successfully!");
+      setIsAddModalOpen(false);
+      resetForm();
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -119,6 +135,7 @@ export function AdminStudents() {
     setParentPhone("");
     setParentEmail("");
     setPassword("");
+    setCollegeFee(80000);
   };
 
   // Populate edit fields helper
@@ -176,6 +193,7 @@ export function AdminStudents() {
       parentPhone,
       parentEmail,
       password,
+      collegeFee,
     });
   };
 
@@ -656,7 +674,16 @@ export function AdminStudents() {
                     <label className="text-xs font-semibold text-muted-foreground">Department *</label>
                     <select
                       value={selectedDept}
-                      onChange={(e) => setSelectedDept(e.target.value)}
+                      onChange={(e) => {
+                        const deptId = e.target.value;
+                        setSelectedDept(deptId);
+                        const dept = deptList.find((d) => d._id === deptId);
+                        if (dept) {
+                          const code = dept.code.toUpperCase();
+                          const defaultFee = defaultFeesByDept[code] || 80000;
+                          setCollegeFee(defaultFee);
+                        }
+                      }}
                       className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none cursor-pointer"
                     >
                       <option value="">Select Department</option>
@@ -697,7 +724,7 @@ export function AdminStudents() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground">Section *</label>
                     <input
@@ -706,6 +733,18 @@ export function AdminStudents() {
                       placeholder="e.g. A"
                       value={section}
                       onChange={(e) => setSection(e.target.value.toUpperCase())}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">College Fee (₹) *</label>
+                    <input
+                      type="number"
+                      required
+                      min={0}
+                      placeholder="e.g. 80000"
+                      value={collegeFee}
+                      onChange={(e) => setCollegeFee(Number(e.target.value))}
                       className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
                     />
                   </div>

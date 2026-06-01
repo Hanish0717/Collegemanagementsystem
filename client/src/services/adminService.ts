@@ -272,6 +272,7 @@ export async function createStudent(payload: {
   password?: string;
   cgpa?: number;
   attendancePercentage?: number;
+  collegeFee?: number;
 }): Promise<StudentItem> {
   const { data } = await api.post<{ success: boolean; data: StudentItem }>(
     "/api/students",
@@ -279,6 +280,7 @@ export async function createStudent(payload: {
   );
   return data.data;
 }
+
 
 export async function updateStudent(
   id: string,
