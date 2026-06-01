@@ -106,8 +106,8 @@ export function AdminFaculty() {
 
       const matchesStatus =
         statusFilter === "All" ||
-        (statusFilter === "Active" && fac.status === "active") ||
-        (statusFilter === "On Leave" && fac.status === "on-leave");
+        (statusFilter === "Active" && fac.status?.toLowerCase() === "active") ||
+        (statusFilter === "On Leave" && fac.status?.toLowerCase() === "on-leave");
 
       return matchesSearch && matchesDept && matchesStatus;
     });
@@ -234,12 +234,12 @@ export function AdminFaculty() {
           { label: "Total Faculty", value: facultyList.length.toString(), tone: "info" as const },
           {
             label: "Active Faculty",
-            value: facultyList.filter((f) => f.status === "active").length.toString(),
+            value: facultyList.filter((f) => f.status?.toLowerCase() === "active").length.toString(),
             tone: "success" as const,
           },
           {
             label: "On Leave",
-            value: facultyList.filter((f) => f.status === "on-leave").length.toString(),
+            value: facultyList.filter((f) => f.status?.toLowerCase() === "on-leave").length.toString(),
             tone: "warn" as const,
           },
           {

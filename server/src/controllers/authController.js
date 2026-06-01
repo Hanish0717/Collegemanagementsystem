@@ -370,8 +370,8 @@ export const login = async (req, res, next) => {
       return next(error);
     }
 
-    // If student or faculty account is not verified yet, block login and return needsVerification
-    if ((user.role === 'student' || user.role === 'faculty') && !user.is_verified) {
+    // If student account is not verified yet, block login and return needsVerification
+    if (user.role === 'student' && !user.is_verified) {
       return res.status(200).json({
         success: false,
         needsVerification: true,

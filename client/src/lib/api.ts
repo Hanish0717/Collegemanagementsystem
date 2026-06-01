@@ -2,7 +2,18 @@ import axios from "axios";
 import { toast } from "sonner";
 // Updated API client: use TanStack Router navigation for 401 redirects and toast notifications for error handling
 
-const API_BASE_URL = "http://localhost:5000";
+const getApiBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    // Map localhost/127.0.0.1 to localhost, otherwise use current LAN IP/hostname
+    if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
+      return `http://${hostname}:5000`;
+    }
+  }
+  return "http://localhost:5000";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

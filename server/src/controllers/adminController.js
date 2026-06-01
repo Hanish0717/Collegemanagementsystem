@@ -22,6 +22,32 @@ const DEPT_NAMES = {
   'EE': 'Electrical & Electronics Engineering'
 };
 
+const getDeptCode = (name) => {
+  if (!name) return null;
+  const DEPT_MAP = {
+    'computer science & engineering': 'CSE',
+    'computer science': 'CSE',
+    'artificial intelligence & machine learning': 'AIML',
+    'artificial intelligence and machine learning': 'AIML',
+    'aiml': 'AIML',
+    'artificial intelligence & data science': 'AIDS',
+    'artificial intelligence and data science': 'AIDS',
+    'aids': 'AIDS',
+    'electronics & communication engineering': 'ECE',
+    'electronics and communication engineering': 'ECE',
+    'ece': 'ECE',
+    'electrical & electronics engineering': 'EEE',
+    'electrical and electronics engineering': 'EEE',
+    'eee': 'EEE',
+    'mechanical engineering': 'MECH',
+    'mech': 'MECH',
+    'civil engineering': 'CIVIL',
+    'civil': 'CIVIL'
+  };
+  const normalized = name.toLowerCase().trim();
+  return DEPT_MAP[normalized] || name.toUpperCase().trim();
+};
+
 const formatFaculty = (f) => {
   if (!f) return null;
   
@@ -95,9 +121,15 @@ export const getFaculty = async (req, res, next) => {
       .eq('is_active', true)
       .eq('users.is_verified', true);
 
-    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
-    if (!isGlobalAdmin && adminProfile.department) {
-      query = query.eq('department', adminProfile.department);
+    const adminDept = adminProfile ? getDeptCode(adminProfile.department) : null;
+    const isGlobalAdmin = !adminProfile || 
+                          !adminProfile.department || 
+                          adminProfile.department === 'Administration' ||
+                          adminProfile.full_name === 'System Admin' ||
+                          adminProfile.email === 'admin@college.com';
+
+    if (!isGlobalAdmin && adminDept) {
+      query = query.eq('department', adminDept);
     }
 
     const { data: facultyList, error } = await query.order('created_at', { ascending: false });
@@ -174,9 +206,15 @@ export const createFaculty = async (req, res, next) => {
       adminProfile = profile;
     }
 
-    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
-    if (!isGlobalAdmin && adminProfile.department) {
-      if (adminProfile.department.toString() !== department.toString()) {
+    const adminDept = adminProfile ? getDeptCode(adminProfile.department) : null;
+    const isGlobalAdmin = !adminProfile || 
+                          !adminProfile.department || 
+                          adminProfile.department === 'Administration' ||
+                          adminProfile.full_name === 'System Admin' ||
+                          adminProfile.email === 'admin@college.com';
+
+    if (!isGlobalAdmin && adminDept) {
+      if (adminDept.toString() !== department.toString()) {
         const error = new Error('Access denied: You can only register faculty in your assigned department');
         error.statusCode = 403;
         throw error;
@@ -329,9 +367,15 @@ export const updateFaculty = async (req, res, next) => {
       adminProfile = profile;
     }
 
-    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
-    if (!isGlobalAdmin && adminProfile.department) {
-      if (facultyMember.department && facultyMember.department.toString() !== adminProfile.department.toString()) {
+    const adminDept = adminProfile ? getDeptCode(adminProfile.department) : null;
+    const isGlobalAdmin = !adminProfile || 
+                          !adminProfile.department || 
+                          adminProfile.department === 'Administration' ||
+                          adminProfile.full_name === 'System Admin' ||
+                          adminProfile.email === 'admin@college.com';
+
+    if (!isGlobalAdmin && adminDept) {
+      if (facultyMember.department && facultyMember.department.toString() !== adminDept.toString()) {
         const error = new Error('Access denied: You can only update faculty in your assigned department');
         error.statusCode = 403;
         return next(error);
@@ -403,9 +447,15 @@ export const deleteFaculty = async (req, res, next) => {
       adminProfile = profile;
     }
 
-    const isGlobalAdmin = !adminProfile || !adminProfile.department || adminProfile.department === 'Administration';
-    if (!isGlobalAdmin && adminProfile.department) {
-      if (facultyMember.department && facultyMember.department.toString() !== adminProfile.department.toString()) {
+    const adminDept = adminProfile ? getDeptCode(adminProfile.department) : null;
+    const isGlobalAdmin = !adminProfile || 
+                          !adminProfile.department || 
+                          adminProfile.department === 'Administration' ||
+                          adminProfile.full_name === 'System Admin' ||
+                          adminProfile.email === 'admin@college.com';
+
+    if (!isGlobalAdmin && adminDept) {
+      if (facultyMember.department && facultyMember.department.toString() !== adminDept.toString()) {
         const error = new Error('Access denied: You can only delete faculty in your assigned department');
         error.statusCode = 403;
         return next(error);

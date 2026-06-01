@@ -15,7 +15,8 @@ import {
   Lock, 
   Unlock, 
   Save, 
-  UserCheck 
+  UserCheck,
+  Clock
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { toast } from "sonner";
@@ -471,7 +472,7 @@ export function AdminExams() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <StatCard label="Upcoming Exams" value={examStats?.upcoming || 0} icon={Calendar} gradient="from-blue-600 to-indigo-500" />
-              <StatCard label="Ongoing Exams" value={examStats?.ongoing || 0} icon={ClockIcon} gradient="from-amber-500 to-orange-500" />
+              <StatCard label="Ongoing Exams" value={examStats?.ongoing || 0} icon={Clock} gradient="from-amber-500 to-orange-500" />
               <StatCard label="Completed Exams" value={examStats?.completed || 0} icon={CheckCircle} gradient="from-emerald-500 to-teal-500" />
               <StatCard label="Results Pending" value={examStats?.pendingResults || 0} icon={FileText} gradient="from-indigo-600 to-purple-500" />
               <StatCard label="Published" value={examStats?.resultsPublished || 0} icon={Award} gradient="from-purple-600 to-pink-500" />
@@ -1211,23 +1212,4 @@ export function AdminExams() {
   );
 }
 
-// ClockIcon fallback inside local page
-function ClockIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
+

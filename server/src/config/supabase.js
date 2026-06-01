@@ -132,8 +132,20 @@ if (isMockMode) {
       if (value === undefined || value === null) return this;
       const cleanVal = typeof value === 'string' ? value.toLowerCase().trim() : value;
       this._data = this._data.filter(item => {
-        let fieldVal = item[column];
-        if (column === 'id' && item._id && !item.id) { fieldVal = item._id; }
+        let fieldVal;
+        if (column.startsWith('users.')) {
+          const prop = column.split('.')[1];
+          const user = db.users.find(u => 
+            (item.user_id && u.id === item.user_id) || 
+            (item.email && u.email && u.email.toLowerCase().trim() === item.email.toLowerCase().trim()) ||
+            (u.id === item.id)
+          );
+          fieldVal = user ? user[prop] : undefined;
+        } else {
+          fieldVal = item[column];
+          if (column === 'id' && item._id && !item.id) { fieldVal = item._id; }
+        }
+        
         if (typeof fieldVal === 'string') {
           return fieldVal.toLowerCase().trim() === cleanVal;
         }
@@ -149,6 +161,33 @@ if (isMockMode) {
 
     lt(column, value) {
       this._data = this._data.filter(item => Number(item[column]) < Number(value));
+      return this;
+    }
+
+    gte(column, value) {
+      this._data = this._data.filter(item => {
+        const itemVal = item[column];
+        if (itemVal === undefined || itemVal === null) return false;
+        return typeof itemVal === 'number' ? itemVal >= Number(value) : String(itemVal) >= String(value);
+      });
+      return this;
+    }
+
+    gt(column, value) {
+      this._data = this._data.filter(item => {
+        const itemVal = item[column];
+        if (itemVal === undefined || itemVal === null) return false;
+        return typeof itemVal === 'number' ? itemVal > Number(value) : String(itemVal) > String(value);
+      });
+      return this;
+    }
+
+    lte(column, value) {
+      this._data = this._data.filter(item => {
+        const itemVal = item[column];
+        if (itemVal === undefined || itemVal === null) return false;
+        return typeof itemVal === 'number' ? itemVal <= Number(value) : String(itemVal) <= String(value);
+      });
       return this;
     }
 
@@ -369,6 +408,21 @@ if (isMockMode) {
 
     lt(column, value) {
       this.conditions.push({ column: `t.${column}`, operator: '<', value });
+      return this;
+    }
+
+    gte(column, value) {
+      this.conditions.push({ column: `t.${column}`, operator: '>=', value });
+      return this;
+    }
+
+    gt(column, value) {
+      this.conditions.push({ column: `t.${column}`, operator: '>', value });
+      return this;
+    }
+
+    lte(column, value) {
+      this.conditions.push({ column: `t.${column}`, operator: '<=', value });
       return this;
     }
 

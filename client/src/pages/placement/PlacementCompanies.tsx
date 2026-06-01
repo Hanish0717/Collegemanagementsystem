@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Grid, List, Loader2, X } from "lucide-react";
+import { Search, Plus, Grid, List, Loader2, X, Trash2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchPlacementData, createCompany, updateCompany, CompanyItem, DriveItem } from "@/services/placementService";
+import { fetchPlacementData, createCompany, updateCompany, deleteCompany, CompanyItem, DriveItem } from "@/services/placementService";
 import { toast } from "sonner";
 
 // Helper to return beautiful vector SVG logos for top companies
@@ -107,6 +107,23 @@ export const getCompanyLogo = (name: string) => {
           </svg>
         </div>
         <span className="text-white/80 font-sans font-bold text-xs tracking-wider mt-1 uppercase select-none">Oracle</span>
+      </div>
+    );
+  }
+  if (clean.includes("capgemini")) {
+    return (
+      <div className="bg-gradient-to-tr from-[#0A2540] to-[#0070AD] rounded-xl flex flex-col items-center justify-center size-full p-4 border border-blue-900 shadow-md relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-[#0070AD]/10 rounded-full blur-xl"></div>
+        <div className="w-full flex items-center justify-center py-1">
+          <svg viewBox="0 0 120 45" className="w-[85%] h-auto drop-shadow-[0_2px_8px_rgba(0,112,173,0.4)]" fill="none">
+            {/* Capgemini Spade/Ace Icon */}
+            <path d="M 22 10 C 18 10, 16 14, 18 18 C 19 21, 20 22, 17 25 C 15 27, 18 30, 22 30 C 26 30, 29 27, 27 25 C 24 22, 25 21, 26 18 C 28 14, 26 10, 22 10 Z" fill="#0070AD" />
+            <path d="M 20 27 L 22 23 L 24 27 Z" fill="#0070AD" />
+            {/* Modern Capgemini Text */}
+            <text x="75" y="25" dominantBaseline="middle" textAnchor="middle" fill="#FFFFFF" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="13" letterSpacing="0.2">Capgemini</text>
+          </svg>
+        </div>
+        <span className="text-blue-300 font-sans font-semibold text-[9px] tracking-widest mt-2 uppercase select-none">Capgemini</span>
       </div>
     );
   }
@@ -274,7 +291,17 @@ export function PlacementCompanies() {
     }
   };
 
-
+  const handleDeleteCompany = async (id: string) => {
+    if (!window.confirm("Are you sure you want to remove this company? This will delete all associated data.")) return;
+    try {
+      await deleteCompany(id);
+      setCompanies((prev) => prev.filter((c) => c.id !== id));
+      toast.success("Company removed successfully!");
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || "Failed to remove company";
+      toast.error(msg);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -392,15 +419,22 @@ export function PlacementCompanies() {
               <div className="flex gap-2 mt-4">
                 <button 
                   onClick={() => openViewModal(company)}
-                  className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
+                  className="flex-1 px-2.5 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
                 >
                   View
                 </button>
                 <button 
                   onClick={() => openEditModal(company)}
-                  className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
+                  className="flex-1 px-2.5 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
                 >
                   Edit
+                </button>
+                <button 
+                  onClick={() => handleDeleteCompany(company.id)}
+                  className="px-2.5 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition cursor-pointer flex items-center justify-center"
+                  title="Remove Company"
+                >
+                  <Trash2 className="size-4" />
                 </button>
               </div>
             </Card>
@@ -476,6 +510,12 @@ export function PlacementCompanies() {
                           className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer"
                         >
                           Edit
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteCompany(company.id)}
+                          className="px-2 py-1 rounded text-xs text-red-600 hover:bg-red-50 hover:text-red-700 transition cursor-pointer"
+                        >
+                          Delete
                         </button>
                       </div>
                     </td>

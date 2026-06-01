@@ -23,6 +23,15 @@ export function PlacementApplications() {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // View Details Modal States
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationItem | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+  const openViewModal = (app: ApplicationItem) => {
+    setSelectedApplication(app);
+    setIsViewModalOpen(true);
+  };
+
   // Import Applications Modal States
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importTab, setImportTab] = useState<"csv" | "manual">("csv");
@@ -396,7 +405,12 @@ export function PlacementApplications() {
                       <Badge tone={(statusColors[app.status] || "info") as any}>{app.status}</Badge>
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <button className="text-xs text-blue-600 hover:underline">View</button>
+                      <button 
+                        onClick={() => openViewModal(app)}
+                        className="text-xs text-blue-600 hover:underline cursor-pointer font-medium"
+                      >
+                        View
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -736,6 +750,123 @@ export function PlacementApplications() {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* View Application Details Modal */}
+      {isViewModalOpen && selectedApplication && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <h3 className="font-bold text-base text-gradient">Application Details</h3>
+              <button
+                onClick={() => {
+                  setIsViewModalOpen(false);
+                  setSelectedApplication(null);
+                }}
+                className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-4">
+              {/* Profile Card */}
+              <div className="p-4 rounded-xl bg-gradient-soft border flex flex-col space-y-1">
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Candidate</span>
+                <span className="font-bold text-lg text-slate-800">{selectedApplication.studentName}</span>
+                <span className="text-xs text-slate-500 font-mono">ID: {selectedApplication.studentId}</span>
+              </div>
+
+              {/* Job Details */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 border rounded-xl bg-background/50">
+                  <span className="text-xs text-muted-foreground block">Company</span>
+                  <span className="font-bold text-sm text-slate-700">{selectedApplication.company}</span>
+                </div>
+                <div className="p-3 border rounded-xl bg-background/50">
+                  <span className="text-xs text-muted-foreground block">Role</span>
+                  <span className="font-bold text-sm text-slate-700">{selectedApplication.role}</span>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="p-2 border rounded-xl bg-background/30">
+                  <span className="text-[10px] text-muted-foreground block">Applied Date</span>
+                  <span className="font-semibold text-xs mt-1 block text-slate-700">
+                    {new Date(selectedApplication.appliedDate).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="p-2 border rounded-xl bg-background/30">
+                  <span className="text-[10px] text-muted-foreground block">Assessment Score</span>
+                  <span className="font-bold text-xs mt-1 block">
+                    {selectedApplication.score > 0 ? (
+                      <span className={selectedApplication.score >= 80 ? "text-emerald-600" : "text-amber-600"}>
+                        {selectedApplication.score}%
+                      </span>
+                    ) : "N/A"}
+                  </span>
+                </div>
+                <div className="p-2 border rounded-xl bg-background/30">
+                  <span className="text-[10px] text-muted-foreground block">Current Round</span>
+                  <span className="font-semibold text-xs mt-1 block text-slate-700">
+                    {selectedApplication.round > 0 ? `Round ${selectedApplication.round}` : "N/A"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Status Section */}
+              <div className="p-4 border rounded-xl space-y-2.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Hiring Status</span>
+                  <Badge tone={(statusColors[selectedApplication.status] || "info") as any}>
+                    {selectedApplication.status}
+                  </Badge>
+                </div>
+
+                {/* Progress bar to simulate status workflow */}
+                <div className="space-y-1 pt-2">
+                  <div className="flex justify-between text-[10px] text-muted-foreground font-semibold">
+                    <span>Process Progress</span>
+                    <span>
+                      {selectedApplication.status === "Rejected" ? "Declined" : 
+                       selectedApplication.status === "Offer Released" || selectedApplication.status === "Selected" ? "Completed" : "In Progress"}
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        selectedApplication.status === "Rejected" ? "bg-rose-500" : 
+                        selectedApplication.status === "Selected" || selectedApplication.status === "Offer Released" ? "bg-emerald-500" : "bg-primary"
+                      }`}
+                      style={{ 
+                        width: selectedApplication.status === "Rejected" ? "100%" :
+                               selectedApplication.status === "Offer Released" || selectedApplication.status === "Selected" ? "100%" :
+                               selectedApplication.status === "Interview Scheduled" ? "65%" :
+                               selectedApplication.status === "Shortlisted" ? "40%" : "20%"
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="pt-4 border-t flex justify-end">
+                <button
+                  onClick={() => {
+                    setIsViewModalOpen(false);
+                    setSelectedApplication(null);
+                  }}
+                  className="px-5 py-2 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary cursor-pointer hover:opacity-95 transition"
+                >
+                  Close Details
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

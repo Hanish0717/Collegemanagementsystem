@@ -55,7 +55,8 @@ const fallbackCompanies = [
   { id: "COM005", name: "Accenture", industry: "Consulting", hrContact: "Rahul Verma", email: "careers@accenture.com", phone: "9876543210", package: "11.0 LPA", hiringStatus: "Active", previousYearHires: 22 },
   { id: "COM006", name: "TCS", industry: "Consulting", hrContact: "Komal Gupta", email: "careers@tcs.com", phone: "9876543210", package: "12.0 LPA", hiringStatus: "Active", previousYearHires: 20 },
   { id: "COM007", name: "Infosys", industry: "IT Services", hrContact: "Deepa Nair", email: "careers@infosys.com", phone: "9876543210", package: "10.5 LPA", hiringStatus: "Active", previousYearHires: 18 },
-  { id: "COM008", name: "Oracle", industry: "Technology", hrContact: "Siddharth Sen", email: "careers@oracle.com", phone: "9876543210", package: "16.5 LPA", hiringStatus: "Active", previousYearHires: 14 }
+  { id: "COM008", name: "Oracle", industry: "Technology", hrContact: "Siddharth Sen", email: "careers@oracle.com", phone: "9876543210", package: "16.5 LPA", hiringStatus: "Active", previousYearHires: 14 },
+  { id: "COM009", name: "Capgemini India", industry: "Consulting", hrContact: "Anisha Reddy", email: "hr-recruiting@capgemini.com", phone: "9876543218", package: "9.5 LPA", hiringStatus: "Active", previousYearHires: 25 }
 ];
 
 const fallbackDrives = [
@@ -451,6 +452,47 @@ export const updateCompany = async (req, res, next) => {
       success: true,
       message: 'Company updated successfully',
       data: formatted
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCompany = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Check fallback list first
+    const fallbackIdx = fallbackCompanies.findIndex(c => c.id === id);
+    if (fallbackIdx !== -1) {
+      fallbackCompanies.splice(fallbackIdx, 1);
+      return res.status(200).json({
+        success: true,
+        message: 'Company deleted successfully from fallback list'
+      });
+    }
+
+    const { data: exists, error: checkErr } = await supabase
+      .from('placement_companies')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (checkErr) throw checkErr;
+    
+    // If not found in DB but exists is null, it's already deleted or not found
+    if (exists) {
+      const { error } = await supabase
+        .from('placement_companies')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Company deleted successfully'
     });
   } catch (error) {
     next(error);

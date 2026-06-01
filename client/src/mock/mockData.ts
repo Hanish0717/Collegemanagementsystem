@@ -960,6 +960,17 @@ export const companies = [
     hiringStatus: "Active",
     previousYearHires: 14,
   },
+  {
+    id: "COM009",
+    name: "Capgemini India",
+    industry: "Consulting",
+    hrContact: "Anisha Reddy",
+    email: "hr-recruiting@capgemini.com",
+    phone: "9876543218",
+    package: "9.5 LPA",
+    hiringStatus: "Active",
+    previousYearHires: 25,
+  },
 ];
 
 export const drives = [

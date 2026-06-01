@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { GraduationCap, Mail, Lock, ArrowRight, Check, Loader2, X } from "lucide-react";
+import { GraduationCap, Mail, Lock, ArrowRight, Check, Loader2, X, Quote } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useGoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { toast } from "sonner";
@@ -44,7 +44,7 @@ function LoginForm() {
     localStorage.removeItem("campusly.role");
   }, []);
 
-  const [roleId, setRoleId] = useState<RoleId | null>(null);
+  const [roleId, setRoleId] = useState<RoleId | null>("student");
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pin, setPin] = useState(["", "", "", ""]);
   const [pinError, setPinError] = useState<string | null>(null);
@@ -205,81 +205,57 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-gradient-hero">
-      {/* Left — role selection */}
-      <div className="relative hidden lg:flex flex-col p-10 xl:p-14 overflow-hidden max-h-screen overflow-y-auto">
+      {/* Left — branding & quotation */}
+      <div className="relative hidden lg:flex flex-col p-10 xl:p-14 overflow-hidden max-h-screen justify-between">
         <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
         <div className="absolute -top-32 -right-20 size-96 rounded-full bg-gradient-primary opacity-25 blur-3xl animate-float pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-gradient-violet opacity-25 blur-3xl animate-float pointer-events-none" />
 
-        <Link to="/" className="relative inline-flex items-center gap-2 mb-8 w-fit">
-          <div className="size-10 rounded-xl bg-gradient-primary grid place-items-center text-white">
+        <Link to="/" className="relative inline-flex items-center gap-2.5 w-fit">
+          <div className="size-10 rounded-xl bg-gradient-primary grid place-items-center text-white shadow-soft">
             <GraduationCap className="size-5" />
           </div>
-          <span className="font-bold text-xl">College Management System</span>
+          <span className="font-bold text-xl tracking-tight bg-slate-900 bg-clip-text">
+            College Management System
+          </span>
         </Link>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="relative"
-        >
-          <h1 className="text-3xl xl:text-4xl font-bold leading-tight">
-            Choose your <span className="text-gradient">role</span> to access the campus system
-          </h1>
-          <p className="mt-3 text-sm text-muted-foreground max-w-md">
-            Each role unlocks a customized dashboard with relevant academic analytics,
-            administrative functions, and institutional insights.
-          </p>
+        <div className="flex-1 flex flex-col justify-center max-w-lg relative z-10 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="space-y-8"
+          >
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-indigo bg-indigo-50 border border-indigo-100 uppercase mb-4">
+                Empowering Education Through Technology
+              </span>
+              <h1 className="text-3xl xl:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
+                College Management <span className="text-gradient bg-gradient-to-r from-cyan-500 to-indigo-600">System</span>
+              </h1>
+            </div>
 
-          <div className="mt-6 grid grid-cols-2 xl:grid-cols-3 gap-3 max-w-3xl">
-            {ROLE_LIST.filter((r) => r.id === "student" || r.id === "parent").map((r) => {
-              const selected = r.id === roleId;
-              const Icon = r.icon;
-              return (
-                <button
-                  key={r.id}
-                  type="button"
-                  onClick={() => setRoleId(r.id)}
-                  className={`group relative text-left rounded-2xl p-4 border transition-all overflow-hidden
-                    ${
-                      selected
-                        ? "border-transparent shadow-soft -translate-y-0.5"
-                        : "border-border bg-white/60 hover:-translate-y-0.5 hover:shadow-soft"
-                    }`}
-                >
-                  {selected && (
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${r.gradient} opacity-95`}
-                    />
-                  )}
-                  <div className="relative">
-                    <div className="flex items-center justify-between">
-                      <div
-                        className={`size-9 rounded-xl grid place-items-center ${selected ? "bg-white/15 text-white backdrop-blur" : `bg-gradient-to-br ${r.gradient} text-white`}`}
-                      >
-                        <Icon className="size-4" />
-                      </div>
-                      {selected && (
-                        <span className="size-5 rounded-full bg-white/20 grid place-items-center">
-                          <Check className="size-3 text-white" />
-                        </span>
-                      )}
-                    </div>
-                    <div className={`mt-3 text-sm font-semibold ${selected ? "text-white" : ""}`}>
-                      {r.name}
-                    </div>
-                    <div
-                      className={`text-[11px] mt-0.5 ${selected ? "text-white/85" : "text-muted-foreground"}`}
-                    >
-                      {r.short}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </motion.div>
+            {/* Quotation block with soft glassmorphism and subtle quote icon */}
+            <div className="relative p-7 rounded-3xl border border-white/50 bg-white/40 backdrop-blur-xl shadow-soft">
+              <Quote className="size-10 text-indigo/10 absolute -top-5 -left-3 rotate-180" />
+              <blockquote className="text-lg xl:text-xl font-medium text-slate-800 italic leading-relaxed">
+                "Education is not the preparation for life; education is life itself."
+              </blockquote>
+              <cite className="block mt-4 text-xs font-bold uppercase tracking-wider text-indigo not-italic">
+                — John Dewey
+              </cite>
+            </div>
+
+            <p className="text-sm text-slate-600 leading-relaxed font-normal max-w-md">
+              Manage academics, attendance, communication, and campus activities through one unified platform.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="relative text-xs text-muted-foreground">
+          © {new Date().getFullYear()} CMS. All rights reserved.
+        </div>
       </div>
 
       {/* Right — form */}
@@ -296,50 +272,17 @@ function LoginForm() {
             </div>
             <span className="font-bold text-lg">College Management System</span>
           </div>
-
-          {active && (
-            <div
-              className={`rounded-2xl p-4 bg-gradient-to-br ${active.gradient} text-white shadow-soft mb-6`}
-            >
-              <div className="text-[11px] uppercase tracking-wide opacity-80">Signing in as</div>
-              <div className="text-lg font-semibold mt-0.5">{active.name}</div>
-              <div className="text-xs opacity-85 mt-0.5">{active.description}</div>
-            </div>
-          )}
-
           <h2 className="text-xl font-bold">Sign in to your account</h2>
           <p className="text-sm text-muted-foreground mt-1">
             Enter your institutional credentials to access the campus management system
           </p>
-
-
-
           {/* Error message */}
           {error && (
             <div className="mt-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
               {error}
             </div>
           )}
-
           <form className="mt-5 space-y-4" onSubmit={submit}>
-            <div className="lg:hidden">
-              <label className="text-xs font-medium">Role</label>
-              <select
-                value={roleId || ""}
-                onChange={(e) => setRoleId((e.target.value || null) as RoleId | null)}
-                className="mt-1 w-full rounded-xl border bg-background/60 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="" disabled>
-                  Select your role...
-                </option>
-                {ROLE_LIST.filter((r) => r.id === "student" || r.id === "parent").map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div>
               <label className="text-xs font-medium">
                 {roleId === "parent"
@@ -424,7 +367,7 @@ function LoginForm() {
                 </>
               ) : (
                 <>
-                  {active ? `Sign in as ${active.name}` : "Sign In"}{" "}
+                  Sign In{" "}
                   <ArrowRight className="size-4" />
                 </>
               )}

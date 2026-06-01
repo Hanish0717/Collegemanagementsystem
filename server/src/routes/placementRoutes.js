@@ -3,6 +3,7 @@ import {
   getPlacementDashboard, 
   createCompany, 
   updateCompany, 
+  deleteCompany,
   createDrive, 
   updateDrive,
   createApplication,
@@ -20,6 +21,7 @@ const router = express.Router();
 router.get('/dashboard', protect, getPlacementDashboard);
 router.post('/companies', protect, createCompany);
 router.put('/companies/:id', protect, updateCompany);
+router.delete('/companies/:id', protect, deleteCompany);
 router.post('/drives', protect, createDrive);
 router.put('/drives/:id', protect, updateDrive);
 
