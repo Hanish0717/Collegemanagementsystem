@@ -19,6 +19,7 @@ router.use(protect);
 
 // Retrieve individual student fees (accessible by Student/Parent/Admin/Super-Admin)
 router.get('/student/:studentId', getStudentFees);
+router.post('/pay/:id', payFee);
 
 // Management routes restricted strictly to Admin and Super-Admin roles
 router.use(authorizeRoles('admin', 'super-admin'));
@@ -30,8 +31,6 @@ router
 
 router.get('/report', getFeesReport);
 router.post('/remind', sendFeeReminder);
-
-router.post('/pay/:id', payFee);
 
 router
   .route('/:id')

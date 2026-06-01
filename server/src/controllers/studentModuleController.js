@@ -712,6 +712,11 @@ export const getStudentNotifications = async (req, res, next) => {
     let isHostelStudent = false;
     let isBusStudent = false;
 
+    const userRole = req.user?.role || req.user?.role_name;
+    if (userRole === 'hostel-warden') {
+      isHostelStudent = true;
+    }
+
     if (profile) {
       // Check hostel allocation
       const { data: hostelAlloc } = await supabase

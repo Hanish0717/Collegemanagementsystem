@@ -467,6 +467,41 @@ export const payFee = async (req, res, next) => {
       return next(error);
     }
 
+    // Self-access guard for student/parent roles
+    if (['student', 'parent'].includes(req.user.role)) {
+      const { data: studentRecord } = await supabase
+        .from('students')
+        .select('*')
+        .eq('id', fee.student)
+        .maybeSingle();
+      
+      if (!studentRecord) {
+        const error = new Error('Associated student not found');
+        error.statusCode = 404;
+        return next(error);
+      }
+
+      if (req.user.role === 'student' && req.user.email !== studentRecord.email) {
+        const error = new Error('You are not authorized to pay this fee record');
+        error.statusCode = 403;
+        return next(error);
+      }
+
+      if (req.user.role === 'parent') {
+        const parentEmailVal = (req.user.child_email || req.user.childEmail || '').toLowerCase().trim();
+        const parentPhoneVal = req.user.mobile || req.user.phone_number || '';
+        
+        const isLinkedByEmail = parentEmailVal && studentRecord.email && parentEmailVal === studentRecord.email.toLowerCase().trim();
+        const isLinkedByPhone = parentPhoneVal && studentRecord.parent_phone && parentPhoneVal === studentRecord.parent_phone;
+
+        if (!isLinkedByEmail && !isLinkedByPhone) {
+          const error = new Error('You are not authorized to pay this fee record');
+          error.statusCode = 403;
+          return next(error);
+        }
+      }
+    }
+
     const currentPaid = Number(fee.paid_amount || 0);
     const totalAmt = Number(fee.amount || 0);
 

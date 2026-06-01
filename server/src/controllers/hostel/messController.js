@@ -163,6 +163,33 @@ export async function listFeedback(req, res) {
 // Fees
 export async function listFees(req, res) {
   try {
+    // 1. Get all active hostel allocations
+    const { data: activeAllocations } = await supabase.from('hostel_allocations').select('student_id').eq('status', 'Active');
+    
+    if (activeAllocations && activeAllocations.length > 0) {
+      // 2. Get existing mess fee resident IDs
+      const { data: existingFees } = await supabase.from('mess_fees').select('resident_id');
+      const existingIds = new Set(existingFees ? existingFees.map(f => f.resident_id) : []);
+      
+      // 3. For any active allocation not in mess_fees, auto-insert a fee bill
+      const newBills = [];
+      for (const alloc of activeAllocations) {
+        if (!existingIds.has(alloc.student_id)) {
+          newBills.push({
+            resident_id: alloc.student_id,
+            mess_fee: 3000.00,
+            paid_amount: 0.00,
+            pending_amount: 3000.00,
+            payment_status: 'Unpaid'
+          });
+        }
+      }
+      
+      if (newBills.length > 0) {
+        await supabase.from('mess_fees').insert(newBills);
+      }
+    }
+
     let q = supabase.from('mess_fees').select('*');
     if (req.user && (req.user.role === 'student' || req.user.role === 'Student')) {
       const { data: student } = await supabase.from('students').select('id').eq('user_id', req.user.id).maybeSingle();
@@ -174,7 +201,26 @@ export async function listFees(req, res) {
     }
     const { data, error } = await q.order('created_at', { ascending: false });
     if (error) throw error;
-    res.json({ fees: data });
+
+    // Fetch all students to map details
+    const { data: students } = await supabase.from('students').select('id, full_name, roll_number');
+    const studentMap = {};
+    if (students) {
+      students.forEach(s => {
+        studentMap[s.id] = s;
+      });
+    }
+
+    const mappedFees = data.map(f => {
+      const student = studentMap[f.resident_id];
+      return {
+        ...f,
+        resident_name: student ? student.full_name : 'Unknown Member',
+        roll_number: student ? student.roll_number : ''
+      };
+    });
+
+    res.json({ fees: mappedFees });
   } catch (err) {
     console.error('listFees', err);
     res.status(500).json({ error: err.message || 'Failed to list fees' });

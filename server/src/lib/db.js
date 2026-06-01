@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Configure DATE (OID 1082) parsing to return raw YYYY-MM-DD string instead of converting to local Date objects
+pkg.types.setTypeParser(1082, (val) => val);
+
 const { Pool } = pkg;
 
 const connectionString = process.env.DATABASE_URL;

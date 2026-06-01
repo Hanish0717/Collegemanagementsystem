@@ -612,7 +612,6 @@ export function HostelMess() {
           <div className="space-y-3">
             {[
               { label: "Mess Menu Planner", desc: "Add, Edit, and Delete weekly menus", tone: "info" as const, to: "/dashboard/hostel/mess/menus" },
-              { label: "Mess Residents Registry", desc: "Manage members, block listings", tone: "success" as const, to: "/dashboard/hostel/mess/residents" },
               { label: "Mess Fee Collections", desc: "Collect payments, track outstanding fees", tone: "warn" as const, to: "/dashboard/hostel/mess/fees" },
             ].map((item) => (
               <button

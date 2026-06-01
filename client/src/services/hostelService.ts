@@ -91,6 +91,7 @@ export interface VisitorRecord {
   checkInTime: string;
   checkOutTime: string | null;
   status: "Inside" | "Checked Out";
+  rawCheckInTime?: string;
 }
 
 export interface HostelFeeRecord {
@@ -389,11 +390,12 @@ export async function fetchResidents(filters: { search?: string; department?: st
 }
 
 export async function createResident(studentPayload: any, allocationPayload: { hostelId: string; blockId: string; roomId: string; bedNumber: number; academicYear: string }) {
-  // Check if student already exists by email and has an active room allocation
+  // Check if student already exists by email or roll number, and has an active room allocation
+  const cleanRoll = studentPayload.rollNumber ? studentPayload.rollNumber.toUpperCase().trim() : "";
   const { data: existingStudent } = await supabase
     .from("students")
     .select("id")
-    .eq("email", studentPayload.email)
+    .or(`email.eq.${studentPayload.email},roll_number.eq.${cleanRoll}`)
     .maybeSingle();
 
   if (existingStudent) {
@@ -450,32 +452,32 @@ export async function createResident(studentPayload: any, allocationPayload: { h
       parent_email: studentPayload.parentEmail
     }).eq("id", studentId);
   } else {
-    const { data: newStudent, error: createErr } = await supabase
-      .from("students")
-      .insert([{
-        full_name: studentPayload.fullName,
-        roll_number: studentPayload.rollNumber,
-        admission_number: studentPayload.admissionNumber || `ADM${Date.now() % 100000}`,
-        email: studentPayload.email,
-        phone_number: studentPayload.phoneNumber || null,
-        gender: studentPayload.gender,
-        date_of_birth: studentPayload.dateOfBirth || null,
-        department: studentPayload.department,
-        year: studentPayload.year,
-        semester: studentPayload.semester,
-        section: studentPayload.section,
-        parent_name: studentPayload.parentName,
-        parent_phone: studentPayload.parentPhone,
-        parent_email: studentPayload.parentEmail,
-        cgpa: studentPayload.cgpa || 8.0,
-        attendance_percentage: studentPayload.attendancePercentage || 90.0,
-        is_active: true
-      }])
-      .select()
-      .single();
-
-    if (createErr) throw createErr;
-    studentId = newStudent.id;
+    // Call backend API to create student and associated user account
+    const resp = await api.post("/api/students", {
+      fullName: studentPayload.fullName,
+      rollNumber: cleanRoll,
+      admissionNumber: studentPayload.admissionNumber || `ADM${Date.now() % 100000}`,
+      email: studentPayload.email,
+      phoneNumber: studentPayload.phoneNumber || "9999999999",
+      gender: studentPayload.gender || "Male",
+      dateOfBirth: studentPayload.dateOfBirth || "2005-01-01",
+      department: studentPayload.department,
+      year: Number(studentPayload.year),
+      semester: Number(studentPayload.semester),
+      section: studentPayload.section,
+      parentName: studentPayload.parentName,
+      parentPhone: studentPayload.parentPhone,
+      parentEmail: studentPayload.parentEmail || studentPayload.email,
+      cgpa: studentPayload.cgpa ? Number(studentPayload.cgpa) : 8.0,
+      attendancePercentage: studentPayload.attendancePercentage ? Number(studentPayload.attendancePercentage) : 90.0,
+      password: "password123",
+      is_active: true
+    });
+    
+    if (!resp.data || !resp.data.data) {
+      throw new Error(resp.data?.message || "Failed to create student on the backend.");
+    }
+    studentId = resp.data.data.id || resp.data.data._id;
   }
 
   // 2. Insert hostel allocation
@@ -912,7 +914,8 @@ export async function fetchHostelVisitors(filters: { search?: string; status?: s
     roomNumber: row.hostel_rooms?.room_number || "-",
     checkInTime: new Date(row.check_in_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
     checkOutTime: row.check_out_time ? new Date(row.check_out_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : null,
-    status: row.status === "In" ? "Inside" : "Checked Out"
+    status: row.status === "In" ? "Inside" : "Checked Out",
+    rawCheckInTime: row.check_in_time
   }));
 
   if (filters.search) {
@@ -1298,14 +1301,14 @@ export interface HostelBlockRecord {
   contact_number: string;
   status: string; // Available / Full / Maintenance
   image_url: string;
-  hostels?: { name: string };
+  hostels?: { name: string; type: string };
 }
 
 export async function fetchHostelBlocksOverview(): Promise<HostelBlockRecord[]> {
   try {
     const { data, error } = await supabase
       .from("hostel_blocks")
-      .select("*, hostels(name)")
+      .select("*, hostels(name, type)")
       .order("name");
 
     if (error) throw error;
@@ -1395,6 +1398,7 @@ export async function fetchHostelBlocksOverview(): Promise<HostelBlockRecord[]> 
     // Check if existing records are unpopulated (e.g. capacity = 0) and repair them dynamically
     let needsUpdate = false;
     const updatedData = data.map((b: any, idx: number) => {
+      const derivedType = b.hostels?.type || b.type || "Boys";
       if (!b.capacity || b.capacity === 0) {
         needsUpdate = true;
         const defaults = [
@@ -1412,13 +1416,13 @@ export async function fetchHostelBlocksOverview(): Promise<HostelBlockRecord[]> 
           non_ac_rooms: b.non_ac_rooms || def.non_ac_rooms,
           block_warden: b.block_warden || def.block_warden,
           contact_number: b.contact_number || def.contact_number,
-          type: b.type || def.type,
+          type: derivedType,
           status: b.status || def.status,
           image_url: b.image_url || def.image_url,
           occupants: b.occupants || (idx % defaults.length === 2 ? def.capacity : Math.floor(def.capacity * 0.6))
         };
       }
-      return b;
+      return { ...b, type: derivedType };
     });
 
     if (needsUpdate) {
@@ -1444,11 +1448,9 @@ export async function fetchHostelBlocksOverview(): Promise<HostelBlockRecord[]> 
           }
         }
       }, 0);
-      localStorage.setItem("campusly.hostel_blocks", JSON.stringify(updatedData));
-      return updatedData;
     }
-
-    return data;
+    localStorage.setItem("campusly.hostel_blocks", JSON.stringify(updatedData));
+    return updatedData;
   } catch (err) {
     console.warn("Supabase fetchHostelBlocksOverview error, falling back to localStorage:", err);
     

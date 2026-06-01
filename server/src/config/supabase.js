@@ -5,6 +5,9 @@ import pkg from 'pg';
 
 dotenv.config();
 
+// Configure DATE (OID 1082) parsing to return raw YYYY-MM-DD string instead of converting to Date objects
+pkg.types.setTypeParser(1082, (val) => val);
+
 const { Pool } = pkg;
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -604,7 +607,12 @@ if (isMockMode) {
         const columns = Object.keys(rows[0]);
         const valuePlaceholders = rows.map(row => {
           const rowPlaceholders = columns.map(col => {
-            params.push(row[col]);
+            const val = row[col];
+            params.push(
+              (typeof val === 'object' && val !== null && !(val instanceof Date) && !Buffer.isBuffer(val))
+                ? JSON.stringify(val)
+                : val
+            );
             return `$${paramCounter++}`;
           });
           return `(${rowPlaceholders.join(', ')})`;
@@ -622,7 +630,11 @@ if (isMockMode) {
       } else if (this.action === 'update') {
         const updates = [];
         for (const [col, val] of Object.entries(this.actionData)) {
-          params.push(val);
+          params.push(
+            (typeof val === 'object' && val !== null && !(val instanceof Date) && !Buffer.isBuffer(val))
+              ? JSON.stringify(val)
+              : val
+          );
           updates.push(`"${col}" = $${paramCounter++}`);
         }
         sql = `UPDATE "${this.tableName}" t SET ${updates.join(', ')}`;

@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Download, TrendingDown } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { attendanceHistory, subjectAttendance as mockSubjectAttendance } from "@/mock/parentData";
+import { toast } from "sonner";
 import api from "@/lib/api";
 
 export function ParentAttendance() {
@@ -16,6 +16,38 @@ export function ParentAttendance() {
     { label: "This Month", value: "0%", tone: "success" as const },
   ]);
   const [attendanceHistoryData, setAttendanceHistoryData] = useState<any[]>([]);
+
+  const handleDownloadReport = () => {
+    if (records.length === 0) {
+      toast.error("No attendance records found to download.");
+      return;
+    }
+    
+    try {
+      const headers = ["Date", "Subject", "Status", "Remarks"];
+      const rows = records.map((r: any) => [
+        r.date ? new Date(r.date).toISOString().split('T')[0] : "-",
+        r.subject || "-",
+        r.status || "-",
+        r.remarks || "-"
+      ]);
+
+      const csvContent = [headers, ...rows].map(e => e.map(val => `"${val}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `child_attendance_report_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Successfully generated and downloaded attendance report CSV!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate report.");
+    }
+  };
 
   useEffect(() => {
     const loadAttendance = async () => {
@@ -134,7 +166,10 @@ export function ParentAttendance() {
         title="Child Attendance"
         desc="Monitor child's attendance across subjects with detailed analytics and history."
         actions={
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
+          <button 
+            onClick={handleDownloadReport}
+            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-90 transition"
+          >
             <Download className="size-4" /> Download Report
           </button>
         }

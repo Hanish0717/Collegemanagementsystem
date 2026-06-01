@@ -273,6 +273,25 @@ export const getParentStudentData = async (req, res, next) => {
       pendingLeavesCount = leaveReqs.filter(l => l.status === 'Pending').length;
     }
 
+    let classRank = "N/A";
+    if (child) {
+      const { data: cohortStudents } = await supabase
+        .from('students')
+        .select('id, cgpa')
+        .eq('department', child.department)
+        .eq('year', Number(child.year))
+        .eq('semester', Number(child.semester))
+        .eq('is_active', true)
+        .order('cgpa', { ascending: false, nullsFirst: false });
+
+      if (cohortStudents && cohortStudents.length > 0) {
+        const index = cohortStudents.findIndex(s => String(s.id) === String(child.id || child._id));
+        if (index !== -1) {
+          classRank = `${index + 1}/${cohortStudents.length}`;
+        }
+      }
+    }
+
     const stats = [
       { label: "Child's Attendance", value: `${attendancePct}%`, change: "Current" },
       { label: "Child's CGPA", value: String(cgpa), change: "Latest" },
@@ -295,7 +314,8 @@ export const getParentStudentData = async (req, res, next) => {
         results,
         fees,
         activities,
-        notifications
+        notifications,
+        classRank
       }
     });
   } catch (error) {

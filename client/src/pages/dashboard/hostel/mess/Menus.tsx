@@ -106,15 +106,9 @@ export default function MessMenusAdmin() {
       const nextWeekStart = new Date(currentWeekStart);
       nextWeekStart.setDate(currentWeekStart.getDate() + 7);
       
-      // Get all menus in current week
-      const currentWeekMenus = menus.filter((m: any) => {
-        const mDate = new Date(m.meal_date);
-        mDate.setHours(0,0,0,0);
-        const end = new Date(currentWeekStart);
-        end.setDate(currentWeekStart.getDate() + 6);
-        end.setHours(23,59,59,999);
-        return mDate >= currentWeekStart && mDate <= end;
-      });
+      // Get all menus in current week timezone-safely
+      const weekDatesStr = weekDays.map(d => formatLocalDate(d));
+      const currentWeekMenus = menus.filter((m: any) => weekDatesStr.includes(m.meal_date));
 
       if (currentWeekMenus.length === 0) {
         throw new Error("No menus scheduled in the current week to copy!");
@@ -122,10 +116,11 @@ export default function MessMenusAdmin() {
 
       // Create new menu schedules for next week
       for (const menu of currentWeekMenus) {
-        const currentMenuDate = new Date(menu.meal_date);
-        const diffDays = Math.round((currentMenuDate.getTime() - currentWeekStart.getTime()) / (1000 * 60 * 60 * 24));
+        const dayIdx = weekDatesStr.indexOf(menu.meal_date);
+        if (dayIdx === -1) continue;
+
         const newMenuDate = new Date(nextWeekStart);
-        newMenuDate.setDate(nextWeekStart.getDate() + diffDays);
+        newMenuDate.setDate(nextWeekStart.getDate() + dayIdx);
 
         const payload = {
           meal_date: formatLocalDate(newMenuDate),

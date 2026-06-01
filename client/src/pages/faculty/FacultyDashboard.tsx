@@ -54,7 +54,7 @@ export function FacultyDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path !== "/dashboard/faculty") return;
+    if (path !== "/dashboard/faculty" && path !== "/dashboard" && path !== "/dashboard/") return;
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
@@ -90,7 +90,7 @@ export function FacultyDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== "/dashboard/faculty") {
+  if (path !== "/dashboard/faculty" && path !== "/dashboard" && path !== "/dashboard/") {
     return <Outlet />;
   }
 

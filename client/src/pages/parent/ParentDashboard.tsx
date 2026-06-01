@@ -66,7 +66,7 @@ export function ParentDashboard() {
   }, []);
 
   useEffect(() => {
-    if (path !== "/dashboard/parent") return;
+    if (path !== "/dashboard/parent" && path !== "/dashboard" && path !== "/dashboard/") return;
 
     const fetchDashboardData = async () => {
       try {
@@ -135,7 +135,7 @@ export function ParentDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== "/dashboard/parent") {
+  if (path !== "/dashboard/parent" && path !== "/dashboard" && path !== "/dashboard/") {
     return <Outlet />;
   }
 

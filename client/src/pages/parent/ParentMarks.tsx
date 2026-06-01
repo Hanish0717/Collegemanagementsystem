@@ -3,32 +3,63 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Download, TrendingUp } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { marksPerformance, subjectMarks as mockSubjectMarks } from "@/mock/parentData";
+import { toast } from "sonner";
 import api from "@/lib/api";
 
 export function ParentMarks() {
   const [results, setResults] = useState<any[]>([]);
-  const [subjectMarks, setSubjectMarks] = useState<any[]>(mockSubjectMarks);
+  const [subjectMarks, setSubjectMarks] = useState<any[]>([]);
   const [stats, setStats] = useState([
-    { label: "Average Marks", value: "85.4%", tone: "success" as const },
-    { label: "Overall GPA", value: "3.6", tone: "success" as const },
-    { label: "Class Rank", value: "8/45", tone: "info" as const },
-    { label: "Top Subjects", value: "2", tone: "info" as const },
+    { label: "Average Marks", value: "0%", tone: "success" as const },
+    { label: "Overall GPA", value: "0.0", tone: "success" as const },
+    { label: "Class Rank", value: "N/A", tone: "info" as const },
+    { label: "Top Subjects", value: "0", tone: "info" as const },
   ]);
+  const [marksPerformanceData, setMarksPerformanceData] = useState<any[]>([]);
+
+  const handleDownloadReportCard = () => {
+    if (subjectMarks.length === 0) {
+      toast.error("No marks found to download.");
+      return;
+    }
+
+    try {
+      const headers = ["Subject", "Internal Marks", "External Marks", "Total", "Grade", "Status"];
+      const rows = subjectMarks.map((s) => [
+        s.subject || "-",
+        s.internal !== undefined ? String(s.internal) : "-",
+        s.external !== undefined ? String(s.external) : "-",
+        s.total !== undefined ? String(s.total) : "-",
+        s.grade || "-",
+        s.status || "-"
+      ]);
+
+      const csvContent = [headers, ...rows].map(e => e.map(val => `"${val}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `report_card_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Successfully generated and downloaded report card CSV!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to generate report card.");
+    }
+  };
 
   useEffect(() => {
     const fetchMarks = async () => {
       try {
         let dbData: any = null;
-        const cached = localStorage.getItem("cms_parent_child_data");
-        if (cached) {
-          dbData = JSON.parse(cached);
-        } else {
-          const res = await api.get("/api/parent-module/student-data");
-          if (res.data?.success && res.data?.data) {
-            dbData = res.data.data;
-            localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
-          }
+        // Always query API to ensure real-time data instead of reading stale local cache
+        const res = await api.get("/api/parent-module/student-data");
+        if (res.data?.success && res.data?.data) {
+          dbData = res.data.data;
+          localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
         }
 
         if (dbData && dbData.results) {
@@ -51,13 +82,50 @@ export function ParentMarks() {
             const avgMarks = Math.round(dbData.results.reduce((sum: number, r: any) => sum + r.marks, 0) / dbData.results.length);
             const cgpaVal = dbData.stats?.find((s: any) => s.label.includes("CGPA"))?.value || "3.7";
             const topCount = mapped.filter((s: any) => s.status === "Excellent" || s.status === "Good").length;
+            const classRankVal = dbData.classRank || "N/A";
 
             setStats([
               { label: "Average Marks", value: `${avgMarks}%`, tone: "success" as const },
               { label: "Overall GPA", value: cgpaVal, tone: "success" as const },
-              { label: "Class Rank", value: "8/45", tone: "info" as const },
+              { label: "Class Rank", value: classRankVal, tone: "info" as const },
               { label: "Top Subjects", value: String(topCount), tone: "info" as const },
             ]);
+
+            // Calculate monthly performance dynamically
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const monthlyMap: Record<string, { total: number; count: number }> = {};
+            
+            const today = new Date();
+            for (let i = 4; i >= 0; i--) {
+              const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+              monthlyMap[months[d.getMonth()]] = { total: 0, count: 0 };
+            }
+
+            dbData.results.forEach((r: any) => {
+              const dateObj = r.created_at ? new Date(r.created_at) : new Date();
+              const mName = months[dateObj.getMonth()];
+              if (monthlyMap[mName]) {
+                monthlyMap[mName].total += Number(r.marks || 0);
+                monthlyMap[mName].count += 1;
+              } else {
+                monthlyMap[mName] = { total: Number(r.marks || 0), count: 1 };
+              }
+            });
+
+            let computedPerformance = Object.keys(monthlyMap)
+              .map(mName => {
+                const mData = monthlyMap[mName];
+                return {
+                  month: mName,
+                  marks: mData.count > 0 ? Math.round(mData.total / mData.count) : 0
+                };
+              });
+            
+            const hasAnyMarks = computedPerformance.some(p => p.marks > 0);
+            if (hasAnyMarks) {
+              computedPerformance = computedPerformance.filter(p => p.marks > 0);
+            }
+            setMarksPerformanceData(computedPerformance);
           }
         }
       } catch (err) {
@@ -67,14 +135,11 @@ export function ParentMarks() {
     fetchMarks();
   }, []);
 
-  // Compute Grade distribution
-  const gradeCounts: Record<string, number> = { "A+": 0, "A": 0, "B+": 0, "B": 0 };
+  // Compute Grade distribution dynamically
+  const gradeCounts: Record<string, number> = {};
   subjectMarks.forEach(s => {
     const g = s.grade.toUpperCase();
-    if (g === "A+") gradeCounts["A+"] += 1;
-    else if (g === "A") gradeCounts["A"] += 1;
-    else if (g === "B+") gradeCounts["B+"] += 1;
-    else if (g === "B") gradeCounts["B"] += 1;
+    gradeCounts[g] = (gradeCounts[g] || 0) + 1;
   });
   const totalSubjects = subjectMarks.length || 1;
   const gradeDistribution = Object.entries(gradeCounts).map(([grade, count]) => ({
@@ -89,7 +154,10 @@ export function ParentMarks() {
         title="Marks & Grades"
         desc="View child's subject-wise marks, grades, and academic performance."
         actions={
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
+          <button 
+            onClick={handleDownloadReportCard}
+            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-90 transition"
+          >
             <Download className="size-4" /> Download Report Card
           </button>
         }
@@ -157,7 +225,7 @@ export function ParentMarks() {
           </div>
           <div className="h-72">
             <ResponsiveContainer>
-              <BarChart data={marksPerformance}>
+              <BarChart data={marksPerformanceData}>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />

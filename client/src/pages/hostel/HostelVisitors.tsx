@@ -115,15 +115,31 @@ export function HostelVisitors() {
     registerMutation.mutate(payload);
   };
 
-  const visitorAnalytics = [
-    { day: "Mon", visitors: 25 },
-    { day: "Tue", visitors: 32 },
-    { day: "Wed", visitors: 28 },
-    { day: "Thu", visitors: 35 },
-    { day: "Fri", visitors: 40 },
-    { day: "Sat", visitors: 55 },
-    { day: "Sun", visitors: 48 },
-  ];
+  const visitorAnalytics = useMemo(() => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const counts: Record<string, number> = {
+      Mon: 0,
+      Tue: 0,
+      Wed: 0,
+      Thu: 0,
+      Fri: 0,
+      Sat: 0,
+      Sun: 0,
+    };
+    visitorsList.forEach((v: any) => {
+      if (v.rawCheckInTime) {
+        const d = new Date(v.rawCheckInTime);
+        const dayName = days[d.getDay()];
+        if (counts[dayName] !== undefined) {
+          counts[dayName]++;
+        }
+      }
+    });
+    return Object.keys(counts).map((day) => ({
+      day,
+      visitors: counts[day],
+    }));
+  }, [visitorsList]);
 
   return (
     <div className="space-y-6">
@@ -317,55 +333,9 @@ export function HostelVisitors() {
             <h3 className="font-semibold">Pending Entry Requests</h3>
           </div>
           <div className="space-y-2">
-            {[
-              {
-                id: "MOCK-1",
-                visitor: "Rajesh Kumar",
-                student: "Vikram Singh",
-                purpose: "Family Visit",
-                time: "10 min ago",
-              },
-              {
-                id: "MOCK-2",
-                visitor: "Meena Devi",
-                student: "Anjali Gupta",
-                purpose: "Parent Meeting",
-                time: "25 min ago",
-              },
-            ].map((approval) => (
-              <div
-                key={approval.id}
-                className="p-3 rounded-xl border hover:bg-accent/50 transition"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm font-medium">{approval.visitor}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {approval.student} • {approval.purpose}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        toast.success("Visitor entry approved");
-                      }}
-                      className="px-2 py-1 rounded text-xs bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition cursor-pointer"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => {
-                        toast.info("Visitor entry rejected");
-                      }}
-                      className="px-2 py-1 rounded text-xs bg-rose-100 text-rose-700 hover:bg-rose-200 transition cursor-pointer"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">{approval.time}</div>
-              </div>
-            ))}
+            <div className="text-center text-sm text-muted-foreground py-8">
+              No pending entry requests today. All verified visitors checked-in are active.
+            </div>
           </div>
         </Card>
       </div>
