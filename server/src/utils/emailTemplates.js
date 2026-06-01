@@ -263,3 +263,201 @@ export const generateAdminWelcomeTemplate = (admin, password) => {
   `;
 };
 
+export const generateAttendanceWarningTemplate = (studentName, percentage) => {
+  return `
+    <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+      <div style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Attendance Warning</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0 0; font-size: 15px;">Academic Performance Alert</p>
+      </div>
+      
+      <div style="padding: 40px 30px; background-color: #ffffff;">
+        <p style="margin: 0 0 15px 0; color: #334155; font-size: 16px; font-weight: 600;">Dear ${studentName},</p>
+        <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; line-height: 1.6;">Your attendance percentage has fallen below the mandatory institutional threshold of **75%**. Maintaining regular attendance is critical for academic eligibility and registration.</p>
+        
+        <div style="background-color: #fef2f2; border: 1px solid #fee2e2; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 24px;">
+          <span style="font-size: 14px; color: #991b1b; font-weight: 600; display: block; margin-bottom: 4px;">CURRENT ATTENDANCE</span>
+          <span style="font-size: 36px; font-weight: 800; color: #b91c1c;">${percentage}%</span>
+        </div>
+        
+        <p style="margin: 0 0 20px 0; color: #475569; font-size: 14px; line-height: 1.6;">Please coordinate with your course mentors and ensure attendance improves immediately. Failure to restore attendance to >= 75% may result in barment from upcoming examinations.</p>
+      </div>
+      
+      <div style="padding: 24px 30px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p style="margin: 0; color: #94a3b8; font-size: 13px;">© ${new Date().getFullYear()} College Management System. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+};
+
+export const generateFeeReminderTemplate = (studentName, feeType, dueDate, balance) => {
+  return `
+    <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+      <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Fee Payment Reminder</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0 0; font-size: 15px;">Pending Balance Invoice</p>
+      </div>
+      
+      <div style="padding: 40px 30px; background-color: #ffffff;">
+        <p style="margin: 0 0 15px 0; color: #334155; font-size: 16px; font-weight: 600;">Dear ${studentName},</p>
+        <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; line-height: 1.6;">This is an administrative reminder that your academic fee payment is due. Please review the details below:</p>
+        
+        <div style="background-color: #fffbeb; border: 1px solid #fef3c7; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #78350f; font-weight: 500; width: 45%;">Fee Category</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${feeType}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #78350f; font-weight: 500;">Due Date</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${new Date(dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="border-top: 1px solid #fef3c7; padding-top: 12px; margin-top: 12px;"></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #b45309; font-weight: 600;">Outstanding Amount</td>
+              <td style="padding: 8px 0; color: #b45309; font-weight: 700; font-size: 16px;">₹${Number(balance).toLocaleString('en-IN')}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <p style="margin: 0; color: #64748b; font-size: 13px;">Please settle the dues at the student portal before the deadline to prevent service disruption or late penalty rates.</p>
+      </div>
+      
+      <div style="padding: 24px 30px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p style="margin: 0; color: #94a3b8; font-size: 13px;">© ${new Date().getFullYear()} College Management System. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+};
+
+export const generatePlacementDriveTemplate = (studentName, company, role, date, deadline) => {
+  return `
+    <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+      <div style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Recruitment Drive Alert</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0 0; font-size: 15px;">New Placement Opportunity Open</p>
+      </div>
+      
+      <div style="padding: 40px 30px; background-color: #ffffff;">
+        <p style="margin: 0 0 15px 0; color: #334155; font-size: 16px; font-weight: 600;">Dear ${studentName},</p>
+        <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; line-height: 1.6;">A new recruitment drive matches your eligibility profile. Register using the Placement portal before the deadline:</p>
+        
+        <div style="background-color: #f5f3ff; border: 1px solid #e0e7ff; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #4f46e5; font-weight: 500; width: 45%;">Company</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${company}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #4f46e5; font-weight: 500;">Role / Position</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${role}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #4f46e5; font-weight: 500;">Drive Date</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="border-top: 1px solid #e0e7ff; padding-top: 12px; margin-top: 12px;"></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #4338ca; font-weight: 600;">Registration Deadline</td>
+              <td style="padding: 8px 0; color: #4338ca; font-weight: 700;">${new Date(deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <p style="margin: 0; color: #64748b; font-size: 13px;">Ensure your profile and resume details are up to date in the Placement Module before applying.</p>
+      </div>
+      
+      <div style="padding: 24px 30px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p style="margin: 0; color: #94a3b8; font-size: 13px;">© ${new Date().getFullYear()} College Management System. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+};
+
+export const generateLeaveStatusTemplate = (studentName, type, fromDate, toDate, status) => {
+  const isApproved = status === 'Approved';
+  const colorPrimary = isApproved ? '#10b981' : '#ef4444';
+  const colorSecondary = isApproved ? '#047857' : '#b91c1c';
+  
+  return `
+    <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+      <div style="background: linear-gradient(135deg, ${colorPrimary} 0%, ${colorSecondary} 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Leave Request ${status}</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0 0; font-size: 15px;">Absence Status Reference</p>
+      </div>
+      
+      <div style="padding: 40px 30px; background-color: #ffffff;">
+        <p style="margin: 0 0 15px 0; color: #334155; font-size: 16px; font-weight: 600;">Dear ${studentName},</p>
+        <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; line-height: 1.6;">Your submitted leave request has been reviewed and **${status.toLowerCase()}** by your supervisor.</p>
+        
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: 500; width: 45%;">Leave Category</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${type}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-weight: 500;">Duration</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${new Date(fromDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} - ${new Date(toDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 12px;"></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: ${colorSecondary}; font-weight: 600;">Decision</td>
+              <td style="padding: 8px 0; color: ${colorSecondary}; font-weight: 700; font-size: 15px;">${status}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      
+      <div style="padding: 24px 30px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p style="margin: 0; color: #94a3b8; font-size: 13px;">© ${new Date().getFullYear()} College Management System. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+};
+
+export const generateBookDueTemplate = (studentName, bookTitle, dueDate) => {
+  return `
+    <div style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+      <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); padding: 40px 30px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">Book Return Reminder</h1>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0 0; font-size: 15px;">Library Borrowing Status</p>
+      </div>
+      
+      <div style="padding: 40px 30px; background-color: #ffffff;">
+        <p style="margin: 0 0 15px 0; color: #334155; font-size: 16px; font-weight: 600;">Dear ${studentName},</p>
+        <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; line-height: 1.6;">This is a friendly reminder that a borrowed library book is due for return tomorrow. Please review the details:</p>
+        
+        <div style="background-color: #eff6ff; border: 1px solid #dbeafe; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #1e40af; font-weight: 500; width: 45%;">Book Title</td>
+              <td style="padding: 8px 0; color: #0f172a; font-weight: 600;">${bookTitle}</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="border-top: 1px solid #dbeafe; padding-top: 12px; margin-top: 12px;"></td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #1d4ed8; font-weight: 600;">Due Date</td>
+              <td style="padding: 8px 0; color: #1d4ed8; font-weight: 700;">${new Date(dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })} (Tomorrow)</td>
+            </tr>
+          </table>
+        </div>
+        
+        <p style="margin: 0; color: #64748b; font-size: 13px;">Please return or re-issue the book at the library circulation desk to avoid late borrowing fines.</p>
+      </div>
+      
+      <div style="padding: 24px 30px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+        <p style="margin: 0; color: #94a3b8; font-size: 13px;">© ${new Date().getFullYear()} College Management System. All rights reserved.</p>
+      </div>
+    </div>
+  `;
+};
+
+

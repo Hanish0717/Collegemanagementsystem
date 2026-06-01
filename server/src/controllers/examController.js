@@ -1,5 +1,6 @@
 import { supabase } from '../config/supabase.js';
 import sendEmail from '../utils/sendEmail.js';
+import { dispatchNotification } from '../services/notificationService.js';
 
 // Helper to send notifications
 async function sendNotification(table, notification) {
@@ -109,6 +110,35 @@ export async function createExam(req, res, next) {
 
     if (error) throw error;
 
+    // Asynchronously notify students & parents
+    (async () => {
+      try {
+        const { data: students } = await supabase
+          .from('students')
+          .select('id, user_id, email, parent_email, full_name')
+          .eq('department', department)
+          .eq('year', parseInt(year))
+          .eq('semester', parseInt(semester));
+
+        if (students && students.length > 0) {
+          for (const s of students) {
+            dispatchNotification({
+              userId: s.user_id,
+              studentId: s.id,
+              email: s.email,
+              parentEmail: s.parent_email,
+              type: 'Academic',
+              title: `New Exam Scheduled: ${name}`,
+              message: `Dear ${s.full_name}, a new exam "${name}" (${type}) has been scheduled for your semester. Duration: ${start_date} to ${end_date}.`,
+              priority: 'Medium'
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to dispatch exam creation notifications:', err);
+      }
+    })();
+
     res.status(201).json({ success: true, data: newExam });
   } catch (err) {
     next(err);
@@ -137,57 +167,26 @@ export async function updateExam(req, res, next) {
       // Find students in the department/year/semester of the exam
       const { data: students } = await supabase
         .from('students')
-        .select('id, email, parent_email, full_name')
+        .select('id, user_id, email, parent_email, full_name')
         .eq('department', updatedExam.department)
         .eq('year', updatedExam.year)
         .eq('semester', updatedExam.semester);
 
-      const emailHtml = `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
-          <h2 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-top: 0;">Examination Results Published</h2>
-          <p style="color: #334155; font-size: 15px;">Dear Student / Parent,</p>
-          <p style="color: #334155; font-size: 15px; line-height: 1.5;">The academic results for <strong>${updatedExam.name}</strong> (${updatedExam.department} - Year ${updatedExam.year} / Sem ${updatedExam.semester}) have been officially published by the administration.</p>
-          <p style="color: #334155; font-size: 15px; line-height: 1.5;">You can now log into your student / parent dashboard to view the subject-wise marks, grades, and credits earned.</p>
-          
-          <div style="margin-top: 24px; text-align: center;">
-            <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" style="background-color: #4f46e5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-block;">View Results on Dashboard</a>
-          </div>
-          
-          <p style="color: #4f46e5; font-weight: 600; font-size: 14px; margin-top: 32px; margin-bottom: 0;">Academic Administration Office</p>
-        </div>
-      `;
-
       if (students && students.length > 0) {
-        // Bulk insert student notifications
-        const studentNotifs = students.map(s => ({
-          id: 'SN-' + Math.random().toString(36).substr(2, 9) + Math.random().toString(36).substr(2, 5),
-          student_id: s.id,
-          title: `Semester Results Published: ${updatedExam.name}`,
-          type: 'Academic',
-          priority: 'High',
-          time: 'Just now',
-          unread: true
-        }));
-        await supabase.from('student_notifications').insert(studentNotifs);
-
-        // Async email dispatch in background
+        // Dispatch notifications via the centralized system
         (async () => {
-          console.log(`[Results Email Dispatcher] Sending ${students.length} student/parent emails in background...`);
+          console.log(`[Results Dispatcher] Sending ${students.length} student/parent notifications...`);
           for (const s of students) {
-            if (s.email) {
-              sendEmail({
-                to: s.email,
-                subject: `Results Published: ${updatedExam.name}`,
-                html: emailHtml
-              }).catch(err => console.error(`[Background Results Email Error] Student: ${s.email}, error:`, err));
-            }
-            if (s.parent_email) {
-              sendEmail({
-                to: s.parent_email,
-                subject: `Child's Results Published: ${updatedExam.name}`,
-                html: emailHtml
-              }).catch(err => console.error(`[Background Results Email Error] Parent: ${s.parent_email}, error:`, err));
-            }
+            dispatchNotification({
+              userId: s.user_id,
+              studentId: s.id,
+              email: s.email,
+              parentEmail: s.parent_email,
+              type: 'Academic',
+              title: `Semester Results Published: ${updatedExam.name}`,
+              message: `Dear ${s.full_name}, your academic results for ${updatedExam.name} have been officially published. Please view them in your dashboard.`,
+              priority: 'High'
+            });
             await new Promise(resolve => setTimeout(resolve, 50));
           }
         })();
@@ -318,7 +317,7 @@ export async function saveExamTimetable(req, res, next) {
       // Find students to notify
       const { data: students } = await supabase
         .from('students')
-        .select('id, email, parent_email, full_name')
+        .select('id, user_id, email, parent_email, full_name')
         .eq('department', exam.department)
         .eq('year', exam.year)
         .eq('semester', exam.semester);
@@ -339,65 +338,21 @@ export async function saveExamTimetable(req, res, next) {
         });
       }
 
-      const emailHtml = `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
-          <h2 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-top: 0;">Examination Timetable Published</h2>
-          <p style="color: #334155; font-size: 15px;">Dear Student / Parent,</p>
-          <p style="color: #334155; font-size: 15px; line-height: 1.5;">The official examination schedule for <strong>${exam.name}</strong> (${exam.department} - Year ${exam.year} / Sem ${exam.semester}) has been published. Please review the schedule below:</p>
-          
-          <table style="width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px;">
-            <thead>
-              <tr style="background-color: #f1f5f9;">
-                <th style="padding: 12px 10px; border: 1px solid #e2e8f0; text-align: left; color: #1e293b; font-weight: 600;">Subject</th>
-                <th style="padding: 12px 10px; border: 1px solid #e2e8f0; text-align: left; color: #1e293b; font-weight: 600;">Date</th>
-                <th style="padding: 12px 10px; border: 1px solid #e2e8f0; text-align: left; color: #1e293b; font-weight: 600;">Time</th>
-                <th style="padding: 12px 10px; border: 1px solid #e2e8f0; text-align: left; color: #1e293b; font-weight: 600;">Hall</th>
-                <th style="padding: 12px 10px; border: 1px solid #e2e8f0; text-align: left; color: #1e293b; font-weight: 600;">Duration</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${scheduleRowsHtml || '<tr><td colspan="5" style="text-align: center; padding: 12px; color: #64748b;">No schedule slots added yet.</td></tr>'}
-            </tbody>
-          </table>
-          
-          <p style="margin-top: 24px; color: #64748b; font-size: 13px; line-height: 1.5; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-            💡 <strong>Reminder:</strong> Please verify your hall ticket eligibility in the portal. A minimum of 75% attendance and clearance of all academic fees are mandatory to be issued a hall ticket.
-          </p>
-          <p style="color: #4f46e5; font-weight: 600; font-size: 14px; margin-top: 20px; margin-bottom: 0;">Academic Administration Office</p>
-        </div>
-      `;
-
       if (students && students.length > 0) {
-        // Bulk insert student notifications
-        const studentNotifs = students.map(s => ({
-          id: 'SN-' + Math.random().toString(36).substr(2, 9) + Math.random().toString(36).substr(2, 5),
-          student_id: s.id,
-          title: `New Exam Timetable published: ${exam.name}`,
-          type: 'Academic',
-          priority: 'High',
-          time: 'Just now',
-          unread: true
-        }));
-        await supabase.from('student_notifications').insert(studentNotifs);
-
-        // Async email dispatch in background
+        // Dispatch notifications via the centralized system
         (async () => {
-          console.log(`[Timetable Email Dispatcher] Sending ${students.length} student/parent emails in background...`);
+          console.log(`[Timetable Dispatcher] Sending ${students.length} student/parent notifications...`);
           for (const s of students) {
-            if (s.email) {
-              sendEmail({
-                to: s.email,
-                subject: `Exam Timetable Published: ${exam.name}`,
-                html: emailHtml
-              }).catch(err => console.error(`[Background Timetable Email Error] Student: ${s.email}, error:`, err));
-            }
-            if (s.parent_email) {
-              sendEmail({
-                to: s.parent_email,
-                subject: `Child's Exam Timetable Published: ${exam.name}`,
-                html: emailHtml
-              }).catch(err => console.error(`[Background Timetable Email Error] Parent: ${s.parent_email}, error:`, err));
-            }
+            dispatchNotification({
+              userId: s.user_id,
+              studentId: s.id,
+              email: s.email,
+              parentEmail: s.parent_email,
+              type: 'Academic',
+              title: `Exam Timetable Published: ${exam.name}`,
+              message: `Dear ${s.full_name}, the official exam timetable for ${exam.name} has been published. Please check the portal to view exam dates, times, and halls.`,
+              priority: 'High'
+            });
             await new Promise(resolve => setTimeout(resolve, 50));
           }
         })();
@@ -615,6 +570,35 @@ export async function approveHallTicket(req, res, next) {
         .single();
       if (error) throw error;
       result = data;
+    }
+
+    try {
+      const { data: student } = await supabase
+        .from('students')
+        .select('full_name, email, parent_email, user_id')
+        .eq('id', student_id)
+        .maybeSingle();
+
+      const { data: exam } = await supabase
+        .from('exams')
+        .select('name')
+        .eq('id', exam_id)
+        .maybeSingle();
+
+      if (student && exam) {
+        dispatchNotification({
+          userId: student.user_id,
+          studentId: student_id,
+          email: student.email,
+          parentEmail: student.parent_email,
+          type: 'Academic',
+          title: `Hall Ticket Generated: ${exam.name}`,
+          message: `Dear ${student.full_name}, your hall ticket for "${exam.name}" has been generated. Seat Number: ${result.seat_number}. Status: ${result.status}.`,
+          priority: 'Medium'
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to send hall ticket notification:', notifErr);
     }
 
     res.json({ success: true, data: result });

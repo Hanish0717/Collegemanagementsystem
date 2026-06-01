@@ -1,4 +1,5 @@
 import { supabase } from '../config/supabase.js';
+import { dispatchNotification } from '../services/notificationService.js';
 
 /**
  * Get Transport Dashboard data from Supabase.
@@ -581,11 +582,156 @@ export const updateBusTelemetry = async (req, res, next) => {
       lastUpdated: new Date().toISOString()
     };
 
+    // Asynchronously fetch route and students, then send notifications
+    (async () => {
+      try {
+        const { data: bus } = await supabase
+          .from('transport_buses')
+          .select('id')
+          .eq('bus_number', busNumber)
+          .maybeSingle();
+
+        if (bus) {
+          const { data: route } = await supabase
+            .from('transport_routes')
+            .select('id, name')
+            .eq('bus', bus.id)
+            .maybeSingle();
+
+          if (route) {
+            const { data: allocations } = await supabase
+              .from('transport_allocations')
+              .select('student_id')
+              .eq('route_id', route.id)
+              .eq('status', 'Active');
+
+            if (allocations && allocations.length > 0) {
+              for (const alloc of allocations) {
+                dispatchNotification({
+                  studentId: alloc.student_id,
+                  type: 'Transport',
+                  title: `Bus Update: Route ${route.name}`,
+                  message: `Your school bus (${busNumber}) is currently ${status || 'On Route'}. Current stop: ${currentStop || 'Near school'}. ETA: ${eta || 10} mins.`,
+                  priority: 'Low'
+                });
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to dispatch telemetry-based transport notification:', err);
+      }
+    })();
+
     return res.status(200).json({
       success: true,
       message: `GPS telemetry coordinate successfully saved for ${busNumber}!`,
       data: busTelemetryStore[busNumber]
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const assignBusToRoute = async (req, res, next) => {
+  try {
+    const { routeId, busId } = req.body;
+    if (!routeId || !busId) {
+      return res.status(400).json({ success: false, message: 'Route ID and Bus ID are required' });
+    }
+
+    // Update transport_routes table
+    const { data: route, error: routeErr } = await supabase
+      .from('transport_routes')
+      .update({ bus: busId, updated_at: new Date() })
+      .eq('id', routeId)
+      .select()
+      .single();
+
+    if (routeErr) throw routeErr;
+
+    const { data: bus } = await supabase
+      .from('transport_buses')
+      .select('bus_number')
+      .eq('id', busId)
+      .maybeSingle();
+
+    const busNumber = bus?.bus_number || 'New Bus';
+
+    // Fetch allocated students
+    const { data: allocations } = await supabase
+      .from('transport_allocations')
+      .select('student_id')
+      .eq('route_id', routeId)
+      .eq('status', 'Active');
+
+    if (allocations && allocations.length > 0) {
+      for (const alloc of allocations) {
+        const { data: student } = await supabase
+          .from('students')
+          .select('full_name, email, parent_email, user_id')
+          .eq('id', alloc.student_id)
+          .maybeSingle();
+
+        if (student) {
+          dispatchNotification({
+            userId: student.user_id,
+            studentId: alloc.student_id,
+            email: student.email,
+            parentEmail: student.parent_email,
+            type: 'Transport',
+            title: 'Transport Bus Assignment Updated',
+            message: `Dear ${student.full_name}, a new bus (${busNumber}) has been assigned to your route "${route.name}".`,
+            priority: 'Medium'
+          });
+        }
+      }
+    }
+
+    return res.json({ success: true, message: 'Bus assigned to route successfully and students notified', data: route });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const triggerTransportFeeDue = async (req, res, next) => {
+  try {
+    const { academicYear, month } = req.body;
+    if (!academicYear || !month) {
+      return res.status(400).json({ success: false, message: 'Academic year and month are required' });
+    }
+
+    // Look up unpaid transport fees for that period or all active allocations
+    const { data: unpaidFees, error: fetchErr } = await supabase
+      .from('transport_fees')
+      .select('*, students(id, full_name, email, parent_email, user_id)')
+      .eq('academic_year', academicYear)
+      .eq('month', month)
+      .eq('status', 'Unpaid');
+
+    if (fetchErr) throw fetchErr;
+
+    let count = 0;
+    if (unpaidFees && unpaidFees.length > 0) {
+      for (const fee of unpaidFees) {
+        const student = fee.students;
+        if (student) {
+          dispatchNotification({
+            userId: student.user_id,
+            studentId: student.id,
+            email: student.email,
+            parentEmail: student.parent_email,
+            type: 'Fee',
+            title: 'Transport Fee Payment Reminder',
+            message: `Dear ${student.full_name}, your transport fee of ₹${Number(fee.total_amount).toLocaleString('en-IN')} for ${month} ${fee.year || ''} is due. Please pay by the due date ${fee.due_date}.`,
+            priority: 'High'
+          });
+          count++;
+        }
+      }
+    }
+
+    return res.json({ success: true, message: `Dispatched transport fee reminders to ${count} students` });
   } catch (error) {
     next(error);
   }

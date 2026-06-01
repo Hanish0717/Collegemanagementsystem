@@ -249,6 +249,75 @@ export const deleteBook = async (req, res, next) => {
   }
 };
 
+export const checkLibraryBooksDueTomorrow = async () => {
+  try {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+    const { data: issues, error } = await supabase
+      .from('issued_books')
+      .select('*, book:books(*)')
+      .eq('due_date', tomorrowStr)
+      .in('status', ['Issued', 'issued', 'Overdue', 'overdue']);
+
+    if (error) throw error;
+    if (!issues || issues.length === 0) return;
+
+    for (const issue of issues) {
+      if (!issue.student) continue;
+
+      const { data: studentRecord } = await supabase
+        .from('students')
+        .select('*')
+        .eq('id', issue.student)
+        .maybeSingle();
+
+      if (!studentRecord) continue;
+
+      const studentId = studentRecord.id;
+      const studentName = studentRecord.full_name;
+      const studentEmail = studentRecord.email;
+      const bookTitle = issue.book?.title || 'Borrowed Book';
+
+      const notifTitle = `Library Book Return Reminder: '${bookTitle}' is due tomorrow.`;
+      const { data: existing } = await supabase
+        .from('student_notifications')
+        .select('id')
+        .eq('student_id', studentId)
+        .eq('title', notifTitle)
+        .maybeSingle();
+
+      if (!existing) {
+        const notifId = `SN-LIB-DUE-${Date.now()}-${issue.id}`;
+        await supabase
+          .from('student_notifications')
+          .insert([{
+            id: notifId,
+            title: notifTitle,
+            type: 'Library',
+            priority: 'High',
+            time: 'Just now',
+            unread: true,
+            student_id: studentId
+          }]);
+
+        if (studentEmail) {
+          const { generateBookDueTemplate } = await import('../utils/emailTemplates.js');
+          const { default: sendEmail } = await import('../utils/sendEmail.js');
+          await sendEmail({
+            to: studentEmail,
+            subject: 'Library Book Return Reminder',
+            html: generateBookDueTemplate(studentName, bookTitle, issue.due_date)
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error in checkLibraryBooksDueTomorrow:', err);
+  }
+};
+
 /**
  * @desc   Issue a book to a student
  */
@@ -362,6 +431,33 @@ export const issueBook = async (req, res, next) => {
         student_id: studentId
       }]);
 
+    if (studentRecord.email) {
+      (async () => {
+        try {
+          const { default: sendEmail } = await import('../utils/sendEmail.js');
+          const emailHtml = `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+              <h2 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-top: 0;">Library Book Issued</h2>
+              <p style="color: #334155; font-size: 15px;">Dear ${studentRecord.full_name},</p>
+              <p style="color: #334155; font-size: 15px; line-height: 1.5;">You have successfully borrowed the book <strong>${book.title}</strong> by ${book.author || 'Unknown'} from the College Library.</p>
+              <p style="color: #ef4444; font-weight: bold; font-size: 15px; line-height: 1.5;">Due Date: ${new Date(dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+              <p style="color: #64748b; font-size: 13px; line-height: 1.5; border-top: 1px solid #e2e8f0; padding-top: 16px; margin-top: 24px;">
+                Please return or renew the book on or before the due date to avoid overdue fines.
+              </p>
+              <p style="color: #4f46e5; font-weight: 600; font-size: 14px; margin-top: 20px; margin-bottom: 0;">College Library Administration</p>
+            </div>
+          `;
+          await sendEmail({
+            to: studentRecord.email,
+            subject: `Book Issued: ${book.title}`,
+            html: emailHtml
+          });
+        } catch (err) {
+          console.error('Error sending book issue email:', err);
+        }
+      })();
+    }
+
     res.status(201).json({
       success: true,
       message: 'Book issued',
@@ -447,6 +543,41 @@ export const returnBook = async (req, res, next) => {
         student_id: issue.student
       }]);
 
+    if (issue.student) {
+      (async () => {
+        try {
+          const { data: studentRecord } = await supabase
+            .from('students')
+            .select('email, full_name')
+            .eq('id', issue.student)
+            .maybeSingle();
+
+          if (studentRecord && studentRecord.email) {
+            const { default: sendEmail } = await import('../utils/sendEmail.js');
+            const emailHtml = `
+              <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 16px; background-color: #ffffff;">
+                <h2 style="color: #4f46e5; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-top: 0;">Library Book Returned</h2>
+                <p style="color: #334155; font-size: 15px;">Dear ${studentRecord.full_name},</p>
+                <p style="color: #334155; font-size: 15px; line-height: 1.5;">The borrowed book <strong>${issue.book?.title || 'Borrowed Book'}</strong> has been successfully marked as returned.</p>
+                <p style="color: #475569; font-size: 14px; line-height: 1.5;">Fine Amount Charged: ₹${fine}</p>
+                <p style="color: #64748b; font-size: 13px; line-height: 1.5; border-top: 1px solid #e2e8f0; padding-top: 16px; margin-top: 24px;">
+                  Thank you for returning the book. Let us know if you want to borrow other materials.
+                </p>
+                <p style="color: #4f46e5; font-weight: 600; font-size: 14px; margin-top: 20px; margin-bottom: 0;">College Library Administration</p>
+              </div>
+            `;
+            await sendEmail({
+              to: studentRecord.email,
+              subject: `Book Returned: ${issue.book?.title || 'Borrowed Book'}`,
+              html: emailHtml
+            });
+          }
+        } catch (err) {
+          console.error('Error sending book return email:', err);
+        }
+      })();
+    }
+
     res.status(200).json({
       success: true,
       message: 'Book returned',
@@ -468,6 +599,7 @@ export const returnBook = async (req, res, next) => {
 export const getIssuedBooks = async (req, res, next) => {
   try {
     await updateOverdueIssues();
+    checkLibraryBooksDueTomorrow().catch(err => console.error('checkLibraryBooksDueTomorrow background error:', err));
     const { status, studentId } = req.query;
 
     let targetUserId = null;

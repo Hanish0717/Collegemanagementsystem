@@ -871,64 +871,23 @@ export async function fetchRoomsForBlock(blockId: string) {
   }
 }
 
-// ── Complaints Management ───────────────────────────────
 export async function fetchHostelComplaints(filters: { search?: string; category?: string; priority?: string; status?: string } = {}): Promise<ComplaintRecord[]> {
-  const { data, error } = await supabase
-    .from("hostel_complaints")
-    .select(`
-      id, title, description, category, priority, status, assigned_to, created_at,
-      students ( full_name ),
-      hostel_rooms ( room_number )
-    `);
-
-  if (error) throw error;
-
-  let records: ComplaintRecord[] = (data || []).map((row: any) => ({
-    id: row.id,
-    studentId: row.student_id || "",
-    studentName: row.students?.full_name || "Anonymous",
-    roomNumber: row.hostel_rooms?.room_number || "General",
-    category: row.category,
-    title: row.title,
-    description: row.description,
-    priority: row.priority as any,
-    status: row.status as any,
-    assignedTo: row.assigned_to,
-    createdAt: row.created_at
-  }));
-
-  if (filters.search) {
-    const q = filters.search.toLowerCase();
-    records = records.filter(r => r.title.toLowerCase().includes(q) || r.studentName.toLowerCase().includes(q));
-  }
-  if (filters.category && filters.category !== "All Categories") {
-    records = records.filter(r => r.category === filters.category);
-  }
-  if (filters.priority && filters.priority !== "All Priority") {
-    records = records.filter(r => r.priority === filters.priority);
-  }
-  if (filters.status && filters.status !== "All Status") {
-    records = records.filter(r => r.status === filters.status);
-  }
-
-  return records;
+  const response = await api.get("/hostel/complaints", { params: filters });
+  return response.data.data;
 }
 
 export async function updateComplaintStatus(id: string, status: "Pending" | "In-Progress" | "Resolved") {
-  const { error } = await supabase.from("hostel_complaints").update({ status, updated_at: new Date() }).eq("id", id);
-  if (error) throw error;
-
+  const response = await api.put(`/hostel/complaints/${id}/status`, { status });
   await logActivity("Warden", "resolved complaint from", `Ticket #${id.substring(0, 6)}`, "Complaint");
   await createNotification(`Complaint Status: Ticket resolved successfully.`, "Complaint", "Medium");
+  return response.data;
 }
 
 export async function createComplaint(payload: any) {
-  const { data, error } = await supabase.from("hostel_complaints").insert([payload]).select().single();
-  if (error) throw error;
-
+  const response = await api.post("/hostel/complaints", payload);
   await logActivity("Warden", "created complaint for", payload.title, "Complaint");
   await createNotification(`New Complaint registered: ${payload.title}`, "Complaint", "Low");
-  return data;
+  return response.data.data;
 }
 
 // ── Visitors Management ──────────────────────────────────

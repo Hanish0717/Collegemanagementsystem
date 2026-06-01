@@ -1,4 +1,5 @@
 import { supabase } from '../config/supabase.js';
+import { dispatchNotification } from '../services/notificationService.js';
 
 // @desc    Get faculty dashboard stats
 // @route   GET /api/faculty-module/dashboard
@@ -624,6 +625,82 @@ export const getStudentPerformance = async (req, res, next) => {
     }
 
     return res.status(200).json({ success: true, data: performanceList });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStudentLeaveRequestStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status, remarks } = req.body;
+
+    if (!['Approved', 'Rejected'].includes(status)) {
+      const error = new Error('Invalid status. Must be Approved or Rejected');
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    // 1. Get the leave request
+    const { data: request, error: fetchErr } = await supabase
+      .from('leave_requests')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+    if (!request) {
+      const error = new Error('Leave request not found');
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    // 2. Update status
+    const { data: updatedRequest, error: updateErr } = await supabase
+      .from('leave_requests')
+      .update({ status, remarks })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    // 3. Find the student linked to user_id of the request
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', request.user_id)
+      .maybeSingle();
+
+    if (userRecord && userRecord.role === 'student') {
+      const { data: student } = await supabase
+        .from('students')
+        .select('*')
+        .eq('email', userRecord.email)
+        .maybeSingle();
+
+      if (student) {
+        dispatchNotification({
+          userId: student.user_id,
+          studentId: student.id,
+          email: student.email,
+          parentEmail: student.parent_email,
+          type: 'Leave',
+          title: `Leave Request ${status}`,
+          message: `Dear ${student.full_name}, your leave request for ${request.days} day(s) starting from ${request.from_date} to ${request.to_date} has been ${status.toLowerCase()}. Remarks: ${remarks || 'None'}.`,
+          priority: 'Medium'
+        });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Leave request status updated to ${status}`,
+      data: {
+        ...updatedRequest,
+        _id: updatedRequest.id
+      }
+    });
   } catch (error) {
     next(error);
   }

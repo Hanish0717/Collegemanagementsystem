@@ -1,5 +1,6 @@
 import pool from '../../lib/db.js';
 import { supabase } from '../../config/supabase.js';
+import { dispatchNotification } from '../../services/notificationService.js';
 
 // Create allocation (non-transactional via supabase for now)
 export async function createAllocation(req, res) {
@@ -9,6 +10,31 @@ export async function createAllocation(req, res) {
     if (error) throw error;
     // increment occupants
     await supabase.from('hostel_rooms').update({ occupants: (payload._occupants_delta || 1) }).eq('id', payload.room_id);
+    
+    // Asynchronously dispatch notification
+    try {
+      const { data: student } = await supabase
+        .from('students')
+        .select('full_name, email, parent_email, user_id')
+        .eq('id', data.student_id)
+        .maybeSingle();
+
+      if (student) {
+        dispatchNotification({
+          userId: student.user_id,
+          studentId: data.student_id,
+          email: student.email,
+          parentEmail: student.parent_email,
+          type: 'Hostel',
+          title: 'Hostel Room Allocated Successfully',
+          message: `Dear ${student.full_name}, your hostel room allocation has been processed successfully.`,
+          priority: 'Medium'
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to dispatch room allocation notification:', notifErr);
+    }
+
     res.status(201).json({ allocation: data });
   } catch (err) {
     console.error('createAllocation', err);
@@ -84,10 +110,43 @@ export async function updateAllocation(req, res) {
 export async function deleteAllocation(req, res) {
   try {
     const { id } = req.params;
+    
+    // Fetch details before deletion
+    const { data: alloc } = await supabase
+      .from('hostel_allocations')
+      .select('student_id')
+      .eq('id', id)
+      .maybeSingle();
+
     const { error } = await supabase.from('hostel_allocations').delete().eq('id', id);
     if (error) throw error;
-    // decrement occupants safely
-    // best-effort: decrement occupancy if present
+    
+    // Asynchronously dispatch notification
+    if (alloc && alloc.student_id) {
+      try {
+        const { data: student } = await supabase
+          .from('students')
+          .select('full_name, email, parent_email, user_id')
+          .eq('id', alloc.student_id)
+          .maybeSingle();
+
+        if (student) {
+          dispatchNotification({
+            userId: student.user_id,
+            studentId: alloc.student_id,
+            email: student.email,
+            parentEmail: student.parent_email,
+            type: 'Hostel',
+            title: 'Hostel Room Allocation Vacated',
+            message: `Dear ${student.full_name}, your hostel room allocation has been vacated.`,
+            priority: 'High'
+          });
+        }
+      } catch (notifErr) {
+        console.error('Failed to dispatch room vacate notification:', notifErr);
+      }
+    }
+
     res.json({ success: true });
   } catch (err) {
     console.error('deleteAllocation', err);

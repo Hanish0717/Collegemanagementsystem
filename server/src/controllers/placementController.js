@@ -1,4 +1,50 @@
 import { supabase } from '../config/supabase.js';
+import { dispatchNotification } from '../services/notificationService.js';
+
+const sendPlacementStatusNotification = async (studentId, company, role, status, customMsg) => {
+  try {
+    const { data: student } = await supabase
+      .from('students')
+      .select('full_name, email, parent_email, user_id')
+      .eq('id', studentId)
+      .maybeSingle();
+
+    if (student) {
+      let title = `Placement Update: ${company}`;
+      let message = customMsg || `Dear ${student.full_name}, your application status for ${company} (${role}) has been updated to "${status}".`;
+
+      if (status === 'Applied') {
+        title = `Applied Successfully: ${company}`;
+        message = `Dear ${student.full_name}, you have successfully applied for the drive "${role}" at ${company}.`;
+      } else if (status === 'Shortlisted') {
+        title = `Shortlisted for Interview: ${company}`;
+        message = `Congratulations ${student.full_name}! You have been shortlisted for the next round of interviews at ${company} for the "${role}" role.`;
+      } else if (status === 'Selected') {
+        title = `Selected at ${company}!`;
+        message = `Outstanding news ${student.full_name}! You have been selected for the role of "${role}" at ${company}! Please check your portal for the offer details.`;
+      } else if (status === 'Rejected') {
+        title = `Application Status Update: ${company}`;
+        message = `Dear ${student.full_name}, thank you for your participation in the ${company} recruitment drive for "${role}". Unfortunately, your application was not selected to move forward at this time.`;
+      } else if (status === 'Offer Released') {
+        title = `Offer Released: ${company}`;
+        message = `Congratulations ${student.full_name}! ${company} has released your official offer letter for the "${role}" position. Please review and respond in your portal.`;
+      }
+
+      dispatchNotification({
+        userId: student.user_id,
+        studentId: studentId,
+        email: student.email,
+        parentEmail: student.parent_email,
+        type: 'Placement',
+        title,
+        message,
+        priority: status === 'Selected' || status === 'Offer Released' ? 'High' : 'Medium'
+      });
+    }
+  } catch (err) {
+    console.error('Failed to send placement status notification:', err);
+  }
+};
 
 // Base mock datasets to fall back to if tables are missing or query fails
 const fallbackCompanies = [
@@ -451,6 +497,73 @@ export const createDrive = async (req, res, next) => {
 
     if (error) throw error;
 
+    // Send notifications to eligible students in the background
+    (async () => {
+      try {
+        const { data: students } = await supabase
+          .from('students')
+          .select('id, full_name, email, department, cgpa')
+          .eq('is_active', true);
+
+        if (students && students.length > 0) {
+          const eligibleMinCgpa = parseFloat(data.eligibility_min_cgpa) || 0;
+          let eligibleDepts = [];
+          try {
+            eligibleDepts = typeof data.eligibility_departments === 'string'
+              ? JSON.parse(data.eligibility_departments)
+              : (data.eligibility_departments || []);
+          } catch (e) {
+            eligibleDepts = [];
+          }
+
+          const { generatePlacementDriveTemplate } = await import('../utils/emailTemplates.js');
+          const { default: sendEmail } = await import('../utils/sendEmail.js');
+
+          for (const student of students) {
+            const studentCgpa = parseFloat(student.cgpa) || 0;
+            const isDeptEligible = eligibleDepts.length === 0 || eligibleDepts.some(
+              d => String(d).trim().toLowerCase() === String(student.department).trim().toLowerCase()
+            );
+
+            if (studentCgpa >= eligibleMinCgpa && isDeptEligible) {
+              const notifId = `SN-PLACEMENT-${data.id}-${student.id}`;
+              
+              // Insert DB notification
+              await supabase
+                .from('student_notifications')
+                .insert([{
+                  id: notifId,
+                  student_id: student.id,
+                  title: `New Recruitment Drive: ${data.company} is hiring for ${data.position}. Register before ${new Date(data.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}.`,
+                  type: 'Placement',
+                  priority: 'High',
+                  time: 'Just now',
+                  unread: true
+                }]);
+
+              // Dispatch Email
+              if (student.email) {
+                const emailHtml = generatePlacementDriveTemplate(
+                  student.full_name,
+                  data.company,
+                  data.position,
+                  data.drive_date,
+                  data.deadline
+                );
+                sendEmail({
+                  to: student.email,
+                  subject: `Placement Drive: ${data.company} Recruitment Open`,
+                  html: emailHtml
+                }).catch(err => console.error(`Error emailing student ${student.email} for placement drive:`, err));
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error dispatching recruitment drive notifications:', err);
+      }
+    })();
+
     let count = 0;
     try {
       const arr = typeof data.applied_students === 'string' ? JSON.parse(data.applied_students) : (data.applied_students || []);
@@ -634,6 +747,9 @@ export const createApplication = async (req, res, next) => {
       if (updateErr) throw updateErr;
     }
 
+    // Trigger notification
+    sendPlacementStatusNotification(studentId, company, role, 'Applied');
+
     res.status(201).json({
       success: true,
       message: 'Application created successfully',
@@ -717,6 +833,12 @@ export const updateApplication = async (req, res, next) => {
 
     if (updateErr) throw updateErr;
 
+    // Trigger notification
+    const studentNotifyId = appliedList[idx].student_id || targetStudentId;
+    if (studentNotifyId && status) {
+      sendPlacementStatusNotification(studentNotifyId, targetCompany, targetRole, status);
+    }
+
     res.status(200).json({
       success: true,
       message: 'Application updated successfully',
@@ -739,7 +861,7 @@ export const createInterview = async (req, res, next) => {
 
     const { data: stu } = await supabase
       .from('students')
-      .select('id')
+      .select('id, user_id, email, parent_email')
       .ilike('full_name', studentName)
       .maybeSingle();
 
@@ -768,6 +890,19 @@ export const createInterview = async (req, res, next) => {
       .single();
 
     if (error) throw error;
+
+    if (stu) {
+      dispatchNotification({
+        userId: stu.user_id,
+        studentId: stu.id,
+        email: stu.email,
+        parentEmail: stu.parent_email,
+        type: 'Placement',
+        title: `Interview Scheduled: ${company}`,
+        message: `Dear ${studentName}, your interview for ${company} (Round ${round || 1}) has been scheduled for ${date || new Date().toISOString().split('T')[0]} at ${time || '10:00 AM'}. Mode: ${mode || 'Online'}. Venue/Link: ${venue || 'Video Call'}.`,
+        priority: 'High'
+      });
+    }
 
     res.status(201).json({
       success: true,

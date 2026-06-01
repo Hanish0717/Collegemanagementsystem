@@ -290,6 +290,37 @@ async function runMigrations() {
 
       -- Ensure downloads column exists in study_materials
       ALTER TABLE study_materials ADD COLUMN IF NOT EXISTS downloads integer DEFAULT 0;
+
+      -- Create notification_preferences table
+      CREATE TABLE IF NOT EXISTS notification_preferences (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id uuid REFERENCES users(id) ON DELETE CASCADE UNIQUE NOT NULL,
+        academic_alerts boolean DEFAULT true,
+        attendance_alerts boolean DEFAULT true,
+        fee_alerts boolean DEFAULT true,
+        placement_alerts boolean DEFAULT true,
+        hostel_alerts boolean DEFAULT true,
+        transport_alerts boolean DEFAULT true,
+        email_enabled boolean DEFAULT true,
+        in_app_enabled boolean DEFAULT true,
+        sms_enabled boolean DEFAULT false,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create notification_logs table
+      CREATE TABLE IF NOT EXISTS notification_logs (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+        recipient_email varchar(255) NOT NULL,
+        type varchar(100) NOT NULL,
+        title varchar(255) NOT NULL,
+        message text NOT NULL,
+        channel varchar(50) NOT NULL,
+        status varchar(50) NOT NULL,
+        error_details text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
     `);
     
     // Seed admin notifications

@@ -1,5 +1,6 @@
 import { supabase } from '../../config/supabase.js';
 import db from '../../lib/db.js';
+import { dispatchNotification } from '../../services/notificationService.js';
 
 const toNumber = (value) => Number(value || 0);
 
@@ -98,6 +99,34 @@ const pushSystemNotification = async (title, type, time = 'Just now') => {
     await supabase.from('system_notifications').insert([{ id: `HN-${Date.now() % 1000000}`, title, type, time, unread: true }]);
   } catch (error) {
     console.error('Failed to create system notification:', error);
+  }
+};
+
+const sendHostelPaymentNotification = async (fee, amount, nextStatus) => {
+  try {
+    const studentId = fee.student_id;
+    if (!studentId) return;
+
+    const { data: student } = await supabase
+      .from('students')
+      .select('full_name, email, parent_email, user_id')
+      .eq('id', studentId)
+      .maybeSingle();
+
+    if (student) {
+      dispatchNotification({
+        userId: student.user_id,
+        studentId,
+        email: student.email,
+        parentEmail: student.parent_email,
+        type: 'Fee',
+        title: 'Hostel Fee Payment Recorded',
+        message: `Dear ${student.full_name}, we have recorded a payment of ₹${toNumber(amount).toLocaleString('en-IN')} towards your hostel fee. Updated status: ${nextStatus}.`,
+        priority: 'Medium'
+      });
+    }
+  } catch (err) {
+    console.error('sendHostelPaymentNotification error:', err);
   }
 };
 
@@ -342,6 +371,29 @@ export const assignFeeToResident = async (req, res) => {
 
     await pushSystemNotification(`Fee assigned to ${allocation.students?.full_name}.`, 'Fee');
 
+    try {
+      const { data: student } = await supabase
+        .from('students')
+        .select('full_name, email, parent_email, user_id')
+        .eq('id', allocation.student_id)
+        .maybeSingle();
+
+      if (student) {
+        dispatchNotification({
+          userId: student.user_id,
+          studentId: allocation.student_id,
+          email: student.email,
+          parentEmail: student.parent_email,
+          type: 'Fee',
+          title: 'Hostel Fee Assigned',
+          message: `Dear ${student.full_name}, your hostel fee structure has been initialized. Amount due: ₹${totalFee.toLocaleString('en-IN')}, due by ${dueDate.toISOString().split('T')[0]}.`,
+          priority: 'High'
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to dispatch fee assignment notification:', notifErr);
+    }
+
     res.status(201).json({ success: true, message: 'Fee assigned to resident successfully', data: formatResidentFee(data) });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to assign fee to resident', error: error.message });
@@ -426,6 +478,7 @@ export const recordPayment = async (req, res) => {
 
       // Notify and return fresh fee object via supabase query for consistent shape
       await pushSystemNotification(`Fee payment received for ${fee.resident_name || 'resident'}.`, nextStatus === 'Paid' ? 'Fee' : 'Alert');
+      sendHostelPaymentNotification(fee, amount, nextStatus);
 
       const { data: freshFee } = await buildFeeQuery().eq('id', id).maybeSingle();
       const insertedPayment = insertRes.rows && insertRes.rows[0] ? insertRes.rows[0] : null;
@@ -513,6 +566,7 @@ export const recordPayment = async (req, res) => {
     }
 
     await pushSystemNotification(`Fee payment received for ${fee.resident_name || fee.students?.full_name || 'resident'}.`, nextStatus === 'Paid' ? 'Fee' : 'Alert');
+    sendHostelPaymentNotification(fee, amount, nextStatus);
 
     return res.json({ success: true, message: 'Payment recorded successfully', data: formatResidentFee(data), payment: insertedPayment || null });
   } catch (error) {

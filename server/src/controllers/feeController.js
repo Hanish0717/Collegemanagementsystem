@@ -39,6 +39,68 @@ const updateOverdueFees = async () => {
   }
 };
 
+const sendFeeAlert = async (feeId) => {
+  try {
+    const { data: fee } = await supabase
+      .from('fees')
+      .select('*, student:students(*)')
+      .eq('id', feeId)
+      .maybeSingle();
+
+    if (!fee || !fee.student) return;
+    const student = fee.student;
+    
+    const s = String(fee.status).toLowerCase();
+    if (!['pending', 'overdue', 'partial', 'partially_paid', 'partially-paid'].includes(s)) return;
+
+    const remainingAmount = Number(fee.amount || 0) - Number(fee.paid_amount || 0);
+    if (remainingAmount <= 0) return;
+
+    const notifId = `SN-FEE-DUE-${fee.id}`;
+    const { data: existing } = await supabase
+      .from('student_notifications')
+      .select('id')
+      .eq('id', notifId)
+      .maybeSingle();
+
+    if (!existing) {
+      await supabase
+        .from('student_notifications')
+        .insert([{
+          id: notifId,
+          student_id: student.id,
+          title: `Fee Payment Reminder: ${fee.fee_type || 'Academic Fee'} is due on ${new Date(fee.due_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}. Balance: ₹${remainingAmount.toLocaleString('en-IN')}`,
+          type: 'Finance',
+          priority: 'High',
+          time: 'Just now',
+          unread: true
+        }]);
+
+      const { generateFeeReminderTemplate } = await import('../utils/emailTemplates.js');
+      const { default: sendEmail } = await import('../utils/sendEmail.js');
+
+      const emailHtml = generateFeeReminderTemplate(student.full_name, fee.fee_type || 'Academic Fee', fee.due_date, remainingAmount);
+
+      if (student.email) {
+        sendEmail({
+          to: student.email,
+          subject: 'Fee Payment Reminder',
+          html: emailHtml
+        }).catch(err => console.error('Error sending fee reminder to student:', err));
+      }
+      if (student.parent_email) {
+        sendEmail({
+          to: student.parent_email,
+          subject: 'Fee Payment Reminder - Parent Copy',
+          html: emailHtml
+        }).catch(err => console.error('Error sending fee reminder to parent:', err));
+      }
+    }
+  } catch (err) {
+    console.error('Error sending fee reminder alert:', err);
+  }
+};
+
 // @desc    Create a new fee record for a student
 // @route   POST /api/fees
 // @access  Private (admin, super-admin)
@@ -93,6 +155,9 @@ export const createFee = async (req, res, next) => {
       .single();
 
     if (createErr) throw createErr;
+
+    // Send fee alert in background
+    sendFeeAlert(fee.id).catch(err => console.error('sendFeeAlert background error:', err));
 
     res.status(201).json({
       success: true,
@@ -322,6 +387,9 @@ export const updateFee = async (req, res, next) => {
       .single();
 
     if (updateErr) throw updateErr;
+
+    // Send fee alert in background if pending/overdue/partial
+    sendFeeAlert(updatedFee.id).catch(err => console.error('sendFeeAlert background error:', err));
 
     res.status(200).json({
       success: true,

@@ -32,6 +32,8 @@ import blockRoutes from './routes/hostel/blockRoutes.js';
 import roomRoutes from './routes/hostel/roomRoutes.js';
 import allocationRoutes from './routes/hostel/allocationRoutes.js';
 import messRoutes from './routes/hostel/messRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import hostelComplaintRoutes from './routes/hostel/complaintRoutes.js';
 
 dotenv.config();
 
@@ -125,6 +127,8 @@ app.use('/api/hostel/blocks', blockRoutes);
 app.use('/api/hostel/rooms', roomRoutes);
 app.use('/api/hostel/allocations', allocationRoutes);
 app.use('/api/hostel/mess', messRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/hostel/complaints', hostelComplaintRoutes);
 
 // 404 handler
 app.use(notFound);
