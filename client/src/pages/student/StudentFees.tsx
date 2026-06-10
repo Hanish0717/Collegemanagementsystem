@@ -25,12 +25,25 @@ export function StudentFees() {
 
   const fetchFees = async () => {
     try {
-      const profileStr = localStorage.getItem("cms_student_profile");
-      if (!profileStr) return;
-      const profile = JSON.parse(profileStr);
-      if (!profile || !profile._id) return;
+      // Fetch fresh profile from dashboard API first
+      const dashRes = await api.get("/api/student-module/dashboard");
+      let studentId = "";
+      if (dashRes.data?.success && dashRes.data?.data?.profile) {
+        const profile = dashRes.data.data.profile;
+        studentId = profile._id || profile.id;
+        localStorage.setItem("cms_student_profile", JSON.stringify(profile));
+      } else {
+        // Fallback to localStorage
+        const profileStr = localStorage.getItem("cms_student_profile");
+        if (profileStr) {
+          const profile = JSON.parse(profileStr);
+          studentId = profile?._id || profile?.id;
+        }
+      }
 
-      const res = await api.get(`/api/fees/student/${profile._id}`);
+      if (!studentId) return;
+
+      const res = await api.get(`/api/fees/student/${studentId}`);
       if (res.data?.success && res.data?.data) {
         const { fees: dbFees, summary } = res.data.data;
 

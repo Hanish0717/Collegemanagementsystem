@@ -391,13 +391,21 @@ if (isMockMode) {
 
     like(column, value) {
       if (value === undefined || value === null) return this;
-      this.conditions.push({ column: `t.${column}`, operator: 'LIKE', value });
+      if (column.startsWith('users.')) {
+        this.conditions.push({ column: `users.${column.split('.')[1]}`, operator: 'LIKE', value });
+      } else {
+        this.conditions.push({ column: `t.${column}`, operator: 'LIKE', value });
+      }
       return this;
     }
 
     ilike(column, value) {
       if (value === undefined || value === null) return this;
-      this.conditions.push({ column: `t.${column}`, operator: 'ILIKE', value });
+      if (column.startsWith('users.')) {
+        this.conditions.push({ column: `users.${column.split('.')[1]}`, operator: 'ILIKE', value });
+      } else {
+        this.conditions.push({ column: `t.${column}`, operator: 'ILIKE', value });
+      }
       return this;
     }
 

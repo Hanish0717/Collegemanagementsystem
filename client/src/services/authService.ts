@@ -100,6 +100,7 @@ export function logout(): void {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
   localStorage.removeItem(ROLE_KEY);
+  localStorage.removeItem("cms_student_profile");
 }
 
 /** Check whether we have a stored token. */
