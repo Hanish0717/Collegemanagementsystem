@@ -38,6 +38,7 @@ import {
   createNotification,
   fetchResidents,
 } from "@/services/hostelService";
+import api from "@/lib/api";
 
 interface SearchSuggestion {
   type: string;
@@ -146,6 +147,35 @@ export function DashboardLayout() {
     queryKey: ["residents-lookup"],
     queryFn: () => fetchResidents(),
     enabled: isWarden,
+  });
+
+  const isLibrarian = role?.id === "librarian";
+
+  const { data: students = [] } = useQuery({
+    queryKey: ["students-lookup"],
+    queryFn: async () => {
+      const res = await api.get("/api/students?limit=1000");
+      const list = res.data?.data?.students || [];
+      return list.map((s: any) => ({
+        id: s._id || s.id,
+        name: s.fullName || s.name
+      }));
+    },
+    enabled: isLibrarian,
+  });
+
+  const { data: books = [] } = useQuery({
+    queryKey: ["books-lookup"],
+    queryFn: async () => {
+      const res = await api.get("/api/library/books?limit=1000");
+      const list = res.data?.data?.books || [];
+      return list.map((b: any) => ({
+        id: b._id || b.id,
+        title: b.title,
+        available: b.availableCopies !== undefined ? b.availableCopies : b.available
+      }));
+    },
+    enabled: isLibrarian,
   });
 
   // Mutations
@@ -1342,7 +1372,7 @@ export function DashboardLayout() {
                   className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
                 >
                   <option value="">Choose student record...</option>
-                  {students.map((s) => (
+                  {students.map((s: any) => (
                     <option key={s.id} value={s.name}>
                       {s.name} ({s.id})
                     </option>
@@ -1359,7 +1389,7 @@ export function DashboardLayout() {
                   className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
                 >
                   <option value="">Choose book resource...</option>
-                  {books.map((b) => (
+                  {books.map((b: any) => (
                     <option key={b.id} value={b.title}>
                       {b.title} {b.available === 0 ? "(Unavailable)" : ""}
                     </option>

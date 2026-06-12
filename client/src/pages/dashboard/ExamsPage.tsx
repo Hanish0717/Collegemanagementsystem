@@ -9,7 +9,7 @@ export function ExamsPage() {
   const [exams, setExams] = useState<any[]>([]);
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const user = getStoredUser();
+  const user = getStoredUser() as any;
 
   useEffect(() => {
     const fetchExamsAndResults = async () => {

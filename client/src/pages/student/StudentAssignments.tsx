@@ -79,7 +79,9 @@ export function StudentAssignments() {
       <div className="grid md:grid-cols-4 gap-4">
         {loading ? (
           [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-24 animate-pulse bg-muted/40" />
+            <Card key={n} className="h-24 animate-pulse bg-muted/40">
+              <div />
+            </Card>
           ))
         ) : (
           [
@@ -104,7 +106,9 @@ export function StudentAssignments() {
         {loading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((n) => (
-              <Card key={n} className="h-44 animate-pulse bg-muted/20" />
+              <Card key={n} className="h-44 animate-pulse bg-muted/20">
+                <div />
+              </Card>
             ))}
           </div>
         ) : (

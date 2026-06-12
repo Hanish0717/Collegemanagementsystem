@@ -11,7 +11,7 @@ export const updateStudentAttendancePercentage = async (studentId) => {
       .from('attendance')
       .select('*', { count: 'exact', head: true })
       .eq('student', studentId)
-      .in('status', ['Present', 'present', 'Late', 'late']);
+      .in('status', ['Present', 'present', 'Late', 'late', 'Excused', 'excused']);
 
     const percentage = (total && total > 0) ? Math.round(((attended || 0) / total) * 100 * 10) / 10 : 100;
 

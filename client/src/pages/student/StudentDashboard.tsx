@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
-import { Outlet, createFileRoute, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import {
-  Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -13,6 +11,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Cell
 } from "recharts";
 import {
   Activity,
@@ -25,6 +24,7 @@ import {
   GraduationCap,
   MapPin,
   TrendingUp,
+  AlertTriangle
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { useAuth } from "@/contexts/AuthContext";
@@ -67,11 +67,16 @@ export function StudentDashboard() {
   const [earnedCredits, setEarnedCredits] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // New detailed attendance states for dashboard integrations
+  const [attendanceStats, setAttendanceStats] = useState<any>(null);
+  const [subjectWise, setSubjectWise] = useState<any[]>([]);
+
   useEffect(() => {
     if (path !== "/dashboard/student" && path !== "/dashboard" && path !== "/dashboard/") return;
 
     const fetchDashboardData = async () => {
       setLoading(true);
+      let resolvedStudentId = "";
       try {
         const dashRes = await api.get("/api/student-module/dashboard");
         if (dashRes.data?.success && dashRes.data?.data) {
@@ -84,6 +89,7 @@ export function StudentDashboard() {
           if (profile) {
             setStudentProfile(profile);
             localStorage.setItem("cms_student_profile", JSON.stringify(profile));
+            resolvedStudentId = profile._id || profile.id;
             if (profile.attendancePercentage !== undefined) {
               setCurrentAttendance(`${profile.attendancePercentage}%`);
             }
@@ -147,13 +153,17 @@ export function StudentDashboard() {
       }
 
       try {
-        const storedProfile = localStorage.getItem("cms_student_profile");
-        const profile = storedProfile ? JSON.parse(storedProfile) : null;
-        const studentId = profile?.id || profile?._id;
+        const studentId = resolvedStudentId || studentProfile?.id || studentProfile?._id;
         if (studentId) {
           const attRes = await api.get(`/api/attendance/student/${studentId}`);
           if (attRes.data?.success && attRes.data?.data) {
-            const { monthly } = attRes.data.data;
+            const { monthly, stats: dbStats, subjectWise: dbSubjectWise } = attRes.data.data;
+            if (dbStats) {
+              setAttendanceStats(dbStats);
+            }
+            if (dbSubjectWise) {
+              setSubjectWise(dbSubjectWise.slice(0, 4));
+            }
             if (monthly && monthly.length > 0) {
               const curMonthStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
               let targetMonthRecord = monthly.find((m: any) => m.month === curMonthStr);
@@ -189,6 +199,9 @@ export function StudentDashboard() {
     return <Outlet />;
   }
 
+  const attPctVal = attendanceStats ? attendanceStats.percentage : (studentProfile?.attendancePercentage || 85);
+  const shortage = attPctVal < 75;
+
   const academicSummaryItems = [
     { label: "Student Name", value: studentProfile?.fullName || user?.fullName || "Student" },
     { label: "Current Semester", value: studentProfile?.semester ? `Sem ${studentProfile.semester}` : "N/A" },
@@ -203,19 +216,43 @@ export function StudentDashboard() {
         desc="Track attendance, view results, submit assignments, and manage academic activities."
       />
 
+      {/* Shortage warning alert widget */}
+      {shortage && (
+        <div className="p-4 rounded-2xl border border-red-200 bg-red-50/50 flex items-start gap-3.5">
+          <div className="p-2 bg-red-500 rounded-xl text-white">
+            <AlertTriangle className="size-5 shrink-0" />
+          </div>
+          <div>
+            <h4 className="font-bold text-sm text-red-800 font-sans">Attendance Shortage Alert</h4>
+            <p className="text-xs text-red-700/80 mt-1">
+              Your overall attendance is <strong className="font-extrabold">{attPctVal}%</strong>, which is below the minimum required 75%. You are at risk of losing examination eligibility.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading ? (
           [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-28 animate-pulse bg-muted/40" />
+            <Card key={n} className="h-28 animate-pulse bg-muted/40">
+              <div />
+            </Card>
           ))
         ) : (
           stats
             .filter((stat) => stat.label !== "Pending Assignments")
-            .map((stat, i) => (
-              <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i % statIcons.length]} gradient={statGradients[i % statGradients.length]} />
-              </motion.div>
-            ))
+            .map((stat, i) => {
+              let label = stat.label;
+              let val = stat.value;
+              if (label === "Overall Attendance" && attendanceStats) {
+                val = `${attendanceStats.percentage}%`;
+              }
+              return (
+                <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                  <StatCard label={label} value={val} change={stat.change} icon={statIcons[i % statIcons.length]} gradient={statGradients[i % statGradients.length]} />
+                </motion.div>
+              );
+            })
         )}
       </div>
 
@@ -226,7 +263,7 @@ export function StudentDashboard() {
               <h3 className="font-semibold">Attendance Summary</h3>
               <p className="text-xs text-muted-foreground">{displayMonth} breakdown</p>
             </div>
-            {!loading && <Badge tone="success">{currentAttendance}</Badge>}
+            <Badge tone={shortage ? "danger" : "success"}>{attPctVal}% Overall</Badge>
           </div>
           <div className="h-72">
             {loading ? (
@@ -253,60 +290,112 @@ export function StudentDashboard() {
           </div>
         </Card>
 
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Quick Actions</h3>
-            <Activity className="size-4 text-muted-foreground" />
+        {/* Conducted/Attended/Absent summary cards */}
+        <Card className="flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Quick Actions</h3>
+              <Activity className="size-4 text-muted-foreground" />
+            </div>
+            <div className="space-y-2.5">
+              {[
+                { label: "View Timetable", tone: "info" as const, to: "/dashboard/student/timetable" },
+                { label: "Pay Fees", tone: "warn" as const, to: "/dashboard/student/fees" },
+                { label: "Register Event", tone: "info" as const, to: "/dashboard/student/events" },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => navigate({ to: item.to })}
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer text-left"
+                >
+                  <span className="text-xs font-semibold">{item.label}</span>
+                  <Badge tone={item.tone}>Action</Badge>
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="space-y-3">
-            {[
-              { label: "View Timetable", tone: "info" as const, to: "/dashboard/student/timetable" },
-              { label: "Pay Fees", tone: "warn" as const, to: "/dashboard/student/fees" },
-              { label: "Register Event", tone: "info" as const, to: "/dashboard/student/events" },
-            ].map((item) => (
-              <button
-                key={item.label}
-                onClick={() => navigate({ to: item.to })}
-                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer text-left"
-              >
-                <span className="text-sm font-medium">{item.label}</span>
-                <Badge tone={item.tone}>Action</Badge>
-              </button>
-            ))}
-          </div>
+
+          {attendanceStats && (
+            <div className="mt-4 pt-4 border-t space-y-2">
+              <div className="text-xs font-semibold text-muted-foreground">Class Slot Breakdown</div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-muted-foreground">Conducted Classes</span>
+                <span className="font-bold">{attendanceStats.total || 0}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-muted-foreground">Attended (Present/Late)</span>
+                <span className="font-bold text-emerald-600">{(attendanceStats.present || 0) + (attendanceStats.late || 0)}</span>
+              </div>
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-muted-foreground">Absent Classes</span>
+                <span className="font-bold text-red-500">{attendanceStats.absent || 0}</span>
+              </div>
+            </div>
+          )}
         </Card>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold">GPA & CGPA Progress</h3>
-              <p className="text-xs text-muted-foreground">Semester-wise GPA and Cumulative CGPA tracking</p>
+        {/* Subject-wise breakdown bars */}
+        {subjectWise.length > 0 ? (
+          <Card className="lg:col-span-2">
+            <h3 className="font-semibold text-sm mb-3">Course Attendance Breakdown</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {subjectWise.map((sw) => {
+                const isShort = sw.percentage < 75;
+                return (
+                  <div key={sw.subject} className="p-3 border rounded-xl bg-gradient-soft flex flex-col justify-between">
+                    <div className="flex justify-between items-start gap-2">
+                      <span className="text-xs font-semibold truncate flex-1">{sw.subject}</span>
+                      <span className={`text-xs font-bold ${isShort ? "text-red-500" : "text-emerald-500"}`}>
+                        {sw.percentage}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full ${isShort ? "bg-red-500" : "bg-emerald-500"}`} 
+                        style={{ width: `${sw.percentage}%` }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-1.5 flex justify-between">
+                      <span>Attended: {sw.present + sw.late}/{sw.total}</span>
+                      <span>{isShort ? "Shortage" : "Good"}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            {!loading && <Badge tone="success">{currentCgpa}</Badge>}
-          </div>
-          <div className="h-72">
-            {loading ? (
-              <div className="h-full w-full bg-muted/20 animate-pulse rounded-xl" />
-            ) : gpaData.length > 0 ? (
-              <ResponsiveContainer>
-                <LineChart data={gpaData}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
-                  <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                  <Line type="monotone" dataKey="gpa" name="Semester GPA" stroke="#4F46E5" strokeWidth={2} />
-                  <Line type="monotone" dataKey="cgpa" name="CGPA" stroke="#10B981" strokeWidth={2.5} />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl">
-                No GPA progress records found in database.
+          </Card>
+        ) : (
+          <Card className="lg:col-span-2">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold">GPA & CGPA Progress</h3>
+                <p className="text-xs text-muted-foreground">Semester-wise GPA and Cumulative CGPA tracking</p>
               </div>
-            )}
-          </div>
-        </Card>
+              <Badge tone="success">{currentCgpa}</Badge>
+            </div>
+            <div className="h-72">
+              {gpaData.length > 0 ? (
+                <ResponsiveContainer>
+                  <LineChart data={gpaData}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
+                    <YAxis stroke="#64748B" fontSize={12} />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                    <Line type="monotone" dataKey="gpa" name="Semester GPA" stroke="#4F46E5" strokeWidth={2} />
+                    <Line type="monotone" dataKey="cgpa" name="CGPA" stroke="#10B981" strokeWidth={2.5} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl">
+                  No GPA progress records found in database.
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
 
         <Card>
           <div className="flex items-center gap-2 mb-4">
@@ -321,8 +410,8 @@ export function StudentDashboard() {
             ) : (
               academicSummaryItems.map(item => (
                 <div key={item.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
-                  <span className="text-sm text-muted-foreground">{item.label}</span>
-                  <span className="font-bold">{item.value}</span>
+                  <span className="text-xs text-muted-foreground">{item.label}</span>
+                  <span className="font-bold text-xs">{item.value}</span>
                 </div>
               ))
             )}
@@ -408,10 +497,4 @@ export function StudentDashboard() {
       </div>
     </div>
   );
-}
-
-// Inline implementation of cell coloring if Cell is not directly imported
-function Cell(props: any) {
-  const { fill, ...rest } = props;
-  return <path fill={fill} {...rest} />;
 }

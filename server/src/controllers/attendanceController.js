@@ -108,22 +108,24 @@ export const getStudentAttendance = async (req, res, next) => {
     const total = records ? records.length : 0;
     const presentCount = records ? records.filter((r) => r.status.toLowerCase() === 'present').length : 0;
     const lateCount = records ? records.filter((r) => r.status.toLowerCase() === 'late').length : 0;
+    const excusedCount = records ? records.filter((r) => r.status.toLowerCase() === 'excused').length : 0;
     const absentCount = records ? records.filter((r) => r.status.toLowerCase() === 'absent').length : 0;
 
-    const overallPercentage = total > 0 ? Math.round(((presentCount + lateCount) / total) * 100 * 10) / 10 : 100;
+    const overallPercentage = total > 0 ? Math.round(((presentCount + lateCount + excusedCount) / total) * 100 * 10) / 10 : 100;
 
     // Subject-wise calculation
     const subjects = records ? [...new Set(records.map((r) => r.subject))] : [];
     const subjectWise = subjects.map((subj) => {
       const subjRecords = records.filter((r) => r.subject === subj);
       const sTotal = subjRecords.length;
-      const sAttended = subjRecords.filter((r) => r.status.toLowerCase() === 'present' || r.status.toLowerCase() === 'late').length;
+      const sAttended = subjRecords.filter((r) => r.status.toLowerCase() === 'present' || r.status.toLowerCase() === 'late' || r.status.toLowerCase() === 'excused').length;
       return {
         subject: subj,
         total: sTotal,
         present: subjRecords.filter((r) => r.status.toLowerCase() === 'present').length,
         late: subjRecords.filter((r) => r.status.toLowerCase() === 'late').length,
         absent: subjRecords.filter((r) => r.status.toLowerCase() === 'absent').length,
+        excused: subjRecords.filter((r) => r.status.toLowerCase() === 'excused').length,
         percentage: sTotal > 0 ? Math.round((sAttended / sTotal) * 100 * 10) / 10 : 100,
       };
     });
@@ -195,7 +197,7 @@ export const getClassAttendance = async (req, res, next) => {
 
     let studentQuery = supabase
       .from('students')
-      .select('id, full_name, roll_number, department')
+      .select('id, full_name, roll_number, department, attendance_percentage')
       .eq('is_active', true);
 
     if (department) studentQuery = studentQuery.eq('department', department);
@@ -238,7 +240,8 @@ export const getClassAttendance = async (req, res, next) => {
           id: s.id,
           fullName: s.full_name,
           rollNumber: s.roll_number,
-          department: s.department
+          department: s.department,
+          attendancePercentage: s.attendance_percentage
         },
         status: attRecord ? attRecord.status : 'Present',
         remarks: attRecord ? (attRecord.remarks || '') : '',
