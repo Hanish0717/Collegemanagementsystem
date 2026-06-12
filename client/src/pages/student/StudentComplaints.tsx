@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, Send } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { complaints } from "@/mock/studentData";
 import api from "@/lib/api";
 
 export function StudentComplaints() {
-  const [history, setHistory] = useState<any[]>(complaints);
+  const [history, setHistory] = useState<any[]>([]);
   const [category, setCategory] = useState("Infrastructure");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
@@ -17,15 +16,13 @@ export function StudentComplaints() {
       const res = await api.get("/api/student-module/complaints");
       if (res.data?.success && res.data?.data) {
         const dbComplaints = res.data.data.map((c: any) => ({
-          id: c._id,
+          id: c._id || c.id,
           category: c.category,
           subject: c.subject,
           date: new Date(c.date || c.createdAt || Date.now()).toISOString().split('T')[0],
           status: c.status
         }));
-        if (dbComplaints.length > 0) {
-          setHistory(dbComplaints);
-        }
+        setHistory(dbComplaints);
       }
     } catch (err) {
       console.error("Error loading complaints:", err);

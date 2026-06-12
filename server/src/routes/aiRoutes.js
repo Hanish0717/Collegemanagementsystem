@@ -1,5 +1,11 @@
 import express from 'express';
 import { handleAIChat } from '../controllers/aiController.js';
+import {
+  predictPerformance,
+  analyzeAttendanceRisk,
+  analyzeStudentRisk,
+  generateReportSummary
+} from '../controllers/aiPredictionController.js';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
 
@@ -37,5 +43,9 @@ const optionalProtect = async (req, res, next) => {
 };
 
 router.post('/chat', optionalProtect, handleAIChat);
+router.post('/performance', optionalProtect, predictPerformance);
+router.post('/attendance-risk', optionalProtect, analyzeAttendanceRisk);
+router.post('/student-risk', optionalProtect, analyzeStudentRisk);
+router.post('/report-summary', optionalProtect, generateReportSummary);
 
 export default router;

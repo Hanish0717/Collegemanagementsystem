@@ -2,35 +2,36 @@ import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, Send } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { leaveRequests } from "@/mock/studentData";
 import api from "@/lib/api";
 
 export function StudentLeave() {
-  const [history, setHistory] = useState<any[]>(leaveRequests);
+  const [history, setHistory] = useState<any[]>([]);
   const [leaveType, setLeaveType] = useState("Sick Leave");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   const fetchLeaves = async () => {
+    setPageLoading(true);
     try {
       const res = await api.get("/api/student-module/leave");
       if (res.data?.success && res.data?.data) {
         const dbLeaves = res.data.data.map((l: any) => ({
-          id: l._id,
+          id: l._id || l.id,
           type: l.type,
-          from: new Date(l.from).toISOString().split('T')[0],
-          to: new Date(l.to).toISOString().split('T')[0],
+          from: new Date(l.from_date || l.from).toISOString().split('T')[0],
+          to: new Date(l.to_date || l.to).toISOString().split('T')[0],
           days: l.days,
           status: l.status
         }));
-        if (dbLeaves.length > 0) {
-          setHistory(dbLeaves);
-        }
+        setHistory(dbLeaves);
       }
     } catch (err) {
       console.error("Error loading leave requests:", err);
+    } finally {
+      setPageLoading(false);
     }
   };
 
@@ -88,77 +89,87 @@ export function StudentLeave() {
       />
 
       <div className="grid md:grid-cols-4 gap-4">
-        {[
-          { label: "Total Leave Balance", value: `${totalRemaining} days`, tone: "info" as const },
-          { label: "Sick Leave Available", value: `${remainingSick} days`, tone: "info" as const },
-          { label: "Casual Leave Available", value: `${remainingCasual} days`, tone: "info" as const },
-          { label: "Earned Leave Available", value: `${remainingEarned} day`, tone: "info" as const },
-        ].map(stat => (
-          <Card key={stat.label}>
-            <div className="text-xs text-muted-foreground">{stat.label}</div>
-            <div className="text-2xl font-bold mt-2">{stat.value}</div>
-            <Badge tone={stat.tone} className="mt-3">
-              Available
-            </Badge>
-          </Card>
-        ))}
+        {pageLoading ? (
+          [1, 2, 3, 4].map((n) => (
+            <Card key={n} className="h-24 animate-pulse bg-muted/40" />
+          ))
+        ) : (
+          [
+            { label: "Total Leave Balance", value: `${totalRemaining} days`, tone: "info" as const },
+            { label: "Sick Leave Available", value: `${remainingSick} days`, tone: "info" as const },
+            { label: "Casual Leave Available", value: `${remainingCasual} days`, tone: "info" as const },
+            { label: "Earned Leave Available", value: `${remainingEarned} day`, tone: "info" as const },
+          ].map(stat => (
+            <Card key={stat.label}>
+              <div className="text-xs text-muted-foreground">{stat.label}</div>
+              <div className="text-2xl font-bold mt-2">{stat.value}</div>
+              <Badge tone={stat.tone} className="mt-3">
+                Available
+              </Badge>
+            </Card>
+          ))
+        )}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4">
         <Card>
           <h3 className="font-semibold mb-4">Apply for Leave</h3>
-          <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Leave Type</label>
-              <select
-                value={leaveType}
-                onChange={(e) => setLeaveType(e.target.value)}
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+          {pageLoading ? (
+            <div className="h-80 bg-muted/10 animate-pulse rounded-xl border" />
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Leave Type</label>
+                <select
+                  value={leaveType}
+                  onChange={(e) => setLeaveType(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                >
+                  {["Sick Leave", "Casual Leave", "Earned Leave"].map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">From Date</label>
+                  <input
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">To Date</label>
+                  <input
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Reason</label>
+                <textarea
+                  placeholder="Reason for leave..."
+                  rows={4}
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2"
               >
-                {["Sick Leave", "Casual Leave", "Earned Leave"].map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">From Date</label>
-                <input
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">To Date</label>
-                <input
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Reason</label>
-              <textarea
-                placeholder="Reason for leave..."
-                rows={4}
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2"
-            >
-              <Send className="size-4" /> {loading ? "Submitting..." : "Submit Request"}
-            </button>
-          </form>
+                <Send className="size-4" /> {loading ? "Submitting..." : "Submit Request"}
+              </button>
+            </form>
+          )}
         </Card>
 
         <Card>
@@ -167,60 +178,72 @@ export function StudentLeave() {
             <h3 className="font-semibold">Leave Balance Summary</h3>
           </div>
           <div className="space-y-3">
-            {[
-              { type: "Sick Leave", total: 5, used: usedSick, remaining: remainingSick },
-              { type: "Casual Leave", total: 4, used: usedCasual, remaining: remainingCasual },
-              { type: "Earned Leave", total: 3, used: usedEarned, remaining: remainingEarned },
-            ].map(item => (
-              <div key={item.type} className="p-4 rounded-xl border">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">{item.type}</span>
-                  <Badge tone="info">{item.remaining} days remaining</Badge>
+            {pageLoading ? (
+              [1, 2, 3].map((n) => (
+                <div key={n} className="h-24 animate-pulse bg-muted/20 border rounded-xl" />
+              ))
+            ) : (
+              [
+                { type: "Sick Leave", total: 5, used: usedSick, remaining: remainingSick },
+                { type: "Casual Leave", total: 4, used: usedCasual, remaining: remainingCasual },
+                { type: "Earned Leave", total: 3, used: usedEarned, remaining: remainingEarned },
+              ].map(item => (
+                <div key={item.type} className="p-4 rounded-xl border">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">{item.type}</span>
+                    <Badge tone="info">{item.remaining} days remaining</Badge>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div className="bg-gradient-primary h-2 rounded-full" style={{ width: `${(item.used / item.total) * 100}%` }} />
+                  </div>
+                  <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+                    <span>Used: {item.used} days</span>
+                    <span>Total: {item.total} days</span>
+                  </div>
                 </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-gradient-primary h-2 rounded-full" style={{ width: `${(item.used / item.total) * 100}%` }} />
-                </div>
-                <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                  <span>Used: {item.used} days</span>
-                  <span>Total: {item.total} days</span>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </Card>
       </div>
 
       <Card>
         <h3 className="font-semibold mb-4">Leave History</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b">
-              <tr>
-                {["Leave Type", "From", "To", "Days", "Status"].map((column) => (
-                  <th
-                    key={column}
-                    className="text-left py-3 px-4 font-semibold text-muted-foreground"
-                  >
-                    {column}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {history.map((leave, index) => (
-                <tr key={leave.id || index} className="hover:bg-accent/50 transition">
-                  <td className="py-3 px-4 font-medium">{leave.type}</td>
-                  <td className="py-3 px-4">{leave.from}</td>
-                  <td className="py-3 px-4">{leave.to}</td>
-                  <td className="py-3 px-4 font-medium">{leave.days}</td>
-                  <td className="py-3 px-4">
-                    <Badge tone={leave.status === "Approved" ? "success" : leave.status === "Rejected" ? "danger" : "warn"}>{leave.status}</Badge>
-                  </td>
+        {pageLoading ? (
+          <div className="h-40 flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl animate-pulse bg-muted/10">
+            Loading leave request history...
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b">
+                <tr>
+                  {["Leave Type", "From", "To", "Days", "Status"].map((column) => (
+                    <th
+                      key={column}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {column}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y">
+                {history.map((leave, index) => (
+                  <tr key={leave.id || index} className="hover:bg-accent/50 transition">
+                    <td className="py-3 px-4 font-medium">{leave.type}</td>
+                    <td className="py-3 px-4">{leave.from}</td>
+                    <td className="py-3 px-4">{leave.to}</td>
+                    <td className="py-3 px-4 font-medium">{leave.days}</td>
+                    <td className="py-3 px-4">
+                      <Badge tone={leave.status === "Approved" ? "success" : leave.status === "Rejected" ? "danger" : "warn"}>{leave.status}</Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Card>
     </div>
   );

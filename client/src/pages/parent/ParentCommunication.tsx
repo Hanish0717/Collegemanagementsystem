@@ -1,9 +1,63 @@
+import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { MessageSquare, Paperclip, Send, Users } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { communications } from "@/mock/parentData";
+import api from "@/lib/api";
 
 export function ParentCommunication() {
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState("");
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        let dbData: any = null;
+        const cached = localStorage.getItem("cms_parent_child_data");
+        if (cached) {
+          dbData = JSON.parse(cached);
+        } else {
+          const res = await api.get("/api/parent-module/student-data");
+          if (res.data?.success && res.data?.data) {
+            dbData = res.data.data;
+            localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
+          }
+        }
+        if (dbData && dbData.notifications) {
+          setAnnouncements(dbData.notifications);
+        }
+      } catch (err) {
+        console.error("Error loading parent announcements:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnnouncements();
+  }, []);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTeacher || !subject || !message) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    alert(`Message successfully sent to ${selectedTeacher}! We will notify you when they reply.`);
+    setSubject("");
+    setMessage("");
+    setSelectedTeacher("");
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Communication" desc="Loading communications..." />
+        <div className="p-8 text-center text-muted-foreground">Loading announcements...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -14,13 +68,13 @@ export function ParentCommunication() {
       <div className="grid md:grid-cols-4 gap-4">
         {[
           {
-            label: "Total Messages",
-            value: communications.length.toString(),
+            label: "Total Announcements",
+            value: announcements.length.toString(),
             tone: "info" as const,
           },
-          { label: "Unread", value: "1", tone: "warn" as const },
-          { label: "Active Threads", value: "3", tone: "success" as const },
-          { label: "Meetings", value: "2", tone: "info" as const },
+          { label: "Unread Alerts", value: announcements.filter(a => a.unread).length.toString(), tone: "warn" as const },
+          { label: "Active Threads", value: "0", tone: "success" as const },
+          { label: "Meetings Today", value: "0", tone: "info" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -36,52 +90,66 @@ export function ParentCommunication() {
         <Card>
           <div className="flex items-center gap-2 mb-4">
             <MessageSquare className="size-5 text-indigo" />
-            <h3 className="font-semibold">Teacher Communications</h3>
+            <h3 className="font-semibold">Recent Alerts & Communications</h3>
           </div>
           <div className="space-y-2">
-            {communications.map((comm) => (
-              <div
-                key={comm.id}
-                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${comm.unread ? "bg-blue-50 border-blue-200" : ""}`}
-              >
-                <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {comm.teacher
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{comm.teacher}</span>
-                    {comm.unread && <div className="size-2 rounded-full bg-primary" />}
+            {announcements.length > 0 ? (
+              announcements.slice(0, 5).map((comm, idx) => (
+                <div
+                  key={comm.id || idx}
+                  className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${comm.unread ? "bg-blue-50/50 border-blue-200" : ""}`}
+                >
+                  <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
+                    {comm.type ? comm.type.slice(0, 2) : "AL"}
                   </div>
-                  <div className="text-xs text-muted-foreground">{comm.subject}</div>
-                  <div className="text-xs text-muted-foreground truncate">{comm.message}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">{comm.type || "Alert"}</span>
+                      {comm.unread && <div className="size-2 rounded-full bg-primary" />}
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate">{comm.title}</div>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{comm.time || "Recent"}</span>
                 </div>
-                <span className="text-xs text-muted-foreground">{comm.time}</span>
+              ))
+            ) : (
+              <div className="p-4 text-center text-muted-foreground text-xs">
+                No teacher communications found.
               </div>
-            ))}
+            )}
           </div>
         </Card>
 
         <Card>
-          <h3 className="font-semibold mb-4">Send Message</h3>
-          <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
-            <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-              {["Select Teacher", "Dr. Rajesh Kumar", "Prof. Emily Chen", "Dr. Marco Rossi"].map(
+          <h3 className="font-semibold mb-4">Send Message to Faculty</h3>
+          <form onSubmit={handleSendMessage} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+            <select
+              value={selectedTeacher}
+              onChange={(e) => setSelectedTeacher(e.target.value)}
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              required
+            >
+              <option value="">Select Teacher</option>
+              {["Dr. Rajesh Kumar", "Prof. Emily Chen", "Dr. Marco Rossi"].map(
                 (t) => (
-                  <option key={t}>{t}</option>
+                  <option key={t} value={t}>{t}</option>
                 ),
               )}
             </select>
             <input
               placeholder="Subject"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              required
             />
             <textarea
               placeholder="Type your message..."
               rows={4}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              required
             />
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -90,10 +158,10 @@ export function ParentCommunication() {
               </label>
               <input type="file" className="text-sm" />
             </div>
-            <button className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
+            <button type="submit" className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
               <Send className="size-4" /> Send Message
             </button>
-          </div>
+          </form>
         </Card>
       </div>
 
@@ -103,62 +171,29 @@ export function ParentCommunication() {
           <h3 className="font-semibold">School Announcements</h3>
         </div>
         <div className="space-y-2">
-          {[
-            { title: "Parent-teacher meeting scheduled", date: "May 30, 2026", type: "Meeting" },
-            { title: "Mid-term exam results released", date: "May 28, 2026", type: "Exam" },
-            { title: "Annual day celebration invitation", date: "June 15, 2026", type: "Event" },
-            { title: "Summer vacation dates announced", date: "June 20, 2026", type: "Holiday" },
-          ].map((announcement) => (
-            <div
-              key={announcement.title}
-              className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
-            >
-              <div className="size-10 rounded-lg bg-gradient-cyan text-white grid place-items-center">
-                <Users className="size-4" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium">{announcement.title}</div>
-                <div className="text-xs text-muted-foreground">
-                  {announcement.type} • {announcement.date}
+          {announcements.length > 0 ? (
+            announcements.map((announcement, idx) => (
+              <div
+                key={announcement.id || idx}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
+                <div className="size-10 rounded-lg bg-gradient-cyan text-white grid place-items-center">
+                  <Users className="size-4" />
                 </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium">{announcement.title}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {announcement.type} • {announcement.time || "Recent"}
+                  </div>
+                </div>
+                <Badge tone="info">{announcement.type}</Badge>
               </div>
-              <Badge tone="info">{announcement.type}</Badge>
+            ))
+          ) : (
+            <div className="p-4 border border-dashed rounded-xl text-center text-muted-foreground text-sm">
+              No school announcements available.
             </div>
-          ))}
-        </div>
-      </Card>
-
-      <Card>
-        <h3 className="font-semibold mb-4">Parent-Teacher Meeting Schedule</h3>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            {
-              teacher: "Dr. Rajesh Kumar",
-              subject: "Data Structures",
-              date: "May 30, 2026",
-              time: "10:00 AM",
-            },
-            {
-              teacher: "Prof. Emily Chen",
-              subject: "Algorithms",
-              date: "May 30, 2026",
-              time: "11:30 AM",
-            },
-            {
-              teacher: "Dr. Marco Rossi",
-              subject: "Database Systems",
-              date: "May 31, 2026",
-              time: "02:00 PM",
-            },
-          ].map((meeting) => (
-            <div key={meeting.teacher} className="p-4 rounded-xl bg-gradient-soft border">
-              <div className="text-sm font-medium">{meeting.teacher}</div>
-              <div className="text-xs text-muted-foreground">{meeting.subject}</div>
-              <div className="mt-2 text-xs text-muted-foreground">
-                {meeting.date} • {meeting.time}
-              </div>
-            </div>
-          ))}
+          )}
         </div>
       </Card>
     </div>

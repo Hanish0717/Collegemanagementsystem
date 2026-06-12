@@ -30,7 +30,6 @@ import {
 } from "recharts";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { supabase } from "@/lib/supabaseClient";
-import { stats as mockStats } from "@/mock/mockData";
 import { fetchDashboardData, type DashboardStats } from "@/services/dashboardService";
 import { getActiveRole } from "@/lib/roles";
 import { getStoredUser } from "@/services/authService";
@@ -175,7 +174,7 @@ export function DashboardIndex() {
     ? wardenStats.filter(s =>
         ["Hostel Students", "Total Rooms", "Occupied Rooms", "Available Rooms", "Pending Complaints", "Fee Collection", "Pending Fees", "Visitors Today"].includes(s.label)
       )
-    : (stats.length > 0 ? stats : mockStats);
+    : stats;
 
   const getIcon = (label: string, index: number) => {
     if (isWarden) {

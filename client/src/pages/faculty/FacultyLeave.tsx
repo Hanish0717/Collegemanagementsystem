@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle, Clock, Send } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { leaveApplications } from "@/mock/facultyData";
 import api from "@/lib/api";
 
 export function FacultyLeave() {
-  const [history, setHistory] = useState<any[]>(leaveApplications);
+  const [history, setHistory] = useState<any[]>([]);
   const [leaveType, setLeaveType] = useState("Sick Leave");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -18,16 +17,14 @@ export function FacultyLeave() {
       const res = await api.get("/api/faculty-module/leave");
       if (res.data?.success && res.data?.data) {
         const dbLeaves = res.data.data.map((l: any) => ({
-          id: l._id,
+          id: l._id || l.id,
           type: l.type,
-          from: new Date(l.from).toISOString().split('T')[0],
-          to: new Date(l.to).toISOString().split('T')[0],
+          from: new Date(l.from || l.from_date).toISOString().split('T')[0],
+          to: new Date(l.to || l.to_date).toISOString().split('T')[0],
           days: l.days,
           status: l.status
         }));
-        if (dbLeaves.length > 0) {
-          setHistory(dbLeaves);
-        }
+        setHistory(dbLeaves);
       }
     } catch (err) {
       console.error("Error loading faculty leave requests:", err);

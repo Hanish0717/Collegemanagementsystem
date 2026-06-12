@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle, Clock, Send } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { leaveHistory as mockLeaveHistory } from "@/mock/parentData";
 import api from "@/lib/api";
 
 export function ParentLeave() {
-  const [history, setHistory] = useState<any[]>(mockLeaveHistory);
+  const [history, setHistory] = useState<any[]>([]);
   const [leaveType, setLeaveType] = useState("Sick Leave");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -18,17 +17,15 @@ export function ParentLeave() {
       const res = await api.get("/api/parent-module/leave");
       if (res.data?.success && res.data?.data) {
         const dbLeaves = res.data.data.map((l: any) => ({
-          date: new Date(l.from).toISOString().split('T')[0],
+          date: new Date(l.from_date || l.from).toISOString().split('T')[0],
           reason: l.reason || "",
-          appliedOn: new Date(l.createdAt).toISOString().split('T')[0],
+          appliedOn: new Date(l.created_at || l.createdAt || Date.now()).toISOString().split('T')[0],
           status: l.status,
           remarks: l.remarks || (l.status === "Approved" ? "Approved by Faculty" : "Awaiting approval"),
           days: l.days,
           type: l.type
         }));
-        if (dbLeaves.length > 0) {
-          setHistory(dbLeaves);
-        }
+        setHistory(dbLeaves);
       }
     } catch (err) {
       console.error("Error loading child leave requests:", err);

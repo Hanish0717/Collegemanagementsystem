@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Download, FileText, Search, Video } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { studyMaterials } from "@/mock/studentData";
 import api from "@/lib/api";
 
 export function StudentMaterials() {

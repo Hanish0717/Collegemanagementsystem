@@ -54,10 +54,7 @@ export function StudentDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [studentProfile, setStudentProfile] = useState<any>(() => {
-    const stored = localStorage.getItem("cms_student_profile");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [studentProfile, setStudentProfile] = useState<any>(null);
 
   const [stats, setStats] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
@@ -207,7 +204,11 @@ export function StudentDashboard() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.length > 0 ? (
+        {loading ? (
+          [1, 2, 3, 4].map((n) => (
+            <Card key={n} className="h-28 animate-pulse bg-muted/40" />
+          ))
+        ) : (
           stats
             .filter((stat) => stat.label !== "Pending Assignments")
             .map((stat, i) => (
@@ -215,12 +216,6 @@ export function StudentDashboard() {
                 <StatCard label={stat.label} value={stat.value} change={stat.change} icon={statIcons[i % statIcons.length]} gradient={statGradients[i % statGradients.length]} />
               </motion.div>
             ))
-        ) : (
-          [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-28 animate-pulse bg-muted/40">
-              <div />
-            </Card>
-          ))
         )}
       </div>
 
@@ -231,10 +226,12 @@ export function StudentDashboard() {
               <h3 className="font-semibold">Attendance Summary</h3>
               <p className="text-xs text-muted-foreground">{displayMonth} breakdown</p>
             </div>
-            <Badge tone="success">{currentAttendance}</Badge>
+            {!loading && <Badge tone="success">{currentAttendance}</Badge>}
           </div>
           <div className="h-72">
-            {attendanceHistoryData.length > 0 ? (
+            {loading ? (
+              <div className="h-full w-full bg-muted/20 animate-pulse rounded-xl" />
+            ) : attendanceHistoryData.length > 0 ? (
               <ResponsiveContainer>
                 <BarChart data={attendanceHistoryData}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
@@ -287,10 +284,12 @@ export function StudentDashboard() {
               <h3 className="font-semibold">GPA & CGPA Progress</h3>
               <p className="text-xs text-muted-foreground">Semester-wise GPA and Cumulative CGPA tracking</p>
             </div>
-            <Badge tone="success">{currentCgpa}</Badge>
+            {!loading && <Badge tone="success">{currentCgpa}</Badge>}
           </div>
           <div className="h-72">
-            {gpaData.length > 0 ? (
+            {loading ? (
+              <div className="h-full w-full bg-muted/20 animate-pulse rounded-xl" />
+            ) : gpaData.length > 0 ? (
               <ResponsiveContainer>
                 <LineChart data={gpaData}>
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
@@ -315,12 +314,18 @@ export function StudentDashboard() {
             <h3 className="font-semibold">Academic Summary</h3>
           </div>
           <div className="space-y-3">
-            {academicSummaryItems.map(item => (
-              <div key={item.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
-                <span className="text-sm text-muted-foreground">{item.label}</span>
-                <span className="font-bold">{item.value}</span>
-              </div>
-            ))}
+            {loading ? (
+              [1, 2, 3, 4].map((n) => (
+                <div key={n} className="h-11 bg-muted/20 animate-pulse rounded-xl border" />
+              ))
+            ) : (
+              academicSummaryItems.map(item => (
+                <div key={item.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
+                  <span className="text-sm text-muted-foreground">{item.label}</span>
+                  <span className="font-bold">{item.value}</span>
+                </div>
+              ))
+            )}
           </div>
         </Card>
       </div>
@@ -332,7 +337,11 @@ export function StudentDashboard() {
             <Badge tone="info">Live</Badge>
           </div>
           <div className="space-y-3">
-            {activities.length > 0 ? (
+            {loading ? (
+              [1, 2, 3].map((n) => (
+                <div key={n} className="h-14 bg-muted/20 animate-pulse rounded-xl border" />
+              ))
+            ) : activities.length > 0 ? (
               activities.map((activity, idx) => (
                 <div key={activity.actor + activity.time + idx} className="flex items-center gap-3 py-2 border-b last:border-0">
                   <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
@@ -361,7 +370,11 @@ export function StudentDashboard() {
             <Bell className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            {notifications.length > 0 ? (
+            {loading ? (
+              [1, 2, 3].map((n) => (
+                <div key={n} className="h-16 bg-muted/20 animate-pulse rounded-xl border" />
+              ))
+            ) : notifications.length > 0 ? (
               notifications.map((notification) => (
                 <div
                   key={notification.id}

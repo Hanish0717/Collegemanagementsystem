@@ -334,11 +334,11 @@ export const createAdmin = async (req, res, next) => {
     // Check duplicate email
     const { data: existingUser } = await supabase
       .from('users')
-      .select('id')
+      .select('id, is_verified, role')
       .eq('email', email.toLowerCase().trim())
       .maybeSingle();
 
-    if (existingUser) {
+    if (existingUser && (existingUser.is_verified || existingUser.role !== 'admin')) {
       const error = new Error('User with this email already exists');
       error.statusCode = 400;
       throw error;
@@ -347,11 +347,11 @@ export const createAdmin = async (req, res, next) => {
     // Check duplicate employee ID
     const { data: existingAdmin } = await supabase
       .from('admins')
-      .select('id')
+      .select('id, user_id')
       .eq('employee_id', employeeId.toUpperCase().trim())
       .maybeSingle();
 
-    if (existingAdmin) {
+    if (existingAdmin && (!existingUser || existingAdmin.user_id !== existingUser.id)) {
       const error = new Error('Admin with this employee ID already exists');
       error.statusCode = 400;
       throw error;
@@ -362,42 +362,98 @@ export const createAdmin = async (req, res, next) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(tempPassword, salt);
 
-    // Create User record (unverified)
-    const { data: user, error: userErr } = await supabase
-      .from('users')
-      .insert([{
-        name: fullName,
-        full_name: fullName,
-        email: email.toLowerCase().trim(),
-        role: 'admin',
-        password: hashedPassword,
-        temp_password: tempPassword,
-        is_verified: false,
-        is_active: true
-      }])
-      .select()
-      .single();
+    let user;
+    if (existingUser) {
+      // Update existing unverified user
+      const { data: updatedUser, error: userErr } = await supabase
+        .from('users')
+        .update({
+          name: fullName,
+          full_name: fullName,
+          password: hashedPassword,
+          temp_password: tempPassword,
+          is_active: true
+        })
+        .eq('id', existingUser.id)
+        .select()
+        .single();
 
-    if (userErr) throw userErr;
-    createdUserId = user.id;
+      if (userErr) throw userErr;
+      user = updatedUser;
+    } else {
+      // Create User record (unverified)
+      const { data: newUser, error: userErr } = await supabase
+        .from('users')
+        .insert([{
+          name: fullName,
+          full_name: fullName,
+          email: email.toLowerCase().trim(),
+          role: 'admin',
+          password: hashedPassword,
+          temp_password: tempPassword,
+          is_verified: false,
+          is_active: true
+        }])
+        .select()
+        .single();
 
-    // Create Admin profile record
-    const { data: adminProfile, error: adminErr } = await supabase
+      if (userErr) throw userErr;
+      user = newUser;
+      createdUserId = user.id;
+    }
+
+    // Create or update Admin profile record
+    let adminProfile;
+    const { data: existingAdminProfile } = await supabase
       .from('admins')
-      .insert([{
-        user_id: user.id,
-        full_name: fullName,
-        email: email.toLowerCase().trim(),
-        employee_id: employeeId.toUpperCase().trim(),
-        department: department || null,
-        is_active: true
-      }])
-      .select()
-      .single();
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-    if (adminErr) {
-      await supabase.from('users').delete().eq('id', createdUserId);
-      throw adminErr;
+    if (existingAdminProfile) {
+      // Update existing admin profile
+      const { data: updatedProfile, error: adminErr } = await supabase
+        .from('admins')
+        .update({
+          full_name: fullName,
+          email: email.toLowerCase().trim(),
+          employee_id: employeeId.toUpperCase().trim(),
+          department: department || null,
+          is_active: true
+        })
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (adminErr) {
+        if (createdUserId) {
+          await supabase.from('users').delete().eq('id', createdUserId);
+        }
+        throw adminErr;
+      }
+      adminProfile = updatedProfile;
+    } else {
+      // Insert new admin profile
+      const { data: newProfile, error: adminErr } = await supabase
+        .from('admins')
+        .insert([{
+          user_id: user.id,
+          full_name: fullName,
+          email: email.toLowerCase().trim(),
+          employee_id: employeeId.toUpperCase().trim(),
+          department: department || null,
+          is_active: true
+        }])
+        .select()
+        .single();
+
+      if (adminErr) {
+        if (createdUserId) {
+          await supabase.from('users').delete().eq('id', createdUserId);
+        }
+        throw adminErr;
+      }
+      adminProfile = newProfile;
     }
 
     // Generate 6-digit OTP

@@ -28,7 +28,6 @@ import {
 } from "lucide-react";
 import { getActiveRole, type Role } from "@/lib/roles";
 import { useAuth } from "@/contexts/AuthContext";
-import { students, faculty, books, libraryNotifications } from "@/mock/mockData";
 import { toast } from "sonner";
 import { Badge } from "@/components/dashboard/ui";
 import { StudentFormModal } from "@/pages/dashboard/students/StudentDialogs";
@@ -86,7 +85,7 @@ export function DashboardLayout() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Notifications State
-  const [localNotifications, setLocalNotifications] = useState(libraryNotifications);
+  const [localNotifications, setLocalNotifications] = useState<any[]>([]);
 
   // Quick Action Modal States
   const [activeQuickAction, setActiveQuickAction] = useState<string | null>(null);
@@ -455,52 +454,58 @@ export function DashboardLayout() {
           setActiveIndex(-1);
         }
       } else {
-        const queryLower = q.toLowerCase();
-        // 1. Search books
-        books.forEach((b) => {
-          if (b.title.toLowerCase().includes(queryLower) || b.author.toLowerCase().includes(queryLower)) {
+        try {
+          const { data: dbStudents } = await supabase
+            .from("students")
+            .select("full_name, roll_number, department")
+            .or(`full_name.ilike.%${q}%,roll_number.ilike.%${q}%`)
+            .limit(3);
+
+          (dbStudents || []).forEach(s => {
+            results.push({
+              type: "Student",
+              label: s.full_name,
+              subtitle: `Roll No: ${s.roll_number} • Dept: ${s.department}`,
+              dept: s.department
+            });
+          });
+
+          const { data: dbFaculty } = await supabase
+            .from("faculty")
+            .select("full_name, department")
+            .or(`full_name.ilike.%${q}%`)
+            .limit(3);
+
+          (dbFaculty || []).forEach(f => {
+            results.push({
+              type: "Faculty",
+              label: f.full_name,
+              subtitle: `Dept: ${f.department}`
+            });
+          });
+
+          const { data: dbBooks } = await supabase
+            .from("books")
+            .select("title, author, category")
+            .or(`title.ilike.%${q}%,author.ilike.%${q}%`)
+            .limit(3);
+
+          (dbBooks || []).forEach(b => {
             results.push({
               type: "Book",
               label: b.title,
               subtitle: `by ${b.author}`,
-              category: b.category,
+              category: b.category
             });
-          }
-        });
+          });
 
-        // 2. Search students
-        students.forEach((s) => {
-          if (s.name.toLowerCase().includes(queryLower) || s.id.toLowerCase().includes(queryLower)) {
-            results.push({ type: "Student", label: s.name, subtitle: `ID: ${s.id}`, dept: s.dept });
-          }
-        });
-
-        // 3. Search faculty
-        faculty.forEach((f) => {
-          if (f.name.toLowerCase().includes(queryLower) || f.id.toLowerCase().includes(queryLower)) {
-            results.push({ type: "Faculty", label: f.name, subtitle: `Dept: ${f.dept}` });
-          }
-        });
-
-        // 4. Search departments
-        const depts = [
-          "Computer Science",
-          "Information Technology",
-          "Electronics & Communication",
-          "Mechanical Engineering",
-          "Electrical Engineering",
-          "Civil Engineering",
-          "Business Administration",
-        ];
-        depts.forEach((d) => {
-          if (d.toLowerCase().includes(queryLower)) {
-            results.push({ type: "Department", label: d, subtitle: "Academic Department" });
-          }
-        });
-
-        setSuggestions(results.slice(0, 7));
-        setIsSearching(false);
-        setActiveIndex(-1);
+          setSuggestions(results.slice(0, 7));
+        } catch (err) {
+          console.error("Global search query error:", err);
+        } finally {
+          setIsSearching(false);
+          setActiveIndex(-1);
+        }
       }
     }, 250);
 

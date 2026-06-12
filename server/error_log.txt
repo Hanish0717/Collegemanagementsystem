@@ -1576,3 +1576,62 @@ Stack: Error: Invalid credentials
     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
 Body: {"email":"parent@college.com","password":"password123"}
 
+[2026-06-01T18:07:39.213Z] POST /api/ai/chat - Status: 500 - Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [404 Not Found] models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.
+    at handleResponseNotOk (file:///F:/Projects/Collegemanagementsystem/server/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async makeRequest (file:///F:/Projects/Collegemanagementsystem/server/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///F:/Projects/Collegemanagementsystem/server/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async handleAIChat (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/aiController.js:416:20)
+Body: {"message":"HELLO","conversationId":null}
+
+[2026-06-01T18:15:27.960Z] POST /api/ai/chat - Status: 500 - Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [503 Service Unavailable] This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.
+Stack: Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent: [503 Service Unavailable] This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.
+    at handleResponseNotOk (file:///F:/Projects/Collegemanagementsystem/server/node_modules/@google/generative-ai/dist/index.mjs:432:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async makeRequest (file:///F:/Projects/Collegemanagementsystem/server/node_modules/@google/generative-ai/dist/index.mjs:401:9)
+    at async generateContent (file:///F:/Projects/Collegemanagementsystem/server/node_modules/@google/generative-ai/dist/index.mjs:865:22)
+    at async handleAIChat (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/aiController.js:416:20)
+Body: {"message":"WHEN WAS RESULTS?","conversationId":"59ab59bc-afe4-46a9-ab94-4ed05a5320f5"}
+
+[2026-06-05T16:18:56.851Z] POST /api/super-admin/admins - Status: 400 - Error: User with this email already exists
+Stack: Error: User with this email already exists
+    at createAdmin (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:342:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+
+[2026-06-05T16:19:05.575Z] POST /api/super-admin/admins - Status: 400 - Error: User with this email already exists
+Stack: Error: User with this email already exists
+    at createAdmin (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:342:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+
+[2026-06-05T16:19:06.610Z] POST /api/super-admin/admins - Status: 400 - Error: User with this email already exists
+Stack: Error: User with this email already exists
+    at createAdmin (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:342:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+
+[2026-06-05T16:19:07.315Z] POST /api/super-admin/admins - Status: 400 - Error: User with this email already exists
+Stack: Error: User with this email already exists
+    at createAdmin (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:342:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+
+[2026-06-05T16:19:07.637Z] POST /api/super-admin/admins - Status: 400 - Error: User with this email already exists
+Stack: Error: User with this email already exists
+    at createAdmin (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:342:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+
+[2026-06-05T16:19:07.840Z] POST /api/super-admin/admins - Status: 400 - Error: User with this email already exists
+Stack: Error: User with this email already exists
+    at createAdmin (file:///F:/Projects/Collegemanagementsystem/server/src/controllers/superAdminController.js:342:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+
+[2026-06-05T16:21:19.060Z] POST /api/super-admin/admins - Status: 400 - Client Error: User with this email already exists - Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+[2026-06-05T16:21:50.381Z] POST /api/super-admin/admins - Status: 400 - Client Error: User with this email already exists - Body: {"fullName":"HANISH","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+[2026-06-05T16:21:51.896Z] POST /api/super-admin/admins - Status: 400 - Client Error: User with this email already exists - Body: {"fullName":"HANISH","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+[2026-06-05T16:21:53.028Z] POST /api/super-admin/admins - Status: 400 - Client Error: User with this email already exists - Body: {"fullName":"HANISH","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}
+[2026-06-05T16:21:53.921Z] POST /api/super-admin/admins - Status: 400 - Client Error: User with this email already exists - Body: {"fullName":"HANISH","email":"hanishvavilapalli17@gmail.com","employeeId":"ADMIN003"}

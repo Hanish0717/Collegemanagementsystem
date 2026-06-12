@@ -3,18 +3,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Download, Filter, TrendingUp, AlertTriangle } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { performanceData as mockPerformanceData } from "@/mock/facultyData";
 import api from "@/lib/api";
 
 export function FacultyPerformance() {
-  const [performance, setPerformance] = useState<any[]>(mockPerformanceData);
+  const [performance, setPerformance] = useState<any[]>([]);
   const [filterType, setFilterType] = useState("All Students");
 
   useEffect(() => {
     const fetchPerformance = async () => {
       try {
         const res = await api.get("/api/faculty-module/performance");
-        if (res.data?.success && res.data?.data && res.data.data.length > 0) {
+        if (res.data?.success && res.data?.data) {
           setPerformance(res.data.data);
         }
       } catch (err) {

@@ -34,16 +34,12 @@ export function SuperAdminCourses() {
     queryFn: fetchDepartments,
   });
 
-  const departmentsList = useMemo(() => {
-    return departmentsData.map(d => d.name);
-  }, [departmentsData]);
-
   // Initialize department dropdown selection if empty
   useEffect(() => {
-    if (departmentsList.length > 0 && !selectedDept) {
-      setSelectedDept(departmentsList[0]);
+    if (departmentsData.length > 0 && !selectedDept) {
+      setSelectedDept(departmentsData[0].id);
     }
-  }, [departmentsList, selectedDept]);
+  }, [departmentsData, selectedDept]);
 
   const addMutation = useMutation({
     mutationFn: addCourse,
@@ -95,8 +91,8 @@ export function SuperAdminCourses() {
     setEditingCourse(null);
     setCode("");
     setName("");
-    if (departmentsList.length > 0) {
-      setSelectedDept(departmentsList[0]);
+    if (departmentsData.length > 0) {
+      setSelectedDept(departmentsData[0].id);
     }
     setSemester("Semester 1");
     setCredits(3);
@@ -160,8 +156,6 @@ export function SuperAdminCourses() {
     }
   };
 
-  const departments = ["All", ...departmentsList];
-  
   const filtered = useMemo(
     () =>
       courses.filter(
@@ -205,8 +199,9 @@ export function SuperAdminCourses() {
             onChange={(event) => setDepartment(event.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm outline-none focus:border-primary transition cursor-pointer"
           >
-            {departments.map((item) => (
-              <option key={item}>{item}</option>
+            <option value="All">All Departments</option>
+            {departmentsData.map((item) => (
+              <option key={item.id} value={item.id}>{item.name}</option>
             ))}
           </select>
         </div>
@@ -331,7 +326,7 @@ export function SuperAdminCourses() {
                 <option>Loading...</option>
               ) : (
                 departmentsData.map((dept) => (
-                  <option key={dept.id} value={dept.name}>{dept.name}</option>
+                  <option key={dept.id} value={dept.id}>{dept.name}</option>
                 ))
               )}
             </select>

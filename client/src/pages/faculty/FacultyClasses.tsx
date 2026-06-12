@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, Plus, Play, Video } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { onlineClasses } from "@/mock/facultyData";
 import api from "@/lib/api";
 
 export function FacultyClasses() {

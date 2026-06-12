@@ -42,6 +42,9 @@ function LoginForm() {
     localStorage.removeItem("cms_token");
     localStorage.removeItem("cms_user");
     localStorage.removeItem("campusly.role");
+    localStorage.removeItem("cms_student_profile");
+    localStorage.removeItem("cms_parent_child_data");
+    localStorage.removeItem("cms_faculty_profile");
   }, []);
 
   const [roleId, setRoleId] = useState<RoleId | null>("student");

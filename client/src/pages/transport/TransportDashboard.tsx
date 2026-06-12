@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { buses as mockBuses } from "@/mock/mockData";
 import { 
   Bus, MapPin, User, Users, Search, ShieldCheck, Phone, ShieldAlert, Navigation, Lock,
   Compass, Map, Layers, Activity, PlusCircle, ArrowRight, Eye 
@@ -241,8 +240,8 @@ export function TransportDashboard() {
         setLoadingBuses(false);
       })
       .catch((err) => {
-        console.warn("Failed to load live transport data, using fallback mock data:", err);
-        setBuses(mockBuses as any);
+        console.warn("Failed to load live transport data:", err);
+        setBuses([]);
         setLoadingBuses(false);
       });
       
