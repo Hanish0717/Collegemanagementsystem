@@ -12,11 +12,13 @@ import {
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
+import { validateRequest } from '../middleware/validationMiddleware.js';
+import { validateRegisterInput, validateLoginInput } from '../validations/authValidation.js';
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.post('/register', validateRequest(validateRegisterInput), register);
+router.post('/login', validateRequest(validateLoginInput), login);
 router.post('/google', googleAuth);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);

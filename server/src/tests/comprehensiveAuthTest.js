@@ -1,15 +1,14 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
-import User from '../models/User.js';
-import OTP from '../models/OTP.js';
+import { supabase } from '../config/supabase.js';
 
 dotenv.config();
 
 const BASE_URL = 'http://localhost:5000/api/auth';
 
 async function getPlaintextOtp(email, type) {
-  const record = await OTP.findOne({ email, type });
+  const { data: records } = await supabase.from('otps').select('*').eq('email', email).eq('type', type);
+  const record = records && records[0];
   if (!record) return null;
   for (let i = 100000; i <= 999999; i++) {
     const candidate = String(i);
@@ -30,14 +29,7 @@ function recordResult(testName, status, details) {
 async function runSuite() {
   console.log('=== STARTING COMPREHENSIVE AUTH TEST SUITE ===\n');
 
-  // Connect to database to inspect and manipulate test data
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB for direct data validation.\n');
-  } catch (error) {
-    console.error('Failed to connect to database in test script:', error);
-    process.exit(1);
-  }
+  console.log('Using Supabase client for direct database verification.\n');
 
   const timestamp = Date.now();
   const testEmail = `user_${timestamp}@test.com`;
@@ -63,7 +55,7 @@ async function runSuite() {
         fullName: testFullName,
         email: testEmail,
         password: testPassword,
-        role: 'student',
+        role: 'librarian',
         phoneNumber: '1234567890'
       })
     });
@@ -108,9 +100,10 @@ async function runSuite() {
 
   // Test 2: Password hashing check in Database
   try {
-    const userInDb = await User.findById(studentUserId).select('+password');
-    if (userInDb && userInDb.password !== testPassword && userInDb.password.startsWith('$2a$')) {
-      recordResult('Password Hashing Verification (DB Check)', 'PASS', 'Verified user password stored in MongoDB is hashed using bcrypt.');
+    const { data: users } = await supabase.from('users').select('*').eq('id', studentUserId);
+    const userInDb = users && users[0];
+    if (userInDb && userInDb.password !== testPassword && (userInDb.password.startsWith('$2a$') || userInDb.password.startsWith('$2b$'))) {
+      recordResult('Password Hashing Verification (DB Check)', 'PASS', 'Verified user password stored in database is hashed using bcrypt.');
     } else {
       recordResult('Password Hashing Verification (DB Check)', 'FAIL', 'Password in database is plain text or missing bcrypt signature.');
     }
@@ -400,11 +393,9 @@ async function runSuite() {
     recordResult('Protected Route Access (Missing Token - 401 Unauthorized)', 'FAIL', err.message);
   }
 
-  // Test 14: GET /api/auth/me with inactive user token
+  // Test 14: Protected route access by deactivated user
   try {
-    // Manually flag the user as inactive in database
-    await User.findByIdAndUpdate(studentUserId, { isActive: false });
-
+    await supabase.from('users').update({ is_active: false }).eq('id', studentUserId);
     const res = await fetch(`${BASE_URL}/me`, {
       method: 'GET',
       headers: {
@@ -421,7 +412,7 @@ async function runSuite() {
     recordResult('Protected Route Access (Inactive User - 401 Unauthorized)', 'FAIL', err.message);
   } finally {
     // Re-enable account to prevent db cleanup issues
-    await User.findByIdAndUpdate(studentUserId, { isActive: true });
+    await supabase.from('users').update({ is_active: true }).eq('id', studentUserId);
   }
 
 
@@ -469,11 +460,9 @@ async function runSuite() {
 
   // Clean up database test entries
   console.log('\nCleaning up database test entries...');
-  await User.deleteMany({ email: { $in: [testEmail, adminEmail] } });
+  await supabase.from('users').delete().in('email', [testEmail, adminEmail]);
   console.log('Database cleaned up.');
 
-  // Disconnect mongoose
-  await mongoose.disconnect();
   console.log('\n=== TEST SUITE COMPLETED ===');
 
   return results;

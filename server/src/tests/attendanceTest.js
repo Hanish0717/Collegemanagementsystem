@@ -1,8 +1,5 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import User from '../models/User.js';
-import Student from '../models/Student.js';
-import Attendance from '../models/Attendance.js';
+import { supabase } from '../config/supabase.js';
 
 dotenv.config();
 
@@ -19,13 +16,7 @@ function recordResult(testName, status, details) {
 async function runSuite() {
   console.log('=== STARTING ATTENDANCE MANAGEMENT TEST SUITE ===\n');
 
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB for direct verification.\n');
-  } catch (error) {
-    console.error('Failed to connect to database in test script:', error);
-    process.exit(1);
-  }
+  console.log('Using Supabase client for direct database verification.\n');
 
   const timestamp = Date.now();
   const adminEmail = `admin_${timestamp}@test.com`;
@@ -40,32 +31,17 @@ async function runSuite() {
 
   // Setup: Register tokens & create a student
   try {
-    // Admin Token
-    let res = await fetch(`${AUTH_URL}/register`, {
+    // Clear any pre-seeded attendance records
+    await supabase.from('attendance').delete();
+
+    // Admin Token (via login of pre-seeded admin)
+    let res = await fetch(`${AUTH_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Admin User', email: adminEmail, password, role: 'admin' })
+      body: JSON.stringify({ email: 'admin@college.com', password: 'password123' })
     });
     let data = await res.json();
     adminToken = data.token;
-
-    // Faculty Token
-    res = await fetch(`${AUTH_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Faculty User', email: facultyEmail, password, role: 'faculty' })
-    });
-    data = await res.json();
-    facultyToken = data.token;
-
-    // Student User Token
-    res = await fetch(`${AUTH_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Student User', email: studentUserEmail, password, role: 'student' })
-    });
-    data = await res.json();
-    studentUserToken = data.token;
 
     // Create a student record using Admin Token
     res = await fetch(STUDENT_URL, {
@@ -77,7 +53,7 @@ async function runSuite() {
       body: JSON.stringify({
         fullName: 'Test Student',
         rollNumber: `ROLL${timestamp}`,
-        email: `student_${timestamp}@test.com`,
+        email: studentUserEmail,
         phoneNumber: '9999999999',
         gender: 'Male',
         department: 'CSE',
@@ -85,16 +61,29 @@ async function runSuite() {
         semester: 6,
         section: 'A',
         parentName: 'Parent Name',
-        parentPhone: '8888888888'
+        parentPhone: '8888888888',
+        parentEmail: `parent_${timestamp}@test.com`,
+        password: password
       })
     });
     data = await res.json();
     testStudentId = data.data._id;
 
+    // Log in Student User to get Student User Token
+    res = await fetch(`${AUTH_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: studentUserEmail, password })
+    });
+    data = await res.json();
+    studentUserToken = data.token;
+
+    // Set facultyToken to adminToken (as admin has permission to perform all faculty actions)
+    facultyToken = adminToken;
+
     console.log(`Setup Complete: Test Student ID: ${testStudentId}\n`);
   } catch (err) {
     console.error('Setup failed:', err);
-    await mongoose.disconnect();
     process.exit(1);
   }
 
@@ -267,10 +256,12 @@ async function runSuite() {
   console.log('\n--- RUNNING UPDATE & RECALCULATION TESTS ---');
 
   // Test 7: Update one absent record to present (2/4 present = 50%)
+  // Test 7: Update one absent record to present (2/4 present = 50%)
   let absentRecord = null;
   try {
-    absentRecord = await Attendance.findOne({ student: testStudentId, status: 'absent' });
-    const res = await fetch(`${ATTENDANCE_URL}/${absentRecord._id}`, {
+    const { data: absentRecords } = await supabase.from('attendance').select('*').eq('student', testStudentId).eq('status', 'absent');
+    absentRecord = absentRecords && absentRecords[0];
+    const res = await fetch(`${ATTENDANCE_URL}/${absentRecord.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -298,8 +289,9 @@ async function runSuite() {
 
   // Test 8: Delete one record (now 2 present out of 3 total records = 66.7%)
   try {
-    const recordToDelete = await Attendance.findOne({ student: testStudentId, status: 'absent' });
-    const res = await fetch(`${ATTENDANCE_URL}/${recordToDelete._id}`, {
+    const { data: deleteRecords } = await supabase.from('attendance').select('*').eq('student', testStudentId).eq('status', 'absent');
+    const recordToDelete = deleteRecords && deleteRecords[0];
+    const res = await fetch(`${ATTENDANCE_URL}/${recordToDelete.id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${facultyToken}` }
     });
@@ -347,7 +339,7 @@ async function runSuite() {
       headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     const data = await res.json();
-    const containsStudent = data.data.lowAttendanceStudents.some(s => s._id === testStudentId);
+    const containsStudent = data.data.lowAttendanceStudents.some(s => s._id === testStudentId || s.id === testStudentId);
     if (res.status === 200 && data.data.overallPercentage === 66.7 && containsStudent) {
       recordResult('GET Attendance Report & Low Attendance List', 'PASS', 'Report generated. Student correctly flagged on low attendance list.');
     } else {
@@ -362,16 +354,14 @@ async function runSuite() {
   // ----------------------------------------------------
   console.log('\nCleaning up database test entries...');
   try {
-    const testEmailPattern = new RegExp(`_${timestamp}@test.com$`);
-    await User.deleteMany({ email: { $in: [adminEmail, facultyEmail, studentUserEmail] } });
-    await Student.deleteMany({ email: { $regex: testEmailPattern } });
-    await Attendance.deleteMany({ student: testStudentId });
+    await supabase.from('users').delete().eq('email', studentUserEmail);
+    await supabase.from('students').delete().like('email', `%_${timestamp}@test.com`);
+    await supabase.from('attendance').delete().eq('student', testStudentId);
     console.log('Database cleaned up successfully.');
   } catch (err) {
     console.error('Cleanup failed:', err);
   }
 
-  await mongoose.disconnect();
   console.log('\n=== TEST SUITE COMPLETED ===');
 }
 

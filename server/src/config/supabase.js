@@ -2,6 +2,14 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import pkg from 'pg';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dns from 'dns/promises';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dbFilePath = path.join(__dirname, 'mock_db.json');
 
 dotenv.config();
 
@@ -15,8 +23,25 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const databaseUrl = process.env.DATABASE_URL;
 
 // Determine if we should run in Database Mock Mode (only if no live PostgreSQL or Supabase credentials are configured)
-const isMockMode = (!databaseUrl || databaseUrl.includes('your_supabase_postgresql')) &&
-                   (!supabaseUrl || supabaseUrl.includes('your-project') || supabaseUrl.includes('placeholder'));
+let isMockMode = (!databaseUrl || databaseUrl.includes('your_supabase_postgresql')) &&
+                   (!supabaseUrl || supabaseUrl.includes('your-project') || supabaseUrl.includes('placeholder')) ||
+                   process.env.FORCE_MOCK_MODE === 'true';
+
+if (!isMockMode && databaseUrl) {
+  try {
+    const host = databaseUrl.split('@')[1]?.split(':')[0]?.split('/')[0];
+    if (host) {
+      await Promise.race([
+        dns.lookup(host),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500))
+      ]);
+    }
+  } catch (err) {
+    console.log("⚠️ Database host is unreachable (e.g. company wifi restriction). Automatically enabling DATABASE MOCK MODE.");
+    isMockMode = true;
+    process.env.FORCE_MOCK_MODE = 'true';
+  }
+}
 
 let activeSupabaseClient;
 
@@ -26,7 +51,7 @@ if (isMockMode) {
   const hashedDefaultPassword = bcrypt.hashSync('password123', 10);
 
   // In-memory mock database tables using valid UUIDs to satisfy isUUID checks in middleware
-  const db = {
+  let db = {
     users: [
       { id: '11111111-1111-1111-1111-111111111111', name: 'Super Admin', full_name: 'Super Admin', email: 'superadmin@college.com', password: hashedDefaultPassword, role: 'super-admin', is_verified: true, is_active: true },
       { id: '22222222-2222-2222-2222-222222222222', name: 'Admin', full_name: 'Admin', email: 'admin@college.com', password: hashedDefaultPassword, role: 'admin', is_verified: true, is_active: true },
@@ -103,10 +128,38 @@ if (isMockMode) {
     otps: []
   };
 
+  const loadDb = () => {
+    try {
+      if (fs.existsSync(dbFilePath)) {
+        return JSON.parse(fs.readFileSync(dbFilePath, 'utf8'));
+      }
+    } catch (e) {
+      // ignore
+    }
+    return db;
+  };
+
+  const saveDb = (currentDb) => {
+    try {
+      fs.writeFileSync(dbFilePath, JSON.stringify(currentDb, null, 2), 'utf8');
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  // Initialize DB file on startup if it doesn't exist
+  if (fs.existsSync(dbFilePath)) {
+    db = loadDb();
+  } else {
+    saveDb(db);
+  }
+
   class MockQueryBuilder {
-    constructor(tableName, data) {
+    constructor(tableName) {
       this.tableName = tableName;
-      this._data = data || [];
+      db = loadDb();
+      if (!db[tableName]) { db[tableName] = []; }
+      this._data = db[tableName];
       this._error = null;
     }
 
@@ -135,6 +188,7 @@ if (isMockMode) {
         let fieldVal;
         if (column.startsWith('users.')) {
           const prop = column.split('.')[1];
+          db = loadDb();
           const user = db.users.find(u => 
             (item.user_id && u.id === item.user_id) || 
             (item.email && u.email && u.email.toLowerCase().trim() === item.email.toLowerCase().trim()) ||
@@ -277,54 +331,92 @@ if (isMockMode) {
       return this;
     }
 
-    maybeSingle() { return Promise.resolve({ data: this._data[0] || null, error: this._error }); }
-
-    single() {
-      if (this._data.length === 0) {
-        return Promise.resolve({ data: null, error: { message: "No rows found" } });
-      }
-      return Promise.resolve({ data: this._data[0], error: this._error });
-    }
-
     insert(rows) {
-      const inputRows = Array.isArray(rows) ? rows : [rows];
-      const addedRows = [];
-      inputRows.forEach(r => {
-        const newRow = { 
-          id: Math.random().toString(36).substr(2, 9), 
-          created_at: new Date().toISOString(), 
-          updated_at: new Date().toISOString(),
-          ...r 
-        };
-        db[this.tableName].push(newRow);
-        addedRows.push(newRow);
-      });
-      this._data = addedRows;
+      this._action = 'insert';
+      this._insertRows = rows;
       return this;
     }
 
     update(values) {
-      this._data.forEach(item => {
-        const sourceItem = db[this.tableName].find(i => i.id === item.id || i._id === item.id);
-        if (sourceItem) {
-          Object.assign(sourceItem, values);
-          sourceItem.updated_at = new Date().toISOString();
-        }
-        Object.assign(item, values);
-      });
+      this._action = 'update';
+      this._updateValues = values;
       return this;
     }
 
     delete() {
-      this._data.forEach(item => {
-        const idx = db[this.tableName].findIndex(i => i.id === item.id || i._id === item.id);
-        if (idx !== -1) { db[this.tableName].splice(idx, 1); }
-      });
-      this._data = [];
+      this._action = 'delete';
       return this;
     }
 
+    _executeAction() {
+      if (!this._action) return;
+      const action = this._action;
+      this._action = null;
+
+      if (action === 'delete') {
+        db = loadDb();
+        if (!db[this.tableName]) { db[this.tableName] = []; }
+        this._data.forEach(item => {
+          const idx = db[this.tableName].findIndex(i => i.id === item.id || i._id === item.id);
+          if (idx !== -1) { db[this.tableName].splice(idx, 1); }
+        });
+        saveDb(db);
+        this._data = [];
+      } else if (action === 'update') {
+        db = loadDb();
+        if (!db[this.tableName]) { db[this.tableName] = []; }
+        this._data.forEach(item => {
+          const sourceItem = db[this.tableName].find(i => i.id === item.id || i._id === item.id);
+          if (sourceItem) {
+            Object.assign(sourceItem, this._updateValues);
+            sourceItem.updated_at = new Date().toISOString();
+          }
+          Object.assign(item, this._updateValues);
+        });
+        saveDb(db);
+      } else if (action === 'insert') {
+        db = loadDb();
+        if (!db[this.tableName]) { db[this.tableName] = []; }
+        const inputRows = Array.isArray(this._insertRows) ? this._insertRows : [this._insertRows];
+        const addedRows = [];
+        inputRows.forEach(r => {
+          const mockUuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random() * 16 | 0;
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+          });
+          const newRow = { 
+            id: mockUuid, 
+            created_at: new Date().toISOString(), 
+            updated_at: new Date().toISOString(),
+            ...r 
+          };
+          if (this.tableName === 'users') {
+            if (newRow.is_active === undefined) newRow.is_active = true;
+            if (newRow.is_verified === undefined) newRow.is_verified = false;
+          }
+          db[this.tableName].push(newRow);
+          addedRows.push(newRow);
+        });
+        saveDb(db);
+        this._data = addedRows;
+      }
+    }
+
+    async maybeSingle() {
+      this._executeAction();
+      return { data: this._data[0] || null, error: this._error };
+    }
+
+    async single() {
+      this._executeAction();
+      if (this._data.length === 0) {
+        return { data: null, error: { message: "No rows found" } };
+      }
+      return { data: this._data[0], error: this._error };
+    }
+
     then(onfulfilled, onrejected) {
+      this._executeAction();
       return Promise.resolve({
         data: this._data,
         error: this._error,
@@ -335,8 +427,7 @@ if (isMockMode) {
 
   activeSupabaseClient = {
     from: (tableName) => {
-      if (!db[tableName]) { db[tableName] = []; }
-      return new MockQueryBuilder(tableName, db[tableName]);
+      return new MockQueryBuilder(tableName);
     },
     auth: {
       signUp: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
@@ -760,3 +851,4 @@ if (isMockMode) {
 }
 
 export const supabase = activeSupabaseClient;
+export { isMockMode };

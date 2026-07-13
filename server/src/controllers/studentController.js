@@ -7,6 +7,8 @@ import { hashOTP } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES } from '../../config.js';
 import { generateAdmissionNumber } from '../utils/admissionUtils.js';
 
+const isUUID = (str) => typeof str === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str);
+
 
 // Helper to format student object keys
 const formatStudent = (s) => {
@@ -109,6 +111,12 @@ export const getStudents = async (req, res, next) => {
 // @access  Private (admin, super-admin)
 export const getStudentById = async (req, res, next) => {
   try {
+    if (!isUUID(req.params.id)) {
+      const error = new Error('Invalid ID format');
+      error.statusCode = 400;
+      return next(error);
+    }
+
     const { data: student } = await supabase
       .from('students')
       .select('*')
@@ -362,6 +370,12 @@ export const createStudent = async (req, res, next) => {
 // @access  Private (admin, super-admin)
 export const updateStudent = async (req, res, next) => {
   try {
+    if (!isUUID(req.params.id)) {
+      const error = new Error('Invalid ID format');
+      error.statusCode = 400;
+      return next(error);
+    }
+
     const { rollNumber, email } = req.body;
 
     const { data: student } = await supabase
@@ -450,6 +464,12 @@ export const updateStudent = async (req, res, next) => {
 // @access  Private (admin, super-admin)
 export const deleteStudent = async (req, res, next) => {
   try {
+    if (!isUUID(req.params.id)) {
+      const error = new Error('Invalid ID format');
+      error.statusCode = 400;
+      return next(error);
+    }
+
     const { data: student } = await supabase
       .from('students')
       .select('*')

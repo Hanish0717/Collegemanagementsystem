@@ -49,5 +49,13 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "src/config/mock_db.json",
+      "*.log",
+      "*.txt",
+      "node_modules"
+    ]
   }
 }

@@ -9,6 +9,8 @@ import {
 } from '../controllers/studentController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
+import { validateRequest } from '../middleware/validationMiddleware.js';
+import { validateStudentInput } from '../validations/studentValidation.js';
 
 const router = express.Router();
 
@@ -18,7 +20,7 @@ router.use(protect);
 router
   .route('/')
   .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager', 'placement-officer', 'hostel-warden'), getStudents)
-  .post(authorizeRoles('admin', 'super-admin', 'transport-manager'), createStudent);
+  .post(authorizeRoles('admin', 'super-admin', 'transport-manager'), validateRequest(validateStudentInput), createStudent);
 
 router
   .route('/verify')

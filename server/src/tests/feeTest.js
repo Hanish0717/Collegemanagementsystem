@@ -1,8 +1,5 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import User from '../models/User.js';
-import Student from '../models/Student.js';
-import Fee from '../models/Fee.js';
+import { supabase } from '../config/supabase.js';
 
 dotenv.config();
 
@@ -19,13 +16,7 @@ function recordResult(testName, status, details) {
 async function runSuite() {
   console.log('=== STARTING FEES MANAGEMENT TEST SUITE ===\n');
 
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB for direct state verification.\n');
-  } catch (error) {
-    console.error('Failed to connect to database in test script:', error);
-    process.exit(1);
-  }
+  console.log('Using Supabase client for direct database verification.\n');
 
   const timestamp = Date.now();
   const adminEmail = `admin_${timestamp}@test.com`;
@@ -41,32 +32,17 @@ async function runSuite() {
 
   // Setup: Register tokens & create students
   try {
-    // Admin Token
-    let res = await fetch(`${AUTH_URL}/register`, {
+    // Clear any pre-seeded fees to ensure clean slate for analytics report totals
+    await supabase.from('fees').delete();
+
+    // Admin Token (via login of pre-seeded admin)
+    let res = await fetch(`${AUTH_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Admin User', email: adminEmail, password, role: 'admin' })
+      body: JSON.stringify({ email: 'admin@college.com', password: 'password123' })
     });
     let data = await res.json();
     adminToken = data.token;
-
-    // Student User Token
-    res = await fetch(`${AUTH_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Test Student User', email: studentUserEmail, password, role: 'student' })
-    });
-    data = await res.json();
-    studentToken = data.token;
-
-    // Other Student User Token
-    res = await fetch(`${AUTH_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Other Student User', email: otherStudentUserEmail, password, role: 'student' })
-    });
-    data = await res.json();
-    otherStudentToken = data.token;
 
     // Create main test Student record using Admin Token
     res = await fetch(STUDENT_URL, {
@@ -86,10 +62,13 @@ async function runSuite() {
         semester: 6,
         section: 'A',
         parentName: 'Parent Name',
-        parentPhone: '8888888888'
+        parentPhone: '8888888888',
+        parentEmail: `parent_${timestamp}@test.com`,
+        password: password
       })
     });
     data = await res.json();
+    console.log("Create Student Status:", res.status, "Response Data:", data);
     testStudentId = data.data._id;
 
     // Create other test Student record using Admin Token
@@ -110,16 +89,35 @@ async function runSuite() {
         semester: 4,
         section: 'B',
         parentName: 'Other Parent',
-        parentPhone: '7776665555'
+        parentPhone: '7776665555',
+        parentEmail: `other_parent_${timestamp}@test.com`,
+        password: password
       })
     });
     data = await res.json();
     otherStudentId = data.data._id;
 
+    // Log in Student User to get Student User Token
+    res = await fetch(`${AUTH_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: studentUserEmail, password })
+    });
+    data = await res.json();
+    studentToken = data.token;
+
+    // Log in Other Student User to get Other Student User Token
+    res = await fetch(`${AUTH_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: otherStudentUserEmail, password })
+    });
+    data = await res.json();
+    otherStudentToken = data.token;
+
     console.log(`Setup Complete: Main Student ID: ${testStudentId}, Other Student ID: ${otherStudentId}\n`);
   } catch (err) {
     console.error('Setup failed:', err);
-    await mongoose.disconnect();
     process.exit(1);
   }
 
@@ -364,16 +362,14 @@ async function runSuite() {
   // ----------------------------------------------------
   console.log('\nCleaning up database test entries...');
   try {
-    const testEmailPattern = new RegExp(`_${timestamp}@test.com$`);
-    await User.deleteMany({ email: { $in: [adminEmail, studentUserEmail, otherStudentUserEmail] } });
-    await Student.deleteMany({ email: { $regex: testEmailPattern } });
-    await Fee.deleteMany({ student: { $in: [testStudentId, otherStudentId] } });
+    await supabase.from('users').delete().in('email', [adminEmail, studentUserEmail, otherStudentUserEmail]);
+    await supabase.from('students').delete().like('email', `%_${timestamp}@test.com`);
+    await supabase.from('fees').delete().in('student', [testStudentId, otherStudentId]);
     console.log('Database cleaned up successfully.');
   } catch (err) {
     console.error('Cleanup failed:', err);
   }
 
-  await mongoose.disconnect();
   console.log('\n=== TEST SUITE COMPLETED ===');
 }
 

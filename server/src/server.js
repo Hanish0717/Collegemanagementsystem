@@ -7,10 +7,7 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const { Client } = pkg;
 
-// Check if we should run in Database Mock Mode
-const isMockMode = !process.env.DATABASE_URL || 
-                   process.env.DATABASE_URL.includes('your_supabase') ||
-                   process.env.DATABASE_URL.includes('placeholder');
+import { isMockMode } from './config/supabase.js';
 
 // Validate Supabase config
 if (isMockMode) {
@@ -321,6 +318,15 @@ async function runMigrations() {
         error_details text,
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
+
+      -- Performance optimization indexes on foreign keys
+      CREATE INDEX IF NOT EXISTS idx_attendance_student ON attendance(student);
+      CREATE INDEX IF NOT EXISTS idx_fees_student ON fees(student);
+      CREATE INDEX IF NOT EXISTS idx_results_student ON results(student);
+      CREATE INDEX IF NOT EXISTS idx_issued_books_student ON issued_books(student);
+      CREATE INDEX IF NOT EXISTS idx_issued_books_user_id ON issued_books(user_id);
+      CREATE INDEX IF NOT EXISTS idx_leave_requests_user ON leave_requests(user_id);
+      CREATE INDEX IF NOT EXISTS idx_complaints_user ON complaints(user_id);
     `);
     
     // Seed admin notifications
@@ -479,7 +485,10 @@ async function runMigrations() {
 
 // Start server after migrations
 runMigrations()
-  .then(() => seedIfNeeded())
+  .then(() => {
+    if (isMockMode) return;
+    return seedIfNeeded();
+  })
   .then(async () => {
     if (isMockMode) {
       return;

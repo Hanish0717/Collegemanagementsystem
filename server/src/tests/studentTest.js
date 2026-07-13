@@ -1,12 +1,24 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import User from '../models/User.js';
-import Student from '../models/Student.js';
+import crypto from 'crypto';
+import { supabase } from '../config/supabase.js';
 
 dotenv.config();
 
 const AUTH_URL = 'http://localhost:5000/api/auth';
 const STUDENT_URL = 'http://localhost:5000/api/students';
+
+async function loginAndGetToken(email, password) {
+  const res = await fetch(`${AUTH_URL}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (!data.success) {
+    throw new Error(`Login failed for ${email}: ${JSON.stringify(data)}`);
+  }
+  return data.token;
+}
 
 const results = [];
 function recordResult(testName, status, details) {
@@ -17,17 +29,10 @@ function recordResult(testName, status, details) {
 async function runSuite() {
   console.log('=== STARTING STUDENT MANAGEMENT TEST SUITE ===\n');
 
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB for direct state verification.\n');
-  } catch (error) {
-    console.error('Failed to connect to database in test script:', error);
-    process.exit(1);
-  }
+  console.log('Using Supabase client for direct database verification.\n');
 
   const timestamp = Date.now();
   const adminEmail = `admin_${timestamp}@test.com`;
-  const studentUserEmail = `stud_user_${timestamp}@test.com`;
   const password = 'Password123!';
 
   let adminToken = '';
@@ -35,28 +40,27 @@ async function runSuite() {
 
   // Setup 1: Register an admin and a student user for auth headers
   try {
-    // Register Admin user
-    let res = await fetch(`${AUTH_URL}/register`, {
+    // Register unique admin
+    const regRes = await fetch(`${AUTH_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Admin User', email: adminEmail, password, role: 'admin' })
+      body: JSON.stringify({ fullName: 'Admin User', email: adminEmail, password, role: 'admin', phoneNumber: '1234567890' })
     });
-    let data = await res.json();
-    adminToken = data.token;
+    
+    if (regRes.status !== 201) {
+      const regData = await regRes.json();
+      throw new Error(`Admin registration failed: ${JSON.stringify(regData)}`);
+    }
 
-    // Register Student user
-    res = await fetch(`${AUTH_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName: 'Student User', email: studentUserEmail, password, role: 'student' })
-    });
-    data = await res.json();
-    studentUserToken = data.token;
+    // Login admin
+    adminToken = await loginAndGetToken(adminEmail, password);
+
+    // Login pre-seeded student
+    studentUserToken = await loginAndGetToken('student@college.com', 'password123');
 
     console.log('Setup: Registered test admin and student user tokens successfully.\n');
   } catch (err) {
     console.error('Setup failed:', err);
-    await mongoose.disconnect();
     process.exit(1);
   }
 
@@ -112,6 +116,8 @@ async function runSuite() {
     section: 'A',
     parentName: 'Bob Smith',
     parentPhone: '9998887777',
+    parentEmail: `bob_smith_${timestamp}@test.com`,
+    password: 'Password123!',
     cgpa: 9.2,
     attendancePercentage: 95
   };
@@ -129,6 +135,8 @@ async function runSuite() {
     section: 'B',
     parentName: 'Sara Jones',
     parentPhone: '8887776666',
+    parentEmail: `sara_jones_${timestamp}@test.com`,
+    password: 'Password123!',
     cgpa: 8.5,
     attendancePercentage: 88
   };
@@ -146,6 +154,8 @@ async function runSuite() {
     section: 'A',
     parentName: 'Mary Green',
     parentPhone: '7776665555',
+    parentEmail: `mary_green_${timestamp}@test.com`,
+    password: 'Password123!',
     cgpa: 7.8,
     attendancePercentage: 92
   };
@@ -375,7 +385,7 @@ async function runSuite() {
 
   // Test 13: GET Student by non-existing ID
   try {
-    const fakeId = new mongoose.Types.ObjectId();
+    const fakeId = '99999999-9999-9999-9999-999999999999';
     const res = await fetch(`${STUDENT_URL}/${fakeId}`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${adminToken}` }
@@ -413,14 +423,20 @@ async function runSuite() {
   // Test 15: UPDATE Student to duplicate rollNumber (should fail)
   try {
     // Attempt to set Student A's roll number to Student B's roll number
-    const studentBRecord = await Student.findOne({ email: `david_${timestamp}@test.com` });
+    const listRes = await fetch(STUDENT_URL, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    const listData = await listRes.json();
+    const studentsList = listData.data?.students || [];
+    const studentBRecord = studentsList.find(s => s.email === `david_${timestamp}@test.com`);
     const res = await fetch(`${STUDENT_URL}/${studentAId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${adminToken}`
       },
-      body: JSON.stringify({ rollNumber: studentBRecord.rollNumber })
+      body: JSON.stringify({ rollNumber: studentBRecord ? (studentBRecord.rollNumber || studentBRecord.roll_number) : 'ECE_DUP' })
     });
     const data = await res.json();
     if (res.status === 400 && data.success === false) {
@@ -492,15 +508,13 @@ async function runSuite() {
   // ----------------------------------------------------
   console.log('\nCleaning up database test entries...');
   try {
-    const testEmailPattern = new RegExp(`_${timestamp}@test.com$`);
-    await User.deleteMany({ email: { $in: [adminEmail, studentUserEmail] } });
-    await Student.deleteMany({ email: { $regex: testEmailPattern } });
+    await supabase.from('users').delete().in('email', [adminEmail]);
+    await supabase.from('students').delete().like('email', `%_${timestamp}@test.com`);
     console.log('Database cleaned up successfully.');
   } catch (err) {
     console.error('Cleanup failed:', err);
   }
 
-  await mongoose.disconnect();
   console.log('\n=== TEST SUITE COMPLETED ===');
 }
 

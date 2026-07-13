@@ -1,0 +1,624 @@
+{
+  "users": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Super Admin",
+      "full_name": "Super Admin",
+      "email": "superadmin@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "super-admin",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "name": "Admin",
+      "full_name": "Admin",
+      "email": "admin@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "admin",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "name": "Faculty",
+      "full_name": "Dr. John Smith",
+      "email": "faculty@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "faculty",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "name": "Student",
+      "full_name": "Student Demo",
+      "email": "student@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "student",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "name": "Parent",
+      "full_name": "Parent Demo",
+      "email": "parent@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "parent",
+      "child_email": "student@college.com",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666666",
+      "name": "Librarian",
+      "full_name": "Librarian Demo",
+      "email": "librarian@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "librarian",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "77777777-7777-7777-7777-777777777777",
+      "name": "Placement Officer",
+      "full_name": "Placement Officer Demo",
+      "email": "placement@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "placement-officer",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "88888888-8888-8888-8888-888888888888",
+      "name": "Hostel Warden",
+      "full_name": "Hostel Warden Demo",
+      "email": "warden@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "hostel-warden",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "99999999-9999-9999-9999-999999999999",
+      "name": "Transport Manager",
+      "full_name": "Transport Manager Demo",
+      "email": "transport@college.com",
+      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "role": "transport-manager",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "ef565fc1-2936-4050-8fca-7e1b00c03599",
+      "created_at": "2026-07-13T05:30:43.591Z",
+      "updated_at": "2026-07-13T05:30:43.591Z",
+      "name": "Alice Smith",
+      "full_name": "Alice Smith",
+      "email": "alice_1783920638038@test.com",
+      "password": "$2a$10$LDYMxXof.kTkW/R9srmyRugniG5GRzAh.oqEHKBf7fGuVIN66PNKq",
+      "temp_password": "Password123!",
+      "role": "student",
+      "phone_number": "1112223333",
+      "mobile": "1112223333",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "826e959c-356e-423b-a635-2f8eab37af27",
+      "created_at": "2026-07-13T05:30:48.032Z",
+      "updated_at": "2026-07-13T05:30:48.032Z",
+      "name": "David Jones",
+      "full_name": "David Jones",
+      "email": "david_1783920638038@test.com",
+      "password": "$2a$10$tEF5ZISHPizfYs/aWXrZZOksVj0G0ak8g/KZowyTwlEcF9Emwpigy",
+      "temp_password": "Password123!",
+      "role": "student",
+      "phone_number": "4445556666",
+      "mobile": "4445556666",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "c7c8c344-f2cf-4694-abec-c9e28a76373b",
+      "created_at": "2026-07-13T05:30:52.948Z",
+      "updated_at": "2026-07-13T05:30:52.948Z",
+      "name": "Charlie Green",
+      "full_name": "Charlie Green",
+      "email": "charlie_1783920638038@test.com",
+      "password": "$2a$10$oaUNEd1SooZU1R5v4/03euQKM.tPc/RWpGS0hnEYMPFDxdRtgXeU.",
+      "temp_password": "Password123!",
+      "role": "student",
+      "phone_number": "7778889999",
+      "mobile": "7778889999",
+      "is_verified": true,
+      "is_active": true
+    }
+  ],
+  "students": [
+    {
+      "id": "s1111111-1111-1111-1111-111111111111",
+      "full_name": "Student Demo",
+      "roll_number": "CS100001",
+      "email": "student@college.com",
+      "phone_number": "1234567890",
+      "gender": "Male",
+      "date_of_birth": "2004-05-15",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "section": "A",
+      "address": "123 College Ave, Campus Town",
+      "parent_name": "Parent Demo",
+      "parent_phone": "0987654321",
+      "parent_email": "parent@college.com",
+      "cgpa": 8.5,
+      "attendance_percentage": 92.5,
+      "is_active": true
+    },
+    {
+      "id": "s2222222-2222-2222-2222-222222222222",
+      "full_name": "Alice Smith",
+      "roll_number": "CS100002",
+      "email": "alice@college.com",
+      "phone_number": "9876543210",
+      "gender": "Female",
+      "date_of_birth": "2004-09-20",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "section": "A",
+      "address": "456 Oak Lane, Cityville",
+      "parent_name": "John Smith",
+      "parent_phone": "9876543211",
+      "parent_email": "john.smith@test.com",
+      "cgpa": 9.1,
+      "attendance_percentage": 88.0,
+      "is_active": true
+    },
+    {
+      "id": "s3333333-3333-3333-3333-333333333333",
+      "full_name": "Bob Jones",
+      "roll_number": "EC200001",
+      "email": "bob@college.com",
+      "phone_number": "8765432109",
+      "gender": "Male",
+      "date_of_birth": "2005-01-12",
+      "department": "ECE",
+      "year": 2,
+      "semester": 3,
+      "section": "B",
+      "address": "789 Pine Rd, Townsville",
+      "parent_name": "Robert Jones",
+      "parent_phone": "8765432100",
+      "parent_email": "robert.jones@test.com",
+      "cgpa": 7.8,
+      "attendance_percentage": 76.5,
+      "is_active": true
+    },
+    {
+      "id": "s4444444-4444-4444-4444-444444444444",
+      "full_name": "Charlie Green",
+      "roll_number": "ME300001",
+      "email": "charlie@college.com",
+      "phone_number": "7654321098",
+      "gender": "Male",
+      "date_of_birth": "2003-11-05",
+      "department": "ME",
+      "year": 4,
+      "semester": 7,
+      "section": "A",
+      "address": "101 Maple Ave, Westford",
+      "parent_name": "William Green",
+      "parent_phone": "7654321090",
+      "parent_email": "william.green@test.com",
+      "cgpa": 8.9,
+      "attendance_percentage": 94.2,
+      "is_active": true
+    },
+    {
+      "id": "s5555555-5555-5555-5555-555555555555",
+      "full_name": "Diana Prince",
+      "roll_number": "CS100003",
+      "email": "diana@college.com",
+      "phone_number": "6543210987",
+      "gender": "Female",
+      "date_of_birth": "2006-03-24",
+      "department": "CSE",
+      "year": 1,
+      "semester": 1,
+      "section": "C",
+      "address": "202 Birch Blvd, Eastville",
+      "parent_name": "Hippolyta Prince",
+      "parent_phone": "6543210980",
+      "parent_email": "queen@amazon.com",
+      "cgpa": 6.5,
+      "attendance_percentage": 62.0,
+      "is_active": true
+    }
+  ],
+  "admins": [
+    {
+      "id": "a1111111-1111-1111-1111-111111111111",
+      "user_id": "22222222-2222-2222-2222-222222222222",
+      "full_name": "System Admin",
+      "email": "admin@college.com",
+      "employee_id": "ADM001",
+      "department": "CSE",
+      "is_active": true
+    }
+  ],
+  "faculty": [
+    {
+      "id": "f1111111-1111-1111-1111-111111111111",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "full_name": "Dr. John Smith",
+      "email": "faculty@college.com",
+      "employee_id": "FAC2020001",
+      "department": "CSE",
+      "designation": "Associate Professor",
+      "experience": 12,
+      "gender": "Male",
+      "phone_number": "9876543212",
+      "status": "Active",
+      "is_active": true
+    }
+  ],
+  "books": [
+    {
+      "id": "b1111111-1111-1111-1111-111111111111",
+      "title": "Introduction to Algorithms",
+      "author": "Cormen, Leiserson, Rivest, Stein",
+      "isbn": "9780262033848",
+      "category": "Computer Science",
+      "quantity": 5,
+      "available_quantity": 4,
+      "shelf_location": "CS-03",
+      "publisher": "MIT Press",
+      "edition": "3rd",
+      "language": "English",
+      "description": "The bible of algorithms.",
+      "is_active": true
+    },
+    {
+      "id": "b2222222-2222-2222-2222-222222222222",
+      "title": "Database System Concepts",
+      "author": "Silberschatz, Korth, Sudarshan",
+      "isbn": "9780073523323",
+      "category": "Computer Science",
+      "quantity": 3,
+      "available_quantity": 3,
+      "shelf_location": "CS-05",
+      "publisher": "McGraw-Hill",
+      "edition": "6th",
+      "language": "English",
+      "description": "Core database text.",
+      "is_active": true
+    }
+  ],
+  "fees": [
+    {
+      "id": "d4422f34-b54a-41b3-9fba-ce9b5e7543d4",
+      "created_at": "2026-07-13T05:52:45.017Z",
+      "updated_at": "2026-07-13T05:52:45.017Z",
+      "student": "2256c8f8-cbe8-4507-8086-0135a9dd420b",
+      "amount": 80000,
+      "type": "College Fee",
+      "due_date": "2026-12-31",
+      "status": "Unpaid",
+      "paid_amount": 0,
+      "academic_year": "2026-2027",
+      "semester": 6
+    }
+  ],
+  "attendance": [],
+  "assignments": [
+    {
+      "id": "as111111-1111-1111-1111-111111111111",
+      "title": "Red-Black Trees Implementation",
+      "description": "Implement RB-Trees insertion and deletion in C++.",
+      "subject": "Data Structures",
+      "due_date": "2026-07-18T05:29:24.653Z",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "section": "A",
+      "faculty": "33333333-3333-3333-3333-333333333333",
+      "submissions": []
+    }
+  ],
+  "complaints": [
+    {
+      "id": "c1111111-1111-1111-1111-111111111111",
+      "title": "Lab 2 AC issue",
+      "description": "The AC in Computer Science Lab 2 has been malfunctioning for a week.",
+      "category": "Infrastructure",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "status": "Pending",
+      "remarks": ""
+    }
+  ],
+  "leave_requests": [
+    {
+      "id": "lr111111-1111-1111-1111-111111111111",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "type": "Sick Leave",
+      "from_date": "2026-05-25",
+      "to_date": "2026-05-26",
+      "days": 2,
+      "reason": "High fever",
+      "status": "Approved",
+      "comments": "Get well soon."
+    }
+  ],
+  "results": [
+    {
+      "id": "r1111111-1111-1111-1111-111111111111",
+      "student": "44444444-4444-4444-4444-444444444444",
+      "subject": "Data Structures",
+      "credits": 4,
+      "marks": 88,
+      "grade": "A",
+      "semester": 5
+    },
+    {
+      "id": "r2222222-2222-2222-2222-222222222222",
+      "student": "44444444-4444-4444-4444-444444444444",
+      "subject": "Database Systems",
+      "credits": 3,
+      "marks": 78,
+      "grade": "B+",
+      "semester": 5
+    },
+    {
+      "id": "r3333333-3333-3333-3333-333333333333",
+      "student": "44444444-4444-4444-4444-444444444444",
+      "subject": "Algorithms",
+      "credits": 4,
+      "marks": 92,
+      "grade": "A+",
+      "semester": 5
+    }
+  ],
+  "study_materials": [
+    {
+      "id": "sm111111-1111-1111-1111-111111111111",
+      "title": "SQL Cheatsheet",
+      "subject": "Database Systems",
+      "type": "PDF",
+      "file_url": "https://example.com/sql.pdf",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "faculty": "33333333-3333-3333-3333-333333333333"
+    }
+  ],
+  "timetable": [
+    {
+      "id": "t1111111-1111-1111-1111-111111111111",
+      "day": "Monday",
+      "start_time": "09:00 AM",
+      "end_time": "10:00 AM",
+      "subject": "Data Structures",
+      "faculty_name": "Dr. John Smith",
+      "room": "LH-101",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "section": "A"
+    },
+    {
+      "id": "t2222222-2222-2222-2222-222222222222",
+      "day": "Monday",
+      "start_time": "10:00 AM",
+      "end_time": "11:00 AM",
+      "subject": "Database Systems",
+      "faculty_name": "Dr. John Smith",
+      "room": "LH-101",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "section": "A"
+    }
+  ],
+  "otps": [
+    {
+      "id": "813a2e86-cc5c-4d5e-8a83-1c6848fb2f5b",
+      "created_at": "2026-07-13T05:29:49.722Z",
+      "updated_at": "2026-07-13T05:29:49.722Z",
+      "email": "stud_user_1783920589140@test.com",
+      "otp": "08c63bdb32e9d380add6a070caea76589828b7b16ed62b7f7412468a354c8f51",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:34:49.721Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "3179703e-376e-40a3-b8d7-f6aba3d4cd36",
+      "created_at": "2026-07-13T05:30:38.352Z",
+      "updated_at": "2026-07-13T05:30:38.352Z",
+      "email": "admin_1783920638038@test.com",
+      "otp": "ab2a166f8dc1f132c12f96e27d0e987dda616d7aa1a9d844b9b29e1575e83fcf",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:35:38.351Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "1e575560-af74-4a29-9cc2-550cd208c3b5",
+      "created_at": "2026-07-13T05:30:43.721Z",
+      "updated_at": "2026-07-13T05:30:43.721Z",
+      "email": "alice_1783920638038@test.com",
+      "otp": "acf30bcd2637e5b27d533e280156455e93ed7fba3e16d97418f6b77583a9d020",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:35:43.720Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "30b55878-bf4a-4b58-813f-05c3611cb540",
+      "created_at": "2026-07-13T05:30:48.145Z",
+      "updated_at": "2026-07-13T05:30:48.145Z",
+      "email": "david_1783920638038@test.com",
+      "otp": "bc9920a64af7582dc9e18365ece1578f7a2aae689ccf0c3bfc2fe7fc04f6c397",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:35:48.145Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "4938a099-23e3-413d-9199-411c60736766",
+      "created_at": "2026-07-13T05:30:53.121Z",
+      "updated_at": "2026-07-13T05:30:53.121Z",
+      "email": "charlie_1783920638038@test.com",
+      "otp": "ff554d65798a5f0f8ba26a3b49c9ac1cc65f840bb4f80b4ee77552ae3f301f6c",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:35:53.120Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "90e08b6f-aa4d-4bfe-9cb8-53af7575d587",
+      "created_at": "2026-07-13T05:32:55.194Z",
+      "updated_at": "2026-07-13T05:32:55.194Z",
+      "email": "student_1783920774578@test.com",
+      "otp": "d3526784bf5c57b9e18f65013bf5d9b9a6a1139b668563e8bbc95aaa50f0d1f4",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:37:55.193Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "ed77b3ff-e0a5-4c01-aaad-cbb0b778fb61",
+      "created_at": "2026-07-13T05:33:00.472Z",
+      "updated_at": "2026-07-13T05:33:00.472Z",
+      "email": "other_student_1783920774578@test.com",
+      "otp": "7e7cf8c11a20bb9eb5c0b6aa80fa42d6e9494556d767393c43511db7d4214055",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:38:00.471Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "6962786a-56de-4990-883b-573ff3f0ae65",
+      "created_at": "2026-07-13T05:33:07.763Z",
+      "updated_at": "2026-07-13T05:33:07.763Z",
+      "email": "stud_user_1783920787178@test.com",
+      "otp": "507ad6b81d79066f64aa69ea7d301082d3467ecf0be180f54d9ffea52d4923bd",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:38:07.763Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "0fe92011-277f-4aba-bca5-07f7f85f1638",
+      "created_at": "2026-07-13T05:52:16.997Z",
+      "updated_at": "2026-07-13T05:52:16.997Z",
+      "email": "student_1783921936332@test.com",
+      "otp": "5f464b6bc9f6ca8a1ed6442eb7de585ba4dade8ab5cc310b4c2335ccb8a8cbaa",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:57:16.996Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "3e2424d8-2459-4cf6-9c27-4626f43b9516",
+      "created_at": "2026-07-13T05:52:23.284Z",
+      "updated_at": "2026-07-13T05:52:23.284Z",
+      "email": "other_student_1783921936332@test.com",
+      "otp": "63accfd3cfe3e24981be63ca379676b01ac89590b0523cd627ef647f308000dd",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:57:23.283Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "98121165-2c01-44cf-af2f-e5ab83cacde2",
+      "created_at": "2026-07-13T05:52:45.082Z",
+      "updated_at": "2026-07-13T05:52:45.082Z",
+      "email": "stud_user_1783921964483@test.com",
+      "otp": "0da7ac8aced190307c2eeef82cf9ec210613d8d6b33b900544ad0c661890d922",
+      "type": "email_verification",
+      "expires_at": "2026-07-13T05:57:45.081Z",
+      "attempts": 0,
+      "blocked_until": null
+    }
+  ],
+  "student_notifications": [
+    {
+      "id": "SN-ATT-WARN-1783920594599",
+      "created_at": "2026-07-13T05:29:54.600Z",
+      "updated_at": "2026-07-13T05:29:54.600Z",
+      "student_id": "7c05f728-ccbf-4dbe-b116-0c71fd5242f0",
+      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
+      "type": "Attendance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-FEE-DUE-12c52e01-7751-43c7-8f5b-05078c73579b",
+      "created_at": "2026-07-13T05:33:06.415Z",
+      "updated_at": "2026-07-13T05:33:06.416Z",
+      "title": "Fee Payment Reminder: tuition is due on 31 Dec. Balance: ₹1,000",
+      "type": "Finance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-FEE-DUE-4f0646fa-f596-4de2-9b20-4ad377251610",
+      "created_at": "2026-07-13T05:33:06.458Z",
+      "updated_at": "2026-07-13T05:33:06.458Z",
+      "title": "Fee Payment Reminder: library is due on 8 Jul. Balance: ₹200",
+      "type": "Finance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-ATT-WARN-1783920792195",
+      "created_at": "2026-07-13T05:33:12.196Z",
+      "updated_at": "2026-07-13T05:33:12.196Z",
+      "student_id": "5d1c6d80-43e7-4fea-8acd-d87bc5d32457",
+      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
+      "type": "Attendance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-FEE-DUE-f9e6dc0c-7f95-425f-b5ee-04184d7e5ff9",
+      "created_at": "2026-07-13T05:52:29.060Z",
+      "updated_at": "2026-07-13T05:52:29.060Z",
+      "title": "Fee Payment Reminder: tuition is due on 31 Dec. Balance: ₹1,000",
+      "type": "Finance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-FEE-DUE-4537d285-5b25-49e6-a71e-c80d3fdcb0ee",
+      "created_at": "2026-07-13T05:52:29.135Z",
+      "updated_at": "2026-07-13T05:52:29.135Z",
+      "title": "Fee Payment Reminder: library is due on 8 Jul. Balance: ₹200",
+      "type": "Finance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-ATT-WARN-1783921969676",
+      "created_at": "2026-07-13T05:52:49.677Z",
+      "updated_at": "2026-07-13T05:52:49.678Z",
+      "student_id": "2256c8f8-cbe8-4507-8086-0135a9dd420b",
+      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
+      "type": "Attendance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    }
+  ]
+}
