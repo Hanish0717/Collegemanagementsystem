@@ -33,7 +33,6 @@ import {
   HelpCircle,
   ShieldCheck,
   Image,
-  Clock,
   FlaskConical
 } from "lucide-react";
 

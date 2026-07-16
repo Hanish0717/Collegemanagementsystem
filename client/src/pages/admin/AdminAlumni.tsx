@@ -142,7 +142,7 @@ export function AdminAlumni() {
     queryFn: fetchSuccessStories
   });
 
-  const { data: announcementLogs = [] } = useQuery({
+  const { data: announcementLogs = [], isLoading: announcementLoading } = useQuery({
     queryKey: ["alumni-announcements"],
     queryFn: fetchAnnouncementLogs
   });
