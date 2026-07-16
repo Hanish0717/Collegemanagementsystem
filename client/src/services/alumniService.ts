@@ -107,6 +107,11 @@ export async function sendAnnouncement(payload: { type: "Email" | "SMS" | "Whats
   return response.data;
 }
 
+export async function fetchAnnouncementLogs() {
+  const response = await api.get("/api/alumni/communication/logs");
+  return response.data.data;
+}
+
 export async function fetchAlumniConnections(alumniId: string) {
   const response = await api.get("/api/alumni/connections", { params: { alumniId } });
   return response.data.data;

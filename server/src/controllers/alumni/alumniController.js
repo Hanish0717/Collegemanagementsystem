@@ -664,6 +664,28 @@ export async function sendAnnouncement(req, res) {
   }
 }
 
+export async function getAnnouncementLogs(req, res) {
+  try {
+    let logs = [];
+
+    if (isMockMode) {
+      const mockDb = await import('../../config/supabase.js').then(m => m.getMockDb ? m.getMockDb() : { alumni_communication_logs: [] });
+      logs = mockDb.alumni_communication_logs || [];
+    } else {
+      const { data, error } = await supabase
+        .from('alumni_communication_logs')
+        .select('*')
+        .order('sent_at', { ascending: false });
+      if (error) throw error;
+      logs = data || [];
+    }
+
+    res.json({ success: true, data: logs });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
 // ── 11. CONNECTIONS NETWORKING ──────────────────────────
 export async function getAlumniConnections(req, res) {
   try {

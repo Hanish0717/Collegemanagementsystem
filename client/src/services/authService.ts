@@ -69,6 +69,8 @@ const roleDashboardMap: Record<string, string> = {
   hod: "/dashboard",
   "exam-cell": "/dashboard",
   accounts: "/dashboard",
+  "alumni-coordinator": "/dashboard/admin/alumni",
+  alumni: "/dashboard/admin/alumni",
 };
 
 /** Get the correct dashboard path for a backend role */

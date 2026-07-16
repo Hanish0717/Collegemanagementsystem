@@ -2,7 +2,7 @@ import { useAlumni, DashboardTab } from "../AdminAlumni";
 import { useNavigate } from "@tanstack/react-router";
 
 export function DashboardPage() {
-  const { stats, statsLoading, donationLeaderboard, eventList, directoryList, mentorshipRequests } = useAlumni();
+  const { stats, statsLoading, donationLeaderboard, eventList, directoryList, mentorshipRequests, jobList, feedPosts, announcementLogs } = useAlumni();
   const navigate = useNavigate();
 
   return (
@@ -14,6 +14,9 @@ export function DashboardPage() {
       eventList={eventList}
       directoryList={directoryList}
       mentorshipRequests={mentorshipRequests}
+      jobList={jobList}
+      feedPosts={feedPosts}
+      announcementLogs={announcementLogs}
     />
   );
 }

@@ -27,6 +27,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { getActiveRole, type Role, ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
+import { getDashboardForRole, toBackendRole } from "@/services/authService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Badge } from "@/components/dashboard/ui";
@@ -1033,7 +1034,7 @@ export function DashboardLayout() {
                                 setActiveRole(r.id);
                                 setRole(r);
                                 toast.success(`Switched to ${r.name} workspace!`);
-                                navigate({ to: "/dashboard" });
+                                navigate({ to: getDashboardForRole(toBackendRole(r.id)) });
                               }}
                               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-left cursor-pointer transition
                                 ${active

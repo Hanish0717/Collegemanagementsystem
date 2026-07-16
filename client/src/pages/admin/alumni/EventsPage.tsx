@@ -1,7 +1,10 @@
+import { useRouterState } from "@tanstack/react-router";
 import { useAlumni, EventsTab } from "../AdminAlumni";
 
 export function EventsPage() {
   const { eventList, eventsLoading, queryClient, directoryList } = useAlumni();
+  const searchStr = useRouterState({ select: (r) => r.location.searchStr });
+  const initialSection = new URLSearchParams(searchStr).get("section") || undefined;
 
   return (
     <EventsTab
@@ -12,6 +15,7 @@ export function EventsPage() {
         queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
       }}
       alumniList={directoryList}
+      initialSection={initialSection}
     />
   );
 }

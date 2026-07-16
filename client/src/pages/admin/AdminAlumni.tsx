@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   Users, Award, Calendar, DollarSign, Plus, Trash2, CheckCircle, MessageSquare, 
@@ -35,6 +35,7 @@ import {
   fetchSuccessStories,
   createSuccessStory,
   sendAnnouncement,
+  fetchAnnouncementLogs,
   fetchAlumniConnections,
   sendConnectionRequest,
   respondToConnectionRequest,
@@ -73,7 +74,7 @@ type TabId =
   | "settings"
   | "help";
 
-import { Outlet, useRouterState } from "@tanstack/react-router";
+import { useRouterState, useNavigate as useRouterNavigate } from "@tanstack/react-router";
 import { createContext, useContext } from "react";
 
 export const AlumniContext = createContext<any>(null);
@@ -141,6 +142,11 @@ export function AdminAlumni() {
     queryFn: fetchSuccessStories
   });
 
+  const { data: announcementLogs = [] } = useQuery({
+    queryKey: ["alumni-announcements"],
+    queryFn: fetchAnnouncementLogs
+  });
+
   const { data: connections = [], isLoading: connsLoading } = useQuery({
     queryKey: ["alumni-connections", currentAlumniId],
     queryFn: () => fetchAlumniConnections(currentAlumniId)
@@ -197,6 +203,8 @@ export function AdminAlumni() {
     leaderboardLoading,
     successStories,
     storiesLoading,
+    announcementLogs,
+    announcementLoading,
     connections,
     connsLoading,
     feedPosts,
@@ -208,6 +216,8 @@ export function AdminAlumni() {
     currentAlumniId,
     queryClient,
   };
+
+  const navigate = useRouterNavigate();
 
   return (
     <AlumniContext.Provider value={contextValue}>
@@ -232,9 +242,143 @@ export function AdminAlumni() {
             : `Manage ${tabTitle[activeTab]?.toLowerCase() || "alumni workspace"} in the Alumni workspace.`}
         />
 
-        {/* Full-width content area */}
+        {/* Full-width content area — rendered directly from path-derived activeTab */}
         <div>
-          <Outlet />
+          {activeTab === "dashboard" && (
+            <DashboardTab
+              stats={stats}
+              isLoading={statsLoading}
+              onNavigate={(tabId: string) => navigate({ to: tabId === "dashboard" ? "/dashboard/admin/alumni" : `/dashboard/admin/alumni/${tabId}` as any })}
+              donationLeaderboard={donationLeaderboard}
+              eventList={eventList}
+              directoryList={directoryList}
+              mentorshipRequests={mentorshipRequests}
+              jobList={jobList}
+              feedPosts={feedPosts}
+              announcementLogs={announcementLogs}
+            />
+          )}
+          {activeTab === "directory" && (
+            <DirectoryTab
+              list={directoryList}
+              isLoading={dirLoading}
+              pending={pendingAlumni}
+              pendingLoading={pendingLoading}
+              onSelectAlumni={(id: string) => {
+                setSelectedAlumniId(id);
+                navigate({ to: "/dashboard/admin/alumni/profile" });
+              }}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+              }}
+              currentAlumniId={currentAlumniId}
+            />
+          )}
+          {activeTab === "registration" && (
+            <RegistrationTab
+              onSuccess={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+                navigate({ to: "/dashboard/admin/alumni/directory" });
+              }}
+            />
+          )}
+          {activeTab === "profile" && (
+            <ProfileTab
+              directory={directoryList}
+              selectedId={selectedAlumniId}
+              onSelectId={setSelectedAlumniId}
+              profile={selectedProfile}
+              isLoading={profileDetailLoading}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-profile-detail", selectedAlumniId] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+              }}
+            />
+          )}
+          {activeTab === "events" && (
+            <EventsTab
+              list={eventList}
+              isLoading={eventsLoading}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-events"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+              }}
+              alumniList={directoryList}
+            />
+          )}
+          {activeTab === "gallery" && <EventGalleryTab eventList={eventList} />}
+          {activeTab === "jobs" && (
+            <JobsTab
+              list={jobList}
+              isLoading={jobsLoading}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-jobs"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+              }}
+              alumniList={directoryList}
+            />
+          )}
+          {activeTab === "internships" && <InternshipsTab alumniList={directoryList} />}
+          {activeTab === "placement" && <PlacementPortalTab alumniList={directoryList} stats={stats} />}
+          {activeTab === "mentorship" && (
+            <MentorshipTab
+              requests={mentorshipRequests}
+              isLoading={mentorLoading}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-mentorship"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+              }}
+              alumniList={directoryList}
+            />
+          )}
+          {activeTab === "donations" && (
+            <DonationsTab
+              leaderboard={donationLeaderboard}
+              isLoading={leaderboardLoading}
+              alumniList={directoryList}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-leaderboard"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+              }}
+            />
+          )}
+          {activeTab === "stories" && (
+            <StoriesTab
+              stories={successStories}
+              isLoading={storiesLoading}
+              alumniList={directoryList}
+              onRefetch={() => queryClient.invalidateQueries({ queryKey: ["alumni-stories"] })}
+            />
+          )}
+          {activeTab === "networking" && (
+            <NetworkingTab
+              posts={feedPosts}
+              isLoading={feedLoading}
+              connections={connections}
+              connsLoading={connsLoading}
+              alumniList={directoryList}
+              currentAlumniId={currentAlumniId}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ["alumni-feed"] });
+                queryClient.invalidateQueries({ queryKey: ["alumni-connections"] });
+              }}
+            />
+          )}
+          {activeTab === "messaging" && (
+            <MessagingTab alumniList={directoryList} currentAlumniId={currentAlumniId} />
+          )}
+          {activeTab === "announcements" && <AnnouncementsTab alumniList={directoryList} />}
+          {activeTab === "notifications" && <NotificationsTab />}
+          {activeTab === "verification" && <VerificationTab alumniList={directoryList} />}
+          {activeTab === "ai-features" && <AIFeaturesTab currentAlumniId={currentAlumniId} />}
+          {activeTab === "reports" && (
+            <ReportsTab alumni={directoryList} donations={donationLeaderboard} />
+          )}
+          {activeTab === "settings" && <SettingsTab />}
+          {activeTab === "help" && <HelpTab />}
         </div>
       </div>
     </AlumniContext.Provider>
@@ -242,7 +386,7 @@ export function AdminAlumni() {
 }
 
 // ── 1. DASHBOARD TAB ─────────────────────────────────────
-export function DashboardTab({ stats, isLoading, onNavigate, donationLeaderboard, eventList, directoryList, mentorshipRequests }: any) {
+export function DashboardTab({ stats, isLoading, onNavigate, donationLeaderboard, eventList, directoryList, mentorshipRequests, jobList = [], feedPosts = [], announcementLogs = [] }: any) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
@@ -272,6 +416,28 @@ export function DashboardTab({ stats, isLoading, onNavigate, donationLeaderboard
     { month: "Mar", amount: 35000 }, { month: "Apr", amount: 72000 },
     { month: "May", amount: 63000 }, { month: "Jun", amount: 89000 },
   ];
+
+  const recentActivities = feedPosts.slice(0, 4);
+  const recentJobs = jobList.slice(0, 4);
+  const recentAnnouncements = announcementLogs.slice(0, 4);
+  const upcomingBirthdays = directoryList
+    .map((alumni: any) => {
+      if (!alumni.date_of_birth) return null;
+      const dob = new Date(alumni.date_of_birth);
+      if (Number.isNaN(dob.getTime())) return null;
+      const nextBirthday = new Date();
+      nextBirthday.setMonth(dob.getMonth(), dob.getDate());
+      nextBirthday.setHours(0, 0, 0, 0);
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      if (nextBirthday < now) {
+        nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+      }
+      return { ...alumni, nextBirthday };
+    })
+    .filter(Boolean)
+    .sort((a: any, b: any) => a.nextBirthday.getTime() - b.nextBirthday.getTime())
+    .slice(0, 4);
 
   const quickActions = [
     { label: "Add Alumni",       icon: Plus,         tab: "registration" as const,   color: "bg-indigo-600 hover:bg-indigo-700" },
@@ -444,6 +610,75 @@ export function DashboardTab({ stats, isLoading, onNavigate, donationLeaderboard
               </div>
             ))}
             {donationLeaderboard.length === 0 && <div className="text-xs text-muted-foreground text-center py-4">No donations yet</div>}
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid lg:grid-cols-4 gap-6">
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Recent Activities</h3>
+            <button onClick={() => onNavigate("networking")} className="text-[11px] font-bold text-indigo-600 hover:underline cursor-pointer">View Feed</button>
+          </div>
+          <div className="space-y-3">
+            {recentActivities.map((post: any) => (
+              <div key={post.id} className="text-xs border-b last:border-0 pb-3 last:pb-0">
+                <div className="font-semibold truncate">{post.authorName}</div>
+                <div className="text-[10px] text-muted-foreground line-clamp-2">{post.content}</div>
+              </div>
+            ))}
+            {recentActivities.length === 0 && <div className="text-xs text-muted-foreground text-center py-4">No recent activity</div>}
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Latest Announcements</h3>
+            <button onClick={() => onNavigate("announcements")} className="text-[11px] font-bold text-indigo-600 hover:underline cursor-pointer">Open Board</button>
+          </div>
+          <div className="space-y-3">
+            {recentAnnouncements.map((announcement: any) => (
+              <div key={announcement.id} className="text-xs border-b last:border-0 pb-3 last:pb-0">
+                <div className="font-semibold truncate">{announcement.subject || announcement.type}</div>
+                <div className="text-[10px] text-muted-foreground line-clamp-2">{announcement.message}</div>
+              </div>
+            ))}
+            {recentAnnouncements.length === 0 && <div className="text-xs text-muted-foreground text-center py-4">No announcements yet</div>}
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Recent Jobs</h3>
+            <button onClick={() => onNavigate("jobs")} className="text-[11px] font-bold text-indigo-600 hover:underline cursor-pointer">Open Portal</button>
+          </div>
+          <div className="space-y-3">
+            {recentJobs.map((job: any) => (
+              <div key={job.id} className="text-xs border-b last:border-0 pb-3 last:pb-0">
+                <div className="font-semibold truncate">{job.title}</div>
+                <div className="text-[10px] text-muted-foreground truncate">{job.company} · {job.location || "Remote"}</div>
+              </div>
+            ))}
+            {recentJobs.length === 0 && <div className="text-xs text-muted-foreground text-center py-4">No jobs posted</div>}
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Upcoming Birthdays</h3>
+            <button onClick={() => onNavigate("directory")} className="text-[11px] font-bold text-indigo-600 hover:underline cursor-pointer">View Alumni</button>
+          </div>
+          <div className="space-y-3">
+            {upcomingBirthdays.map((alumni: any) => (
+              <div key={alumni.id} className="flex items-center justify-between text-xs">
+                <div className="min-w-0 pr-2">
+                  <div className="font-semibold truncate">{alumni.full_name}</div>
+                  <div className="text-[10px] text-muted-foreground truncate">{alumni.department}</div>
+                </div>
+                <div className="text-[10px] font-semibold text-indigo-600 whitespace-nowrap">{alumni.nextBirthday.toLocaleDateString()}</div>
+              </div>
+            ))}
+            {upcomingBirthdays.length === 0 && <div className="text-xs text-muted-foreground text-center py-4">No birthdays found</div>}
           </div>
         </Card>
       </div>
@@ -1180,8 +1415,13 @@ export function ProfileTab({ directory, selectedId, onSelectId, profile, isLoadi
 }
 
 // ── 5. EVENTS TAB ────────────────────────────────────────
-export function EventsTab({ list, isLoading, onRefetch, alumniList }: any) {
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+export function EventsTab({ list, isLoading, onRefetch, alumniList, initialSection }: any) {
+  const [isCreateOpen, setIsCreateOpen] = useState(initialSection === "registration");
+  useEffect(() => {
+    if (initialSection === "registration") {
+      setIsCreateOpen(true);
+    }
+  }, [initialSection]);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [category, setCategory] = useState("Reunion");

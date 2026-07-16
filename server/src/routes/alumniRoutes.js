@@ -20,6 +20,7 @@ import {
   getSuccessStories,
   createSuccessStory,
   sendAnnouncement,
+  getAnnouncementLogs,
   getAlumniConnections,
   sendConnectionRequest,
   respondToConnectionRequest,
@@ -64,6 +65,7 @@ router.get('/donations/leaderboard', getDonationLeaderboard);
 router.get('/stories', getSuccessStories);
 router.post('/stories', createSuccessStory);
 router.post('/communication/announce', sendAnnouncement);
+router.get('/communication/logs', getAnnouncementLogs);
 
 // Networking & Feed
 router.get('/connections', getAlumniConnections);
