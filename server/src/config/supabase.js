@@ -115,7 +115,12 @@ if (isMockMode) {
       { id: '66666666-6666-6666-6666-666666666666', name: 'Librarian', full_name: 'Librarian Demo', email: 'librarian@college.com', password: hashedDefaultPassword, role: 'librarian', is_verified: true, is_active: true },
       { id: '77777777-7777-7777-7777-777777777777', name: 'Placement Officer', full_name: 'Placement Officer Demo', email: 'placement@college.com', password: hashedDefaultPassword, role: 'placement-officer', is_verified: true, is_active: true },
       { id: '88888888-8888-8888-8888-888888888888', name: 'Hostel Warden', full_name: 'Hostel Warden Demo', email: 'warden@college.com', password: hashedDefaultPassword, role: 'hostel-warden', is_verified: true, is_active: true },
-      { id: '99999999-9999-9999-9999-999999999999', name: 'Transport Manager', full_name: 'Transport Manager Demo', email: 'transport@college.com', password: hashedDefaultPassword, role: 'transport-manager', is_verified: true, is_active: true }
+      { id: '99999999-9999-9999-9999-999999999999', name: 'Transport Manager', full_name: 'Transport Manager Demo', email: 'transport@college.com', password: hashedDefaultPassword, role: 'transport-manager', is_verified: true, is_active: true },
+      { id: 'e1111111-1111-1111-1111-111111111111', name: 'Exam Cell Officer', full_name: 'Exam Cell Office', email: 'examcell@college.com', password: hashedDefaultPassword, role: 'exam-cell', is_verified: true, is_active: true },
+      { id: 'de111111-1111-1111-1111-111111111111', name: 'Dean Academics', full_name: 'Dean Academics Office', email: 'dean@college.com', password: hashedDefaultPassword, role: 'dean', is_verified: true, is_active: true },
+      { id: 'ac111111-1111-1111-1111-111111111111', name: 'Accounts Manager', full_name: 'Accounts Office', email: 'accounts@college.com', password: hashedDefaultPassword, role: 'accounts', is_verified: true, is_active: true },
+      { id: 'pr111111-1111-1111-1111-111111111111', name: 'Principal', full_name: 'Principal Office', email: 'principal@college.com', password: hashedDefaultPassword, role: 'principal', is_verified: true, is_active: true },
+      { id: 'ho111111-1111-1111-1111-111111111111', name: 'HOD CSE', full_name: 'HOD CSE Dept', email: 'hod@college.com', password: hashedDefaultPassword, role: 'hod', is_verified: true, is_active: true }
     ],
     students: [
       {

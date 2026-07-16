@@ -110,6 +110,56 @@
       "role": "faculty",
       "is_verified": true,
       "is_active": true
+    },
+    {
+      "id": "e1111111-1111-1111-1111-111111111111",
+      "name": "Exam Cell Officer",
+      "full_name": "Exam Cell Office",
+      "email": "examcell@college.com",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
+      "role": "exam-cell",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "de111111-1111-1111-1111-111111111111",
+      "name": "Dean Academics",
+      "full_name": "Dean Academics Office",
+      "email": "dean@college.com",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
+      "role": "dean",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "ac111111-1111-1111-1111-111111111111",
+      "name": "Accounts Manager",
+      "full_name": "Accounts Office",
+      "email": "accounts@college.com",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
+      "role": "accounts",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "pr111111-1111-1111-1111-111111111111",
+      "name": "Principal",
+      "full_name": "Principal Office",
+      "email": "principal@college.com",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
+      "role": "principal",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "ho111111-1111-1111-1111-111111111111",
+      "name": "HOD CSE",
+      "full_name": "HOD CSE Dept",
+      "email": "hod@college.com",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
+      "role": "hod",
+      "is_verified": true,
+      "is_active": true
     }
   ],
   "students": [
@@ -267,7 +317,11 @@
       "title": "Red-Black Trees Implementation",
       "description": "Implement RB-Trees insertion and deletion in C++.",
       "subject": "Data Structures",
+<<<<<<< HEAD
       "due_date": "2026-07-21T13:24:01.806Z",
+=======
+      "due_date": "2026-07-21T13:28:35.169Z",
+>>>>>>> 9d2edfc96a82c1ca7102c7877a2244987a0b8cb8
       "department": "CSE",
       "year": 3,
       "semester": 5,
@@ -1024,6 +1078,29 @@
       "action": "Profile details updated",
       "ip_address": "127.0.0.1",
       "created_at": "2026-07-16T13:23:28.964Z"
+    }
+  ],
+  "faculty_attendance": [
+    {
+      "id": "fa111111-1111-1111-1111-111111111111",
+      "faculty": "f1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-24",
+      "status": "present",
+      "remarks": ""
+    },
+    {
+      "id": "fa222222-2222-2222-2222-222222222222",
+      "faculty": "f1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-25",
+      "status": "present",
+      "remarks": ""
+    },
+    {
+      "id": "fa333333-3333-3333-3333-333333333333",
+      "faculty": "f1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-26",
+      "status": "absent",
+      "remarks": "Sick leave"
     }
   ]
 }
