@@ -305,7 +305,7 @@ const autoAssignResidentFee = async (
 
 // ── Residents CRUD ──────────────────────────────────────
 export async function fetchResidents(filters: { search?: string; department?: string; status?: string; floor?: string } = {}): Promise<ResidentRecord[]> {
-  const response = await api.get("/hostel/allocations", { params: filters });
+  const response = await api.get("/api/hostel/allocations", { params: filters });
   const rawData = response.data.data || [];
 
   let residents: ResidentRecord[] = rawData.map((row: any) => {
@@ -370,7 +370,7 @@ export async function fetchResidents(filters: { search?: string; department?: st
 }
 
 export async function createResident(studentPayload: any, allocationPayload: { hostelId: string; blockId: string; roomId: string; bedNumber: number; academicYear: string }) {
-  const response = await api.post("/hostel/allocations/resident", { studentPayload, allocationPayload });
+  const response = await api.post("/api/hostel/allocations/resident", { studentPayload, allocationPayload });
   await logActivity("Warden", "allocated room for", studentPayload.fullName, "Allocation");
   await createNotification(`New Room Allocation: ${studentPayload.fullName} assigned to room.`, "Maintenance", "Medium");
   return response.data.data;
@@ -382,14 +382,14 @@ export async function updateResident(
   studentPayload: any,
   allocationPayload: { hostelId: string; blockId: string; roomId: string; bedNumber: number; academicYear: string; status: string }
 ) {
-  const response = await api.put(`/hostel/allocations/resident/${allocationId}`, { studentId, studentPayload, allocationPayload });
+  const response = await api.put(`/api/hostel/allocations/resident/${allocationId}`, { studentId, studentPayload, allocationPayload });
   await logActivity("Warden", "updated profile details for", studentPayload.fullName, "Update");
   await createNotification(`Resident Updated: ${studentPayload.fullName} profile modified.`, "Info", "Low");
   return response.data.data;
 }
 
 export async function deleteResident(allocationId: string, roomId: string, studentName: string) {
-  const response = await api.delete(`/hostel/allocations/${allocationId}`);
+  const response = await api.delete(`/api/hostel/allocations/${allocationId}`);
   await logActivity("Warden", "removed room allocation for", studentName, "Removal");
   await createNotification(`Room Vacated: ${studentName} checked out.`, "Alert", "High");
   return response.data;
@@ -403,7 +403,7 @@ export async function fetchHostelRooms(filters: {
   roomType?: string;
   acType?: string;
 } = {}): Promise<RoomRecord[]> {
-  const response = await api.get("/hostel/rooms", { params: filters });
+  const response = await api.get("/api/hostel/rooms", { params: filters });
   const rawRooms = response.data.rooms || [];
   const rawAllocations = await fetchResidents();
 
@@ -503,7 +503,7 @@ export async function fetchHostelRooms(filters: {
 // Helper: fetch all active hostels (auto-seeds if empty)
 export async function fetchHostels() {
   try {
-    const response = await api.get("/hostel/hostels");
+    const response = await api.get("/api/hostel/hostels");
     return response.data.hostels || [];
   } catch (err) {
     console.error("Exception in fetchHostels, using static fallbacks:", err);
@@ -517,7 +517,7 @@ export async function fetchHostels() {
 // Helper: fetch blocks for a hostel
 export async function fetchHostelBlocks(hostelId: string) {
   try {
-    const response = await api.get("/hostel/blocks", { params: { hostelId } });
+    const response = await api.get("/api/hostel/blocks", { params: { hostelId } });
     return response.data.blocks || [];
   } catch (err) {
     console.error("Exception in fetchHostelBlocks, using static fallbacks:", err);
@@ -531,7 +531,7 @@ export async function fetchHostelBlocks(hostelId: string) {
 // Helper: fetch rooms for a block
 export async function fetchRoomsForBlock(blockId: string) {
   try {
-    const response = await api.get("/hostel/rooms", { params: { blockId } });
+    const response = await api.get("/api/hostel/rooms", { params: { blockId } });
     return response.data.rooms || [];
   } catch (err) {
     console.error("Exception in fetchRoomsForBlock, using static fallbacks:", err);
@@ -544,19 +544,19 @@ export async function fetchRoomsForBlock(blockId: string) {
 }
 
 export async function fetchHostelComplaints(filters: { search?: string; category?: string; priority?: string; status?: string } = {}): Promise<ComplaintRecord[]> {
-  const response = await api.get("/hostel/complaints", { params: filters });
+  const response = await api.get("/api/hostel/complaints", { params: filters });
   return response.data.data;
 }
 
 export async function updateComplaintStatus(id: string, status: "Pending" | "In-Progress" | "Resolved") {
-  const response = await api.put(`/hostel/complaints/${id}/status`, { status });
+  const response = await api.put(`/api/hostel/complaints/${id}/status`, { status });
   await logActivity("Warden", "resolved complaint from", `Ticket #${id.substring(0, 6)}`, "Complaint");
   await createNotification(`Complaint Status: Ticket resolved successfully.`, "Complaint", "Medium");
   return response.data;
 }
 
 export async function createComplaint(payload: any) {
-  const response = await api.post("/hostel/complaints", payload);
+  const response = await api.post("/api/hostel/complaints", payload);
   await logActivity("Warden", "created complaint for", payload.title, "Complaint");
   await createNotification(`New Complaint registered: ${payload.title}`, "Complaint", "Low");
   return response.data.data;
@@ -565,7 +565,7 @@ export async function createComplaint(payload: any) {
 // ── Visitors Management ──────────────────────────────────
 // ── Visitors Management ──────────────────────────────────
 export async function fetchHostelVisitors(filters: { search?: string; status?: string } = {}): Promise<VisitorRecord[]> {
-  const response = await api.get("/hostel/visitors", { params: filters });
+  const response = await api.get("/api/hostel/visitors", { params: filters });
   const rawData = response.data.data || [];
 
   let records: VisitorRecord[] = rawData.map((row: any) => ({
@@ -586,20 +586,20 @@ export async function fetchHostelVisitors(filters: { search?: string; status?: s
 }
 
 export async function registerVisitor(payload: any) {
-  const response = await api.post("/hostel/visitors", payload);
+  const response = await api.post("/api/hostel/visitors", payload);
   await logActivity("Security", "registered visitor for", payload.visitor_name, "Visitor");
   await createNotification(`Visitor Checked-In: ${payload.visitor_name} registered.`, "Policy", "Low");
   return response.data.data;
 }
 
 export async function checkOutVisitor(id: string) {
-  const response = await api.put(`/hostel/visitors/${id}/checkout`);
+  const response = await api.put(`/api/hostel/visitors/${id}/checkout`);
   return response.data;
 }
 
 // ── Fees Management ──────────────────────────────────────
 export async function fetchHostelFees(filters: HostelFeeFilters = {}): Promise<HostelFeeRecord[]> {
-  const response = await api.get("/hostel/fees", { params: filters });
+  const response = await api.get("/api/hostel/fees", { params: filters });
   const rawData = response.data.data || [];
 
   let records: HostelFeeRecord[] = rawData.map((row: any) => {
@@ -1616,17 +1616,17 @@ export async function cancelAllocation(allocationId: string) {
 }
 
 export async function fetchHostelAttendance(filters: { date?: string; blockId?: string; roomId?: string; search?: string } = {}) {
-  const response = await api.get("/hostel/attendance", { params: filters });
+  const response = await api.get("/api/hostel/attendance", { params: filters });
   return response.data;
 }
 
 export async function markHostelAttendance(payload: { studentId: string; hostelId: string; roomId: string; date: string; status: "Present" | "Absent" | "On Leave"; remarks?: string }) {
-  const response = await api.post("/hostel/attendance/mark", payload);
+  const response = await api.post("/api/hostel/attendance/mark", payload);
   return response.data;
 }
 
 export async function fetchHostelAttendanceStats(filters: { date?: string; blockId?: string } = {}) {
-  const response = await api.get("/hostel/attendance/stats", { params: filters });
+  const response = await api.get("/api/hostel/attendance/stats", { params: filters });
   return response.data.data;
 }
 
