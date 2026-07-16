@@ -620,5 +620,257 @@
       "time": "Just now",
       "unread": true
     }
+  ],
+  "hostels": [
+    {
+      "id": "h1111111-1111-1111-1111-111111111111",
+      "name": "Vivekananda Boys Hostel",
+      "code": "VBH",
+      "type": "Boys",
+      "total_rooms": 60,
+      "total_beds": 120,
+      "monthly_fee": 5000,
+      "facilities": [
+        "WiFi",
+        "Gym",
+        "Mess"
+      ],
+      "contact_number": "9876500100",
+      "created_at": "2026-07-16T12:39:06.001Z",
+      "updated_at": "2026-07-16T12:39:06.003Z"
+    },
+    {
+      "id": "h2222222-2222-2222-2222-222222222222",
+      "name": "Sarojini Girls Hostel",
+      "code": "SGH",
+      "type": "Girls",
+      "total_rooms": 40,
+      "total_beds": 80,
+      "monthly_fee": 5500,
+      "facilities": [
+        "WiFi",
+        "Gym",
+        "Mess",
+        "CCTV"
+      ],
+      "contact_number": "9876500101",
+      "created_at": "2026-07-16T12:39:06.003Z",
+      "updated_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "hostel_blocks": [
+    {
+      "id": "hb111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "name": "Block A",
+      "code": "A",
+      "total_floors": 3,
+      "total_rooms": 30,
+      "total_beds": 60,
+      "facilities": [
+        "WiFi"
+      ],
+      "block_warden": "Hostel Warden Demo",
+      "created_at": "2026-07-16T12:39:06.003Z"
+    },
+    {
+      "id": "hb222222-2222-2222-2222-222222222222",
+      "hostel_id": "h2222222-2222-2222-2222-222222222222",
+      "name": "Block B",
+      "code": "B",
+      "total_floors": 3,
+      "total_rooms": 30,
+      "total_beds": 60,
+      "facilities": [
+        "WiFi"
+      ],
+      "block_warden": "Hostel Warden Demo",
+      "created_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "hostel_rooms": [
+    {
+      "id": "hr111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "block_id": "hb111111-1111-1111-1111-111111111111",
+      "room_number": "A101",
+      "floor": 1,
+      "type": "AC",
+      "capacity": 2,
+      "occupants": 1,
+      "amenities": [
+        "AC",
+        "Study Table"
+      ],
+      "created_at": "2026-07-16T12:39:06.003Z"
+    },
+    {
+      "id": "hr222222-2222-2222-2222-222222222222",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "block_id": "hb111111-1111-1111-1111-111111111111",
+      "room_number": "A102",
+      "floor": 1,
+      "type": "Non-AC",
+      "capacity": 4,
+      "occupants": 0,
+      "amenities": [
+        "Study Table"
+      ],
+      "created_at": "2026-07-16T12:39:06.003Z"
+    },
+    {
+      "id": "hr333333-3333-3333-3333-333333333333",
+      "hostel_id": "h2222222-2222-2222-2222-222222222222",
+      "block_id": "hb222222-2222-2222-2222-222222222222",
+      "room_number": "B101",
+      "floor": 1,
+      "type": "AC",
+      "capacity": 2,
+      "occupants": 0,
+      "amenities": [
+        "AC",
+        "Study Table"
+      ],
+      "created_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "hostel_allocations": [
+    {
+      "id": "ha111111-1111-1111-1111-111111111111",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "block_id": "hb111111-1111-1111-1111-111111111111",
+      "room_id": "hr111111-1111-1111-1111-111111111111",
+      "bed_number": 1,
+      "status": "Active",
+      "academic_year": "2025-2026",
+      "created_at": "2026-07-16T12:39:06.003Z",
+      "updated_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "hostel_fees": [
+    {
+      "id": "hf111111-1111-1111-1111-111111111111",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "block_id": "hb111111-1111-1111-1111-111111111111",
+      "room_id": "hr111111-1111-1111-1111-111111111111",
+      "fee_type": "Monthly Rent",
+      "month": "July",
+      "year": 2026,
+      "total_amount": 5000,
+      "paid_amount": 5000,
+      "due_date": "2026-07-15",
+      "status": "Paid",
+      "payment_method": "Online",
+      "receipt_number": "REC-HST-2026-001",
+      "academic_year": "2025-2026",
+      "resident_name": "Student Demo",
+      "registration_number": "CS100001",
+      "room_number": "A101",
+      "room_type": "AC",
+      "ac_type": "AC",
+      "total_fee": 5000,
+      "amount_paid": 5000,
+      "pending_amount": 0,
+      "payment_status": "Paid",
+      "payment_date": "2026-07-16T12:39:06.003Z"
+    },
+    {
+      "id": "hf222222-2222-2222-2222-222222222222",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "block_id": "hb111111-1111-1111-1111-111111111111",
+      "room_id": "hr111111-1111-1111-1111-111111111111",
+      "fee_type": "Monthly Rent",
+      "month": "August",
+      "year": 2026,
+      "total_amount": 5000,
+      "paid_amount": 0,
+      "due_date": "2026-08-15",
+      "status": "Unpaid",
+      "academic_year": "2025-2026",
+      "resident_name": "Student Demo",
+      "registration_number": "CS100001",
+      "room_number": "A101",
+      "room_type": "AC",
+      "ac_type": "AC",
+      "total_fee": 5000,
+      "amount_paid": 0,
+      "pending_amount": 5000,
+      "payment_status": "Pending"
+    }
+  ],
+  "hostel_complaints": [
+    {
+      "id": "hc111111-1111-1111-1111-111111111111",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "room_id": "hr111111-1111-1111-1111-111111111111",
+      "title": "Water leakage in bathroom",
+      "description": "There is a slow leakage in the washbasin tap.",
+      "category": "Plumbing",
+      "priority": "Low",
+      "status": "Pending",
+      "assigned_to": "Plumber John",
+      "created_at": "2026-07-16T12:39:06.003Z",
+      "updated_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "hostel_visitors": [
+    {
+      "id": "hv111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "room_id": "hr111111-1111-1111-1111-111111111111",
+      "visitor_name": "Robert Demo",
+      "visitor_phone": "9876543209",
+      "relationship": "Father",
+      "purpose": "Deliver books",
+      "id_type": "Aadhaar Card",
+      "id_number": "1234-5678-9012",
+      "check_in_time": "2026-07-16T11:39:06.003Z",
+      "check_out_time": null,
+      "status": "In",
+      "created_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "hostel_attendance": [
+    {
+      "id": "hat11111-1111-1111-1111-111111111111",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "hostel_id": "h1111111-1111-1111-1111-111111111111",
+      "room_id": "hr111111-1111-1111-1111-111111111111",
+      "attendance_date": "2026-07-16",
+      "status": "Present",
+      "remarks": "In room during roll call",
+      "created_at": "2026-07-16T12:39:06.003Z",
+      "updated_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "fee_structures": [
+    {
+      "id": "fs111111-1111-1111-1111-111111111111",
+      "fee_structure_code": "FEE-AC-SINGLE-A",
+      "hostel_block_id": "hb111111-1111-1111-1111-111111111111",
+      "academic_year": "2025-2026",
+      "fee_category": "Hostel Fees",
+      "room_type": "AC",
+      "ac_type": "AC",
+      "resident_category": "General",
+      "monthly_hostel_fee": 4000,
+      "mess_fee": 1000,
+      "electricity_fee": 0,
+      "maintenance_fee": 0,
+      "security_deposit": 0,
+      "late_fee": 0,
+      "other_charges": 0,
+      "total_fee": 5000,
+      "effective_from": "2025-06-01",
+      "status": "Active",
+      "notes": "Default AC block structure",
+      "created_at": "2026-07-16T12:39:06.003Z",
+      "updated_at": "2026-07-16T12:39:06.003Z"
+    }
   ]
 }

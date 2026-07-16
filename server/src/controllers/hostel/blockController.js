@@ -2,7 +2,10 @@ import { supabase } from '../../config/supabase.js';
 
 export async function listBlocks(req, res) {
   try {
-    const { data, error } = await supabase.from('hostel_blocks').select('*').order('name', { ascending: true });
+    const { hostelId } = req.query;
+    let query = supabase.from('hostel_blocks').select('*');
+    if (hostelId) query = query.eq('hostel_id', hostelId);
+    const { data, error } = await query.order('name', { ascending: true });
     if (error) throw error;
     res.json({ blocks: data });
   } catch (err) {

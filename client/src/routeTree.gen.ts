@@ -88,6 +88,7 @@ import { Route as DashboardHostelNotificationsRouteImport } from './routes/dashb
 import { Route as DashboardHostelMessRouteImport } from './routes/dashboard/hostel/mess'
 import { Route as DashboardHostelFeesRouteImport } from './routes/dashboard/hostel/fees'
 import { Route as DashboardHostelComplaintsRouteImport } from './routes/dashboard/hostel/complaints'
+import { Route as DashboardHostelAttendanceRouteImport } from './routes/dashboard/hostel/attendance'
 import { Route as DashboardFacultyStudentsRouteImport } from './routes/dashboard/faculty/students'
 import { Route as DashboardFacultySettingsRouteImport } from './routes/dashboard/faculty/settings'
 import { Route as DashboardFacultyPerformanceRouteImport } from './routes/dashboard/faculty/performance'
@@ -561,6 +562,12 @@ const DashboardHostelComplaintsRoute =
     path: '/complaints',
     getParentRoute: () => DashboardHostelRoute,
   } as any)
+const DashboardHostelAttendanceRoute =
+  DashboardHostelAttendanceRouteImport.update({
+    id: '/attendance',
+    path: '/attendance',
+    getParentRoute: () => DashboardHostelRoute,
+  } as any)
 const DashboardFacultyStudentsRoute =
   DashboardFacultyStudentsRouteImport.update({
     id: '/students',
@@ -853,6 +860,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/faculty/performance': typeof DashboardFacultyPerformanceRoute
   '/dashboard/faculty/settings': typeof DashboardFacultySettingsRoute
   '/dashboard/faculty/students': typeof DashboardFacultyStudentsRoute
+  '/dashboard/hostel/attendance': typeof DashboardHostelAttendanceRoute
   '/dashboard/hostel/complaints': typeof DashboardHostelComplaintsRoute
   '/dashboard/hostel/fees': typeof DashboardHostelFeesRoute
   '/dashboard/hostel/mess': typeof DashboardHostelMessRouteWithChildren
@@ -975,6 +983,7 @@ export interface FileRoutesByTo {
   '/dashboard/faculty/performance': typeof DashboardFacultyPerformanceRoute
   '/dashboard/faculty/settings': typeof DashboardFacultySettingsRoute
   '/dashboard/faculty/students': typeof DashboardFacultyStudentsRoute
+  '/dashboard/hostel/attendance': typeof DashboardHostelAttendanceRoute
   '/dashboard/hostel/complaints': typeof DashboardHostelComplaintsRoute
   '/dashboard/hostel/fees': typeof DashboardHostelFeesRoute
   '/dashboard/hostel/mess': typeof DashboardHostelMessRouteWithChildren
@@ -1099,6 +1108,7 @@ export interface FileRoutesById {
   '/dashboard/faculty/performance': typeof DashboardFacultyPerformanceRoute
   '/dashboard/faculty/settings': typeof DashboardFacultySettingsRoute
   '/dashboard/faculty/students': typeof DashboardFacultyStudentsRoute
+  '/dashboard/hostel/attendance': typeof DashboardHostelAttendanceRoute
   '/dashboard/hostel/complaints': typeof DashboardHostelComplaintsRoute
   '/dashboard/hostel/fees': typeof DashboardHostelFeesRoute
   '/dashboard/hostel/mess': typeof DashboardHostelMessRouteWithChildren
@@ -1224,6 +1234,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/performance'
     | '/dashboard/faculty/settings'
     | '/dashboard/faculty/students'
+    | '/dashboard/hostel/attendance'
     | '/dashboard/hostel/complaints'
     | '/dashboard/hostel/fees'
     | '/dashboard/hostel/mess'
@@ -1346,6 +1357,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/performance'
     | '/dashboard/faculty/settings'
     | '/dashboard/faculty/students'
+    | '/dashboard/hostel/attendance'
     | '/dashboard/hostel/complaints'
     | '/dashboard/hostel/fees'
     | '/dashboard/hostel/mess'
@@ -1469,6 +1481,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/performance'
     | '/dashboard/faculty/settings'
     | '/dashboard/faculty/students'
+    | '/dashboard/hostel/attendance'
     | '/dashboard/hostel/complaints'
     | '/dashboard/hostel/fees'
     | '/dashboard/hostel/mess'
@@ -2093,6 +2106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardHostelComplaintsRouteImport
       parentRoute: typeof DashboardHostelRoute
     }
+    '/dashboard/hostel/attendance': {
+      id: '/dashboard/hostel/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/hostel/attendance'
+      preLoaderRoute: typeof DashboardHostelAttendanceRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
     '/dashboard/faculty/students': {
       id: '/dashboard/faculty/students'
       path: '/students'
@@ -2513,6 +2533,7 @@ const DashboardHostelMessRouteWithChildren =
   DashboardHostelMessRoute._addFileChildren(DashboardHostelMessRouteChildren)
 
 interface DashboardHostelRouteChildren {
+  DashboardHostelAttendanceRoute: typeof DashboardHostelAttendanceRoute
   DashboardHostelComplaintsRoute: typeof DashboardHostelComplaintsRoute
   DashboardHostelFeesRoute: typeof DashboardHostelFeesRoute
   DashboardHostelMessRoute: typeof DashboardHostelMessRouteWithChildren
@@ -2525,6 +2546,7 @@ interface DashboardHostelRouteChildren {
 }
 
 const DashboardHostelRouteChildren: DashboardHostelRouteChildren = {
+  DashboardHostelAttendanceRoute: DashboardHostelAttendanceRoute,
   DashboardHostelComplaintsRoute: DashboardHostelComplaintsRoute,
   DashboardHostelFeesRoute: DashboardHostelFeesRoute,
   DashboardHostelMessRoute: DashboardHostelMessRouteWithChildren,

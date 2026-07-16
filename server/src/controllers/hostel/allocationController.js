@@ -114,12 +114,24 @@ export async function deleteAllocation(req, res) {
     // Fetch details before deletion
     const { data: alloc } = await supabase
       .from('hostel_allocations')
-      .select('student_id')
+      .select('student_id, room_id, status')
       .eq('id', id)
       .maybeSingle();
 
     const { error } = await supabase.from('hostel_allocations').delete().eq('id', id);
     if (error) throw error;
+
+    // Decrement occupants in room if the allocation was active
+    if (alloc && alloc.status === 'Active' && alloc.room_id) {
+      try {
+        const { data: rm } = await supabase.from('hostel_rooms').select('occupants').eq('id', alloc.room_id).single();
+        if (rm && rm.occupants > 0) {
+          await supabase.from('hostel_rooms').update({ occupants: rm.occupants - 1 }).eq('id', alloc.room_id);
+        }
+      } catch (e) {
+        console.error('Failed to decrement room occupants during vacate:', e);
+      }
+    }
     
     // Asynchronously dispatch notification
     if (alloc && alloc.student_id) {
@@ -153,3 +165,366 @@ export async function deleteAllocation(req, res) {
     res.status(500).json({ error: err.message || 'Failed to delete allocation' });
   }
 }
+
+export async function listAllocations(req, res) {
+  try {
+    const { status, hostelId, blockId, roomId } = req.query;
+
+    let query = supabase.from('hostel_allocations').select('*');
+
+    if (status) query = query.eq('status', status);
+    if (hostelId) query = query.eq('hostel_id', hostelId);
+    if (blockId) query = query.eq('block_id', blockId);
+    if (roomId) query = query.eq('room_id', roomId);
+
+    const { data: allocations, error } = await query;
+    if (error) throw error;
+
+    // Resolve relationships in parallel to guarantee mock db mode works
+    const { data: students } = await supabase.from('students').select('*');
+    const { data: rooms } = await supabase.from('hostel_rooms').select('*');
+    const { data: blocks } = await supabase.from('hostel_blocks').select('*');
+
+    const studentMap = new Map((students || []).map(s => [s.id, s]));
+    const roomMap = new Map((rooms || []).map(r => [r.id, r]));
+    const blockMap = new Map((blocks || []).map(b => [b.id, b]));
+
+    const records = (allocations || []).map(alloc => {
+      const student = studentMap.get(alloc.student_id) || {};
+      const room = roomMap.get(alloc.room_id) || {};
+      const block = blockMap.get(alloc.block_id) || {};
+
+      return {
+        id: alloc.id,
+        studentId: alloc.student_id,
+        hostelId: alloc.hostel_id,
+        blockId: alloc.block_id,
+        roomId: alloc.room_id,
+        bedNumber: alloc.bed_number,
+        status: alloc.status,
+        academicYear: alloc.academic_year,
+        createdAt: alloc.created_at,
+        updatedAt: alloc.updated_at,
+        // Match the relationship shapes
+        students: {
+          id: student.id,
+          full_name: student.full_name || 'Unknown Student',
+          roll_number: student.roll_number || '-',
+          admission_number: student.admission_number || '-',
+          email: student.email || '-',
+          phone_number: student.phone_number || '-',
+          gender: student.gender || '-',
+          date_of_birth: student.date_of_birth || '-',
+          department: student.department || '-',
+          year: student.year || 1,
+          semester: student.semester || 1,
+          section: student.section || '-',
+          parent_name: student.parent_name || '-',
+          parent_phone: student.parent_phone || '-',
+          parent_email: student.parent_email || '-',
+          cgpa: student.cgpa || '-',
+          attendance_percentage: student.attendance_percentage || 100
+        },
+        hostel_rooms: {
+          id: room.id,
+          room_number: room.room_number || '-',
+          room_type: room.room_type || room.type || '-',
+          type: room.type || '-',
+          ac_type: room.ac_type || (String(room.type).toLowerCase().includes('ac') ? 'AC' : 'Non-AC')
+        },
+        hostel_blocks: {
+          id: block.id,
+          name: block.name || '-'
+        }
+      };
+    });
+
+    res.json({ success: true, data: records });
+  } catch (err) {
+    console.error('listAllocations error:', err);
+    res.status(500).json({ error: err.message || 'Failed to list allocations' });
+  }
+}
+
+export async function createResidentAllocation(req, res) {
+  try {
+    const { studentPayload, allocationPayload } = req.body;
+    const cleanRoll = studentPayload.rollNumber ? studentPayload.rollNumber.toUpperCase().trim() : "";
+
+    // Check if student exists
+    const { data: existingStudent } = await supabase
+      .from('students')
+      .select('id')
+      .or(`email.eq.${studentPayload.email},roll_number.eq.${cleanRoll}`)
+      .maybeSingle();
+
+    if (existingStudent) {
+      const { data: activeAlloc } = await supabase
+        .from('hostel_allocations')
+        .select('id')
+        .eq('student_id', existingStudent.id)
+        .eq('status', 'Active')
+        .maybeSingle();
+
+      if (activeAlloc) {
+        return res.status(400).json({ error: 'This student already has an active room allocation.' });
+      }
+    }
+
+    // Check if bed is occupied
+    const { data: occupiedBed } = await supabase
+      .from('hostel_allocations')
+      .select('id')
+      .eq('room_id', allocationPayload.roomId)
+      .eq('bed_number', allocationPayload.bedNumber)
+      .eq('status', 'Active')
+      .maybeSingle();
+
+    if (occupiedBed) {
+      return res.status(400).json({ error: `Bed ${allocationPayload.bedNumber} in this room is already occupied.` });
+    }
+
+    // Check room capacity
+    const { data: room } = await supabase
+      .from('hostel_rooms')
+      .select('capacity, occupants')
+      .eq('id', allocationPayload.roomId)
+      .maybeSingle();
+
+    if (room && room.occupants >= room.capacity) {
+      return res.status(400).json({ error: 'This room is already at full capacity.' });
+    }
+
+    let studentId = "";
+    if (existingStudent) {
+      studentId = existingStudent.id;
+      await supabase.from('students').update({
+        full_name: studentPayload.fullName,
+        phone_number: studentPayload.phoneNumber,
+        department: studentPayload.department,
+        year: studentPayload.year,
+        semester: studentPayload.semester,
+        section: studentPayload.section,
+        parent_phone: studentPayload.parentPhone,
+        parent_name: studentPayload.parentName,
+        parent_email: studentPayload.parentEmail
+      }).eq('id', studentId);
+    } else {
+      const { data: newStudent, error: studError } = await supabase.from('students').insert([{
+        full_name: studentPayload.fullName,
+        roll_number: cleanRoll,
+        admission_number: studentPayload.admissionNumber || `ADM${Date.now() % 100000}`,
+        email: studentPayload.email,
+        phone_number: studentPayload.phoneNumber || '9999999999',
+        gender: studentPayload.gender || 'Male',
+        date_of_birth: studentPayload.dateOfBirth || '2005-01-01',
+        department: studentPayload.department,
+        year: Number(studentPayload.year),
+        semester: Number(studentPayload.semester),
+        section: studentPayload.section,
+        parent_name: studentPayload.parentName,
+        parent_phone: studentPayload.parentPhone,
+        parent_email: studentPayload.parentEmail || studentPayload.email,
+        cgpa: studentPayload.cgpa ? Number(studentPayload.cgpa) : 8.0,
+        attendance_percentage: studentPayload.attendancePercentage ? Number(studentPayload.attendancePercentage) : 90.0,
+        is_active: true
+      }]).select().single();
+
+      if (studError) throw studError;
+      studentId = newStudent.id;
+    }
+
+    // Insert allocation
+    const { data: allocation, error: allocErr } = await supabase
+      .from('hostel_allocations')
+      .insert([{
+        student_id: studentId,
+        hostel_id: allocationPayload.hostelId,
+        block_id: allocationPayload.blockId,
+        room_id: allocationPayload.roomId,
+        bed_number: allocationPayload.bedNumber,
+        status: 'Active',
+        academic_year: allocationPayload.academicYear
+      }])
+      .select()
+      .single();
+
+    if (allocErr) throw allocErr;
+
+    // Increment occupants count
+    if (room) {
+      await supabase.from('hostel_rooms').update({ occupants: (room.occupants || 0) + 1 }).eq('id', allocationPayload.roomId);
+    }
+
+    // Auto-assign fee structure
+    try {
+      const roomType = room?.room_type || room?.type || 'Standard';
+      const acType = room?.ac_type || (String(roomType).toLowerCase().includes('ac') ? 'AC' : 'Non-AC');
+      const residentCategory = studentPayload.residentCategory || studentPayload.category || studentPayload.department || 'General';
+      
+      const { data: feeStructure } = await supabase
+        .from('fee_structures')
+        .select('*')
+        .eq('hostel_block_id', allocationPayload.blockId)
+        .eq('academic_year', allocationPayload.academicYear)
+        .eq('room_type', roomType)
+        .eq('ac_type', acType)
+        .eq('status', 'Active')
+        .maybeSingle();
+
+      if (feeStructure) {
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 10);
+
+        await supabase.from('hostel_fees').insert([{
+          student_id: studentId,
+          hostel_id: allocationPayload.hostelId,
+          block_id: allocationPayload.blockId,
+          room_id: allocationPayload.roomId,
+          fee_structure_id: feeStructure.id,
+          resident_category: residentCategory,
+          academic_year: allocationPayload.academicYear,
+          resident_name: studentPayload.fullName,
+          registration_number: cleanRoll,
+          room_number: room?.room_number || '-',
+          room_type: roomType,
+          ac_type: acType,
+          fee_type: feeStructure.fee_category || 'Hostel Rent',
+          monthly_hostel_fee: Number(feeStructure.monthly_hostel_fee || 0),
+          mess_fee: Number(feeStructure.mess_fee || 0),
+          electricity_fee: Number(feeStructure.electricity_fee || 0),
+          maintenance_fee: Number(feeStructure.maintenance_fee || 0),
+          security_deposit: Number(feeStructure.security_deposit || 0),
+          other_charges: Number(feeStructure.other_charges || 0),
+          total_fee: Number(feeStructure.total_fee || 0),
+          amount_paid: 0,
+          pending_amount: Number(feeStructure.total_fee || 0),
+          due_date: dueDate.toISOString().split('T')[0],
+          status: 'Unpaid',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }]);
+      }
+    } catch (feeErr) {
+      console.error('Failed auto fee assignment in createResidentAllocation:', feeErr);
+    }
+
+    res.status(201).json({ success: true, data: allocation });
+  } catch (err) {
+    console.error('createResidentAllocation error:', err);
+    res.status(500).json({ error: err.message || 'Failed to create resident allocation' });
+  }
+}
+
+export async function updateResidentAllocation(req, res) {
+  try {
+    const { id: allocationId } = req.params;
+    const { studentId, studentPayload, allocationPayload } = req.body;
+
+    // Check old allocation
+    const { data: oldAlloc } = await supabase
+      .from('hostel_allocations')
+      .select('room_id, bed_number, status')
+      .eq('id', allocationId)
+      .maybeSingle();
+
+    if (oldAlloc) {
+      const isNewActive = allocationPayload.status === 'Active';
+
+      if (isNewActive && (oldAlloc.room_id !== allocationPayload.roomId || oldAlloc.bed_number !== allocationPayload.bedNumber || oldAlloc.status !== 'Active')) {
+        const { data: occupiedBed } = await supabase
+          .from('hostel_allocations')
+          .select('id')
+          .eq('room_id', allocationPayload.roomId)
+          .eq('bed_number', allocationPayload.bedNumber)
+          .eq('status', 'Active')
+          .neq('id', allocationId)
+          .maybeSingle();
+
+        if (occupiedBed) {
+          return res.status(400).json({ error: `Bed ${allocationPayload.bedNumber} in this room is already occupied.` });
+        }
+      }
+
+      const roomChanged = oldAlloc.room_id !== allocationPayload.roomId;
+      const activated = oldAlloc.status !== 'Active' && isNewActive;
+      if (isNewActive && (roomChanged || activated)) {
+        const { data: room } = await supabase
+          .from('hostel_rooms')
+          .select('capacity, occupants')
+          .eq('id', allocationPayload.roomId)
+          .maybeSingle();
+
+        if (room && room.occupants >= room.capacity) {
+          return res.status(400).json({ error: 'The target room is already at full capacity.' });
+        }
+      }
+    }
+
+    // Update Student Details
+    await supabase.from('students').update({
+      full_name: studentPayload.fullName,
+      phone_number: studentPayload.phoneNumber,
+      department: studentPayload.department,
+      year: studentPayload.year,
+      semester: studentPayload.semester,
+      section: studentPayload.section,
+      parent_name: studentPayload.parentName,
+      parent_phone: studentPayload.parentPhone,
+      parent_email: studentPayload.parentEmail,
+      is_active: allocationPayload.status === 'Active'
+    }).eq('id', studentId);
+
+    // Update Allocation
+    const { data: allocation, error: allocErr } = await supabase
+      .from('hostel_allocations')
+      .update({
+        hostel_id: allocationPayload.hostelId,
+        block_id: allocationPayload.blockId,
+        room_id: allocationPayload.roomId,
+        bed_number: allocationPayload.bedNumber,
+        status: allocationPayload.status,
+        academic_year: allocationPayload.academicYear
+      })
+      .eq('id', allocationId)
+      .select()
+      .maybeSingle();
+
+    if (allocErr) throw allocErr;
+
+    // Adjust occupants counts
+    if (oldAlloc) {
+      const wasActive = oldAlloc.status === 'Active';
+      const isActiveNow = allocationPayload.status === 'Active';
+      const oldRoomId = oldAlloc.room_id;
+      const newRoomId = allocationPayload.roomId;
+
+      if (wasActive && !isActiveNow) {
+        const { data: rmOld } = await supabase.from('hostel_rooms').select('occupants').eq('id', oldRoomId).single();
+        if (rmOld && rmOld.occupants > 0) {
+          await supabase.from('hostel_rooms').update({ occupants: rmOld.occupants - 1 }).eq('id', oldRoomId);
+        }
+      } else if (!wasActive && isActiveNow) {
+        const { data: rmNew } = await supabase.from('hostel_rooms').select('occupants').eq('id', newRoomId).single();
+        if (rmNew) {
+          await supabase.from('hostel_rooms').update({ occupants: (rmNew.occupants || 0) + 1 }).eq('id', newRoomId);
+        }
+      } else if (wasActive && isActiveNow && oldRoomId !== newRoomId) {
+        const { data: rmOld } = await supabase.from('hostel_rooms').select('occupants').eq('id', oldRoomId).single();
+        if (rmOld && rmOld.occupants > 0) {
+          await supabase.from('hostel_rooms').update({ occupants: rmOld.occupants - 1 }).eq('id', oldRoomId);
+        }
+        const { data: rmNew } = await supabase.from('hostel_rooms').select('occupants').eq('id', newRoomId).single();
+        if (rmNew) {
+          await supabase.from('hostel_rooms').update({ occupants: (rmNew.occupants || 0) + 1 }).eq('id', newRoomId);
+        }
+      }
+    }
+
+    res.json({ success: true, data: allocation });
+  } catch (err) {
+    console.error('updateResidentAllocation error:', err);
+    res.status(500).json({ error: err.message || 'Failed to update resident allocation' });
+  }
+}
+

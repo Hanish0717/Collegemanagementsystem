@@ -34,6 +34,8 @@ import allocationRoutes from './routes/hostel/allocationRoutes.js';
 import messRoutes from './routes/hostel/messRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import hostelComplaintRoutes from './routes/hostel/complaintRoutes.js';
+import hostelAttendanceRoutes from './routes/hostel/attendanceRoutes.js';
+import visitorRoutes from './routes/hostel/visitorRoutes.js';
 
 dotenv.config();
 
@@ -120,6 +122,17 @@ app.use('/api/transport', transportRoutes);
 app.use('/api/placement', placementRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/events', eventRoutes);
+
+app.get('/api/hostel/hostels', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('hostels').select('*');
+    if (error) throw error;
+    res.json({ success: true, hostels: data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.use('/api/hostel/reports', reportRoutes);
 app.use('/api/hostel/exports', exportRoutes);
 app.use('/api/hostel/fees', hostelFeeRoutes);
@@ -129,6 +142,8 @@ app.use('/api/hostel/allocations', allocationRoutes);
 app.use('/api/hostel/mess', messRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/hostel/complaints', hostelComplaintRoutes);
+app.use('/api/hostel/attendance', hostelAttendanceRoutes);
+app.use('/api/hostel/visitors', visitorRoutes);
 
 // 404 handler
 app.use(notFound);

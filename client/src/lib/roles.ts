@@ -248,6 +248,9 @@ export const ROLES: Record<RoleId, Role> = {
         label: "Hostel",
         icon: Building2,
         children: [
+          { to: "/dashboard/hostel/attendance", label: "Attendance", icon: CalendarCheck },
+          { to: "/dashboard/hostel/visitors", label: "Visitors", icon: ClipboardList },
+          { to: "/dashboard/hostel/complaints", label: "Complaints", icon: FileText },
           { to: "/dashboard/hostel/mess/menus", label: "Mess Menus", icon: FileText },
           { to: "/dashboard/hostel/mess/fees", label: "Mess Fees", icon: Wallet },
         ],
