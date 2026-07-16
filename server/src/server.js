@@ -9,12 +9,7 @@ const { Client } = pkg;
 
 import { isMockMode } from './config/supabase.js';
 
-// Validate Supabase config
-if (isMockMode) {
-  console.log("🚀 Running backend in DATABASE MOCK MODE because no live database credentials are configured.");
-} else {
-  console.log("✅ Live database credentials detected. Ready to process queries.");
-}
+
 
 // Startup database migration
 async function runMigrations() {
