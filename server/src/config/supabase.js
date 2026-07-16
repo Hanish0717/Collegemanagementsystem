@@ -5,11 +5,20 @@ import pkg from 'pg';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dns from 'dns/promises';
+import * as dns from 'dns/promises';
+import * as net from 'net';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dbFilePath = path.join(__dirname, 'mock_db.json');
+
+const debugLog = (msg) => {
+  try {
+    fs.appendFileSync(path.join(__dirname, '..', '..', 'debug_startup.txt'), `[${new Date().toISOString()}] ${msg}\n`);
+  } catch (e) {}
+};
+
+debugLog("Supabase.js module loading starting");
 
 dotenv.config();
 
@@ -27,17 +36,60 @@ let isMockMode = (!databaseUrl || databaseUrl.includes('your_supabase_postgresql
                    (!supabaseUrl || supabaseUrl.includes('your-project') || supabaseUrl.includes('placeholder')) ||
                    process.env.FORCE_MOCK_MODE === 'true';
 
+debugLog("databaseUrl: " + databaseUrl + ", isMockMode: " + isMockMode);
+
 if (!isMockMode && databaseUrl) {
   try {
-    const host = databaseUrl.split('@')[1]?.split(':')[0]?.split('/')[0];
+    const hostParts = databaseUrl.split('@')[1]?.split('/')[0]?.split(':');
+    const host = hostParts?.[0];
+    const port = hostParts?.[1] ? parseInt(hostParts[1], 10) : 5432;
+    debugLog("Starting database TCP check for host: " + host + ", port: " + port);
     if (host) {
+      // 1. Resolve DNS
       await Promise.race([
         dns.lookup(host),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500))
       ]);
+
+      // 2. Check if TCP port is reachable
+      const portReachable = await new Promise((resolve) => {
+        const socket = new net.Socket();
+        let isResolved = false;
+
+        const cleanup = () => {
+          socket.removeAllListeners('connect');
+          socket.removeAllListeners('timeout');
+          socket.on('error', () => {});
+          socket.destroy();
+        };
+
+        const done = (status) => {
+          if (isResolved) return;
+          isResolved = true;
+          cleanup();
+          resolve(status);
+        };
+
+        socket.setTimeout(1500);
+        socket.once('connect', () => done(true));
+        socket.once('timeout', () => done(false));
+        socket.once('error', () => done(false));
+        
+        try {
+          socket.connect(port, host);
+        } catch (e) {
+          done(false);
+        }
+      });
+
+      if (!portReachable) {
+        throw new Error(`TCP port ${port} is unreachable`);
+      }
+      debugLog("TCP check succeeded!");
     }
   } catch (err) {
-    console.log("⚠️ Database host is unreachable (e.g. company wifi restriction). Automatically enabling DATABASE MOCK MODE.");
+    debugLog("TCP check error: " + err.message + ", stack: " + err.stack);
+    console.log("⚠️ Database host or port is unreachable (e.g. company wifi restriction). Automatically enabling DATABASE MOCK MODE.");
     isMockMode = true;
     process.env.FORCE_MOCK_MODE = 'true';
   }
@@ -445,7 +497,8 @@ if (isMockMode) {
 
   const pool = new Pool({
     connectionString: databaseUrl,
-    ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
+    ssl: isLocalDatabase ? false : { rejectUnauthorized: false },
+    connectionTimeoutMillis: 3000
   });
 
   class PostgresQueryBuilder {
@@ -854,6 +907,8 @@ if (isMockMode) {
     }
   };
 }
+
+debugLog("Supabase.js module loading completed successfully!");
 
 export const supabase = activeSupabaseClient;
 export { isMockMode };

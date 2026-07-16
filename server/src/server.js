@@ -524,7 +524,10 @@ runMigrations()
     app.listen(PORT, () => {
       console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     });
-  }); // Hot-reload trigger comment
+  })
+  .catch((err) => {
+    console.error("❌ Critical server startup failure:", err);
+  }); // trigger reload 123
 
 
 
