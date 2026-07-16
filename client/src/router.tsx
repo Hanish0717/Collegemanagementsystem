@@ -15,6 +15,9 @@ export const getRouter = () => {
   });
 
   routerInstance = router;
+  if (typeof window !== "undefined") {
+    (window as any).router = router;
+  }
 
   return router;
 };

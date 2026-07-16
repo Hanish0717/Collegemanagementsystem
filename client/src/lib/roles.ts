@@ -23,7 +23,8 @@ import {
   UserPlus,
   MessageSquare,
   ShieldAlert,
-  FolderLock
+  FolderLock,
+  Clock
 } from "lucide-react";
 
 export type RoleId =
@@ -148,7 +149,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/faculty/materials", label: "Materials", icon: BookOpen },
       { to: "/dashboard/admin/lms", label: "LMS Portal", icon: FileText },
       { to: "/dashboard/faculty/students", label: "My Students", icon: Users },
-      { to: "/dashboard/admin/communication", label: "Message Hub", icon: MessageSquare },
+      { to: "/dashboard/faculty/communication", label: "Message Hub", icon: MessageSquare },
       { to: "/dashboard/faculty/notifications", label: "Notifications", icon: Bell },
       { to: "/dashboard/faculty/settings", label: "Settings", icon: Settings },
     ],
@@ -164,12 +165,13 @@ export const ROLES: Record<RoleId, Role> = {
     nav: [
       base,
       { to: "/dashboard/student/attendance", label: "Attendance", icon: CalendarCheck },
+      { to: "/dashboard/student/timetable", label: "Class Timetable", icon: Clock },
       { to: "/dashboard/student/results", label: "Results & GPA", icon: BookOpen },
       { to: "/dashboard/student/fees", label: "Fees Registry", icon: Wallet },
       { to: "/dashboard/library", label: "Library Catalog", icon: Library },
       { to: "/dashboard/student/materials", label: "Study Materials", icon: FileText },
       { to: "/dashboard/admin/lms", label: "LMS Classroom", icon: BookOpen },
-      { to: "/dashboard/admin/grievance", label: "Grievances Box", icon: ShieldAlert },
+      { to: "/dashboard/student/complaints", label: "Grievances Box", icon: ShieldAlert },
       { to: "/dashboard/student/events", label: "Events", icon: Sparkles },
       notif,
       settings,
