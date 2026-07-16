@@ -27,6 +27,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { getActiveRole, type Role, ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
+import { getDashboardForRole, toBackendRole } from "@/services/authService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Badge } from "@/components/dashboard/ui";
@@ -64,6 +65,7 @@ export function DashboardLayout() {
 
   const [role, setRole] = useState<Role>(() => getActiveRole());
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const currentSearch = useRouterState({ select: (r) => r.location.searchStr });
   const displayName = user?.fullName ?? "Anjali Sharma";
 
   // Popover States
@@ -74,8 +76,20 @@ export function DashboardLayout() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [helpActiveTab, setHelpActiveTab] = useState<"getting-started" | "role-guide" | "faqs" | "support">("getting-started");
-  // Sidebar submenu open state
-  const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>({});
+  // Sidebar submenu open state — keyed by item.label for uniqueness
+  const [openSubmenus, setOpenSubmenus] = useState<Record<string, boolean>>(() => {
+    try {
+      const stored = localStorage.getItem(`cms.submenus.${getActiveRole().id}`);
+      return stored ? JSON.parse(stored) : {};
+    } catch { return {}; }
+  });
+
+  // Persist submenu state to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(`cms.submenus.${role.id}`, JSON.stringify(openSubmenus));
+    } catch {}
+  }, [openSubmenus, role.id]);
 
   // Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -750,9 +764,20 @@ export function DashboardLayout() {
 
           // If item has children, render collapsible group
           if (item.children && (!collapsed || isMobile)) {
-            const isOpen = openSubmenus[item.to] !== undefined
-              ? openSubmenus[item.to]
-              : path.startsWith(item.to);
+            // Use label as unique key (to can be identical across groups)
+            const submenuKey = item.label;
+            const anyChildActive = item.children.some(child => {
+              const childUrl = new URL(child.to, window.location.origin);
+              if (childUrl.search.length > 0) {
+                const cp = new URLSearchParams(currentSearch);
+                return path === childUrl.pathname &&
+                  [...childUrl.searchParams.entries()].every(([k, v]) => cp.get(k) === v);
+              }
+              return path === child.to;
+            });
+            const isOpen = openSubmenus[submenuKey] !== undefined
+              ? openSubmenus[submenuKey]
+              : anyChildActive;
             return (
               <div key={item.to}>
                 <div className="flex items-center gap-2">
@@ -786,11 +811,11 @@ export function DashboardLayout() {
 
                   {(!collapsed || isMobile) && (
                     <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenSubmenus(prev => ({ ...prev, [item.to]: !prev[item.to] })); }}
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenSubmenus(prev => ({ ...prev, [submenuKey]: !prev[submenuKey] })); }}
                       aria-label={`Toggle ${item.label}`}
                       className="p-2 rounded-full hover:bg-accent transition"
                     >
-                      <ChevronDown className={`size-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`size-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
                   )}
                 </div>
@@ -798,13 +823,31 @@ export function DashboardLayout() {
                 {isOpen && (
                   <div className="ml-4 mt-1 space-y-1">
                     {item.children.map((sub) => {
-                      const subActive = path.startsWith(sub.to);
+                      const subUrl = new URL(sub.to, window.location.origin);
+                      const subHasQuery = subUrl.search.length > 0;
+                      let subActive = false;
+                      if (subHasQuery) {
+                        // Match pathname + search param
+                        const currentParams = new URLSearchParams(currentSearch);
+                        const subParams = subUrl.searchParams;
+                        subActive = path === subUrl.pathname &&
+                          [...subParams.entries()].every(([k, v]) => currentParams.get(k) === v);
+                      } else {
+                        // Exact match for clean path routes
+                        subActive = path === sub.to;
+                      }
+                      const handleSubClick = (e: React.MouseEvent) => {
+                        if (isMobile) setMobileOpen(false);
+                      };
                       return (
                         <Link
                           key={sub.to}
-                          to={sub.to}
-                          onClick={() => { if (isMobile) setMobileOpen(false); }}
-                          className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition ${subActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'}`}
+                          to={subHasQuery ? sub.to.split("?")[0] : sub.to}
+                          search={subHasQuery ? Object.fromEntries(new URL(sub.to, window.location.origin).searchParams) : undefined}
+                          onClick={handleSubClick}
+                          className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition cursor-pointer ${
+                            subActive ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold' : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
+                          }`}
                         >
                           <span className="size-3.5">{sub.icon ? <sub.icon className="size-3" /> : null}</span>
                           <span className="truncate">{sub.label}</span>
@@ -812,6 +855,7 @@ export function DashboardLayout() {
                       );
                     })}
                   </div>
+
                 )}
               </div>
             );
@@ -990,7 +1034,7 @@ export function DashboardLayout() {
                                 setActiveRole(r.id);
                                 setRole(r);
                                 toast.success(`Switched to ${r.name} workspace!`);
-                                navigate({ to: "/dashboard" });
+                                navigate({ to: getDashboardForRole(toBackendRole(r.id)) });
                               }}
                               className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-left cursor-pointer transition
                                 ${active

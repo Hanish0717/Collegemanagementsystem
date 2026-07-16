@@ -132,10 +132,31 @@ import { Route as DashboardAdminAssignmentsRouteImport } from './routes/dashboar
 import { Route as DashboardAdminAlumniRouteImport } from './routes/dashboard/admin/alumni'
 import { Route as DashboardAdminAdmissionsRouteImport } from './routes/dashboard/admin/admissions'
 import { Route as DashboardAdminAccreditationRouteImport } from './routes/dashboard/admin/accreditation'
+import { Route as DashboardAdminAlumniIndexRouteImport } from './routes/dashboard/admin/alumni/index'
 import { Route as DashboardHostelMessResidentsRouteImport } from './routes/dashboard/hostel/mess/residents'
 import { Route as DashboardHostelMessMenusRouteImport } from './routes/dashboard/hostel/mess/menus'
 import { Route as DashboardHostelMessFeesRouteImport } from './routes/dashboard/hostel/mess/fees'
 import { Route as DashboardAdminFacultyAttendanceRouteImport } from './routes/dashboard/admin/faculty/attendance'
+import { Route as DashboardAdminAlumniVerificationRouteImport } from './routes/dashboard/admin/alumni/verification'
+import { Route as DashboardAdminAlumniStoriesRouteImport } from './routes/dashboard/admin/alumni/stories'
+import { Route as DashboardAdminAlumniSettingsRouteImport } from './routes/dashboard/admin/alumni/settings'
+import { Route as DashboardAdminAlumniReportsRouteImport } from './routes/dashboard/admin/alumni/reports'
+import { Route as DashboardAdminAlumniRegistrationRouteImport } from './routes/dashboard/admin/alumni/registration'
+import { Route as DashboardAdminAlumniProfileRouteImport } from './routes/dashboard/admin/alumni/profile'
+import { Route as DashboardAdminAlumniPlacementRouteImport } from './routes/dashboard/admin/alumni/placement'
+import { Route as DashboardAdminAlumniNotificationsRouteImport } from './routes/dashboard/admin/alumni/notifications'
+import { Route as DashboardAdminAlumniNetworkingRouteImport } from './routes/dashboard/admin/alumni/networking'
+import { Route as DashboardAdminAlumniMessagingRouteImport } from './routes/dashboard/admin/alumni/messaging'
+import { Route as DashboardAdminAlumniMentorshipRouteImport } from './routes/dashboard/admin/alumni/mentorship'
+import { Route as DashboardAdminAlumniJobsRouteImport } from './routes/dashboard/admin/alumni/jobs'
+import { Route as DashboardAdminAlumniInternshipsRouteImport } from './routes/dashboard/admin/alumni/internships'
+import { Route as DashboardAdminAlumniHelpRouteImport } from './routes/dashboard/admin/alumni/help'
+import { Route as DashboardAdminAlumniGalleryRouteImport } from './routes/dashboard/admin/alumni/gallery'
+import { Route as DashboardAdminAlumniEventsRouteImport } from './routes/dashboard/admin/alumni/events'
+import { Route as DashboardAdminAlumniDonationsRouteImport } from './routes/dashboard/admin/alumni/donations'
+import { Route as DashboardAdminAlumniDirectoryRouteImport } from './routes/dashboard/admin/alumni/directory'
+import { Route as DashboardAdminAlumniAnnouncementsRouteImport } from './routes/dashboard/admin/alumni/announcements'
+import { Route as DashboardAdminAlumniAiFeaturesRouteImport } from './routes/dashboard/admin/alumni/ai-features'
 
 const VerifyOtpRoute = VerifyOtpRouteImport.update({
   id: '/verify-otp',
@@ -802,6 +823,12 @@ const DashboardAdminAccreditationRoute =
     path: '/accreditation',
     getParentRoute: () => DashboardAdminRoute,
   } as any)
+const DashboardAdminAlumniIndexRoute =
+  DashboardAdminAlumniIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
 const DashboardHostelMessResidentsRoute =
   DashboardHostelMessResidentsRouteImport.update({
     id: '/residents',
@@ -824,6 +851,126 @@ const DashboardAdminFacultyAttendanceRoute =
     id: '/attendance',
     path: '/attendance',
     getParentRoute: () => DashboardAdminFacultyRoute,
+  } as any)
+const DashboardAdminAlumniVerificationRoute =
+  DashboardAdminAlumniVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniStoriesRoute =
+  DashboardAdminAlumniStoriesRouteImport.update({
+    id: '/stories',
+    path: '/stories',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniSettingsRoute =
+  DashboardAdminAlumniSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniReportsRoute =
+  DashboardAdminAlumniReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniRegistrationRoute =
+  DashboardAdminAlumniRegistrationRouteImport.update({
+    id: '/registration',
+    path: '/registration',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniProfileRoute =
+  DashboardAdminAlumniProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniPlacementRoute =
+  DashboardAdminAlumniPlacementRouteImport.update({
+    id: '/placement',
+    path: '/placement',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniNotificationsRoute =
+  DashboardAdminAlumniNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniNetworkingRoute =
+  DashboardAdminAlumniNetworkingRouteImport.update({
+    id: '/networking',
+    path: '/networking',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniMessagingRoute =
+  DashboardAdminAlumniMessagingRouteImport.update({
+    id: '/messaging',
+    path: '/messaging',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniMentorshipRoute =
+  DashboardAdminAlumniMentorshipRouteImport.update({
+    id: '/mentorship',
+    path: '/mentorship',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniJobsRoute =
+  DashboardAdminAlumniJobsRouteImport.update({
+    id: '/jobs',
+    path: '/jobs',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniInternshipsRoute =
+  DashboardAdminAlumniInternshipsRouteImport.update({
+    id: '/internships',
+    path: '/internships',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniHelpRoute =
+  DashboardAdminAlumniHelpRouteImport.update({
+    id: '/help',
+    path: '/help',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniGalleryRoute =
+  DashboardAdminAlumniGalleryRouteImport.update({
+    id: '/gallery',
+    path: '/gallery',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniEventsRoute =
+  DashboardAdminAlumniEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniDonationsRoute =
+  DashboardAdminAlumniDonationsRouteImport.update({
+    id: '/donations',
+    path: '/donations',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniDirectoryRoute =
+  DashboardAdminAlumniDirectoryRouteImport.update({
+    id: '/directory',
+    path: '/directory',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniAnnouncementsRoute =
+  DashboardAdminAlumniAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniAiFeaturesRoute =
+  DashboardAdminAlumniAiFeaturesRouteImport.update({
+    id: '/ai-features',
+    path: '/ai-features',
+    getParentRoute: () => DashboardAdminAlumniRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -855,7 +1002,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
-  '/dashboard/admin/alumni': typeof DashboardAdminAlumniRoute
+  '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
@@ -950,10 +1097,31 @@ export interface FileRoutesByFullPath {
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/dashboard/admin/alumni/ai-features': typeof DashboardAdminAlumniAiFeaturesRoute
+  '/dashboard/admin/alumni/announcements': typeof DashboardAdminAlumniAnnouncementsRoute
+  '/dashboard/admin/alumni/directory': typeof DashboardAdminAlumniDirectoryRoute
+  '/dashboard/admin/alumni/donations': typeof DashboardAdminAlumniDonationsRoute
+  '/dashboard/admin/alumni/events': typeof DashboardAdminAlumniEventsRoute
+  '/dashboard/admin/alumni/gallery': typeof DashboardAdminAlumniGalleryRoute
+  '/dashboard/admin/alumni/help': typeof DashboardAdminAlumniHelpRoute
+  '/dashboard/admin/alumni/internships': typeof DashboardAdminAlumniInternshipsRoute
+  '/dashboard/admin/alumni/jobs': typeof DashboardAdminAlumniJobsRoute
+  '/dashboard/admin/alumni/mentorship': typeof DashboardAdminAlumniMentorshipRoute
+  '/dashboard/admin/alumni/messaging': typeof DashboardAdminAlumniMessagingRoute
+  '/dashboard/admin/alumni/networking': typeof DashboardAdminAlumniNetworkingRoute
+  '/dashboard/admin/alumni/notifications': typeof DashboardAdminAlumniNotificationsRoute
+  '/dashboard/admin/alumni/placement': typeof DashboardAdminAlumniPlacementRoute
+  '/dashboard/admin/alumni/profile': typeof DashboardAdminAlumniProfileRoute
+  '/dashboard/admin/alumni/registration': typeof DashboardAdminAlumniRegistrationRoute
+  '/dashboard/admin/alumni/reports': typeof DashboardAdminAlumniReportsRoute
+  '/dashboard/admin/alumni/settings': typeof DashboardAdminAlumniSettingsRoute
+  '/dashboard/admin/alumni/stories': typeof DashboardAdminAlumniStoriesRoute
+  '/dashboard/admin/alumni/verification': typeof DashboardAdminAlumniVerificationRoute
   '/dashboard/admin/faculty/attendance': typeof DashboardAdminFacultyAttendanceRoute
   '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
   '/dashboard/hostel/mess/menus': typeof DashboardHostelMessMenusRoute
   '/dashboard/hostel/mess/residents': typeof DashboardHostelMessResidentsRoute
+  '/dashboard/admin/alumni/': typeof DashboardAdminAlumniIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -983,7 +1151,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
-  '/dashboard/admin/alumni': typeof DashboardAdminAlumniRoute
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
@@ -1078,10 +1245,31 @@ export interface FileRoutesByTo {
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
+  '/dashboard/admin/alumni/ai-features': typeof DashboardAdminAlumniAiFeaturesRoute
+  '/dashboard/admin/alumni/announcements': typeof DashboardAdminAlumniAnnouncementsRoute
+  '/dashboard/admin/alumni/directory': typeof DashboardAdminAlumniDirectoryRoute
+  '/dashboard/admin/alumni/donations': typeof DashboardAdminAlumniDonationsRoute
+  '/dashboard/admin/alumni/events': typeof DashboardAdminAlumniEventsRoute
+  '/dashboard/admin/alumni/gallery': typeof DashboardAdminAlumniGalleryRoute
+  '/dashboard/admin/alumni/help': typeof DashboardAdminAlumniHelpRoute
+  '/dashboard/admin/alumni/internships': typeof DashboardAdminAlumniInternshipsRoute
+  '/dashboard/admin/alumni/jobs': typeof DashboardAdminAlumniJobsRoute
+  '/dashboard/admin/alumni/mentorship': typeof DashboardAdminAlumniMentorshipRoute
+  '/dashboard/admin/alumni/messaging': typeof DashboardAdminAlumniMessagingRoute
+  '/dashboard/admin/alumni/networking': typeof DashboardAdminAlumniNetworkingRoute
+  '/dashboard/admin/alumni/notifications': typeof DashboardAdminAlumniNotificationsRoute
+  '/dashboard/admin/alumni/placement': typeof DashboardAdminAlumniPlacementRoute
+  '/dashboard/admin/alumni/profile': typeof DashboardAdminAlumniProfileRoute
+  '/dashboard/admin/alumni/registration': typeof DashboardAdminAlumniRegistrationRoute
+  '/dashboard/admin/alumni/reports': typeof DashboardAdminAlumniReportsRoute
+  '/dashboard/admin/alumni/settings': typeof DashboardAdminAlumniSettingsRoute
+  '/dashboard/admin/alumni/stories': typeof DashboardAdminAlumniStoriesRoute
+  '/dashboard/admin/alumni/verification': typeof DashboardAdminAlumniVerificationRoute
   '/dashboard/admin/faculty/attendance': typeof DashboardAdminFacultyAttendanceRoute
   '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
   '/dashboard/hostel/mess/menus': typeof DashboardHostelMessMenusRoute
   '/dashboard/hostel/mess/residents': typeof DashboardHostelMessResidentsRoute
+  '/dashboard/admin/alumni': typeof DashboardAdminAlumniIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1113,7 +1301,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
-  '/dashboard/admin/alumni': typeof DashboardAdminAlumniRoute
+  '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
@@ -1208,10 +1396,31 @@ export interface FileRoutesById {
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
+  '/dashboard/admin/alumni/ai-features': typeof DashboardAdminAlumniAiFeaturesRoute
+  '/dashboard/admin/alumni/announcements': typeof DashboardAdminAlumniAnnouncementsRoute
+  '/dashboard/admin/alumni/directory': typeof DashboardAdminAlumniDirectoryRoute
+  '/dashboard/admin/alumni/donations': typeof DashboardAdminAlumniDonationsRoute
+  '/dashboard/admin/alumni/events': typeof DashboardAdminAlumniEventsRoute
+  '/dashboard/admin/alumni/gallery': typeof DashboardAdminAlumniGalleryRoute
+  '/dashboard/admin/alumni/help': typeof DashboardAdminAlumniHelpRoute
+  '/dashboard/admin/alumni/internships': typeof DashboardAdminAlumniInternshipsRoute
+  '/dashboard/admin/alumni/jobs': typeof DashboardAdminAlumniJobsRoute
+  '/dashboard/admin/alumni/mentorship': typeof DashboardAdminAlumniMentorshipRoute
+  '/dashboard/admin/alumni/messaging': typeof DashboardAdminAlumniMessagingRoute
+  '/dashboard/admin/alumni/networking': typeof DashboardAdminAlumniNetworkingRoute
+  '/dashboard/admin/alumni/notifications': typeof DashboardAdminAlumniNotificationsRoute
+  '/dashboard/admin/alumni/placement': typeof DashboardAdminAlumniPlacementRoute
+  '/dashboard/admin/alumni/profile': typeof DashboardAdminAlumniProfileRoute
+  '/dashboard/admin/alumni/registration': typeof DashboardAdminAlumniRegistrationRoute
+  '/dashboard/admin/alumni/reports': typeof DashboardAdminAlumniReportsRoute
+  '/dashboard/admin/alumni/settings': typeof DashboardAdminAlumniSettingsRoute
+  '/dashboard/admin/alumni/stories': typeof DashboardAdminAlumniStoriesRoute
+  '/dashboard/admin/alumni/verification': typeof DashboardAdminAlumniVerificationRoute
   '/dashboard/admin/faculty/attendance': typeof DashboardAdminFacultyAttendanceRoute
   '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
   '/dashboard/hostel/mess/menus': typeof DashboardHostelMessMenusRoute
   '/dashboard/hostel/mess/residents': typeof DashboardHostelMessResidentsRoute
+  '/dashboard/admin/alumni/': typeof DashboardAdminAlumniIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1339,10 +1548,31 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
     | '/dashboard/librarian/'
+    | '/dashboard/admin/alumni/ai-features'
+    | '/dashboard/admin/alumni/announcements'
+    | '/dashboard/admin/alumni/directory'
+    | '/dashboard/admin/alumni/donations'
+    | '/dashboard/admin/alumni/events'
+    | '/dashboard/admin/alumni/gallery'
+    | '/dashboard/admin/alumni/help'
+    | '/dashboard/admin/alumni/internships'
+    | '/dashboard/admin/alumni/jobs'
+    | '/dashboard/admin/alumni/mentorship'
+    | '/dashboard/admin/alumni/messaging'
+    | '/dashboard/admin/alumni/networking'
+    | '/dashboard/admin/alumni/notifications'
+    | '/dashboard/admin/alumni/placement'
+    | '/dashboard/admin/alumni/profile'
+    | '/dashboard/admin/alumni/registration'
+    | '/dashboard/admin/alumni/reports'
+    | '/dashboard/admin/alumni/settings'
+    | '/dashboard/admin/alumni/stories'
+    | '/dashboard/admin/alumni/verification'
     | '/dashboard/admin/faculty/attendance'
     | '/dashboard/hostel/mess/fees'
     | '/dashboard/hostel/mess/menus'
     | '/dashboard/hostel/mess/residents'
+    | '/dashboard/admin/alumni/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1372,7 +1602,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
-    | '/dashboard/admin/alumni'
     | '/dashboard/admin/assignments'
     | '/dashboard/admin/attendance'
     | '/dashboard/admin/calendar'
@@ -1467,10 +1696,31 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
     | '/dashboard/librarian'
+    | '/dashboard/admin/alumni/ai-features'
+    | '/dashboard/admin/alumni/announcements'
+    | '/dashboard/admin/alumni/directory'
+    | '/dashboard/admin/alumni/donations'
+    | '/dashboard/admin/alumni/events'
+    | '/dashboard/admin/alumni/gallery'
+    | '/dashboard/admin/alumni/help'
+    | '/dashboard/admin/alumni/internships'
+    | '/dashboard/admin/alumni/jobs'
+    | '/dashboard/admin/alumni/mentorship'
+    | '/dashboard/admin/alumni/messaging'
+    | '/dashboard/admin/alumni/networking'
+    | '/dashboard/admin/alumni/notifications'
+    | '/dashboard/admin/alumni/placement'
+    | '/dashboard/admin/alumni/profile'
+    | '/dashboard/admin/alumni/registration'
+    | '/dashboard/admin/alumni/reports'
+    | '/dashboard/admin/alumni/settings'
+    | '/dashboard/admin/alumni/stories'
+    | '/dashboard/admin/alumni/verification'
     | '/dashboard/admin/faculty/attendance'
     | '/dashboard/hostel/mess/fees'
     | '/dashboard/hostel/mess/menus'
     | '/dashboard/hostel/mess/residents'
+    | '/dashboard/admin/alumni'
   id:
     | '__root__'
     | '/'
@@ -1596,10 +1846,31 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
     | '/dashboard/librarian/'
+    | '/dashboard/admin/alumni/ai-features'
+    | '/dashboard/admin/alumni/announcements'
+    | '/dashboard/admin/alumni/directory'
+    | '/dashboard/admin/alumni/donations'
+    | '/dashboard/admin/alumni/events'
+    | '/dashboard/admin/alumni/gallery'
+    | '/dashboard/admin/alumni/help'
+    | '/dashboard/admin/alumni/internships'
+    | '/dashboard/admin/alumni/jobs'
+    | '/dashboard/admin/alumni/mentorship'
+    | '/dashboard/admin/alumni/messaging'
+    | '/dashboard/admin/alumni/networking'
+    | '/dashboard/admin/alumni/notifications'
+    | '/dashboard/admin/alumni/placement'
+    | '/dashboard/admin/alumni/profile'
+    | '/dashboard/admin/alumni/registration'
+    | '/dashboard/admin/alumni/reports'
+    | '/dashboard/admin/alumni/settings'
+    | '/dashboard/admin/alumni/stories'
+    | '/dashboard/admin/alumni/verification'
     | '/dashboard/admin/faculty/attendance'
     | '/dashboard/hostel/mess/fees'
     | '/dashboard/hostel/mess/menus'
     | '/dashboard/hostel/mess/residents'
+    | '/dashboard/admin/alumni/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -2476,6 +2747,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminAccreditationRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/admin/alumni/': {
+      id: '/dashboard/admin/alumni/'
+      path: '/'
+      fullPath: '/dashboard/admin/alumni/'
+      preLoaderRoute: typeof DashboardAdminAlumniIndexRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
     '/dashboard/hostel/mess/residents': {
       id: '/dashboard/hostel/mess/residents'
       path: '/residents'
@@ -2504,8 +2782,201 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminFacultyAttendanceRouteImport
       parentRoute: typeof DashboardAdminFacultyRoute
     }
+    '/dashboard/admin/alumni/verification': {
+      id: '/dashboard/admin/alumni/verification'
+      path: '/verification'
+      fullPath: '/dashboard/admin/alumni/verification'
+      preLoaderRoute: typeof DashboardAdminAlumniVerificationRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/stories': {
+      id: '/dashboard/admin/alumni/stories'
+      path: '/stories'
+      fullPath: '/dashboard/admin/alumni/stories'
+      preLoaderRoute: typeof DashboardAdminAlumniStoriesRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/settings': {
+      id: '/dashboard/admin/alumni/settings'
+      path: '/settings'
+      fullPath: '/dashboard/admin/alumni/settings'
+      preLoaderRoute: typeof DashboardAdminAlumniSettingsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/reports': {
+      id: '/dashboard/admin/alumni/reports'
+      path: '/reports'
+      fullPath: '/dashboard/admin/alumni/reports'
+      preLoaderRoute: typeof DashboardAdminAlumniReportsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/registration': {
+      id: '/dashboard/admin/alumni/registration'
+      path: '/registration'
+      fullPath: '/dashboard/admin/alumni/registration'
+      preLoaderRoute: typeof DashboardAdminAlumniRegistrationRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/profile': {
+      id: '/dashboard/admin/alumni/profile'
+      path: '/profile'
+      fullPath: '/dashboard/admin/alumni/profile'
+      preLoaderRoute: typeof DashboardAdminAlumniProfileRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/placement': {
+      id: '/dashboard/admin/alumni/placement'
+      path: '/placement'
+      fullPath: '/dashboard/admin/alumni/placement'
+      preLoaderRoute: typeof DashboardAdminAlumniPlacementRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/notifications': {
+      id: '/dashboard/admin/alumni/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/admin/alumni/notifications'
+      preLoaderRoute: typeof DashboardAdminAlumniNotificationsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/networking': {
+      id: '/dashboard/admin/alumni/networking'
+      path: '/networking'
+      fullPath: '/dashboard/admin/alumni/networking'
+      preLoaderRoute: typeof DashboardAdminAlumniNetworkingRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/messaging': {
+      id: '/dashboard/admin/alumni/messaging'
+      path: '/messaging'
+      fullPath: '/dashboard/admin/alumni/messaging'
+      preLoaderRoute: typeof DashboardAdminAlumniMessagingRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/mentorship': {
+      id: '/dashboard/admin/alumni/mentorship'
+      path: '/mentorship'
+      fullPath: '/dashboard/admin/alumni/mentorship'
+      preLoaderRoute: typeof DashboardAdminAlumniMentorshipRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/jobs': {
+      id: '/dashboard/admin/alumni/jobs'
+      path: '/jobs'
+      fullPath: '/dashboard/admin/alumni/jobs'
+      preLoaderRoute: typeof DashboardAdminAlumniJobsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/internships': {
+      id: '/dashboard/admin/alumni/internships'
+      path: '/internships'
+      fullPath: '/dashboard/admin/alumni/internships'
+      preLoaderRoute: typeof DashboardAdminAlumniInternshipsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/help': {
+      id: '/dashboard/admin/alumni/help'
+      path: '/help'
+      fullPath: '/dashboard/admin/alumni/help'
+      preLoaderRoute: typeof DashboardAdminAlumniHelpRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/gallery': {
+      id: '/dashboard/admin/alumni/gallery'
+      path: '/gallery'
+      fullPath: '/dashboard/admin/alumni/gallery'
+      preLoaderRoute: typeof DashboardAdminAlumniGalleryRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/events': {
+      id: '/dashboard/admin/alumni/events'
+      path: '/events'
+      fullPath: '/dashboard/admin/alumni/events'
+      preLoaderRoute: typeof DashboardAdminAlumniEventsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/donations': {
+      id: '/dashboard/admin/alumni/donations'
+      path: '/donations'
+      fullPath: '/dashboard/admin/alumni/donations'
+      preLoaderRoute: typeof DashboardAdminAlumniDonationsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/directory': {
+      id: '/dashboard/admin/alumni/directory'
+      path: '/directory'
+      fullPath: '/dashboard/admin/alumni/directory'
+      preLoaderRoute: typeof DashboardAdminAlumniDirectoryRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/announcements': {
+      id: '/dashboard/admin/alumni/announcements'
+      path: '/announcements'
+      fullPath: '/dashboard/admin/alumni/announcements'
+      preLoaderRoute: typeof DashboardAdminAlumniAnnouncementsRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
+    '/dashboard/admin/alumni/ai-features': {
+      id: '/dashboard/admin/alumni/ai-features'
+      path: '/ai-features'
+      fullPath: '/dashboard/admin/alumni/ai-features'
+      preLoaderRoute: typeof DashboardAdminAlumniAiFeaturesRouteImport
+      parentRoute: typeof DashboardAdminAlumniRoute
+    }
   }
 }
+
+interface DashboardAdminAlumniRouteChildren {
+  DashboardAdminAlumniAiFeaturesRoute: typeof DashboardAdminAlumniAiFeaturesRoute
+  DashboardAdminAlumniAnnouncementsRoute: typeof DashboardAdminAlumniAnnouncementsRoute
+  DashboardAdminAlumniDirectoryRoute: typeof DashboardAdminAlumniDirectoryRoute
+  DashboardAdminAlumniDonationsRoute: typeof DashboardAdminAlumniDonationsRoute
+  DashboardAdminAlumniEventsRoute: typeof DashboardAdminAlumniEventsRoute
+  DashboardAdminAlumniGalleryRoute: typeof DashboardAdminAlumniGalleryRoute
+  DashboardAdminAlumniHelpRoute: typeof DashboardAdminAlumniHelpRoute
+  DashboardAdminAlumniInternshipsRoute: typeof DashboardAdminAlumniInternshipsRoute
+  DashboardAdminAlumniJobsRoute: typeof DashboardAdminAlumniJobsRoute
+  DashboardAdminAlumniMentorshipRoute: typeof DashboardAdminAlumniMentorshipRoute
+  DashboardAdminAlumniMessagingRoute: typeof DashboardAdminAlumniMessagingRoute
+  DashboardAdminAlumniNetworkingRoute: typeof DashboardAdminAlumniNetworkingRoute
+  DashboardAdminAlumniNotificationsRoute: typeof DashboardAdminAlumniNotificationsRoute
+  DashboardAdminAlumniPlacementRoute: typeof DashboardAdminAlumniPlacementRoute
+  DashboardAdminAlumniProfileRoute: typeof DashboardAdminAlumniProfileRoute
+  DashboardAdminAlumniRegistrationRoute: typeof DashboardAdminAlumniRegistrationRoute
+  DashboardAdminAlumniReportsRoute: typeof DashboardAdminAlumniReportsRoute
+  DashboardAdminAlumniSettingsRoute: typeof DashboardAdminAlumniSettingsRoute
+  DashboardAdminAlumniStoriesRoute: typeof DashboardAdminAlumniStoriesRoute
+  DashboardAdminAlumniVerificationRoute: typeof DashboardAdminAlumniVerificationRoute
+  DashboardAdminAlumniIndexRoute: typeof DashboardAdminAlumniIndexRoute
+}
+
+const DashboardAdminAlumniRouteChildren: DashboardAdminAlumniRouteChildren = {
+  DashboardAdminAlumniAiFeaturesRoute: DashboardAdminAlumniAiFeaturesRoute,
+  DashboardAdminAlumniAnnouncementsRoute:
+    DashboardAdminAlumniAnnouncementsRoute,
+  DashboardAdminAlumniDirectoryRoute: DashboardAdminAlumniDirectoryRoute,
+  DashboardAdminAlumniDonationsRoute: DashboardAdminAlumniDonationsRoute,
+  DashboardAdminAlumniEventsRoute: DashboardAdminAlumniEventsRoute,
+  DashboardAdminAlumniGalleryRoute: DashboardAdminAlumniGalleryRoute,
+  DashboardAdminAlumniHelpRoute: DashboardAdminAlumniHelpRoute,
+  DashboardAdminAlumniInternshipsRoute: DashboardAdminAlumniInternshipsRoute,
+  DashboardAdminAlumniJobsRoute: DashboardAdminAlumniJobsRoute,
+  DashboardAdminAlumniMentorshipRoute: DashboardAdminAlumniMentorshipRoute,
+  DashboardAdminAlumniMessagingRoute: DashboardAdminAlumniMessagingRoute,
+  DashboardAdminAlumniNetworkingRoute: DashboardAdminAlumniNetworkingRoute,
+  DashboardAdminAlumniNotificationsRoute:
+    DashboardAdminAlumniNotificationsRoute,
+  DashboardAdminAlumniPlacementRoute: DashboardAdminAlumniPlacementRoute,
+  DashboardAdminAlumniProfileRoute: DashboardAdminAlumniProfileRoute,
+  DashboardAdminAlumniRegistrationRoute: DashboardAdminAlumniRegistrationRoute,
+  DashboardAdminAlumniReportsRoute: DashboardAdminAlumniReportsRoute,
+  DashboardAdminAlumniSettingsRoute: DashboardAdminAlumniSettingsRoute,
+  DashboardAdminAlumniStoriesRoute: DashboardAdminAlumniStoriesRoute,
+  DashboardAdminAlumniVerificationRoute: DashboardAdminAlumniVerificationRoute,
+  DashboardAdminAlumniIndexRoute: DashboardAdminAlumniIndexRoute,
+}
+
+const DashboardAdminAlumniRouteWithChildren =
+  DashboardAdminAlumniRoute._addFileChildren(DashboardAdminAlumniRouteChildren)
 
 interface DashboardAdminFacultyRouteChildren {
   DashboardAdminFacultyAttendanceRoute: typeof DashboardAdminFacultyAttendanceRoute
@@ -2523,7 +2994,7 @@ const DashboardAdminFacultyRouteWithChildren =
 interface DashboardAdminRouteChildren {
   DashboardAdminAccreditationRoute: typeof DashboardAdminAccreditationRoute
   DashboardAdminAdmissionsRoute: typeof DashboardAdminAdmissionsRoute
-  DashboardAdminAlumniRoute: typeof DashboardAdminAlumniRoute
+  DashboardAdminAlumniRoute: typeof DashboardAdminAlumniRouteWithChildren
   DashboardAdminAssignmentsRoute: typeof DashboardAdminAssignmentsRoute
   DashboardAdminAttendanceRoute: typeof DashboardAdminAttendanceRoute
   DashboardAdminCalendarRoute: typeof DashboardAdminCalendarRoute
@@ -2550,7 +3021,7 @@ interface DashboardAdminRouteChildren {
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminAccreditationRoute: DashboardAdminAccreditationRoute,
   DashboardAdminAdmissionsRoute: DashboardAdminAdmissionsRoute,
-  DashboardAdminAlumniRoute: DashboardAdminAlumniRoute,
+  DashboardAdminAlumniRoute: DashboardAdminAlumniRouteWithChildren,
   DashboardAdminAssignmentsRoute: DashboardAdminAssignmentsRoute,
   DashboardAdminAttendanceRoute: DashboardAdminAttendanceRoute,
   DashboardAdminCalendarRoute: DashboardAdminCalendarRoute,

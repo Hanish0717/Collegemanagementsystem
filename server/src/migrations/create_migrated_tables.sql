@@ -668,3 +668,222 @@ CREATE TABLE IF NOT EXISTS transport_fees (
   status varchar(50) DEFAULT 'Unpaid' CHECK (status IN ('Paid', 'Unpaid', 'Partially-Paid')),
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- 9. Create Alumni Management Tables
+CREATE TABLE IF NOT EXISTS alumni_profiles (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+  full_name varchar(255) NOT NULL,
+  roll_number varchar(100) UNIQUE,
+  student_id varchar(100) UNIQUE,
+  email varchar(255) UNIQUE NOT NULL,
+  phone varchar(50),
+  photo text,
+  department varchar(100) NOT NULL,
+  graduation_year integer NOT NULL,
+  current_company varchar(255),
+  designation varchar(255),
+  higher_studies text,
+  location varchar(255),
+  country varchar(100),
+  linkedin varchar(255),
+  portfolio varchar(255),
+  skills jsonb DEFAULT '[]'::jsonb,
+  achievements text,
+  biography text,
+  resume_url text,
+  status varchar(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Approved', 'Rejected')),
+  profile_completion integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_employment (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  company_name varchar(255) NOT NULL,
+  designation varchar(255) NOT NULL,
+  start_date date NOT NULL,
+  end_date date,
+  is_current boolean DEFAULT false,
+  description text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_education (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  institution varchar(255) NOT NULL,
+  degree varchar(255) NOT NULL,
+  field_of_study varchar(255),
+  start_year integer,
+  end_year integer,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_events (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title varchar(255) NOT NULL,
+  description text,
+  category varchar(100) NOT NULL CHECK (category IN ('Reunion', 'Seminar', 'Workshop', 'Networking', 'Webinar', 'Guest Lecture')),
+  date date NOT NULL,
+  time varchar(50),
+  venue varchar(255) NOT NULL,
+  organizer varchar(255),
+  image_url text,
+  capacity integer,
+  status varchar(50) DEFAULT 'Published' CHECK (status IN ('Published', 'Draft', 'Cancelled')),
+  feedback_enabled boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_event_registrations (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id uuid REFERENCES alumni_events(id) ON DELETE CASCADE,
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  registered_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  attended boolean DEFAULT false,
+  feedback text,
+  rating integer,
+  UNIQUE(event_id, alumni_id)
+);
+
+CREATE TABLE IF NOT EXISTS alumni_jobs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title varchar(255) NOT NULL,
+  company varchar(255) NOT NULL,
+  location varchar(255),
+  job_type varchar(100) NOT NULL CHECK (job_type IN ('Full-time', 'Part-time', 'Internship', 'Contract')),
+  description text NOT NULL,
+  requirements text,
+  eligibility varchar(255),
+  deadline date,
+  posted_by uuid REFERENCES users(id) ON DELETE SET NULL,
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_job_applications (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  job_id uuid REFERENCES alumni_jobs(id) ON DELETE CASCADE,
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  applied_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  status varchar(50) DEFAULT 'Applied' CHECK (status IN ('Applied', 'Shortlisted', 'Rejected', 'Selected')),
+  resume_url text,
+  UNIQUE(job_id, alumni_id)
+);
+
+CREATE TABLE IF NOT EXISTS alumni_mentorship_requests (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  mentor_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+  request_reason text,
+  status varchar(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Approved', 'Rejected', 'Completed')),
+  session_schedule timestamp with time zone,
+  feedback text,
+  rating integer,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_donations (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  amount numeric(12, 2) NOT NULL,
+  cause varchar(255) NOT NULL,
+  payment_status varchar(50) DEFAULT 'Completed' CHECK (payment_status IN ('Pending', 'Completed', 'Failed')),
+  transaction_id varchar(100),
+  date date NOT NULL,
+  receipt_url text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_success_stories (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  title varchar(255) NOT NULL,
+  content text NOT NULL,
+  category varchar(100) NOT NULL CHECK (category IN ('Entrepreneurship', 'Research', 'Government Jobs', 'Startups', 'Featured Alumni', 'Corporate Career')),
+  likes_count integer DEFAULT 0,
+  published_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_communication_logs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  type varchar(50) NOT NULL CHECK (type IN ('Email', 'SMS', 'WhatsApp')),
+  recipient varchar(255) NOT NULL,
+  subject varchar(255),
+  message text NOT NULL,
+  sent_by uuid REFERENCES users(id) ON DELETE SET NULL,
+  sent_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 9.1. Create Expanded Alumni Management Tables
+CREATE TABLE IF NOT EXISTS alumni_connections (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  sender_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  receiver_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  status varchar(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Accepted', 'Rejected')),
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE(sender_id, receiver_id)
+);
+
+CREATE TABLE IF NOT EXISTS alumni_posts (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  author_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  content text NOT NULL,
+  image_url text,
+  likes_count integer DEFAULT 0,
+  comments_count integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_post_likes (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  post_id uuid REFERENCES alumni_posts(id) ON DELETE CASCADE,
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE(post_id, alumni_id)
+);
+
+CREATE TABLE IF NOT EXISTS alumni_post_comments (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  post_id uuid REFERENCES alumni_posts(id) ON DELETE CASCADE,
+  author_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  content text NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_messages (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  sender_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  receiver_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  content text NOT NULL,
+  file_url text,
+  is_seen boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS mentorship_sessions (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  request_id uuid REFERENCES alumni_mentorship_requests(id) ON DELETE CASCADE,
+  mentor_id uuid REFERENCES alumni_profiles(id) ON DELETE CASCADE,
+  student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+  date date NOT NULL,
+  start_time varchar(50) NOT NULL,
+  end_time varchar(50) NOT NULL,
+  status varchar(50) DEFAULT 'Scheduled' CHECK (status IN ('Scheduled', 'Completed', 'Cancelled')),
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS alumni_activity_logs (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  alumni_id uuid REFERENCES alumni_profiles(id) ON DELETE SET NULL,
+  action varchar(255) NOT NULL,
+  ip_address varchar(100),
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);

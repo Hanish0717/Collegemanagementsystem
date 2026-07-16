@@ -43,6 +43,7 @@ import { DeanDashboard } from "./DeanDashboard";
 import { HodDashboard } from "./HodDashboard";
 import { ExamCellDashboard } from "./ExamCellDashboard";
 import { AccountsDashboard } from "./AccountsDashboard";
+import { AdminAlumni } from "@/pages/admin/AdminAlumni";
 
 const statIcons: Record<string, any> = {
   "Total Students": Users,
@@ -180,6 +181,9 @@ export function DashboardIndex() {
   }
   if (activeRole.id === "accounts") {
     return <AccountsDashboard />;
+  }
+  if (activeRole.id === "alumni" || activeRole.id === "alumni_coordinator") {
+    return <AdminAlumni />;
   }
 
   // Extraction of real-time data or fallback mocks
