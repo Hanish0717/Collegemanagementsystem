@@ -6,262 +6,447 @@ import {
   FileCheck,
   CreditCard,
   UserPlus,
+  BookOpen,
+  Layers,
+  Award,
   Search,
-  BadgeAlert,
-  Building,
   Check,
-  X
+  X,
+  FileText,
+  BadgeAlert
 } from "lucide-react";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 
 export function AdminAdmissions() {
-  const [registrations, setRegistrations] = useState([
-    { id: "REG-001", name: "Amit Verma", quota: "Entrance (EAPCET)", rank: 4521, docStatus: "Pending", paymentStatus: "Paid", allotted: false },
-    { id: "REG-002", name: "Siddharth Roy", quota: "Management Quota", rank: 25412, docStatus: "Verified", paymentStatus: "Unpaid", allotted: false },
-    { id: "REG-003", name: "Priya Sharma", quota: "Entrance (EAPCET)", rank: 1205, docStatus: "Verified", paymentStatus: "Paid", allotted: false },
-    { id: "REG-004", name: "Kunal Kapoor", quota: "Management Quota", rank: 18451, docStatus: "Pending", paymentStatus: "Unpaid", allotted: false }
+  const [activeTab, setActiveTab] = useState<"registrations" | "quota" | "verification" | "allotment">("registrations");
+
+  // Applicant list for Registration & Verification stages
+  const [applicants, setApplicants] = useState([
+    {
+      id: "REG-001",
+      name: "Amit Verma",
+      quota: "Entrance (EAPCET)",
+      rank: 4521,
+      docs: { marksheets: false, aadhaar: true, tc: false },
+      docStatus: "Pending",
+      feesPaid: 15000,
+      feeStatus: "Paid",
+      allotted: false
+    },
+    {
+      id: "REG-002",
+      name: "Siddharth Roy",
+      quota: "Management Quota",
+      rank: 25412,
+      docs: { marksheets: true, aadhaar: true, tc: true },
+      docStatus: "Verified",
+      feesPaid: 0,
+      feeStatus: "Unpaid",
+      allotted: false
+    },
+    {
+      id: "REG-003",
+      name: "Priya Sharma",
+      quota: "Entrance (EAPCET)",
+      rank: 1205,
+      docs: { marksheets: true, aadhaar: true, tc: true },
+      docStatus: "Verified",
+      feesPaid: 15000,
+      feeStatus: "Paid",
+      allotted: true,
+      roll: "CS2026101",
+      dept: "CSE",
+      sec: "A"
+    },
+    {
+      id: "REG-004",
+      name: "Kunal Kapoor",
+      quota: "Management Quota",
+      rank: 18451,
+      docs: { marksheets: false, aadhaar: false, tc: false },
+      docStatus: "Pending",
+      feesPaid: 0,
+      feeStatus: "Unpaid",
+      allotted: false
+    }
   ]);
 
-  const [department, setDepartment] = useState("CSE");
-  const [section, setSection] = useState("A");
-  const [selectedReg, setSelectedReg] = useState<string>("REG-001");
-  const [allotmentHistory, setAllotmentHistory] = useState<any[]>([
-    { regId: "REG-003", name: "Priya Sharma", roll: "CS2026101", dept: "CSE", sec: "A" }
-  ]);
+  // Quota allocation configurations
+  const [quotaStats, setQuotaStats] = useState({
+    entranceAllotted: 840,
+    entranceTotal: 1200,
+    mgmtAllotted: 180,
+    mgmtTotal: 200
+  });
 
-  const handleVerifyDocs = (id: string, name: string) => {
-    setRegistrations(prev => prev.map(r => r.id === id ? { ...r, docStatus: "Verified" } : r));
-    toast.success(`Documents verified for ${name}!`);
+  const [selectedDept, setSelectedDept] = useState("CSE");
+  const [selectedSec, setSelectedSec] = useState("A");
+  const [selectedApplicantId, setSelectedApplicantId] = useState("REG-002");
+
+  // Verify specific document toggle
+  const toggleDoc = (applicantId: string, docType: "marksheets" | "aadhaar" | "tc") => {
+    setApplicants(prev => prev.map(app => {
+      if (app.id !== applicantId) return app;
+      const updatedDocs = { ...app.docs, [docType]: !app.docs[docType] };
+      const allVerified = updatedDocs.marksheets && updatedDocs.aadhaar && updatedDocs.tc;
+      return {
+        ...app,
+        docs: updatedDocs,
+        docStatus: allVerified ? "Verified" : "Pending"
+      };
+    }));
+    toast.success("Document verification checklist updated!");
   };
 
-  const handleMarkPaid = (id: string, name: string) => {
-    setRegistrations(prev => prev.map(r => r.id === id ? { ...r, paymentStatus: "Paid" } : r));
-    toast.success(`Fee Payment confirmed for ${name}!`);
+  // Collect Fee clearance
+  const collectFee = (applicantId: string, name: string) => {
+    setApplicants(prev => prev.map(app => {
+      if (app.id === applicantId) {
+        return { ...app, feeStatus: "Paid", feesPaid: 15000 };
+      }
+      return app;
+    }));
+    toast.success(`Fee Payment of ₹15,000 confirmed for ${name}!`);
   };
 
-  const handleAllotSeat = (regId: string) => {
-    const reg = registrations.find(r => r.id === regId);
-    if (!reg) return;
+  // Complete seat allotment & generate ID
+  const allotSeat = (applicantId: string) => {
+    const app = applicants.find(a => a.id === applicantId);
+    if (!app) return;
 
-    if (reg.docStatus !== "Verified") {
-      toast.error("Cannot allot seat. Documents must be Verified first!");
+    if (app.docStatus !== "Verified") {
+      toast.error("Cannot allot seat. Documents must be 100% verified first!");
       return;
     }
-    if (reg.paymentStatus !== "Paid") {
-      toast.error("Cannot allot seat. Fees must be Paid first!");
+    if (app.feeStatus !== "Paid") {
+      toast.error("Cannot allot seat. Admission fee clearance is required!");
       return;
     }
 
     const yearSuffix = new Date().getFullYear().toString().slice(-2);
     const randomSuffix = Math.floor(100 + Math.random() * 900);
-    const generatedRoll = `${department}${yearSuffix}${randomSuffix}`;
+    const generatedRoll = `${selectedDept}${yearSuffix}${randomSuffix}`;
 
-    setRegistrations(prev => prev.map(r => r.id === regId ? { ...r, allotted: true } : r));
-    const newAllotment = {
-      regId,
-      name: reg.name,
-      roll: generatedRoll,
-      dept: department,
-      sec: section
-    };
-    setAllotmentHistory([newAllotment, ...allotmentHistory]);
-    toast.success(`Seat allotted! ${reg.name} registered under Roll: ${generatedRoll} in CSE Section ${section}`);
+    setApplicants(prev => prev.map(a => {
+      if (a.id === applicantId) {
+        return {
+          ...a,
+          allotted: true,
+          roll: generatedRoll,
+          dept: selectedDept,
+          sec: selectedSec
+        };
+      }
+      return a;
+    }));
+
+    // Update quota stats
+    setQuotaStats(prev => {
+      if (app.quota.includes("Entrance")) {
+        return { ...prev, entranceAllotted: prev.entranceAllotted + 1 };
+      } else {
+        return { ...prev, mgmtAllotted: prev.mgmtAllotted + 1 };
+      }
+    });
+
+    toast.success(`Seat allocated! Roll No: ${generatedRoll} assigned to CSE Section ${selectedSec}`);
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Admission Management Desk"
-        desc="Administer online candidate registrations, verify certificates, track fees clearance, and allocate department sections."
+        title="Admission Management"
+        desc="Manage registrations, check quota status, verify certificates, log payments, and allot seats with roll number generation."
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Online Registrations"
-          value="1,482"
-          change="35 pending review"
-          icon={Users}
-          gradient="bg-gradient-primary"
-        />
-        <StatCard
-          label="Documents Checked"
-          value="1,447"
-          change="97.6% verification rate"
-          icon={FileCheck}
-          gradient="bg-gradient-violet"
-        />
-        <StatCard
-          label="Admission Fee Cleared"
-          value="1,412"
-          change="₹1.41 Cr collected"
-          icon={CreditCard}
-          gradient="bg-gradient-cyan"
-        />
-        <StatCard
-          label="Seats Allotted"
-          value="1,385"
-          change="CSE fully occupied"
-          icon={UserPlus}
-          gradient="bg-gradient-primary"
-        />
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-4">
-        {/* Left: Applicant Registry */}
-        <Card className="lg:col-span-2">
-          <h3 className="font-semibold mb-3">Online Registration Registry</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b text-slate-400">
-                  <th className="text-left pb-2">Reg ID</th>
-                  <th className="text-left pb-2">Applicant</th>
-                  <th className="text-left pb-2">Quota Type</th>
-                  <th className="text-center pb-2">Docs Status</th>
-                  <th className="text-center pb-2">Admission Fees</th>
-                  <th className="text-right pb-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {registrations.map(r => (
-                  <tr key={r.id} className="hover:bg-slate-50">
-                    <td className="py-2.5 font-mono font-bold text-indigo-700">{r.id}</td>
-                    <td className="py-2.5">
-                      <div className="font-bold text-slate-800">{r.name}</div>
-                      <div className="text-[9px] text-slate-400">Rank: #{r.rank.toLocaleString()}</div>
-                    </td>
-                    <td className="py-2.5 font-medium">{r.quota}</td>
-                    <td className="py-2.5 text-center">
-                      <Badge tone={r.docStatus === "Verified" ? "success" : "warn"}>
-                        {r.docStatus}
-                      </Badge>
-                    </td>
-                    <td className="py-2.5 text-center">
-                      <Badge tone={r.paymentStatus === "Paid" ? "success" : "danger"}>
-                        {r.paymentStatus}
-                      </Badge>
-                    </td>
-                    <td className="py-2.5 text-right space-x-1">
-                      {r.docStatus === "Pending" && (
-                        <button
-                          onClick={() => handleVerifyDocs(r.id, r.name)}
-                          className="px-2 py-0.5 rounded border text-indigo-600 hover:bg-indigo-50 font-bold transition text-[10px]"
-                        >
-                          Verify Docs
-                        </button>
-                      )}
-                      {r.paymentStatus === "Unpaid" && (
-                        <button
-                          onClick={() => handleMarkPaid(r.id, r.name)}
-                          className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-white font-bold transition text-[10px]"
-                        >
-                          Collect Fee
-                        </button>
-                      )}
-                      {r.docStatus === "Verified" && r.paymentStatus === "Paid" && !r.allotted && (
-                        <span className="text-[10px] text-emerald-600 font-bold">Ready to Allot</span>
-                      )}
-                      {r.allotted && (
-                        <span className="text-[10px] text-slate-400 font-bold">Seat Allotted</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
-        {/* Right: Seat Allocation Form */}
-        <Card className="flex flex-col justify-between">
-          <div>
-            <h3 className="font-semibold mb-2">Manual Seat Allocation</h3>
-            <p className="text-xs text-muted-foreground mb-4">Choose verification-cleared candidates, select departments and sections, and generate roll numbers.</p>
-
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">Select Candidate</label>
-                <select
-                  value={selectedReg}
-                  onChange={(e) => setSelectedReg(e.target.value)}
-                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
-                >
-                  {registrations.filter(r => !r.allotted).map(r => (
-                    <option key={r.id} value={r.id}>
-                      {r.id}: {r.name} ({r.docStatus === "Verified" && r.paymentStatus === "Paid" ? "Cleared" : "Requirements Pending"})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Allocate Dept</label>
-                  <select
-                    value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
-                  >
-                    <option value="CSE">CSE (Computer Science)</option>
-                    <option value="ECE">ECE (Electronics)</option>
-                    <option value="EEE">EEE (Electrical)</option>
-                    <option value="MECH">MECH (Mechanical)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Section</label>
-                  <select
-                    value={section}
-                    onChange={(e) => setSection(e.target.value)}
-                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
-                  >
-                    <option value="A">Section A</option>
-                    <option value="B">Section B</option>
-                    <option value="C">Section C</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
+      {/* Tabs */}
+      <div className="flex border-b border-slate-200">
+        {[
+          { id: "registrations", label: "Online Registration", icon: Users },
+          { id: "quota", label: "Entrance / Management Quota", icon: Layers },
+          { id: "verification", label: "Document & Fee Verification", icon: FileCheck },
+          { id: "allotment", label: "Seat Allotment & ID Gen", icon: UserPlus }
+        ].map(tab => (
           <button
-            onClick={() => handleAllotSeat(selectedReg)}
-            className="w-full mt-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition cursor-pointer"
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-semibold transition cursor-pointer ${
+              activeTab === tab.id
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
           >
-            Allot Seat &amp; Generate Roll No
+            <tab.icon className="size-4" />
+            <span>{tab.label}</span>
           </button>
-        </Card>
+        ))}
       </div>
 
-      {/* Seat Allocation History */}
-      <Card>
-        <h3 className="font-semibold mb-3">Allotted Seats &amp; ID Generation Log</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="border-b text-slate-400">
-                <th className="text-left pb-2">Reg ID</th>
-                <th className="text-left pb-2">Candidate Name</th>
-                <th className="text-left pb-2">Assigned Department</th>
-                <th className="text-center pb-2">Section</th>
-                <th className="text-right pb-2">Generated Student Roll No</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {allotmentHistory.map(row => (
-                <tr key={row.roll}>
-                  <td className="py-2 font-mono font-bold text-slate-400">{row.regId}</td>
-                  <td className="py-2 font-bold text-slate-800">{row.name}</td>
-                  <td className="py-2 font-medium">{row.dept}</td>
-                  <td className="py-2 text-center font-bold text-indigo-600">{row.sec}</td>
-                  <td className="py-2 text-right font-mono font-bold text-emerald-600">{row.roll}</td>
-                </tr>
+      {/* Tab content */}
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0 }}
+        className="space-y-6"
+      >
+        {/* ONLINE REGISTRATIONS */}
+        {activeTab === "registrations" && (
+          <Card>
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h3 className="font-semibold text-slate-800 text-sm">Online Candidate Registration List</h3>
+                <p className="text-[10px] text-slate-500">Live roster of candidates who registered via the online admissions portal.</p>
+              </div>
+              <Badge tone="info">4 Total Applications</Badge>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b text-slate-400">
+                    <th className="text-left pb-2">Reg ID</th>
+                    <th className="text-left pb-2">Applicant Name</th>
+                    <th className="text-left pb-2">Entrance / Quota</th>
+                    <th className="text-center pb-2">Entrance Rank</th>
+                    <th className="text-center pb-2">Registrar Fee</th>
+                    <th className="text-right pb-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {applicants.map(app => (
+                    <tr key={app.id} className="hover:bg-slate-50">
+                      <td className="py-3 font-mono font-bold text-indigo-700">{app.id}</td>
+                      <td className="py-3 font-bold text-slate-800">{app.name}</td>
+                      <td className="py-3 font-semibold">{app.quota}</td>
+                      <td className="py-3 text-center font-mono font-bold text-slate-600">#{app.rank.toLocaleString()}</td>
+                      <td className="py-3 text-center font-bold text-slate-700">₹{app.feesPaid.toLocaleString()}</td>
+                      <td className="py-3 text-right">
+                        <Badge tone={app.allotted ? "success" : "warn"}>
+                          {app.allotted ? "Admitted" : "Awaiting Allotment"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        )}
+
+        {/* QUOTA STATUS */}
+        {activeTab === "quota" && (
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Entrance Quota */}
+            <Card>
+              <h3 className="font-semibold text-sm mb-1.5">Entrance Exam Quota (EAPCET)</h3>
+              <p className="text-[10px] text-slate-500 mb-4">Admissions secured via merit rankings in State Entrance Exam.</p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-slate-700">Allotted Seats</span>
+                  <span className="font-mono font-bold text-indigo-600">{quotaStats.entranceAllotted} / {quotaStats.entranceTotal}</span>
+                </div>
+                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+                    style={{ width: `${(quotaStats.entranceAllotted / quotaStats.entranceTotal) * 100}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400">Remaining capacity: {quotaStats.entranceTotal - quotaStats.entranceAllotted} seats.</p>
+              </div>
+            </Card>
+
+            {/* Management Quota */}
+            <Card>
+              <h3 className="font-semibold text-sm mb-1.5">Management Quota</h3>
+              <p className="text-[10px] text-slate-500 mb-4">Direct admissions allotted under management administration sanction.</p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-slate-700">Allotted Seats</span>
+                  <span className="font-mono font-bold text-emerald-600">{quotaStats.mgmtAllotted} / {quotaStats.mgmtTotal}</span>
+                </div>
+                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-600 rounded-full transition-all duration-500"
+                    style={{ width: `${(quotaStats.mgmtAllotted / quotaStats.mgmtTotal) * 100}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400">Remaining capacity: {quotaStats.mgmtTotal - quotaStats.mgmtAllotted} seats.</p>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* VERIFICATION & FEES */}
+        {activeTab === "verification" && (
+          <Card>
+            <h3 className="font-semibold mb-3 text-sm">Document Verification &amp; Fee Payments</h3>
+            <div className="space-y-4">
+              {applicants.map(app => (
+                <div key={app.id} className="p-4 border rounded-xl bg-slate-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  {/* Info */}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-indigo-700 text-xs">{app.id}</span>
+                      <span className="font-bold text-slate-800 text-xs">{app.name}</span>
+                      <Badge tone={app.quota.includes("Entrance") ? "info" : "warn"} className="text-[9px]">
+                        {app.quota}
+                      </Badge>
+                    </div>
+                    {/* Document Verification Checkboxes */}
+                    <div className="flex items-center gap-4 pt-1.5">
+                      <span className="text-[10px] font-semibold text-slate-400">Documents checklist:</span>
+                      <label className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-600 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={app.docs.marksheets}
+                          onChange={() => toggleDoc(app.id, "marksheets")}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                        10th/12th Marksheets
+                      </label>
+                      <label className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-600 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={app.docs.aadhaar}
+                          onChange={() => toggleDoc(app.id, "aadhaar")}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                        Aadhaar ID Card
+                      </label>
+                      <label className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-600 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={app.docs.tc}
+                          onChange={() => toggleDoc(app.id, "tc")}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                        Transfer Certificate
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Document & Fee Status Actions */}
+                  <div className="flex items-center gap-3 shrink-0 self-end md:self-auto">
+                    <div className="flex flex-col items-end gap-1">
+                      <div className="flex gap-1.5">
+                        <Badge tone={app.docStatus === "Verified" ? "success" : "danger"} className="text-[9px]">
+                          Docs: {app.docStatus}
+                        </Badge>
+                        <Badge tone={app.feeStatus === "Paid" ? "success" : "danger"} className="text-[9px]">
+                          Fee: {app.feeStatus}
+                        </Badge>
+                      </div>
+                    </div>
+                    {app.feeStatus === "Unpaid" && (
+                      <button
+                        onClick={() => collectFee(app.id, app.name)}
+                        className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer"
+                      >
+                        <CreditCard className="size-3" /> Collect Fee
+                      </button>
+                    )}
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+            </div>
+          </Card>
+        )}
+
+        {/* SEAT ALLOTMENT & ID GENERATION */}
+        {activeTab === "allotment" && (
+          <div className="grid lg:grid-cols-3 gap-4">
+            {/* Form */}
+            <Card className="flex flex-col justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-800 text-sm mb-1.5">Seat Allocation &amp; ID Generator</h3>
+                <p className="text-xs text-muted-foreground mb-4">Choose verification-cleared applicants, allocate departments, and generate student IDs.</p>
+
+                <div className="space-y-3.5">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">Select Applicant</label>
+                    <select
+                      value={selectedApplicantId}
+                      onChange={(e) => setSelectedApplicantId(e.target.value)}
+                      className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none cursor-pointer"
+                    >
+                      {applicants.filter(a => !a.allotted).map(a => (
+                        <option key={a.id} value={a.id}>
+                          {a.id}: {a.name} ({a.docStatus === "Verified" && a.feeStatus === "Paid" ? "Cleared" : "Pending Requirements"})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase">Department</label>
+                      <select
+                        value={selectedDept}
+                        onChange={(e) => setSelectedDept(e.target.value)}
+                        className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none cursor-pointer"
+                      >
+                        <option value="CS">CSE (Computer Science)</option>
+                        <option value="EC">ECE (Electronics)</option>
+                        <option value="EE">EEE (Electrical)</option>
+                        <option value="ME">MECH (Mechanical)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase">Section</label>
+                      <select
+                        value={selectedSec}
+                        onChange={(e) => setSelectedSec(e.target.value)}
+                        className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none cursor-pointer"
+                      >
+                        <option value="A">Section A</option>
+                        <option value="B">Section B</option>
+                        <option value="C">Section C</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => allotSeat(selectedApplicantId)}
+                className="w-full mt-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition cursor-pointer"
+              >
+                Allot Seat &amp; Generate Student ID
+              </button>
+            </Card>
+
+            {/* History Logs */}
+            <Card className="lg:col-span-2">
+              <h3 className="font-semibold text-slate-800 text-sm mb-3">Allotted Seats &amp; Department Allocation History</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b text-slate-400">
+                      <th className="text-left pb-2">Reg ID</th>
+                      <th className="text-left pb-2">Candidate Name</th>
+                      <th className="text-left pb-2">Allotted Department</th>
+                      <th className="text-center pb-2">Section</th>
+                      <th className="text-right pb-2">Generated Student Roll No</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {applicants.filter(a => a.allotted).map(row => (
+                      <tr key={row.id}>
+                        <td className="py-2.5 font-mono font-bold text-slate-400">{row.id}</td>
+                        <td className="py-2.5 font-bold text-slate-800">{row.name}</td>
+                        <td className="py-2.5 font-semibold text-indigo-700">{row.dept === "CS" ? "CSE" : row.dept === "EC" ? "ECE" : row.dept === "EE" ? "EEE" : "MECH"}</td>
+                        <td className="py-2.5 text-center font-bold text-slate-700">{row.sec}</td>
+                        <td className="py-2.5 text-right font-mono font-bold text-emerald-600">{row.roll}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 }
