@@ -23,7 +23,15 @@ import {
   UserPlus,
   MessageSquare,
   ShieldAlert,
-  FolderLock
+  FolderLock,
+  Search,
+  Plus,
+  Star,
+  DollarSign,
+  Send,
+  HelpCircle,
+  ShieldCheck,
+  Image,
 } from "lucide-react";
 
 export type RoleId =
@@ -40,7 +48,9 @@ export type RoleId =
   | "dean"
   | "hod"
   | "exam_cell"
-  | "accounts";
+  | "accounts"
+  | "alumni_coordinator"
+  | "alumni";
 
 export type NavItem = {
   to: string;
@@ -64,6 +74,125 @@ export type Role = {
 const base: NavItem = { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true };
 const settings: NavItem = { to: "/dashboard/settings", label: "Settings", icon: Settings };
 const notif: NavItem = { to: "/dashboard/notifications", label: "Notifications", icon: Bell };
+
+// ── Alumni submenu for Admin / Principal / Super Admin roles (4 spec items) ──
+const adminAlumniNav: NavItem = {
+  to: "/dashboard/admin/alumni",
+  label: "Alumni",
+  icon: Heart,
+  children: [
+    { to: "/dashboard/admin/alumni?tab=registration", label: "Alumni Registration", icon: Plus },
+    { to: "/dashboard/admin/alumni?tab=donations",    label: "Donations",           icon: DollarSign },
+    { to: "/dashboard/admin/alumni?tab=events",       label: "Events",              icon: CalendarCheck },
+    { to: "/dashboard/admin/alumni?tab=mentorship",   label: "Mentorship",          icon: Star },
+  ],
+};
+
+// ── Full grouped alumni workspace nav (ERPNext-style) ──
+const alumniWorkspaceNav: NavItem[] = [
+  { to: "/dashboard/admin/alumni?tab=dashboard", label: "Dashboard", icon: LayoutDashboard, exact: false },
+
+  // Alumni Management group
+  {
+    to: "/dashboard/admin/alumni?tab=directory",
+    label: "Alumni Management",
+    icon: Users,
+    children: [
+      { to: "/dashboard/admin/alumni?tab=directory",    label: "Alumni Directory",    icon: Search },
+      { to: "/dashboard/admin/alumni?tab=registration", label: "Alumni Registration", icon: Plus },
+      { to: "/dashboard/admin/alumni?tab=profile",      label: "Alumni Profiles",     icon: Award },
+      { to: "/dashboard/admin/alumni?tab=verification", label: "Alumni Verification", icon: ShieldCheck },
+    ],
+  },
+
+  // Career group
+  {
+    to: "/dashboard/admin/alumni?tab=jobs",
+    label: "Career",
+    icon: Briefcase,
+    children: [
+      { to: "/dashboard/admin/alumni?tab=jobs",        label: "Job Portal",              icon: Briefcase },
+      { to: "/dashboard/admin/alumni?tab=internships", label: "Internship Opportunities", icon: BookOpen },
+      { to: "/dashboard/admin/alumni?tab=placement",   label: "Placement Portal",        icon: Star },
+    ],
+  },
+
+  // Community group
+  {
+    to: "/dashboard/admin/alumni?tab=mentorship",
+    label: "Community",
+    icon: Heart,
+    children: [
+      { to: "/dashboard/admin/alumni?tab=mentorship",  label: "Mentorship",          icon: Star },
+      { to: "/dashboard/admin/alumni?tab=networking",  label: "Professional Network", icon: Users },
+      { to: "/dashboard/admin/alumni?tab=messaging",   label: "Messages",             icon: MessageSquare },
+    ],
+  },
+
+  // Events group
+  {
+    to: "/dashboard/admin/alumni?tab=events",
+    label: "Events",
+    icon: CalendarCheck,
+    children: [
+      { to: "/dashboard/admin/alumni?tab=events",      label: "Events & Reunions",    icon: CalendarCheck },
+      { to: "/dashboard/admin/alumni?tab=gallery",     label: "Event Gallery",        icon: Image },
+    ],
+  },
+
+  // Contributions group
+  {
+    to: "/dashboard/admin/alumni?tab=donations",
+    label: "Contributions",
+    icon: DollarSign,
+    children: [
+      { to: "/dashboard/admin/alumni?tab=donations", label: "Donations",       icon: DollarSign },
+      { to: "/dashboard/admin/alumni?tab=stories",   label: "Success Stories", icon: BookOpen },
+    ],
+  },
+
+  // Communication group
+  {
+    to: "/dashboard/admin/alumni?tab=announcements",
+    label: "Communication",
+    icon: Send,
+    children: [
+      { to: "/dashboard/admin/alumni?tab=announcements", label: "Announcements", icon: Send },
+      { to: "/dashboard/admin/alumni?tab=notifications", label: "Notifications",  icon: Bell },
+    ],
+  },
+
+  { to: "/dashboard/admin/alumni?tab=reports",    label: "Reports & Analytics", icon: Activity },
+  { to: "/dashboard/admin/alumni?tab=settings",   label: "Settings",            icon: Settings },
+  { to: "/dashboard/admin/alumni?tab=help",        label: "Help",                icon: HelpCircle },
+];
+
+// ── Legacy flat submenu (kept for backwards compatibility reference) ──
+const alumniNavSubmenu: NavItem = {
+  to: "/dashboard/admin/alumni",
+  label: "Alumni Management",
+  icon: Heart,
+  children: [
+    { to: "/dashboard/admin/alumni?tab=dashboard",     label: "Dashboard",           icon: LayoutDashboard },
+    { to: "/dashboard/admin/alumni?tab=directory",     label: "Directory",           icon: Search },
+    { to: "/dashboard/admin/alumni?tab=registration",  label: "Alumni Registration", icon: Plus },
+    { to: "/dashboard/admin/alumni?tab=profile",       label: "Alumni Profile",      icon: Award },
+    { to: "/dashboard/admin/alumni?tab=events",        label: "Events & Reunions",   icon: CalendarCheck },
+    { to: "/dashboard/admin/alumni?tab=jobs",          label: "Job Portal",          icon: Briefcase },
+    { to: "/dashboard/admin/alumni?tab=mentorship",    label: "Mentorship",          icon: Star },
+    { to: "/dashboard/admin/alumni?tab=networking",    label: "Social Network",      icon: Heart },
+    { to: "/dashboard/admin/alumni?tab=messaging",     label: "Inbox Messages",      icon: MessageSquare },
+    { to: "/dashboard/admin/alumni?tab=donations",     label: "Donations",           icon: DollarSign },
+    { to: "/dashboard/admin/alumni?tab=stories",       label: "Success Stories",     icon: BookOpen },
+    { to: "/dashboard/admin/alumni?tab=announcements", label: "Announcements",       icon: Send },
+    { to: "/dashboard/admin/alumni?tab=notifications", label: "System Alerts",       icon: Bell },
+    { to: "/dashboard/admin/alumni?tab=verification",  label: "Degree Verifier",     icon: ShieldCheck },
+    { to: "/dashboard/admin/alumni?tab=ai-features",   label: "AI Recommendations",  icon: Sparkles },
+    { to: "/dashboard/admin/alumni?tab=reports",       label: "Reports",             icon: FileText },
+    { to: "/dashboard/admin/alumni?tab=settings",      label: "Settings",            icon: Settings },
+  ],
+};
+
 
 export const ROLES: Record<RoleId, Role> = {
   super_admin: {
@@ -91,6 +220,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/inventory", label: "Inventory Management", icon: Database },
       { to: "/dashboard/admin/accreditation", label: "Accreditation (NAAC)", icon: Award },
       { to: "/dashboard/admin/grievance", label: "Grievances Cell", icon: ShieldAlert },
+      adminAlumniNav,
       { to: "/dashboard/super-admin/configuration", label: "System Configuration", icon: Settings },
       { to: "/dashboard/super-admin/automation", label: "AI Automation Control", icon: Sparkles },
       { to: "/dashboard/super-admin/reports", label: "Global Reports", icon: Activity },
@@ -125,7 +255,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/accreditation", label: "NAAC/NBA Portal", icon: Award },
       { to: "/dashboard/admin/communication", label: "Communication Hub", icon: MessageSquare },
       { to: "/dashboard/admin/grievance", label: "Grievances Cell", icon: ShieldAlert },
-      { to: "/dashboard/admin/alumni", label: "Alumni Records", icon: Heart },
+      adminAlumniNav,
       { to: "/dashboard/admin/events", label: "Campus Events", icon: Sparkles },
       { to: "/dashboard/admin/notifications", label: "Notifications", icon: Bell },
       { to: "/dashboard/admin/settings", label: "Settings", icon: Settings },
@@ -292,6 +422,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/accreditation", label: "NAAC/NBA Dashboard", icon: Award },
       { to: "/dashboard/admin/grievance", label: "Grievances Desk", icon: ShieldAlert },
       { to: "/dashboard/admin/communication", label: "Communication Center", icon: MessageSquare },
+      adminAlumniNav,
       { to: "/dashboard/admin/reports", label: "Academic Audit Reports", icon: Activity },
       settings,
     ],
@@ -362,6 +493,26 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/hrms", label: "HRMS Staff Payroll", icon: ClipboardList },
       settings,
     ],
+  },
+  alumni_coordinator: {
+    id: "alumni_coordinator",
+    name: "Alumni Coordinator",
+    short: "Alumni & Reunions",
+    description: "Manage alumni registrations, events, mentorship, and donations.",
+    icon: Heart,
+    gradient: "from-pink-500 to-rose-600",
+    accent: "bg-rose-500",
+    nav: [...alumniWorkspaceNav],
+  },
+  alumni: {
+    id: "alumni",
+    name: "Alumni",
+    short: "Alumni Workspace",
+    description: "Access job board, networking events, mentorship, and donations.",
+    icon: Award,
+    gradient: "from-indigo-600 to-pink-500",
+    accent: "bg-indigo-500",
+    nav: [...alumniWorkspaceNav],
   },
 };
 

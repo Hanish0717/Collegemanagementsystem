@@ -36,6 +36,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import hostelComplaintRoutes from './routes/hostel/complaintRoutes.js';
 import hostelAttendanceRoutes from './routes/hostel/attendanceRoutes.js';
 import visitorRoutes from './routes/hostel/visitorRoutes.js';
+import alumniRoutes from './routes/alumniRoutes.js';
 
 dotenv.config();
 
@@ -144,6 +145,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/hostel/complaints', hostelComplaintRoutes);
 app.use('/api/hostel/attendance', hostelAttendanceRoutes);
 app.use('/api/hostel/visitors', visitorRoutes);
+app.use('/api/alumni', alumniRoutes);
 
 // 404 handler
 app.use(notFound);

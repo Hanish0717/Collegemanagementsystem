@@ -872,5 +872,575 @@
       "created_at": "2026-07-16T12:39:06.003Z",
       "updated_at": "2026-07-16T12:39:06.003Z"
     }
+  ],
+  "alumni_profiles": [
+    {
+      "id": "alm-001",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "full_name": "Anish Senapati",
+      "roll_number": "17CS801",
+      "student_id": "STU-801",
+      "email": "anish.s@alumni.com",
+      "phone": "9876543210",
+      "photo": "",
+      "department": "Computer Science",
+      "graduation_year": 2021,
+      "current_company": "Google",
+      "designation": "Software Engineer L4",
+      "higher_studies": "N/A",
+      "location": "Bangalore",
+      "country": "India",
+      "linkedin": "https://linkedin.com/in/anishsenapati",
+      "portfolio": "https://anish.dev",
+      "skills": [
+        "React",
+        "Node.js",
+        "Docker",
+        "Go"
+      ],
+      "achievements": "Winner of College Smart India Hackathon 2020",
+      "biography": "CSE graduate passionate about distributed systems and premium UI animations.",
+      "resume_url": "",
+      "status": "Approved",
+      "profile_completion": 85,
+      "created_at": "2026-07-16T13:07:28.777Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    },
+    {
+      "id": "alm-002",
+      "user_id": null,
+      "full_name": "Sahil Varma",
+      "roll_number": "15EC402",
+      "student_id": "STU-402",
+      "email": "sahil.v@alumni.com",
+      "phone": "9876543211",
+      "photo": "",
+      "department": "Electronics & Communication",
+      "graduation_year": 2019,
+      "current_company": "Amazon",
+      "designation": "Solutions Architect",
+      "higher_studies": "MS in Computer Science at ASU",
+      "location": "Seattle",
+      "country": "USA",
+      "linkedin": "https://linkedin.com/in/sahilvarma",
+      "portfolio": "",
+      "skills": [
+        "AWS",
+        "Terraform",
+        "Python",
+        "Kubernetes"
+      ],
+      "achievements": "Published 3 IEEE research papers on IoT edge computing",
+      "biography": "ECE graduate working on cloud infrastructures.",
+      "resume_url": "",
+      "status": "Approved",
+      "profile_completion": 90,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    },
+    {
+      "id": "alm-003",
+      "user_id": null,
+      "full_name": "Ritika Roy",
+      "roll_number": "18AI903",
+      "student_id": "STU-903",
+      "email": "ritika.r@alumni.com",
+      "phone": "9876543212",
+      "photo": "",
+      "department": "Artificial Intelligence",
+      "graduation_year": 2022,
+      "current_company": "Microsoft",
+      "designation": "Data Scientist",
+      "higher_studies": "N/A",
+      "location": "Hyderabad",
+      "country": "India",
+      "linkedin": "https://linkedin.com/in/ritikaroy",
+      "portfolio": "",
+      "skills": [
+        "Python",
+        "PyTorch",
+        "TensorFlow",
+        "Scikit-Learn"
+      ],
+      "achievements": "Top 1% rank in Kaggle Housing Prices Challenge",
+      "biography": "AI/ML graduate modeling large neural architectures.",
+      "resume_url": "",
+      "status": "Approved",
+      "profile_completion": 75,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    },
+    {
+      "id": "alm-004",
+      "user_id": null,
+      "full_name": "Vikram Seth",
+      "roll_number": "16ME104",
+      "student_id": "STU-104",
+      "email": "vikram.s@test.com",
+      "phone": "9876543213",
+      "photo": "",
+      "department": "Mechanical Engineering",
+      "graduation_year": 2020,
+      "current_company": "Tata Motors",
+      "designation": "Design Engineer",
+      "higher_studies": "N/A",
+      "location": "Pune",
+      "country": "India",
+      "linkedin": "",
+      "portfolio": "",
+      "skills": [
+        "SolidWorks",
+        "AutoCAD",
+        "Ansys"
+      ],
+      "achievements": "Designed Formula Student racing chassis",
+      "biography": "Mechanical designer focusing on automotive aerodynamics.",
+      "resume_url": "",
+      "status": "Pending",
+      "profile_completion": 60,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    }
+  ],
+  "alumni_employment": [
+    {
+      "id": "emp-001",
+      "alumni_id": "alm-001",
+      "company_name": "Google",
+      "designation": "Software Engineer L4",
+      "start_date": "2022-01-15",
+      "end_date": null,
+      "is_current": true,
+      "description": "Working on Google Cloud Platform networking stack."
+    },
+    {
+      "id": "emp-002",
+      "alumni_id": "alm-002",
+      "company_name": "Amazon",
+      "designation": "Solutions Architect",
+      "start_date": "2020-03-01",
+      "end_date": null,
+      "is_current": true,
+      "description": "Designing cloud migration topologies for enterprise partners."
+    }
+  ],
+  "alumni_education": [
+    {
+      "id": "edu-001",
+      "alumni_id": "alm-001",
+      "institution": "Vellore Institute of Technology",
+      "degree": "B.Tech",
+      "field_of_study": "Computer Science",
+      "start_year": 2017,
+      "end_year": 2021
+    },
+    {
+      "id": "edu-002",
+      "alumni_id": "alm-002",
+      "institution": "Arizona State University",
+      "degree": "MS",
+      "field_of_study": "Computer Science",
+      "start_year": 2019,
+      "end_year": 2021
+    }
+  ],
+  "alumni_events": [
+    {
+      "id": "evt-001",
+      "title": "Silver Jubilee Grand Reunion 2026",
+      "description": "Annual grand reunion dinner and networking meetup for classes 1995-2022. Catch up with your old faculty members and explore our new AI Research wing.",
+      "category": "Reunion",
+      "date": "2026-12-25",
+      "time": "18:00 - 22:00",
+      "venue": "Main Campus Auditorium & Gardens",
+      "organizer": "Alumni Relations Office",
+      "image_url": "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80",
+      "capacity": 500,
+      "status": "Published",
+      "feedback_enabled": true,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    },
+    {
+      "id": "evt-002",
+      "title": "Industry Webinar: Emerging Paradigms in ML & Generative AI",
+      "description": "Guest lecture hosted by Ritika Roy (Class of 2022) on large transformer models and deployment pipelines on Azure.",
+      "category": "Webinar",
+      "date": "2026-11-15",
+      "time": "15:00 - 16:30",
+      "venue": "Teams Online Conference link",
+      "organizer": "AIML Department",
+      "image_url": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80",
+      "capacity": 200,
+      "status": "Published",
+      "feedback_enabled": false,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    },
+    {
+      "created_at": "2026-07-16T14:08:09.257Z",
+      "updated_at": "2026-07-16T14:08:09.257Z",
+      "title": "lokhi",
+      "description": "",
+      "category": "Reunion",
+      "date": "2026-07-24",
+      "time": "",
+      "venue": "audi",
+      "capacity": null,
+      "status": "Published"
+    }
+  ],
+  "alumni_event_registrations": [
+    {
+      "id": "reg-001",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T13:07:28.779Z",
+      "attended": true,
+      "feedback": "Had a great time visiting the campus after 5 years!",
+      "rating": 5
+    },
+    {
+      "id": "reg-002",
+      "event_id": "evt-001",
+      "alumni_id": "alm-002",
+      "registered_at": "2026-07-16T13:07:28.779Z",
+      "attended": false,
+      "feedback": "",
+      "rating": null
+    },
+    {
+      "created_at": "2026-07-16T14:07:37.918Z",
+      "updated_at": "2026-07-16T14:07:37.918Z",
+      "event_id": "evt-002",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:07:37.916Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:07:39.042Z",
+      "updated_at": "2026-07-16T14:07:39.042Z",
+      "event_id": "evt-002",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:07:39.039Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:07:43.212Z",
+      "updated_at": "2026-07-16T14:07:43.212Z",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:07:43.210Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:12.506Z",
+      "updated_at": "2026-07-16T14:08:12.506Z",
+      "event_id": "undefined",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:12.504Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:14.882Z",
+      "updated_at": "2026-07-16T14:08:14.882Z",
+      "event_id": "evt-002",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:14.879Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:16.112Z",
+      "updated_at": "2026-07-16T14:08:16.112Z",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:16.110Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:16.520Z",
+      "updated_at": "2026-07-16T14:08:16.520Z",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:16.518Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:16.700Z",
+      "updated_at": "2026-07-16T14:08:16.700Z",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:16.698Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:16.899Z",
+      "updated_at": "2026-07-16T14:08:16.899Z",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:16.897Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:17.059Z",
+      "updated_at": "2026-07-16T14:08:17.059Z",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:17.056Z",
+      "attended": false
+    },
+    {
+      "created_at": "2026-07-16T14:08:17.234Z",
+      "updated_at": "2026-07-16T14:08:17.234Z",
+      "event_id": "evt-001",
+      "alumni_id": "alm-001",
+      "registered_at": "2026-07-16T14:08:17.232Z",
+      "attended": false
+    }
+  ],
+  "alumni_jobs": [
+    {
+      "id": "job-001",
+      "title": "Software Engineer - Google Cloud Platform",
+      "company": "Google",
+      "location": "Bangalore (Hybrid)",
+      "job_type": "Full-time",
+      "description": "Join the GCP Compute Networking team to scale low-latency VPC connections. Focus on Go, C++, and Linux virtualization overlays.",
+      "requirements": "• 2+ years of professional backend dev experience\n• Experience with system level networking or VPC internals\n• Strong CS algorithms foundations",
+      "eligibility": "B.Tech CSE/ECE/AIML, minimum 7.5 CGPA",
+      "deadline": "2026-09-30",
+      "posted_by": "11111111-1111-1111-1111-111111111111",
+      "is_active": true,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    },
+    {
+      "id": "job-002",
+      "title": "Machine Learning Intern",
+      "company": "Microsoft",
+      "location": "Hyderabad (On-site)",
+      "job_type": "Internship",
+      "description": "6 months internship focusing on fine-tuning large language models for local language interfaces.",
+      "requirements": "• Proficiency in Python and PyTorch\n• Basic understanding of transformer models\n• Kaggle experience is a plus",
+      "eligibility": "Pre-final/Final year B.Tech, CSE/IT/AI",
+      "deadline": "2026-08-15",
+      "posted_by": "11111111-1111-1111-1111-111111111111",
+      "is_active": true,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    }
+  ],
+  "alumni_job_applications": [
+    {
+      "id": "app-001",
+      "job_id": "job-001",
+      "alumni_id": "alm-003",
+      "applied_at": "2026-07-16T13:07:28.779Z",
+      "status": "Shortlisted",
+      "resume_url": "https://storage.googleapis.com/college-resumes/st-903-resume.pdf"
+    },
+    {
+      "created_at": "2026-07-16T14:10:47.173Z",
+      "updated_at": "2026-07-16T14:10:47.173Z",
+      "job_id": "job-001",
+      "alumni_id": "alm-001",
+      "applied_at": "2026-07-16T14:10:47.172Z",
+      "status": "Applied",
+      "resume_url": "https://storage.googleapis.com/resume.pdf"
+    },
+    {
+      "created_at": "2026-07-16T14:10:47.820Z",
+      "updated_at": "2026-07-16T14:10:47.820Z",
+      "job_id": "job-001",
+      "alumni_id": "alm-001",
+      "applied_at": "2026-07-16T14:10:47.817Z",
+      "status": "Applied",
+      "resume_url": "https://storage.googleapis.com/resume.pdf"
+    },
+    {
+      "created_at": "2026-07-16T14:10:48.017Z",
+      "updated_at": "2026-07-16T14:10:48.017Z",
+      "job_id": "job-001",
+      "alumni_id": "alm-001",
+      "applied_at": "2026-07-16T14:10:48.015Z",
+      "status": "Applied",
+      "resume_url": "https://storage.googleapis.com/resume.pdf"
+    },
+    {
+      "created_at": "2026-07-16T14:10:48.395Z",
+      "updated_at": "2026-07-16T14:10:48.395Z",
+      "job_id": "job-001",
+      "alumni_id": "alm-001",
+      "applied_at": "2026-07-16T14:10:48.393Z",
+      "status": "Applied",
+      "resume_url": "https://storage.googleapis.com/resume.pdf"
+    },
+    {
+      "created_at": "2026-07-16T14:10:48.611Z",
+      "updated_at": "2026-07-16T14:10:48.611Z",
+      "job_id": "job-001",
+      "alumni_id": "alm-001",
+      "applied_at": "2026-07-16T14:10:48.609Z",
+      "status": "Applied",
+      "resume_url": "https://storage.googleapis.com/resume.pdf"
+    },
+    {
+      "created_at": "2026-07-16T14:10:48.819Z",
+      "updated_at": "2026-07-16T14:10:48.819Z",
+      "job_id": "job-001",
+      "alumni_id": "alm-001",
+      "applied_at": "2026-07-16T14:10:48.817Z",
+      "status": "Applied",
+      "resume_url": "https://storage.googleapis.com/resume.pdf"
+    }
+  ],
+  "alumni_mentorship_requests": [
+    {
+      "id": "mnt-001",
+      "mentor_id": "alm-003",
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "request_reason": "Looking for guidance on selecting the right pre-trained models for speech processing project.",
+      "status": "Approved",
+      "session_schedule": "2026-07-19T13:07:28.779Z",
+      "feedback": "",
+      "rating": null,
+      "created_at": "2026-07-16T13:07:28.779Z",
+      "updated_at": "2026-07-16T13:07:28.779Z"
+    }
+  ],
+  "alumni_donations": [
+    {
+      "id": "don-001",
+      "alumni_id": "alm-002",
+      "amount": 150000,
+      "cause": "AIML Lab Supercomputing Fund",
+      "payment_status": "Completed",
+      "transaction_id": "TXN-90218392",
+      "date": "2026-06-12",
+      "receipt_url": "",
+      "created_at": "2026-07-16T13:07:28.779Z"
+    },
+    {
+      "id": "don-002",
+      "alumni_id": "alm-001",
+      "amount": 50000,
+      "cause": "Library E-Books Subscription",
+      "payment_status": "Completed",
+      "transaction_id": "TXN-10294829",
+      "date": "2026-07-01",
+      "receipt_url": "",
+      "created_at": "2026-07-16T13:07:28.779Z"
+    }
+  ],
+  "alumni_success_stories": [
+    {
+      "id": "story-001",
+      "alumni_id": "alm-001",
+      "title": "Anish Senapati wins Google Tech Excellence Award",
+      "content": "Anish Senapati, a graduate from the CSE class of 2021, has received the Google Cloud Excellence award for developing a high-throughput network overlay optimizer. He shares his story and credits the college hackathon culture for his practical experience.",
+      "category": "Featured Alumni",
+      "likes_count": 42,
+      "published_at": "2026-07-16T13:07:28.779Z",
+      "created_at": "2026-07-16T13:07:28.779Z"
+    }
+  ],
+  "alumni_communication_logs": [
+    {
+      "id": "log-001",
+      "type": "Email",
+      "recipient": "anish.s@alumni.com",
+      "subject": "Invitation to speak at annual tech summit",
+      "message": "Dear Anish, we would love to have you as a keynote speaker for TechFest 2026...",
+      "sent_by": "11111111-1111-1111-1111-111111111111",
+      "sent_at": "2026-07-16T13:07:28.779Z"
+    }
+  ],
+  "alumni_connections": [
+    {
+      "id": "con-001",
+      "sender_id": "alm-001",
+      "receiver_id": "alm-002",
+      "status": "Accepted",
+      "created_at": "2026-07-16T13:23:28.963Z",
+      "updated_at": "2026-07-16T13:23:28.964Z"
+    },
+    {
+      "id": "con-002",
+      "sender_id": "alm-003",
+      "receiver_id": "alm-001",
+      "status": "Pending",
+      "created_at": "2026-07-16T13:23:28.964Z",
+      "updated_at": "2026-07-16T13:23:28.964Z"
+    }
+  ],
+  "alumni_posts": [
+    {
+      "id": "post-001",
+      "author_id": "alm-001",
+      "content": "Thrilled to share that I have started a new role as Software Engineer L4 at Google Bangalore! Big thanks to our college's hackathon cell for helping me polish my coding skills.",
+      "image_url": "https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=600&auto=format&fit=crop&q=80",
+      "likes_count": 5,
+      "comments_count": 1,
+      "created_at": "2026-07-16T13:23:28.964Z"
+    }
+  ],
+  "alumni_post_likes": [
+    {
+      "id": "like-001",
+      "post_id": "post-001",
+      "alumni_id": "alm-002",
+      "created_at": "2026-07-16T13:23:28.964Z"
+    }
+  ],
+  "alumni_post_comments": [
+    {
+      "id": "comm-001",
+      "post_id": "post-001",
+      "author_id": "alm-002",
+      "content": "Congratulations Anish! Well deserved.",
+      "created_at": "2026-07-16T13:23:28.964Z"
+    }
+  ],
+  "alumni_messages": [
+    {
+      "id": "msg-001",
+      "sender_id": "alm-001",
+      "receiver_id": "alm-002",
+      "content": "Hi Sahil, wanted to check if there are any openings in AWS cloud overlay teams?",
+      "file_url": "",
+      "is_seen": true,
+      "created_at": "2026-07-16T12:23:28.964Z"
+    },
+    {
+      "id": "msg-002",
+      "sender_id": "alm-002",
+      "receiver_id": "alm-001",
+      "content": "Hey Anish, yes we do have a few positions. Send over your resume, I'll refer you!",
+      "file_url": "",
+      "is_seen": false,
+      "created_at": "2026-07-16T13:23:28.964Z"
+    }
+  ],
+  "mentorship_sessions": [
+    {
+      "id": "ses-001",
+      "request_id": "mnt-001",
+      "mentor_id": "alm-003",
+      "student_id": "44444444-4444-4444-4444-444444444444",
+      "date": "2026-07-19",
+      "start_time": "15:00",
+      "end_time": "16:00",
+      "status": "Scheduled",
+      "created_at": "2026-07-16T13:23:28.964Z"
+    }
+  ],
+  "alumni_activity_logs": [
+    {
+      "id": "act-001",
+      "alumni_id": "alm-001",
+      "action": "Profile details updated",
+      "ip_address": "127.0.0.1",
+      "created_at": "2026-07-16T13:23:28.964Z"
+    }
   ]
 }

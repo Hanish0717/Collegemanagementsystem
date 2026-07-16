@@ -96,6 +96,8 @@ if (!isMockMode && databaseUrl) {
 }
 
 let activeSupabaseClient;
+let getMockDb = () => ({});
+
 
 if (isMockMode) {
   console.log("🚀 Running backend in DATABASE MOCK MODE because no live database credentials are configured.");
@@ -198,6 +200,73 @@ if (isMockMode) {
       // ignore
     }
   };
+
+  getMockDb = () => {
+    const currentDb = loadDb();
+    const requiredTables = [
+      'alumni_profiles',
+      'alumni_events',
+      'alumni_jobs',
+      'alumni_donations',
+      'alumni_event_registrations',
+      'alumni_mentorship_requests',
+      'alumni_success_stories',
+      'alumni_communication_logs',
+      'alumni_connections',
+      'alumni_posts',
+      'alumni_post_likes',
+      'alumni_post_comments',
+      'alumni_messages',
+      'mentorship_sessions',
+      'alumni_employment',
+      'alumni_education',
+      'alumni_job_applications'
+    ];
+    let changed = false;
+    requiredTables.forEach(table => {
+      if (!currentDb[table]) {
+        currentDb[table] = [];
+        changed = true;
+      }
+    });
+    if (changed) {
+      saveDb(currentDb);
+    }
+
+    const handler = {
+      get(target, prop, receiver) {
+        const value = Reflect.get(target, prop, receiver);
+        if (typeof value === 'object' && value !== null) {
+          return new Proxy(value, {
+            set(subTarget, subProp, subValue, subReceiver) {
+              const success = Reflect.set(subTarget, subProp, subValue, subReceiver);
+              if (success) {
+                saveDb(target);
+              }
+              return success;
+            },
+            deleteProperty(subTarget, subProp) {
+              const success = Reflect.deleteProperty(subTarget, subProp);
+              if (success) {
+                saveDb(target);
+              }
+              return success;
+            }
+          });
+        }
+        return value;
+      },
+      set(target, prop, value, receiver) {
+        const success = Reflect.set(target, prop, value, receiver);
+        if (success) {
+          saveDb(target);
+        }
+        return success;
+      }
+    };
+    return new Proxy(currentDb, handler);
+  };
+
 
   // Initialize DB file on startup if it doesn't exist
   if (fs.existsSync(dbFilePath)) {
@@ -911,4 +980,4 @@ if (isMockMode) {
 debugLog("Supabase.js module loading completed successfully!");
 
 export const supabase = activeSupabaseClient;
-export { isMockMode };
+export { isMockMode, getMockDb };
