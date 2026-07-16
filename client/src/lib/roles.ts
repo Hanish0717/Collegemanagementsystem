@@ -23,7 +23,8 @@ import {
   UserPlus,
   MessageSquare,
   ShieldAlert,
-  FolderLock
+  FolderLock,
+  Clock
 } from "lucide-react";
 
 export type RoleId =
@@ -116,6 +117,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/assignments", label: "Faculty Assignments", icon: ClipboardList },
       { to: "/dashboard/admin/timetable", label: "Class Timetable", icon: CalendarCheck },
       { to: "/dashboard/admin/attendance", label: "Attendance Control", icon: CalendarCheck },
+      { to: "/dashboard/admin/faculty/attendance", label: "Faculty Attendance", icon: CalendarCheck },
       { to: "/dashboard/admin/exams", label: "Exam Cell Manager", icon: BookOpen },
       { to: "/dashboard/admin/lms", label: "LMS Curriculum", icon: FileText },
       { to: "/dashboard/admin/fees", label: "Fee Collection", icon: Wallet },
@@ -127,6 +129,9 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/grievance", label: "Grievances Cell", icon: ShieldAlert },
       { to: "/dashboard/admin/alumni", label: "Alumni Records", icon: Heart },
       { to: "/dashboard/admin/events", label: "Campus Events", icon: Sparkles },
+      { to: "/dashboard/admin/research", label: "Research (R&D)", icon: Sparkles },
+      { to: "/dashboard/admin/clubs", label: "Student Clubs", icon: Users },
+      { to: "/dashboard/admin/health", label: "Health & Wellness", icon: Heart },
       { to: "/dashboard/admin/notifications", label: "Notifications", icon: Bell },
       { to: "/dashboard/admin/settings", label: "Settings", icon: Settings },
     ],
@@ -145,7 +150,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/faculty/materials", label: "Materials", icon: BookOpen },
       { to: "/dashboard/admin/lms", label: "LMS Portal", icon: FileText },
       { to: "/dashboard/faculty/students", label: "My Students", icon: Users },
-      { to: "/dashboard/admin/communication", label: "Message Hub", icon: MessageSquare },
+      { to: "/dashboard/faculty/communication", label: "Message Hub", icon: MessageSquare },
       { to: "/dashboard/faculty/notifications", label: "Notifications", icon: Bell },
       { to: "/dashboard/faculty/settings", label: "Settings", icon: Settings },
     ],
@@ -161,12 +166,13 @@ export const ROLES: Record<RoleId, Role> = {
     nav: [
       base,
       { to: "/dashboard/student/attendance", label: "Attendance", icon: CalendarCheck },
+      { to: "/dashboard/student/timetable", label: "Class Timetable", icon: Clock },
       { to: "/dashboard/student/results", label: "Results & GPA", icon: BookOpen },
       { to: "/dashboard/student/fees", label: "Fees Registry", icon: Wallet },
       { to: "/dashboard/library", label: "Library Catalog", icon: Library },
       { to: "/dashboard/student/materials", label: "Study Materials", icon: FileText },
       { to: "/dashboard/admin/lms", label: "LMS Classroom", icon: BookOpen },
-      { to: "/dashboard/admin/grievance", label: "Grievances Box", icon: ShieldAlert },
+      { to: "/dashboard/student/complaints", label: "Grievances Box", icon: ShieldAlert },
       { to: "/dashboard/student/events", label: "Events", icon: Sparkles },
       notif,
       settings,
@@ -248,6 +254,9 @@ export const ROLES: Record<RoleId, Role> = {
         label: "Hostel",
         icon: Building2,
         children: [
+          { to: "/dashboard/hostel/attendance", label: "Attendance", icon: CalendarCheck },
+          { to: "/dashboard/hostel/visitors", label: "Visitors", icon: ClipboardList },
+          { to: "/dashboard/hostel/complaints", label: "Complaints", icon: FileText },
           { to: "/dashboard/hostel/mess/menus", label: "Mess Menus", icon: FileText },
           { to: "/dashboard/hostel/mess/fees", label: "Mess Fees", icon: Wallet },
         ],
@@ -324,6 +333,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/admin/faculty", label: "Faculty Workloads", icon: GraduationCap },
       { to: "/dashboard/admin/timetable", label: "Dept Timetable", icon: CalendarCheck },
       { to: "/dashboard/admin/attendance", label: "Attendance Audit", icon: CalendarCheck },
+      { to: "/dashboard/admin/faculty/attendance", label: "Faculty Attendance", icon: CalendarCheck },
       { to: "/dashboard/admin/exams", label: "Dept Exams & Marks", icon: BookOpen },
       settings,
     ],

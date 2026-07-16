@@ -19,7 +19,26 @@ import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 
 export function AdminAdmissions() {
-  const [activeTab, setActiveTab] = useState<"registrations" | "quota" | "verification" | "allotment">("registrations");
+  const [activeTab, setActiveTab] = useState<"registrations" | "quota" | "verification" | "allotment" | "crm" | "merit" | "counselling">("registrations");
+
+  // CRM Lead Management State
+  const [crmLeads, setCrmLeads] = useState([
+    { id: "LED-801", name: "Rohan Das", phone: "9876543210", email: "rohan@gmail.com", source: "Google Ads", notes: "Interested in CSE. Confirmed rank 8412.", status: "Contacted" },
+    { id: "LED-802", name: "Sanya Sen", phone: "9988776655", email: "sanya@yahoo.com", source: "Direct Walk-in", notes: "Inquired about hostel facilities and fees.", status: "New Enquiry" }
+  ]);
+  const [newLeadName, setNewLeadName] = useState("");
+  const [newLeadEmail, setNewLeadEmail] = useState("");
+  const [newLeadNotes, setNewLeadNotes] = useState("");
+
+  // Merit Cutoffs State
+  const [cutoffRank, setCutoffRank] = useState(15000);
+
+  // Counselling Schedules State
+  const [counsellingSlots, setCounsellingSlots] = useState([
+    { id: "CNS-01", name: "Siddharth Roy", date: "2026-07-20", time: "10:00 AM", panel: "Panel A (Main Block)", status: "Scheduled" },
+    { id: "CNS-02", name: "Amit Verma", date: "2026-07-20", time: "11:30 AM", panel: "Panel B (CSE Block)", status: "Completed" }
+  ]);
+
 
   // Applicant list for Registration & Verification stages
   const [applicants, setApplicants] = useState([
@@ -161,12 +180,15 @@ export function AdminAdmissions() {
       />
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-slate-200 overflow-x-auto">
         {[
           { id: "registrations", label: "Online Registration", icon: Users },
           { id: "quota", label: "Entrance / Management Quota", icon: Layers },
           { id: "verification", label: "Document & Fee Verification", icon: FileCheck },
-          { id: "allotment", label: "Seat Allotment & ID Gen", icon: UserPlus }
+          { id: "allotment", label: "Seat Allotment & ID Gen", icon: UserPlus },
+          { id: "crm", label: "Admission CRM Leads", icon: FileText },
+          { id: "merit", label: "Merit Cutoffs", icon: Award },
+          { id: "counselling", label: "Counselling Schedule", icon: CheckCircle }
         ].map(tab => (
           <button
             key={tab.id}
@@ -445,6 +467,216 @@ export function AdminAdmissions() {
               </div>
             </Card>
           </div>
+        )}
+
+        {/* ADMISSION CRM & LEADS */}
+        {activeTab === "crm" && (
+          <div className="grid lg:grid-cols-3 gap-4">
+            <Card className="lg:col-span-2">
+              <h3 className="font-semibold text-slate-800 text-sm mb-3">Admission CRM Lead Roster</h3>
+              <div className="space-y-3">
+                {crmLeads.map(lead => (
+                  <div key={lead.id} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-indigo-700">{lead.id}</span>
+                        <span className="font-bold text-slate-800">{lead.name}</span>
+                        <Badge tone="info" className="text-[9px]">{lead.source}</Badge>
+                      </div>
+                      <div className="text-slate-500 font-semibold">Phone: {lead.phone} | Email: {lead.email}</div>
+                      <div className="text-[10px] text-slate-400 font-bold">Notes: {lead.notes}</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge tone={lead.status === "Registered" ? "success" : "warn"}>{lead.status}</Badge>
+                      {lead.status !== "Registered" && (
+                        <button
+                          onClick={() => {
+                            setCrmLeads(prev => prev.map(l => l.id === lead.id ? { ...l, status: "Registered" } : l));
+                            toast.success(`Lead '${lead.name}' successfully marked as registered candidate!`);
+                          }}
+                          className="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[9px] font-bold cursor-pointer transition"
+                        >
+                          Mark Registered
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card>
+              <h3 className="font-semibold text-slate-800 text-sm mb-4">Add Enquiry Lead</h3>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!newLeadName.trim() || !newLeadEmail.trim()) {
+                    toast.error("Please fill in lead details!");
+                    return;
+                  }
+                  const newLd = {
+                    id: `LED-${Math.floor(803 + Math.random() * 100)}`,
+                    name: newLeadName,
+                    phone: "98451 00214",
+                    email: newLeadEmail,
+                    source: "Direct Web",
+                    notes: newLeadNotes || "No notes provided.",
+                    status: "New Enquiry"
+                  };
+                  setCrmLeads([...crmLeads, newLd]);
+                  toast.success(`CRM Lead '${newLeadName}' added!`);
+                  setNewLeadName("");
+                  setNewLeadEmail("");
+                  setNewLeadNotes("");
+                }}
+                className="space-y-3.5"
+              >
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Lead Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Candidate Name"
+                    value={newLeadName}
+                    onChange={(e) => setNewLeadName(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="candidate@gmail.com"
+                    value={newLeadEmail}
+                    onChange={(e) => setNewLeadEmail(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Notes / Chat Log</label>
+                  <textarea
+                    placeholder="Enquiry details..."
+                    value={newLeadNotes}
+                    onChange={(e) => setNewLeadNotes(e.target.value)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none h-16 resize-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                >
+                  Save Lead
+                </button>
+              </form>
+            </Card>
+          </div>
+        )}
+
+        {/* MERIT CUTOFFS */}
+        {activeTab === "merit" && (
+          <div className="grid lg:grid-cols-3 gap-4">
+            <Card>
+              <h3 className="font-semibold text-slate-800 text-sm mb-1.5">Merit Cutoff Rank Calculator</h3>
+              <p className="text-[10px] text-slate-500 mb-4">Set the maximum EAPCET rank threshold to filter qualifying candidates.</p>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase block mb-2">EAPCET Cutoff Rank Limit</label>
+                  <input
+                    type="number"
+                    value={cutoffRank}
+                    onChange={(e) => setCutoffRank(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    toast.success(`Merit Cutoff rank updated to #${cutoffRank.toLocaleString()}`);
+                  }}
+                  className="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+                >
+                  Apply Cutoff Filter
+                </button>
+              </div>
+            </Card>
+
+            <Card className="lg:col-span-2">
+              <h3 className="font-semibold text-slate-800 text-sm mb-3">Qualifying Merit Candidates List</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b text-slate-400">
+                      <th className="text-left pb-2">Reg ID</th>
+                      <th className="text-left pb-2">Candidate Name</th>
+                      <th className="text-center pb-2">EAPCET Rank</th>
+                      <th className="text-right pb-2">Accreditation Eligibility</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {applicants
+                      .filter(app => app.quota.includes("Entrance") && app.rank <= cutoffRank)
+                      .map(row => (
+                        <tr key={row.id}>
+                          <td className="py-2.5 font-mono font-bold text-slate-400">{row.id}</td>
+                          <td className="py-2.5 font-bold text-slate-800">{row.name}</td>
+                          <td className="py-2.5 text-center font-mono font-bold text-indigo-700">#{row.rank.toLocaleString()}</td>
+                          <td className="py-2.5 text-right">
+                            <Badge tone="success">Qualifies</Badge>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* COUNSELLING */}
+        {activeTab === "counselling" && (
+          <Card>
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Counselling &amp; Physical Verification Schedules</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b text-slate-400">
+                    <th className="text-left pb-2">Slot ID</th>
+                    <th className="text-left pb-2">Candidate Name</th>
+                    <th className="text-left pb-2">Scheduled Date</th>
+                    <th className="text-left pb-2">Time Slot</th>
+                    <th className="text-left pb-2">Assigned Panel Block</th>
+                    <th className="text-right pb-2">Verification Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {counsellingSlots.map(slot => (
+                    <tr key={slot.id}>
+                      <td className="py-3 font-mono font-bold text-indigo-700">{slot.id}</td>
+                      <td className="py-3 font-bold text-slate-800">{slot.name}</td>
+                      <td className="py-3 font-semibold text-slate-500">{slot.date}</td>
+                      <td className="py-3 font-bold text-slate-700">{slot.time}</td>
+                      <td className="py-3 font-semibold">{slot.panel}</td>
+                      <td className="py-3 text-right">
+                        {slot.status === "Completed" ? (
+                          <Badge tone="success">Completed</Badge>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setCounsellingSlots(prev => prev.map(s => s.id === slot.id ? { ...s, status: "Completed" } : s));
+                              toast.success(`Verification checklist completed for ${slot.name}!`);
+                            }}
+                            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-bold cursor-pointer transition"
+                          >
+                            Mark Completed
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         )}
       </motion.div>
     </div>

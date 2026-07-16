@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Filter, Plus, Search, UserPlus, Trash2, Edit, Loader2, X } from "lucide-react";
+import { Filter, Plus, Search, UserPlus, Trash2, Edit, Loader2, X, Eye, BookOpen, FileText, Users, UserCheck, CreditCard, Award, GraduationCap, CheckCircle, AlertCircle } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 import api from "@/lib/api";
@@ -15,6 +15,29 @@ import {
 
 export function AdminStudents() {
   const queryClient = useQueryClient();
+
+  const [activeTab, setActiveTab] = useState<"roster" | "discipline" | "achievements" | "vault">("roster");
+
+  // Conduct Logs (Disciplinary Actions)
+  const [disciplinaryLogs, setDisdisciplinaryLogs] = useState([
+    { id: "DIS-001", student: "Amit Verma", roll: "21CS001", violation: "Littering inside Lab", action: "Verbal Warning issued", date: "2026-07-02", severity: "Low" },
+    { id: "DIS-002", student: "Siddharth Roy", roll: "21CS002", violation: "Attendance Shortage", action: "Parent Memo Sent", date: "2026-07-10", severity: "Medium" }
+  ]);
+  const [newDiscName, setNewDiscName] = useState("");
+  const [newDiscRoll, setNewDiscRoll] = useState("");
+  const [newDiscViolation, setNewDiscViolation] = useState("");
+
+  // Achievements
+  const [achievements, setAchievements] = useState([
+    { id: "ACH-901", student: "Priya Sharma", roll: "21CS003", title: "Smart India Hackathon First Prize", category: "Technical", date: "2026-06-15" },
+    { id: "ACH-902", student: "Aman Sharma", roll: "21CS004", title: "State Inter-Collegiate Basketball Winners", category: "Sports", date: "2026-06-28" }
+  ]);
+
+  // Document Vault Checklist
+  const [vaultRecords, setVaultRecords] = useState([
+    { roll: "21CS001", name: "Amit Verma", marksheets10: true, marksheets12: true, tc: false, incomeCert: false },
+    { roll: "21CS002", name: "Siddharth Roy", marksheets10: true, marksheets12: true, tc: true, incomeCert: true }
+  ]);
 
   // Search & Filtering State
   const [search, setSearch] = useState("");
@@ -41,6 +64,8 @@ export function AdminStudents() {
   const [parentEmail, setParentEmail] = useState("");
   const [password, setPassword] = useState("");
   const [collegeFee, setCollegeFee] = useState<number>(80000);
+  const [selectedSisStudent, setSelectedSisStudent] = useState<any | null>(null);
+  const [sisTab, setSisTab] = useState<"profile" | "history" | "certificates" | "parent" | "idcard" | "alumni">("profile");
 
   // Default fee mapping by department code
   const defaultFeesByDept: Record<string, number> = {
@@ -317,8 +342,32 @@ export function AdminStudents() {
           </button>
         }
       />
+      {/* Tabs */}
+      <div className="flex border-b border-slate-200 overflow-x-auto mb-4">
+        {[
+          { id: "roster", label: "Student Roster", icon: Users },
+          { id: "discipline", label: "Disciplinary Logs", icon: AlertCircle },
+          { id: "achievements", label: "Achievements", icon: Award },
+          { id: "vault", label: "Document Vault", icon: FileText }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-semibold transition cursor-pointer ${
+              activeTab === tab.id
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <tab.icon className="size-4" />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-      <Card>
+      {activeTab === "roster" && (
+        <>
+          <Card>
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -438,7 +487,17 @@ export function AdminStudents() {
                         </Badge>
                       </td>
                       <td className="py-3 px-4">
-                        <div className="flex gap-2">
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={() => {
+                              setSelectedSisStudent(student);
+                              setSisTab("profile");
+                            }}
+                            className="p-1 rounded hover:bg-accent text-indigo-600 hover:text-indigo-700 cursor-pointer transition"
+                            title="View SIS Details"
+                          >
+                            <Eye className="size-4" />
+                          </button>
                           <button
                             onClick={() => openEditModal(student)}
                             className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer transition"
@@ -531,6 +590,216 @@ export function AdminStudents() {
           </button>
         </Card>
       </div>
+        </>
+      )}
+
+      {/* DISCIPLINARY LOGS */}
+      {activeTab === "discipline" && (
+        <div className="grid lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-2">
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Conduct Log &amp; Disciplinary Warnings</h3>
+            <div className="space-y-3.5">
+              {disciplinaryLogs.map(log => (
+                <div key={log.id} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-rose-600">{log.id}</span>
+                      <span className="font-bold text-slate-800">{log.student} ({log.roll})</span>
+                      <Badge tone={log.severity === "Low" ? "info" : log.severity === "Medium" ? "warn" : "danger"} className="text-[9px]">
+                        {log.severity} Severity
+                      </Badge>
+                    </div>
+                    <div className="text-slate-500 font-semibold">Violation: {log.violation}</div>
+                    <div className="text-[10px] text-slate-400 font-bold">Action Taken: {log.action} | Date: {log.date}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <h3 className="font-semibold text-slate-800 text-sm mb-4">Log Disciplinary Incident</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newDiscName.trim() || !newDiscRoll.trim() || !newDiscViolation.trim()) {
+                  toast.error("Please fill in violation incident details!");
+                  return;
+                }
+                const newLog = {
+                  id: `DIS-00${disciplinaryLogs.length + 1}`,
+                  student: newDiscName,
+                  roll: newDiscRoll,
+                  violation: newDiscViolation,
+                  action: "Warning Letter Dispatched",
+                  date: new Date().toISOString().split("T")[0],
+                  severity: "Low"
+                };
+                setDisdisciplinaryLogs([newLog, ...disciplinaryLogs]);
+                toast.success(`Disciplinary incident logged for ${newDiscName}!`);
+                setNewDiscName("");
+                setNewDiscRoll("");
+                setNewDiscViolation("");
+              }}
+              className="space-y-3.5"
+            >
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Student Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Student Name"
+                  value={newDiscName}
+                  onChange={(e) => setNewDiscName(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Roll Number</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Roll Number"
+                  value={newDiscRoll}
+                  onChange={(e) => setNewDiscRoll(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Violation Description</label>
+                <textarea
+                  required
+                  placeholder="Incident details..."
+                  value={newDiscViolation}
+                  onChange={(e) => setNewDiscViolation(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none h-16 resize-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Log Incident Warning
+              </button>
+            </form>
+          </Card>
+        </div>
+      )}
+
+      {/* ACHIEVEMENTS */}
+      {activeTab === "achievements" && (
+        <Card>
+          <h3 className="font-semibold text-slate-800 text-sm mb-3">Student Extra-Curricular &amp; Academic Achievements</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Record ID</th>
+                  <th className="text-left pb-2">Student Name</th>
+                  <th className="text-left pb-2">Roll Number</th>
+                  <th className="text-left pb-2">Achievement Details / Event</th>
+                  <th className="text-center pb-2">Category</th>
+                  <th className="text-right pb-2">Log Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {achievements.map(ach => (
+                  <tr key={ach.id}>
+                    <td className="py-3 font-mono font-bold text-indigo-700">{ach.id}</td>
+                    <td className="py-3 font-bold text-slate-800">{ach.student}</td>
+                    <td className="py-3 font-mono text-slate-500 font-semibold">{ach.roll}</td>
+                    <td className="py-3 font-semibold text-slate-700">{ach.title}</td>
+                    <td className="py-3 text-center"><Badge tone="success">{ach.category}</Badge></td>
+                    <td className="py-3 text-right font-mono text-slate-400">{ach.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
+      {/* DOCUMENT VAULT */}
+      {activeTab === "vault" && (
+        <Card>
+          <h3 className="font-semibold text-slate-800 text-sm mb-3">Student Certificate Vault &amp; Documents Checklist</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Roll No</th>
+                  <th className="text-left pb-2">Student Name</th>
+                  <th className="text-center pb-2">10th Marksheet</th>
+                  <th className="text-center pb-2">12th Marksheet</th>
+                  <th className="text-center pb-2">Transfer Certificate</th>
+                  <th className="text-center pb-2">Income Certificate</th>
+                  <th className="text-right pb-2">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {vaultRecords.map(row => {
+                  const allOk = row.marksheets10 && row.marksheets12 && row.tc && row.incomeCert;
+                  return (
+                    <tr key={row.roll}>
+                      <td className="py-3 font-mono font-bold text-slate-400">{row.roll}</td>
+                      <td className="py-3 font-bold text-slate-800">{row.name}</td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.marksheets10}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, marksheets10: !r.marksheets10 } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.marksheets12}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, marksheets12: !r.marksheets12 } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.tc}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, tc: !r.tc } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.incomeCert}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, incomeCert: !r.incomeCert } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-right">
+                        <Badge tone={allOk ? "success" : "danger"}>
+                          {allOk ? "Vault Complete" : "Documents Missing"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
       {/* Add Student Modal */}
       {isAddModalOpen && (
@@ -1029,6 +1298,296 @@ export function AdminStudents() {
           </div>
         </div>
       )}
+
+      {/* Student Information System (SIS) Details Modal */}
+      {selectedSisStudent && (() => {
+        const deptObj = typeof selectedSisStudent.department === "object" && selectedSisStudent.department
+          ? selectedSisStudent.department
+          : deptList.find((d: any) => d.code === selectedSisStudent.department || d._id === selectedSisStudent.department);
+        const sisDeptName = deptObj ? deptObj.name : (typeof selectedSisStudent.department === "string" ? selectedSisStudent.department : "Other");
+
+        return (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div className="bg-background border rounded-3xl shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              {/* Header */}
+              <div className="flex items-center justify-between p-5 border-b bg-muted/20">
+                <div>
+                  <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                    <UserCheck className="size-5 text-indigo-600" />
+                    <span>Student Information System (SIS) Portal</span>
+                  </h3>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    Detailed registry files for {selectedSisStudent.fullName} ({selectedSisStudent.rollNumber})
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedSisStudent(null)}
+                  className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+
+              <div className="flex-1 flex overflow-hidden">
+                {/* Tab Navigation */}
+                <div className="w-56 border-r bg-muted/10 p-3 space-y-1.5 overflow-y-auto shrink-0">
+                  {[
+                    { id: "profile", label: "Student Profile", icon: UserCheck },
+                    { id: "history", label: "Academic History", icon: BookOpen },
+                    { id: "certificates", label: "Certificates Hub", icon: FileText },
+                    { id: "parent", label: "Parent Details", icon: Users },
+                    { id: "idcard", label: "ID Card Generator", icon: CreditCard },
+                    { id: "alumni", label: "Alumni Record", icon: Award }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setSisTab(tab.id as any)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2  rounded-xl text-xs text-left cursor-pointer transition
+                        ${sisTab === tab.id
+                          ? "bg-indigo-600 text-white font-bold shadow-soft"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                        }`}
+                    >
+                      <tab.icon className="size-4" />
+                      <span>{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tab Content Panel */}
+                <div className="flex-1 p-6 overflow-y-auto bg-slate-50/20 text-left">
+                  {sisTab === "profile" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 pb-3 border-b">
+                        <div className="size-12 rounded-2xl bg-indigo-600 text-white font-bold text-base flex items-center justify-center">
+                          {selectedSisStudent.fullName.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-sm text-slate-800">{selectedSisStudent.fullName}</h4>
+                          <p className="text-[10px] text-muted-foreground">Roll: {selectedSisStudent.rollNumber} | Adm: {selectedSisStudent.admissionNumber || "N/A"}</p>
+                        </div>
+                        <Badge tone="success" className="ml-auto">Active Student</Badge>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div className="bg-slate-50 p-3 rounded-xl border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase">Institutional Scope</span>
+                          <div className="mt-1.5 space-y-1.5">
+                            <div className="flex justify-between"><span className="text-muted-foreground">Department:</span> <span className="font-bold text-slate-800">{sisDeptName}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Academic Year:</span> <span className="font-semibold">Year {selectedSisStudent.year}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Semester:</span> <span className="font-semibold">Semester {selectedSisStudent.semester}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Section:</span> <span className="font-semibold">Section {selectedSisStudent.section || "A"}</span></div>
+                          </div>
+                        </div>
+
+                        <div className="bg-slate-50 p-3 rounded-xl border">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase">Contact & Personal Details</span>
+                          <div className="mt-1.5 space-y-1.5">
+                            <div className="flex justify-between"><span className="text-muted-foreground">Email:</span> <span className="font-semibold truncate max-w-[120px]">{selectedSisStudent.email}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Phone:</span> <span className="font-semibold">{selectedSisStudent.phoneNumber || "9876543210"}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Gender:</span> <span className="font-semibold">{selectedSisStudent.gender || "Male"}</span></div>
+                            <div className="flex justify-between"><span className="text-muted-foreground">Admission Date:</span> <span className="font-semibold">July 20, 2024</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {sisTab === "history" && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="p-3 border rounded-2xl bg-indigo-50/50 text-center">
+                          <div className="text-[10px] font-bold text-indigo-700 uppercase">Cumulative GPA</div>
+                          <div className="text-xl font-black text-indigo-800 mt-1">8.58</div>
+                        </div>
+                        <div className="p-3 border rounded-2xl bg-emerald-50/50 text-center">
+                          <div className="text-[10px] font-bold text-emerald-700 uppercase">Earned Credits</div>
+                          <div className="text-xl font-black text-emerald-800 mt-1">84 / 160</div>
+                        </div>
+                        <div className="p-3 border rounded-2xl bg-rose-50/50 text-center">
+                          <div className="text-[10px] font-bold text-rose-700 uppercase">Active Backlogs</div>
+                          <div className="text-xl font-black text-rose-800 mt-1">0</div>
+                        </div>
+                      </div>
+
+                      <div className="border rounded-2xl overflow-hidden bg-background">
+                        <div className="px-3 py-2 bg-muted/20 border-b text-[10px] font-bold uppercase text-muted-foreground">Semester Breakdown</div>
+                        <table className="w-full text-xs text-left">
+                          <thead>
+                            <tr className="border-b bg-slate-50 text-[10px] uppercase text-muted-foreground">
+                              <th className="p-2">Semester</th>
+                              <th className="p-2">SGPA</th>
+                              <th className="p-2">Credits Registered</th>
+                              <th className="p-2">Result</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y">
+                            <tr><td className="p-2 font-semibold">Semester 1</td><td className="p-2 font-bold text-slate-700">8.45</td><td className="p-2">22 Credits</td><td className="p-2 text-emerald-600 font-bold">Passed</td></tr>
+                            <tr><td className="p-2 font-semibold">Semester 2</td><td className="p-2 font-bold text-slate-700">8.70</td><td className="p-2">22 Credits</td><td className="p-2 text-emerald-600 font-bold">Passed</td></tr>
+                            <tr><td className="p-2 font-semibold">Semester 3</td><td className="p-2 font-bold text-slate-700">8.32</td><td className="p-2">20 Credits</td><td className="p-2 text-emerald-600 font-bold">Passed</td></tr>
+                            <tr><td className="p-2 font-semibold">Semester 4</td><td className="p-2 font-bold text-slate-700">8.85</td><td className="p-2">20 Credits</td><td className="p-2 text-emerald-600 font-bold">Passed</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {sisTab === "certificates" && (
+                    <div className="space-y-3">
+                      <h4 className="font-bold text-xs text-slate-700 mb-2">Student Certificate Verification &amp; Issuance</h4>
+                      {[
+                        { name: "Admission Offer Letter", status: "Issued", type: "system" },
+                        { name: "Study/Bonafide Certificate", status: "Issued", type: "dynamic" },
+                        { name: "Transfer Certificate (TC)", status: "Pending Clearance", type: "manual" },
+                        { name: "Transcript of Marks (Consolidated)", status: "Issued", type: "system" }
+                      ].map((cert, idx) => (
+                        <div key={idx} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
+                          <div className="flex items-center gap-2">
+                            <FileText className="size-4 text-indigo-500" />
+                            <span className="font-bold text-slate-800">{cert.name}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge tone={cert.status === "Issued" ? "success" : "warn"}>{cert.status}</Badge>
+                            <button
+                              onClick={() => toast.success(`Generated and downloaded ${cert.name} for ${selectedSisStudent.fullName}!`)}
+                              className="px-2 py-1 border hover:bg-accent rounded-lg font-bold text-[10px] text-indigo-600 transition cursor-pointer"
+                            >
+                              {cert.status === "Issued" ? "Download" : "Approve & Issue"}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {sisTab === "parent" && (
+                    <div className="space-y-4">
+                      <div className="p-4 border rounded-2xl bg-indigo-50/20 space-y-3 text-xs">
+                        <div>
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase">Parent / Guardian Name</span>
+                          <div className="font-bold text-slate-800 mt-0.5 text-sm">{selectedSisStudent.parentName || "Ramesh Verma"}</div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Parent Phone Number</span>
+                            <div className="font-semibold text-slate-700 mt-0.5">{selectedSisStudent.parentPhone || "9876543211"}</div>
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase">Parent Email Address</span>
+                            <div className="font-semibold text-slate-700 mt-0.5">{selectedSisStudent.parentEmail || "parent@gmail.com"}</div>
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase">Emergency Contact Address</span>
+                          <div className="font-semibold text-slate-700 mt-0.5">Flat 402, Royal Residency, Vizianagaram, AP, 535002</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {sisTab === "idcard" && (
+                    <div className="flex flex-col items-center gap-4">
+                      {/* Visual ID Card Mockup */}
+                      <div className="w-[340px] h-[200px] rounded-2xl border bg-gradient-to-br from-indigo-900 to-indigo-950 text-white p-4 relative overflow-hidden shadow-lg select-none">
+                        <div className="absolute top-0 right-0 size-24 bg-cyan-500/10 rounded-full blur-xl pointer-events-none" />
+                        
+                        {/* Logo header */}
+                        <div className="flex items-center gap-1.5 border-b border-indigo-800 pb-2">
+                          <GraduationCap className="size-5 text-cyan-400" />
+                          <span className="text-[9px] font-black tracking-widest uppercase">Campusly University</span>
+                          <Badge className="ml-auto text-[8px] bg-cyan-500 hover:bg-cyan-500 text-white border-0 py-0 px-1">STUDENT</Badge>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex items-center gap-3.5 mt-3.5">
+                          <div className="size-14 rounded-xl border border-indigo-700 bg-indigo-950 flex items-center justify-center font-bold text-lg shadow-sm">
+                            {selectedSisStudent.fullName.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="space-y-0.5 text-left min-w-0">
+                            <div className="font-extrabold text-sm truncate max-w-[180px]">{selectedSisStudent.fullName}</div>
+                            <div className="text-[9px] text-indigo-300 font-mono">Roll: {selectedSisStudent.rollNumber}</div>
+                            <div className="text-[9px] text-indigo-300 font-semibold">{sisDeptName}</div>
+                            <div className="text-[8px] text-cyan-400 font-medium pt-1">Valid: July 2024 - June 2028</div>
+                          </div>
+                        </div>
+
+                        {/* Barcode Mock */}
+                        <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between border-t border-indigo-800/50 pt-2 text-[7px] text-indigo-400">
+                          <span>EMERGENCY: {selectedSisStudent.parentPhone || "9876543211"}</span>
+                          <div className="flex flex-col items-end">
+                            <div className="w-16 h-4 bg-white/10 rounded-xs flex items-center justify-evenly py-0.5 px-1 font-mono tracking-widest text-[5px]">
+                              ||||| | |||
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => toast.success(`Student ID Card triggered for print! (Roll No: ${selectedSisStudent.rollNumber})`)}
+                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-soft"
+                      >
+                        <CreditCard className="size-4" /> Print ID Card
+                      </button>
+                    </div>
+                  )}
+
+                  {sisTab === "alumni" && (
+                    <div className="space-y-4">
+                      <div className="p-4 border rounded-2xl bg-slate-50 space-y-4 text-xs">
+                        <div>
+                          <h4 className="font-bold text-slate-800">Alumni Graduation Records</h4>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">Toggle student cohort categorization to mark graduation and place placement tracks.</p>
+                        </div>
+
+                        <div className="flex items-center justify-between p-3 border bg-background rounded-xl">
+                          <div className="space-y-0.5">
+                            <div className="font-bold text-slate-700">Cohort Category</div>
+                            <div className="text-[10px] text-muted-foreground">Mark student as graduated alumnus.</div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              toast.success(`${selectedSisStudent.fullName} marked as Alumnus!`);
+                              setSelectedSisStudent((prev: any) => ({ ...prev, year: 4, semester: 8 }));
+                            }}
+                            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-[10px] transition cursor-pointer"
+                          >
+                            Promote to Alumnus
+                          </button>
+                        </div>
+
+                        <div className="space-y-3 pt-2">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <span className="text-[9px] font-bold text-muted-foreground uppercase">Graduation Batch</span>
+                              <div className="font-bold text-slate-800 mt-0.5">Class of 2028 (Expected)</div>
+                            </div>
+                            <div>
+                              <span className="text-[9px] font-bold text-muted-foreground uppercase">Career Track Placement</span>
+                              <div className="font-semibold text-slate-700 mt-0.5">Not Placed Yet</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t bg-muted/20 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSisStudent(null)}
+                  className="px-4 py-2 rounded-xl border text-muted-foreground text-xs font-semibold hover:bg-accent transition cursor-pointer"
+                >
+                  Close Portal
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

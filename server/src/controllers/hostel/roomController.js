@@ -2,11 +2,13 @@ import { supabase } from '../../config/supabase.js';
 
 export async function listRooms(req, res) {
   try {
-    // include block info
-    const { data, error } = await supabase
-      .from('hostel_rooms')
-      .select('*, hostel_blocks(name, code)')
-      .order('room_number', { ascending: true });
+    const { blockId, hostelId } = req.query;
+    let query = supabase.from('hostel_rooms').select('*, hostel_blocks(name, code)');
+    
+    if (blockId) query = query.eq('block_id', blockId);
+    if (hostelId) query = query.eq('hostel_id', hostelId);
+
+    const { data, error } = await query.order('room_number', { ascending: true });
     if (error) throw error;
     res.json({ rooms: data });
   } catch (err) {

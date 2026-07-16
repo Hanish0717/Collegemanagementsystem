@@ -553,6 +553,19 @@ CREATE TABLE IF NOT EXISTS hostel_visitors (
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS hostel_attendance (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+  hostel_id uuid REFERENCES hostels(id) ON DELETE CASCADE,
+  room_id uuid REFERENCES hostel_rooms(id) ON DELETE CASCADE,
+  attendance_date date NOT NULL,
+  status varchar(50) DEFAULT 'Present' CHECK (status IN ('Present', 'Absent', 'On Leave')),
+  remarks text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  UNIQUE(student_id, attendance_date)
+);
+
 -- 3. Create Transport Tables
 CREATE TABLE IF NOT EXISTS buses (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),

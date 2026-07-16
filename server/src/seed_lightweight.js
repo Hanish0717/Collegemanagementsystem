@@ -382,7 +382,8 @@ export const seedIfNeeded = async () => {
 
   const client = new Client({
     connectionString,
-    ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
+    ssl: isLocalDatabase ? false : { rejectUnauthorized: false },
+    connectionTimeoutMillis: 3000
   });
 
   try {
@@ -590,6 +591,10 @@ export const seedIfNeeded = async () => {
   } catch (err) {
     console.error("❌ Lightweight seeding failed:", err);
   } finally {
-    await client.end();
+    try {
+      await client.end();
+    } catch (e) {
+      // Ignore end failure if never connected
+    }
   }
 };

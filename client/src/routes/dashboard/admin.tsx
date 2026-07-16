@@ -3,8 +3,23 @@ import { AdminDashboard } from "@/pages/admin/AdminDashboard";
 import { getStoredUser } from "@/services/authService";
 
 export const Route = createFileRoute("/dashboard/admin")({
-  beforeLoad: () => {
+  beforeLoad: ({ location }) => {
     const user = getStoredUser();
+    
+    // Allow access to shared LMS and Grievance routes
+    const isLms = location.pathname.includes("/dashboard/admin/lms");
+    const isGrievance = location.pathname.includes("/dashboard/admin/grievance");
+    
+    if (isLms) {
+      const allowedLms = ["student", "faculty", "admin", "super-admin", "principal", "dean", "hod", "exam-cell", "accounts"];
+      if (user && allowedLms.includes(user.role)) return;
+    }
+    
+    if (isGrievance) {
+      const allowedGrievance = ["student", "parent", "faculty", "admin", "super-admin", "principal", "dean", "hod", "exam-cell", "accounts"];
+      if (user && allowedGrievance.includes(user.role)) return;
+    }
+
     const allowedRoles = [
       "admin",
       "super-admin",

@@ -5,11 +5,20 @@ import pkg from 'pg';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dns from 'dns/promises';
+import * as dns from 'dns/promises';
+import * as net from 'net';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dbFilePath = path.join(__dirname, 'mock_db.json');
+
+const debugLog = (msg) => {
+  try {
+    fs.appendFileSync(path.join(__dirname, '..', '..', 'debug_startup.txt'), `[${new Date().toISOString()}] ${msg}\n`);
+  } catch (e) {}
+};
+
+debugLog("Supabase.js module loading starting");
 
 dotenv.config();
 
@@ -27,17 +36,60 @@ let isMockMode = (!databaseUrl || databaseUrl.includes('your_supabase_postgresql
                    (!supabaseUrl || supabaseUrl.includes('your-project') || supabaseUrl.includes('placeholder')) ||
                    process.env.FORCE_MOCK_MODE === 'true';
 
+debugLog("databaseUrl: " + databaseUrl + ", isMockMode: " + isMockMode);
+
 if (!isMockMode && databaseUrl) {
   try {
-    const host = databaseUrl.split('@')[1]?.split(':')[0]?.split('/')[0];
+    const hostParts = databaseUrl.split('@')[1]?.split('/')[0]?.split(':');
+    const host = hostParts?.[0];
+    const port = hostParts?.[1] ? parseInt(hostParts[1], 10) : 5432;
+    debugLog("Starting database TCP check for host: " + host + ", port: " + port);
     if (host) {
+      // 1. Resolve DNS
       await Promise.race([
         dns.lookup(host),
         new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500))
       ]);
+
+      // 2. Check if TCP port is reachable
+      const portReachable = await new Promise((resolve) => {
+        const socket = new net.Socket();
+        let isResolved = false;
+
+        const cleanup = () => {
+          socket.removeAllListeners('connect');
+          socket.removeAllListeners('timeout');
+          socket.on('error', () => {});
+          socket.destroy();
+        };
+
+        const done = (status) => {
+          if (isResolved) return;
+          isResolved = true;
+          cleanup();
+          resolve(status);
+        };
+
+        socket.setTimeout(1500);
+        socket.once('connect', () => done(true));
+        socket.once('timeout', () => done(false));
+        socket.once('error', () => done(false));
+        
+        try {
+          socket.connect(port, host);
+        } catch (e) {
+          done(false);
+        }
+      });
+
+      if (!portReachable) {
+        throw new Error(`TCP port ${port} is unreachable`);
+      }
+      debugLog("TCP check succeeded!");
     }
   } catch (err) {
-    console.log("⚠️ Database host is unreachable (e.g. company wifi restriction). Automatically enabling DATABASE MOCK MODE.");
+    debugLog("TCP check error: " + err.message + ", stack: " + err.stack);
+    console.log("⚠️ Database host or port is unreachable (e.g. company wifi restriction). Automatically enabling DATABASE MOCK MODE.");
     isMockMode = true;
     process.env.FORCE_MOCK_MODE = 'true';
   }
@@ -89,7 +141,7 @@ if (isMockMode) {
       { id: 'a1111111-1111-1111-1111-111111111111', user_id: '22222222-2222-2222-2222-222222222222', full_name: 'System Admin', email: 'admin@college.com', employee_id: 'ADM001', department: 'CSE', is_active: true }
     ],
     faculty: [
-      { id: 'f1111111-1111-1111-1111-111111111111', user_id: '33333333-3333-3333-3333-333333333333', full_name: 'Dr. John Smith', email: 'faculty@college.com', employee_id: 'FAC2020001', department: 'CSE', designation: 'Associate Professor', experience: 12, gender: 'Male', phone_number: '9876543212', status: 'Active', is_active: true }
+      { id: 'f1111111-1111-1111-1111-111111111111', user_id: '33333333-3333-3333-3333-333333333333', full_name: 'Dr. John Smith', email: 'faculty@college.com', employee_id: 'FAC2020001', department: 'CSE', designation: 'Associate Professor', experience: 12, gender: 'Male', phone_number: '9876543212', status: 'Active', attendance_percentage: 95.0, is_active: true }
     ],
     books: [
       { id: 'b1111111-1111-1111-1111-111111111111', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', isbn: '9780262033848', category: 'Computer Science', quantity: 5, available_quantity: 4, shelf_location: 'CS-03', publisher: 'MIT Press', edition: '3rd', language: 'English', description: 'The bible of algorithms.', is_active: true },
@@ -125,7 +177,12 @@ if (isMockMode) {
       { id: 't1111111-1111-1111-1111-111111111111', day: 'Monday', start_time: '09:00 AM', end_time: '10:00 AM', subject: 'Data Structures', faculty_name: 'Dr. John Smith', room: 'LH-101', department: 'CSE', year: 3, semester: 5, section: 'A' },
       { id: 't2222222-2222-2222-2222-222222222222', day: 'Monday', start_time: '10:00 AM', end_time: '11:00 AM', subject: 'Database Systems', faculty_name: 'Dr. John Smith', room: 'LH-101', department: 'CSE', year: 3, semester: 5, section: 'A' }
     ],
-    otps: []
+    otps: [],
+    faculty_attendance: [
+      { id: 'fa111111-1111-1111-1111-111111111111', faculty: 'f1111111-1111-1111-1111-111111111111', date: '2026-05-28', status: 'present', remarks: 'On duty' },
+      { id: 'fa222222-2222-2222-2222-222222222222', faculty: 'f1111111-1111-1111-1111-111111111111', date: '2026-05-27', status: 'present', remarks: '' },
+      { id: 'fa333333-3333-3333-3333-333333333333', faculty: 'f1111111-1111-1111-1111-111111111111', date: '2026-05-26', status: 'absent', remarks: 'Sick leave' }
+    ]
   };
 
   const loadDb = () => {
@@ -445,7 +502,8 @@ if (isMockMode) {
 
   const pool = new Pool({
     connectionString: databaseUrl,
-    ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
+    ssl: isLocalDatabase ? false : { rejectUnauthorized: false },
+    connectionTimeoutMillis: 3000
   });
 
   class PostgresQueryBuilder {
@@ -854,6 +912,8 @@ if (isMockMode) {
     }
   };
 }
+
+debugLog("Supabase.js module loading completed successfully!");
 
 export const supabase = activeSupabaseClient;
 export { isMockMode };

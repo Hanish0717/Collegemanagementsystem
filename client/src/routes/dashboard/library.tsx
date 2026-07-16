@@ -5,7 +5,19 @@ import { getStoredUser } from "@/services/authService";
 export const Route = createFileRoute("/dashboard/library")({
   beforeLoad: () => {
     const user = getStoredUser();
-    if (!user || user.role !== "librarian") {
+    const allowedRoles = [
+      "student",
+      "faculty",
+      "librarian",
+      "admin",
+      "super-admin",
+      "principal",
+      "dean",
+      "hod",
+      "exam-cell",
+      "accounts"
+    ];
+    if (!user || !allowedRoles.includes(user.role)) {
       throw redirect({ to: "/dashboard" });
     }
   },

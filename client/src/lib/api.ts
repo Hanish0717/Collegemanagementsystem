@@ -5,6 +5,14 @@ import { toast } from "sonner";
 const getApiBaseUrl = () => {
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
+    // Support tunnel services (localtunnel / ngrok)
+    if (hostname && hostname.includes("loca.lt")) {
+      return "https://loud-things-accept.loca.lt";
+    }
+    if (hostname && (hostname.includes("ngrok-free.app") || hostname.includes("ngrok.io"))) {
+      // When using ngrok, replace this with your backend ngrok tunnel URL
+      return "YOUR_BACKEND_NGROK_URL";
+    }
     // Map localhost/127.0.0.1 to localhost, otherwise use current LAN IP/hostname
     if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
       return `http://${hostname}:5000`;

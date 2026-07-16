@@ -1,0 +1,6 @@
+[2026-07-16T13:11:01.320Z] Supabase.js module loading starting
+[2026-07-16T13:11:01.328Z] databaseUrl: postgresql://postgres:RAMESH143.b21@db.rdzitvvxxdhtbzzqoasd.supabase.co:5432/postgres, isMockMode: false
+[2026-07-16T13:11:01.329Z] Starting database TCP check for host: db.rdzitvvxxdhtbzzqoasd.supabase.co, port: 5432
+[2026-07-16T13:11:02.812Z] TCP check error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co, stack: Error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:internal/dns/promises:88:17)
+[2026-07-16T13:11:02.993Z] Supabase.js module loading completed successfully!
