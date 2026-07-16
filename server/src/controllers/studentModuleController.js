@@ -1,33 +1,52 @@
 import { supabase } from '../config/supabase.js';
 
-// Helper to get student's profile by email
-const getProfile = async (email) => {
-  if (!email) return null;
-  const cleanEmail = email.toLowerCase().trim();
-  const { data } = await supabase
-    .from('students')
-    .select('*')
-    .ilike('email', cleanEmail)
-    .eq('is_active', true)
-    .maybeSingle();
+const formatProfile = (data) => {
+  if (!data) return null;
+  return {
+    ...data,
+    _id: data.id,
+    fullName: data.full_name,
+    rollNumber: data.roll_number,
+    admissionNumber: data.admission_number,
+    phoneNumber: data.phone_number,
+    dateOfBirth: data.date_of_birth,
+    parentName: data.parent_name,
+    parentPhone: data.parent_phone,
+    parentEmail: data.parent_email,
+    attendancePercentage: data.attendance_percentage,
+    profileImage: data.profile_image,
+    isActive: data.is_active
+  };
+};
 
-  if (data) {
-    return {
-      ...data,
-      _id: data.id,
-      fullName: data.full_name,
-      rollNumber: data.roll_number,
-      admissionNumber: data.admission_number,
-      phoneNumber: data.phone_number,
-      dateOfBirth: data.date_of_birth,
-      parentName: data.parent_name,
-      parentPhone: data.parent_phone,
-      parentEmail: data.parent_email,
-      attendancePercentage: data.attendance_percentage,
-      profileImage: data.profile_image,
-      isActive: data.is_active
-    };
+const getProfile = async (userId, email) => {
+  if (userId) {
+    const { data: byUserId } = await supabase
+      .from('students')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (byUserId) {
+      return formatProfile(byUserId);
+    }
   }
+
+  if (email) {
+    const cleanEmail = email.toLowerCase().trim();
+    const { data: byEmail } = await supabase
+      .from('students')
+      .select('*')
+      .ilike('email', cleanEmail)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (byEmail) {
+      return formatProfile(byEmail);
+    }
+  }
+
   return null;
 };
 
@@ -36,7 +55,7 @@ const getProfile = async (email) => {
 // @access  Private (student)
 export const getStudentDashboard = async (req, res, next) => {
   try {
-    const profile = await getProfile(req.user.email);
+    const profile = await getProfile(req.user.id || req.user._id, req.user.email);
     
     let cgpa = profile ? profile.cgpa : 3.5;
     let attendancePct = profile ? profile.attendancePercentage : 85;
@@ -274,7 +293,7 @@ export const getStudentDashboard = async (req, res, next) => {
 // @access  Private (student)
 export const getStudentTimetable = async (req, res, next) => {
   try {
-    const profile = await getProfile(req.user.email);
+    const profile = await getProfile(req.user.id || req.user._id, req.user.email);
     const { data: slots } = await supabase
       .from('timetable')
       .select('*')
@@ -319,7 +338,7 @@ export const getStudentResults = async (req, res, next) => {
 // @access  Private (student)
 export const getStudentAssignments = async (req, res, next) => {
   try {
-    const profile = await getProfile(req.user.email);
+    const profile = await getProfile(req.user.id || req.user._id, req.user.email);
     const { data: assignments } = await supabase
       .from('assignments')
       .select('*')
@@ -441,7 +460,7 @@ export const submitAssignment = async (req, res, next) => {
 // @access  Private (student)
 export const getStudentMaterials = async (req, res, next) => {
   try {
-    const profile = await getProfile(req.user.email);
+    const profile = await getProfile(req.user.id || req.user._id, req.user.email);
     let query = supabase.from('study_materials').select('*');
     
     // Scoping to student's specific cohort if they have a student profile
@@ -708,7 +727,7 @@ export const createStudentComplaint = async (req, res, next) => {
 // @access  Private (student)
 export const getStudentNotifications = async (req, res, next) => {
   try {
-    const profile = await getProfile(req.user.email);
+    const profile = await getProfile(req.user.id || req.user._id, req.user.email);
     let isHostelStudent = false;
     let isBusStudent = false;
 

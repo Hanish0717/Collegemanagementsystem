@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { CreditCard, DollarSign } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import api from "@/lib/api";
+import { resolveStudentProfile } from "@/services/studentProfileService";
 
 export function StudentFees() {
   const [fees, setFees] = useState<any[]>([]);
@@ -21,26 +22,13 @@ export function StudentFees() {
   const fetchFees = async () => {
     setLoading(true);
     try {
-      let profileStr = localStorage.getItem("cms_student_profile");
-      let profile = profileStr ? JSON.parse(profileStr) : null;
-
-      if (!profile || !profile._id) {
-        const dashRes = await api.get("/api/student-module/dashboard");
-        if (dashRes.data?.success && dashRes.data?.data?.profile) {
-          profile = dashRes.data.data.profile;
-          localStorage.setItem("cms_student_profile", JSON.stringify(profile));
-        }
-      }
-
-      if (!profile || !profile._id) {
+      const profile = await resolveStudentProfile();
+      if (!profile || !(profile._id || profile.id)) {
         setLoading(false);
         return;
       }
 
       const studentId = profile._id || profile.id;
-
-      if (!studentId) return;
-
       const res = await api.get(`/api/fees/student/${studentId}`);
       if (res.data?.success && res.data?.data) {
         const { fees: dbFees, summary } = res.data.data;

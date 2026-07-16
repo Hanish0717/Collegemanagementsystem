@@ -2457,3 +2457,108 @@ Stack: error: relation "transport_routes" does not exist
     at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
 Body: {}
 
+[2026-06-06T01:15:20.437Z] [assignFaculty] Started with body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["ML -2"],"assignedSubjects":["AM501"]}
+[2026-06-06T01:15:20.439Z] [assignFaculty] Searching for faculty with ID: 9c68caaf-5d1f-4d06-b443-b56103a27334
+[2026-06-06T01:15:20.537Z] [assignFaculty] Found faculty: Prof. Alan Turing, department: AIML
+[2026-06-06T01:15:20.641Z] [assignFaculty] Admin checks - isGlobalAdmin: false, adminProfileDept: Artificial Intelligence & Machine Learning
+[2026-06-06T01:15:20.641Z] [assignFaculty] Access denied: department mismatch
+[2026-06-06T01:15:20.642Z] [assignFaculty] Catch block caught error: Access denied: You can only assign faculty in your assigned department
+Stack: Error: Access denied: You can only assign faculty in your assigned department
+    at assignFaculty (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/adminController.js:546:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[2026-06-06T01:15:20.647Z] POST /api/admin/assignments - Status: 403 - Error: Access denied: You can only assign faculty in your assigned department
+Stack: Error: Access denied: You can only assign faculty in your assigned department
+    at assignFaculty (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/adminController.js:546:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["ML -2"],"assignedSubjects":["AM501"]}
+
+[2026-06-06T01:22:12.605Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"aman","rollNumber":"Ml2044","email":"lokeshkotni633@gmail.com","phoneNumber":"1122334","gender":"Male","department":"CSE","year":4,"semester":8,"section":"A","parentName":"expired","parentPhone":"no","parentEmail":"lokeshkotni633@gmail.com","password":"qmqn@1223","collegeFee":90000}
+
+[2026-06-06T01:22:18.655Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"aman","rollNumber":"Ml2044","email":"lokeshkotni633@gmail.com","phoneNumber":"1122334","gender":"Male","department":"CSE","year":4,"semester":8,"section":"A","parentName":"expired","parentPhone":"no","parentEmail":"lokeshkotni633@gmail.com","password":"qmqn@1223","collegeFee":90000}
+
+[2026-06-06T01:23:57.974Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Lokesh Kotni","rollNumber":"ML210","email":"lokeshkotni633@gmail.com","phoneNumber":"11111111111","gender":"Male","department":"ECE","year":3,"semester":6,"section":"A","parentName":"chandra","parentPhone":"1111111111","parentEmail":"lokeshotni633@gmail.com","password":"lk","collegeFee":80000}
+
+[2026-06-06T01:24:05.446Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Lokesh Kotni","rollNumber":"ML210","email":"lokeshkotni633@gmail.com","phoneNumber":"11111111111","gender":"Male","department":"ECE","year":3,"semester":6,"section":"A","parentName":"chandra","parentPhone":"1111111111","parentEmail":"lokeshotni633@gmail.com","password":"lk","collegeFee":80000}
+
+[2026-06-06T01:24:07.011Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Lokesh Kotni","rollNumber":"ML210","email":"lokeshkotni633@gmail.com","phoneNumber":"11111111111","gender":"Male","department":"ECE","year":3,"semester":6,"section":"A","parentName":"chandra","parentPhone":"1111111111","parentEmail":"lokeshotni633@gmail.com","password":"lk","collegeFee":80000}
+
+[2026-06-06T01:24:07.393Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Lokesh Kotni","rollNumber":"ML210","email":"lokeshkotni633@gmail.com","phoneNumber":"11111111111","gender":"Male","department":"ECE","year":3,"semester":6,"section":"A","parentName":"chandra","parentPhone":"1111111111","parentEmail":"lokeshotni633@gmail.com","password":"lk","collegeFee":80000}
+
+[2026-06-06T01:24:07.700Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Lokesh Kotni","rollNumber":"ML210","email":"lokeshkotni633@gmail.com","phoneNumber":"11111111111","gender":"Male","department":"ECE","year":3,"semester":6,"section":"A","parentName":"chandra","parentPhone":"1111111111","parentEmail":"lokeshotni633@gmail.com","password":"lk","collegeFee":80000}
+
+[2026-06-06T01:24:08.007Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Lokesh Kotni","rollNumber":"ML210","email":"lokeshkotni633@gmail.com","phoneNumber":"11111111111","gender":"Male","department":"ECE","year":3,"semester":6,"section":"A","parentName":"chandra","parentPhone":"1111111111","parentEmail":"lokeshotni633@gmail.com","password":"lk","collegeFee":80000}
+
+[2026-06-06T01:24:08.242Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Lokesh Kotni","rollNumber":"ML210","email":"lokeshkotni633@gmail.com","phoneNumber":"11111111111","gender":"Male","department":"ECE","year":3,"semester":6,"section":"A","parentName":"chandra","parentPhone":"1111111111","parentEmail":"lokeshotni633@gmail.com","password":"lk","collegeFee":80000}
+
+[2026-06-06T01:31:29.562Z] [assignFaculty] Started with body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["ML-A","ML-B"],"assignedSubjects":["AM501"]}
+[2026-06-06T01:31:29.563Z] [assignFaculty] Searching for faculty with ID: 9c68caaf-5d1f-4d06-b443-b56103a27334
+[2026-06-06T01:31:29.765Z] [assignFaculty] Found faculty: Prof. Alan Turing, department: AIML
+[2026-06-06T01:31:29.868Z] [assignFaculty] Admin checks - isGlobalAdmin: false, adminProfileDept: Artificial Intelligence & Machine Learning
+[2026-06-06T01:31:29.869Z] [assignFaculty] Access denied: department mismatch
+[2026-06-06T01:31:29.870Z] [assignFaculty] Catch block caught error: Access denied: You can only assign faculty in your assigned department
+Stack: Error: Access denied: You can only assign faculty in your assigned department
+    at assignFaculty (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/adminController.js:546:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[2026-06-06T01:31:29.872Z] POST /api/admin/assignments - Status: 403 - Error: Access denied: You can only assign faculty in your assigned department
+Stack: Error: Access denied: You can only assign faculty in your assigned department
+    at assignFaculty (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/adminController.js:546:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["ML-A","ML-B"],"assignedSubjects":["AM501"]}
+
+[2026-06-06T01:41:05.878Z] POST /api/students - Status: 400 - Error: User account with this email already exists in system
+Stack: Error: User account with this email already exists in system
+    at createStudent (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/studentController.js:194:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"fullName":"Aman guptha kumar","rollNumber":"Ml201","email":"lokeshkoni633@gmail.com","phoneNumber":"12345656","gender":"Male","department":"AIML","year":4,"semester":8,"section":"A","parentName":"Rupesh","parentPhone":"1234567654","parentEmail":"lokeshkotni33@gmail.com","password":"lokesh","collegeFee":95000}
+
+[2026-06-06T01:42:04.891Z] [assignFaculty] Started with body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["ML-A"],"assignedSubjects":["AM502"]}
+[2026-06-06T01:42:04.892Z] [assignFaculty] Searching for faculty with ID: 9c68caaf-5d1f-4d06-b443-b56103a27334
+[2026-06-06T01:42:04.985Z] [assignFaculty] Found faculty: Prof. Alan Turing, department: AIML
+[2026-06-06T01:42:05.085Z] [assignFaculty] Admin checks - isGlobalAdmin: false, adminProfileDept: Artificial Intelligence & Machine Learning
+[2026-06-06T01:42:05.086Z] [assignFaculty] Access denied: department mismatch
+[2026-06-06T01:42:05.087Z] [assignFaculty] Catch block caught error: Access denied: You can only assign faculty in your assigned department
+Stack: Error: Access denied: You can only assign faculty in your assigned department
+    at assignFaculty (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/adminController.js:546:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+[2026-06-06T01:42:05.089Z] POST /api/admin/assignments - Status: 403 - Error: Access denied: You can only assign faculty in your assigned department
+Stack: Error: Access denied: You can only assign faculty in your assigned department
+    at assignFaculty (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/adminController.js:546:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["ML-A"],"assignedSubjects":["AM502"]}
+

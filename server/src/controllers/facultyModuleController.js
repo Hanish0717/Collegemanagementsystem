@@ -589,29 +589,70 @@ export const getStudentPerformance = async (req, res, next) => {
       .select('*')
       .eq('is_active', true);
 
-    if (!students) {
+    if (!students || students.length === 0) {
       return res.status(200).json({ success: true, data: [] });
     }
 
     const performanceList = [];
 
-    for (const student of students) {
-      const { data: userRecord } = await supabase
+    // Extract all unique non-empty student emails
+    const studentEmails = [...new Set(students
+      .map(s => s.email)
+      .filter(email => typeof email === 'string' && email.trim() !== '')
+      .map(email => email.toLowerCase().trim())
+    )];
+
+    const emailToUserMap = new Map();
+    const studentResultsMap = new Map();
+
+    if (studentEmails.length > 0) {
+      // Fetch user records in one query
+      const { data: users } = await supabase
         .from('users')
-        .select('*')
-        .eq('email', student.email)
-        .maybeSingle();
+        .select('id, email')
+        .in('email', studentEmails);
 
+      if (users && users.length > 0) {
+        users.forEach(u => {
+          if (u.email && u.id) {
+            emailToUserMap.set(u.email.toLowerCase().trim(), u.id);
+          }
+        });
+
+        // Collect all matching user IDs
+        const userIds = Array.from(emailToUserMap.values());
+
+        if (userIds.length > 0) {
+          // Fetch results for all these users in one query
+          const { data: results } = await supabase
+            .from('results')
+            .select('student, marks')
+            .in('student', userIds);
+
+          if (results && results.length > 0) {
+            results.forEach(r => {
+              if (r.student && r.marks !== undefined) {
+                if (!studentResultsMap.has(r.student)) {
+                  studentResultsMap.set(r.student, []);
+                }
+                studentResultsMap.get(r.student).push(Number(r.marks));
+              }
+            });
+          }
+        }
+      }
+    }
+
+    for (const student of students) {
+      const cleanEmail = student.email ? student.email.toLowerCase().trim() : '';
+      const userId = emailToUserMap.get(cleanEmail);
       let avgMarks = 0;
-      if (userRecord) {
-        const { data: results } = await supabase
-          .from('results')
-          .select('*')
-          .eq('student', userRecord.id);
 
-        if (results && results.length > 0) {
-          const sum = results.reduce((s, r) => s + r.marks, 0);
-          avgMarks = Math.round(sum / results.length);
+      if (userId) {
+        const marksList = studentResultsMap.get(userId);
+        if (marksList && marksList.length > 0) {
+          const sum = marksList.reduce((s, m) => s + m, 0);
+          avgMarks = Math.round(sum / marksList.length);
         }
       }
 

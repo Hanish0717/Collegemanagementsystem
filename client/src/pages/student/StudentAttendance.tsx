@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { AlertTriangle, CheckCircle, HelpCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 import api from "@/lib/api";
+import { resolveStudentProfile } from "@/services/studentProfileService";
 
 export function StudentAttendance() {
   const [records, setRecords] = useState<any[]>([]);
@@ -12,7 +13,7 @@ export function StudentAttendance() {
     { label: "Overall Attendance", value: "0%", tone: "success" as const },
     { label: "Present Days", value: "0", tone: "info" as const },
     { label: "Absent Days", value: "0", tone: "danger" as const },
-    { label: "Total Classes", value: "0", tone: "success" as const },
+    { label: "Total Conducted", value: "0", tone: "success" as const },
   ]);
   const [loading, setLoading] = useState(true);
 
@@ -29,24 +30,13 @@ export function StudentAttendance() {
     const fetchAttendance = async () => {
       setLoading(true);
       try {
-        let profileStr = localStorage.getItem("cms_student_profile");
-        let profile = profileStr ? JSON.parse(profileStr) : null;
+        const profile = await resolveStudentProfile();
 
-        if (!profile || !profile._id) {
-          const dashRes = await api.get("/api/student-module/dashboard");
-          if (dashRes.data?.success && dashRes.data?.data?.profile) {
-            profile = dashRes.data.data.profile;
-            localStorage.setItem("cms_student_profile", JSON.stringify(profile));
-          }
-        }
-
-        if (!profile || !profile._id) {
+        if (!profile || !(profile._id || profile.id)) {
           setLoading(false);
           return;
         }
         const studentId = profile._id || profile.id;
-
-        if (!studentId) return;
 
         const res = await api.get(`/api/attendance/student/${studentId}`);
         if (res.data?.success && res.data?.data) {
