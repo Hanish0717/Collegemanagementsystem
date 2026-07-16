@@ -37,6 +37,19 @@ async function runMigrations() {
       ALTER TABLE students ADD COLUMN IF NOT EXISTS admission_number varchar(100);
       ALTER TABLE users ADD COLUMN IF NOT EXISTS temp_password varchar(255);
       ALTER TABLE faculty ADD COLUMN IF NOT EXISTS user_id uuid;
+      ALTER TABLE faculty ADD COLUMN IF NOT EXISTS attendance_percentage numeric(5, 2) DEFAULT 100.00;
+
+      -- Create faculty_attendance table
+      CREATE TABLE IF NOT EXISTS faculty_attendance (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        faculty uuid REFERENCES faculty(id) ON DELETE CASCADE,
+        date date NOT NULL,
+        status varchar(50) DEFAULT 'Present',
+        remarks text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        UNIQUE(faculty, date)
+      );
 
       -- Add period and time columns to attendance if not exist
       ALTER TABLE attendance ADD COLUMN IF NOT EXISTS period integer;

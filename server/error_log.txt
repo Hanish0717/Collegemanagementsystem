@@ -2461,4 +2461,8 @@ Body: {}
 
 [2026-07-16T12:20:13.905Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"student@college.com","password":"password@123"}
 
+
 [2026-07-16T12:58:12.929Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"warden@college.com","password":"passwor123"}
+
+[2026-07-16T13:01:03.205Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"faculty@college.com","password":"password"}
+

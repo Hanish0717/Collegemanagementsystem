@@ -141,7 +141,7 @@ if (isMockMode) {
       { id: 'a1111111-1111-1111-1111-111111111111', user_id: '22222222-2222-2222-2222-222222222222', full_name: 'System Admin', email: 'admin@college.com', employee_id: 'ADM001', department: 'CSE', is_active: true }
     ],
     faculty: [
-      { id: 'f1111111-1111-1111-1111-111111111111', user_id: '33333333-3333-3333-3333-333333333333', full_name: 'Dr. John Smith', email: 'faculty@college.com', employee_id: 'FAC2020001', department: 'CSE', designation: 'Associate Professor', experience: 12, gender: 'Male', phone_number: '9876543212', status: 'Active', is_active: true }
+      { id: 'f1111111-1111-1111-1111-111111111111', user_id: '33333333-3333-3333-3333-333333333333', full_name: 'Dr. John Smith', email: 'faculty@college.com', employee_id: 'FAC2020001', department: 'CSE', designation: 'Associate Professor', experience: 12, gender: 'Male', phone_number: '9876543212', status: 'Active', attendance_percentage: 95.0, is_active: true }
     ],
     books: [
       { id: 'b1111111-1111-1111-1111-111111111111', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', isbn: '9780262033848', category: 'Computer Science', quantity: 5, available_quantity: 4, shelf_location: 'CS-03', publisher: 'MIT Press', edition: '3rd', language: 'English', description: 'The bible of algorithms.', is_active: true },
@@ -177,7 +177,12 @@ if (isMockMode) {
       { id: 't1111111-1111-1111-1111-111111111111', day: 'Monday', start_time: '09:00 AM', end_time: '10:00 AM', subject: 'Data Structures', faculty_name: 'Dr. John Smith', room: 'LH-101', department: 'CSE', year: 3, semester: 5, section: 'A' },
       { id: 't2222222-2222-2222-2222-222222222222', day: 'Monday', start_time: '10:00 AM', end_time: '11:00 AM', subject: 'Database Systems', faculty_name: 'Dr. John Smith', room: 'LH-101', department: 'CSE', year: 3, semester: 5, section: 'A' }
     ],
-    otps: []
+    otps: [],
+    faculty_attendance: [
+      { id: 'fa111111-1111-1111-1111-111111111111', faculty: 'f1111111-1111-1111-1111-111111111111', date: '2026-05-28', status: 'present', remarks: 'On duty' },
+      { id: 'fa222222-2222-2222-2222-222222222222', faculty: 'f1111111-1111-1111-1111-111111111111', date: '2026-05-27', status: 'present', remarks: '' },
+      { id: 'fa333333-3333-3333-3333-333333333333', faculty: 'f1111111-1111-1111-1111-111111111111', date: '2026-05-26', status: 'absent', remarks: 'Sick leave' }
+    ]
   };
 
   const loadDb = () => {

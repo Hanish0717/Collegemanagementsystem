@@ -263,6 +263,7 @@
       "gender": "Male",
       "phone_number": "9876543212",
       "status": "Active",
+      "attendance_percentage": 95,
       "is_active": true
     }
   ],
@@ -621,6 +622,7 @@
       "unread": true
     }
   ],
+
   "hostels": [
     {
       "id": "h1111111-1111-1111-1111-111111111111",
@@ -870,7 +872,30 @@
       "status": "Active",
       "notes": "Default AC block structure",
       "created_at": "2026-07-16T12:39:06.003Z",
-      "updated_at": "2026-07-16T12:39:06.003Z"
+    }
+  ],
+  "faculty_attendance": [
+    {
+      "id": "fa111111-1111-1111-1111-111111111111",
+      "faculty": "f1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-28",
+      "status": "present",
+      "remarks": "On duty"
+    },
+    {
+      "id": "fa222222-2222-2222-2222-222222222222",
+      "faculty": "f1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-27",
+      "status": "present",
+      "remarks": ""
+    },
+    {
+      "id": "fa333333-3333-3333-3333-333333333333",
+      "faculty": "f1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-26",
+      "status": "absent",
+      "remarks": "Sick leave"
+
     }
   ]
 }
