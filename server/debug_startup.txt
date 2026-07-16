@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2026-07-16T13:11:01.320Z] Supabase.js module loading starting
 [2026-07-16T13:11:01.328Z] databaseUrl: postgresql://postgres:RAMESH143.b21@db.rdzitvvxxdhtbzzqoasd.supabase.co:5432/postgres, isMockMode: false
 [2026-07-16T13:11:01.329Z] Starting database TCP check for host: db.rdzitvvxxdhtbzzqoasd.supabase.co, port: 5432
@@ -22,3 +23,18 @@
 [2026-07-16T13:37:07.193Z] TCP check error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co, stack: Error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co
     at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:internal/dns/promises:88:17)
 [2026-07-16T13:37:07.268Z] Supabase.js module loading completed successfully!
+=======
+[Logs Cleared]
+[2026-07-16T15:06:52.026Z] Supabase.js module loading starting
+[2026-07-16T15:06:52.028Z] databaseUrl: postgresql://postgres:RAMESH143.b21@db.rdzitvvxxdhtbzzqoasd.supabase.co:5432/postgres, isMockMode: false
+[2026-07-16T15:06:52.029Z] Starting database TCP check for host: db.rdzitvvxxdhtbzzqoasd.supabase.co, port: 5432
+[2026-07-16T15:06:52.741Z] TCP check error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co, stack: Error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:internal/dns/promises:88:17)
+[2026-07-16T15:06:52.820Z] Supabase.js module loading completed successfully!
+[2026-07-16T15:09:10.951Z] Supabase.js module loading starting
+[2026-07-16T15:09:10.954Z] databaseUrl: postgresql://postgres:RAMESH143.b21@db.rdzitvvxxdhtbzzqoasd.supabase.co:5432/postgres, isMockMode: false
+[2026-07-16T15:09:10.955Z] Starting database TCP check for host: db.rdzitvvxxdhtbzzqoasd.supabase.co, port: 5432
+[2026-07-16T15:09:11.625Z] TCP check error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co, stack: Error: getaddrinfo ENOTFOUND db.rdzitvvxxdhtbzzqoasd.supabase.co
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:internal/dns/promises:88:17)
+[2026-07-16T15:09:11.705Z] Supabase.js module loading completed successfully!
+>>>>>>> 738956c (UI Refactor: remove interactive workspace switcher dropdown in header)
