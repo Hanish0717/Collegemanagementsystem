@@ -9,12 +9,19 @@ import {
   CheckCircle,
   Clock,
   Plus,
-  ClipboardList
+  ClipboardList,
+  BarChart2
 } from "lucide-react";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 
 export function AdminCommunication() {
+  const [activeTab, setActiveTab] = useState<"broadcast" | "polls">("broadcast");
+
+  const [polls, setPolls] = useState([
+    { id: "POLL-01", question: "Rate the quality of online study materials", responses: 482, status: "Active", deadline: "2026-07-25" },
+    { id: "POLL-02", question: "Preferences for the winter vacation schedule", responses: 914, status: "Closed", deadline: "2026-07-10" }
+  ]);
   const [broadcastLogs, setBroadcastLogs] = useState([
     { id: "MSG-101", subject: "Odd Term Examinations Fee Deadline", target: "All Students", channel: "Portal Circular", sentCount: 5240, status: "Delivered", time: "2 hours ago" },
     { id: "MSG-102", subject: "Syllabus Audit Meeting - Dean Office", target: "All Faculty", channel: "Email & Push", sentCount: 342, status: "Delivered", time: "1 day ago" },
@@ -64,8 +71,30 @@ export function AdminCommunication() {
         title="Institutional Communication Hub"
         desc="Broadcast mass announcements, publish official circular directives, send parent SMS alerts, and audit WhatsApp system logs."
       />
+      {/* Tabs */}
+      <div className="flex border-b border-slate-200 overflow-x-auto mb-4">
+        {[
+          { id: "broadcast", label: "Announcement Center", icon: Bell },
+          { id: "polls", label: "Polls & Surveys", icon: BarChart2 }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-semibold transition cursor-pointer ${
+              activeTab === tab.id
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <tab.icon className="size-4" />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {activeTab === "broadcast" && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="SMS Alerts Sent"
           value="14,842 text alerts"
@@ -228,6 +257,100 @@ export function AdminCommunication() {
           </table>
         </div>
       </Card>
+        </>
+      )}
+
+      {/* POLLS & SURVEYS */}
+      {activeTab === "polls" && (
+        <div className="grid lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Institutional Feedback Surveys &amp; Student Polls</h3>
+            <div className="space-y-3.5">
+              {polls.map(poll => (
+                <div key={poll.id} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-indigo-700">{poll.id}</span>
+                      <span className="font-bold text-slate-800">{poll.question}</span>
+                    </div>
+                    <div className="text-slate-500 font-semibold">Total Submissions: {poll.responses} responses</div>
+                    <div className="text-[10px] text-slate-400 font-bold">Closing Deadline: {poll.deadline}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge tone={poll.status === "Active" ? "success" : "default"}>{poll.status}</Badge>
+                    {poll.status === "Active" && (
+                      <button
+                        onClick={() => {
+                          setPolls(prev => prev.map(p => p.id === poll.id ? { ...p, status: "Closed" } : p));
+                          toast.info("Feedback Poll status closed.");
+                        }}
+                        className="px-2 py-0.5 bg-slate-950 text-white rounded text-[10px] font-semibold cursor-pointer"
+                      >
+                        Close Poll
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Launch New Student Poll</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const question = (form.elements.namedItem("question") as HTMLInputElement).value;
+                const deadline = (form.elements.namedItem("deadline") as HTMLInputElement).value;
+
+                if (!question.trim() || !deadline) {
+                  toast.error("Please specify both question and deadline date!");
+                  return;
+                }
+
+                const newPoll = {
+                  id: `POLL-0${polls.length + 1}`,
+                  question,
+                  responses: 0,
+                  status: "Active",
+                  deadline
+                };
+                setPolls([...polls, newPoll]);
+                toast.success("New institutional feedback survey dispatched to student portals!");
+                form.reset();
+              }}
+              className="space-y-3.5"
+            >
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Poll Question / Title</label>
+                <input
+                  name="question"
+                  type="text"
+                  required
+                  placeholder="e.g. Preferences for the new library hours"
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Closing Date</label>
+                <input
+                  name="deadline"
+                  type="date"
+                  required
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Publish Feedback Poll
+              </button>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

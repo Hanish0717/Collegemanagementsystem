@@ -16,7 +16,9 @@ import {
   Unlock, 
   Save, 
   UserCheck,
-  Clock
+  Clock,
+  BookOpen,
+  Shield
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { toast } from "sonner";
@@ -75,7 +77,19 @@ interface MarkRow {
 
 export function AdminExams() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"overview" | "create" | "timetable" | "halltickets" | "results" | "analytics">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "create" | "timetable" | "qbank" | "invigilation" | "halltickets" | "results" | "analytics">("overview");
+
+  // Question Bank State
+  const [qbank, setQbank] = useState([
+    { id: "QB-01", subject: "Operating Systems", year: 3, semester: 5, uploadedBy: "Dr. Kumar Swamy", status: "Approved" },
+    { id: "QB-02", subject: "Database Management Systems", year: 3, semester: 5, uploadedBy: "Prof. Anitha Rao", status: "Under Review" }
+  ]);
+
+  // Invigilation/Duty Chart State
+  const [invigilationDuty, setInvigilationDuty] = useState([
+    { id: "DUTY-01", faculty: "Dr. Kumar Swamy", date: "2026-08-10", session: "Morning (09:30 AM)", hall: "Block-A / 101" },
+    { id: "DUTY-02", faculty: "Prof. Anitha Rao", date: "2026-08-11", session: "Afternoon (02:00 PM)", hall: "Block-B / 203" }
+  ]);
 
   // Selection states
   const [selectedExamId, setSelectedExamId] = useState<string>("");
@@ -437,6 +451,8 @@ export function AdminExams() {
           { id: "overview", label: "Dashboard & Exams", icon: LayoutDashboard },
           { id: "create", label: "Schedule Exam", icon: PlusCircle },
           { id: "timetable", label: "Timetable Builder", icon: Calendar },
+          { id: "qbank", label: "Question Bank", icon: BookOpen },
+          { id: "invigilation", label: "Invigilation Duty", icon: Shield },
           { id: "halltickets", label: "Hall Ticket Control", icon: UserCheck },
           { id: "results", label: "Results Publisher", icon: Award },
           { id: "analytics", label: "Exam Analytics", icon: PieChart }
@@ -849,6 +865,180 @@ export function AdminExams() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* QUESTION BANK MANAGEMENT */}
+      {activeTab === "qbank" && (
+        <Card>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-slate-800 text-sm">Question Bank Vault &amp; Peer Auditing</h3>
+            <Badge tone="info">Accreditation Audit Ready</Badge>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Record ID</th>
+                  <th className="text-left pb-2">Subject Course</th>
+                  <th className="text-center pb-2">Cohort (Year/Sem)</th>
+                  <th className="text-left pb-2">Uploaded By (Faculty)</th>
+                  <th className="text-center pb-2">Audit Status</th>
+                  <th className="text-right pb-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {qbank.map(row => (
+                  <tr key={row.id}>
+                    <td className="py-3 font-mono font-bold text-indigo-700">{row.id}</td>
+                    <td className="py-3 font-bold text-slate-800">{row.subject}</td>
+                    <td className="py-3 text-center">Y{row.year} / S{row.semester}</td>
+                    <td className="py-3 font-semibold text-slate-600">{row.uploadedBy}</td>
+                    <td className="py-3 text-center">
+                      <Badge tone={row.status === "Approved" ? "success" : "warn"}>
+                        {row.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3 text-right space-x-1.5">
+                      {row.status !== "Approved" ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setQbank(prev => prev.map(q => q.id === row.id ? { ...q, status: "Approved" } : q));
+                              toast.success(`Question Bank for ${row.subject} approved successfully!`);
+                            }}
+                            className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold cursor-pointer transition"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => {
+                              setQbank(prev => prev.map(q => q.id === row.id ? { ...q, status: "Rejected" } : q));
+                              toast.error(`Question Bank for ${row.subject} rejected/sent back for revision!`);
+                            }}
+                            className="px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold cursor-pointer transition"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-[10px] text-slate-400 font-bold">Locked &amp; Verified</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
+      {/* INVIGILATION DUTY CHART */}
+      {activeTab === "invigilation" && (
+        <div className="grid lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Invigilator Allocation &amp; Exam Hall Duties</h3>
+            <div className="space-y-3.5">
+              {invigilationDuty.map(duty => (
+                <div key={duty.id} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-indigo-700">{duty.id}</span>
+                      <span className="font-bold text-slate-800">{duty.faculty}</span>
+                    </div>
+                    <div className="text-slate-500 font-semibold">Date: {duty.date} | Session: {duty.session}</div>
+                    <div className="text-[10px] text-slate-400 font-bold">Assigned Location: {duty.hall}</div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setInvigilationDuty(prev => prev.filter(d => d.id !== duty.id));
+                      toast.info(`Invigilation duty duty duty deleted.`);
+                    }}
+                    className="p-1 text-rose-500 hover:text-rose-700 cursor-pointer"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Assign Duty Slot</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const faculty = (form.elements.namedItem("faculty") as HTMLInputElement).value;
+                const date = (form.elements.namedItem("date") as HTMLInputElement).value;
+                const session = (form.elements.namedItem("session") as HTMLSelectElement).value;
+                const hall = (form.elements.namedItem("hall") as HTMLInputElement).value;
+
+                if (!faculty.trim() || !date || !hall.trim()) {
+                  toast.error("Please fill in all duty details!");
+                  return;
+                }
+
+                const newDuty = {
+                  id: `DUTY-0${invigilationDuty.length + 1}`,
+                  faculty,
+                  date,
+                  session,
+                  hall
+                };
+                setInvigilationDuty([...invigilationDuty, newDuty]);
+                toast.success(`Invigilation duty assigned to ${faculty}!`);
+                form.reset();
+              }}
+              className="space-y-3.5"
+            >
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Faculty Name</label>
+                <input
+                  name="faculty"
+                  type="text"
+                  required
+                  placeholder="e.g. Prof. Anitha Rao"
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Duty Date</label>
+                <input
+                  name="date"
+                  type="date"
+                  required
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Session Slot</label>
+                <select
+                  name="session"
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="Morning (09:30 AM)">Morning (09:30 AM)</option>
+                  <option value="Afternoon (02:00 PM)">Afternoon (02:00 PM)</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Exam Hall</label>
+                <input
+                  name="hall"
+                  type="text"
+                  required
+                  placeholder="e.g. Block-A / 101"
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Assign Duty
+              </button>
+            </form>
+          </Card>
         </div>
       )}
 

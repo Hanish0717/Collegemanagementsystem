@@ -18,7 +18,18 @@ const departmentsList = [
 ];
 
 export function AdminAttendance() {
-  const [activeTab, setActiveTab] = useState<"monitor" | "settings">("monitor");
+  const [activeTab, setActiveTab] = useState<"monitor" | "leaves" | "settings">("monitor");
+
+  const [leaveRequests, setLeaveRequests] = useState([
+    { id: "LR-001", student: "Amit Verma", roll: "21CS001", type: "Medical Leave", dates: "2026-07-03 to 2026-07-06", reason: "Viral Typhoid Fever", status: "Pending" },
+    { id: "LR-002", student: "Priya Sharma", roll: "21CS003", type: "On-Duty (OD)", dates: "2026-07-12", reason: "Representing college in sports meet", status: "Approved" }
+  ]);
+
+  const handleApproveLeave = (id: string, name: string) => {
+    setLeaveRequests(prev => prev.map(l => l.id === id ? { ...l, status: "Approved" } : l));
+    toast.success(`Leave/OD request for ${name} has been approved!`);
+  };
+
 
   const [reportData, setReportData] = useState<any>(null);
   const [studentList, setStudentList] = useState<any[]>([]);
@@ -170,10 +181,10 @@ export function AdminAttendance() {
       />
 
       {/* Tabs */}
-      <div className="flex border-b border-muted">
+      <div className="flex border-b border-muted overflow-x-auto">
         <button
           onClick={() => setActiveTab("monitor")}
-          className={`px-6 py-2.5 text-sm font-semibold border-b-2 transition cursor-pointer ${
+          className={`px-6 py-2.5 text-xs font-semibold border-b-2 transition cursor-pointer shrink-0 ${
             activeTab === "monitor"
               ? "border-indigo-600 text-indigo-600 font-bold"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -182,19 +193,28 @@ export function AdminAttendance() {
           Monitor Attendance
         </button>
         <button
+          onClick={() => setActiveTab("leaves")}
+          className={`px-6 py-2.5 text-xs font-semibold border-b-2 transition cursor-pointer shrink-0 ${
+            activeTab === "leaves"
+              ? "border-indigo-600 text-indigo-600 font-bold"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Leaves &amp; On-Duty (OD) Approvals
+        </button>
+        <button
           onClick={() => setActiveTab("settings")}
-          className={`px-6 py-2.5 text-sm font-semibold border-b-2 transition cursor-pointer ${
+          className={`px-6 py-2.5 text-xs font-semibold border-b-2 transition cursor-pointer shrink-0 ${
             activeTab === "settings"
               ? "border-indigo-600 text-indigo-600 font-bold"
               : "border-transparent text-muted-foreground hover:text-foreground"
           }`}
         >
-          Policies, Settings & Audits
+          Policies, Settings &amp; Audits
         </button>
       </div>
 
-      {activeTab === "monitor" ? (
-        /* MONITOR ATTENDANCE PANEL (Original View) */
+      {activeTab === "monitor" && (
         <>
           <div className="grid md:grid-cols-4 gap-4">
             {[
@@ -504,8 +524,58 @@ export function AdminAttendance() {
             )}
           </div>
         </>
-      ) : (
-        /* POLICIES, SETTINGS & AUDIT LOGS VIEW */
+      )}
+
+      {/* LEAVES & OD APPROVALS */}
+      {activeTab === "leaves" && (
+        <Card>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-slate-800 text-sm">Leaves &amp; On-Duty (OD) Verification</h3>
+            <Badge tone="info">Pending Academic Approvals</Badge>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Request ID</th>
+                  <th className="text-left pb-2">Student Name</th>
+                  <th className="text-left pb-2">Roll No</th>
+                  <th className="text-left pb-2">Leave Category</th>
+                  <th className="text-left pb-2">Requested Dates</th>
+                  <th className="text-left pb-2">Reason / Note</th>
+                  <th className="text-right pb-2">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {leaveRequests.map(req => (
+                  <tr key={req.id}>
+                    <td className="py-3 font-mono font-bold text-rose-600">{req.id}</td>
+                    <td className="py-3 font-bold text-slate-800">{req.student}</td>
+                    <td className="py-3 font-mono text-slate-500 font-semibold">{req.roll}</td>
+                    <td className="py-3 font-semibold"><Badge tone="info">{req.type}</Badge></td>
+                    <td className="py-3 text-slate-500 font-semibold">{req.dates}</td>
+                    <td className="py-3 text-slate-500 font-semibold">{req.reason}</td>
+                    <td className="py-3 text-right">
+                      {req.status === "Approved" ? (
+                        <Badge tone="success">Approved</Badge>
+                      ) : (
+                        <button
+                          onClick={() => handleApproveLeave(req.id, req.student)}
+                          className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[10px] font-bold cursor-pointer transition"
+                        >
+                          Approve Exemption
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
+      {activeTab === "settings" && (
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Settings & Policies Form */}
           <div className="lg:col-span-2 space-y-6">

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { MapPin, Plus, User, Loader2, Trash2, Calendar } from "lucide-react";
+import { MapPin, Plus, User, Loader2, Trash2, Calendar, FileText, CheckCircle, MessageSquare } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 import {
@@ -14,6 +14,22 @@ import {
 export function AdminTimetable() {
   const queryClient = useQueryClient();
   const subjectInputRef = useRef<HTMLInputElement>(null);
+
+  const [activeTab, setActiveTab] = useState<"schedule" | "syllabus" | "feedback">("schedule");
+
+  // Syllabus Compliance Tracker State
+  const [syllabusCompliance, setSyllabusCompliance] = useState([
+    { id: "SYL-01", subject: "Operating Systems", faculty: "Dr. Kumar Swamy", totalWeeks: 16, weeksCompleted: 10, status: "On Track" },
+    { id: "SYL-02", subject: "Database Management Systems", faculty: "Prof. Anitha Rao", totalWeeks: 16, weeksCompleted: 6, status: "Delayed" },
+    { id: "SYL-03", subject: "Computer Networks", faculty: "Dr. Srinivas Rao", totalWeeks: 16, weeksCompleted: 11, status: "On Track" }
+  ]);
+
+  // Faculty Feedback Scores State
+  const [feedbackScores, setFeedbackScores] = useState([
+    { name: "Dr. Kumar Swamy", subject: "Operating Systems", rating: 4.8, count: 54 },
+    { name: "Prof. Anitha Rao", subject: "Database Management Systems", rating: 3.9, count: 48 },
+    { name: "Dr. Srinivas Rao", subject: "Computer Networks", rating: 4.6, count: 62 }
+  ]);
 
   // Constants
   const timeSlots = ["09:00 AM", "11:00 AM", "02:00 PM"];
@@ -111,8 +127,32 @@ export function AdminTimetable() {
         desc="Manage weekly timetables, faculty allocation, classroom assignment and subject scheduling."
       />
 
-      {/* Cohort Filters Card */}
-      <Card>
+      {/* Tabs */}
+      <div className="flex border-b border-slate-200 overflow-x-auto mb-4">
+        {[
+          { id: "schedule", label: "Weekly Schedule", icon: Calendar },
+          { id: "syllabus", label: "Syllabus Compliance", icon: FileText },
+          { id: "feedback", label: "Faculty Feedback", icon: MessageSquare }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-semibold transition cursor-pointer ${
+              activeTab === tab.id
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <tab.icon className="size-4" />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "schedule" && (
+        <>
+          {/* Cohort Filters Card */}
+          <Card>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="text-xs font-semibold text-muted-foreground block mb-1">Department</label>
@@ -390,6 +430,110 @@ export function AdminTimetable() {
           </form>
         </Card>
       </div>
-    </div>
+        </>
+      )}
+
+
+      {/* SYLLABUS COMPLIANCE TRACKER */}
+      {activeTab === "syllabus" && (
+        <Card>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-slate-800 text-sm">Syllabus Coverage &amp; Academic Audit</h3>
+            <Badge tone="info">Accreditation Compliant</Badge>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Subject Code</th>
+                  <th className="text-left pb-2">Subject</th>
+                  <th className="text-left pb-2">Assigned Faculty</th>
+                  <th className="text-center pb-2">Completed / Total Weeks</th>
+                  <th className="text-center pb-2">Coverage %</th>
+                  <th className="text-right pb-2">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {syllabusCompliance.map(row => {
+                  const pct = Math.round((row.weeksCompleted / row.totalWeeks) * 100);
+                  return (
+                    <tr key={row.id}>
+                      <td className="py-3 font-mono font-bold text-indigo-700">{row.id}</td>
+                      <td className="py-3 font-bold text-slate-800">{row.subject}</td>
+                      <td className="py-3 font-semibold">{row.faculty}</td>
+                      <td className="py-3 text-center font-bold text-slate-700">{row.weeksCompleted} / {row.totalWeeks} Weeks</td>
+                      <td className="py-3 text-center font-mono font-bold text-emerald-600">{pct}%</td>
+                      <td className="py-3 text-right">
+                        <button
+                          onClick={() => {
+                            if (row.weeksCompleted >= row.totalWeeks) {
+                              toast.info("Syllabus is already 100% completed!");
+                              return;
+                            }
+                            setSyllabusCompliance(prev => prev.map(s => s.id === row.id ? { ...s, weeksCompleted: s.weeksCompleted + 1 } : s));
+                            toast.success(`Incremented syllabus coverage for ${row.subject}!`);
+                          }}
+                          className="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold cursor-pointer transition"
+                        >
+                          + Log Week Completed
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
+      {/* FACULTY FEEDBACK PORTAL */}
+      {activeTab === "feedback" && (
+        <Card>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-slate-800 text-sm">Faculty Performance Feedback &amp; Review</h3>
+            <button
+              onClick={() => {
+                toast.loading("Broadcasting feedback form reminders to student portals...", { duration: 1500 });
+                setTimeout(() => {
+                  toast.success("Feedback collection reminder emails sent successfully!");
+                }, 1600);
+              }}
+              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+            >
+              Request Student Responses
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Faculty Name</th>
+                  <th className="text-left pb-2">Subject Course</th>
+                  <th className="text-center pb-2">Total Feedbacks Received</th>
+                  <th className="text-right pb-2">Average Student Rating</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {feedbackScores.map((row, idx) => (
+                  <tr key={idx}>
+                    <td className="py-3 font-bold text-slate-800">{row.name}</td>
+                    <td className="py-3 font-semibold text-slate-600">{row.subject}</td>
+                    <td className="py-3 text-center font-bold text-slate-700">{row.count} Responses</td>
+                    <td className="py-3 text-right">
+                      <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                        row.rating >= 4.5 ? "bg-emerald-100 text-emerald-800" : row.rating >= 4.0 ? "bg-blue-100 text-blue-800" : "bg-amber-100 text-amber-800"
+                      }`}>
+                        ★ {row.rating} / 5.0
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+      </div>
   );
 }

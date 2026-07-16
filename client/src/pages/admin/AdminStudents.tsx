@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Filter, Plus, Search, UserPlus, Trash2, Edit, Loader2, X, Eye, BookOpen, FileText, Users, UserCheck, CreditCard, Award, GraduationCap } from "lucide-react";
+import { Filter, Plus, Search, UserPlus, Trash2, Edit, Loader2, X, Eye, BookOpen, FileText, Users, UserCheck, CreditCard, Award, GraduationCap, CheckCircle, AlertCircle } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 import api from "@/lib/api";
@@ -15,6 +15,29 @@ import {
 
 export function AdminStudents() {
   const queryClient = useQueryClient();
+
+  const [activeTab, setActiveTab] = useState<"roster" | "discipline" | "achievements" | "vault">("roster");
+
+  // Conduct Logs (Disciplinary Actions)
+  const [disciplinaryLogs, setDisdisciplinaryLogs] = useState([
+    { id: "DIS-001", student: "Amit Verma", roll: "21CS001", violation: "Littering inside Lab", action: "Verbal Warning issued", date: "2026-07-02", severity: "Low" },
+    { id: "DIS-002", student: "Siddharth Roy", roll: "21CS002", violation: "Attendance Shortage", action: "Parent Memo Sent", date: "2026-07-10", severity: "Medium" }
+  ]);
+  const [newDiscName, setNewDiscName] = useState("");
+  const [newDiscRoll, setNewDiscRoll] = useState("");
+  const [newDiscViolation, setNewDiscViolation] = useState("");
+
+  // Achievements
+  const [achievements, setAchievements] = useState([
+    { id: "ACH-901", student: "Priya Sharma", roll: "21CS003", title: "Smart India Hackathon First Prize", category: "Technical", date: "2026-06-15" },
+    { id: "ACH-902", student: "Aman Sharma", roll: "21CS004", title: "State Inter-Collegiate Basketball Winners", category: "Sports", date: "2026-06-28" }
+  ]);
+
+  // Document Vault Checklist
+  const [vaultRecords, setVaultRecords] = useState([
+    { roll: "21CS001", name: "Amit Verma", marksheets10: true, marksheets12: true, tc: false, incomeCert: false },
+    { roll: "21CS002", name: "Siddharth Roy", marksheets10: true, marksheets12: true, tc: true, incomeCert: true }
+  ]);
 
   // Search & Filtering State
   const [search, setSearch] = useState("");
@@ -319,8 +342,32 @@ export function AdminStudents() {
           </button>
         }
       />
+      {/* Tabs */}
+      <div className="flex border-b border-slate-200 overflow-x-auto mb-4">
+        {[
+          { id: "roster", label: "Student Roster", icon: Users },
+          { id: "discipline", label: "Disciplinary Logs", icon: AlertCircle },
+          { id: "achievements", label: "Achievements", icon: Award },
+          { id: "vault", label: "Document Vault", icon: FileText }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-semibold transition cursor-pointer ${
+              activeTab === tab.id
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <tab.icon className="size-4" />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-      <Card>
+      {activeTab === "roster" && (
+        <>
+          <Card>
         <div className="flex flex-col lg:flex-row gap-3">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -543,6 +590,216 @@ export function AdminStudents() {
           </button>
         </Card>
       </div>
+        </>
+      )}
+
+      {/* DISCIPLINARY LOGS */}
+      {activeTab === "discipline" && (
+        <div className="grid lg:grid-cols-3 gap-4">
+          <Card className="lg:col-span-2">
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Conduct Log &amp; Disciplinary Warnings</h3>
+            <div className="space-y-3.5">
+              {disciplinaryLogs.map(log => (
+                <div key={log.id} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-rose-600">{log.id}</span>
+                      <span className="font-bold text-slate-800">{log.student} ({log.roll})</span>
+                      <Badge tone={log.severity === "Low" ? "info" : log.severity === "Medium" ? "warn" : "danger"} className="text-[9px]">
+                        {log.severity} Severity
+                      </Badge>
+                    </div>
+                    <div className="text-slate-500 font-semibold">Violation: {log.violation}</div>
+                    <div className="text-[10px] text-slate-400 font-bold">Action Taken: {log.action} | Date: {log.date}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <h3 className="font-semibold text-slate-800 text-sm mb-4">Log Disciplinary Incident</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newDiscName.trim() || !newDiscRoll.trim() || !newDiscViolation.trim()) {
+                  toast.error("Please fill in violation incident details!");
+                  return;
+                }
+                const newLog = {
+                  id: `DIS-00${disciplinaryLogs.length + 1}`,
+                  student: newDiscName,
+                  roll: newDiscRoll,
+                  violation: newDiscViolation,
+                  action: "Warning Letter Dispatched",
+                  date: new Date().toISOString().split("T")[0],
+                  severity: "Low"
+                };
+                setDisdisciplinaryLogs([newLog, ...disciplinaryLogs]);
+                toast.success(`Disciplinary incident logged for ${newDiscName}!`);
+                setNewDiscName("");
+                setNewDiscRoll("");
+                setNewDiscViolation("");
+              }}
+              className="space-y-3.5"
+            >
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Student Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Student Name"
+                  value={newDiscName}
+                  onChange={(e) => setNewDiscName(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Roll Number</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Roll Number"
+                  value={newDiscRoll}
+                  onChange={(e) => setNewDiscRoll(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Violation Description</label>
+                <textarea
+                  required
+                  placeholder="Incident details..."
+                  value={newDiscViolation}
+                  onChange={(e) => setNewDiscViolation(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none h-16 resize-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Log Incident Warning
+              </button>
+            </form>
+          </Card>
+        </div>
+      )}
+
+      {/* ACHIEVEMENTS */}
+      {activeTab === "achievements" && (
+        <Card>
+          <h3 className="font-semibold text-slate-800 text-sm mb-3">Student Extra-Curricular &amp; Academic Achievements</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Record ID</th>
+                  <th className="text-left pb-2">Student Name</th>
+                  <th className="text-left pb-2">Roll Number</th>
+                  <th className="text-left pb-2">Achievement Details / Event</th>
+                  <th className="text-center pb-2">Category</th>
+                  <th className="text-right pb-2">Log Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {achievements.map(ach => (
+                  <tr key={ach.id}>
+                    <td className="py-3 font-mono font-bold text-indigo-700">{ach.id}</td>
+                    <td className="py-3 font-bold text-slate-800">{ach.student}</td>
+                    <td className="py-3 font-mono text-slate-500 font-semibold">{ach.roll}</td>
+                    <td className="py-3 font-semibold text-slate-700">{ach.title}</td>
+                    <td className="py-3 text-center"><Badge tone="success">{ach.category}</Badge></td>
+                    <td className="py-3 text-right font-mono text-slate-400">{ach.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
+      {/* DOCUMENT VAULT */}
+      {activeTab === "vault" && (
+        <Card>
+          <h3 className="font-semibold text-slate-800 text-sm mb-3">Student Certificate Vault &amp; Documents Checklist</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Roll No</th>
+                  <th className="text-left pb-2">Student Name</th>
+                  <th className="text-center pb-2">10th Marksheet</th>
+                  <th className="text-center pb-2">12th Marksheet</th>
+                  <th className="text-center pb-2">Transfer Certificate</th>
+                  <th className="text-center pb-2">Income Certificate</th>
+                  <th className="text-right pb-2">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {vaultRecords.map(row => {
+                  const allOk = row.marksheets10 && row.marksheets12 && row.tc && row.incomeCert;
+                  return (
+                    <tr key={row.roll}>
+                      <td className="py-3 font-mono font-bold text-slate-400">{row.roll}</td>
+                      <td className="py-3 font-bold text-slate-800">{row.name}</td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.marksheets10}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, marksheets10: !r.marksheets10 } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.marksheets12}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, marksheets12: !r.marksheets12 } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.tc}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, tc: !r.tc } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={row.incomeCert}
+                          onChange={() => {
+                            setVaultRecords(prev => prev.map(r => r.roll === row.roll ? { ...r, incomeCert: !r.incomeCert } : r));
+                            toast.success("Document vault status toggled!");
+                          }}
+                          className="rounded text-indigo-600 size-3 cursor-pointer"
+                        />
+                      </td>
+                      <td className="py-3 text-right">
+                        <Badge tone={allOk ? "success" : "danger"}>
+                          {allOk ? "Vault Complete" : "Documents Missing"}
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
       {/* Add Student Modal */}
       {isAddModalOpen && (

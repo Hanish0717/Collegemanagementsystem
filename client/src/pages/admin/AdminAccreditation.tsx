@@ -9,12 +9,25 @@ import {
   CheckCircle,
   Clock,
   Sliders,
-  RefreshCw
+  RefreshCw,
+  FileCheck,
+  FolderOpen
 } from "lucide-react";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 
 export function AdminAccreditation() {
+  const [activeTab, setActiveTab] = useState<"dash" | "aqar" | "ssr">("dash");
+
+  const [aqarReports, setAqarReports] = useState([
+    { id: "AQAR-2024-25", academicYear: "2024-25", compiledBy: "Dr. Srinivas Rao", status: "Submitted", submissionDate: "2025-06-20" },
+    { id: "AQAR-2025-26", academicYear: "2025-26", compiledBy: "Mrs. Ananya Sen", status: "Drafting", submissionDate: "Pending (Due Dec 2026)" }
+  ]);
+
+  const [ssrDocs, setSsrDocs] = useState([
+    { id: "SSR-DOC-001", criteria: "Criteria 1.1.3", title: "Syllabus revision documents & board minutes", file: "BoardMinutes_2025.pdf", status: "Approved" },
+    { id: "SSR-DOC-002", criteria: "Criteria 2.2.1", title: "Student-computer ratio verification statement", file: "ComputerInventory_2026.pdf", status: "Awaiting Review" }
+  ]);
   const [naacCriteria, setNaacCriteria] = useState([
     { id: "CRT-1", name: "Curricular Aspects", score: "3.90/4.00", progress: 95 },
     { id: "CRT-2", name: "Teaching-Learning & Evaluation", score: "3.85/4.00", progress: 92 },
@@ -47,8 +60,31 @@ export function AdminAccreditation() {
         title="Accreditation &amp; Standards Compliance"
         desc="Audit institutional quality benchmarks, monitor NAAC Criteria compliance scores, and review NBA Outcome-Based Education (OBE) portfolios."
       />
+      {/* Tabs */}
+      <div className="flex border-b border-slate-200 overflow-x-auto mb-4">
+        {[
+          { id: "dash", label: "Accreditation Dash", icon: Award },
+          { id: "aqar", label: "AQAR Annual Report", icon: FileCheck },
+          { id: "ssr", label: "SSR Verification Docs", icon: FolderOpen }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-semibold transition cursor-pointer ${
+              activeTab === tab.id
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <tab.icon className="size-4" />
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {activeTab === "dash" && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="NAAC Cumulative Grade"
           value="A++ (3.82 CGPA)"
@@ -139,6 +175,112 @@ export function AdminAccreditation() {
           </div>
         </Card>
       </div>
+        </>
+      )}
+
+      {/* AQAR ANNUAL REPORT */}
+      {activeTab === "aqar" && (
+        <Card>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-slate-800 text-sm">Annual Quality Assurance Report (AQAR) Submissions</h3>
+            <button
+              onClick={() => {
+                toast.loading("Generating full AQAR compilation...", { duration: 1000 });
+                setTimeout(() => {
+                  const newReport = {
+                    id: `AQAR-2026-27`,
+                    academicYear: "2026-27",
+                    compiledBy: "Dr. Srinivas Rao",
+                    status: "Drafting",
+                    submissionDate: "Awaiting Review"
+                  };
+                  setAqarReports([newReport, ...aqarReports]);
+                  toast.success("AQAR 2026-27 compiled to draft!");
+                }, 1100);
+              }}
+              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+            >
+              Compile AQAR
+            </button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Report ID</th>
+                  <th className="text-left pb-2">Academic Year</th>
+                  <th className="text-left pb-2">Coordinator / Compiler</th>
+                  <th className="text-center pb-2">Status</th>
+                  <th className="text-right pb-2">Submission Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {aqarReports.map(report => (
+                  <tr key={report.id}>
+                    <td className="py-3 font-mono font-bold text-rose-600">{report.id}</td>
+                    <td className="py-3 font-bold text-slate-800">{report.academicYear}</td>
+                    <td className="py-3 font-semibold text-slate-600">{report.compiledBy}</td>
+                    <td className="py-3 text-center">
+                      <Badge tone={report.status === "Submitted" ? "success" : "warn"}>
+                        {report.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3 text-right font-mono text-slate-500 font-semibold">{report.submissionDate}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
+
+      {/* SSR VERIFICATION DOCUMENTS */}
+      {activeTab === "ssr" && (
+        <Card>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-semibold text-slate-800 text-sm">Self-Study Report (SSR) Supporting Data Vault</h3>
+            <Badge tone="success">Ready for Peer Team Visit</Badge>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b text-slate-400">
+                  <th className="text-left pb-2">Doc ID</th>
+                  <th className="text-left pb-2">Criteria / Metric</th>
+                  <th className="text-left pb-2">Document Description</th>
+                  <th className="text-left pb-2">File Name</th>
+                  <th className="text-right pb-2">Audit Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {ssrDocs.map(doc => (
+                  <tr key={doc.id}>
+                    <td className="py-3 font-mono font-bold text-slate-400">{doc.id}</td>
+                    <td className="py-3 font-bold text-indigo-700">{doc.criteria}</td>
+                    <td className="py-3 text-slate-600 font-semibold">{doc.title}</td>
+                    <td className="py-3 font-mono text-slate-500 font-semibold">{doc.file}</td>
+                    <td className="py-3 text-right">
+                      {doc.status === "Approved" ? (
+                        <Badge tone="success">Verified &amp; Approved</Badge>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSsrDocs(prev => prev.map(d => d.id === doc.id ? { ...d, status: "Approved" } : d));
+                            toast.success(`Document ${doc.id} approved for SSR!`);
+                          }}
+                          className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-[10px] font-bold cursor-pointer transition"
+                        >
+                          Approve Doc
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
