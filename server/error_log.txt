@@ -1830,6 +1830,7 @@ Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":
 [2026-07-13T05:52:49.501Z] POST /api/attendance/mark - Status: 401 - Client Error: Not authorized, no token provided - Body: {"student":"2256c8f8-cbe8-4507-8086-0135a9dd420b","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
 [2026-07-13T05:52:49.511Z] POST /api/attendance/mark - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"student":"2256c8f8-cbe8-4507-8086-0135a9dd420b","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
 [2026-07-13T05:52:49.609Z] POST /api/attendance/mark - Status: 400 - Client Error: Attendance already marked for this student, subject, and date - Body: {"student":"2256c8f8-cbe8-4507-8086-0135a9dd420b","subject":"Math","date":"2026-05-01","status":"absent","department":"CSE","semester":6,"section":"A"}
+
 [2026-07-16T07:14:08.997Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
 Stack: Error: secretOrPrivateKey must have a value
     at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
@@ -2561,4 +2562,6 @@ Stack: Error: Access denied: You can only assign faculty in your assigned depart
     at assignFaculty (file:///C:/CMS/Collegemanagementsystem/server/src/controllers/adminController.js:546:23)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["ML-A"],"assignedSubjects":["AM502"]}
+
+[2026-07-16T12:20:13.905Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"student@college.com","password":"password@123"}
 

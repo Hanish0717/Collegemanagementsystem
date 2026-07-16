@@ -1,6 +1,11 @@
 import { execSync } from 'child_process';
 
-const cwd = "d:\\ALL FILES\\MINI PROJECT\\INTESHIP\\Collegemanagementsystem";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const cwd = path.resolve(__dirname, '..');
 
 function runGit(command) {
   try {
