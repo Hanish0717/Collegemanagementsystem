@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { GraduationCap, Mail, Lock, ArrowRight, Check, Loader2, X, Quote } from "lucide-react";
+import { GraduationCap, Mail, Lock, ArrowRight, Check, Loader2, X, Quote, BookOpen, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useGoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import { toast } from "sonner";
@@ -81,6 +81,8 @@ function LoginForm() {
   const verifyPin = (enteredPin: string) => {
     const credentialsMap: Record<string, { email: string; password?: string; admissionNumber?: string; role: RoleId; roleName: string }> = {
       "1111": { email: "superadmin@college.com", password: "password123", role: "super_admin", roleName: "Super Admin" },
+      "1212": { email: "lms.coordinator@college.com", password: "password123", role: "lms", roleName: "LMS Coordinator" },
+      "1313": { email: "learning@college.com", password: "password123", role: "lms", roleName: "LMS Portal" },
       "2222": { email: "admin@college.com", password: "password123", role: "admin", roleName: "System Admin" },
       "3333": { email: "srinivas.faculty@gmail.com", password: "password123", role: "faculty", roleName: "Faculty" },
       "4444": { email: "hanish@gmail.com", password: "password123", role: "student", roleName: "Student" },
@@ -112,7 +114,7 @@ function LoginForm() {
         toast.success(`Autofilled ${match.roleName} credentials! Press Sign In.`);
       }, 800);
     } else {
-      setPinError("Invalid PIN! Try 1111 (Super Admin), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).");
+      setPinError("Invalid PIN! Try 1111 (Super Admin), 1212 (LMS Coordinator), 1313 (LMS Portal), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).");
       setPin(["", "", "", ""]);
       setTimeout(() => {
         const firstInput = document.getElementById("pin-input-0");
@@ -164,8 +166,16 @@ function LoginForm() {
 
       // Direct login — no OTP step
       const user = result;
-      setActiveRole(toFrontendRole(user.role));
-      navigate({ to: getDashboardForRole(user.role) });
+
+      if (roleId === "lms") {
+        // LMS coordinator — use lms frontend role regardless of backend role
+        setActiveRole("lms");
+        localStorage.setItem("campusly.role", "lms");
+        navigate({ to: "/dashboard/admin/lms" });
+      } else {
+        setActiveRole(toFrontendRole(user.role));
+        navigate({ to: getDashboardForRole(user.role) });
+      }
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
@@ -286,19 +296,53 @@ function LoginForm() {
           <p className="text-sm text-muted-foreground mt-1">
             Enter your institutional credentials to access the campus management system
           </p>
-          {/* Error message */}
+          {/* Role Selector Dropdown */}
+          <div className="mt-4">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-1.5">
+              Select your role to sign in
+            </label>
+            <div className="relative">
+              <select
+                value={roleId ?? "student"}
+                onChange={(e) => {
+                  const id = e.target.value as RoleId;
+                  setRoleId(id);
+                  setEmail(id === "lms" ? "learning@college.com" : "");
+                  setPassword("");
+                  setError(null);
+                }}
+                className="w-full appearance-none rounded-xl border bg-background/60 pl-4 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
+              >
+                {ROLE_LIST.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name} — {r.short}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+            </div>
+            {active && (
+              <div className={`mt-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r ${active.gradient} text-white text-xs font-semibold`}>
+                <active.icon className="size-3.5 shrink-0" />
+                <span>{active.description}</span>
+              </div>
+            )}
+          </div>
+
           {error && (
-            <div className="mt-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            <div className="mt-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
               {error}
             </div>
           )}
-          <form className="mt-5 space-y-4" onSubmit={submit}>
+          <form className="mt-4 space-y-4" onSubmit={submit}>
             <div>
               <label className="text-xs font-medium">
                 {roleId === "parent"
                   ? "Parent Email"
                   : roleId === "student"
                   ? "Email or Admission Number"
+                  : roleId === "lms"
+                  ? "LMS Portal Email"
                   : "Email"}
               </label>
               <div className="mt-1 relative">
@@ -312,6 +356,8 @@ function LoginForm() {
                       ? "parent@example.com"
                       : roleId === "student"
                       ? "you@university.edu or Admission Number"
+                      : roleId === "lms"
+                      ? "learning@college.com"
                       : "you@university.edu"
                   }
                   required
@@ -517,6 +563,10 @@ function LoginForm() {
                         <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("1111")}>
                           <span className="text-muted-foreground">Super Admin</span>
                           <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">1111</kbd>
+                        </div>
+                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("1212")}>
+                          <span className="text-muted-foreground">LMS Coord</span>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">1212</kbd>
                         </div>
                         <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("2222")}>
                           <span className="text-muted-foreground">Admin</span>

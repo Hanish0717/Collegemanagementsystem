@@ -31,6 +31,7 @@ export type RoleId =
   | "super_admin"
   | "admin"
   | "faculty"
+  | "lms"
   | "student"
   | "parent"
   | "librarian"
@@ -153,6 +154,24 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/faculty/communication", label: "Message Hub", icon: MessageSquare },
       { to: "/dashboard/faculty/notifications", label: "Notifications", icon: Bell },
       { to: "/dashboard/faculty/settings", label: "Settings", icon: Settings },
+    ],
+  },
+  lms: {
+    id: "lms",
+    name: "LMS Coordinator",
+    short: "Digital learning hub",
+    description: "Manage notes, video lectures, quizzes, assignments, forum, and online classes.",
+    icon: BookOpen,
+    gradient: "from-emerald-500 to-teal-600",
+    accent: "bg-emerald-500",
+    nav: [
+      { to: "/dashboard/admin/lms", label: "LMS Home", icon: LayoutDashboard, exact: true },
+      { to: "/dashboard/faculty/materials", label: "Study Materials", icon: FileText },
+      { to: "/dashboard/faculty/attendance", label: "Attendance", icon: CalendarCheck },
+      { to: "/dashboard/faculty/students", label: "My Students", icon: Users },
+      { to: "/dashboard/faculty/communication", label: "Message Hub", icon: MessageSquare },
+      notif,
+      settings,
     ],
   },
   student: {

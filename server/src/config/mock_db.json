@@ -5,7 +5,7 @@
       "name": "Super Admin",
       "full_name": "Super Admin",
       "email": "superadmin@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "super-admin",
       "is_verified": true,
       "is_active": true
@@ -15,7 +15,7 @@
       "name": "Admin",
       "full_name": "Admin",
       "email": "admin@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "admin",
       "is_verified": true,
       "is_active": true
@@ -25,7 +25,7 @@
       "name": "Faculty",
       "full_name": "Dr. John Smith",
       "email": "faculty@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "faculty",
       "is_verified": true,
       "is_active": true
@@ -35,7 +35,7 @@
       "name": "Student",
       "full_name": "Student Demo",
       "email": "student@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "student",
       "is_verified": true,
       "is_active": true
@@ -45,7 +45,7 @@
       "name": "Parent",
       "full_name": "Parent Demo",
       "email": "parent@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "parent",
       "child_email": "student@college.com",
       "is_verified": true,
@@ -56,7 +56,7 @@
       "name": "Librarian",
       "full_name": "Librarian Demo",
       "email": "librarian@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "librarian",
       "is_verified": true,
       "is_active": true
@@ -66,7 +66,7 @@
       "name": "Placement Officer",
       "full_name": "Placement Officer Demo",
       "email": "placement@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "placement-officer",
       "is_verified": true,
       "is_active": true
@@ -76,7 +76,7 @@
       "name": "Hostel Warden",
       "full_name": "Hostel Warden Demo",
       "email": "warden@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "hostel-warden",
       "is_verified": true,
       "is_active": true
@@ -86,53 +86,28 @@
       "name": "Transport Manager",
       "full_name": "Transport Manager Demo",
       "email": "transport@college.com",
-      "password": "$2a$10$eis4zDh81cfxIiUIglRzrenI3iQ6QxKqF81OA7DuQ4kr/IliyCtPu",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
       "role": "transport-manager",
       "is_verified": true,
       "is_active": true
     },
     {
-      "id": "ef565fc1-2936-4050-8fca-7e1b00c03599",
-      "created_at": "2026-07-13T05:30:43.591Z",
-      "updated_at": "2026-07-13T05:30:43.591Z",
-      "name": "Alice Smith",
-      "full_name": "Alice Smith",
-      "email": "alice_1783920638038@test.com",
-      "password": "$2a$10$LDYMxXof.kTkW/R9srmyRugniG5GRzAh.oqEHKBf7fGuVIN66PNKq",
-      "temp_password": "Password123!",
-      "role": "student",
-      "phone_number": "1112223333",
-      "mobile": "1112223333",
+      "id": "12121212-1212-1212-1212-121212121212",
+      "name": "LMS Coordinator",
+      "full_name": "LMS Coordinator",
+      "email": "lms.coordinator@college.com",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
+      "role": "faculty",
       "is_verified": true,
       "is_active": true
     },
     {
-      "id": "826e959c-356e-423b-a635-2f8eab37af27",
-      "created_at": "2026-07-13T05:30:48.032Z",
-      "updated_at": "2026-07-13T05:30:48.032Z",
-      "name": "David Jones",
-      "full_name": "David Jones",
-      "email": "david_1783920638038@test.com",
-      "password": "$2a$10$tEF5ZISHPizfYs/aWXrZZOksVj0G0ak8g/KZowyTwlEcF9Emwpigy",
-      "temp_password": "Password123!",
-      "role": "student",
-      "phone_number": "4445556666",
-      "mobile": "4445556666",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "c7c8c344-f2cf-4694-abec-c9e28a76373b",
-      "created_at": "2026-07-13T05:30:52.948Z",
-      "updated_at": "2026-07-13T05:30:52.948Z",
-      "name": "Charlie Green",
-      "full_name": "Charlie Green",
-      "email": "charlie_1783920638038@test.com",
-      "password": "$2a$10$oaUNEd1SooZU1R5v4/03euQKM.tPc/RWpGS0hnEYMPFDxdRtgXeU.",
-      "temp_password": "Password123!",
-      "role": "student",
-      "phone_number": "7778889999",
-      "mobile": "7778889999",
+      "id": "13131313-1313-1313-1313-131313131313",
+      "name": "Learning Portal",
+      "full_name": "LMS Learning Portal",
+      "email": "learning@college.com",
+      "password": "$2a$10$GOzGAh2G9BQfO.J7.LoIZOA3hSo3PhW7vluB4IMTH6suar/An9MlO",
+      "role": "faculty",
       "is_verified": true,
       "is_active": true
     }
@@ -156,86 +131,6 @@
       "parent_email": "parent@college.com",
       "cgpa": 8.5,
       "attendance_percentage": 92.5,
-      "is_active": true
-    },
-    {
-      "id": "s2222222-2222-2222-2222-222222222222",
-      "full_name": "Alice Smith",
-      "roll_number": "CS100002",
-      "email": "alice@college.com",
-      "phone_number": "9876543210",
-      "gender": "Female",
-      "date_of_birth": "2004-09-20",
-      "department": "CSE",
-      "year": 3,
-      "semester": 5,
-      "section": "A",
-      "address": "456 Oak Lane, Cityville",
-      "parent_name": "John Smith",
-      "parent_phone": "9876543211",
-      "parent_email": "john.smith@test.com",
-      "cgpa": 9.1,
-      "attendance_percentage": 88,
-      "is_active": true
-    },
-    {
-      "id": "s3333333-3333-3333-3333-333333333333",
-      "full_name": "Bob Jones",
-      "roll_number": "EC200001",
-      "email": "bob@college.com",
-      "phone_number": "8765432109",
-      "gender": "Male",
-      "date_of_birth": "2005-01-12",
-      "department": "ECE",
-      "year": 2,
-      "semester": 3,
-      "section": "B",
-      "address": "789 Pine Rd, Townsville",
-      "parent_name": "Robert Jones",
-      "parent_phone": "8765432100",
-      "parent_email": "robert.jones@test.com",
-      "cgpa": 7.8,
-      "attendance_percentage": 76.5,
-      "is_active": true
-    },
-    {
-      "id": "s4444444-4444-4444-4444-444444444444",
-      "full_name": "Charlie Green",
-      "roll_number": "ME300001",
-      "email": "charlie@college.com",
-      "phone_number": "7654321098",
-      "gender": "Male",
-      "date_of_birth": "2003-11-05",
-      "department": "ME",
-      "year": 4,
-      "semester": 7,
-      "section": "A",
-      "address": "101 Maple Ave, Westford",
-      "parent_name": "William Green",
-      "parent_phone": "7654321090",
-      "parent_email": "william.green@test.com",
-      "cgpa": 8.9,
-      "attendance_percentage": 94.2,
-      "is_active": true
-    },
-    {
-      "id": "s5555555-5555-5555-5555-555555555555",
-      "full_name": "Diana Prince",
-      "roll_number": "CS100003",
-      "email": "diana@college.com",
-      "phone_number": "6543210987",
-      "gender": "Female",
-      "date_of_birth": "2006-03-24",
-      "department": "CSE",
-      "year": 1,
-      "semester": 1,
-      "section": "C",
-      "address": "202 Birch Blvd, Eastville",
-      "parent_name": "Hippolyta Prince",
-      "parent_phone": "6543210980",
-      "parent_email": "queen@amazon.com",
-      "cgpa": 6.5,
-      "attendance_percentage": 62,
       "is_active": true
     }
   ],
@@ -264,6 +159,20 @@
       "phone_number": "9876543212",
       "status": "Active",
       "attendance_percentage": 95,
+      "is_active": true
+    },
+    {
+      "id": "f1212121-2121-2121-2121-212121212121",
+      "user_id": "12121212-1212-1212-1212-121212121212",
+      "full_name": "LMS Coordinator",
+      "email": "lms.coordinator@college.com",
+      "employee_id": "FAC-LMS-001",
+      "department": "CSE",
+      "designation": "LMS Director",
+      "experience": 10,
+      "gender": "Male",
+      "phone_number": "9876543210",
+      "status": "Active",
       "is_active": true
     }
   ],
@@ -301,27 +210,64 @@
   ],
   "fees": [
     {
-      "id": "d4422f34-b54a-41b3-9fba-ce9b5e7543d4",
-      "created_at": "2026-07-13T05:52:45.017Z",
-      "updated_at": "2026-07-13T05:52:45.017Z",
-      "student": "2256c8f8-cbe8-4507-8086-0135a9dd420b",
-      "amount": 80000,
-      "type": "College Fee",
-      "due_date": "2026-12-31",
+      "id": "fee11111-1111-1111-1111-111111111111",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "amount": 2500,
+      "type": "Tuition Fee",
+      "due_date": "2026-06-30",
+      "status": "Paid",
+      "paid_amount": 2500,
+      "payment_date": "2026-05-10",
+      "payment_method": "Online",
+      "transaction_id": "TXN123456",
+      "academic_year": "2025-2026",
+      "semester": 5
+    },
+    {
+      "id": "fee22222-2222-2222-2222-222222222222",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "amount": 800,
+      "type": "Hostel Fee",
+      "due_date": "2026-07-15",
       "status": "Unpaid",
       "paid_amount": 0,
-      "academic_year": "2026-2027",
-      "semester": 6
+      "academic_year": "2025-2026",
+      "semester": 5
     }
   ],
-  "attendance": [],
+  "attendance": [
+    {
+      "id": "att11111-1111-1111-1111-111111111111",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-28",
+      "status": "Present",
+      "subject": "Data Structures",
+      "remarks": "Good participation"
+    },
+    {
+      "id": "att22222-2222-2222-2222-222222222222",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-27",
+      "status": "Present",
+      "subject": "Database Systems",
+      "remarks": ""
+    },
+    {
+      "id": "att33333-3333-3333-3333-333333333333",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "date": "2026-05-26",
+      "status": "Absent",
+      "subject": "Algorithms",
+      "remarks": "Medical leave"
+    }
+  ],
   "assignments": [
     {
       "id": "as111111-1111-1111-1111-111111111111",
       "title": "Red-Black Trees Implementation",
       "description": "Implement RB-Trees insertion and deletion in C++.",
       "subject": "Data Structures",
-      "due_date": "2026-07-18T05:29:24.653Z",
+      "due_date": "2026-07-21T13:24:01.806Z",
       "department": "CSE",
       "year": 3,
       "semester": 5,
@@ -394,6 +340,19 @@
       "year": 3,
       "semester": 5,
       "faculty": "33333333-3333-3333-3333-333333333333"
+    },
+    {
+      "id": "14fe5050-3e3b-446b-ad52-539270ff8898",
+      "created_at": "2026-07-16T13:59:11.203Z",
+      "updated_at": "2026-07-16T13:59:11.203Z",
+      "title": "ravan",
+      "subject": "Data Structures",
+      "type": "PDF",
+      "file_url": "https://example.com/materials/doc-1784210351191.pdf",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "faculty": "13131313-1313-1313-1313-131313131313"
     }
   ],
   "timetable": [
@@ -424,907 +383,7 @@
       "section": "A"
     }
   ],
-  "otps": [
-    {
-      "id": "813a2e86-cc5c-4d5e-8a83-1c6848fb2f5b",
-      "created_at": "2026-07-13T05:29:49.722Z",
-      "updated_at": "2026-07-13T05:29:49.722Z",
-      "email": "stud_user_1783920589140@test.com",
-      "otp": "08c63bdb32e9d380add6a070caea76589828b7b16ed62b7f7412468a354c8f51",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:34:49.721Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "3179703e-376e-40a3-b8d7-f6aba3d4cd36",
-      "created_at": "2026-07-13T05:30:38.352Z",
-      "updated_at": "2026-07-13T05:30:38.352Z",
-      "email": "admin_1783920638038@test.com",
-      "otp": "ab2a166f8dc1f132c12f96e27d0e987dda616d7aa1a9d844b9b29e1575e83fcf",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:35:38.351Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "1e575560-af74-4a29-9cc2-550cd208c3b5",
-      "created_at": "2026-07-13T05:30:43.721Z",
-      "updated_at": "2026-07-13T05:30:43.721Z",
-      "email": "alice_1783920638038@test.com",
-      "otp": "acf30bcd2637e5b27d533e280156455e93ed7fba3e16d97418f6b77583a9d020",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:35:43.720Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "30b55878-bf4a-4b58-813f-05c3611cb540",
-      "created_at": "2026-07-13T05:30:48.145Z",
-      "updated_at": "2026-07-13T05:30:48.145Z",
-      "email": "david_1783920638038@test.com",
-      "otp": "bc9920a64af7582dc9e18365ece1578f7a2aae689ccf0c3bfc2fe7fc04f6c397",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:35:48.145Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "4938a099-23e3-413d-9199-411c60736766",
-      "created_at": "2026-07-13T05:30:53.121Z",
-      "updated_at": "2026-07-13T05:30:53.121Z",
-      "email": "charlie_1783920638038@test.com",
-      "otp": "ff554d65798a5f0f8ba26a3b49c9ac1cc65f840bb4f80b4ee77552ae3f301f6c",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:35:53.120Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "90e08b6f-aa4d-4bfe-9cb8-53af7575d587",
-      "created_at": "2026-07-13T05:32:55.194Z",
-      "updated_at": "2026-07-13T05:32:55.194Z",
-      "email": "student_1783920774578@test.com",
-      "otp": "d3526784bf5c57b9e18f65013bf5d9b9a6a1139b668563e8bbc95aaa50f0d1f4",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:37:55.193Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "ed77b3ff-e0a5-4c01-aaad-cbb0b778fb61",
-      "created_at": "2026-07-13T05:33:00.472Z",
-      "updated_at": "2026-07-13T05:33:00.472Z",
-      "email": "other_student_1783920774578@test.com",
-      "otp": "7e7cf8c11a20bb9eb5c0b6aa80fa42d6e9494556d767393c43511db7d4214055",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:38:00.471Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "6962786a-56de-4990-883b-573ff3f0ae65",
-      "created_at": "2026-07-13T05:33:07.763Z",
-      "updated_at": "2026-07-13T05:33:07.763Z",
-      "email": "stud_user_1783920787178@test.com",
-      "otp": "507ad6b81d79066f64aa69ea7d301082d3467ecf0be180f54d9ffea52d4923bd",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:38:07.763Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "0fe92011-277f-4aba-bca5-07f7f85f1638",
-      "created_at": "2026-07-13T05:52:16.997Z",
-      "updated_at": "2026-07-13T05:52:16.997Z",
-      "email": "student_1783921936332@test.com",
-      "otp": "5f464b6bc9f6ca8a1ed6442eb7de585ba4dade8ab5cc310b4c2335ccb8a8cbaa",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:57:16.996Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "3e2424d8-2459-4cf6-9c27-4626f43b9516",
-      "created_at": "2026-07-13T05:52:23.284Z",
-      "updated_at": "2026-07-13T05:52:23.284Z",
-      "email": "other_student_1783921936332@test.com",
-      "otp": "63accfd3cfe3e24981be63ca379676b01ac89590b0523cd627ef647f308000dd",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:57:23.283Z",
-      "attempts": 0,
-      "blocked_until": null
-    },
-    {
-      "id": "98121165-2c01-44cf-af2f-e5ab83cacde2",
-      "created_at": "2026-07-13T05:52:45.082Z",
-      "updated_at": "2026-07-13T05:52:45.082Z",
-      "email": "stud_user_1783921964483@test.com",
-      "otp": "0da7ac8aced190307c2eeef82cf9ec210613d8d6b33b900544ad0c661890d922",
-      "type": "email_verification",
-      "expires_at": "2026-07-13T05:57:45.081Z",
-      "attempts": 0,
-      "blocked_until": null
-    }
-  ],
-  "student_notifications": [
-    {
-      "id": "SN-ATT-WARN-1783920594599",
-      "created_at": "2026-07-13T05:29:54.600Z",
-      "updated_at": "2026-07-13T05:29:54.600Z",
-      "student_id": "7c05f728-ccbf-4dbe-b116-0c71fd5242f0",
-      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
-      "type": "Attendance",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-FEE-DUE-12c52e01-7751-43c7-8f5b-05078c73579b",
-      "created_at": "2026-07-13T05:33:06.415Z",
-      "updated_at": "2026-07-13T05:33:06.416Z",
-      "title": "Fee Payment Reminder: tuition is due on 31 Dec. Balance: ₹1,000",
-      "type": "Finance",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-FEE-DUE-4f0646fa-f596-4de2-9b20-4ad377251610",
-      "created_at": "2026-07-13T05:33:06.458Z",
-      "updated_at": "2026-07-13T05:33:06.458Z",
-      "title": "Fee Payment Reminder: library is due on 8 Jul. Balance: ₹200",
-      "type": "Finance",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-ATT-WARN-1783920792195",
-      "created_at": "2026-07-13T05:33:12.196Z",
-      "updated_at": "2026-07-13T05:33:12.196Z",
-      "student_id": "5d1c6d80-43e7-4fea-8acd-d87bc5d32457",
-      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
-      "type": "Attendance",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-FEE-DUE-f9e6dc0c-7f95-425f-b5ee-04184d7e5ff9",
-      "created_at": "2026-07-13T05:52:29.060Z",
-      "updated_at": "2026-07-13T05:52:29.060Z",
-      "title": "Fee Payment Reminder: tuition is due on 31 Dec. Balance: ₹1,000",
-      "type": "Finance",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-FEE-DUE-4537d285-5b25-49e6-a71e-c80d3fdcb0ee",
-      "created_at": "2026-07-13T05:52:29.135Z",
-      "updated_at": "2026-07-13T05:52:29.135Z",
-      "title": "Fee Payment Reminder: library is due on 8 Jul. Balance: ₹200",
-      "type": "Finance",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-ATT-WARN-1783921969676",
-      "created_at": "2026-07-13T05:52:49.677Z",
-      "updated_at": "2026-07-13T05:52:49.678Z",
-      "student_id": "2256c8f8-cbe8-4507-8086-0135a9dd420b",
-      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
-      "type": "Attendance",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-PLACEMENT-fcbda4ff-b1f1-4751-bd85-fedd11587d7e-s1111111-1111-1111-1111-111111111111",
-      "created_at": "2026-07-16T12:53:08.036Z",
-      "updated_at": "2026-07-16T12:53:08.036Z",
-      "student_id": "s1111111-1111-1111-1111-111111111111",
-      "title": "New Recruitment Drive: infosys is hiring for ai. Register before 18 Jun.",
-      "type": "Placement",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-PLACEMENT-fcbda4ff-b1f1-4751-bd85-fedd11587d7e-s2222222-2222-2222-2222-222222222222",
-      "created_at": "2026-07-16T12:53:08.054Z",
-      "updated_at": "2026-07-16T12:53:08.056Z",
-      "student_id": "s2222222-2222-2222-2222-222222222222",
-      "title": "New Recruitment Drive: infosys is hiring for ai. Register before 18 Jun.",
-      "type": "Placement",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    },
-    {
-      "id": "SN-PLACEMENT-fcbda4ff-b1f1-4751-bd85-fedd11587d7e-s3333333-3333-3333-3333-333333333333",
-      "created_at": "2026-07-16T12:53:08.069Z",
-      "updated_at": "2026-07-16T12:53:08.069Z",
-      "student_id": "s3333333-3333-3333-3333-333333333333",
-      "title": "New Recruitment Drive: infosys is hiring for ai. Register before 18 Jun.",
-      "type": "Placement",
-      "priority": "High",
-      "time": "Just now",
-      "unread": true
-    }
-  ],
-  "placement_companies": [
-    {
-      "id": "803fef7b-fcd4-4de8-ad5b-e98d74fb1a26",
-      "created_at": "2026-07-16T12:51:23.964Z",
-      "updated_at": "2026-07-16T12:51:23.964Z",
-      "name": "infosys",
-      "industry": "IT Services",
-      "hr_contact": "Lokesh Kotni",
-      "email": "lokeshkotni633@gmail.com",
-      "phone": "6281751184",
-      "package_amount": "12",
-      "previous_hires": 10,
-      "is_active": false
-    },
-    {
-      "id": "5e4d4874-bba4-49b7-ba26-31d8a3748a57",
-      "created_at": "2026-07-16T12:55:25.055Z",
-      "updated_at": "2026-07-16T12:55:25.055Z",
-      "name": "google",
-      "industry": "IT Services",
-      "hr_contact": "ramesh dora",
-      "email": "ramesh@gmail.com",
-      "phone": "989898989",
-      "package_amount": "11",
-      "previous_hires": 10,
-      "is_active": true
-    },
-    {
-      "id": "6c254942-ea4b-4f39-aab0-df7eb5373ae4",
-      "created_at": "2026-07-16T12:56:14.545Z",
-      "updated_at": "2026-07-16T12:56:14.545Z",
-      "name": "microsoft",
-      "industry": "IT Services",
-      "hr_contact": "ashok",
-      "email": "ashok@gmail.com",
-      "phone": "989898998",
-      "package_amount": "12",
-      "previous_hires": 6,
-      "is_active": true
-    },
-    {
-      "id": "890e0a74-3694-42cb-97ee-e6eac1fa024a",
-      "created_at": "2026-07-16T13:00:48.989Z",
-      "updated_at": "2026-07-16T13:00:48.989Z",
-      "name": "Apple Inc.",
-      "industry": "Technology",
-      "hr_contact": "Sarah Connor",
-      "email": "recruiting@apple.com",
-      "phone": "9876543201",
-      "package_amount": "24",
-      "previous_hires": 5,
-      "is_active": true
-    },
-    {
-      "id": "533cdb93-f114-4f80-a901-27996f552a6d",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "Meta Platforms",
-      "industry": "Technology",
-      "hr_contact": "Mark Zuckerberg",
-      "email": "careers@meta.com",
-      "phone": "9876543202",
-      "package_amount": "26",
-      "previous_hires": 4,
-      "is_active": true
-    },
-    {
-      "id": "3bab3eee-a133-4de7-8ff9-93945c2700ec",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "Goldman Sachs",
-      "industry": "Finance",
-      "hr_contact": "Sneha Rao",
-      "email": "careers@gs.com",
-      "phone": "9876543203",
-      "package_amount": "18",
-      "previous_hires": 8,
-      "is_active": true
-    },
-    {
-      "id": "4a1d6774-5b29-44f2-84c8-bb49bb1f26c1",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "JPMorgan Chase",
-      "industry": "Finance",
-      "hr_contact": "John Doe",
-      "email": "careers@jpmorgan.com",
-      "phone": "9876543204",
-      "package_amount": "16.5",
-      "previous_hires": 12,
-      "is_active": true
-    },
-    {
-      "id": "a4906725-7734-457e-a484-70ee49754e67",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "McKinsey & Company",
-      "industry": "Consulting",
-      "hr_contact": "Sarah Jenkins",
-      "email": "careers@mckinsey.com",
-      "phone": "9876543205",
-      "package_amount": "15.5",
-      "previous_hires": 6,
-      "is_active": true
-    },
-    {
-      "id": "1cca564c-634a-4b25-91e1-f5e74945b72e",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "Accenture",
-      "industry": "Consulting",
-      "hr_contact": "Rahul Verma",
-      "email": "careers@accenture.com",
-      "phone": "9876543206",
-      "package_amount": "12",
-      "previous_hires": 22,
-      "is_active": true
-    },
-    {
-      "id": "426c8c36-0882-48eb-8c7e-45d1b5c0bb9d",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "TCS",
-      "industry": "IT Services",
-      "hr_contact": "Komal Gupta",
-      "email": "careers@tcs.com",
-      "phone": "9876543207",
-      "package_amount": "9.5",
-      "previous_hires": 35,
-      "is_active": true
-    },
-    {
-      "id": "64c91204-7b06-4d7c-baf5-8c372623ad8d",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "Wipro",
-      "industry": "IT Services",
-      "hr_contact": "Rishad Premji",
-      "email": "careers@wipro.com",
-      "phone": "9876543208",
-      "package_amount": "8.5",
-      "previous_hires": 28,
-      "is_active": true
-    },
-    {
-      "id": "6a28914b-de2d-4272-ad7d-49d19f7ea2ad",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "Amazon",
-      "industry": "E-commerce",
-      "hr_contact": "Sanjay Sen",
-      "email": "careers@amazon.in",
-      "phone": "9876543209",
-      "package_amount": "19.5",
-      "previous_hires": 15,
-      "is_active": true
-    },
-    {
-      "id": "0fad3e65-1615-4069-a329-1d55fd80ba21",
-      "created_at": "2026-07-16T13:00:48.992Z",
-      "updated_at": "2026-07-16T13:00:48.992Z",
-      "name": "Flipkart",
-      "industry": "E-commerce",
-      "hr_contact": "Kalyan K",
-      "email": "careers@flipkart.com",
-      "phone": "9876543210",
-      "package_amount": "14",
-      "previous_hires": 11,
-      "is_active": true
-    }
-  ],
-  "placements": [
-    {
-      "id": "037f3756-c460-426c-899c-de06249bbed9",
-      "created_at": "2026-07-16T13:15:48.536Z",
-      "updated_at": "2026-07-16T13:15:48.536Z",
-      "company": "google",
-      "position": "Software Engineer",
-      "company_id": "5e4d4874-bba4-49b7-ba26-31d8a3748a57",
-      "drive_date": "2026-07-28",
-      "venue": "Main Auditorium",
-      "deadline": "2026-07-24",
-      "status": "upcoming",
-      "package_min": 15,
-      "package_max": 22,
-      "eligibility_min_cgpa": 8,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    },
-    {
-      "id": "d15ac304-932b-4dab-8d86-2975295cfbb5",
-      "created_at": "2026-07-16T13:15:48.537Z",
-      "updated_at": "2026-07-16T13:15:48.537Z",
-      "company": "Apple Inc.",
-      "position": "Hardware Engineer",
-      "company_id": "890e0a74-3694-42cb-97ee-e6eac1fa024a",
-      "drive_date": "2026-08-02",
-      "venue": "Tech Lab 1",
-      "deadline": "2026-07-29",
-      "status": "upcoming",
-      "package_min": 18,
-      "package_max": 24,
-      "eligibility_min_cgpa": 7.5,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    },
-    {
-      "id": "9e611c8d-a7e5-4e3d-a1fd-441495a02628",
-      "created_at": "2026-07-16T13:15:48.537Z",
-      "updated_at": "2026-07-16T13:15:48.537Z",
-      "company": "Wipro",
-      "position": "Project Engineer",
-      "company_id": "64c91204-7b06-4d7c-baf5-8c372623ad8d",
-      "drive_date": "2026-07-22",
-      "venue": "Block C",
-      "deadline": "2026-07-19",
-      "status": "upcoming",
-      "package_min": 5,
-      "package_max": 8.5,
-      "eligibility_min_cgpa": 6,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    },
-    {
-      "id": "3e851540-e485-40b6-9fb8-c8bf76d4b204",
-      "created_at": "2026-07-16T13:15:48.537Z",
-      "updated_at": "2026-07-16T13:15:48.537Z",
-      "company": "Goldman Sachs",
-      "position": "Financial Analyst",
-      "company_id": "3bab3eee-a133-4de7-8ff9-93945c2700ec",
-      "drive_date": "2026-07-16",
-      "venue": "Seminar Hall 2",
-      "deadline": "2026-07-14",
-      "status": "ongoing",
-      "package_min": 12,
-      "package_max": 18,
-      "eligibility_min_cgpa": 7,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    },
-    {
-      "id": "eb54c918-65c0-4f18-9287-dde64aa3a833",
-      "created_at": "2026-07-16T13:15:48.537Z",
-      "updated_at": "2026-07-16T13:15:48.537Z",
-      "company": "McKinsey & Company",
-      "position": "Junior Consultant",
-      "company_id": "a4906725-7734-457e-a484-70ee49754e67",
-      "drive_date": "2026-07-17",
-      "venue": "Virtual",
-      "deadline": "2026-07-15",
-      "status": "ongoing",
-      "package_min": 10,
-      "package_max": 15,
-      "eligibility_min_cgpa": 7.5,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    },
-    {
-      "id": "2c634122-8509-4fa9-b820-90fba2d6c78e",
-      "created_at": "2026-07-16T13:15:48.537Z",
-      "updated_at": "2026-07-16T13:15:48.537Z",
-      "company": "Flipkart",
-      "position": "Operations Trainee",
-      "company_id": "0fad3e65-1615-4069-a329-1d55fd80ba21",
-      "drive_date": "2026-07-18",
-      "venue": "Seminar Hall 1",
-      "deadline": "2026-07-14",
-      "status": "ongoing",
-      "package_min": 8,
-      "package_max": 14,
-      "eligibility_min_cgpa": 6.5,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    },
-    {
-      "id": "a3cb4393-b101-4bc1-9330-f60574906709",
-      "created_at": "2026-07-16T13:15:48.537Z",
-      "updated_at": "2026-07-16T13:15:48.537Z",
-      "company": "Amazon",
-      "position": "Cloud Associate",
-      "company_id": "6a28914b-de2d-4272-ad7d-49d19f7ea2ad",
-      "drive_date": "2026-07-08",
-      "venue": "Virtual",
-      "deadline": "2026-07-03",
-      "status": "completed",
-      "package_min": 12,
-      "package_max": 19.5,
-      "eligibility_min_cgpa": 6.5,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    },
-    {
-      "id": "d26342fd-c73a-4f58-8af0-10639e323f14",
-      "created_at": "2026-07-16T13:15:48.537Z",
-      "updated_at": "2026-07-16T13:15:48.537Z",
-      "company": "TCS",
-      "position": "Systems Engineer",
-      "company_id": "426c8c36-0882-48eb-8c7e-45d1b5c0bb9d",
-      "drive_date": "2026-07-05",
-      "venue": "Placement Cell",
-      "deadline": "2026-07-01",
-      "status": "completed",
-      "package_min": 6,
-      "package_max": 9.5,
-      "eligibility_min_cgpa": 6,
-      "eligibility_departments": "[\"CSE\",\"ECE\",\"EEE\",\"IT\"]",
-      "applied_students": "[]"
-    }
-  ],
-  "placement_interviews": [
-    {
-      "id": "c9604581-e3c5-4c1e-bd73-904f62ad630b",
-      "created_at": "2026-07-16T13:17:52.433Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "student_name": "Aarav Sharma",
-      "company_name": "Google",
-      "round": "Technical Round 1",
-      "date": "2026-07-28",
-      "time": "10:00 AM",
-      "mode": "Online",
-      "status": "Scheduled"
-    },
-    {
-      "id": "ed56ff16-d726-4f23-9df4-c39728800919",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "student_name": "Priya Patel",
-      "company_name": "Microsoft",
-      "round": "HR Round",
-      "date": "2026-07-29",
-      "time": "02:00 PM",
-      "mode": "Online",
-      "status": "Scheduled"
-    },
-    {
-      "id": "13ffff8d-66f4-4dc2-9a2d-be0f39f4c500",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "student_name": "Ethan Walker",
-      "company_name": "Goldman Sachs",
-      "round": "Technical Round 2",
-      "date": "2026-07-25",
-      "time": "11:30 AM",
-      "mode": "Offline",
-      "status": "Scheduled"
-    },
-    {
-      "id": "e1b5b21e-da55-4db7-94b0-6dc219073700",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "student_name": "Sofia Rodriguez",
-      "company_name": "McKinsey & Company",
-      "round": "Case Interview",
-      "date": "2026-07-27",
-      "time": "04:00 PM",
-      "mode": "Online",
-      "status": "Scheduled"
-    },
-    {
-      "id": "495f2b7e-729f-4f6c-b641-3986065ae447",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "student_name": "Student Demo",
-      "company_name": "Flipkart",
-      "round": "Technical Round 1",
-      "date": "2026-07-24",
-      "time": "01:00 PM",
-      "mode": "Online",
-      "status": "Scheduled"
-    }
-  ],
-  "placement_notifications": [
-    {
-      "id": "d12d8e66-a471-47fe-8601-08bce7c30a1e",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "title": "Google India drive scheduled for 28th July",
-      "time": "2 hours ago",
-      "type": "Drive",
-      "unread": true
-    },
-    {
-      "id": "4e6e2a7b-143b-44c4-881e-f9c51dc4c7e9",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "title": "Microsoft India application deadline is tomorrow",
-      "time": "5 hours ago",
-      "type": "Deadline",
-      "unread": true
-    },
-    {
-      "id": "f623ef41-6b06-4e4c-af10-98dcefc86da2",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "title": "JPMorgan Chase scheduled 3 interviews today",
-      "time": "1 day ago",
-      "type": "Interview",
-      "unread": false
-    },
-    {
-      "id": "5e72fb1f-ee28-415a-a6fb-b801d4beb585",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "title": "Offer released for Sofia Rodriguez at McKinsey & Company",
-      "time": "2 days ago",
-      "type": "Offer",
-      "unread": false
-    },
-    {
-      "id": "df8d5f14-56ea-4650-8d35-85d00a4c9d18",
-      "created_at": "2026-07-16T13:17:52.434Z",
-      "updated_at": "2026-07-16T13:17:52.434Z",
-      "title": "Wipro hiring drive registration opened",
-      "time": "3 days ago",
-      "type": "Drive",
-      "unread": false
-    }
-  ],
-
-  "hostels": [
-    {
-      "id": "h1111111-1111-1111-1111-111111111111",
-      "name": "Vivekananda Boys Hostel",
-      "code": "VBH",
-      "type": "Boys",
-      "total_rooms": 60,
-      "total_beds": 120,
-      "monthly_fee": 5000,
-      "facilities": [
-        "WiFi",
-        "Gym",
-        "Mess"
-      ],
-      "contact_number": "9876500100",
-      "created_at": "2026-07-16T12:39:06.001Z",
-      "updated_at": "2026-07-16T12:39:06.003Z"
-    },
-    {
-      "id": "h2222222-2222-2222-2222-222222222222",
-      "name": "Sarojini Girls Hostel",
-      "code": "SGH",
-      "type": "Girls",
-      "total_rooms": 40,
-      "total_beds": 80,
-      "monthly_fee": 5500,
-      "facilities": [
-        "WiFi",
-        "Gym",
-        "Mess",
-        "CCTV"
-      ],
-      "contact_number": "9876500101",
-      "created_at": "2026-07-16T12:39:06.003Z",
-      "updated_at": "2026-07-16T12:39:06.003Z"
-    }
-  ],
-  "hostel_blocks": [
-    {
-      "id": "hb111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "name": "Block A",
-      "code": "A",
-      "total_floors": 3,
-      "total_rooms": 30,
-      "total_beds": 60,
-      "facilities": [
-        "WiFi"
-      ],
-      "block_warden": "Hostel Warden Demo",
-      "created_at": "2026-07-16T12:39:06.003Z"
-    },
-    {
-      "id": "hb222222-2222-2222-2222-222222222222",
-      "hostel_id": "h2222222-2222-2222-2222-222222222222",
-      "name": "Block B",
-      "code": "B",
-      "total_floors": 3,
-      "total_rooms": 30,
-      "total_beds": 60,
-      "facilities": [
-        "WiFi"
-      ],
-      "block_warden": "Hostel Warden Demo",
-      "created_at": "2026-07-16T12:39:06.003Z"
-    }
-  ],
-  "hostel_rooms": [
-    {
-      "id": "hr111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "block_id": "hb111111-1111-1111-1111-111111111111",
-      "room_number": "A101",
-      "floor": 1,
-      "type": "AC",
-      "capacity": 2,
-      "occupants": 1,
-      "amenities": [
-        "AC",
-        "Study Table"
-      ],
-      "created_at": "2026-07-16T12:39:06.003Z"
-    },
-    {
-      "id": "hr222222-2222-2222-2222-222222222222",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "block_id": "hb111111-1111-1111-1111-111111111111",
-      "room_number": "A102",
-      "floor": 1,
-      "type": "Non-AC",
-      "capacity": 4,
-      "occupants": 0,
-      "amenities": [
-        "Study Table"
-      ],
-      "created_at": "2026-07-16T12:39:06.003Z"
-    },
-    {
-      "id": "hr333333-3333-3333-3333-333333333333",
-      "hostel_id": "h2222222-2222-2222-2222-222222222222",
-      "block_id": "hb222222-2222-2222-2222-222222222222",
-      "room_number": "B101",
-      "floor": 1,
-      "type": "AC",
-      "capacity": 2,
-      "occupants": 0,
-      "amenities": [
-        "AC",
-        "Study Table"
-      ],
-      "created_at": "2026-07-16T12:39:06.003Z"
-    }
-  ],
-  "hostel_allocations": [
-    {
-      "id": "ha111111-1111-1111-1111-111111111111",
-      "student_id": "s1111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "block_id": "hb111111-1111-1111-1111-111111111111",
-      "room_id": "hr111111-1111-1111-1111-111111111111",
-      "bed_number": 1,
-      "status": "Active",
-      "academic_year": "2025-2026",
-      "created_at": "2026-07-16T12:39:06.003Z",
-      "updated_at": "2026-07-16T12:39:06.003Z"
-    }
-  ],
-  "hostel_fees": [
-    {
-      "id": "hf111111-1111-1111-1111-111111111111",
-      "student_id": "s1111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "block_id": "hb111111-1111-1111-1111-111111111111",
-      "room_id": "hr111111-1111-1111-1111-111111111111",
-      "fee_type": "Monthly Rent",
-      "month": "July",
-      "year": 2026,
-      "total_amount": 5000,
-      "paid_amount": 5000,
-      "due_date": "2026-07-15",
-      "status": "Paid",
-      "payment_method": "Online",
-      "receipt_number": "REC-HST-2026-001",
-      "academic_year": "2025-2026",
-      "resident_name": "Student Demo",
-      "registration_number": "CS100001",
-      "room_number": "A101",
-      "room_type": "AC",
-      "ac_type": "AC",
-      "total_fee": 5000,
-      "amount_paid": 5000,
-      "pending_amount": 0,
-      "payment_status": "Paid",
-      "payment_date": "2026-07-16T12:39:06.003Z"
-    },
-    {
-      "id": "hf222222-2222-2222-2222-222222222222",
-      "student_id": "s1111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "block_id": "hb111111-1111-1111-1111-111111111111",
-      "room_id": "hr111111-1111-1111-1111-111111111111",
-      "fee_type": "Monthly Rent",
-      "month": "August",
-      "year": 2026,
-      "total_amount": 5000,
-      "paid_amount": 0,
-      "due_date": "2026-08-15",
-      "status": "Unpaid",
-      "academic_year": "2025-2026",
-      "resident_name": "Student Demo",
-      "registration_number": "CS100001",
-      "room_number": "A101",
-      "room_type": "AC",
-      "ac_type": "AC",
-      "total_fee": 5000,
-      "amount_paid": 0,
-      "pending_amount": 5000,
-      "payment_status": "Pending"
-    }
-  ],
-  "hostel_complaints": [
-    {
-      "id": "hc111111-1111-1111-1111-111111111111",
-      "student_id": "s1111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "room_id": "hr111111-1111-1111-1111-111111111111",
-      "title": "Water leakage in bathroom",
-      "description": "There is a slow leakage in the washbasin tap.",
-      "category": "Plumbing",
-      "priority": "Low",
-      "status": "Pending",
-      "assigned_to": "Plumber John",
-      "created_at": "2026-07-16T12:39:06.003Z",
-      "updated_at": "2026-07-16T12:39:06.003Z"
-    }
-  ],
-  "hostel_visitors": [
-    {
-      "id": "hv111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "student_id": "s1111111-1111-1111-1111-111111111111",
-      "room_id": "hr111111-1111-1111-1111-111111111111",
-      "visitor_name": "Robert Demo",
-      "visitor_phone": "9876543209",
-      "relationship": "Father",
-      "purpose": "Deliver books",
-      "id_type": "Aadhaar Card",
-      "id_number": "1234-5678-9012",
-      "check_in_time": "2026-07-16T11:39:06.003Z",
-      "check_out_time": null,
-      "status": "In",
-      "created_at": "2026-07-16T12:39:06.003Z"
-    }
-  ],
-  "hostel_attendance": [
-    {
-      "id": "hat11111-1111-1111-1111-111111111111",
-      "student_id": "s1111111-1111-1111-1111-111111111111",
-      "hostel_id": "h1111111-1111-1111-1111-111111111111",
-      "room_id": "hr111111-1111-1111-1111-111111111111",
-      "attendance_date": "2026-07-16",
-      "status": "Present",
-      "remarks": "In room during roll call",
-      "created_at": "2026-07-16T12:39:06.003Z",
-      "updated_at": "2026-07-16T12:39:06.003Z"
-    }
-  ],
-  "fee_structures": [
-    {
-      "id": "fs111111-1111-1111-1111-111111111111",
-      "fee_structure_code": "FEE-AC-SINGLE-A",
-      "hostel_block_id": "hb111111-1111-1111-1111-111111111111",
-      "academic_year": "2025-2026",
-      "fee_category": "Hostel Fees",
-      "room_type": "AC",
-      "ac_type": "AC",
-      "resident_category": "General",
-      "monthly_hostel_fee": 4000,
-      "mess_fee": 1000,
-      "electricity_fee": 0,
-      "maintenance_fee": 0,
-      "security_deposit": 0,
-      "late_fee": 0,
-      "other_charges": 0,
-      "total_fee": 5000,
-      "effective_from": "2025-06-01",
-      "status": "Active",
-      "notes": "Default AC block structure",
-      "created_at": "2026-07-16T12:39:06.003Z",
-    }
-  ],
+  "otps": [],
   "faculty_attendance": [
     {
       "id": "fa111111-1111-1111-1111-111111111111",
@@ -1346,7 +405,55 @@
       "date": "2026-05-26",
       "status": "absent",
       "remarks": "Sick leave"
-
+    }
+  ],
+  "placement_companies": [
+    {
+      "id": "8b0c6369-59aa-4a02-8375-e92658af0fcb",
+      "created_at": "2026-07-16T13:30:05.220Z",
+      "updated_at": "2026-07-16T13:30:05.221Z",
+      "name": "infosys",
+      "industry": "Technology",
+      "hr_contact": "Lokesh Kotni",
+      "email": "lokeshkotni633@gmail.com",
+      "phone": "9898989",
+      "package_amount": "11",
+      "previous_hires": 26,
+      "is_active": true
+    }
+  ],
+  "placements": [
+    {
+      "id": "46b46f08-9bd8-43ed-ba86-a4a93ca716d2",
+      "created_at": "2026-07-16T13:30:32.392Z",
+      "updated_at": "2026-07-16T13:30:32.392Z",
+      "company": "infosys",
+      "position": "aiml",
+      "company_id": "8b0c6369-59aa-4a02-8375-e92658af0fcb",
+      "drive_date": "2026-07-02",
+      "venue": "aa",
+      "deadline": "2026-07-06",
+      "status": "upcoming",
+      "package_min": 6,
+      "package_max": 8,
+      "eligibility_min_cgpa": 7,
+      "eligibility_departments": "[\"CSE\",\"ECE\"]",
+      "applied_students": "[]"
+    }
+  ],
+  "placement_interviews": [],
+  "placement_notifications": [],
+  "student_notifications": [
+    {
+      "id": "SN-PLACEMENT-46b46f08-9bd8-43ed-ba86-a4a93ca716d2-s1111111-1111-1111-1111-111111111111",
+      "created_at": "2026-07-16T13:30:32.435Z",
+      "updated_at": "2026-07-16T13:30:32.435Z",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "title": "New Recruitment Drive: infosys is hiring for aiml. Register before 6 Jul.",
+      "type": "Placement",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
     }
   ]
 }

@@ -2570,3 +2570,47 @@ Body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["M
 
 [2026-07-16T13:01:03.205Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"faculty@college.com","password":"password"}
 
+[2026-07-16T13:45:45.530Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:45:46.551Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:12.013Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:13.066Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:15.082Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:19.099Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:27.439Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:28.452Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:43.346Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:50:44.365Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:11.673Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:11.687Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:17.642Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-16&period=1&time=09:00+AM - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:17.666Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-16&period=1&time=09:00+AM - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:17.678Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Operating+Systems&date=2026-07-16&period=1&time=09:00+AM - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:20.578Z] GET /api/faculty/students - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:21.600Z] GET /api/faculty/students - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:23.617Z] GET /api/faculty/students - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:27.633Z] GET /api/faculty/students - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:27.998Z] GET /api/faculty-module/performance - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:28.016Z] GET /api/faculty-module/performance - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:29.830Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:30.852Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:31.627Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:31.634Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:32.400Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:54.706Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-16&period=1&time=09:00+AM - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:54.731Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-16&period=1&time=09:00+AM - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:54.742Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Operating+Systems&date=2026-07-16&period=1&time=09:00+AM - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:51:57.626Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:52:00.253Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:52:00.266Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:52:01.094Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:52:02.926Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:52:02.948Z] GET /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {}
+[2026-07-16T13:52:29.462Z] POST /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {"title":"ravan","subject":"Algorithms","type":"PDF","fileUrl":"https://example.com/materials/doc-1784209949451.pdf","department":"CSE","year":3,"semester":5}
+[2026-07-16T13:52:34.441Z] POST /api/faculty-module/materials - Status: 403 - Client Error: Forbidden: Your role 'placement-officer' is not authorized to access this resource - Body: {"title":"ravan","subject":"Algorithms","type":"PDF","fileUrl":"https://example.com/materials/doc-1784209954433.pdf","department":"CSE","year":3,"semester":5}
+[2026-07-16T13:58:46.730Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-16T13:58:47.748Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-16T13:58:49.760Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-16T13:58:53.782Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-16T13:59:25.541Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-16T15:01:32.219Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"learning@college.com","password":"password13"}
+[2026-07-16T15:01:41.271Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"learning@college.com","password":"password1223"}

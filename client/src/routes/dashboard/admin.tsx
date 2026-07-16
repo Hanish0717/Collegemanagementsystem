@@ -11,7 +11,7 @@ export const Route = createFileRoute("/dashboard/admin")({
     const isGrievance = location.pathname.includes("/dashboard/admin/grievance");
     
     if (isLms) {
-      const allowedLms = ["student", "faculty", "admin", "super-admin", "principal", "dean", "hod", "exam-cell", "accounts"];
+      const allowedLms = ["student", "faculty", "lms", "admin", "super-admin", "principal", "dean", "hod", "exam-cell", "accounts"];
       if (user && allowedLms.includes(user.role)) return;
     }
     
