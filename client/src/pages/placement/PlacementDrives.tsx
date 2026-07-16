@@ -11,6 +11,20 @@ export function PlacementDrives() {
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState<"upcoming" | "ongoing" | "completed">("upcoming");
 
+  // Dynamic recruitment calendar configurations for the present month
+  const today = new Date();
+  const calendarYear = today.getFullYear();
+  const calendarMonth = today.getMonth(); // 0-indexed (e.g. 6 is July)
+  const calendarMonthName = today.toLocaleString("en-US", { month: "long" });
+
+  // Days in current month
+  const totalDays = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+
+  // Get index of 1st day of the month (0 = Sun, 1 = Mon, ..., 6 = Sat)
+  // Shift to align: 0 = Mon, 1 = Tue, ..., 6 = Sun
+  const firstDayIndexRaw = new Date(calendarYear, calendarMonth, 1).getDay();
+  const firstDayIndex = firstDayIndexRaw === 0 ? 6 : firstDayIndexRaw - 1;
+
   // Drive Modals & Saving state
   const [isAddDriveModalOpen, setIsAddDriveModalOpen] = useState(false);
   const [isViewDriveModalOpen, setIsViewDriveModalOpen] = useState(false);
@@ -320,14 +334,18 @@ export function PlacementDrives() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-semibold text-gradient">June 2026 Calendar Schedule</h3>
+              <h3 className="font-semibold text-gradient">{calendarMonthName} {calendarYear} Calendar Schedule</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Timezone-safe dynamic recruitment calendar</p>
             </div>
             <Badge tone="info">
               {drives.filter((d) => {
                 if (!d.date || d.date === "TBD") return false;
                 const parts = d.date.split('-');
-                return parts.length === 3 && parseInt(parts[1], 10) === 6;
+                if (parts.length === 3) {
+                  return parseInt(parts[0], 10) === calendarYear && parseInt(parts[1], 10) === (calendarMonth + 1);
+                }
+                const dateObj = new Date(d.date);
+                return dateObj.getUTCFullYear() === calendarYear && dateObj.getUTCMonth() === calendarMonth;
               }).length} drives
             </Badge>
           </div>
@@ -344,7 +362,15 @@ export function PlacementDrives() {
           </div>
 
           <div className="grid grid-cols-7 gap-2">
-            {Array.from({ length: 30 }, (_, i) => i + 1).map((day) => {
+            {/* Empty padding cells for start-of-month alignment */}
+            {Array.from({ length: firstDayIndex }).map((_, idx) => (
+              <div
+                key={`empty-${idx}`}
+                className="min-h-24 rounded-xl border border-dashed border-slate-100/40 bg-slate-50/10 opacity-30"
+              />
+            ))}
+
+            {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => {
               // Parse date strictly as YYYY-MM-DD to avoid timezone shifting
               const dayDrives = drives.filter((d) => {
                 if (!d.date || d.date === "TBD" || d.date === "Closed") return false;
@@ -353,13 +379,13 @@ export function PlacementDrives() {
                   const year = parseInt(parts[0], 10);
                   const month = parseInt(parts[1], 10);
                   const dayVal = parseInt(parts[2], 10);
-                  return year === 2026 && month === 6 && dayVal === day;
+                  return year === calendarYear && month === (calendarMonth + 1) && dayVal === day;
                 }
                 const dateObj = new Date(d.date);
-                return dateObj.getUTCMonth() === 5 && dateObj.getUTCDate() === day;
+                return dateObj.getUTCFullYear() === calendarYear && dateObj.getUTCMonth() === calendarMonth && dateObj.getUTCDate() === day;
               });
 
-              const isWeekend = day % 7 === 6 || day % 7 === 0;
+              const isWeekend = ((firstDayIndex + day - 1) % 7) >= 5;
 
               return (
                 <div

@@ -127,6 +127,76 @@ export const getCompanyLogo = (name: string) => {
       </div>
     );
   }
+  if (clean.includes("apple")) {
+    return (
+      <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="absolute -top-12 -left-12 size-24 bg-slate-500/5 rounded-full blur-xl"></div>
+        <div className="size-16 flex items-center justify-center relative">
+          <svg viewBox="0 0 170 170" className="size-12 fill-slate-800 drop-shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.34.13-9.04-1.93-14.12-6.17-3.55-2.99-7.37-7.79-11.47-14.38-5.35-8.62-9.53-19.14-12.54-31.55-3.01-12.41-4.52-24.16-4.52-35.24 0-15.66 3.62-28.43 10.87-38.31 7.25-9.88 16.48-14.88 27.69-15.01 4.58 0 9.87 1.37 15.86 4.13 6 2.76 10.02 4.13 12.06 4.13 1.87 0 6.01-1.49 12.41-4.48 6.4-2.98 11.83-4.38 16.31-4.21 12.75.51 22.84 5.21 30.29 14.1 6.2 7.42 9.88 15.93 11.05 25.53-15.66 7.41-23.27 18.42-22.85 33.02.43 10.74 4.59 19.53 12.5 26.36 7.91 6.83 17 10.37 27.27 10.63.13 2.11-.26 5.09-1.16 8.92zM119.22 32.41c0-7.82 2.8-15.22 8.4-22.18 5.6-6.96 12.28-10.96 20.04-12 1.02 8.33-1.61 16.14-7.91 23.42-6.29 7.28-13.26 11.23-20.53 10.76z"/>
+          </svg>
+        </div>
+        <span className="text-slate-700 font-sans font-bold text-sm tracking-wide mt-1 select-none">Apple</span>
+      </div>
+    );
+  }
+  if (clean.includes("meta") || clean.includes("facebook")) {
+    return (
+      <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="absolute -top-12 -left-12 size-24 bg-blue-500/5 rounded-full blur-xl"></div>
+        <div className="size-16 flex items-center justify-center relative">
+          <svg viewBox="0 0 24 24" className="size-12 fill-[#0064E0] drop-shadow-[0_2px_8px_rgba(0,100,224,0.15)]">
+            <path d="M17.437 6c-1.391 0-2.617.51-3.606 1.48L12 9.17l-1.83-1.69c-.99-.97-2.215-1.48-3.607-1.48-2.915 0-5.286 2.378-5.286 5.3 0 1.395.512 2.624 1.485 3.616L12 23l9.238-8.084c.973-.992 1.485-2.22 1.485-3.616 0-2.922-2.37-5.3-5.286-5.3zm-10.26 8.6c-.63 0-1.185-.231-1.63-.676-.445-.444-.678-.999-.678-1.624 0-.625.233-1.18.678-1.624.445-.445 1-.676 1.63-.676.626 0 1.18.231 1.625.676.444.444.677.999.677 1.624 0 .625-.233 1.18-.677 1.624-.445.445-.999.676-1.625.676zm10.26 0c-.626 0-1.18-.231-1.625-.676-.444-.444-.677-.999-.677-1.624 0-.625.233-1.18.677-1.624.445-.445 1-.676 1.625-.676.63 0 1.185.231 1.63.676.444.444.677.999.677 1.624 0 .625-.233 1.18-.677 1.624-.445.445-.999.676-1.63.676z"/>
+          </svg>
+        </div>
+        <span className="text-[#0064E0] font-sans font-bold text-sm tracking-wide mt-1 select-none">Meta</span>
+      </div>
+    );
+  }
+  if (clean.includes("jpmorgan") || clean.includes("jp morgan")) {
+    return (
+      <div className="bg-[#112E51] text-white rounded-xl flex flex-col items-center justify-center size-full p-4 border border-[#0d223c] shadow-md relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-full blur-xl"></div>
+        <span className="font-serif text-lg font-bold tracking-tight">J.P. Morgan</span>
+        <span className="text-[9px] uppercase tracking-widest opacity-80 mt-1 select-none">CHASE & CO.</span>
+      </div>
+    );
+  }
+  if (clean.includes("mckinsey")) {
+    return (
+      <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="absolute top-0 left-0 w-2 h-full bg-[#051C2C]"></div>
+        <span className="text-[#051C2C] font-serif text-xl font-bold tracking-tight">McKinsey</span>
+        <span className="text-[#051C2C]/70 font-sans text-xs tracking-widest -mt-1">& Company</span>
+      </div>
+    );
+  }
+  if (clean.includes("wipro")) {
+    return (
+      <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="size-14 flex items-center justify-center relative">
+          <svg viewBox="0 0 100 100" className="size-full">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#2563EB" strokeWidth="2" strokeDasharray="3 3" />
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#EC4899" strokeWidth="2" strokeDasharray="4 4" />
+            <circle cx="50" cy="50" r="20" fill="none" stroke="#10B981" strokeWidth="2" />
+            <circle cx="50" cy="50" r="10" fill="#F59E0B" />
+          </svg>
+        </div>
+        <span className="text-slate-800 font-sans font-black text-sm tracking-widest mt-1 select-none">WIPRO</span>
+      </div>
+    );
+  }
+  if (clean.includes("flipkart")) {
+    return (
+      <div className="bg-[#2874F0] text-white rounded-xl flex flex-col items-center justify-center size-full p-4 shadow-md border border-[#1b63dd] relative overflow-hidden transition-all duration-300 hover:shadow-xl">
+        <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-yellow-400/10 rounded-full blur-xl"></div>
+        <span className="font-sans font-black italic text-2xl tracking-tighter">Flipkart</span>
+        <div className="bg-[#FFE500] text-[#2874F0] font-sans font-extrabold text-[8px] px-2 py-0.5 rounded-full mt-1.5 uppercase select-none tracking-widest shadow-sm">
+          Plus
+        </div>
+      </div>
+    );
+  }
   
   // Clean fallback card for user-defined new companies
   const char = name.charAt(0).toUpperCase();
