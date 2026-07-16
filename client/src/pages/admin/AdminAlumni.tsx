@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   Users, Award, Calendar, DollarSign, Plus, Trash2, CheckCircle, MessageSquare, 
@@ -73,40 +73,29 @@ type TabId =
   | "settings"
   | "help";
 
+import { Outlet, useRouterState } from "@tanstack/react-router";
+import { createContext, useContext } from "react";
+
+export const AlumniContext = createContext<any>(null);
+
+export function useAlumni() {
+  return useContext(AlumniContext);
+}
+
 export function AdminAlumni() {
   const queryClient = useQueryClient();
+  const routerState = useRouterState();
+  const path = routerState.location.pathname;
 
-  const getTabFromUrl = (): TabId => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const tab = params.get("tab") as TabId;
-      if (tab) return tab;
-    }
-    return "dashboard";
+  const getTabFromPath = (pathname: string): TabId => {
+    const parts = pathname.split("/");
+    const lastPart = parts[parts.length - 1];
+    if (lastPart === "alumni" || !lastPart) return "dashboard";
+    if (lastPart === "placement") return "placement"; // matching placement vs placement-portal
+    return lastPart as TabId;
   };
 
-  const [activeTab, _setActiveTab] = useState<TabId>(getTabFromUrl());
-
-  const setActiveTab = (tabId: TabId) => {
-    _setActiveTab(tabId);
-    if (typeof window !== "undefined") {
-      const url = new URL(window.location.href);
-      url.searchParams.set("tab", tabId);
-      window.history.pushState({}, "", url.toString());
-    }
-  };
-
-  useEffect(() => {
-    const handleUrlChange = () => {
-      _setActiveTab(getTabFromUrl());
-    };
-    window.addEventListener("popstate", handleUrlChange);
-    const interval = setInterval(handleUrlChange, 200);
-    return () => {
-      window.removeEventListener("popstate", handleUrlChange);
-      clearInterval(interval);
-    };
-  }, []);
+  const activeTab = getTabFromPath(path);
 
   // Local active alumni id context (simulate current logged in alumni profile)
   const currentAlumniId = "alm-001";
@@ -191,169 +180,69 @@ export function AdminAlumni() {
     announcements: "Communication", notifications: "Communication",
   };
 
+  const contextValue = {
+    stats,
+    statsLoading,
+    directoryList,
+    dirLoading,
+    pendingAlumni,
+    pendingLoading,
+    eventList,
+    eventsLoading,
+    jobList,
+    jobsLoading,
+    mentorshipRequests,
+    mentorLoading,
+    donationLeaderboard,
+    leaderboardLoading,
+    successStories,
+    storiesLoading,
+    connections,
+    connsLoading,
+    feedPosts,
+    feedLoading,
+    selectedAlumniId,
+    setSelectedAlumniId,
+    selectedProfile,
+    profileDetailLoading,
+    currentAlumniId,
+    queryClient,
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Page breadcrumb + title */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-        <span className="font-medium text-foreground">Alumni</span>
-        {tabGroup[activeTab] && (
-          <>
-            <span>/</span>
-            <span>{tabGroup[activeTab]}</span>
-          </>
-        )}
-        <span>/</span>
-        <span className="font-semibold text-indigo-600">{tabTitle[activeTab]}</span>
-      </div>
+    <AlumniContext.Provider value={contextValue}>
+      <div className="space-y-6">
+        {/* Page breadcrumb + title */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+          <span className="font-medium text-foreground">Alumni</span>
+          {tabGroup[activeTab] && (
+            <>
+              <span>/</span>
+              <span>{tabGroup[activeTab]}</span>
+            </>
+          )}
+          <span>/</span>
+          <span className="font-semibold text-indigo-600">{tabTitle[activeTab]}</span>
+        </div>
 
-      <PageHeader
-        title={tabTitle[activeTab]}
-        desc={activeTab === "dashboard"
-          ? "Alumni network overview — registrations, placements, events, donations and analytics."
-          : `Manage ${tabTitle[activeTab].toLowerCase()} in the Alumni workspace.`}
-      />
+        <PageHeader
+          title={tabTitle[activeTab]}
+          desc={activeTab === "dashboard"
+            ? "Alumni network overview — registrations, placements, events, donations and analytics."
+            : `Manage ${tabTitle[activeTab]?.toLowerCase() || "alumni workspace"} in the Alumni workspace.`}
+        />
 
-      {/* Full-width content area */}
-      <div>
-        {activeTab === "dashboard" && (
-          <DashboardTab
-            stats={stats}
-            isLoading={statsLoading}
-            onNavigate={setActiveTab}
-            donationLeaderboard={donationLeaderboard}
-            eventList={eventList}
-            directoryList={directoryList}
-            mentorshipRequests={mentorshipRequests}
-          />
-        )}
-        {activeTab === "directory" && (
-          <DirectoryTab
-            list={directoryList}
-            isLoading={dirLoading}
-            pending={pendingAlumni}
-            pendingLoading={pendingLoading}
-            onSelectAlumni={(id: string) => {
-              setSelectedAlumniId(id);
-              setActiveTab("profile");
-            }}
-            onRefetch={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
-            }}
-            currentAlumniId={currentAlumniId}
-          />
-        )}
-        {activeTab === "registration" && (
-          <RegistrationTab
-            onSuccess={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
-              setActiveTab("directory");
-            }}
-          />
-        )}
-        {activeTab === "profile" && (
-          <ProfileTab
-            directory={directoryList}
-            selectedId={selectedAlumniId}
-            onSelectId={setSelectedAlumniId}
-            profile={selectedProfile}
-            isLoading={profileDetailLoading}
-            onRefetch={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-profile-detail", selectedAlumniId] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
-            }}
-          />
-        )}
-        {activeTab === "events" && (
-          <EventsTab
-            list={eventList}
-            isLoading={eventsLoading}
-            onRefetch={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-events"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
-            }}
-            alumniList={directoryList}
-          />
-        )}
-        {activeTab === "gallery" && <EventGalleryTab eventList={eventList} />}
-        {activeTab === "jobs" && (
-          <JobsTab
-            list={jobList}
-            isLoading={jobsLoading}
-            onRefetch={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-jobs"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
-            }}
-            alumniList={directoryList}
-          />
-        )}
-        {activeTab === "internships" && <InternshipsTab alumniList={directoryList} />}
-        {activeTab === "placement" && <PlacementPortalTab alumniList={directoryList} stats={stats} />}
-        {activeTab === "mentorship" && (
-          <MentorshipTab
-            requests={mentorshipRequests}
-            isLoading={mentorLoading}
-            onRefetch={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-mentorship"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
-            }}
-            alumniList={directoryList}
-          />
-        )}
-        {activeTab === "donations" && (
-          <DonationsTab
-            leaderboard={donationLeaderboard}
-            isLoading={leaderboardLoading}
-            alumniList={directoryList}
-            onRefetch={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-leaderboard"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
-            }}
-          />
-        )}
-        {activeTab === "stories" && (
-          <StoriesTab
-            stories={successStories}
-            isLoading={storiesLoading}
-            alumniList={directoryList}
-            onRefetch={() => queryClient.invalidateQueries({ queryKey: ["alumni-stories"] })}
-          />
-        )}
-        {activeTab === "networking" && (
-          <NetworkingTab
-            posts={feedPosts}
-            isLoading={feedLoading}
-            connections={connections}
-            connsLoading={connsLoading}
-            alumniList={directoryList}
-            currentAlumniId={currentAlumniId}
-            onRefetch={() => {
-              queryClient.invalidateQueries({ queryKey: ["alumni-feed"] });
-              queryClient.invalidateQueries({ queryKey: ["alumni-connections"] });
-            }}
-          />
-        )}
-        {activeTab === "messaging" && (
-          <MessagingTab alumniList={directoryList} currentAlumniId={currentAlumniId} />
-        )}
-        {activeTab === "announcements" && <AnnouncementsTab alumniList={directoryList} />}
-        {activeTab === "notifications" && <NotificationsTab />}
-        {activeTab === "verification" && <VerificationTab alumniList={directoryList} />}
-        {activeTab === "ai-features" && <AIFeaturesTab currentAlumniId={currentAlumniId} />}
-        {activeTab === "reports" && (
-          <ReportsTab alumni={directoryList} donations={donationLeaderboard} />
-        )}
-        {activeTab === "settings" && <SettingsTab />}
-        {activeTab === "help" && <HelpTab />}
+        {/* Full-width content area */}
+        <div>
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </AlumniContext.Provider>
   );
 }
 
 // ── 1. DASHBOARD TAB ─────────────────────────────────────
-function DashboardTab({ stats, isLoading, onNavigate, donationLeaderboard, eventList, directoryList, mentorshipRequests }: any) {
+export function DashboardTab({ stats, isLoading, onNavigate, donationLeaderboard, eventList, directoryList, mentorshipRequests }: any) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
@@ -581,7 +470,7 @@ function DashboardTab({ stats, isLoading, onNavigate, donationLeaderboard, event
 
 
 // ── 2. ALUMNI DIRECTORY TAB ──────────────────────────────
-function DirectoryTab({ list, isLoading, pending, pendingLoading, onSelectAlumni, onRefetch, currentAlumniId }: any) {
+export function DirectoryTab({ list, isLoading, pending, pendingLoading, onSelectAlumni, onRefetch, currentAlumniId }: any) {
   const [search, setSearch] = useState("");
   const [dept, setDept] = useState("All Departments");
   const [year, setYear] = useState("All Years");
@@ -898,7 +787,7 @@ function DirectoryTab({ list, isLoading, pending, pendingLoading, onSelectAlumni
 }
 
 // ── 3. ALUMNI REGISTRATION TAB ───────────────────────────
-function RegistrationTab({ onSuccess }: any) {
+export function RegistrationTab({ onSuccess }: any) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -1097,7 +986,7 @@ function RegistrationTab({ onSuccess }: any) {
 }
 
 // ── 4. PROFILE TAB ───────────────────────────────────────
-function ProfileTab({ directory, selectedId, onSelectId, profile, isLoading, onRefetch }: any) {
+export function ProfileTab({ directory, selectedId, onSelectId, profile, isLoading, onRefetch }: any) {
   const [isEditing, setIsEditing] = useState(false);
   const [editCompany, setEditCompany] = useState("");
   const [editDesignation, setEditDesignation] = useState("");
@@ -1291,7 +1180,7 @@ function ProfileTab({ directory, selectedId, onSelectId, profile, isLoading, onR
 }
 
 // ── 5. EVENTS TAB ────────────────────────────────────────
-function EventsTab({ list, isLoading, onRefetch, alumniList }: any) {
+export function EventsTab({ list, isLoading, onRefetch, alumniList }: any) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
@@ -1507,7 +1396,7 @@ function EventsTab({ list, isLoading, onRefetch, alumniList }: any) {
 }
 
 // ── 6. JOBS TAB ──────────────────────────────────────────
-function JobsTab({ list, isLoading, onRefetch, alumniList }: any) {
+export function JobsTab({ list, isLoading, onRefetch, alumniList }: any) {
   const [isPostOpen, setIsPostOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
@@ -1694,7 +1583,7 @@ function JobsTab({ list, isLoading, onRefetch, alumniList }: any) {
 }
 
 // ── 7. MENTORSHIP TAB ────────────────────────────────────
-function MentorshipTab({ requests, isLoading, onRefetch, alumniList }: any) {
+export function MentorshipTab({ requests, isLoading, onRefetch, alumniList }: any) {
   const [activeSubTab, setActiveSubTab] = useState<"requests" | "book">("requests");
   const [selectedMentorId, setSelectedMentorId] = useState("");
   const [requestReason, setRequestReason] = useState("");
@@ -1857,7 +1746,7 @@ function MentorshipTab({ requests, isLoading, onRefetch, alumniList }: any) {
 }
 
 // ── 8. DONATIONS TAB ─────────────────────────────────────
-function DonationsTab({ leaderboard, isLoading, alumniList, onRefetch }: any) {
+export function DonationsTab({ leaderboard, isLoading, alumniList, onRefetch }: any) {
   const [amount, setAmount] = useState("");
   const [alumniId, setAlumniId] = useState("");
   const [cause, setCause] = useState("AIML Lab Supercomputing Fund");
@@ -1971,7 +1860,7 @@ function DonationsTab({ leaderboard, isLoading, alumniList, onRefetch }: any) {
 }
 
 // ── 9. STORIES TAB ───────────────────────────────────────
-function StoriesTab({ stories, isLoading, alumniList, onRefetch }: any) {
+export function StoriesTab({ stories, isLoading, alumniList, onRefetch }: any) {
   const [isWriteOpen, setIsWriteOpen] = useState(false);
   const [alumniId, setAlumniId] = useState("");
   const [title, setTitle] = useState("");
@@ -2121,7 +2010,7 @@ function StoriesTab({ stories, isLoading, alumniList, onRefetch }: any) {
 }
 
 // ── 10. NETWORKING TAB (SOCIAL FEED) ──────────────────────
-function NetworkingTab({ posts, isLoading, connections, connsLoading, alumniList, currentAlumniId, onRefetch }: any) {
+export function NetworkingTab({ posts, isLoading, connections, connsLoading, alumniList, currentAlumniId, onRefetch }: any) {
   const [postText, setPostText] = useState("");
   const [commentText, setCommentText] = useState<Record<string, string>>({});
 
@@ -2278,7 +2167,7 @@ function NetworkingTab({ posts, isLoading, connections, connsLoading, alumniList
 }
 
 // ── 11. MESSAGING TAB ────────────────────────────────────
-function MessagingTab({ alumniList, currentAlumniId }: any) {
+export function MessagingTab({ alumniList, currentAlumniId }: any) {
   const [selectedPeerId, setSelectedPeerId] = useState("");
   const [inputText, setInputText] = useState("");
 
@@ -2384,7 +2273,7 @@ function MessagingTab({ alumniList, currentAlumniId }: any) {
 }
 
 // ── 12. ANNOUNCEMENTS TAB ────────────────────────────────
-function AnnouncementsTab({ alumniList }: any) {
+export function AnnouncementsTab({ alumniList }: any) {
   const [type, setType] = useState<"Email" | "SMS" | "WhatsApp">("Email");
   const [recipient, setRecipient] = useState("All Active Alumni");
   const [subject, setSubject] = useState("");
@@ -2486,7 +2375,7 @@ function AnnouncementsTab({ alumniList }: any) {
 }
 
 // ── 13. NOTIFICATIONS TAB ────────────────────────────────
-function NotificationsTab() {
+export function NotificationsTab() {
   const [logs, setLogs] = useState([
     { id: "1", title: "New Job Placement: Google L4 Software Engineer", date: "Just now", read: false },
     { id: "2", title: "Mentorship request slot schedule accepted", date: "2 hours ago", read: false },
@@ -2521,7 +2410,7 @@ function NotificationsTab() {
 }
 
 // ── 14. DEGREE VERIFICATION TAB ──────────────────────────
-function VerificationTab({ alumniList }: any) {
+export function VerificationTab({ alumniList }: any) {
   const [selectedAlmId, setSelectedAlmId] = useState("");
   const [verifiedStatus, setVerifiedStatus] = useState<string | null>(null);
 
@@ -2573,7 +2462,7 @@ function VerificationTab({ alumniList }: any) {
 }
 
 // ── 15. AI FEATURES TAB ──────────────────────────────────
-function AIFeaturesTab({ currentAlumniId }: any) {
+export function AIFeaturesTab({ currentAlumniId }: any) {
   const [resumeText, setResumeText] = useState("");
   const [aiScore, setAiScore] = useState<number | null>(null);
   const [aiTips, setAiTips] = useState<string[]>([]);
@@ -2718,7 +2607,7 @@ function AIFeaturesTab({ currentAlumniId }: any) {
 }
 
 // ── 16. REPORTS TAB ──────────────────────────────────────
-function ReportsTab({ alumni, donations }: any) {
+export function ReportsTab({ alumni, donations }: any) {
   const handleDownloadExcel = () => {
     toast.info("Preparing Excel Audit logs...");
     setTimeout(() => {
@@ -2792,7 +2681,7 @@ function ReportsTab({ alumni, donations }: any) {
 }
 
 // ── 17. SETTINGS TAB ─────────────────────────────────────
-function SettingsTab() {
+export function SettingsTab() {
   const [emailNotifs, setEmailNotifs] = useState(true);
   const [waNotifs, setWaNotifs] = useState(false);
   const [privacy, setPrivacy] = useState("Public");

@@ -772,7 +772,7 @@ export function DashboardLayout() {
                 return path === childUrl.pathname &&
                   [...childUrl.searchParams.entries()].every(([k, v]) => cp.get(k) === v);
               }
-              return path.startsWith(child.to);
+              return path === child.to;
             });
             const isOpen = openSubmenus[submenuKey] !== undefined
               ? openSubmenus[submenuKey]
@@ -822,7 +822,6 @@ export function DashboardLayout() {
                 {isOpen && (
                   <div className="ml-4 mt-1 space-y-1">
                     {item.children.map((sub) => {
-                      // For query-param based tabs (e.g. ?tab=directory)
                       const subUrl = new URL(sub.to, window.location.origin);
                       const subHasQuery = subUrl.search.length > 0;
                       let subActive = false;
@@ -833,14 +832,10 @@ export function DashboardLayout() {
                         subActive = path === subUrl.pathname &&
                           [...subParams.entries()].every(([k, v]) => currentParams.get(k) === v);
                       } else {
-                        subActive = path.startsWith(sub.to);
+                        // Exact match for clean path routes
+                        subActive = path === sub.to;
                       }
                       const handleSubClick = (e: React.MouseEvent) => {
-                        if (subHasQuery) {
-                          e.preventDefault();
-                          window.history.pushState({}, "", sub.to);
-                          window.dispatchEvent(new PopStateEvent("popstate"));
-                        }
                         if (isMobile) setMobileOpen(false);
                       };
                       return (
@@ -859,6 +854,7 @@ export function DashboardLayout() {
                       );
                     })}
                   </div>
+
                 )}
               </div>
             );

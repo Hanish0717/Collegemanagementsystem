@@ -81,90 +81,90 @@ const adminAlumniNav: NavItem = {
   label: "Alumni",
   icon: Heart,
   children: [
-    { to: "/dashboard/admin/alumni?tab=registration", label: "Alumni Registration", icon: Plus },
-    { to: "/dashboard/admin/alumni?tab=donations",    label: "Donations",           icon: DollarSign },
-    { to: "/dashboard/admin/alumni?tab=events",       label: "Events",              icon: CalendarCheck },
-    { to: "/dashboard/admin/alumni?tab=mentorship",   label: "Mentorship",          icon: Star },
+    { to: "/dashboard/admin/alumni/registration", label: "Alumni Registration", icon: Plus },
+    { to: "/dashboard/admin/alumni/donations",    label: "Donations",           icon: DollarSign },
+    { to: "/dashboard/admin/alumni/events",       label: "Events",              icon: CalendarCheck },
+    { to: "/dashboard/admin/alumni/mentorship",   label: "Mentorship",          icon: Star },
   ],
 };
 
 // ── Full grouped alumni workspace nav (ERPNext-style) ──
 const alumniWorkspaceNav: NavItem[] = [
-  { to: "/dashboard/admin/alumni?tab=dashboard", label: "Dashboard", icon: LayoutDashboard, exact: false },
+  { to: "/dashboard/admin/alumni", label: "Dashboard", icon: LayoutDashboard, exact: true },
 
   // Alumni Management group
   {
-    to: "/dashboard/admin/alumni?tab=directory",
+    to: "/dashboard/admin/alumni/directory",
     label: "Alumni Management",
     icon: Users,
     children: [
-      { to: "/dashboard/admin/alumni?tab=directory",    label: "Alumni Directory",    icon: Search },
-      { to: "/dashboard/admin/alumni?tab=registration", label: "Alumni Registration", icon: Plus },
-      { to: "/dashboard/admin/alumni?tab=profile",      label: "Alumni Profiles",     icon: Award },
-      { to: "/dashboard/admin/alumni?tab=verification", label: "Alumni Verification", icon: ShieldCheck },
+      { to: "/dashboard/admin/alumni/directory",    label: "Alumni Directory",    icon: Search },
+      { to: "/dashboard/admin/alumni/registration", label: "Alumni Registration", icon: Plus },
+      { to: "/dashboard/admin/alumni/profile",      label: "Alumni Profiles",     icon: Award },
+      { to: "/dashboard/admin/alumni/verification", label: "Alumni Verification", icon: ShieldCheck },
     ],
   },
 
   // Career group
   {
-    to: "/dashboard/admin/alumni?tab=jobs",
+    to: "/dashboard/admin/alumni/jobs",
     label: "Career",
     icon: Briefcase,
     children: [
-      { to: "/dashboard/admin/alumni?tab=jobs",        label: "Job Portal",              icon: Briefcase },
-      { to: "/dashboard/admin/alumni?tab=internships", label: "Internship Opportunities", icon: BookOpen },
-      { to: "/dashboard/admin/alumni?tab=placement",   label: "Placement Portal",        icon: Star },
+      { to: "/dashboard/admin/alumni/jobs",        label: "Job Portal",              icon: Briefcase },
+      { to: "/dashboard/admin/alumni/internships", label: "Internship Opportunities", icon: BookOpen },
+      { to: "/dashboard/admin/alumni/placement",   label: "Placement Portal",        icon: Star },
     ],
   },
 
   // Community group
   {
-    to: "/dashboard/admin/alumni?tab=mentorship",
+    to: "/dashboard/admin/alumni/mentorship",
     label: "Community",
     icon: Heart,
     children: [
-      { to: "/dashboard/admin/alumni?tab=mentorship",  label: "Mentorship",          icon: Star },
-      { to: "/dashboard/admin/alumni?tab=networking",  label: "Professional Network", icon: Users },
-      { to: "/dashboard/admin/alumni?tab=messaging",   label: "Messages",             icon: MessageSquare },
+      { to: "/dashboard/admin/alumni/mentorship",  label: "Mentorship",          icon: Star },
+      { to: "/dashboard/admin/alumni/networking",  label: "Professional Network", icon: Users },
+      { to: "/dashboard/admin/alumni/messaging",   label: "Messages",             icon: MessageSquare },
     ],
   },
 
   // Events group
   {
-    to: "/dashboard/admin/alumni?tab=events",
+    to: "/dashboard/admin/alumni/events",
     label: "Events",
     icon: CalendarCheck,
     children: [
-      { to: "/dashboard/admin/alumni?tab=events",      label: "Events & Reunions",    icon: CalendarCheck },
-      { to: "/dashboard/admin/alumni?tab=gallery",     label: "Event Gallery",        icon: Image },
+      { to: "/dashboard/admin/alumni/events",      label: "Events & Reunions",    icon: CalendarCheck },
+      { to: "/dashboard/admin/alumni/gallery",     label: "Event Gallery",        icon: Image },
     ],
   },
 
   // Contributions group
   {
-    to: "/dashboard/admin/alumni?tab=donations",
+    to: "/dashboard/admin/alumni/donations",
     label: "Contributions",
     icon: DollarSign,
     children: [
-      { to: "/dashboard/admin/alumni?tab=donations", label: "Donations",       icon: DollarSign },
-      { to: "/dashboard/admin/alumni?tab=stories",   label: "Success Stories", icon: BookOpen },
+      { to: "/dashboard/admin/alumni/donations", label: "Donations",       icon: DollarSign },
+      { to: "/dashboard/admin/alumni/stories",   label: "Success Stories", icon: BookOpen },
     ],
   },
 
   // Communication group
   {
-    to: "/dashboard/admin/alumni?tab=announcements",
+    to: "/dashboard/admin/alumni/announcements",
     label: "Communication",
     icon: Send,
     children: [
-      { to: "/dashboard/admin/alumni?tab=announcements", label: "Announcements", icon: Send },
-      { to: "/dashboard/admin/alumni?tab=notifications", label: "Notifications",  icon: Bell },
+      { to: "/dashboard/admin/alumni/announcements", label: "Announcements", icon: Send },
+      { to: "/dashboard/admin/alumni/notifications", label: "Notifications",  icon: Bell },
     ],
   },
 
-  { to: "/dashboard/admin/alumni?tab=reports",    label: "Reports & Analytics", icon: Activity },
-  { to: "/dashboard/admin/alumni?tab=settings",   label: "Settings",            icon: Settings },
-  { to: "/dashboard/admin/alumni?tab=help",        label: "Help",                icon: HelpCircle },
+  { to: "/dashboard/admin/alumni/reports",    label: "Reports & Analytics", icon: Activity },
+  { to: "/dashboard/admin/alumni/settings",   label: "Settings",            icon: Settings },
+  { to: "/dashboard/admin/alumni/help",        label: "Help",                icon: HelpCircle },
 ];
 
 // ── Legacy flat submenu (kept for backwards compatibility reference) ──
