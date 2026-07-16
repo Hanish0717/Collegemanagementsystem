@@ -438,9 +438,14 @@ if (isMockMode) {
 } else {
   console.log("✅ LIVE POSTGRESQL / SUPABASE CONNECTION DETECTED. Query builder is online.");
 
+  const isLocalDatabase =
+    databaseUrl.includes('localhost') ||
+    databaseUrl.includes('127.0.0.1') ||
+    databaseUrl.includes('host.docker.internal');
+
   const pool = new Pool({
     connectionString: databaseUrl,
-    ssl: { rejectUnauthorized: false }
+    ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
   });
 
   class PostgresQueryBuilder {

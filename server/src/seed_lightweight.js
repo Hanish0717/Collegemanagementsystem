@@ -6,6 +6,10 @@ dotenv.config();
 
 const { Client } = pkg;
 const connectionString = process.env.DATABASE_URL;
+const isLocalDatabase =
+  connectionString?.includes('localhost') ||
+  connectionString?.includes('127.0.0.1') ||
+  connectionString?.includes('host.docker.internal');
 
 const DEPARTMENTS = [
   { code: 'CSE', name: 'Computer Science & Engineering', head: 'Dr. Srinivas Rao', budget: '₹32L' },
@@ -378,7 +382,7 @@ export const seedIfNeeded = async () => {
 
   const client = new Client({
     connectionString,
-    ssl: { rejectUnauthorized: false }
+    ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
   });
 
   try {

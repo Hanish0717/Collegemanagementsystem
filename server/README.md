@@ -6,8 +6,8 @@ Backend API for College Management System ERP.
 
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
-- **MongoDB Atlas** - Database
-- **Mongoose** - ODM for MongoDB
+- **PostgreSQL / Supabase** - Database layer
+- **pg** - PostgreSQL client
 - **JWT** - Authentication
 - **bcryptjs** - Password hashing
 - **dotenv** - Environment variables
@@ -21,7 +21,7 @@ Backend API for College Management System ERP.
 server/
 ├── src/
 │   ├── config/
-│   │   └── database.js       # MongoDB connection setup
+│   │   └── supabase.js       # PostgreSQL / Supabase connection layer
 │   ├── controllers/          # Route controllers
 │   ├── middleware/
 │   │   └── errorHandler.js   # Error handling middleware
@@ -48,7 +48,9 @@ npm install
 ```env
 PORT=5000
 NODE_ENV=development
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/college-management
+DATABASE_URL=postgresql://<username>:<password>@<host>:5432/<database>
+SUPABASE_URL=https://<your-project>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
 JWT_SECRET=your_jwt_secret_key
 FRONTEND_URL=http://localhost:5173
 ```
@@ -81,7 +83,7 @@ Response:
 ## Features
 
 - ✅ Express server setup
-- ✅ MongoDB connection
+- ✅ PostgreSQL / Supabase connection
 - ✅ Global middleware (CORS, JSON parsing, cookie-parser, morgan)
 - ✅ Error handling middleware
 - ✅ Environment configuration

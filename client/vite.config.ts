@@ -13,6 +13,9 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    optimizeDeps: {
+      include: ["use-sync-external-store/shim/with-selector"],
+    },
     server: {
       port: 5173,
       strictPort: true,

@@ -26,7 +26,7 @@ import {
   Trash2,
   AlertTriangle,
 } from "lucide-react";
-import { getActiveRole, type Role } from "@/lib/roles";
+import { getActiveRole, type Role, ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Badge } from "@/components/dashboard/ui";
@@ -961,27 +961,51 @@ export function DashboardLayout() {
               )}
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {/* Role Info */}
+              {/* Role Switcher */}
               <div className="relative">
                 <button
                   onClick={() => setShowRoleInfo(!showRoleInfo)}
-                  className={`hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-90 transition`}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-95 shadow-soft transition`}
                 >
-                  <RoleIcon className="size-3" /> {role.name}
+                  <RoleIcon className="size-3.5" />
+                  <span>{role.name}</span>
+                  <ChevronDown className="size-3 opacity-80" />
                 </button>
                 {showRoleInfo && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setShowRoleInfo(false)} />
-                    <div className="absolute right-0 lg:left-0 lg:right-auto top-full mt-2 w-64 bg-background border rounded-xl shadow-lg z-50 p-4 animate-in fade-in slide-in-from-top-2 duration-150 text-left">
-                      <div className="font-semibold text-sm">Role Scope: {role.name}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{role.description}</div>
-                      <div className="border-t pt-2 mt-2">
-                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Navigation Items</div>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {role.nav.map(n => (
-                            <Badge key={n.to} tone="info" className="text-[9px] py-0.5 px-1.5">{n.label}</Badge>
-                          ))}
-                        </div>
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-background border rounded-2xl shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150 text-left max-h-96 overflow-y-auto">
+                      <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">
+                        Switch ERP Workspace
+                      </div>
+                      <div className="space-y-0.5 mt-1">
+                        {ROLE_LIST.map((r) => {
+                          const IconComp = r.icon;
+                          const active = r.id === role.id;
+                          return (
+                            <button
+                              key={r.id}
+                              onClick={() => {
+                                setShowRoleInfo(false);
+                                setActiveRole(r.id);
+                                setRole(r);
+                                toast.success(`Switched to ${r.name} workspace!`);
+                                navigate({ to: "/dashboard" });
+                              }}
+                              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-left cursor-pointer transition
+                                ${active
+                                  ? `bg-gradient-to-r ${r.gradient} text-white font-semibold shadow-soft`
+                                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                                }`}
+                            >
+                              <IconComp className="size-3.5" />
+                              <div className="leading-tight">
+                                <div>{r.name}</div>
+                                {!active && <div className="text-[9px] opacity-70 font-normal">{r.short}</div>}
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </>

@@ -5,7 +5,7 @@ import { getStoredUser } from "@/services/authService";
 export const Route = createFileRoute("/dashboard/transport")({
   beforeLoad: () => {
     const user = getStoredUser();
-    if (!user || user.role !== "transport-manager") {
+    if (!user || (user.role !== "transport-manager" && user.role !== "transport")) {
       throw redirect({ to: "/dashboard" });
     }
   },

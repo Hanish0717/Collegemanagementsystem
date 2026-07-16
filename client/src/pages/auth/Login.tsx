@@ -86,7 +86,14 @@ function LoginForm() {
       "4444": { email: "hanish@gmail.com", password: "password123", role: "student", roleName: "Student" },
       "5555": { email: "hanish.parent@gmail.com", admissionNumber: "CS2026101", role: "parent", roleName: "Parent" },
       "6666": { email: "placement@college.com", password: "password123", role: "placement", roleName: "Placement Officer" },
-      "7777": { email: "librarian@college.com", password: "password123", role: "librarian", roleName: "Librarian" }
+      "7777": { email: "librarian@college.com", password: "password123", role: "librarian", roleName: "Librarian" },
+      "7778": { email: "warden@college.com", password: "password123", role: "warden", roleName: "Hostel Warden" },
+      "7779": { email: "transport@college.com", password: "password123", role: "transport", roleName: "Transport Manager" },
+      "8888": { email: "principal@college.com", password: "password123", role: "principal", roleName: "Principal" },
+      "9999": { email: "hod@college.com", password: "password123", role: "hod", roleName: "HOD CSE" },
+      "8080": { email: "dean@college.com", password: "password123", role: "dean", roleName: "Dean Academics" },
+      "7070": { email: "examcell@college.com", password: "password123", role: "exam_cell", roleName: "Exam Cell Officer" },
+      "6060": { email: "accounts@college.com", password: "password123", role: "accounts", roleName: "Accounts Manager" }
     };
 
     const match = credentialsMap[enteredPin];
@@ -105,7 +112,7 @@ function LoginForm() {
         toast.success(`Autofilled ${match.roleName} credentials! Press Sign In.`);
       }, 800);
     } else {
-      setPinError("Invalid PIN! Try 1111 (Super Admin), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian).");
+      setPinError("Invalid PIN! Try 1111 (Super Admin), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).");
       setPin(["", "", "", ""]);
       setTimeout(() => {
         const firstInput = document.getElementById("pin-input-0");

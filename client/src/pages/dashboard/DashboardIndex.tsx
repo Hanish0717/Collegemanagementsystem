@@ -38,6 +38,11 @@ import { fetchTransportData } from "@/services/transportService";
 import { ParentDashboard } from "@/pages/parent/ParentDashboard";
 import { StudentDashboard } from "@/pages/student/StudentDashboard";
 import { FacultyDashboard } from "@/pages/faculty/FacultyDashboard";
+import { PrincipalDashboard } from "./PrincipalDashboard";
+import { DeanDashboard } from "./DeanDashboard";
+import { HodDashboard } from "./HodDashboard";
+import { ExamCellDashboard } from "./ExamCellDashboard";
+import { AccountsDashboard } from "./AccountsDashboard";
 
 const statIcons: Record<string, any> = {
   "Total Students": Users,
@@ -160,6 +165,21 @@ export function DashboardIndex() {
   }
   if (activeRole.id === "faculty") {
     return <FacultyDashboard />;
+  }
+  if (activeRole.id === "principal") {
+    return <PrincipalDashboard />;
+  }
+  if (activeRole.id === "dean") {
+    return <DeanDashboard />;
+  }
+  if (activeRole.id === "hod") {
+    return <HodDashboard />;
+  }
+  if (activeRole.id === "exam_cell") {
+    return <ExamCellDashboard />;
+  }
+  if (activeRole.id === "accounts") {
+    return <AccountsDashboard />;
   }
 
   // Extraction of real-time data or fallback mocks

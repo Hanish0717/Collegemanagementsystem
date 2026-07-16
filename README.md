@@ -1,6 +1,6 @@
 # College Management System
 
-A modern, service-based College Management System featuring live MongoDB integrations, OTP verification, and an AI-powered assistant.
+A modern, service-based College Management System featuring live PostgreSQL/Supabase integrations, OTP verification, and an AI-powered assistant.
 
 E2E tests
 -------

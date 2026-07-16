@@ -1830,3 +1830,630 @@ Body: {"fullName":"hanish","email":"hanishvavilapalli17@gmail.com","employeeId":
 [2026-07-13T05:52:49.501Z] POST /api/attendance/mark - Status: 401 - Client Error: Not authorized, no token provided - Body: {"student":"2256c8f8-cbe8-4507-8086-0135a9dd420b","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
 [2026-07-13T05:52:49.511Z] POST /api/attendance/mark - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"student":"2256c8f8-cbe8-4507-8086-0135a9dd420b","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
 [2026-07-13T05:52:49.609Z] POST /api/attendance/mark - Status: 400 - Client Error: Attendance already marked for this student, subject, and date - Body: {"student":"2256c8f8-cbe8-4507-8086-0135a9dd420b","subject":"Math","date":"2026-05-01","status":"absent","department":"CSE","semester":6,"section":"A"}
+[2026-07-16T07:14:08.997Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:14:16.069Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:14:16.759Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:26.543Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:27.485Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:27.701Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:27.885Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:28.098Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:28.264Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:28.492Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:28.846Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:23:29.048Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T07:26:17.260Z] POST /api/auth/login - Status: 500 - Error: secretOrPrivateKey must have a value
+Stack: Error: secretOrPrivateKey must have a value
+    at module.exports [as sign] (c:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\jsonwebtoken\sign.js:111:20)
+    at generateToken (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/services/authService.js:4:14)
+    at login (file:///c:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/authController.js:383:19)
+Body: {"email":"superadmin@college.com","password":"password123"}
+
+[2026-07-16T09:10:32.082Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-16T12:12:05.104Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-16T12:12:32.961Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-16T12:13:53.584Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-16T12:13:55.499Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-16T12:16:57.558Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:16:57.605Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:17:07.209Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:17:07.235Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:19:39.146Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:40.156Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:41.021Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:41.029Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:41.044Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:41.050Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:42.169Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:42.842Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:42.848Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:43.341Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:43.344Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:43.354Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:43.358Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:44.707Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getEBooks (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/libraryController.js:883:37)
+Body: {}
+
+[2026-07-16T12:19:44.721Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getEBooks (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/libraryController.js:883:37)
+Body: {}
+
+[2026-07-16T12:19:45.362Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:45.384Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:45.974Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:45.984Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:46.208Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:46.714Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getEBooks (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/libraryController.js:883:37)
+Body: {}
+
+[2026-07-16T12:19:46.723Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getEBooks (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/libraryController.js:883:37)
+Body: {}
+
+[2026-07-16T12:19:47.701Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:47.705Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:48.721Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:48.726Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:50.736Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:50.745Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:54.455Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:54.464Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:55.242Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:55.246Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:55.256Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:19:55.259Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:20:05.582Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:20:05.603Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:20:06.597Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:20:06.620Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:20:08.611Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:20:08.638Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:20:11.564Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:20:11.585Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:23:29.276Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:23:29.290Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:24:11.724Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:24:11.737Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:24:19.500Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:24:19.515Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:24:24.728Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:24:24.742Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:27:14.120Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"passwor123"}
+[2026-07-16T12:27:20.798Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-16T12:27:22.252Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-16T12:27:36.976Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:27:36.985Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:28:56.007Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:28:56.011Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:28:56.032Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:28:56.036Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:28:56.046Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:28:56.052Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:13.716Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:13.729Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:14.599Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:14.626Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:15.423Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:15.446Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:15.732Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:15.757Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:16.062Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:16.084Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:17.839Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:17.856Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:17.889Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:17.910Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:17.928Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:17.932Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:27.876Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:29.970Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:29.995Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:37.602Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:37.620Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:37.626Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:37.647Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:38.527Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:38.544Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:38.550Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:38.560Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:38.867Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:39.947Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:39.971Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:39.976Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:39.992Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:40.512Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:40.994Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:42.078Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:42.731Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:42.954Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:43.121Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:43.305Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:43.906Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:44.851Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:45.018Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:46.399Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:46.413Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:46.416Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:46.429Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:47.448Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:47.462Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:47.468Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:47.486Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:48.476Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:48.706Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:48.883Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:49.089Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:49.866Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:50.356Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:51.765Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:51.779Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:51.782Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:51.794Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:29:52.092Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:29:52.402Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:18.196Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:18.718Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:19.154Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:19.763Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:20.218Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:20.662Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:21.068Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:21.576Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:26.588Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:28.381Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:28.995Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:29.568Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:29.972Z] GET /api/faculty-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:30.356Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:31.366Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:48.804Z] GET /api/students?page=1&limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:48.813Z] GET /api/students?page=1&limit=8 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:49.013Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:50.663Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:51.379Z] GET /api/students?page=1&limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:51.383Z] GET /api/students?page=1&limit=8 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:51.933Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:30:51.947Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:30:54.407Z] GET /api/students?page=1&limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:54.411Z] GET /api/students?page=1&limit=8 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:55.424Z] GET /api/students?page=1&limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:55.436Z] GET /api/students?page=1&limit=8 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:56.484Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:30:56.501Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:30:58.972Z] GET /api/students?page=1&limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:58.977Z] GET /api/students?page=1&limit=8 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:30:59.789Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:00.805Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:02.823Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:03.631Z] GET /api/students?page=1&limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:03.636Z] GET /api/students?page=1&limit=8 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:04.657Z] GET /api/students?page=1&limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:04.667Z] GET /api/students?page=1&limit=8 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:04.992Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:31:05.013Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:31:11.963Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:12.916Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:12.920Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:12.980Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:13.930Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:13.935Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:15.003Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:15.782Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:15.799Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:15.820Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:15.829Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:16.319Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:16.329Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:16.915Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:16.920Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:17.372Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getEBooks (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/libraryController.js:883:37)
+Body: {}
+
+[2026-07-16T12:31:17.389Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getEBooks (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/libraryController.js:883:37)
+Body: {}
+
+[2026-07-16T12:31:18.078Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:18.986Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:19.027Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:19.089Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:20.003Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:21.108Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:22.020Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:25.138Z] GET /api/library/issued - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:31:26.040Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'principal' is not authorized to access this resource - Body: {}
+[2026-07-16T12:34:54.381Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+
+[2026-07-16T12:34:54.398Z] GET /api/transport/dashboard - Status: 500 - Error: relation "transport_routes" does not exist
+Stack: error: relation "transport_routes" does not exist
+    at C:\Users\nagir\Desktop\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/config/supabase.js:719:23)
+    at async getTransportDashboard (file:///C:/Users/nagir/Desktop/Collegemanagementsystem/server/src/controllers/transportController.js:12:47)
+Body: {}
+

@@ -9,11 +9,14 @@ const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   console.error("❌ Error: DATABASE_URL is missing in your .env file!");
 } else {
+  const isLocalDatabase =
+    connectionString.includes('localhost') ||
+    connectionString.includes('127.0.0.1') ||
+    connectionString.includes('host.docker.internal');
+
   const client = new Client({
     connectionString,
-    ssl: {
-      rejectUnauthorized: false
-    }
+    ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
   });
 
   const sqlSchema = `

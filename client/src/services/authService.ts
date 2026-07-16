@@ -15,6 +15,11 @@ const backendRoleToFrontendRole: Record<string, RoleId> = {
   "placement-officer": "placement",
   "hostel-warden": "warden",
   "transport-manager": "transport",
+  principal: "principal",
+  dean: "dean",
+  hod: "hod",
+  "exam-cell": "exam_cell",
+  accounts: "accounts",
 };
 
 const frontendRoleToBackendRole: Record<RoleId, string> = {
@@ -27,6 +32,11 @@ const frontendRoleToBackendRole: Record<RoleId, string> = {
   placement: "placement-officer",
   warden: "hostel-warden",
   transport: "transport-manager",
+  principal: "principal",
+  dean: "dean",
+  hod: "hod",
+  exam_cell: "exam-cell",
+  accounts: "accounts",
 };
 
 /** Convert backend role string to frontend RoleId */
@@ -50,6 +60,11 @@ const roleDashboardMap: Record<string, string> = {
   "placement-officer": "/dashboard/placement",
   "hostel-warden": "/dashboard/hostel",
   "transport-manager": "/dashboard/transport",
+  principal: "/dashboard",
+  dean: "/dashboard",
+  hod: "/dashboard",
+  "exam-cell": "/dashboard",
+  accounts: "/dashboard",
 };
 
 /** Get the correct dashboard path for a backend role */

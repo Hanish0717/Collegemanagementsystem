@@ -175,7 +175,7 @@
       "parent_phone": "9876543211",
       "parent_email": "john.smith@test.com",
       "cgpa": 9.1,
-      "attendance_percentage": 88.0,
+      "attendance_percentage": 88,
       "is_active": true
     },
     {
@@ -235,7 +235,7 @@
       "parent_phone": "6543210980",
       "parent_email": "queen@amazon.com",
       "cgpa": 6.5,
-      "attendance_percentage": 62.0,
+      "attendance_percentage": 62,
       "is_active": true
     }
   ],
