@@ -32,7 +32,9 @@ export const Route = createFileRoute("/dashboard/admin")({
       "exam-cell",
       "accounts",
       "alumni-coordinator",
-      "alumni"
+      "alumni",
+      "transport",
+      "transport-manager"
     ];
     if (!user || !allowedRoles.includes(user.role)) {
       throw redirect({ to: "/dashboard" });

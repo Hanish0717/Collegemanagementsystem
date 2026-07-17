@@ -234,13 +234,14 @@
       "isbn": "9780262033848",
       "category": "Computer Science",
       "quantity": 5,
-      "available_quantity": 4,
+      "available_quantity": 1,
       "shelf_location": "CS-03",
       "publisher": "MIT Press",
       "edition": "3rd",
       "language": "English",
       "description": "The bible of algorithms.",
-      "is_active": true
+      "is_active": true,
+      "updated_at": "2026-07-16T15:01:17.922Z"
     },
     {
       "id": "b2222222-2222-2222-2222-222222222222",
@@ -249,13 +250,46 @@
       "isbn": "9780073523323",
       "category": "Computer Science",
       "quantity": 3,
-      "available_quantity": 3,
+      "available_quantity": 1,
       "shelf_location": "CS-05",
       "publisher": "McGraw-Hill",
       "edition": "6th",
       "language": "English",
       "description": "Core database text.",
-      "is_active": true
+      "is_active": true,
+      "updated_at": "2026-07-16T15:01:17.922Z"
+    },
+    {
+      "id": "85d3d50b-3b9a-46a9-b89f-25b9a759196a",
+      "created_at": "2026-07-16T14:23:45.359Z",
+      "updated_at": "2026-07-16T15:01:17.922Z",
+      "title": "ml",
+      "author": "visyny",
+      "category": "Computer Science",
+      "isbn": "63254159",
+      "publisher": "vishsju",
+      "quantity": 10,
+      "available_quantity": 1,
+      "shelf_location": "5463",
+      "description": "dncbuycdd",
+      "cover_image": "",
+      "is_active": false
+    },
+    {
+      "id": "2ea381d9-1294-40d6-a383-98574c6c85a1",
+      "created_at": "2026-07-16T14:24:26.690Z",
+      "updated_at": "2026-07-16T15:01:17.922Z",
+      "title": "MC kjdcv",
+      "author": "NKBDCLHvdbd",
+      "category": "Computer Science",
+      "isbn": "16565165",
+      "publisher": "",
+      "quantity": 10,
+      "available_quantity": 1,
+      "shelf_location": "",
+      "description": "cAC",
+      "cover_image": "",
+      "is_active": false
     }
   ],
   "fees": [
@@ -317,11 +351,7 @@
       "title": "Red-Black Trees Implementation",
       "description": "Implement RB-Trees insertion and deletion in C++.",
       "subject": "Data Structures",
-<<<<<<< HEAD
-      "due_date": "2026-07-21T13:24:01.806Z",
-=======
       "due_date": "2026-07-21T13:28:35.169Z",
->>>>>>> 9d2edfc96a82c1ca7102c7877a2244987a0b8cb8
       "department": "CSE",
       "year": 3,
       "semester": 5,
@@ -508,6 +538,116 @@
       "priority": "High",
       "time": "Just now",
       "unread": true
+    },
+    {
+      "id": "SN-ATT-WARN-1783921969676",
+      "created_at": "2026-07-13T05:52:49.677Z",
+      "updated_at": "2026-07-13T05:52:49.678Z",
+      "student_id": "2256c8f8-cbe8-4507-8086-0135a9dd420b",
+      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
+      "type": "Attendance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-LIB-1784212093670",
+      "created_at": "2026-07-16T14:28:13.672Z",
+      "updated_at": "2026-07-16T14:28:13.672Z",
+      "title": "Book issued: 'Introduction to Algorithms' by Cormen, Leiserson, Rivest, Stein. Due: 30 Jul.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784212560050",
+      "created_at": "2026-07-16T14:36:00.072Z",
+      "updated_at": "2026-07-16T14:36:00.072Z",
+      "title": "Book issued: 'Database System Concepts' by Silberschatz, Korth, Sudarshan. Due: 31 Jul.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784212595618",
+      "created_at": "2026-07-16T14:36:35.619Z",
+      "updated_at": "2026-07-16T14:36:35.619Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹0.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784212881222",
+      "created_at": "2026-07-16T14:41:21.223Z",
+      "updated_at": "2026-07-16T14:41:21.223Z",
+      "title": "Book issued: 'Database System Concepts' by Silberschatz, Korth, Sudarshan. Due: 30 Jul.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784213261851",
+      "created_at": "2026-07-16T14:47:41.852Z",
+      "updated_at": "2026-07-16T14:47:41.852Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹0.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784213507346",
+      "created_at": "2026-07-16T14:51:47.351Z",
+      "updated_at": "2026-07-16T14:51:47.351Z",
+      "title": "Book issued: 'Introduction to Algorithms' by Cormen, Leiserson, Rivest, Stein. Due: 30 Jul.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784213941298",
+      "created_at": "2026-07-16T14:59:01.299Z",
+      "updated_at": "2026-07-16T14:59:01.299Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹20.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784214067000",
+      "created_at": "2026-07-16T15:01:07.030Z",
+      "updated_at": "2026-07-16T15:01:07.030Z",
+      "title": "Book issued: 'Introduction to Algorithms' by Cormen, Leiserson, Rivest, Stein. Due: 30 Jul.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784214077925",
+      "created_at": "2026-07-16T15:01:17.930Z",
+      "updated_at": "2026-07-16T15:01:17.930Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹0.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
   "alumni_profiles": [
@@ -1101,6 +1241,59 @@
       "date": "2026-05-26",
       "status": "absent",
       "remarks": "Sick leave"
+  ],
+  "issued_books": [
+    {
+      "id": "69600b63-a80c-4f7c-b078-d2c9c98ca532",
+      "created_at": "2026-07-16T14:36:00.040Z",
+      "updated_at": "2026-07-16T14:36:35.593Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b2222222-2222-2222-2222-222222222222",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-16",
+      "due_date": "2026-07-31",
+      "status": "Returned",
+      "return_date": "2026-07-16",
+      "fine_amount": 0
+    },
+    {
+      "id": "a81a2d52-936e-47b7-b6ea-9af82b1db40e",
+      "created_at": "2026-07-16T14:41:21.214Z",
+      "updated_at": "2026-07-16T14:47:41.846Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b2222222-2222-2222-2222-222222222222",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-16",
+      "due_date": "2026-07-30",
+      "status": "Returned",
+      "return_date": "2026-07-16",
+      "fine_amount": 0
+    },
+    {
+      "id": "1fa55c96-5755-48b3-9fa9-15d8a7542e02",
+      "created_at": "2026-07-16T14:51:47.306Z",
+      "updated_at": "2026-07-16T14:59:01.286Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b1111111-1111-1111-1111-111111111111",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-16",
+      "due_date": "2026-07-30",
+      "status": "Returned",
+      "return_date": "2026-07-16",
+      "fine_amount": 20
+    },
+    {
+      "id": "c9617c9f-583b-4ad6-b075-efcc4acb50dd",
+      "created_at": "2026-07-16T15:01:06.992Z",
+      "updated_at": "2026-07-16T15:01:17.910Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b1111111-1111-1111-1111-111111111111",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-16",
+      "due_date": "2026-07-30",
+      "status": "Returned",
+      "return_date": "2026-07-16",
+      "fine_amount": 0
     }
   ]
 }

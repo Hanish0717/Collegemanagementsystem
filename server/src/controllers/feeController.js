@@ -11,7 +11,7 @@ const formatFee = (f) => {
     student: f.student,
     academicYear: f.academic_year,
     semester: f.semester,
-    feeType: f.fee_type,
+    feeType: f.fee_type || f.type || 'Academic Fee',
     totalAmount: amt,
     paidAmount: paid,
     remainingAmount: amt - paid,

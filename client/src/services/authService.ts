@@ -2,6 +2,23 @@ import api from "../lib/api";
 import type { RoleId } from "../lib/roles";
 import type { AuthUser, LoginPayload, LoginResponse } from "@/types/auth";
 
+const demoCredentialsByRole: Record<RoleId, { email: string; password: string }> = {
+  super_admin: { email: "superadmin@college.com", password: "password123" },
+  admin: { email: "admin@college.com", password: "password123" },
+  faculty: { email: "faculty@college.com", password: "password123" },
+  student: { email: "student@college.com", password: "password123" },
+  parent: { email: "parent@college.com", password: "password123" },
+  librarian: { email: "librarian@college.com", password: "password123" },
+  placement: { email: "placement@college.com", password: "password123" },
+  warden: { email: "warden@college.com", password: "password123" },
+  transport: { email: "transport@college.com", password: "password123" },
+  principal: { email: "principal@college.com", password: "password123" },
+  dean: { email: "dean@college.com", password: "password123" },
+  hod: { email: "hod@college.com", password: "password123" },
+  exam_cell: { email: "examcell@college.com", password: "password123" },
+  accounts: { email: "accounts@college.com", password: "password123" },
+};
+
 // ── Role Mapping (backend ↔ frontend) ───────────────────
 // Backend uses "super-admin", "placement-officer", "hostel-warden", "transport-manager"
 // Frontend uses "super_admin", "placement", "warden", "transport"
@@ -105,6 +122,16 @@ export async function login(payload: LoginPayload): Promise<any> {
   localStorage.setItem(ROLE_KEY, frontendRole);
 
   return user;
+}
+
+/** Switch the current demo workspace to a role-specific login. */
+export async function loginAsDemoRole(roleId: RoleId): Promise<AuthUser> {
+  const credentials = demoCredentialsByRole[roleId];
+  if (!credentials) {
+    throw new Error(`No demo credentials configured for role ${roleId}`);
+  }
+
+  return login(credentials);
 }
 
 /** Fetch the currently authenticated user from backend. */

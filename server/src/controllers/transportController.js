@@ -8,25 +8,43 @@ import { dispatchNotification } from '../services/notificationService.js';
  */
 export const getTransportDashboard = async (req, res, next) => {
   try {
-    // 1️⃣ Fetch all active routes from the correct transport_routes table
-    const { data: routes, error: routeErr } = await supabase
-      .from('transport_routes')
-      .select('id, name, route_number, start_point, end_point, status, bus, driver, stops')
-      .eq('status', 'active');
-    if (routeErr) throw routeErr;
+    let routes = [];
+    let routeErr = null;
+    try {
+      const { data, error } = await supabase
+        .from('transport_routes')
+        .select('id, name, route_number, start_point, end_point, status, bus, driver, stops')
+        .eq('status', 'active');
+      if (error) routeErr = error;
+      else routes = data || [];
+    } catch (dbErr) {
+      routeErr = dbErr;
+    }
+
+    if (routeErr) {
+      console.warn("Failed to fetch transport routes from database, falling back to mock routes:", routeErr.message || routeErr);
+    }
 
     // Helper to fetch related records in parallel from correct transport tables
     const fetchBus = async (busId) => {
       if (!busId) return null;
-      const { data, error } = await supabase.from('transport_buses').select('id, bus_number, type, make, model, capacity, status').eq('id', busId).maybeSingle();
-      if (error) return null;
-      return data;
+      try {
+        const { data, error } = await supabase.from('transport_buses').select('id, bus_number, type, make, model, capacity, status').eq('id', busId).maybeSingle();
+        if (error) return null;
+        return data;
+      } catch (err) {
+        return null;
+      }
     };
     const fetchDriver = async (driverId) => {
       if (!driverId) return null;
-      const { data, error } = await supabase.from('transport_drivers').select('id, full_name, phone, license_number, status').eq('id', driverId).maybeSingle();
-      if (error) return null;
-      return data;
+      try {
+        const { data, error } = await supabase.from('transport_drivers').select('id, full_name, phone, license_number, status').eq('id', driverId).maybeSingle();
+        if (error) return null;
+        return data;
+      } catch (err) {
+        return null;
+      }
     };
     const fetchStops = async (routeNumber) => {
       // Dynamically return beautiful regional stops to completely eliminate fake/out-of-region coordinates
@@ -66,12 +84,18 @@ export const getTransportDashboard = async (req, res, next) => {
         fetchStops(r.route_number)
       ]);
 
-      // Count active student allocations for this route
-      const { count: studentCount } = await supabase
-        .from('transport_allocations')
-        .select('*', { count: 'exact', head: true })
-        .eq('route_id', r.id)
-        .eq('status', 'Active');
+      // Count active student allocations for this route safely
+      let studentCount = 0;
+      try {
+        const { count, error: countErr } = await supabase
+          .from('transport_allocations')
+          .select('*', { count: 'exact', head: true })
+          .eq('route_id', r.id)
+          .eq('status', 'Active');
+        if (!countErr && count !== null) {
+          studentCount = count;
+        }
+      } catch (err) {}
 
       let coverage = `${r.start_point} ➔ ${r.end_point}`;
       if (stopObjs.length > 0) {
@@ -99,7 +123,7 @@ export const getTransportDashboard = async (req, res, next) => {
       });
     }
 
-    // Fallback data if no routes exist
+    // Fallback data if no routes exist or if database failed
     if (dashboardData.length === 0) {
       dashboardData.push(
         { id: '1', route: 'Route 1', driver: 'Satish Kumar', coverage: 'Vizianagaram Ring Road ➔ GMRIT Campus', students: 42, status: 'On Route' },
@@ -162,8 +186,7 @@ export const verifyStudentTransport = async (req, res, next) => {
     let bus = null;
     let driver = null;
 
-    if (isMockMode) {
-      // Look up in hardcoded mock data mapping exactly to your active student records
+    const runMockLookup = () => {
       const mockStudents = [
         { id: 'stu001-id', full_name: 'Aarav Sharma', roll_number: 'STU001', email: 'aarav@college.com', department: 'Computer Science', year: 3, semester: 5, cgpa: 9.2, attendance_percentage: 96, phone_number: '9848011221', is_active: true },
         { id: 'stu002-id', full_name: 'Priya Patel', roll_number: 'STU002', email: 'priya@college.com', department: 'Electronics', year: 2, semester: 3, cgpa: 8.7, attendance_percentage: 92, phone_number: '9848011222', is_active: true },
@@ -177,16 +200,7 @@ export const verifyStudentTransport = async (req, res, next) => {
 
       student = mockStudents.find(s => s.roll_number.toUpperCase() === cleanRoll || s.email.toUpperCase() === cleanRoll);
       
-      // If student is found, check if branch (department) matches
-      if (student && cleanBranch && normalizeDept(student.department) !== normalizeDept(cleanBranch)) {
-        return res.status(400).json({
-          success: false,
-          message: `Verification Alert: Student found with Roll Number ${targetRoll}, but they belong to branch '${student.department}', not '${targetBranch.toUpperCase()}'.`
-        });
-      }
-
       if (student) {
-        // Build mock allocation & route details
         allocation = {
           pass_number: `PASS-${student.roll_number}`,
           academic_year: '2025-2026',
@@ -226,166 +240,189 @@ export const verifyStudentTransport = async (req, res, next) => {
           status: 'Active'
         };
       }
+    };
+
+    let useMock = isMockMode;
+
+    if (useMock) {
+      runMockLookup();
+      if (student && cleanBranch && normalizeDept(student.department) !== normalizeDept(cleanBranch)) {
+        return res.status(400).json({
+          success: false,
+          message: `Verification Alert: Student found with Roll Number ${targetRoll}, but they belong to branch '${student.department}', not '${targetBranch.toUpperCase()}'.`
+        });
+      }
     } else {
-      // Live database lookup!
-      // Fetch student by roll number OR email
-      let dbStudent = null;
-      let dbStudentErr = null;
+      try {
+        // Live database lookup!
+        // Fetch student by roll number OR email
+        let dbStudent = null;
+        let dbStudentErr = null;
 
-      const { data: studentByRoll, error: rollErr } = await supabase
-        .from('students')
-        .select('*')
-        .eq('roll_number', cleanRoll)
-        .maybeSingle();
-
-      if (studentByRoll) {
-        dbStudent = studentByRoll;
-      } else {
-        const { data: studentByEmail, error: emailErr } = await supabase
+        const { data: studentByRoll, error: rollErr } = await supabase
           .from('students')
           .select('*')
-          .eq('email', cleanRoll.toLowerCase())
+          .eq('roll_number', cleanRoll)
           .maybeSingle();
-        dbStudent = studentByEmail;
-        dbStudentErr = emailErr;
-      }
 
-      if (dbStudentErr) {
-        console.error('DB student lookup error:', dbStudentErr);
-        throw dbStudentErr;
-      }
-      student = dbStudent;
-      console.log(`🔍 Roll/Email lookup "${cleanRoll}" → ${student ? `FOUND: ${student.full_name} (${student.department})` : 'NOT FOUND'}`);
+        if (studentByRoll) {
+          dbStudent = studentByRoll;
+        } else {
+          const { data: studentByEmail, error: emailErr } = await supabase
+            .from('students')
+            .select('*')
+            .eq('email', cleanRoll.toLowerCase())
+            .maybeSingle();
+          dbStudent = studentByEmail;
+          dbStudentErr = emailErr;
+        }
 
-      // Verify branch/department matches if provided
-      // Allow match if: codes are equal directly (e.g. "CSE"==="CSE") OR normalized forms match
-      if (student && cleanBranch) {
-        const dbDeptNorm = normalizeDept(student.department);
-        const inputNorm = normalizeDept(cleanBranch);
-        const directMatch = student.department.toLowerCase() === cleanBranch;
-        if (!directMatch && dbDeptNorm !== inputNorm) {
-          console.warn(`⚠️ Branch mismatch: DB="${student.department}" (norm="${dbDeptNorm}") vs Input="${cleanBranch}" (norm="${inputNorm}")`);
+        if (dbStudentErr) {
+          console.error('DB student lookup error:', dbStudentErr);
+          throw dbStudentErr;
+        }
+        student = dbStudent;
+        console.log(`🔍 Roll/Email lookup "${cleanRoll}" → ${student ? `FOUND: ${student.full_name} (${student.department})` : 'NOT FOUND'}`);
+
+        // Verify branch/department matches if provided
+        // Allow match if: codes are equal directly (e.g. "CSE"==="CSE") OR normalized forms match
+        if (student && cleanBranch) {
+          const dbDeptNorm = normalizeDept(student.department);
+          const inputNorm = normalizeDept(cleanBranch);
+          const directMatch = student.department.toLowerCase() === cleanBranch;
+          if (!directMatch && dbDeptNorm !== inputNorm) {
+            console.warn(`⚠️ Branch mismatch: DB="${student.department}" (norm="${dbDeptNorm}") vs Input="${cleanBranch}" (norm="${inputNorm}")`);
+            return res.status(400).json({
+              success: false,
+              message: `Student found but belongs to branch '${student.department}', not '${targetBranch.toUpperCase()}'. Please select the correct branch.`
+            });
+          }
+        }
+
+        if (student) {
+          // Fetch allocation from live transport_allocations
+          const { data: dbAlloc } = await supabase
+            .from('transport_allocations')
+            .select('*')
+            .eq('student_id', student.id)
+            .eq('status', 'Active')
+            .maybeSingle();
+          
+          allocation = dbAlloc;
+
+          if (allocation) {
+            // Fetch route from correct transport_routes table
+            const { data: dbRoute } = await supabase
+              .from('transport_routes')
+              .select('*')
+              .eq('id', allocation.route_id)
+              .maybeSingle();
+            route = dbRoute;
+          } else {
+            // If no allocation exists, fetch the appropriate active route from transport_routes based on student department or default
+            // Priya Patel (CS100003) is from Electronics -> Palakonda route
+            // Aarav Sharma (CS100002) is from Computer Science -> Vizianagaram route
+            const targetRouteNum = student.roll_number === 'CS100003' ? 'R-PKR' : 'R-PKR'; 
+            const { data: dbRoutes } = await supabase
+              .from('transport_routes')
+              .select('*')
+              .eq('status', 'active');
+            
+            if (dbRoutes && dbRoutes.length > 0) {
+              // Match student department to route: CS100003 goes to Palakonda, others to Palakonda to Rajam or first route
+              const deptLower = student.department.toLowerCase();
+              const matchedRoute = dbRoutes.find(r => 
+                deptLower.includes('electron') ? r.route_number === 'R-PKR' : r.route_number === 'R-PKR'
+              ) || dbRoutes[0];
+
+              route = matchedRoute;
+              
+              // Build high-fidelity temporary allocation to preserve state
+              allocation = {
+                pass_number: `PASS-TEMP-${student.roll_number}`,
+                academic_year: '2025-2026',
+                monthly_fare: route.route_number === 'R-PKR' ? 1500 : 2200,
+                status: 'Active'
+              };
+            }
+          }
+
+          if (route) {
+            // Fetch bus from correct transport_buses table
+            if (route.bus) {
+              const { data: dbBus } = await supabase
+                .from('transport_buses')
+                .select('*')
+                .eq('id', route.bus)
+                .maybeSingle();
+              bus = dbBus;
+            }
+            if (!bus) {
+              const busNum = route.route_number === 'R-PKR' ? 'TS-09-UB-1002' : 'TS-09-UB-1001';
+              const { data: dbBus } = await supabase
+                .from('transport_buses')
+                .select('*')
+                .eq('bus_number', busNum)
+                .maybeSingle();
+              bus = dbBus;
+            }
+
+            // Fetch driver from correct transport_drivers table
+            if (route.driver) {
+              const { data: dbDriver } = await supabase
+                .from('transport_drivers')
+                .select('*')
+                .eq('id', route.driver)
+                .maybeSingle();
+              driver = dbDriver;
+            }
+            if (!driver) {
+              const driverName = route.route_number === 'R-PKR' ? 'Mohammad Rafiq' : 'Satish Kumar';
+              const { data: dbDriver } = await supabase
+                .from('transport_drivers')
+                .select('*')
+                .eq('full_name', driverName)
+                .maybeSingle();
+              driver = dbDriver;
+            }
+
+            // Dynamically map stops along real GMRIT/Rajam geographic paths
+            const routeKey = route.route_number || '';
+            if (routeKey === 'R-PKR') {
+              route.stops = [
+                { name: 'Palakonda Stand', landmark: 'Main Bus Stand', fare: 1500, arrival: '08:00 AM' },
+                { name: 'Santhakaviti Stop', landmark: 'Rural Bank Office', fare: 1100, arrival: '08:25 AM' },
+                { name: 'Rajam Bypass', landmark: 'High School Circle stop', fare: 700, arrival: '08:45 AM' },
+                { name: 'GMRIT Campus (Main Gate)', landmark: 'SH137 Entrance', fare: 0, arrival: '09:00 AM' }
+              ];
+            } else if (routeKey === 'R-PKS') {
+              route.stops = [
+                { name: 'Palakonda Stand', landmark: 'Main Bus Stand', fare: 1800, arrival: '07:50 AM' },
+                { name: 'Chilakapalem', landmark: 'NH16 Toll Gate Crossing', fare: 1400, arrival: '08:10 AM' },
+                { name: 'Ranasthalam', landmark: 'Expressway Service Rd', fare: 1000, arrival: '08:30 AM' },
+                { name: 'Laveru Junction', landmark: 'Rural Crossing Circle', fare: 700, arrival: '08:45 AM' },
+                { name: 'GMRIT Campus', landmark: 'SH137 Entrance', fare: 0, arrival: '09:00 AM' }
+              ];
+            } else {
+              route.stops = [
+                { name: 'GMRIT Campus (Main Gate)', landmark: 'SH137 Entrance', fare: 0, arrival: '08:00 AM' },
+                { name: 'Rajam Bypass Junction', landmark: 'High School Circle stop', fare: 800, arrival: '08:15 AM' },
+                { name: 'Garividi stop', landmark: 'Railway Crossing', fare: 1200, arrival: '08:30 AM' },
+                { name: 'Cheepurupalli Junction', landmark: 'Substation Circle', fare: 1500, arrival: '08:40 AM' },
+                { name: 'Nellimarla stop', landmark: 'Junction Junction', fare: 1800, arrival: '08:50 AM' },
+                { name: 'Vizianagaram Transit Hub', landmark: 'Main Circle', fare: 2200, arrival: '09:00 AM' }
+              ];
+            }
+          }
+        }
+      } catch (dbErr) {
+        console.warn("Database lookup failed, falling back to mock lookup:", dbErr.message || dbErr);
+        runMockLookup();
+        if (student && cleanBranch && normalizeDept(student.department) !== normalizeDept(cleanBranch)) {
           return res.status(400).json({
             success: false,
-            message: `Student found but belongs to branch '${student.department}', not '${targetBranch.toUpperCase()}'. Please select the correct branch.`
+            message: `Verification Alert: Student found with Roll Number ${targetRoll}, but they belong to branch '${student.department}', not '${targetBranch.toUpperCase()}'.`
           });
-        }
-      }
-
-      if (student) {
-        // Fetch allocation from live transport_allocations
-        const { data: dbAlloc } = await supabase
-          .from('transport_allocations')
-          .select('*')
-          .eq('student_id', student.id)
-          .eq('status', 'Active')
-          .maybeSingle();
-        
-        allocation = dbAlloc;
-
-        if (allocation) {
-          // Fetch route from correct transport_routes table
-          const { data: dbRoute } = await supabase
-            .from('transport_routes')
-            .select('*')
-            .eq('id', allocation.route_id)
-            .maybeSingle();
-          route = dbRoute;
-        } else {
-          // If no allocation exists, fetch the appropriate active route from transport_routes based on student department or default
-          // Priya Patel (CS100003) is from Electronics -> Palakonda route
-          // Aarav Sharma (CS100002) is from Computer Science -> Vizianagaram route
-          const targetRouteNum = student.roll_number === 'CS100003' ? 'R-PKR' : 'R-PKR'; 
-          const { data: dbRoutes } = await supabase
-            .from('transport_routes')
-            .select('*')
-            .eq('status', 'active');
-          
-          if (dbRoutes && dbRoutes.length > 0) {
-            // Match student department to route: CS100003 goes to Palakonda, others to Palakonda to Rajam or first route
-            const deptLower = student.department.toLowerCase();
-            const matchedRoute = dbRoutes.find(r => 
-              deptLower.includes('electron') ? r.route_number === 'R-PKR' : r.route_number === 'R-PKR'
-            ) || dbRoutes[0];
-
-            route = matchedRoute;
-            
-            // Build high-fidelity temporary allocation to preserve state
-            allocation = {
-              pass_number: `PASS-TEMP-${student.roll_number}`,
-              academic_year: '2025-2026',
-              monthly_fare: route.route_number === 'R-PKR' ? 1500 : 2200,
-              status: 'Active'
-            };
-          }
-        }
-
-        if (route) {
-          // Fetch bus from correct transport_buses table
-          if (route.bus) {
-            const { data: dbBus } = await supabase
-              .from('transport_buses')
-              .select('*')
-              .eq('id', route.bus)
-              .maybeSingle();
-            bus = dbBus;
-          }
-          if (!bus) {
-            const busNum = route.route_number === 'R-PKR' ? 'TS-09-UB-1002' : 'TS-09-UB-1001';
-            const { data: dbBus } = await supabase
-              .from('transport_buses')
-              .select('*')
-              .eq('bus_number', busNum)
-              .maybeSingle();
-            bus = dbBus;
-          }
-
-          // Fetch driver from correct transport_drivers table
-          if (route.driver) {
-            const { data: dbDriver } = await supabase
-              .from('transport_drivers')
-              .select('*')
-              .eq('id', route.driver)
-              .maybeSingle();
-            driver = dbDriver;
-          }
-          if (!driver) {
-            const driverName = route.route_number === 'R-PKR' ? 'Mohammad Rafiq' : 'Satish Kumar';
-            const { data: dbDriver } = await supabase
-              .from('transport_drivers')
-              .select('*')
-              .eq('full_name', driverName)
-              .maybeSingle();
-            driver = dbDriver;
-          }
-
-          // Dynamically map stops along real GMRIT/Rajam geographic paths
-          const routeKey = route.route_number || '';
-          if (routeKey === 'R-PKR') {
-            route.stops = [
-              { name: 'Palakonda Stand', landmark: 'Main Bus Stand', fare: 1500, arrival: '08:00 AM' },
-              { name: 'Santhakaviti Stop', landmark: 'Rural Bank Office', fare: 1100, arrival: '08:25 AM' },
-              { name: 'Rajam Bypass', landmark: 'High School Circle stop', fare: 700, arrival: '08:45 AM' },
-              { name: 'GMRIT Campus (Main Gate)', landmark: 'SH137 Entrance', fare: 0, arrival: '09:00 AM' }
-            ];
-          } else if (routeKey === 'R-PKS') {
-            route.stops = [
-              { name: 'Palakonda Stand', landmark: 'Main Bus Stand', fare: 1800, arrival: '07:50 AM' },
-              { name: 'Chilakapalem', landmark: 'NH16 Toll Gate Crossing', fare: 1400, arrival: '08:10 AM' },
-              { name: 'Ranasthalam', landmark: 'Expressway Service Rd', fare: 1000, arrival: '08:30 AM' },
-              { name: 'Laveru Junction', landmark: 'Rural Crossing Circle', fare: 700, arrival: '08:45 AM' },
-              { name: 'GMRIT Campus', landmark: 'SH137 Entrance', fare: 0, arrival: '09:00 AM' }
-            ];
-          } else {
-            route.stops = [
-              { name: 'GMRIT Campus (Main Gate)', landmark: 'SH137 Entrance', fare: 0, arrival: '08:00 AM' },
-              { name: 'Rajam Bypass Junction', landmark: 'High School Circle stop', fare: 800, arrival: '08:15 AM' },
-              { name: 'Garividi stop', landmark: 'Railway Crossing', fare: 1200, arrival: '08:30 AM' },
-              { name: 'Cheepurupalli Junction', landmark: 'Substation Circle', fare: 1500, arrival: '08:40 AM' },
-              { name: 'Nellimarla stop', landmark: 'Junction Junction', fare: 1800, arrival: '08:50 AM' },
-              { name: 'Vizianagaram Transit Hub', landmark: 'Main Circle', fare: 2200, arrival: '09:00 AM' }
-            ];
-          }
         }
       }
     }

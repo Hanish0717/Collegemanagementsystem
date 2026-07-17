@@ -132,6 +132,7 @@ CREATE TABLE books (
   edition varchar(255),
   language varchar(255),
   description text,
+  cover_image text,
   is_active boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );

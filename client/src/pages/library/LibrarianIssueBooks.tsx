@@ -5,23 +5,27 @@ import {
   fetchBooks,
   issueBook,
   fetchIssuedBooks,
+  deleteIssueRecord,
   type BookItem,
   type IssuedBookItem,
 } from "@/services/libraryService";
 import api from "@/lib/api";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 
 interface StudentListItem {
   _id: string;
   fullName: string;
   rollNumber: string;
   department: string;
+  section?: string;
 }
 
 export function LibrarianIssueBooks() {
   const [students, setStudents] = useState<StudentListItem[]>([]);
   const [books, setBooks] = useState<BookItem[]>([]);
   const [issuedHistory, setIssuedHistory] = useState<IssuedBookItem[]>([]);
+  const [returnedHistory, setReturnedHistory] = useState<IssuedBookItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Form State
@@ -35,6 +39,12 @@ export function LibrarianIssueBooks() {
   });
   const [submitting, setSubmitting] = useState(false);
 
+  const sections = Array.from(new Set(students.map((student) => student.section).filter(Boolean))) as string[];
+  const tags = Array.from(new Set(books.map((book) => book.category).filter(Boolean))) as string[];
+
+  const selectedStudentData = students.find((student) => student._id === selectedStudent);
+  const selectedBookData = books.find((book) => book._id === selectedBook);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -46,7 +56,8 @@ export function LibrarianIssueBooks() {
         }),
       ]);
       setBooks(booksData);
-      setIssuedHistory(historyData);
+      setIssuedHistory(historyData.filter((issue) => issue.status === "issued" || issue.status === "overdue"));
+      setReturnedHistory(historyData.filter((issue) => issue.status === "returned"));
       setStudents(studentsRes.data.data.students);
     } catch (err) {
       console.error(err);
@@ -95,6 +106,17 @@ export function LibrarianIssueBooks() {
     toast.info("Issue form reset.");
   };
 
+  const handleDeleteReturnedRecord = async (issueId: string) => {
+    if (!confirm("Delete this returned record from history?")) return;
+    try {
+      await deleteIssueRecord(issueId);
+      toast.success("Returned record deleted.");
+      loadData();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || "Failed to delete record");
+    }
+  };
+
   const availableBooks = books.filter((b) => b.availableCopies > 0);
 
   return (
@@ -129,10 +151,20 @@ export function LibrarianIssueBooks() {
                     <option value="">Choose student...</option>
                     {students.map((s) => (
                       <option key={s._id} value={s._id}>
-                        {s.fullName} ({s.rollNumber})
+                        {s.fullName} ({s.rollNumber}){s.section ? ` - Section ${s.section}` : ""}
                       </option>
                     ))}
                   </select>
+                  {selectedStudentData && (
+                    <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
+                        Section: {selectedStudentData.section || "N/A"}
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
+                        Dept: {selectedStudentData.department}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -148,10 +180,52 @@ export function LibrarianIssueBooks() {
                     <option value="">Choose book...</option>
                     {availableBooks.map((b) => (
                       <option key={b._id} value={b._id}>
-                        {b.title} (ISBN: {b.isbn})
+                        {b.title} (ISBN: {b.isbn}){b.category ? ` - ${b.category}` : ""}
                       </option>
                     ))}
                   </select>
+                  {selectedBookData && (
+                    <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
+                        Category: {selectedBookData.category}
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
+                        Available: {selectedBookData.availableCopies}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl border bg-gradient-soft">
+                  <div className="text-xs font-semibold text-muted-foreground mb-2">All Sections</div>
+                  <div className="flex flex-wrap gap-2">
+                    {sections.length === 0 ? (
+                      <span className="text-xs text-muted-foreground">No section data loaded</span>
+                    ) : (
+                      sections.map((section) => (
+                        <span key={section} className="px-2.5 py-1 rounded-full bg-background border text-xs">
+                          {section}
+                        </span>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl border bg-gradient-soft">
+                  <div className="text-xs font-semibold text-muted-foreground mb-2">Book Tags</div>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.length === 0 ? (
+                      <span className="text-xs text-muted-foreground">No book tags loaded</span>
+                    ) : (
+                      tags.map((tag) => (
+                        <span key={tag} className="px-2.5 py-1 rounded-full bg-background border text-xs">
+                          {tag}
+                        </span>
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -232,9 +306,31 @@ export function LibrarianIssueBooks() {
                               {studentName} ({roll})
                             </div>
                           </div>
-                          <Badge tone={issue.status === "returned" ? "success" : "danger"}>
-                            {issue.status}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge tone={issue.status === "returned" ? "success" : "danger"}>
+                              {issue.status}
+                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteReturnedRecord(issue._id)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition text-[11px] font-medium cursor-pointer"
+                              title="Delete this issued record"
+                            >
+                              <Trash2 className="size-3.5" />
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-[11px] mb-2">
+                          <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
+                            Books taken: 1
+                          </span>
+                          <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
+                            Deadline: {new Date(issue.dueDate).toLocaleDateString()}
+                          </span>
+                          <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
+                            Section: {typeof issue.student === "object" ? issue.student?.section || "N/A" : "N/A"}
+                          </span>
                         </div>
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>Issued: {new Date(issue.issueDate).toLocaleDateString()}</span>
@@ -273,6 +369,53 @@ export function LibrarianIssueBooks() {
               </div>
             </Card>
           </div>
+
+          <Card>
+            <h3 className="font-semibold mb-4">Returned Records</h3>
+            {returnedHistory.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-6 text-center">
+                No returned records yet.
+              </p>
+            ) : (
+              <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
+                {returnedHistory.map((issue) => {
+                  const studentName =
+                    typeof issue.student === "object" ? issue.student?.fullName : "Student";
+                  const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
+                  const title = typeof issue.book === "object" ? issue.book?.title : "Book";
+
+                  return (
+                    <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div>
+                          <div className="font-medium text-sm">{title}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {studentName} ({roll})
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteReturnedRecord(issue._id)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition text-xs font-medium cursor-pointer"
+                        >
+                          <Trash2 className="size-3.5" />
+                          Delete Record
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-[11px]">
+                        <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
+                          Returned: {issue.returnDate ? new Date(issue.returnDate).toLocaleDateString() : "N/A"}
+                        </span>
+                        <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
+                          Deadline: {new Date(issue.dueDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
 
           {/* Issue Guidelines */}
           <Card>

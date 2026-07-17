@@ -607,6 +607,13 @@ export function TransportDashboard() {
       endpoints = routeGPSPaths[routeKey as keyof typeof routeGPSPaths] || routeGPSPaths.vizianagaram;
     }
 
+    // Ensure the container exists in the DOM before initializing the map
+    const mapElement = document.getElementById('leaflet-live-map');
+    if (!mapElement) {
+      console.warn("Leaflet map element not found in DOM yet. Delaying initialization.");
+      return;
+    }
+
     // Reset Leaflet DOM container
     const container = (window as any).L.DomUtil.get('leaflet-live-map');
     if (container) {

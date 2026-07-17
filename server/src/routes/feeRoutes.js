@@ -21,8 +21,8 @@ router.use(protect);
 router.get('/student/:studentId', getStudentFees);
 router.post('/pay/:id', payFee);
 
-// Management routes restricted strictly to Admin and Super-Admin roles
-router.use(authorizeRoles('admin', 'super-admin'));
+// Management routes restricted to Admin, Super-Admin, and Transport-Manager roles
+router.use(authorizeRoles('admin', 'super-admin', 'transport-manager'));
 
 router
   .route('/')

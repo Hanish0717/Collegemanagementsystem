@@ -137,3 +137,20 @@ export async function sendFeeReminder(feeType: string): Promise<{ message: strin
   );
   return { message: data.message, count: data.count };
 }
+
+// Create a new fee record
+export async function createFee(payload: {
+  student: string;
+  academicYear: string;
+  semester: number;
+  feeType: string;
+  totalAmount: number;
+  dueDate: string;
+  remarks?: string;
+}): Promise<FeeRecord> {
+  const { data } = await api.post<{ success: boolean; data: FeeRecord }>(
+    "/api/fees",
+    payload
+  );
+  return data.data;
+}

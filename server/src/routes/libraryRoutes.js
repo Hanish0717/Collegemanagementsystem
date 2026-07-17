@@ -7,6 +7,7 @@ import {
   deleteBook,
   issueBook,
   returnBook,
+  deleteIssueRecord,
   getIssuedBooks,
   getLibraryReport,
   getEBooks,
@@ -50,6 +51,7 @@ router.delete('/ebooks/:id', deleteEBook);
 // Issue/Return - librarian or admin
 router.post('/issue', authorizeRoles('librarian', 'admin'), issueBook);
 router.post('/return/:issueId', authorizeRoles('librarian', 'admin'), returnBook);
+router.delete('/issue/:issueId', authorizeRoles('librarian', 'admin'), deleteIssueRecord);
 
 // Reporting - librarian/admin/super-admin
 router.get('/report', getLibraryReport);

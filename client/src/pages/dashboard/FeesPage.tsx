@@ -188,7 +188,7 @@ export function FeesPage() {
 
       <div className="grid lg:grid-cols-3 gap-4">
         {fees.slice(0, 3).map((f) => {
-          const studentName = typeof f.student === "object" ? f.student.fullName : f.student;
+          const studentName = (f.student && typeof f.student === "object") ? f.student.fullName : (f.student || "—");
           return (
             <Card key={f.id} className="gradient-border">
               <div className="flex items-start justify-between">
@@ -244,7 +244,7 @@ export function FeesPage() {
             </thead>
             <tbody>
               {fees.map((f) => {
-                const studentName = typeof f.student === "object" ? f.student.fullName : f.student;
+                const studentName = (f.student && typeof f.student === "object") ? f.student.fullName : (f.student || "—");
                 const isPaid = f.paymentStatus === "paid" || f.paymentStatus === "Paid";
                 return (
                   <tr key={f.id} className="border-t hover:bg-muted/30">

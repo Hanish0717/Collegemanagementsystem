@@ -1,8 +1,14 @@
 import axios from "axios";
 import { toast } from "sonner";
-// Updated API client: use TanStack Router navigation for 401 redirects and toast notifications for error handling
 
 const getApiBaseUrl = () => {
+  const configuredBaseUrl =
+    import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_BACKEND_URL;
+
+  if (configuredBaseUrl) {
+    return configuredBaseUrl;
+  }
+
   if (typeof window !== "undefined") {
     const hostname = window.location.hostname;
     // Support tunnel services (localtunnel / ngrok)
@@ -14,10 +20,14 @@ const getApiBaseUrl = () => {
       return "YOUR_BACKEND_NGROK_URL";
     }
     // Map localhost/127.0.0.1 to localhost, otherwise use current LAN IP/hostname
+    const apiPort = "5000";
     if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
-      return `http://${hostname}:5000`;
+      return `http://${hostname}:${apiPort}`;
     }
+
+    return `http://localhost:${apiPort}`;
   }
+
   return "http://localhost:5000";
 };
 

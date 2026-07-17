@@ -13,6 +13,7 @@ export interface BookItem {
   language?: string;
   shelfNumber?: string;
   description?: string;
+  coverImage?: string;
   isActive: boolean;
 }
 
@@ -24,6 +25,7 @@ export interface IssuedBookItem {
         fullName: string;
         rollNumber: string;
         department: string;
+        section?: string;
       }
     | string;
   book:
@@ -108,11 +110,17 @@ export async function issueBook(payload: {
   return data.data;
 }
 
-export async function returnBook(issueId: string): Promise<IssuedBookItem> {
+export async function returnBook(issueId: string, fineAmount?: number): Promise<IssuedBookItem> {
+  const payload = fineAmount !== undefined ? { fineAmount } : {};
   const { data } = await api.post<{ success: boolean; data: IssuedBookItem }>(
     `/api/library/return/${issueId}`,
+    payload,
   );
   return data.data;
+}
+
+export async function deleteIssueRecord(issueId: string): Promise<void> {
+  await api.delete(`/api/library/issue/${issueId}`);
 }
 
 export async function fetchIssuedBooks(params?: {

@@ -2614,3 +2614,174 @@ Body: {"facultyId":"9c68caaf-5d1f-4d06-b443-b56103a27334","assignedSections":["M
 [2026-07-16T13:59:25.541Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
 [2026-07-16T15:01:32.219Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"learning@college.com","password":"password13"}
 [2026-07-16T15:01:41.271Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"learning@college.com","password":"password1223"}
+
+[2026-07-16T13:05:48.612Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:22.454Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:22.467Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:22.478Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:23.475Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:23.498Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:23.509Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:25.498Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:25.513Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:25.524Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:29.516Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:29.531Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:18:29.545Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:35.355Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:35.367Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:35.386Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:36.402Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:36.414Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:36.418Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:38.413Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:38.431Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:38.438Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:43.904Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:43.962Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:19:43.973Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:42.645Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:42.668Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:42.695Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:43.672Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:43.696Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:43.711Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:45.692Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:45.708Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:45.730Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:53.356Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:53.371Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:53.387Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:54.373Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:54.391Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:54.405Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:56.393Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:56.435Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:21:56.470Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:22:00.426Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:22:00.463Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:22:00.481Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:08.469Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:08.516Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:08.539Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:09.534Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:09.546Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:09.571Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:11.562Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:11.569Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:23:11.592Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:12.394Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:12.406Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:12.412Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:13.404Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:13.419Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:13.427Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:15.421Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:15.433Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:15.446Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:19.446Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:19.459Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:24:19.468Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:40.378Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:40.395Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:40.408Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:41.402Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:41.419Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:41.436Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:43.423Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:43.439Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:43.449Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:47.438Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:47.450Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:25:47.466Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:17.795Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:17.857Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:17.901Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:18.840Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:18.887Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:18.936Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:20.855Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:20.903Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:20.954Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:24.886Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:24.920Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:37:24.975Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:39:02.564Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:39:03.595Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:39:05.622Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T13:39:09.652Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:04.702Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:05.850Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:07.941Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:10.696Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:11.737Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:11.965Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:13.757Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:36.248Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:37.334Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:39.417Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:43.452Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:48.022Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:49.125Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:51.154Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:08:55.232Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:09:10.077Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"student@colleg.com","password":"password123"}
+[2026-07-16T14:09:23.931Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:09:25.457Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:09:27.559Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:09:27.894Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:09:28.956Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:09:31.605Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:10:02.075Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:10:03.159Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:10:05.204Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:10:09.249Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:14:46.385Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:14:47.644Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:14:49.425Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:14:49.674Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:14:50.506Z] GET /api/library/report - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:14:53.705Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:15:30.251Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254156","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:15:32.187Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254156","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:15:36.480Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254156","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:15:36.678Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254156","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:15:37.745Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254156","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:15:38.594Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254156","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:16:05.354Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"dfvefvefv","author":"casdasdc","category":"Computer Science","isbn":"6444465465","publisher":"","totalCopies":10,"shelfNumber":"","description":"","coverImage":""}
+[2026-07-16T14:16:06.416Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"dfvefvefv","author":"casdasdc","category":"Computer Science","isbn":"6444465465","publisher":"","totalCopies":10,"shelfNumber":"","description":"","coverImage":""}
+[2026-07-16T14:17:56.942Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"4","publisher":"","totalCopies":10,"shelfNumber":"","description":"","coverImage":""}
+[2026-07-16T14:17:57.063Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"4","publisher":"","totalCopies":10,"shelfNumber":"","description":"","coverImage":""}
+[2026-07-16T14:18:04.970Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:18:05.929Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:18:06.146Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:18:06.382Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:18:11.036Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:18:12.502Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:18:13.337Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:19:05.089Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vosunu","author":"cnbUDVCUWD","category":"Computer Science","isbn":"498898","publisher":"CaA","totalCopies":10,"shelfNumber":"54848","description":"","coverImage":""}
+[2026-07-16T14:19:13.618Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254158","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:19:15.321Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254158","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:19:57.937Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"ml","author":"visyny","category":"Computer Science","isbn":"63254158","publisher":"vishsju","totalCopies":10,"shelfNumber":"5463","description":"dncbuycdd","coverImage":""}
+[2026-07-16T14:19:59.232Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:00.430Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:02.713Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:06.818Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:56.074Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:57.255Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:59.341Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:59.766Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:20:59.852Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:21:03.362Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:21:22.007Z] POST /api/library/books - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"title":"vuwv,wju","author":"NBCkhvci","category":"Computer Science","isbn":"6565965","publisher":"dWEDwe","totalCopies":10,"shelfNumber":"","description":"sdfSDFSD","coverImage":""}
+[2026-07-16T14:22:13.540Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:22:17.296Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-16T14:30:53.538Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-16T14:30:53.735Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-16T14:33:11.519Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-16T14:33:11.988Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-16T14:37:18.098Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-16T14:37:18.194Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-16T14:43:11.055Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-16T14:43:11.231Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+>>>>>>> Stashed changes

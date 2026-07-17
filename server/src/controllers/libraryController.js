@@ -17,6 +17,7 @@ const formatBook = (b) => {
     language: b.language || '',
     shelfNumber: b.shelf_location || b.shelf_number || '',
     description: b.description || '',
+    coverImage: b.cover_image || b.coverImage || '',
     isActive: b.is_active !== undefined ? b.is_active : true,
     createdAt: b.created_at
   };
@@ -42,7 +43,7 @@ const updateOverdueIssues = async () => {
  */
 export const addBook = async (req, res, next) => {
   try {
-    const { title, author, category, isbn, publisher, edition, totalCopies, language, shelfNumber, description } = req.body;
+    const { title, author, category, isbn, publisher, edition, totalCopies, language, shelfNumber, description, coverImage } = req.body;
     if (!title || !author || !category || !isbn || !totalCopies) {
       const err = new Error('Missing required fields');
       err.statusCode = 400;
@@ -76,6 +77,7 @@ export const addBook = async (req, res, next) => {
         language,
         shelf_location: shelfNumber,
         description,
+        cover_image: coverImage,
         is_active: true
       }])
       .select()
@@ -208,6 +210,7 @@ export const updateBook = async (req, res, next) => {
     if (req.body.language) updateData.language = req.body.language;
     if (req.body.shelfNumber) updateData.shelf_location = req.body.shelfNumber;
     if (req.body.description) updateData.description = req.body.description;
+    if (req.body.coverImage !== undefined) updateData.cover_image = req.body.coverImage;
     if (req.body.isActive !== undefined) updateData.is_active = req.body.isActive;
 
     const { data: updatedBook, error: updateErr } = await supabase
@@ -501,11 +504,20 @@ export const returnBook = async (req, res, next) => {
     }
 
     const now = new Date();
+    // Auto-calculate fine based on overdue days (₹10/day)
     let fine = 0;
     const dueDate = new Date(issue.due_date);
     if (now > dueDate) {
       const daysLate = Math.ceil((now - dueDate) / (1000 * 60 * 60 * 24));
-      fine = daysLate * 10; // $10 per day fine
+      fine = daysLate * 10;
+    }
+
+    // Allow librarian to override the fine with a custom amount from request body
+    if (req.body && req.body.fineAmount !== undefined && req.body.fineAmount !== null) {
+      const customFine = Number(req.body.fineAmount);
+      if (!isNaN(customFine) && customFine >= 0) {
+        fine = customFine;
+      }
     }
 
     const { data: updatedIssue, error: updateErr } = await supabase
@@ -594,6 +606,56 @@ export const returnBook = async (req, res, next) => {
 };
 
 /**
+ * @desc   Delete an issue record
+ * @route  DELETE /api/library/issue/:issueId
+ */
+export const deleteIssueRecord = async (req, res, next) => {
+  try {
+    const { issueId } = req.params;
+
+    const { data: issue, error: fetchErr } = await supabase
+      .from('issued_books')
+      .select('id, status, book:books(id, available_quantity)')
+      .eq('id', issueId)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+
+    if (!issue) {
+      const err = new Error('Issue record not found');
+      err.statusCode = 404;
+      return next(err);
+    }
+
+    const currentStatus = String(issue.status || '').toLowerCase();
+
+    if (currentStatus !== 'returned' && issue.book?.id) {
+      const { error: restoreErr } = await supabase
+        .from('books')
+        .update({ available_quantity: Number(issue.book.available_quantity || 0) + 1 })
+        .eq('id', issue.book.id);
+
+      if (restoreErr) throw restoreErr;
+    }
+
+    const { error: deleteErr } = await supabase
+      .from('issued_books')
+      .delete()
+      .eq('id', issueId);
+
+    if (deleteErr) throw deleteErr;
+
+    res.status(200).json({
+      success: true,
+      message: 'Issue record deleted',
+      data: { id: issueId },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * @desc   Get issued books (with filters)
  */
 export const getIssuedBooks = async (req, res, next) => {
@@ -649,7 +711,10 @@ export const getIssuedBooks = async (req, res, next) => {
       }
     }
 
-    let query = supabase.from('issued_books').select('*, book:books(*), user:users(*)');
+    // Use explicit FK hint `books!book` to avoid the column/alias naming collision
+    // where the column named 'book' and the alias 'book' cause PostgREST to
+    // return the raw UUID instead of the joined book object.
+    let query = supabase.from('issued_books').select('*, bookData:books!book(id,title,author), user:users(*)');
 
     if (status) {
       const mapStatus = {
@@ -682,9 +747,35 @@ export const getIssuedBooks = async (req, res, next) => {
       });
     }
 
+    // Collect all unique book UUIDs for a fallback lookup in case the join fails
+    const bookIds = [...new Set(
+      (issues || []).map(item => {
+        // item.book holds the raw UUID (the FK column), item.bookData holds the joined object
+        const rawBookId = typeof item.book === 'string' ? item.book : null;
+        return rawBookId;
+      }).filter(Boolean)
+    )];
+
+    const bookMap = {};
+    if (bookIds.length > 0) {
+      const { data: bookRows } = await supabase
+        .from('books')
+        .select('id, title, author')
+        .in('id', bookIds);
+      if (bookRows) {
+        bookRows.forEach(b => { bookMap[b.id] = b; });
+      }
+    }
+
     const formattedIssues = issues ? issues.map(item => {
       const userEmail = item.user?.email;
       const childProfile = (item.student ? studentMapById[item.student] : null) || (userEmail ? studentMap[userEmail] : null);
+
+      // Resolve book data: prefer the joined object, fall back to the manual lookup map
+      const joinedBook = item.bookData && typeof item.bookData === 'object' ? item.bookData : null;
+      const rawBookId = typeof item.book === 'string' ? item.book : (joinedBook ? joinedBook.id : null);
+      const fallbackBook = rawBookId ? bookMap[rawBookId] : null;
+      const resolvedBook = joinedBook || fallbackBook;
 
       return {
         id: item.id,
@@ -694,11 +785,11 @@ export const getIssuedBooks = async (req, res, next) => {
         returnDate: item.return_date,
         status: String(item.status).toLowerCase(),
         fineAmount: Number(item.fine_amount || 0),
-        book: item.book ? {
-          _id: item.book.id,
-          id: item.book.id,
-          title: item.book.title,
-          author: item.book.author
+        book: resolvedBook ? {
+          _id: resolvedBook.id,
+          id: resolvedBook.id,
+          title: resolvedBook.title || 'Unknown Book',
+          author: resolvedBook.author || ''
         } : null,
         student: childProfile ? {
           _id: childProfile.id,

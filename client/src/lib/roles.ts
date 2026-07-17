@@ -392,6 +392,7 @@ export const ROLES: Record<RoleId, Role> = {
       base,
       { to: "/dashboard/transport", label: "Transport", icon: Bus },
       { to: "/dashboard/students", label: "Passengers", icon: Users },
+      { to: "/dashboard/admin/fees", label: "Fee Collection", icon: Wallet },
       notif,
       settings,
     ],

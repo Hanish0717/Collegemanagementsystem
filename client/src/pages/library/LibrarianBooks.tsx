@@ -32,7 +32,9 @@ export function LibrarianBooks() {
   const [totalCopies, setTotalCopies] = useState("10");
   const [shelfNumber, setShelfNumber] = useState("");
   const [description, setDescription] = useState("");
+  const [coverImage, setCoverImage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const canSaveBook = title.trim() && author.trim() && isbn.trim() && category.trim() && totalCopies.trim();
 
   const categories = [
     "All",
@@ -75,6 +77,7 @@ export function LibrarianBooks() {
     setTotalCopies("10");
     setShelfNumber("");
     setDescription("");
+    setCoverImage("");
   };
 
   const handleAddBook = async (e: React.FormEvent) => {
@@ -94,6 +97,7 @@ export function LibrarianBooks() {
         totalCopies: parseInt(totalCopies) || 1,
         shelfNumber,
         description,
+        coverImage,
       });
       toast.success("Book successfully saved to database!");
       setIsAddModalOpen(false);
@@ -125,6 +129,7 @@ export function LibrarianBooks() {
         totalCopies: parseInt(totalCopies) || 1,
         shelfNumber,
         description,
+        coverImage,
       });
       toast.success("Book successfully updated in database!");
       setIsEditModalOpen(false);
@@ -160,6 +165,7 @@ export function LibrarianBooks() {
     setTotalCopies(String(book.totalCopies));
     setShelfNumber(book.shelfNumber || "");
     setDescription(book.description || "");
+    setCoverImage(book.coverImage || "");
     setIsEditModalOpen(true);
   };
 
@@ -288,7 +294,18 @@ export function LibrarianBooks() {
                 >
                   <div>
                     <div className="aspect-[3/2] rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 text-white grid place-items-center mb-4 relative overflow-hidden">
-                      <BookOpen className="size-12 opacity-80" />
+                      {book.coverImage ? (
+                        <>
+                          <img
+                            src={book.coverImage}
+                            alt={book.title}
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-black/10" />
+                        </>
+                      ) : (
+                        <BookOpen className="size-12 opacity-80" />
+                      )}
                       <div className="absolute inset-0 grid-bg opacity-30" />
                       <div className="absolute top-2 left-2">
                         <Badge tone="info" className="text-xs font-mono">
@@ -425,7 +442,7 @@ export function LibrarianBooks() {
       {/* Add Book Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-lg animate-in fade-in zoom-in-95 duration-150 relative">
+          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150 relative">
             <button
               onClick={() => setIsAddModalOpen(false)}
               className="absolute right-4 top-4 text-muted-foreground hover:text-foreground cursor-pointer"
@@ -534,6 +551,21 @@ export function LibrarianBooks() {
                   className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none resize-none"
                 />
               </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Cover Image URL
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://example.com/book-cover.jpg"
+                  value={coverImage}
+                  onChange={(e) => setCoverImage(e.target.value)}
+                  className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Optional. Paste a direct image URL to show a cover on the book card.
+                </p>
+              </div>
               <div className="flex gap-3 pt-4 border-t">
                 <button
                   type="button"
@@ -544,11 +576,11 @@ export function LibrarianBooks() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition flex items-center justify-center gap-2"
+                  disabled={submitting || !canSaveBook}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting && <Loader2 className="size-4 animate-spin" />}
-                  Save Book
+                  Save Book to List
                 </button>
               </div>
             </form>
@@ -559,7 +591,7 @@ export function LibrarianBooks() {
       {/* Edit Book Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-lg animate-in fade-in zoom-in-95 duration-150 relative">
+          <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150 relative">
             <button
               onClick={() => setIsEditModalOpen(false)}
               className="absolute right-4 top-4 text-muted-foreground hover:text-foreground cursor-pointer"
@@ -662,6 +694,21 @@ export function LibrarianBooks() {
                   className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none resize-none"
                 />
               </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Cover Image URL
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://example.com/book-cover.jpg"
+                  value={coverImage}
+                  onChange={(e) => setCoverImage(e.target.value)}
+                  className="w-full mt-1.5 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                />
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Optional. Paste a direct image URL to show a cover on the book card.
+                </p>
+              </div>
               <div className="flex gap-3 pt-4 border-t">
                 <button
                   type="button"
@@ -672,8 +719,8 @@ export function LibrarianBooks() {
                 </button>
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition flex items-center justify-center gap-2"
+                  disabled={submitting || !canSaveBook}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting && <Loader2 className="size-4 animate-spin" />}
                   Save Changes
