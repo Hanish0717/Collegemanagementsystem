@@ -572,7 +572,10 @@ if (isMockMode) {
   const isLocalDatabase =
     databaseUrl.includes('localhost') ||
     databaseUrl.includes('127.0.0.1') ||
-    databaseUrl.includes('host.docker.internal');
+    databaseUrl.includes('db') ||
+    databaseUrl.includes('postgres') ||
+    databaseUrl.includes('host.docker.internal') ||
+    process.env.DATABASE_SSL === 'false';
 
   const pool = new Pool({
     connectionString: databaseUrl,

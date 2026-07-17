@@ -21,7 +21,10 @@ async function runMigrations() {
   const isLocalDatabase =
     process.env.DATABASE_URL?.includes('localhost') ||
     process.env.DATABASE_URL?.includes('127.0.0.1') ||
-    process.env.DATABASE_URL?.includes('host.docker.internal');
+    process.env.DATABASE_URL?.includes('db') ||
+    process.env.DATABASE_URL?.includes('postgres') ||
+    process.env.DATABASE_URL?.includes('host.docker.internal') ||
+    process.env.DATABASE_SSL === 'false';
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,

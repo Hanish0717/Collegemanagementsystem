@@ -1,4 +1,0 @@
-[Logs Cleared]
-[2026-07-17T05:14:33.435Z] Supabase.js module loading starting
-[2026-07-17T05:14:33.444Z] databaseUrl: postgresql://postgres.rdzitvvxxdhtbzzqoasd:RAMESH143.b21@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres, isMockMode: true
-[2026-07-17T05:14:33.563Z] Supabase.js module loading completed successfully!

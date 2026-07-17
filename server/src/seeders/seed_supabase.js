@@ -33,13 +33,21 @@ async function getClientConfig(connStr) {
     }
   }
 
+  const isLocalDatabase =
+    host.includes('localhost') ||
+    host.includes('127.0.0.1') ||
+    host.includes('db') ||
+    host.includes('postgres') ||
+    host.includes('host.docker.internal') ||
+    process.env.DATABASE_SSL === 'false';
+
   return {
     host: resolvedHost,
     port: port ? parseInt(port, 10) : 5432,
     user: username,
     password: decodeURIComponent(password),
     database: dbname,
-    ssl: { rejectUnauthorized: false }
+    ssl: isLocalDatabase ? false : { rejectUnauthorized: false }
   };
 }
 
@@ -137,7 +145,6 @@ async function seed() {
     console.log("✅ Connected successfully.");
 
     // Clean existing records in dependency order
-    console.log("⏳ Cleaning old data...");
     await client.query(`
       TRUNCATE TABLE selected_students CASCADE;
       TRUNCATE TABLE student_applications CASCADE;
@@ -162,8 +169,18 @@ async function seed() {
       TRUNCATE TABLE attendance CASCADE;
       TRUNCATE TABLE issued_books CASCADE;
       TRUNCATE TABLE books CASCADE;
-      DELETE FROM students WHERE email NOT IN ('student@college.com');
-      DELETE FROM users WHERE role NOT IN ('super-admin', 'admin', 'faculty', 'librarian');
+      TRUNCATE TABLE faculty_attendance CASCADE;
+      TRUNCATE TABLE admins CASCADE;
+      TRUNCATE TABLE faculty CASCADE;
+      TRUNCATE TABLE students CASCADE;
+      DELETE FROM users WHERE email NOT IN (
+        'superadmin@college.com', 'admin@college.com', 'faculty@college.com',
+        'student@college.com', 'parent@college.com', 'librarian@college.com',
+        'placement@college.com', 'warden@college.com', 'transport@college.com',
+        'principal@college.com', 'dean@college.com', 'hod@college.com',
+        'examcell@college.com', 'accounts@college.com', 'alumnicoord@college.com',
+        'alumni@college.com'
+      );
     `);
     console.log("✅ Old data cleaned.");
 
@@ -206,6 +223,43 @@ async function seed() {
     }
 
     console.log("✅ Administrative accounts verified/seeded.");
+
+    const allStudentsList = []; // Helper for attendance & results
+
+    // Seed default profiles
+    console.log("⏳ Seeding default profiles...");
+    const adminUserRes = await client.query("SELECT id FROM users WHERE email = $1", ['admin@college.com']);
+    if (adminUserRes.rows.length > 0) {
+      const adminUserId = adminUserRes.rows[0].id;
+      await client.query(
+        `INSERT INTO admins (user_id, full_name, email, employee_id, department, is_active)
+         VALUES ($1, $2, $3, $4, $5, true)`,
+        [adminUserId, 'System Admin', 'admin@college.com', 'ADM001', 'CSE']
+      );
+    }
+
+    const facultyUserRes = await client.query("SELECT id FROM users WHERE email = $1", ['faculty@college.com']);
+    if (facultyUserRes.rows.length > 0) {
+      const facultyUserId = facultyUserRes.rows[0].id;
+      await client.query(
+        `INSERT INTO faculty (user_id, full_name, email, employee_id, department, designation, experience, gender, phone_number, status, is_active)
+         VALUES ($1, $2, $3, $4, $5, $6, 12, 'Male', '9876543212', 'Active', true)`,
+        [facultyUserId, 'Dr. John Smith', 'faculty@college.com', 'FAC2020001', 'CSE', 'Associate Professor']
+      );
+    }
+
+    const studentUserRes = await client.query("SELECT id FROM users WHERE email = $1", ['student@college.com']);
+    let defaultStudentId;
+    if (studentUserRes.rows.length > 0) {
+      const studentUserId = studentUserRes.rows[0].id;
+      defaultStudentId = crypto.randomUUID();
+      await client.query(
+        `INSERT INTO students (id, user_id, full_name, roll_number, admission_number, email, phone_number, gender, date_of_birth, department, year, semester, section, address, parent_name, parent_phone, parent_email, cgpa, attendance_percentage, is_active)
+         VALUES ($1, $2, 'Student Demo', 'CS100001', 'ADM2026CS100001', 'student@college.com', '1234567890', 'Male', '2004-05-15', 'CSE', 3, 5, 'A', '123 College Ave, Campus Town', 'Parent Demo', '0987654321', 'parent@college.com', 8.5, 92.5, true)`,
+        [defaultStudentId, studentUserId]
+      );
+      allStudentsList.push({ id: defaultStudentId, email: 'student@college.com' });
+    }
 
     // ----------------------------------------------------
     // SEED HOSTELS, BLOCKS, ROOMS
@@ -374,21 +428,65 @@ async function seed() {
     const batchTransportAllocations = [];
     const batchTransportFees = [];
     const batchGeneralFees = [];
-    const allStudentsList = []; // Helper for attendance & results
-
+    // allStudentsList helper is declared early for default profiles
+    
     let studentIndex = 1;
     let hostelAllocationCount = 0;
     let transportAllocationCount = 0;
     let dayScholarCount = 0;
 
-    for (const dept of DEPARTMENTS) {
-      const targets = getDeptAllocationTargets(dept);
-      let deptHostelLeft = targets.hostel;
-      let deptTransportLeft = targets.transport;
-      let deptDayLeft = targets.day;
+    const batchFaculty = [];
 
-      for (let sIdx = 1; sIdx <= 50; sIdx++) {
-        const gender = sIdx <= 25 ? 'Male' : 'Female';
+    for (const dept of DEPARTMENTS) {
+      // Seed 3 Faculty Members per department
+      for (let fIdx = 1; fIdx <= 3; fIdx++) {
+        const gender = fIdx % 2 === 0 ? 'Female' : 'Male';
+        const nameData = generateName(gender, fIdx + 100, dept);
+        const fName = nameData.fullName;
+        const fEmail = `faculty.${dept.toLowerCase()}.${fIdx}@college.com`;
+        const empId = `FAC${dept}${fIdx}`;
+        
+        const facultyUserId = crypto.randomUUID();
+        const facultyProfileId = crypto.randomUUID();
+        
+        batchUsers.push({
+          id: facultyUserId,
+          name: fName,
+          full_name: fName,
+          email: fEmail,
+          password: passwordHash,
+          temp_password: 'password123',
+          role: 'faculty',
+          child_email: null,
+          is_verified: true,
+          is_active: true
+        });
+        
+        batchFaculty.push({
+          id: facultyProfileId,
+          user_id: facultyUserId,
+          full_name: fName,
+          email: fEmail,
+          employee_id: empId,
+          department: dept,
+          designation: fIdx === 1 ? 'Professor' : fIdx === 2 ? 'Associate Professor' : 'Assistant Professor',
+          experience: 5 + fIdx * 3,
+          gender: gender,
+          phone_number: `98480${dept.charCodeAt(0)}${dept.charCodeAt(1)}${fIdx}`,
+          status: 'Active',
+          is_active: true,
+          assigned_sections: JSON.stringify(['A']),
+          assigned_subjects: JSON.stringify([`Sub-${dept}-${fIdx}`]),
+          assigned_student_ids: JSON.stringify([])
+        });
+      }
+
+      let deptHostelLeft = 5;
+      let deptTransportLeft = 5;
+      let deptDayLeft = 5;
+
+      for (let sIdx = 1; sIdx <= 15; sIdx++) {
+        const gender = sIdx <= 8 ? 'Male' : 'Female';
         const nameData = generateName(gender, sIdx, dept);
         
         // Year & Semester limits
@@ -572,6 +670,13 @@ async function seed() {
     ], batchStudents);
     console.log("✅ Students inserted.");
 
+    console.log("⏳ Inserting Faculty profiles...");
+    await batchInsert(client, 'faculty', [
+      'id', 'user_id', 'full_name', 'email', 'employee_id', 'department', 'designation', 'experience', 'gender',
+      'phone_number', 'status', 'is_active', 'assigned_sections', 'assigned_subjects', 'assigned_student_ids'
+    ], batchFaculty);
+    console.log("✅ Faculty profiles inserted.");
+
     console.log("⏳ Inserting Hostel Allocations...");
     await batchInsert(client, 'hostel_allocations', [
       'student_id', 'hostel_id', 'block_id', 'room_id', 'bed_number', 'status', 'academic_year'
@@ -638,7 +743,7 @@ async function seed() {
     const attendanceQuery = `
       INSERT INTO attendance (student, date, status, subject, remarks)
       VALUES ${attendanceValueStrings.join(', ')}
-      ON CONFLICT (student, date, subject) DO NOTHING
+      ON CONFLICT (student, date, subject, period) DO NOTHING
     `;
     await client.query(attendanceQuery, attendanceValues);
     console.log("✅ Attendance records seeded.");

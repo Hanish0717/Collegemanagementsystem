@@ -33,23 +33,6 @@ export function Login() {
   );
 }
 
-const demoCredentials = [
-  { label: "Super Admin", email: "superadmin@college.com", password: "password123", role: "super_admin" },
-  { label: "System Admin", email: "admin@college.com", password: "password123", role: "admin" },
-  { label: "Faculty Member", email: "faculty@college.com", password: "password123", role: "faculty" },
-  { label: "Student", email: "student@college.com", password: "password123", role: "student" },
-  { label: "Parent", email: "parent@college.com", password: "password123", admissionNumber: "CS100001", role: "parent" },
-  { label: "Placement Officer", email: "placement@college.com", password: "password123", role: "placement" },
-  { label: "Librarian", email: "librarian@college.com", password: "password123", role: "librarian" },
-  { label: "Hostel Warden", email: "warden@college.com", password: "password123", role: "warden" },
-  { label: "Transport Manager", email: "transport@college.com", password: "password123", role: "transport" },
-  { label: "Principal", email: "principal@college.com", password: "password123", role: "principal" },
-  { label: "HOD CSE", email: "hod@college.com", password: "password123", role: "hod" },
-  { label: "Dean Academics", email: "dean@college.com", password: "password123", role: "dean" },
-  { label: "Exam Cell Officer", email: "examcell@college.com", password: "password123", role: "exam_cell" },
-  { label: "Accounts Manager", email: "accounts@college.com", password: "password123", role: "accounts" }
-];
-
 function LoginForm() {
   const navigate = useNavigate();
   const { login, refreshUser } = useAuth();
@@ -353,33 +336,6 @@ function LoginForm() {
           )}
           <form className="mt-4 space-y-4" onSubmit={submit}>
             <div>
-              <label className="text-xs font-semibold text-indigo-600 block mb-1">
-                Select Demo Role Account (Autofills credentials)
-              </label>
-              <select
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (!val) return;
-                  const selected = demoCredentials.find(c => c.email === val);
-                  if (selected) {
-                    setRoleId(selected.role as any);
-                    setEmail(selected.email);
-                    if (selected.password) setPassword(selected.password);
-                    if (selected.admissionNumber) setAdmissionNumber(selected.admissionNumber);
-                  }
-                }}
-                className="w-full rounded-xl border bg-background/60 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">-- Click to select role --</option>
-                {demoCredentials.map((c) => (
-                  <option key={c.label} value={c.email}>
-                    {c.label} ({c.email})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
               <label className="text-xs font-medium">
                 {roleId === "parent"
                   ? "Parent Email"
@@ -512,6 +468,17 @@ function LoginForm() {
             )}
             {googleLoading ? "Signing in…" : "Continue with Google"}
           </button>
+
+          {/* PIN Toggle Trigger */}
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => setIsPinModalOpen(true)}
+              className="text-xs text-indigo-600 hover:underline cursor-pointer font-medium"
+            >
+              Need Demo Credentials? Click here to view PINs
+            </button>
+          </div>
 
           {/* PIN modal */}
           {isPinModalOpen && (

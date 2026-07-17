@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+.env
+.git
+.github
+debug_startup.txt
+error_log.txt
+output.txt
+*.log
+*.txt

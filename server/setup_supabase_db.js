@@ -1,6 +1,12 @@
 import pkg from 'pg';
 import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -13,14 +19,102 @@ if (!connectionString) {
   process.exit(1);
 }
 
+const isLocalDatabase =
+  connectionString.includes('localhost') ||
+  connectionString.includes('127.0.0.1') ||
+  connectionString.includes('db') ||
+  connectionString.includes('postgres') ||
+  connectionString.includes('host.docker.internal') ||
+  process.env.DATABASE_SSL === 'false';
+
 const client = new Client({
   connectionString,
-  ssl: {
-    rejectUnauthorized: false // Required for Supabase SSL connection
+  ssl: isLocalDatabase ? false : {
+    rejectUnauthorized: false
   }
 });
 
 const sqlSchema = `
+-- Drop all existing tables cascadingly for a clean reset
+DROP TABLE IF EXISTS departments CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS students CASCADE;
+DROP TABLE IF EXISTS admins CASCADE;
+DROP TABLE IF EXISTS faculty CASCADE;
+DROP TABLE IF EXISTS assignments CASCADE;
+DROP TABLE IF EXISTS attendance CASCADE;
+DROP TABLE IF EXISTS faculty_attendance CASCADE;
+DROP TABLE IF EXISTS books CASCADE;
+DROP TABLE IF EXISTS issued_books CASCADE;
+DROP TABLE IF EXISTS library_notifications CASCADE;
+DROP TABLE IF EXISTS library_settings CASCADE;
+DROP TABLE IF EXISTS complaints CASCADE;
+DROP TABLE IF EXISTS leave_requests CASCADE;
+DROP TABLE IF EXISTS fees CASCADE;
+DROP TABLE IF EXISTS results CASCADE;
+DROP TABLE IF EXISTS study_materials CASCADE;
+DROP TABLE IF EXISTS timetable CASCADE;
+DROP TABLE IF EXISTS otps CASCADE;
+DROP TABLE IF EXISTS companies CASCADE;
+DROP TABLE IF EXISTS placement_drives CASCADE;
+DROP TABLE IF EXISTS selected_students CASCADE;
+DROP TABLE IF EXISTS student_applications CASCADE;
+DROP TABLE IF EXISTS drive_rounds CASCADE;
+DROP TABLE IF EXISTS hostels CASCADE;
+DROP TABLE IF EXISTS hostel_blocks CASCADE;
+DROP TABLE IF EXISTS hostel_rooms CASCADE;
+DROP TABLE IF EXISTS hostel_allocations CASCADE;
+DROP TABLE IF EXISTS hostel_fees CASCADE;
+DROP TABLE IF EXISTS hostel_fee_payments CASCADE;
+DROP TABLE IF EXISTS hostel_fee_receipts CASCADE;
+DROP TABLE IF EXISTS fee_notifications CASCADE;
+DROP TABLE IF EXISTS hostel_complaints CASCADE;
+DROP TABLE IF EXISTS hostel_visitors CASCADE;
+DROP TABLE IF EXISTS hostel_attendance CASCADE;
+DROP TABLE IF EXISTS buses CASCADE;
+DROP TABLE IF EXISTS drivers CASCADE;
+DROP TABLE IF EXISTS stops CASCADE;
+DROP TABLE IF EXISTS routes CASCADE;
+DROP TABLE IF EXISTS transport_allocations CASCADE;
+DROP TABLE IF EXISTS vehicle_maintenance CASCADE;
+DROP TABLE IF EXISTS transport_fees CASCADE;
+DROP TABLE IF EXISTS alumni_profiles CASCADE;
+DROP TABLE IF EXISTS alumni_employment CASCADE;
+DROP TABLE IF EXISTS alumni_education CASCADE;
+DROP TABLE IF EXISTS alumni_events CASCADE;
+DROP TABLE IF EXISTS alumni_event_registrations CASCADE;
+DROP TABLE IF EXISTS alumni_jobs CASCADE;
+DROP TABLE IF EXISTS alumni_job_applications CASCADE;
+DROP TABLE IF EXISTS alumni_mentorship_requests CASCADE;
+DROP TABLE IF EXISTS alumni_donations CASCADE;
+DROP TABLE IF EXISTS alumni_success_stories CASCADE;
+DROP TABLE IF EXISTS alumni_communication_logs CASCADE;
+DROP TABLE IF EXISTS alumni_connections CASCADE;
+DROP TABLE IF EXISTS alumni_posts CASCADE;
+DROP TABLE IF EXISTS alumni_post_likes CASCADE;
+DROP TABLE IF EXISTS alumni_post_comments CASCADE;
+DROP TABLE IF EXISTS alumni_messages CASCADE;
+DROP TABLE IF EXISTS mentorship_sessions CASCADE;
+DROP TABLE IF EXISTS alumni_activity_logs CASCADE;
+DROP TABLE IF EXISTS chat_conversations CASCADE;
+DROP TABLE IF EXISTS chat_messages CASCADE;
+DROP TABLE IF EXISTS broadcast_notifications CASCADE;
+DROP TABLE IF EXISTS admin_notifications CASCADE;
+DROP TABLE IF EXISTS faculty_notifications CASCADE;
+DROP TABLE IF EXISTS faculty_notification_settings CASCADE;
+DROP TABLE IF EXISTS student_notifications CASCADE;
+DROP TABLE IF EXISTS placement_companies CASCADE;
+DROP TABLE IF EXISTS placements CASCADE;
+DROP TABLE IF EXISTS placement_interviews CASCADE;
+DROP TABLE IF EXISTS placement_notifications CASCADE;
+DROP TABLE IF EXISTS placement_training CASCADE;
+DROP TABLE IF EXISTS exams CASCADE;
+DROP TABLE IF EXISTS exam_timetables CASCADE;
+DROP TABLE IF EXISTS exam_questions CASCADE;
+DROP TABLE IF EXISTS exam_invigilations CASCADE;
+DROP TABLE IF EXISTS exam_hall_tickets CASCADE;
+DROP TABLE IF EXISTS exam_results CASCADE;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 0. DEPARTMENTS Table
@@ -45,7 +139,8 @@ CREATE TABLE IF NOT EXISTS users (
   password varchar(255),
   role varchar(50) DEFAULT 'student' CHECK (role IN (
     'super-admin', 'admin', 'faculty', 'student', 'parent', 
-    'librarian', 'placement-officer', 'hostel-warden', 'transport-manager'
+    'librarian', 'placement-officer', 'hostel-warden', 'transport-manager',
+    'principal', 'dean', 'hod', 'exam-cell', 'accounts', 'alumni-coordinator', 'alumni'
   )),
   phone_number varchar(50),
   mobile varchar(50),
@@ -348,7 +443,14 @@ const demoUsers = [
   { name: 'Librarian', email: 'librarian@college.com', role: 'librarian' },
   { name: 'Placement Officer', email: 'placement@college.com', role: 'placement-officer' },
   { name: 'Hostel Warden', email: 'warden@college.com', role: 'hostel-warden' },
-  { name: 'Transport Manager', email: 'transport@college.com', role: 'transport-manager' }
+  { name: 'Transport Manager', email: 'transport@college.com', role: 'transport-manager' },
+  { name: 'Principal Office', email: 'principal@college.com', role: 'principal' },
+  { name: 'Dean Academics', email: 'dean@college.com', role: 'dean' },
+  { name: 'HOD CSE', email: 'hod@college.com', role: 'hod' },
+  { name: 'Exam Cell Officer', email: 'examcell@college.com', role: 'exam-cell' },
+  { name: 'Accounts Manager', email: 'accounts@college.com', role: 'accounts' },
+  { name: 'Alumni Coordinator', email: 'alumnicoord@college.com', role: 'alumni-coordinator' },
+  { name: 'Alumni Student', email: 'alumni@college.com', role: 'alumni' }
 ];
 
 async function runSetup() {
@@ -359,6 +461,87 @@ async function runSetup() {
 
     console.log("Executing SQL Schema Migrations (creating tables if not exist)...");
     await client.query(sqlSchema);
+
+    // Create admins and faculty tables
+    console.log("Creating admins and faculty tables if not exist...");
+    const missingTablesSql = `
+      CREATE TABLE IF NOT EXISTS admins (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id uuid UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        full_name varchar(255) NOT NULL,
+        email varchar(255) UNIQUE NOT NULL,
+        employee_id varchar(50) UNIQUE NOT NULL,
+        department varchar(255),
+        is_active boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS faculty (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id uuid UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        full_name varchar(255) NOT NULL,
+        email varchar(255) UNIQUE NOT NULL,
+        employee_id varchar(50) UNIQUE NOT NULL,
+        department varchar(255) NOT NULL,
+        designation varchar(255) NOT NULL,
+        experience integer DEFAULT 0,
+        gender varchar(20),
+        phone_number varchar(50),
+        status varchar(50) DEFAULT 'Active',
+        is_active boolean DEFAULT true,
+        assigned_sections jsonb DEFAULT '[]'::jsonb,
+        assigned_subjects jsonb DEFAULT '[]'::jsonb,
+        assigned_student_ids jsonb DEFAULT '[]'::jsonb,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+    `;
+    await client.query(missingTablesSql);
+
+    // Run ALTER TABLE migrations
+    console.log("Applying column and secondary migrations...");
+    const alterTablesSql = `
+      ALTER TABLE students ADD COLUMN IF NOT EXISTS user_id uuid;
+      ALTER TABLE students ADD COLUMN IF NOT EXISTS admission_number varchar(100);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS temp_password varchar(255);
+      ALTER TABLE faculty ADD COLUMN IF NOT EXISTS user_id uuid;
+      ALTER TABLE faculty ADD COLUMN IF NOT EXISTS attendance_percentage numeric(5, 2) DEFAULT 100.00;
+
+      CREATE TABLE IF NOT EXISTS faculty_attendance (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        faculty uuid REFERENCES faculty(id) ON DELETE CASCADE,
+        date date NOT NULL,
+        status varchar(50) DEFAULT 'Present',
+        remarks text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        UNIQUE(faculty, date)
+      );
+
+      ALTER TABLE attendance ADD COLUMN IF NOT EXISTS period integer;
+      ALTER TABLE attendance ADD COLUMN IF NOT EXISTS time varchar(50);
+    `;
+    await client.query(alterTablesSql);
+
+    // Run migrated tables DDL schema
+    const migratedPath = path.join(__dirname, 'src', 'migrations', 'create_migrated_tables.sql');
+    if (fs.existsSync(migratedPath)) {
+      console.log("Executing Migrated Tables SQL...");
+      const migratedSql = fs.readFileSync(migratedPath, 'utf8');
+      await client.query(migratedSql);
+      console.log("✅ Migrated tables schema created/verified.");
+    }
+
+    // Run chat tables DDL schema
+    const chatPath = path.join(__dirname, 'src', 'migrations', 'create_chat_tables.sql');
+    if (fs.existsSync(chatPath)) {
+      console.log("Executing Chat Tables SQL...");
+      const chatSql = fs.readFileSync(chatPath, 'utf8');
+      await client.query(chatSql);
+      console.log("✅ Chat tables schema created/verified.");
+    }
+
     console.log("✅ Tables created/validated successfully.");
 
     console.log("Seeding Demo Accounts...");
@@ -483,8 +666,8 @@ async function runSetup() {
       if (check.rows.length === 0) {
         const insertRes = await client.query(
           `INSERT INTO students (full_name, roll_number, email, phone_number, gender, date_of_birth, department, year, semester, section, address, parent_name, parent_phone, parent_email, cgpa, attendance_percentage, is_active)
-           VALUES ($1, $2, $3, '9876543210', 'Male', '2004-06-20', $4, 4, 7, 'A', '123 Campus Lane', 'Parent ' || $1, '9876543210', 'parent.' || $3, $5, 90.0, true) RETURNING id`,
-          [stud.full_name, stud.roll_number, stud.email, stud.department, stud.cgpa]
+           VALUES ($1, $2, $3, '9876543210', 'Male', '2004-06-20', $4, 4, 7, 'A', '123 Campus Lane', $5, '9876543210', $6, $7, 90.0, true) RETURNING id`,
+          [stud.full_name, stud.roll_number, stud.email, stud.department, `Parent ${stud.full_name}`, `parent.${stud.email}`, stud.cgpa]
         );
         studentMap[stud.full_name] = insertRes.rows[0].id;
       } else {
