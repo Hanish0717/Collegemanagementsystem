@@ -130,7 +130,11 @@ export const fetchDashboardAnalytics = async () => {
 /**
  * Search Residents
  */
-export const searchResidents = async (query: string = '', page: number = 1, pageSize: number = 20) => {
+export const searchResidents = async (
+  query: string = '',
+  page: number = 1,
+  pageSize: number = 20,
+) => {
   try {
     const params = new URLSearchParams();
     if (query) params.append('q', query);

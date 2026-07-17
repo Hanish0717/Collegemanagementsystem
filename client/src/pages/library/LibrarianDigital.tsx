@@ -1,92 +1,98 @@
-import { useState } from "react";
-import { Search, FileText, Download, Eye, Plus, Trash2 } from "lucide-react";
-import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { toast } from "sonner";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchEBooks, downloadEBook, createEBook, deleteEBook, EBookItem } from "@/services/libraryService";
+import { useState } from 'react';
+import { Search, FileText, Download, Eye, Plus, Trash2 } from 'lucide-react';
+import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  fetchEBooks,
+  downloadEBook,
+  createEBook,
+  deleteEBook,
+  EBookItem,
+} from '@/services/libraryService';
 
 export function LibrarianDigital() {
   const queryClient = useQueryClient();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedBook, setSelectedBook] = useState<EBookItem | null>(null);
 
   // Add Resource Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [category, setCategory] = useState("Computer Science");
-  const [format, setFormat] = useState("PDF");
-  const [size, setSize] = useState("");
-  const [fileUrl, setFileUrl] = useState("");
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [category, setCategory] = useState('Computer Science');
+  const [format, setFormat] = useState('PDF');
+  const [size, setSize] = useState('');
+  const [fileUrl, setFileUrl] = useState('');
 
-  const categories = ["All", "Computer Science", "Business", "Mathematics", "Science"];
+  const categories = ['All', 'Computer Science', 'Business', 'Mathematics', 'Science'];
 
   // Fetch all ebooks to compute domain/category totals
   const { data: allEBooks } = useQuery({
-    queryKey: ["allEbooks"],
+    queryKey: ['allEbooks'],
     queryFn: () => fetchEBooks(),
   });
 
   // Fetch filtered ebooks
   const { data: ebooks = [], isLoading } = useQuery({
-    queryKey: ["ebooks", searchTerm, selectedCategory],
+    queryKey: ['ebooks', searchTerm, selectedCategory],
     queryFn: () =>
       fetchEBooks({
         search: searchTerm || undefined,
-        category: selectedCategory === "All" ? undefined : selectedCategory,
+        category: selectedCategory === 'All' ? undefined : selectedCategory,
       }),
   });
 
   const downloadMutation = useMutation({
     mutationFn: (bookId: string) => downloadEBook(bookId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ebooks"] });
-      queryClient.invalidateQueries({ queryKey: ["allEbooks"] });
+      queryClient.invalidateQueries({ queryKey: ['ebooks'] });
+      queryClient.invalidateQueries({ queryKey: ['allEbooks'] });
     },
   });
 
   const addMutation = useMutation({
     mutationFn: (payload: any) => createEBook(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ebooks"] });
-      queryClient.invalidateQueries({ queryKey: ["allEbooks"] });
-      toast.success("Digital resource added successfully!");
+      queryClient.invalidateQueries({ queryKey: ['ebooks'] });
+      queryClient.invalidateQueries({ queryKey: ['allEbooks'] });
+      toast.success('Digital resource added successfully!');
       setIsAddModalOpen(false);
       resetForm();
     },
     onError: (err) => {
-      toast.error("Failed to add resource.");
+      toast.error('Failed to add resource.');
       console.error(err);
-    }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteEBook(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ebooks"] });
-      queryClient.invalidateQueries({ queryKey: ["allEbooks"] });
-      toast.success("Digital resource deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ['ebooks'] });
+      queryClient.invalidateQueries({ queryKey: ['allEbooks'] });
+      toast.success('Digital resource deleted successfully!');
     },
     onError: (err) => {
-      toast.error("Failed to delete resource.");
+      toast.error('Failed to delete resource.');
       console.error(err);
-    }
+    },
   });
 
   const resetForm = () => {
-    setTitle("");
-    setAuthor("");
-    setCategory("Computer Science");
-    setFormat("PDF");
-    setSize("");
-    setFileUrl("");
+    setTitle('');
+    setAuthor('');
+    setCategory('Computer Science');
+    setFormat('PDF');
+    setSize('');
+    setFileUrl('');
   };
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !author || !size) {
-      toast.error("Please fill in all required fields.");
+      toast.error('Please fill in all required fields.');
       return;
     }
     addMutation.mutate({
@@ -95,7 +101,7 @@ export function LibrarianDigital() {
       category,
       format,
       size,
-      fileUrl: fileUrl || "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+      fileUrl: fileUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     });
   };
 
@@ -112,12 +118,13 @@ export function LibrarianDigital() {
       onSuccess: () => {
         toast.dismiss();
         toast.success(`Successfully downloaded "${title}"!`);
-        const urlToOpen = customUrl || "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-        window.open(urlToOpen, "_blank");
+        const urlToOpen =
+          customUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+        window.open(urlToOpen, '_blank');
       },
       onError: (err) => {
         toast.dismiss();
-        toast.error("Failed to register download.");
+        toast.error('Failed to register download.');
         console.error(err);
       },
     });
@@ -127,9 +134,7 @@ export function LibrarianDigital() {
     if (!allEBooks) return 0;
     const kw = keyword.toLowerCase();
     return allEBooks.filter(
-      (e) =>
-        e.title.toLowerCase().includes(kw) ||
-        e.category.toLowerCase().includes(kw)
+      (e) => e.title.toLowerCase().includes(kw) || e.category.toLowerCase().includes(kw),
     ).length;
   };
 
@@ -171,8 +176,8 @@ export function LibrarianDigital() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition cursor-pointer ${
                   selectedCategory === cat
-                    ? "bg-gradient-primary text-white"
-                    : "bg-background border text-muted-foreground hover:border-primary"
+                    ? 'bg-gradient-primary text-white'
+                    : 'bg-background border text-muted-foreground hover:border-primary'
                 }`}
               >
                 {cat}
@@ -192,7 +197,9 @@ export function LibrarianDigital() {
       ) : !ebooks || ebooks.length === 0 ? (
         <Card className="text-center py-12">
           <FileText className="size-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-          <p className="text-muted-foreground font-medium">No digital resources found matching your criteria.</p>
+          <p className="text-muted-foreground font-medium">
+            No digital resources found matching your criteria.
+          </p>
         </Card>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -295,11 +302,12 @@ export function LibrarianDigital() {
             </div>
 
             <div className="p-4 rounded-xl bg-gradient-soft border mb-6">
-              <h4 className="font-semibold text-xs text-muted-foreground mb-2">
-                Document Preview
-              </h4>
+              <h4 className="font-semibold text-xs text-muted-foreground mb-2">Document Preview</h4>
               <iframe
-                src={selectedBook.fileUrl || "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"}
+                src={
+                  selectedBook.fileUrl ||
+                  'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                }
                 className="w-full aspect-video rounded-lg border bg-slate-950"
                 title={selectedBook.title}
               />
@@ -340,7 +348,9 @@ export function LibrarianDigital() {
             <h3 className="font-semibold text-lg mb-4 text-gradient">Add New Digital Resource</h3>
             <form onSubmit={handleAddSubmit} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">Resource Title *</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Resource Title *
+                </label>
                 <input
                   type="text"
                   required
@@ -404,7 +414,9 @@ export function LibrarianDigital() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">PDF Link / URL (Optional)</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    PDF Link / URL (Optional)
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g. https://domain.com/book.pdf"
@@ -428,7 +440,7 @@ export function LibrarianDigital() {
                   disabled={addMutation.isPending}
                   className="flex-1 px-4 py-2 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition text-sm disabled:opacity-50"
                 >
-                  {addMutation.isPending ? "Adding..." : "Add Resource"}
+                  {addMutation.isPending ? 'Adding...' : 'Add Resource'}
                 </button>
               </div>
             </form>
@@ -441,10 +453,21 @@ export function LibrarianDigital() {
         <h3 className="font-semibold mb-4 text-gradient">Popular Digital Domains</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { title: "Python Programming", docs: getDomainCount("python"), color: "from-blue-500" },
-            { title: "Web Development", docs: getDomainCount("web"), color: "from-purple-500" },
-            { title: "Data Science", docs: getDomainCount("data science") + getDomainCount("machine learning") + getDomainCount("ai &"), color: "from-pink-500" },
-            { title: "Business Management", docs: getDomainCount("business") + getDomainCount("marketing"), color: "from-cyan-500" },
+            { title: 'Python Programming', docs: getDomainCount('python'), color: 'from-blue-500' },
+            { title: 'Web Development', docs: getDomainCount('web'), color: 'from-purple-500' },
+            {
+              title: 'Data Science',
+              docs:
+                getDomainCount('data science') +
+                getDomainCount('machine learning') +
+                getDomainCount('ai &'),
+              color: 'from-pink-500',
+            },
+            {
+              title: 'Business Management',
+              docs: getDomainCount('business') + getDomainCount('marketing'),
+              color: 'from-cyan-500',
+            },
           ].map((cat, i) => (
             <div
               key={i}

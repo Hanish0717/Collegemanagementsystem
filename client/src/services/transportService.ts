@@ -1,4 +1,4 @@
-import api from "../lib/api";
+import api from '../lib/api';
 
 export interface BusItem {
   id: string;
@@ -63,15 +63,18 @@ export interface StudentTransportDetails {
 
 export async function fetchTransportData(): Promise<{ buses: BusItem[] }> {
   const { data } = await api.get<{ success: boolean; data: { buses: BusItem[] } }>(
-    "/api/transport/dashboard",
+    '/api/transport/dashboard',
   );
   return data.data;
 }
 
-export async function verifyStudentTransportApi(rollNumber: string, branchName: string): Promise<StudentTransportDetails> {
+export async function verifyStudentTransportApi(
+  rollNumber: string,
+  branchName: string,
+): Promise<StudentTransportDetails> {
   const { data } = await api.post<{ success: boolean; data: StudentTransportDetails }>(
-    "/api/transport/verify-student",
-    { rollNumber, branchName }
+    '/api/transport/verify-student',
+    { rollNumber, branchName },
   );
   return data.data;
 }
@@ -89,15 +92,17 @@ export interface BusTelemetry {
 
 export async function getBusTelemetryApi(busNumber: string): Promise<BusTelemetry> {
   const { data } = await api.get<{ success: boolean; data: BusTelemetry }>(
-    `/api/transport/telemetry?busNumber=${encodeURIComponent(busNumber)}`
+    `/api/transport/telemetry?busNumber=${encodeURIComponent(busNumber)}`,
   );
   return data.data;
 }
 
-export async function updateBusTelemetryApi(payload: Partial<BusTelemetry> & { busNumber: string }): Promise<any> {
+export async function updateBusTelemetryApi(
+  payload: Partial<BusTelemetry> & { busNumber: string },
+): Promise<any> {
   const { data } = await api.post<{ success: boolean; message: string; data: any }>(
-    "/api/transport/telemetry",
-    payload
+    '/api/transport/telemetry',
+    payload,
   );
   return data;
 }

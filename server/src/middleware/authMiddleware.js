@@ -59,7 +59,11 @@ export const protect = async (req, res, next) => {
       req.user = user;
       next();
     } catch (error) {
-      const err = new Error('Not authorized, invalid token');
+      let message = 'Not authorized, invalid token';
+      if (error.name === 'TokenExpiredError') {
+        message = 'Not authorized, token has expired';
+      }
+      const err = new Error(message);
       err.statusCode = 401;
       return next(err);
     }

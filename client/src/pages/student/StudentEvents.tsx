@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Calendar, Users } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import api from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { Calendar, Users } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 export function StudentEvents() {
   const [eventsList, setEventsList] = useState<any[]>([]);
@@ -11,19 +11,23 @@ export function StudentEvents() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await api.get("/api/events");
+        const res = await api.get('/api/events');
         if (res.data?.success && res.data?.data) {
           const mapped = res.data.data.map((e: any) => ({
             id: e.id,
             title: e.title,
             type: e.type,
-            date: new Date(e.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-            status: e.status === "Approved" ? "Not Registered" : "Closed"
+            date: new Date(e.date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            status: e.status === 'Approved' ? 'Not Registered' : 'Closed',
           }));
           setEventsList(mapped);
         }
       } catch (err) {
-        console.error("Error fetching events:", err);
+        console.error('Error fetching events:', err);
       } finally {
         setLoading(false);
       }
@@ -33,27 +37,35 @@ export function StudentEvents() {
 
   const handleRegister = (eventId: string, title: string) => {
     alert(`Registered successfully for ${title}!`);
-    setEventsList(prev => prev.map(e => {
-      if (e.id === eventId) {
-        return { ...e, status: "Registered" };
-      }
-      return e;
-    }));
+    setEventsList((prev) =>
+      prev.map((e) => {
+        if (e.id === eventId) {
+          return { ...e, status: 'Registered' };
+        }
+        return e;
+      }),
+    );
   };
 
-  const registeredEvents = eventsList.filter((e) => e.status === "Registered");
+  const registeredEvents = eventsList.filter((e) => e.status === 'Registered');
 
   // Group categories dynamically
   const categoriesMap: Record<string, number> = {};
-  eventsList.forEach(e => {
-    const t = e.type || "Other";
+  eventsList.forEach((e) => {
+    const t = e.type || 'Other';
     categoriesMap[t] = (categoriesMap[t] || 0) + 1;
   });
 
-  const categories = Object.keys(categoriesMap).map(type => ({
+  const categories = Object.keys(categoriesMap).map((type) => ({
     category: type,
     count: categoriesMap[type],
-    icon: type.toLowerCase().includes("tech") ? "💻" : type.toLowerCase().includes("cult") ? "🎭" : type.toLowerCase().includes("sport") ? "⚽" : "📚"
+    icon: type.toLowerCase().includes('tech')
+      ? '💻'
+      : type.toLowerCase().includes('cult')
+        ? '🎭'
+        : type.toLowerCase().includes('sport')
+          ? '⚽'
+          : '📚',
   }));
 
   if (loading) {
@@ -74,14 +86,22 @@ export function StudentEvents() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Events", value: eventsList.length.toString(), tone: "info" as const },
+          { label: 'Total Events', value: eventsList.length.toString(), tone: 'info' as const },
           {
-            label: "Registered",
+            label: 'Registered',
             value: registeredEvents.length.toString(),
-            tone: "success" as const,
+            tone: 'success' as const,
           },
-          { label: "Upcoming", value: eventsList.filter(e => e.status !== "Closed").length.toString(), tone: "info" as const },
-          { label: "Closed Events", value: eventsList.filter(e => e.status === "Closed").length.toString(), tone: "warn" as const },
+          {
+            label: 'Upcoming',
+            value: eventsList.filter((e) => e.status !== 'Closed').length.toString(),
+            tone: 'info' as const,
+          },
+          {
+            label: 'Closed Events',
+            value: eventsList.filter((e) => e.status === 'Closed').length.toString(),
+            tone: 'warn' as const,
+          },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -103,7 +123,15 @@ export function StudentEvents() {
                   <div className="size-11 rounded-xl bg-gradient-cyan text-white grid place-items-center">
                     <Calendar className="size-5" />
                   </div>
-                  <Badge tone={event.status === "Registered" ? "success" : event.status === "Closed" ? "danger" : "info"}>
+                  <Badge
+                    tone={
+                      event.status === 'Registered'
+                        ? 'success'
+                        : event.status === 'Closed'
+                          ? 'danger'
+                          : 'info'
+                    }
+                  >
                     {event.status}
                   </Badge>
                 </div>
@@ -115,7 +143,7 @@ export function StudentEvents() {
                     <span className="text-muted-foreground">{event.date}</span>
                   </div>
                 </div>
-                {event.status === "Not Registered" && (
+                {event.status === 'Not Registered' && (
                   <button
                     onClick={() => handleRegister(event.id, event.title)}
                     className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-xs font-medium hover:opacity-90 transition"

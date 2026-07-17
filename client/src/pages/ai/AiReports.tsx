@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
 import {
   Download,
   FileText,
@@ -7,76 +7,76 @@ import {
   Calendar,
   Clock,
   CheckCircle,
-} from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+} from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
 
 export function AiReports() {
   const reportTypes = [
-    { type: "Attendance Reports", count: 45, icon: Calendar, color: "bg-gradient-primary" },
-    { type: "Academic Reports", count: 38, icon: FileText, color: "bg-gradient-violet" },
-    { type: "Placement Analytics", count: 22, icon: TrendingUp, color: "bg-gradient-cyan" },
-    { type: "Department Performance", count: 15, icon: BarChart3, color: "bg-gradient-primary" },
+    { type: 'Attendance Reports', count: 45, icon: Calendar, color: 'bg-gradient-primary' },
+    { type: 'Academic Reports', count: 38, icon: FileText, color: 'bg-gradient-violet' },
+    { type: 'Placement Analytics', count: 22, icon: TrendingUp, color: 'bg-gradient-cyan' },
+    { type: 'Department Performance', count: 15, icon: BarChart3, color: 'bg-gradient-primary' },
   ];
 
   const recentReports = [
     {
-      name: "Monthly Attendance Report - May 2026",
-      type: "Attendance",
-      date: "May 25, 2026",
-      size: "2.4 MB",
-      status: "Ready",
+      name: 'Monthly Attendance Report - May 2026',
+      type: 'Attendance',
+      date: 'May 25, 2026',
+      size: '2.4 MB',
+      status: 'Ready',
     },
     {
-      name: "Academic Performance - Semester 5",
-      type: "Academic",
-      date: "May 24, 2026",
-      size: "3.1 MB",
-      status: "Ready",
+      name: 'Academic Performance - Semester 5',
+      type: 'Academic',
+      date: 'May 24, 2026',
+      size: '3.1 MB',
+      status: 'Ready',
     },
     {
-      name: "Department Analysis - Computer Science",
-      type: "Department",
-      date: "May 23, 2026",
-      size: "1.8 MB",
-      status: "Ready",
+      name: 'Department Analysis - Computer Science',
+      type: 'Department',
+      date: 'May 23, 2026',
+      size: '1.8 MB',
+      status: 'Ready',
     },
     {
-      name: "Placement Statistics - 2026",
-      type: "Placement",
-      date: "May 22, 2026",
-      size: "4.2 MB",
-      status: "Processing",
+      name: 'Placement Statistics - 2026',
+      type: 'Placement',
+      date: 'May 22, 2026',
+      size: '4.2 MB',
+      status: 'Processing',
     },
     {
-      name: "Student Risk Summary - May",
-      type: "Risk",
-      date: "May 21, 2026",
-      size: "2.9 MB",
-      status: "Ready",
+      name: 'Student Risk Summary - May',
+      type: 'Risk',
+      date: 'May 21, 2026',
+      size: '2.9 MB',
+      status: 'Ready',
     },
   ];
 
   const summaryCards = [
-    { label: "Total Reports Generated", value: "156", tone: "success" as const },
-    { label: "Reports This Month", value: "28", tone: "info" as const },
-    { label: "Pending Generation", value: "5", tone: "warn" as const },
-    { label: "Downloads Today", value: "42", tone: "success" as const },
+    { label: 'Total Reports Generated', value: '156', tone: 'success' as const },
+    { label: 'Reports This Month', value: '28', tone: 'info' as const },
+    { label: 'Pending Generation', value: '5', tone: 'warn' as const },
+    { label: 'Downloads Today', value: '42', tone: 'success' as const },
   ];
 
   const insights = [
     {
-      title: "Attendance Improvement",
-      desc: "Overall college attendance improved by 3.2% this month",
+      title: 'Attendance Improvement',
+      desc: 'Overall college attendance improved by 3.2% this month',
       icon: TrendingUp,
     },
     {
-      title: "Academic Excellence",
-      desc: "Computer Science department shows highest GPA improvement",
+      title: 'Academic Excellence',
+      desc: 'Computer Science department shows highest GPA improvement',
       icon: CheckCircle,
     },
     {
-      title: "Risk Reduction",
-      desc: "High-risk student count decreased by 8% after interventions",
+      title: 'Risk Reduction',
+      desc: 'High-risk student count decreased by 8% after interventions',
       icon: TrendingUp,
     },
   ];
@@ -157,7 +157,7 @@ export function AiReports() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Report Name", "Type", "Date", "Size", "Status", "Action"].map((column) => (
+                {['Report Name', 'Type', 'Date', 'Size', 'Status', 'Action'].map((column) => (
                   <th
                     key={column}
                     className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -175,7 +175,7 @@ export function AiReports() {
                   <td className="py-3 px-4 text-muted-foreground">{report.date}</td>
                   <td className="py-3 px-4">{report.size}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={report.status === "Ready" ? "success" : "warn"}>
+                    <Badge tone={report.status === 'Ready' ? 'success' : 'warn'}>
                       {report.status}
                     </Badge>
                   </td>
@@ -196,34 +196,34 @@ export function AiReports() {
         <div className="space-y-3">
           {[
             {
-              date: "May 25, 2026",
-              time: "10:30 AM",
-              report: "Monthly Attendance Report",
-              status: "Completed",
+              date: 'May 25, 2026',
+              time: '10:30 AM',
+              report: 'Monthly Attendance Report',
+              status: 'Completed',
             },
             {
-              date: "May 24, 2026",
-              time: "03:45 PM",
-              report: "Academic Performance Report",
-              status: "Completed",
+              date: 'May 24, 2026',
+              time: '03:45 PM',
+              report: 'Academic Performance Report',
+              status: 'Completed',
             },
             {
-              date: "May 23, 2026",
-              time: "11:20 AM",
-              report: "Department Analysis Report",
-              status: "Completed",
+              date: 'May 23, 2026',
+              time: '11:20 AM',
+              report: 'Department Analysis Report',
+              status: 'Completed',
             },
             {
-              date: "May 22, 2026",
-              time: "02:15 PM",
-              report: "Placement Statistics Report",
-              status: "Processing",
+              date: 'May 22, 2026',
+              time: '02:15 PM',
+              report: 'Placement Statistics Report',
+              status: 'Processing',
             },
             {
-              date: "May 21, 2026",
-              time: "09:00 AM",
-              report: "Student Risk Summary",
-              status: "Completed",
+              date: 'May 21, 2026',
+              time: '09:00 AM',
+              report: 'Student Risk Summary',
+              status: 'Completed',
             },
           ].map((history, index) => (
             <div
@@ -239,7 +239,7 @@ export function AiReports() {
                   {history.date} • {history.time}
                 </div>
               </div>
-              <Badge tone={history.status === "Completed" ? "success" : "warn"}>
+              <Badge tone={history.status === 'Completed' ? 'success' : 'warn'}>
                 {history.status}
               </Badge>
             </div>
@@ -252,36 +252,36 @@ export function AiReports() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 border rounded-xl bg-gradient-soft">
           <select className="rounded-lg border bg-background px-3 py-2 text-sm">
             {[
-              "Select Report Type",
-              "Attendance",
-              "Academic",
-              "Placement",
-              "Department",
-              "Risk Analysis",
+              'Select Report Type',
+              'Attendance',
+              'Academic',
+              'Placement',
+              'Department',
+              'Risk Analysis',
             ].map((type) => (
               <option key={type}>{type}</option>
             ))}
           </select>
           <select className="rounded-lg border bg-background px-3 py-2 text-sm">
             {[
-              "Select Time Period",
-              "This Month",
-              "Last Month",
-              "This Semester",
-              "This Year",
-              "Custom Range",
+              'Select Time Period',
+              'This Month',
+              'Last Month',
+              'This Semester',
+              'This Year',
+              'Custom Range',
             ].map((period) => (
               <option key={period}>{period}</option>
             ))}
           </select>
           <select className="rounded-lg border bg-background px-3 py-2 text-sm">
             {[
-              "Select Department",
-              "All Departments",
-              "Computer Science",
-              "Electrical Engineering",
-              "Mechanical Engineering",
-              "Business Administration",
+              'Select Department',
+              'All Departments',
+              'Computer Science',
+              'Electrical Engineering',
+              'Mechanical Engineering',
+              'Business Administration',
             ].map((dept) => (
               <option key={dept}>{dept}</option>
             ))}
@@ -297,23 +297,23 @@ export function AiReports() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
-              label: "Total Downloads",
-              value: "1,245",
+              label: 'Total Downloads',
+              value: '1,245',
               icon: Download,
-              color: "bg-gradient-primary",
+              color: 'bg-gradient-primary',
             },
-            { label: "This Week", value: "89", icon: Download, color: "bg-gradient-violet" },
+            { label: 'This Week', value: '89', icon: Download, color: 'bg-gradient-violet' },
             {
-              label: "Most Downloaded",
-              value: "Attendance",
+              label: 'Most Downloaded',
+              value: 'Attendance',
               icon: FileText,
-              color: "bg-gradient-cyan",
+              color: 'bg-gradient-cyan',
             },
             {
-              label: "Avg Download Time",
-              value: "2.3s",
+              label: 'Avg Download Time',
+              value: '2.3s',
               icon: Clock,
-              color: "bg-gradient-primary",
+              color: 'bg-gradient-primary',
             },
           ].map((stat, index) => (
             <div key={index} className="p-4 rounded-xl border hover:bg-accent/50 transition">

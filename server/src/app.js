@@ -39,9 +39,52 @@ import hostelAttendanceRoutes from './routes/hostel/attendanceRoutes.js';
 import visitorRoutes from './routes/hostel/visitorRoutes.js';
 import alumniRoutes from './routes/alumniRoutes.js';
 
+import helmet from 'helmet';
+import { rateLimit } from 'express-rate-limit';
+
 dotenv.config();
 
 const app = express();
+
+// Standard HTTP Security Headers using Helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com"],
+      connectSrc: ["'self'", "http://localhost:5000", "http://localhost:5173", "https://rdzitvvxxdhtbzzqoasd.supabase.co"]
+    }
+  }
+}));
+
+// Set up general rate limiter (200 requests per 15 minutes per IP)
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests from this IP, please try again after 15 minutes.' }
+});
+
+// Set up auth rate limiter (15 login/OTP/reset requests per 5 minutes per IP)
+const authLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many authentication attempts, please try again after 5 minutes.' }
+});
+
+// Apply rate limiting
+app.use('/api', generalLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/send-otp', authLimiter);
+app.use('/api/auth/verify-otp', authLimiter);
+app.use('/api/auth/forgot-password', authLimiter);
+app.use('/api/auth/reset-password', authLimiter);
 
 // Robust CORS middleware supporting dynamic localhost and 127.0.0.1 development ports
 const allowedOrigins = [
@@ -86,6 +129,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
+
 
 // Routes
 app.get('/', (req, res) => {

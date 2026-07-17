@@ -222,7 +222,9 @@ export const register = async (req, res, next) => {
       blocked_until: null,
     }]);
 
-    console.log("OTP for " + cleanEmail + ": " + otp);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("OTP for " + cleanEmail + ": " + otp);
+    }
 
     // Send OTP via Email
     await sendEmail({
@@ -538,7 +540,9 @@ export const sendOtp = async (req, res, next) => {
       blocked_until: null,
     }]);
 
-    console.log("OTP for " + cleanEmail + ": " + otp);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("OTP for " + cleanEmail + ": " + otp);
+    }
 
     await sendEmail({
       to: cleanEmail,
@@ -769,10 +773,12 @@ export const forgotPassword = async (req, res, next) => {
       expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString()
     }]);
 
-    console.log(`\n\n========================================`);
-    console.log(`🔐 PASSWORD RESET OTP FOR ${email}:`);
-    console.log(`${otp}`);
-    console.log(`========================================\n\n`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`\n\n========================================`);
+      console.log(`🔐 PASSWORD RESET OTP FOR ${email}:`);
+      console.log(`${otp}`);
+      console.log(`========================================\n\n`);
+    }
 
     await sendEmail({
       to: email,
@@ -923,3 +929,20 @@ export const updateProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Logout user / clear cookie session
+// @route   POST /api/auth/logout
+// @access  Public
+export const logout = async (req, res, next) => {
+  try {
+    res.clearCookie('token');
+    res.clearCookie('cms_token');
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

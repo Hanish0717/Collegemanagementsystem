@@ -1,43 +1,65 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { AdminDashboard } from "@/pages/admin/AdminDashboard";
-import { getStoredUser } from "@/services/authService";
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { AdminDashboard } from '@/pages/admin/AdminDashboard';
+import { getStoredUser } from '@/services/authService';
 
-export const Route = createFileRoute("/dashboard/admin")({
+export const Route = createFileRoute('/dashboard/admin')({
   beforeLoad: ({ location }) => {
     const user = getStoredUser();
-    
+
     // Allow access to shared LMS and Grievance routes
-    const isLms = location.pathname.includes("/dashboard/admin/lms");
-    const isGrievance = location.pathname.includes("/dashboard/admin/grievance");
-    
+    const isLms = location.pathname.includes('/dashboard/admin/lms');
+    const isGrievance = location.pathname.includes('/dashboard/admin/grievance');
+
     if (isLms) {
-      const allowedLms = ["student", "faculty", "lms", "admin", "super-admin", "principal", "dean", "hod", "exam-cell", "accounts"];
+      const allowedLms = [
+        'student',
+        'faculty',
+        'lms',
+        'admin',
+        'super-admin',
+        'principal',
+        'dean',
+        'hod',
+        'exam-cell',
+        'accounts',
+      ];
       if (user && allowedLms.includes(user.role)) return;
     }
-    
+
     if (isGrievance) {
-      const allowedGrievance = ["student", "parent", "faculty", "admin", "super-admin", "principal", "dean", "hod", "exam-cell", "accounts"];
+      const allowedGrievance = [
+        'student',
+        'parent',
+        'faculty',
+        'admin',
+        'super-admin',
+        'principal',
+        'dean',
+        'hod',
+        'exam-cell',
+        'accounts',
+      ];
       if (user && allowedGrievance.includes(user.role)) return;
     }
 
-    if (user && (user.role === "alumni" || user.role === "alumni-coordinator")) {
-      throw redirect({ to: "/dashboard/admin/alumni" });
+    if (user && (user.role === 'alumni' || user.role === 'alumni-coordinator')) {
+      throw redirect({ to: '/dashboard/admin/alumni' });
     }
     const allowedRoles = [
-      "admin",
-      "super-admin",
-      "principal",
-      "dean",
-      "hod",
-      "exam-cell",
-      "accounts",
-      "alumni-coordinator",
-      "alumni",
-      "transport",
-      "transport-manager"
+      'admin',
+      'super-admin',
+      'principal',
+      'dean',
+      'hod',
+      'exam-cell',
+      'accounts',
+      'alumni-coordinator',
+      'alumni',
+      'transport',
+      'transport-manager',
     ];
     if (!user || !allowedRoles.includes(user.role)) {
-      throw redirect({ to: "/dashboard" });
+      throw redirect({ to: '/dashboard' });
     }
   },
   component: AdminDashboard,

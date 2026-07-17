@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { Download, Calendar } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { getStoredUser } from "@/services/authService";
-import api from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
+import { Download, Calendar } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { getStoredUser } from '@/services/authService';
+import api from '@/lib/api';
 
 export function ExamsPage() {
   const [exams, setExams] = useState<any[]>([]);
@@ -15,8 +15,10 @@ export function ExamsPage() {
     const fetchExamsAndResults = async () => {
       try {
         const [examRes, resultsRes] = await Promise.all([
-          api.get("/api/exams"),
-          api.get("/api/student-module/results").catch(() => ({ data: { success: true, data: [] } }))
+          api.get('/api/exams'),
+          api
+            .get('/api/student-module/results')
+            .catch(() => ({ data: { success: true, data: [] } })),
         ]);
 
         if (examRes.data?.success && examRes.data?.data) {
@@ -26,7 +28,7 @@ export function ExamsPage() {
           setResults(resultsRes.data.data);
         }
       } catch (err) {
-        console.error("Error loading exams & results details:", err);
+        console.error('Error loading exams & results details:', err);
       } finally {
         setLoading(false);
       }
@@ -38,24 +40,29 @@ export function ExamsPage() {
     return (
       <div className="space-y-6">
         <PageHeader title="Examinations" desc="Loading examination schedule..." />
-        <div className="p-8 text-center text-muted-foreground">Synchronizing exam timetables...</div>
+        <div className="p-8 text-center text-muted-foreground">
+          Synchronizing exam timetables...
+        </div>
       </div>
     );
   }
 
   // Format results for chart
-  const performanceChartData = results.map(r => ({
-    month: r.subject || "Subject",
-    score: r.marks || 0
+  const performanceChartData = results.map((r) => ({
+    month: r.subject || 'Subject',
+    score: r.marks || 0,
   }));
 
   // Fallback to static subjects if student has no results yet
-  const displayChartData = performanceChartData.length > 0 ? performanceChartData : [
-    { month: "Mathematics", score: 85 },
-    { month: "Physics", score: 78 },
-    { month: "Chemistry", score: 92 },
-    { month: "Computer Science", score: 88 }
-  ];
+  const displayChartData =
+    performanceChartData.length > 0
+      ? performanceChartData
+      : [
+          { month: 'Mathematics', score: 85 },
+          { month: 'Physics', score: 78 },
+          { month: 'Chemistry', score: 92 },
+          { month: 'Computer Science', score: 88 },
+        ];
 
   return (
     <div className="space-y-6">
@@ -71,7 +78,7 @@ export function ExamsPage() {
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
                 <tr>
-                  {["Exam Name", "Type", "Department", "Semester", "Date", "Status"].map((h) => (
+                  {['Exam Name', 'Type', 'Department', 'Semester', 'Date', 'Status'].map((h) => (
                     <th key={h} className="px-5 py-3 text-left font-medium">
                       {h}
                     </th>
@@ -86,10 +93,19 @@ export function ExamsPage() {
                     <td className="px-5 py-3 font-mono text-xs">{e.department}</td>
                     <td className="px-5 py-3 text-center">{e.semester}</td>
                     <td className="px-5 py-3 text-xs">
-                      {new Date(e.start_date).toLocaleDateString()} &ndash; {new Date(e.end_date).toLocaleDateString()}
+                      {new Date(e.start_date).toLocaleDateString()} &ndash;{' '}
+                      {new Date(e.end_date).toLocaleDateString()}
                     </td>
                     <td className="px-5 py-3">
-                      <Badge tone={e.status === "Upcoming" ? "info" : e.status === "Ongoing" ? "warn" : "success"}>
+                      <Badge
+                        tone={
+                          e.status === 'Upcoming'
+                            ? 'info'
+                            : e.status === 'Ongoing'
+                              ? 'warn'
+                              : 'success'
+                        }
+                      >
                         {e.status}
                       </Badge>
                     </td>
@@ -98,7 +114,9 @@ export function ExamsPage() {
               </tbody>
             </table>
           ) : (
-            <div className="p-8 text-center text-muted-foreground">No upcoming examination schedule published.</div>
+            <div className="p-8 text-center text-muted-foreground">
+              No upcoming examination schedule published.
+            </div>
           )}
         </Card>
 
@@ -117,19 +135,25 @@ export function ExamsPage() {
             <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="opacity-70 text-xs">Student</div>
-                <div className="font-medium truncate max-w-[120px]">{user?.fullName || "Student User"}</div>
+                <div className="font-medium truncate max-w-[120px]">
+                  {user?.fullName || 'Student User'}
+                </div>
               </div>
               <div>
                 <div className="opacity-70 text-xs">Roll No.</div>
-                <div className="font-medium truncate max-w-[120px]">{user?.rollNumber || user?.id?.substring(0, 8) || "N/A"}</div>
+                <div className="font-medium truncate max-w-[120px]">
+                  {user?.rollNumber || user?.id?.substring(0, 8) || 'N/A'}
+                </div>
               </div>
               <div>
                 <div className="opacity-70 text-xs">Course</div>
-                <div className="font-medium truncate max-w-[120px]">{user?.department || "General"}</div>
+                <div className="font-medium truncate max-w-[120px]">
+                  {user?.department || 'General'}
+                </div>
               </div>
               <div>
                 <div className="opacity-70 text-xs">Role</div>
-                <div className="font-medium truncate max-w-[120px]">{user?.role || "Student"}</div>
+                <div className="font-medium truncate max-w-[120px]">{user?.role || 'Student'}</div>
               </div>
             </div>
             <div className="mt-5 flex gap-2">
@@ -137,8 +161,8 @@ export function ExamsPage() {
                 <div key={i} className="flex-1 h-6 rounded bg-white/20" />
               ))}
             </div>
-            <button 
-              onClick={() => alert("Downloading digital copy of hall ticket...")}
+            <button
+              onClick={() => alert('Downloading digital copy of hall ticket...')}
               className="mt-5 w-full rounded-xl bg-white text-foreground text-sm font-medium py-2 flex items-center justify-center gap-2 cursor-pointer hover:bg-slate-100 transition"
             >
               <Download className="size-4" /> Download

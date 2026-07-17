@@ -11,6 +11,7 @@ import { isMockMode } from './config/supabase.js';
 
 
 
+// Triggering server restart
 // Startup database migration
 async function runMigrations() {
   if (isMockMode) {

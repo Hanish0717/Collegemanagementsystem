@@ -1,11 +1,11 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export function StatCard({
   label,
   value,
   change,
   icon: Icon,
-  gradient = "bg-gradient-primary",
+  gradient = 'bg-gradient-primary',
 }: {
   label: string;
   value: ReactNode;
@@ -53,19 +53,19 @@ export function PageHeader({
 
 export function Badge({
   children,
-  tone = "default",
-  className = "",
+  tone = 'default',
+  className = '',
 }: {
   children: ReactNode;
-  tone?: "default" | "success" | "warn" | "danger" | "info";
+  tone?: 'default' | 'success' | 'warn' | 'danger' | 'info';
   className?: string;
 }) {
   const tones: Record<string, string> = {
-    default: "bg-muted text-muted-foreground",
-    success: "bg-emerald-100 text-emerald-700",
-    warn: "bg-amber-100 text-amber-700",
-    danger: "bg-rose-100 text-rose-700",
-    info: "bg-indigo-100 text-indigo-700",
+    default: 'bg-muted text-muted-foreground',
+    success: 'bg-emerald-100 text-emerald-700',
+    warn: 'bg-amber-100 text-amber-700',
+    danger: 'bg-rose-100 text-rose-700',
+    info: 'bg-indigo-100 text-indigo-700',
   };
   return (
     <span
@@ -78,7 +78,7 @@ export function Badge({
 
 export function Card({
   children,
-  className = "",
+  className = '',
   ...props
 }: {
   children: ReactNode;

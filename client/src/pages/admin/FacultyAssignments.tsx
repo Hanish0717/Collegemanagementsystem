@@ -1,20 +1,20 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Plus, BookOpen, Users, CheckCircle, HelpCircle } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { fetchFaculty, fetchSubjects, assignSectionsSubjects } from "@/services/adminService";
-import { toast } from "sonner";
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Plus, BookOpen, Users, CheckCircle, HelpCircle } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { fetchFaculty, fetchSubjects, assignSectionsSubjects } from '@/services/adminService';
+import { toast } from 'sonner';
 
 export function FacultyAssignments() {
   const queryClient = useQueryClient();
-  const [selectedFacultyId, setSelectedFacultyId] = useState("");
-  const [customSection, setCustomSection] = useState("");
+  const [selectedFacultyId, setSelectedFacultyId] = useState('');
+  const [customSection, setCustomSection] = useState('');
   const [sections, setSections] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
 
   // Queries
   const { data: facultyList = [], isLoading: isFacultyLoading } = useQuery({
-    queryKey: ["faculty"],
+    queryKey: ['faculty'],
     queryFn: fetchFaculty,
   });
 
@@ -25,7 +25,7 @@ export function FacultyAssignments() {
 
   // Fetch subjects for selected faculty's department
   const { data: subjects = [], isLoading: isSubjectsLoading } = useQuery({
-    queryKey: ["subjects", selectedFaculty?.department?._id],
+    queryKey: ['subjects', selectedFaculty?.department?._id],
     queryFn: () => fetchSubjects(selectedFaculty?.department?._id),
     enabled: !!selectedFaculty?.department?._id,
   });
@@ -34,10 +34,10 @@ export function FacultyAssignments() {
   const assignMutation = useMutation({
     mutationFn: assignSectionsSubjects,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["faculty"] });
-      toast.success("Faculty assignments updated & students auto-linked!");
+      queryClient.invalidateQueries({ queryKey: ['faculty'] });
+      toast.success('Faculty assignments updated & students auto-linked!');
       // Reset assignment UI state
-      setCustomSection("");
+      setCustomSection('');
       if (data) {
         setSections(data.assignedSections || []);
         setSelectedSubjects(data.assignedSubjects?.map((s) => s._id) || []);
@@ -45,7 +45,7 @@ export function FacultyAssignments() {
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to update assignments");
+      toast.error(err.response?.data?.message || 'Failed to update assignments');
     },
   });
 
@@ -66,11 +66,11 @@ export function FacultyAssignments() {
     const trimmed = customSection.trim().toUpperCase();
     if (!trimmed) return;
     if (sections.includes(trimmed)) {
-      toast.warning("Section is already added");
+      toast.warning('Section is already added');
       return;
     }
     setSections([...sections, trimmed]);
-    setCustomSection("");
+    setCustomSection('');
   };
 
   const handleRemoveSection = (section: string) => {
@@ -88,18 +88,20 @@ export function FacultyAssignments() {
   const handleSaveAssignments = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFacultyId) {
-      alert("Please select a faculty member from the left panel first.");
-      toast.error("Please select a faculty member first");
+      alert('Please select a faculty member from the left panel first.');
+      toast.error('Please select a faculty member first');
       return;
     }
     if (sections.length === 0) {
       alert("Please assign at least one teaching section (e.g. enter 'A' and click Add).");
-      toast.error("Please assign at least one section");
+      toast.error('Please assign at least one section');
       return;
     }
     if (selectedSubjects.length === 0) {
-      alert("Please select at least one subject from the 'Subjects Specialize' checklist by clicking on it.");
-      toast.error("Please assign at least one subject");
+      alert(
+        "Please select at least one subject from the 'Subjects Specialize' checklist by clicking on it.",
+      );
+      toast.error('Please assign at least one subject');
       return;
     }
 
@@ -138,15 +140,15 @@ export function FacultyAssignments() {
                     onClick={() => handleFacultyChange(fac._id)}
                     className={`w-full text-left p-3 rounded-xl border transition text-xs flex flex-col gap-1.5 cursor-pointer ${
                       selectedFacultyId === fac._id
-                        ? "border-primary bg-primary/5 text-foreground"
-                        : "hover:bg-accent/40 bg-card"
+                        ? 'border-primary bg-primary/5 text-foreground'
+                        : 'hover:bg-accent/40 bg-card'
                     }`}
                   >
                     <div className="font-bold">{fac.fullName}</div>
                     <div className="flex items-center justify-between text-[10px] text-muted-foreground w-full">
                       <span>{fac.employeeId}</span>
                       <Badge tone="info" className="scale-90 origin-right">
-                        {fac.department?.code || "No Dept"}
+                        {fac.department?.code || 'No Dept'}
                       </Badge>
                     </div>
                   </button>
@@ -182,7 +184,7 @@ export function FacultyAssignments() {
                       {selectedFaculty.designation} • Dept: {selectedFaculty.department?.name}
                     </p>
                   </div>
-                  <Badge tone={selectedFaculty.status === "active" ? "success" : "warn"}>
+                  <Badge tone={selectedFaculty.status === 'active' ? 'success' : 'warn'}>
                     {selectedFaculty.status}
                   </Badge>
                 </div>
@@ -258,16 +260,18 @@ export function FacultyAssignments() {
                             onClick={() => handleToggleSubject(sub._id)}
                             className={`flex items-center justify-between p-3 rounded-xl border text-xs text-left cursor-pointer transition ${
                               isChecked
-                                ? "border-primary bg-primary/5 font-semibold text-primary"
-                                : "hover:bg-accent/40 border-muted"
+                                ? 'border-primary bg-primary/5 font-semibold text-primary'
+                                : 'hover:bg-accent/40 border-muted'
                             }`}
                           >
                             <div className="flex items-center gap-2.5">
-                              <div className={`size-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
-                                isChecked 
-                                  ? "border-primary bg-primary text-white" 
-                                  : "border-muted-foreground/30 bg-background"
-                              }`}>
+                              <div
+                                className={`size-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                                  isChecked
+                                    ? 'border-primary bg-primary text-white'
+                                    : 'border-muted-foreground/30 bg-background'
+                                }`}
+                              >
                                 {isChecked && <span className="text-[9px] font-bold">✓</span>}
                               </div>
                               <div>
@@ -293,7 +297,7 @@ export function FacultyAssignments() {
                   {assignMutation.isPending ? (
                     <Loader2 className="size-4 animate-spin" />
                   ) : (
-                    "Save & Link Assignments"
+                    'Save & Link Assignments'
                   )}
                 </button>
               </form>

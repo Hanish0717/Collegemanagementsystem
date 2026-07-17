@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { Outlet, useRouterState, useNavigate } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
 import {
   Area,
   AreaChart,
@@ -9,40 +9,40 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import {
-  Activity,
-  Bell,
-  BookOpen,
-  Calendar,
-  FileText,
-  GraduationCap,
-  Users,
-} from "lucide-react";
-import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
-import api from "@/lib/api";
+} from 'recharts';
+import { Activity, Bell, BookOpen, Calendar, FileText, GraduationCap, Users } from 'lucide-react';
+import { Badge, Card, PageHeader, StatCard } from '@/components/dashboard/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import api from '@/lib/api';
 
 const getIcon = (label: string) => {
   switch (label) {
-    case "Students Under Mentorship": return Users;
-    case "Study Materials Shared": return BookOpen;
-    case "Pending Leave Requests": return Calendar;
-    default: return GraduationCap;
+    case 'Students Under Mentorship':
+      return Users;
+    case 'Study Materials Shared':
+      return BookOpen;
+    case 'Pending Leave Requests':
+      return Calendar;
+    default:
+      return GraduationCap;
   }
 };
 
 const getGradient = (label: string) => {
   switch (label) {
-    case "Students Under Mentorship": return "bg-gradient-primary";
-    case "Study Materials Shared": return "bg-gradient-cyan";
-    case "Pending Leave Requests": return "bg-gradient-violet";
-    default: return "bg-gradient-primary";
+    case 'Students Under Mentorship':
+      return 'bg-gradient-primary';
+    case 'Study Materials Shared':
+      return 'bg-gradient-cyan';
+    case 'Pending Leave Requests':
+      return 'bg-gradient-violet';
+    default:
+      return 'bg-gradient-primary';
   }
 };
 
 export function FacultyDashboard() {
-  const path = useRouterState({ select: r => r.location.pathname });
+  const path = useRouterState({ select: (r) => r.location.pathname });
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -54,35 +54,41 @@ export function FacultyDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path !== "/dashboard/faculty" && path !== "/dashboard" && path !== "/dashboard/") return;
+    if (path !== '/dashboard/faculty' && path !== '/dashboard' && path !== '/dashboard/') return;
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const dashboardRes = await api.get("/api/faculty-module/dashboard");
+        const dashboardRes = await api.get('/api/faculty-module/dashboard');
         if (dashboardRes.data?.success && dashboardRes.data?.data) {
-          const { stats: dbStats, activities: dbActivities, notifications: dbNotifs, weeklyAttendance: dbAtt, profile } = dashboardRes.data.data;
+          const {
+            stats: dbStats,
+            activities: dbActivities,
+            notifications: dbNotifs,
+            weeklyAttendance: dbAtt,
+            profile,
+          } = dashboardRes.data.data;
           setStats(dbStats || []);
           setActivities(dbActivities || []);
           setNotifications(dbNotifs || []);
           setWeeklyAttendanceData(dbAtt || []);
           if (profile) {
-            localStorage.setItem("cms_faculty_profile", JSON.stringify(profile));
+            localStorage.setItem('cms_faculty_profile', JSON.stringify(profile));
           }
         }
 
         // Fetch student performance
-        const performanceRes = await api.get("/api/faculty-module/performance");
+        const performanceRes = await api.get('/api/faculty-module/performance');
         if (performanceRes.data?.success && performanceRes.data?.data) {
           // Map backend performance field names to frontend expected names
           const mappedPerformance = performanceRes.data.data.map((p: any) => ({
             student: p.student,
             attendance: p.attendance,
-            marks: p.overall
+            marks: p.overall,
           }));
           setPerformanceData(mappedPerformance);
         }
       } catch (err) {
-        console.error("Error loading faculty dashboard:", err);
+        console.error('Error loading faculty dashboard:', err);
       } finally {
         setLoading(false);
       }
@@ -90,14 +96,14 @@ export function FacultyDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== "/dashboard/faculty" && path !== "/dashboard" && path !== "/dashboard/") {
+  if (path !== '/dashboard/faculty' && path !== '/dashboard' && path !== '/dashboard/') {
     return <Outlet />;
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Welcome, ${user?.fullName || "Faculty"}`}
+        title={`Welcome, ${user?.fullName || 'Faculty'}`}
         desc="Manage classes, attendance, marks and student performance."
       />
 
@@ -110,8 +116,19 @@ export function FacultyDashboard() {
           ))
         ) : stats.length > 0 ? (
           stats.map((stat, i) => (
-            <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-              <StatCard label={stat.label} value={stat.value} change={stat.change} icon={getIcon(stat.label)} gradient={getGradient(stat.label)} />
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+            >
+              <StatCard
+                label={stat.label}
+                value={stat.value}
+                change={stat.change}
+                icon={getIcon(stat.label)}
+                gradient={getGradient(stat.label)}
+              />
             </motion.div>
           ))
         ) : (
@@ -131,7 +148,7 @@ export function FacultyDashboard() {
             <Badge tone="success">
               {weeklyAttendanceData.length > 0
                 ? `${Math.round(weeklyAttendanceData.reduce((acc, curr) => acc + curr.percentage, 0) / weeklyAttendanceData.length)}%`
-                : "N/A"}
+                : 'N/A'}
             </Badge>
           </div>
           <div className="h-72">
@@ -151,7 +168,7 @@ export function FacultyDashboard() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                   <Area
                     type="monotone"
                     dataKey="percentage"
@@ -176,9 +193,17 @@ export function FacultyDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Mark Attendance", tone: "default" as const, to: "/dashboard/faculty/attendance" },
-              { label: "Enter Marks", tone: "warn" as const, to: "/dashboard/faculty/marks" },
-              { label: "Start Online Class", tone: "info" as const, to: "/dashboard/faculty/classes" },
+              {
+                label: 'Mark Attendance',
+                tone: 'default' as const,
+                to: '/dashboard/faculty/attendance',
+              },
+              { label: 'Enter Marks', tone: 'warn' as const, to: '/dashboard/faculty/marks' },
+              {
+                label: 'Start Online Class',
+                tone: 'info' as const,
+                to: '/dashboard/faculty/classes',
+              },
             ].map((item) => (
               <button
                 key={item.label}
@@ -210,7 +235,7 @@ export function FacultyDashboard() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{student.student}</span>
                     <Badge
-                      tone={student.marks >= 85 ? "success" : student.marks >= 75 ? "info" : "warn"}
+                      tone={student.marks >= 85 ? 'success' : student.marks >= 75 ? 'info' : 'warn'}
                     >
                       {student.marks}%
                     </Badge>
@@ -242,13 +267,16 @@ export function FacultyDashboard() {
               </div>
             ) : activities.length > 0 ? (
               activities.map((activity, idx) => (
-                <div key={activity.actor + activity.time + idx} className="flex items-center gap-3 py-2 border-b last:border-0">
+                <div
+                  key={activity.actor + activity.time + idx}
+                  className="flex items-center gap-3 py-2 border-b last:border-0"
+                >
                   <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                     {activity.actor.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 text-sm">
-                    <span className="font-medium">{activity.actor}</span>{" "}
-                    <span className="text-muted-foreground">{activity.action}</span>{" "}
+                    <span className="font-medium">{activity.actor}</span>{' '}
+                    <span className="text-muted-foreground">{activity.action}</span>{' '}
                     <span className="font-medium">{activity.target}</span>
                     <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
                   </div>
@@ -277,7 +305,7 @@ export function FacultyDashboard() {
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50" : "hover:bg-accent/50"}`}
+                  className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50' : 'hover:bg-accent/50'}`}
                 >
                   <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                   <div className="flex-1 min-w-0">
@@ -286,11 +314,11 @@ export function FacultyDashboard() {
                   </div>
                   <Badge
                     tone={
-                      notification.type === "Alert"
-                        ? "danger"
-                        : notification.type === "Request"
-                          ? "warn"
-                          : "info"
+                      notification.type === 'Alert'
+                        ? 'danger'
+                        : notification.type === 'Request'
+                          ? 'warn'
+                          : 'info'
                     }
                   >
                     {notification.type}
@@ -308,4 +336,3 @@ export function FacultyDashboard() {
     </div>
   );
 }
-

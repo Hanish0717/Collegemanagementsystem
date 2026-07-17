@@ -1,1 +1,23 @@
 [2026-07-17T09:09:24.029Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-17T10:30:42.876Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-17T10:47:27.589Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-17T11:04:12.354Z] POST /api/auth/register - Status: 400 - Client Error: Direct sign up is disabled for this role. Account credentials must be provided by the administrator. - Body: {"fullName":"Duplicate User","email":"user_1784286247215@test.com","password":"Password123!","role":"student"}
+[2026-07-17T11:04:12.361Z] POST /api/auth/register - Status: 400 - Client Error: Full name is required - Body: {"email":"missing_name_1784286247215@test.com","password":"Password123!"}
+[2026-07-17T11:04:12.364Z] POST /api/auth/register - Status: 400 - Client Error: Direct sign up is disabled for this role. Account credentials must be provided by the administrator. - Body: {"fullName":"Test Invalid Email","email":"not-an-email","password":"Password123!","role":"student"}
+[2026-07-17T11:04:12.368Z] POST /api/auth/register - Status: 400 - Client Error: Please fill in all required fields - Body: {"fullName":"Test Invalid Role","email":"invalidrole_1784286247215@test.com","password":"Password123!","role":"not-a-valid-role-name"}
+[2026-07-17T11:04:17.364Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"user_1784286247215@test.com","password":"WrongPasswordXYZ"}
+[2026-07-17T11:04:17.369Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"nonexistentuser@test.com","password":"Password123!"}
+[2026-07-17T11:04:17.372Z] POST /api/auth/login - Status: 400 - Client Error: Email is required, Password is required - Body: {"email":"","password":""}
+[2026-07-17T11:04:17.379Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-17T11:04:17.381Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-17T11:04:17.388Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user account is inactive - Body: {}
+[2026-07-17T11:04:17.396Z] GET /api/auth/admin-test - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-17T11:04:43.534Z] GET /api/students - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-17T11:04:43.539Z] GET /api/students - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-17T11:04:55.257Z] POST /api/students - Status: 400 - Client Error: Student with this roll number already exists - Body: {"fullName":"Charlie Green","rollNumber":"CSE1784286279227C","email":"charlie_new_1784286279227@test.com","phoneNumber":"7778889999","gender":"Other","dateOfBirth":"2006-01-05","department":"CSE","year":1,"semester":2,"section":"A","parentName":"Mary Green","parentPhone":"7776665555","parentEmail":"mary_green_1784286279227@test.com","password":"Password123!","cgpa":7.8,"attendancePercentage":92}
+[2026-07-17T11:04:55.264Z] POST /api/students - Status: 400 - Client Error: User account with this email already exists in system - Body: {"fullName":"Charlie Green","rollNumber":"CSE1784286279227NEW","email":"charlie_1784286279227@test.com","phoneNumber":"7778889999","gender":"Other","dateOfBirth":"2006-01-05","department":"CSE","year":1,"semester":2,"section":"A","parentName":"Mary Green","parentPhone":"7776665555","parentEmail":"mary_green_1784286279227@test.com","password":"Password123!","cgpa":7.8,"attendancePercentage":92}
+[2026-07-17T11:04:55.269Z] POST /api/students - Status: 400 - Client Error: Email is required, Department is required - Body: {"fullName":"Missing Fields Person","rollNumber":"MISS1784286279227"}
+[2026-07-17T11:04:55.299Z] GET /api/students/invalidmongooseid123 - Status: 400 - Client Error: Invalid ID format - Body: {}
+[2026-07-17T11:04:55.303Z] GET /api/students/99999999-9999-9999-9999-999999999999 - Status: 404 - Client Error: Student not found - Body: {}
+[2026-07-17T11:04:55.319Z] PUT /api/students/102cfca0-4844-4c3a-8dca-e286c20bd055 - Status: 400 - Client Error: Student with this roll number already exists - Body: {"rollNumber":"ECE1784286279227B"}
+[2026-07-17T11:04:55.331Z] GET /api/students/102cfca0-4844-4c3a-8dca-e286c20bd055 - Status: 404 - Client Error: Student not found - Body: {}

@@ -1,12 +1,12 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { GraduationCap, Mail, ArrowRight, Loader2, KeyRound } from "lucide-react";
-import { useState } from "react";
-import api from "@/lib/api";
+import { Link, useNavigate } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
+import { GraduationCap, Mail, ArrowRight, Loader2, KeyRound } from 'lucide-react';
+import { useState } from 'react';
+import api from '@/lib/api';
 
 export function ForgotPassword() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,14 +16,14 @@ export function ForgotPassword() {
     setLoading(true);
 
     try {
-      await api.post("/api/auth/forgot-password", { email });
-      navigate({ to: "/reset-password", search: { email } });
+      await api.post('/api/auth/forgot-password', { email });
+      navigate({ to: '/reset-password', search: { email } });
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
         err.response?.data?.error ||
         err.message ||
-        "Failed to send reset link. Please try again.";
+        'Failed to send reset link. Please try again.';
       setError(msg);
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ export function ForgotPassword() {
           </form>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            Remember your password?{" "}
+            Remember your password?{' '}
             <Link to="/login" className="text-indigo hover:underline font-medium">
               Sign in
             </Link>

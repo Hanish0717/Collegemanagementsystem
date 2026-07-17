@@ -1,13 +1,24 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { GraduationCap, Mail, Lock, ArrowRight, Check, Loader2, X, Quote, BookOpen, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useGoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-import { toast } from "sonner";
-import { ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
-import { getDashboardForRole, toFrontendRole } from "@/services/authService";
-import { useAuth } from "@/contexts/AuthContext";
-import api from "@/lib/api";
+import { Link, useNavigate } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
+import {
+  GraduationCap,
+  Mail,
+  Lock,
+  ArrowRight,
+  Check,
+  Loader2,
+  X,
+  Quote,
+  BookOpen,
+  ChevronDown,
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useGoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { toast } from 'sonner';
+import { ROLE_LIST, setActiveRole, type RoleId } from '@/lib/roles';
+import { getDashboardForRole, toFrontendRole } from '@/services/authService';
+import { useAuth } from '@/contexts/AuthContext';
+import api from '@/lib/api';
 
 export function Login() {
   const [mounted, setMounted] = useState(false);
@@ -25,7 +36,7 @@ export function Login() {
     <GoogleOAuthProvider
       clientId={
         import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-        "100000000000-dummyclientid.apps.googleusercontent.com"
+        '100000000000-dummyclientid.apps.googleusercontent.com'
       }
     >
       <LoginForm />
@@ -39,17 +50,17 @@ function LoginForm() {
 
   // Clear any stale session on login page load
   useEffect(() => {
-    localStorage.removeItem("cms_token");
-    localStorage.removeItem("cms_user");
-    localStorage.removeItem("campusly.role");
-    localStorage.removeItem("cms_student_profile");
-    localStorage.removeItem("cms_parent_child_data");
-    localStorage.removeItem("cms_faculty_profile");
+    localStorage.removeItem('cms_token');
+    localStorage.removeItem('cms_user');
+    localStorage.removeItem('campusly.role');
+    localStorage.removeItem('cms_student_profile');
+    localStorage.removeItem('cms_parent_child_data');
+    localStorage.removeItem('cms_faculty_profile');
   }, []);
 
-  const [roleId, setRoleId] = useState<RoleId | null>("student");
+  const [roleId, setRoleId] = useState<RoleId | null>('student');
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
-  const [pin, setPin] = useState(["", "", "", ""]);
+  const [pin, setPin] = useState(['', '', '', '']);
   const [pinError, setPinError] = useState<string | null>(null);
   const [pinSuccess, setPinSuccess] = useState(false);
 
@@ -69,33 +80,116 @@ function LoginForm() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === "Backspace" && !pin[index] && index > 0) {
+    if (e.key === 'Backspace' && !pin[index] && index > 0) {
       const prevInput = document.getElementById(`pin-input-${index - 1}`);
       prevInput?.focus();
       const newPin = [...pin];
-      newPin[index - 1] = "";
+      newPin[index - 1] = '';
       setPin(newPin);
     }
   };
 
   const verifyPin = (enteredPin: string) => {
-    const credentialsMap: Record<string, { email: string; password?: string; admissionNumber?: string; role: RoleId; roleName: string }> = {
-      "1111": { email: "superadmin@college.com", password: "password123", role: "super_admin", roleName: "Super Admin" },
-      "1212": { email: "lms.coordinator@college.com", password: "password123", role: "lms", roleName: "LMS Coordinator" },
-      "1313": { email: "learning@college.com", password: "password123", role: "lms", roleName: "LMS Portal" },
-      "2222": { email: "admin@college.com", password: "password123", role: "admin", roleName: "System Admin" },
-      "3333": { email: "srinivas.faculty@gmail.com", password: "password123", role: "faculty", roleName: "Faculty" },
-      "4444": { email: "hanish@gmail.com", password: "password123", role: "student", roleName: "Student" },
-      "5555": { email: "hanish.parent@gmail.com", admissionNumber: "CS2026101", role: "parent", roleName: "Parent" },
-      "6666": { email: "placement@college.com", password: "password123", role: "placement", roleName: "Placement Officer" },
-      "7777": { email: "librarian@college.com", password: "password123", role: "librarian", roleName: "Librarian" },
-      "7778": { email: "warden@college.com", password: "password123", role: "warden", roleName: "Hostel Warden" },
-      "7779": { email: "transport@college.com", password: "password123", role: "transport", roleName: "Transport Manager" },
-      "8888": { email: "principal@college.com", password: "password123", role: "principal", roleName: "Principal" },
-      "9999": { email: "hod@college.com", password: "password123", role: "hod", roleName: "HOD CSE" },
-      "8080": { email: "dean@college.com", password: "password123", role: "dean", roleName: "Dean Academics" },
-      "7070": { email: "examcell@college.com", password: "password123", role: "exam_cell", roleName: "Exam Cell Officer" },
-      "6060": { email: "accounts@college.com", password: "password123", role: "accounts", roleName: "Accounts Manager" }
+    const credentialsMap: Record<
+      string,
+      { email: string; password?: string; admissionNumber?: string; role: RoleId; roleName: string }
+    > = {
+      '1111': {
+        email: 'superadmin@college.com',
+        password: 'password123',
+        role: 'super_admin',
+        roleName: 'Super Admin',
+      },
+      '1212': {
+        email: 'lms.coordinator@college.com',
+        password: 'password123',
+        role: 'lms',
+        roleName: 'LMS Coordinator',
+      },
+      '1313': {
+        email: 'learning@college.com',
+        password: 'password123',
+        role: 'lms',
+        roleName: 'LMS Portal',
+      },
+      '2222': {
+        email: 'admin@college.com',
+        password: 'password123',
+        role: 'admin',
+        roleName: 'System Admin',
+      },
+      '3333': {
+        email: 'srinivas.faculty@gmail.com',
+        password: 'password123',
+        role: 'faculty',
+        roleName: 'Faculty',
+      },
+      '4444': {
+        email: 'hanish@gmail.com',
+        password: 'password123',
+        role: 'student',
+        roleName: 'Student',
+      },
+      '5555': {
+        email: 'hanish.parent@gmail.com',
+        admissionNumber: 'CS2026101',
+        role: 'parent',
+        roleName: 'Parent',
+      },
+      '6666': {
+        email: 'placement@college.com',
+        password: 'password123',
+        role: 'placement',
+        roleName: 'Placement Officer',
+      },
+      '7777': {
+        email: 'librarian@college.com',
+        password: 'password123',
+        role: 'librarian',
+        roleName: 'Librarian',
+      },
+      '7778': {
+        email: 'warden@college.com',
+        password: 'password123',
+        role: 'warden',
+        roleName: 'Hostel Warden',
+      },
+      '7779': {
+        email: 'transport@college.com',
+        password: 'password123',
+        role: 'transport',
+        roleName: 'Transport Manager',
+      },
+      '8888': {
+        email: 'principal@college.com',
+        password: 'password123',
+        role: 'principal',
+        roleName: 'Principal',
+      },
+      '9999': {
+        email: 'hod@college.com',
+        password: 'password123',
+        role: 'hod',
+        roleName: 'HOD CSE',
+      },
+      '8080': {
+        email: 'dean@college.com',
+        password: 'password123',
+        role: 'dean',
+        roleName: 'Dean Academics',
+      },
+      '7070': {
+        email: 'examcell@college.com',
+        password: 'password123',
+        role: 'exam_cell',
+        roleName: 'Exam Cell Officer',
+      },
+      '6060': {
+        email: 'accounts@college.com',
+        password: 'password123',
+        role: 'accounts',
+        roleName: 'Accounts Manager',
+      },
     };
 
     const match = credentialsMap[enteredPin];
@@ -106,29 +200,31 @@ function LoginForm() {
         setEmail(match.email);
         if (match.password) setPassword(match.password);
         if (match.admissionNumber) setAdmissionNumber(match.admissionNumber);
-        
+
         setIsPinModalOpen(false);
-        setPin(["", "", "", ""]);
+        setPin(['', '', '', '']);
         setPinSuccess(false);
         setPinError(null);
         toast.success(`Autofilled ${match.roleName} credentials! Press Sign In.`);
       }, 800);
     } else {
-      setPinError("Invalid PIN! Try 1111 (Super Admin), 1212 (LMS Coordinator), 1313 (LMS Portal), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).");
-      setPin(["", "", "", ""]);
+      setPinError(
+        'Invalid PIN! Try 1111 (Super Admin), 1212 (LMS Coordinator), 1313 (LMS Portal), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).',
+      );
+      setPin(['', '', '', '']);
       setTimeout(() => {
-        const firstInput = document.getElementById("pin-input-0");
+        const firstInput = document.getElementById('pin-input-0');
         firstInput?.focus();
       }, 50);
     }
   };
 
   const handleQuickPin = (enteredPin: string) => {
-    setPin(enteredPin.split(""));
+    setPin(enteredPin.split(''));
   };
 
   useEffect(() => {
-    const entered = pin.join("");
+    const entered = pin.join('');
     if (entered.length === 4) {
       verifyPin(entered);
     }
@@ -136,9 +232,9 @@ function LoginForm() {
 
   const active = roleId ? ROLE_LIST.find((r) => r.id === roleId) : null;
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [admissionNumber, setAdmissionNumber] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [admissionNumber, setAdmissionNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -150,7 +246,7 @@ function LoginForm() {
 
     try {
       let result;
-      if (roleId === "parent") {
+      if (roleId === 'parent') {
         result = await login({ email, admissionNumber });
       } else {
         result = await login({ email, password });
@@ -158,8 +254,8 @@ function LoginForm() {
 
       if (result && result.needsVerification) {
         navigate({
-          to: "/verify-otp",
-          search: { email: result.email, target: "email_verification" },
+          to: '/verify-otp',
+          search: { email: result.email, target: 'email_verification' },
         });
         return;
       }
@@ -167,11 +263,11 @@ function LoginForm() {
       // Direct login — no OTP step
       const user = result;
 
-      if (roleId === "lms") {
+      if (roleId === 'lms') {
         // LMS coordinator — use lms frontend role regardless of backend role
-        setActiveRole("lms");
-        localStorage.setItem("campusly.role", "lms");
-        navigate({ to: "/dashboard/admin/lms" });
+        setActiveRole('lms');
+        localStorage.setItem('campusly.role', 'lms');
+        navigate({ to: '/dashboard/admin/lms' });
       } else {
         setActiveRole(toFrontendRole(user.role));
         navigate({ to: getDashboardForRole(user.role) });
@@ -181,7 +277,7 @@ function LoginForm() {
         err.response?.data?.message ||
         err.response?.data?.error ||
         err.message ||
-        "Login failed. Please try again.";
+        'Login failed. Please try again.';
       setError(msg);
     } finally {
       setLoading(false);
@@ -193,26 +289,26 @@ function LoginForm() {
     setError(null);
     try {
       // Exchange access token for user info
-      const userInfo = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
       }).then((r) => r.json());
 
-      const res = await api.post("/api/auth/google", {
+      const res = await api.post('/api/auth/google', {
         credential: tokenResponse.access_token,
         googleUserInfo: userInfo,
-        role: roleId || "student",
+        role: roleId || 'student',
       });
 
       if (res.data.token) {
-        localStorage.setItem("cms_token", res.data.token);
-        localStorage.setItem("cms_user", JSON.stringify(res.data.user));
+        localStorage.setItem('cms_token', res.data.token);
+        localStorage.setItem('cms_user', JSON.stringify(res.data.user));
         const role = toFrontendRole(res.data.user.role);
-        localStorage.setItem("campusly.role", role);
+        localStorage.setItem('campusly.role', role);
         await refreshUser();
         navigate({ to: getDashboardForRole(res.data.user.role) });
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Google Sign-In failed. Please try again.");
+      setError(err.response?.data?.message || 'Google Sign-In failed. Please try again.');
     } finally {
       setGoogleLoading(false);
     }
@@ -220,7 +316,7 @@ function LoginForm() {
 
   const googleLogin = useGoogleLogin({
     onSuccess: handleGoogleSuccess,
-    onError: () => setError("Google Sign-In was cancelled or failed."),
+    onError: () => setError('Google Sign-In was cancelled or failed.'),
   });
 
   return (
@@ -244,7 +340,7 @@ function LoginForm() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
             className="space-y-8"
           >
             <div>
@@ -252,7 +348,10 @@ function LoginForm() {
                 Empowering Education Through Technology
               </span>
               <h1 className="text-3xl xl:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
-                College Management <span className="text-gradient bg-gradient-to-r from-cyan-500 to-indigo-600">System</span>
+                College Management{' '}
+                <span className="text-gradient bg-gradient-to-r from-cyan-500 to-indigo-600">
+                  System
+                </span>
               </h1>
             </div>
 
@@ -268,7 +367,8 @@ function LoginForm() {
             </div>
 
             <p className="text-sm text-slate-600 leading-relaxed font-normal max-w-md">
-              Manage academics, attendance, communication, and campus activities through one unified platform.
+              Manage academics, attendance, communication, and campus activities through one unified
+              platform.
             </p>
           </motion.div>
         </div>
@@ -303,12 +403,12 @@ function LoginForm() {
             </label>
             <div className="relative">
               <select
-                value={roleId ?? "student"}
+                value={roleId ?? 'student'}
                 onChange={(e) => {
                   const id = e.target.value as RoleId;
                   setRoleId(id);
-                  setEmail(id === "lms" ? "learning@college.com" : "");
-                  setPassword("");
+                  setEmail(id === 'lms' ? 'learning@college.com' : '');
+                  setPassword('');
                   setError(null);
                 }}
                 className="w-full appearance-none rounded-xl border bg-background/60 pl-4 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
@@ -322,7 +422,9 @@ function LoginForm() {
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
             </div>
             {active && (
-              <div className={`mt-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r ${active.gradient} text-white text-xs font-semibold`}>
+              <div
+                className={`mt-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r ${active.gradient} text-white text-xs font-semibold`}
+              >
                 <active.icon className="size-3.5 shrink-0" />
                 <span>{active.description}</span>
               </div>
@@ -337,28 +439,28 @@ function LoginForm() {
           <form className="mt-4 space-y-4" onSubmit={submit}>
             <div>
               <label className="text-xs font-medium">
-                {roleId === "parent"
-                  ? "Parent Email"
-                  : roleId === "student"
-                  ? "Email or Admission Number"
-                  : roleId === "lms"
-                  ? "LMS Portal Email"
-                  : "Email"}
+                {roleId === 'parent'
+                  ? 'Parent Email'
+                  : roleId === 'student'
+                    ? 'Email or Admission Number'
+                    : roleId === 'lms'
+                      ? 'LMS Portal Email'
+                      : 'Email'}
               </label>
               <div className="mt-1 relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                 <input
-                  type={roleId === "student" ? "text" : "email"}
+                  type={roleId === 'student' ? 'text' : 'email'}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={
-                    roleId === "parent"
-                      ? "parent@example.com"
-                      : roleId === "student"
-                      ? "you@university.edu or Admission Number"
-                      : roleId === "lms"
-                      ? "learning@college.com"
-                      : "you@university.edu"
+                    roleId === 'parent'
+                      ? 'parent@example.com'
+                      : roleId === 'student'
+                        ? 'you@university.edu or Admission Number'
+                        : roleId === 'lms'
+                          ? 'learning@college.com'
+                          : 'you@university.edu'
                   }
                   required
                   autoComplete="off"
@@ -367,7 +469,7 @@ function LoginForm() {
               </div>
             </div>
 
-            {roleId !== "parent" ? (
+            {roleId !== 'parent' ? (
               <div>
                 <label className="text-xs font-medium">Password</label>
                 <div className="mt-1 relative">
@@ -385,7 +487,9 @@ function LoginForm() {
               </div>
             ) : (
               <div>
-                <label className="text-xs font-medium">Student Admission ID (Admission No or Roll No) *</label>
+                <label className="text-xs font-medium">
+                  Student Admission ID (Admission No or Roll No) *
+                </label>
                 <div className="mt-1 relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                   <input
@@ -400,7 +504,7 @@ function LoginForm() {
               </div>
             )}
 
-            {roleId !== "parent" && (
+            {roleId !== 'parent' && (
               <div className="flex items-center justify-between text-xs">
                 <label className="flex items-center gap-2">
                   <input type="checkbox" defaultChecked className="rounded" /> Remember me
@@ -414,7 +518,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active ? active.gradient : "from-cyan-500 to-indigo-600"} shadow-soft disabled:opacity-70`}
+              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active ? active.gradient : 'from-cyan-500 to-indigo-600'} shadow-soft disabled:opacity-70`}
             >
               {loading ? (
                 <>
@@ -423,8 +527,7 @@ function LoginForm() {
                 </>
               ) : (
                 <>
-                  Sign In{" "}
-                  <ArrowRight className="size-4" />
+                  Sign In <ArrowRight className="size-4" />
                 </>
               )}
             </button>
@@ -466,7 +569,7 @@ function LoginForm() {
                 />
               </svg>
             )}
-            {googleLoading ? "Signing in…" : "Continue with Google"}
+            {googleLoading ? 'Signing in…' : 'Continue with Google'}
           </button>
 
           {/* PIN Toggle Trigger */}
@@ -487,7 +590,7 @@ function LoginForm() {
                 initial={{ opacity: 0, scale: 0.95, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 15 }}
-                transition={{ type: "spring", duration: 0.4 }}
+                transition={{ type: 'spring', duration: 0.4 }}
                 className="bg-white border border-slate-100 shadow-2xl rounded-3xl w-full max-w-sm p-6 overflow-hidden relative"
               >
                 {/* Ambient gradients */}
@@ -499,13 +602,15 @@ function LoginForm() {
                   <div className="flex justify-between items-center pb-3 border-b border-slate-100">
                     <div className="flex items-center gap-2">
                       <span className="size-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                      <h3 className="font-bold text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">Demo Autofill Security Pin</h3>
+                      <h3 className="font-bold text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+                        Demo Autofill Security Pin
+                      </h3>
                     </div>
                     <button
                       type="button"
                       onClick={() => {
                         setIsPinModalOpen(false);
-                        setPin(["", "", "", ""]);
+                        setPin(['', '', '', '']);
                         setPinError(null);
                       }}
                       className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
@@ -534,13 +639,14 @@ function LoginForm() {
                           onChange={(e) => handlePinChange(e.target.value, idx)}
                           onKeyDown={(e) => handleKeyDown(e, idx)}
                           className={`size-11 rounded-xl text-center font-bold text-lg border-2 outline-none transition-all
-                            ${pinSuccess 
-                              ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                              : pinError
-                              ? "border-rose-500 bg-rose-50 text-rose-700"
-                              : digit
-                              ? "border-indigo-600 bg-indigo-50/50 text-indigo-700 shadow-sm"
-                              : "border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                            ${
+                              pinSuccess
+                                ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                                : pinError
+                                  ? 'border-rose-500 bg-rose-50 text-rose-700'
+                                  : digit
+                                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700 shadow-sm'
+                                    : 'border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'
                             }`}
                         />
                       ))}
@@ -548,8 +654,8 @@ function LoginForm() {
 
                     {/* Status messages */}
                     {pinError && (
-                      <motion.p 
-                        initial={{ opacity: 0, y: -5 }} 
+                      <motion.p
+                        initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-[10px] font-medium text-rose-600 px-3 leading-tight mb-4"
                       >
@@ -558,8 +664,8 @@ function LoginForm() {
                     )}
 
                     {pinSuccess && (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }} 
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-600 mb-4"
                       >
@@ -569,39 +675,81 @@ function LoginForm() {
 
                     {/* Cheat Sheet / Helper */}
                     <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-3 text-left">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Available Demo PINs (Click to fill):</span>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">
+                        Available Demo PINs (Click to fill):
+                      </span>
                       <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-700">
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("1111")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('1111')}
+                        >
                           <span className="text-muted-foreground">Super Admin</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">1111</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            1111
+                          </kbd>
                         </div>
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("1212")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('1212')}
+                        >
                           <span className="text-muted-foreground">LMS Coord</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">1212</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            1212
+                          </kbd>
                         </div>
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("2222")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('2222')}
+                        >
                           <span className="text-muted-foreground">Admin</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">2222</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            2222
+                          </kbd>
                         </div>
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("3333")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('3333')}
+                        >
                           <span className="text-muted-foreground">Faculty</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">3333</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            3333
+                          </kbd>
                         </div>
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("4444")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('4444')}
+                        >
                           <span className="text-muted-foreground">Student</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">4444</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            4444
+                          </kbd>
                         </div>
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("5555")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('5555')}
+                        >
                           <span className="text-muted-foreground">Parent</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">5555</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            5555
+                          </kbd>
                         </div>
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("6666")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('6666')}
+                        >
                           <span className="text-muted-foreground">Placement</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">6666</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            6666
+                          </kbd>
                         </div>
-                        <div className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer" onClick={() => handleQuickPin("7777")}>
+                        <div
+                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
+                          onClick={() => handleQuickPin('7777')}
+                        >
                           <span className="text-muted-foreground">Librarian</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">7777</kbd>
+                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
+                            7777
+                          </kbd>
                         </div>
                       </div>
                     </div>

@@ -27,6 +27,7 @@ import { Route as DashboardPlacementRouteImport } from './routes/dashboard/place
 import { Route as DashboardParentRouteImport } from './routes/dashboard/parent'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard/library'
+import { Route as DashboardLibrarianRouteImport } from './routes/dashboard/librarian'
 import { Route as DashboardHostelRouteImport } from './routes/dashboard/hostel'
 import { Route as DashboardFeesRouteImport } from './routes/dashboard/fees'
 import { Route as DashboardFacultyRouteImport } from './routes/dashboard/faculty'
@@ -132,6 +133,7 @@ import { Route as DashboardAdminAssignmentsRouteImport } from './routes/dashboar
 import { Route as DashboardAdminAlumniRouteImport } from './routes/dashboard/admin/alumni'
 import { Route as DashboardAdminAdmissionsRouteImport } from './routes/dashboard/admin/admissions'
 import { Route as DashboardAdminAccreditationRouteImport } from './routes/dashboard/admin/accreditation'
+import { Route as DashboardAdminAcademicsRouteImport } from './routes/dashboard/admin/academics'
 import { Route as DashboardAdminFacultyIndexRouteImport } from './routes/dashboard/admin/faculty/index'
 import { Route as DashboardAdminExamsIndexRouteImport } from './routes/dashboard/admin/exams/index'
 import { Route as DashboardAdminAlumniIndexRouteImport } from './routes/dashboard/admin/alumni/index'
@@ -257,6 +259,11 @@ const DashboardLibraryRoute = DashboardLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardLibrarianRoute = DashboardLibrarianRouteImport.update({
+  id: '/librarian',
+  path: '/librarian',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardHostelRoute = DashboardHostelRouteImport.update({
   id: '/hostel',
   path: '/hostel',
@@ -298,9 +305,9 @@ const DashboardAdminRoute = DashboardAdminRouteImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
-  id: '/librarian/',
-  path: '/librarian/',
-  getParentRoute: () => DashboardRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardSuperAdminUsersRoute =
   DashboardSuperAdminUsersRouteImport.update({
@@ -506,54 +513,54 @@ const DashboardParentAttendanceRoute =
   } as any)
 const DashboardLibrarianSettingsRoute =
   DashboardLibrarianSettingsRouteImport.update({
-    id: '/librarian/settings',
-    path: '/librarian/settings',
-    getParentRoute: () => DashboardRoute,
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianReturnRoute =
   DashboardLibrarianReturnRouteImport.update({
-    id: '/librarian/return',
-    path: '/librarian/return',
-    getParentRoute: () => DashboardRoute,
+    id: '/return',
+    path: '/return',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianReportsRoute =
   DashboardLibrarianReportsRouteImport.update({
-    id: '/librarian/reports',
-    path: '/librarian/reports',
-    getParentRoute: () => DashboardRoute,
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianNotificationsRoute =
   DashboardLibrarianNotificationsRouteImport.update({
-    id: '/librarian/notifications',
-    path: '/librarian/notifications',
-    getParentRoute: () => DashboardRoute,
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianMembersRoute =
   DashboardLibrarianMembersRouteImport.update({
-    id: '/librarian/members',
-    path: '/librarian/members',
-    getParentRoute: () => DashboardRoute,
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianIssueRoute = DashboardLibrarianIssueRouteImport.update({
-  id: '/librarian/issue',
-  path: '/librarian/issue',
-  getParentRoute: () => DashboardRoute,
+  id: '/issue',
+  path: '/issue',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardLibrarianFinesRoute = DashboardLibrarianFinesRouteImport.update({
-  id: '/librarian/fines',
-  path: '/librarian/fines',
-  getParentRoute: () => DashboardRoute,
+  id: '/fines',
+  path: '/fines',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardLibrarianDigitalRoute =
   DashboardLibrarianDigitalRouteImport.update({
-    id: '/librarian/digital',
-    path: '/librarian/digital',
-    getParentRoute: () => DashboardRoute,
+    id: '/digital',
+    path: '/digital',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianBooksRoute = DashboardLibrarianBooksRouteImport.update({
-  id: '/librarian/books',
-  path: '/librarian/books',
-  getParentRoute: () => DashboardRoute,
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardHostelVisitorsRoute = DashboardHostelVisitorsRouteImport.update({
   id: '/visitors',
@@ -834,6 +841,11 @@ const DashboardAdminAccreditationRoute =
     path: '/accreditation',
     getParentRoute: () => DashboardAdminRoute,
   } as any)
+const DashboardAdminAcademicsRoute = DashboardAdminAcademicsRouteImport.update({
+  id: '/academics',
+  path: '/academics',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
 const DashboardAdminFacultyIndexRoute =
   DashboardAdminFacultyIndexRouteImport.update({
     id: '/faculty/',
@@ -1055,6 +1067,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/faculty': typeof DashboardFacultyRouteWithChildren
   '/dashboard/fees': typeof DashboardFeesRoute
   '/dashboard/hostel': typeof DashboardHostelRouteWithChildren
+  '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parent': typeof DashboardParentRouteWithChildren
@@ -1065,6 +1078,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
@@ -1223,6 +1237,7 @@ export interface FileRoutesByTo {
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
@@ -1372,6 +1387,7 @@ export interface FileRoutesById {
   '/dashboard/faculty': typeof DashboardFacultyRouteWithChildren
   '/dashboard/fees': typeof DashboardFeesRoute
   '/dashboard/hostel': typeof DashboardHostelRouteWithChildren
+  '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parent': typeof DashboardParentRouteWithChildren
@@ -1382,6 +1398,7 @@ export interface FileRoutesById {
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
@@ -1533,6 +1550,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty'
     | '/dashboard/fees'
     | '/dashboard/hostel'
+    | '/dashboard/librarian'
     | '/dashboard/library'
     | '/dashboard/notifications'
     | '/dashboard/parent'
@@ -1543,6 +1561,7 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin'
     | '/dashboard/transport'
     | '/dashboard/'
+    | '/dashboard/admin/academics'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/alumni'
@@ -1701,6 +1720,7 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin'
     | '/dashboard/transport'
     | '/dashboard'
+    | '/dashboard/admin/academics'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/assignments'
@@ -1849,6 +1869,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty'
     | '/dashboard/fees'
     | '/dashboard/hostel'
+    | '/dashboard/librarian'
     | '/dashboard/library'
     | '/dashboard/notifications'
     | '/dashboard/parent'
@@ -1859,6 +1880,7 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin'
     | '/dashboard/transport'
     | '/dashboard/'
+    | '/dashboard/admin/academics'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/alumni'
@@ -2131,6 +2153,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLibraryRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/librarian': {
+      id: '/dashboard/librarian'
+      path: '/librarian'
+      fullPath: '/dashboard/librarian'
+      preLoaderRoute: typeof DashboardLibrarianRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/hostel': {
       id: '/dashboard/hostel'
       path: '/hostel'
@@ -2189,10 +2218,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/librarian/': {
       id: '/dashboard/librarian/'
-      path: '/librarian'
+      path: '/'
       fullPath: '/dashboard/librarian/'
       preLoaderRoute: typeof DashboardLibrarianIndexRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/super-admin/users': {
       id: '/dashboard/super-admin/users'
@@ -2441,66 +2470,66 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/librarian/settings': {
       id: '/dashboard/librarian/settings'
-      path: '/librarian/settings'
+      path: '/settings'
       fullPath: '/dashboard/librarian/settings'
       preLoaderRoute: typeof DashboardLibrarianSettingsRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/return': {
       id: '/dashboard/librarian/return'
-      path: '/librarian/return'
+      path: '/return'
       fullPath: '/dashboard/librarian/return'
       preLoaderRoute: typeof DashboardLibrarianReturnRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/reports': {
       id: '/dashboard/librarian/reports'
-      path: '/librarian/reports'
+      path: '/reports'
       fullPath: '/dashboard/librarian/reports'
       preLoaderRoute: typeof DashboardLibrarianReportsRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/notifications': {
       id: '/dashboard/librarian/notifications'
-      path: '/librarian/notifications'
+      path: '/notifications'
       fullPath: '/dashboard/librarian/notifications'
       preLoaderRoute: typeof DashboardLibrarianNotificationsRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/members': {
       id: '/dashboard/librarian/members'
-      path: '/librarian/members'
+      path: '/members'
       fullPath: '/dashboard/librarian/members'
       preLoaderRoute: typeof DashboardLibrarianMembersRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/issue': {
       id: '/dashboard/librarian/issue'
-      path: '/librarian/issue'
+      path: '/issue'
       fullPath: '/dashboard/librarian/issue'
       preLoaderRoute: typeof DashboardLibrarianIssueRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/fines': {
       id: '/dashboard/librarian/fines'
-      path: '/librarian/fines'
+      path: '/fines'
       fullPath: '/dashboard/librarian/fines'
       preLoaderRoute: typeof DashboardLibrarianFinesRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/digital': {
       id: '/dashboard/librarian/digital'
-      path: '/librarian/digital'
+      path: '/digital'
       fullPath: '/dashboard/librarian/digital'
       preLoaderRoute: typeof DashboardLibrarianDigitalRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/books': {
       id: '/dashboard/librarian/books'
-      path: '/librarian/books'
+      path: '/books'
       fullPath: '/dashboard/librarian/books'
       preLoaderRoute: typeof DashboardLibrarianBooksRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/hostel/visitors': {
       id: '/dashboard/hostel/visitors'
@@ -2866,6 +2895,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminAccreditationRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/admin/academics': {
+      id: '/dashboard/admin/academics'
+      path: '/academics'
+      fullPath: '/dashboard/admin/academics'
+      preLoaderRoute: typeof DashboardAdminAcademicsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/faculty/': {
       id: '/dashboard/admin/faculty/'
       path: '/faculty'
@@ -3161,6 +3197,7 @@ const DashboardAdminAlumniRouteWithChildren =
   DashboardAdminAlumniRoute._addFileChildren(DashboardAdminAlumniRouteChildren)
 
 interface DashboardAdminRouteChildren {
+  DashboardAdminAcademicsRoute: typeof DashboardAdminAcademicsRoute
   DashboardAdminAccreditationRoute: typeof DashboardAdminAccreditationRoute
   DashboardAdminAdmissionsRoute: typeof DashboardAdminAdmissionsRoute
   DashboardAdminAlumniRoute: typeof DashboardAdminAlumniRouteWithChildren
@@ -3196,6 +3233,7 @@ interface DashboardAdminRouteChildren {
 }
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
+  DashboardAdminAcademicsRoute: DashboardAdminAcademicsRoute,
   DashboardAdminAccreditationRoute: DashboardAdminAccreditationRoute,
   DashboardAdminAdmissionsRoute: DashboardAdminAdmissionsRoute,
   DashboardAdminAlumniRoute: DashboardAdminAlumniRouteWithChildren,
@@ -3338,6 +3376,35 @@ const DashboardHostelRouteWithChildren = DashboardHostelRoute._addFileChildren(
   DashboardHostelRouteChildren,
 )
 
+interface DashboardLibrarianRouteChildren {
+  DashboardLibrarianBooksRoute: typeof DashboardLibrarianBooksRoute
+  DashboardLibrarianDigitalRoute: typeof DashboardLibrarianDigitalRoute
+  DashboardLibrarianFinesRoute: typeof DashboardLibrarianFinesRoute
+  DashboardLibrarianIssueRoute: typeof DashboardLibrarianIssueRoute
+  DashboardLibrarianMembersRoute: typeof DashboardLibrarianMembersRoute
+  DashboardLibrarianNotificationsRoute: typeof DashboardLibrarianNotificationsRoute
+  DashboardLibrarianReportsRoute: typeof DashboardLibrarianReportsRoute
+  DashboardLibrarianReturnRoute: typeof DashboardLibrarianReturnRoute
+  DashboardLibrarianSettingsRoute: typeof DashboardLibrarianSettingsRoute
+  DashboardLibrarianIndexRoute: typeof DashboardLibrarianIndexRoute
+}
+
+const DashboardLibrarianRouteChildren: DashboardLibrarianRouteChildren = {
+  DashboardLibrarianBooksRoute: DashboardLibrarianBooksRoute,
+  DashboardLibrarianDigitalRoute: DashboardLibrarianDigitalRoute,
+  DashboardLibrarianFinesRoute: DashboardLibrarianFinesRoute,
+  DashboardLibrarianIssueRoute: DashboardLibrarianIssueRoute,
+  DashboardLibrarianMembersRoute: DashboardLibrarianMembersRoute,
+  DashboardLibrarianNotificationsRoute: DashboardLibrarianNotificationsRoute,
+  DashboardLibrarianReportsRoute: DashboardLibrarianReportsRoute,
+  DashboardLibrarianReturnRoute: DashboardLibrarianReturnRoute,
+  DashboardLibrarianSettingsRoute: DashboardLibrarianSettingsRoute,
+  DashboardLibrarianIndexRoute: DashboardLibrarianIndexRoute,
+}
+
+const DashboardLibrarianRouteWithChildren =
+  DashboardLibrarianRoute._addFileChildren(DashboardLibrarianRouteChildren)
+
 interface DashboardParentRouteChildren {
   DashboardParentAttendanceRoute: typeof DashboardParentAttendanceRoute
   DashboardParentCommunicationRoute: typeof DashboardParentCommunicationRoute
@@ -3463,6 +3530,7 @@ interface DashboardRouteChildren {
   DashboardFacultyRoute: typeof DashboardFacultyRouteWithChildren
   DashboardFeesRoute: typeof DashboardFeesRoute
   DashboardHostelRoute: typeof DashboardHostelRouteWithChildren
+  DashboardLibrarianRoute: typeof DashboardLibrarianRouteWithChildren
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardParentRoute: typeof DashboardParentRouteWithChildren
@@ -3473,16 +3541,6 @@ interface DashboardRouteChildren {
   DashboardSuperAdminRoute: typeof DashboardSuperAdminRouteWithChildren
   DashboardTransportRoute: typeof DashboardTransportRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardLibrarianBooksRoute: typeof DashboardLibrarianBooksRoute
-  DashboardLibrarianDigitalRoute: typeof DashboardLibrarianDigitalRoute
-  DashboardLibrarianFinesRoute: typeof DashboardLibrarianFinesRoute
-  DashboardLibrarianIssueRoute: typeof DashboardLibrarianIssueRoute
-  DashboardLibrarianMembersRoute: typeof DashboardLibrarianMembersRoute
-  DashboardLibrarianNotificationsRoute: typeof DashboardLibrarianNotificationsRoute
-  DashboardLibrarianReportsRoute: typeof DashboardLibrarianReportsRoute
-  DashboardLibrarianReturnRoute: typeof DashboardLibrarianReturnRoute
-  DashboardLibrarianSettingsRoute: typeof DashboardLibrarianSettingsRoute
-  DashboardLibrarianIndexRoute: typeof DashboardLibrarianIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -3494,6 +3552,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFacultyRoute: DashboardFacultyRouteWithChildren,
   DashboardFeesRoute: DashboardFeesRoute,
   DashboardHostelRoute: DashboardHostelRouteWithChildren,
+  DashboardLibrarianRoute: DashboardLibrarianRouteWithChildren,
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardParentRoute: DashboardParentRouteWithChildren,
@@ -3504,16 +3563,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSuperAdminRoute: DashboardSuperAdminRouteWithChildren,
   DashboardTransportRoute: DashboardTransportRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  DashboardLibrarianBooksRoute: DashboardLibrarianBooksRoute,
-  DashboardLibrarianDigitalRoute: DashboardLibrarianDigitalRoute,
-  DashboardLibrarianFinesRoute: DashboardLibrarianFinesRoute,
-  DashboardLibrarianIssueRoute: DashboardLibrarianIssueRoute,
-  DashboardLibrarianMembersRoute: DashboardLibrarianMembersRoute,
-  DashboardLibrarianNotificationsRoute: DashboardLibrarianNotificationsRoute,
-  DashboardLibrarianReportsRoute: DashboardLibrarianReportsRoute,
-  DashboardLibrarianReturnRoute: DashboardLibrarianReturnRoute,
-  DashboardLibrarianSettingsRoute: DashboardLibrarianSettingsRoute,
-  DashboardLibrarianIndexRoute: DashboardLibrarianIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(

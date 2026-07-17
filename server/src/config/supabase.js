@@ -44,7 +44,8 @@ if (!isMockMode && databaseUrl) {
     const host = hostParts?.[0];
     const port = hostParts?.[1] ? parseInt(hostParts[1], 10) : 5432;
     debugLog("Starting database TCP check for host: " + host + ", port: " + port);
-    if (host) {
+    const isLocal = host === 'localhost' || host === '127.0.0.1' || host === 'host.docker.internal';
+    if (host && !isLocal) {
       // 1. Resolve DNS
       await Promise.race([
         dns.lookup(host),

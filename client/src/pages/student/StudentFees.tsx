@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { CreditCard, DollarSign } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import api from "@/lib/api";
-import { resolveStudentProfile } from "@/services/studentProfileService";
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { CreditCard, DollarSign } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
+import { resolveStudentProfile } from '@/services/studentProfileService';
 
 export function StudentFees() {
   const [fees, setFees] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [stats, setStats] = useState([
-    { label: "Total Due", value: "₹0", tone: "warn" as const },
-    { label: "Overdue", value: "₹0", tone: "danger" as const },
-    { label: "Paid This Year", value: "₹0", tone: "success" as const },
-    { label: "Next Due", value: "N/A", tone: "info" as const },
+    { label: 'Total Due', value: '₹0', tone: 'warn' as const },
+    { label: 'Overdue', value: '₹0', tone: 'danger' as const },
+    { label: 'Paid This Year', value: '₹0', tone: 'success' as const },
+    { label: 'Next Due', value: 'N/A', tone: 'info' as const },
   ]);
   const [loading, setLoading] = useState(true);
 
-  const [selectedFeeType, setSelectedFeeType] = useState("");
+  const [selectedFeeType, setSelectedFeeType] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const fetchFees = async () => {
@@ -35,32 +35,54 @@ export function StudentFees() {
         const feesArr = dbFees || [];
 
         const mappedFees = feesArr.map((f: any) => ({
-          feeType: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + " Fee",
+          feeType: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + ' Fee',
           amount: `₹${Number(f.totalAmount).toLocaleString('en-IN')}`,
           dueDate: new Date(f.dueDate).toISOString().split('T')[0],
-          status: f.paymentStatus.charAt(0).toUpperCase() + f.paymentStatus.slice(1)
+          status: f.paymentStatus.charAt(0).toUpperCase() + f.paymentStatus.slice(1),
         }));
         setFees(mappedFees);
 
-        const paidFees = feesArr.filter((f: any) => f.paidAmount > 0).map((f: any) => ({
-          type: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + " Fee",
-          amount: `₹${Number(f.paidAmount).toLocaleString('en-IN')}`,
-          date: new Date(f.updatedAt || Date.now()).toISOString().split('T')[0],
-          status: "Paid"
-        }));
+        const paidFees = feesArr
+          .filter((f: any) => f.paidAmount > 0)
+          .map((f: any) => ({
+            type: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + ' Fee',
+            amount: `₹${Number(f.paidAmount).toLocaleString('en-IN')}`,
+            date: new Date(f.updatedAt || Date.now()).toISOString().split('T')[0],
+            status: 'Paid',
+          }));
         setHistory(paidFees);
 
         if (summary) {
           setStats([
-            { label: "Total Due", value: `₹${Number(summary.totalRemaining).toLocaleString('en-IN')}`, tone: "warn" as const },
-            { label: "Overdue", value: `₹${Number(summary.totalRemaining > 0 && summary.overdueCount > 0 ? summary.totalRemaining : 0).toLocaleString('en-IN')}`, tone: "danger" as const },
-            { label: "Paid This Year", value: `₹${Number(summary.totalPaid).toLocaleString('en-IN')}`, tone: "success" as const },
-            { label: "Next Due", value: feesArr.find((f: any) => f.paymentStatus !== "paid") ? new Date(feesArr.find((f: any) => f.paymentStatus !== "paid").dueDate).toLocaleDateString() : "None", tone: "info" as const },
+            {
+              label: 'Total Due',
+              value: `₹${Number(summary.totalRemaining).toLocaleString('en-IN')}`,
+              tone: 'warn' as const,
+            },
+            {
+              label: 'Overdue',
+              value: `₹${Number(summary.totalRemaining > 0 && summary.overdueCount > 0 ? summary.totalRemaining : 0).toLocaleString('en-IN')}`,
+              tone: 'danger' as const,
+            },
+            {
+              label: 'Paid This Year',
+              value: `₹${Number(summary.totalPaid).toLocaleString('en-IN')}`,
+              tone: 'success' as const,
+            },
+            {
+              label: 'Next Due',
+              value: feesArr.find((f: any) => f.paymentStatus !== 'paid')
+                ? new Date(
+                    feesArr.find((f: any) => f.paymentStatus !== 'paid').dueDate,
+                  ).toLocaleDateString()
+                : 'None',
+              tone: 'info' as const,
+            },
           ]);
         }
       }
     } catch (err) {
-      console.error("Error loading fees data:", err);
+      console.error('Error loading fees data:', err);
     } finally {
       setLoading(false);
     }
@@ -75,11 +97,13 @@ export function StudentFees() {
     setPaymentLoading(true);
     setTimeout(() => {
       setPaymentLoading(false);
-      alert("Online payment simulation successful! Once approved by the administrator, your record will update.");
+      alert(
+        'Online payment simulation successful! Once approved by the administrator, your record will update.',
+      );
     }, 1500);
   };
 
-  const pendingFeesList = fees.filter(f => f.status !== "Paid");
+  const pendingFeesList = fees.filter((f) => f.status !== 'Paid');
 
   return (
     <div className="space-y-6">
@@ -89,23 +113,21 @@ export function StudentFees() {
       />
 
       <div className="grid md:grid-cols-4 gap-4">
-        {loading ? (
-          [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-24 animate-pulse bg-muted/40">
-              <div />
-            </Card>
-          ))
-        ) : (
-          stats.map(stat => (
-            <Card key={stat.label}>
-              <div className="text-xs text-muted-foreground">{stat.label}</div>
-              <div className="text-2xl font-bold mt-2">{stat.value}</div>
-              <Badge tone={stat.tone} className="mt-3">
-                Current
-              </Badge>
-            </Card>
-          ))
-        )}
+        {loading
+          ? [1, 2, 3, 4].map((n) => (
+              <Card key={n} className="h-24 animate-pulse bg-muted/40">
+                <div />
+              </Card>
+            ))
+          : stats.map((stat) => (
+              <Card key={stat.label}>
+                <div className="text-xs text-muted-foreground">{stat.label}</div>
+                <div className="text-2xl font-bold mt-2">{stat.value}</div>
+                <Badge tone={stat.tone} className="mt-3">
+                  Current
+                </Badge>
+              </Card>
+            ))}
       </div>
 
       <Card>
@@ -119,7 +141,7 @@ export function StudentFees() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Fee Type", "Amount", "Due Date", "Status"].map((column) => (
+                  {['Fee Type', 'Amount', 'Due Date', 'Status'].map((column) => (
                     <th
                       key={column}
                       className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -138,11 +160,11 @@ export function StudentFees() {
                     <td className="py-3 px-4">
                       <Badge
                         tone={
-                          record.status === "Paid"
-                            ? "success"
-                            : record.status === "Overdue"
-                              ? "danger"
-                              : "warn"
+                          record.status === 'Paid'
+                            ? 'success'
+                            : record.status === 'Overdue'
+                              ? 'danger'
+                              : 'warn'
                         }
                       >
                         {record.status}
@@ -165,27 +187,50 @@ export function StudentFees() {
           {loading ? (
             <div className="space-y-4 p-4 border rounded-xl bg-muted/10 animate-pulse h-44" />
           ) : (
-            <form onSubmit={handlePayment} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+            <form
+              onSubmit={handlePayment}
+              className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
+            >
               <select
                 value={selectedFeeType}
                 onChange={(e) => setSelectedFeeType(e.target.value)}
                 className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               >
                 <option value="">-- Choose Fee to Pay --</option>
-                {pendingFeesList.map(f => <option key={f.feeType} value={f.feeType}>{f.feeType} - {f.amount}</option>)}
+                {pendingFeesList.map((f) => (
+                  <option key={f.feeType} value={f.feeType}>
+                    {f.feeType} - {f.amount}
+                  </option>
+                ))}
               </select>
               <div className="grid sm:grid-cols-2 gap-4">
-                <input required placeholder="Card number" className="rounded-lg border bg-background px-3 py-2 text-sm" />
-                <input required placeholder="MM/YY" className="rounded-lg border bg-background px-3 py-2 text-sm" />
-                <input required placeholder="CVV" className="rounded-lg border bg-background px-3 py-2 text-sm" />
-                <input required placeholder="Cardholder name" className="rounded-lg border bg-background px-3 py-2 text-sm" />
+                <input
+                  required
+                  placeholder="Card number"
+                  className="rounded-lg border bg-background px-3 py-2 text-sm"
+                />
+                <input
+                  required
+                  placeholder="MM/YY"
+                  className="rounded-lg border bg-background px-3 py-2 text-sm"
+                />
+                <input
+                  required
+                  placeholder="CVV"
+                  className="rounded-lg border bg-background px-3 py-2 text-sm"
+                />
+                <input
+                  required
+                  placeholder="Cardholder name"
+                  className="rounded-lg border bg-background px-3 py-2 text-sm"
+                />
               </div>
               <button
                 type="submit"
                 disabled={paymentLoading || !selectedFeeType}
                 className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium disabled:opacity-50"
               >
-                {paymentLoading ? "Processing..." : "Pay Now"}
+                {paymentLoading ? 'Processing...' : 'Pay Now'}
               </button>
             </form>
           )}
@@ -198,10 +243,10 @@ export function StudentFees() {
           </div>
           <div className="space-y-3">
             {[
-              { method: "Credit Card", icon: "💳", status: "Active" },
-              { method: "Debit Card", icon: "💳", status: "Active" },
-              { method: "Net Banking", icon: "🏦", status: "Active" },
-              { method: "UPI", icon: "📱", status: "Active" },
+              { method: 'Credit Card', icon: '💳', status: 'Active' },
+              { method: 'Debit Card', icon: '💳', status: 'Active' },
+              { method: 'Net Banking', icon: '🏦', status: 'Active' },
+              { method: 'UPI', icon: '📱', status: 'Active' },
             ].map((item) => (
               <div
                 key={item.method}
@@ -227,7 +272,10 @@ export function StudentFees() {
             ))
           ) : history.length > 0 ? (
             history.map((payment, i) => (
-              <div key={payment.date + i} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+              <div
+                key={payment.date + i}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {payment.type.slice(0, 2)}
                 </div>

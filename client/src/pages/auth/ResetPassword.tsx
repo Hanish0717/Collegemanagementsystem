@@ -1,23 +1,23 @@
-import { Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { GraduationCap, Lock, ArrowRight, Loader2, KeySquare, Hash } from "lucide-react";
-import { useState, useEffect } from "react";
-import api from "@/lib/api";
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
+import { GraduationCap, Lock, ArrowRight, Loader2, KeySquare, Hash } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
 
 export function ResetPassword() {
   const navigate = useNavigate();
-  const search = useSearch({ from: "/reset-password" }) as { email?: string };
+  const search = useSearch({ from: '/reset-password' }) as { email?: string };
   const { email } = search;
 
-  const [otp, setOtp] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!email) {
-      navigate({ to: "/login" });
+      navigate({ to: '/login' });
     }
   }, [email, navigate]);
 
@@ -26,31 +26,31 @@ export function ResetPassword() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
+      setError('Password must be at least 6 characters long');
       return;
     }
 
     if (!otp || otp.length !== 6) {
-      setError("Please enter a valid 6-digit OTP");
+      setError('Please enter a valid 6-digit OTP');
       return;
     }
 
     setLoading(true);
 
     try {
-      await api.post("/api/auth/reset-password", { email, otp, password });
-      navigate({ to: "/login" });
+      await api.post('/api/auth/reset-password', { email, otp, password });
+      navigate({ to: '/login' });
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
         err.response?.data?.error ||
         err.message ||
-        "Failed to reset password. OTP may be invalid or expired.";
+        'Failed to reset password. OTP may be invalid or expired.';
       setError(msg);
     } finally {
       setLoading(false);
@@ -100,7 +100,7 @@ export function ResetPassword() {
               <input
                 type="text"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="000000"
                 required
                 className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring text-center tracking-widest text-lg font-semibold"

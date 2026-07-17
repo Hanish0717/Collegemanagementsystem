@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { Outlet, useRouterState, useNavigate } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
 import {
   Area,
   AreaChart,
@@ -11,7 +11,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts';
 import {
   Activity,
   Bell,
@@ -20,33 +20,33 @@ import {
   GraduationCap,
   TrendingUp,
   User,
-} from "lucide-react";
-import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
-import api from "@/lib/api";
+} from 'lucide-react';
+import { Badge, Card, PageHeader, StatCard } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 const getIcon = (label: string) => {
-  if (label.includes("Attendance")) return TrendingUp;
-  if (label.includes("CGPA")) return GraduationCap;
-  if (label.includes("Fees")) return DollarSign;
-  if (label.includes("Leaves")) return Calendar;
+  if (label.includes('Attendance')) return TrendingUp;
+  if (label.includes('CGPA')) return GraduationCap;
+  if (label.includes('Fees')) return DollarSign;
+  if (label.includes('Leaves')) return Calendar;
   return GraduationCap;
 };
 
 const getGradient = (label: string) => {
-  if (label.includes("Attendance")) return "bg-gradient-violet";
-  if (label.includes("CGPA")) return "bg-gradient-primary";
-  if (label.includes("Fees")) return "bg-gradient-cyan";
-  if (label.includes("Leaves")) return "bg-gradient-violet";
-  return "bg-gradient-primary";
+  if (label.includes('Attendance')) return 'bg-gradient-violet';
+  if (label.includes('CGPA')) return 'bg-gradient-primary';
+  if (label.includes('Fees')) return 'bg-gradient-cyan';
+  if (label.includes('Leaves')) return 'bg-gradient-violet';
+  return 'bg-gradient-primary';
 };
 
 export function ParentDashboard() {
-  const path = useRouterState({ select: r => r.location.pathname });
+  const path = useRouterState({ select: (r) => r.location.pathname });
   const navigate = useNavigate();
 
   const [stats, setStats] = useState<any[]>([]);
   const [childInfo, setChildInfo] = useState<any>(null);
-  const [parentName, setParentName] = useState("Parent");
+  const [parentName, setParentName] = useState('Parent');
   const [activities, setActivities] = useState<any[]>([]);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [attendanceHistoryData, setAttendanceHistoryData] = useState<any[]>([]);
@@ -54,11 +54,11 @@ export function ParentDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userStr = localStorage.getItem("cms_user");
+    const userStr = localStorage.getItem('cms_user');
     if (userStr) {
       try {
         const u = JSON.parse(userStr);
-        setParentName(u.fullName || u.name || "Parent");
+        setParentName(u.fullName || u.name || 'Parent');
       } catch (e) {
         console.error(e);
       }
@@ -66,17 +66,17 @@ export function ParentDashboard() {
   }, []);
 
   useEffect(() => {
-    if (path !== "/dashboard/parent" && path !== "/dashboard" && path !== "/dashboard/") return;
+    if (path !== '/dashboard/parent' && path !== '/dashboard' && path !== '/dashboard/') return;
 
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const res = await api.get("/api/parent-module/student-data");
+        const res = await api.get('/api/parent-module/student-data');
         if (res.data?.success && res.data?.data) {
           const dbData = res.data.data;
           // Store in localStorage for sub-pages to use
-          localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
-          
+          localStorage.setItem('cms_parent_child_data', JSON.stringify(dbData));
+
           setChildInfo(dbData);
           setStats(dbData.stats || []);
           setActivities(dbData.activities || []);
@@ -93,13 +93,15 @@ export function ParentDashboard() {
               semGroup[sem].total += Number(r.marks || 0);
               semGroup[sem].count += 1;
             });
-            const formattedMarks = Object.keys(semGroup).map(sem => {
-              const sNum = Number(sem);
-              return {
-                semester: `Sem ${sNum}`,
-                marks: Math.round(semGroup[sNum].total / semGroup[sNum].count)
-              };
-            }).sort((a, b) => a.semester.localeCompare(b.semester));
+            const formattedMarks = Object.keys(semGroup)
+              .map((sem) => {
+                const sNum = Number(sem);
+                return {
+                  semester: `Sem ${sNum}`,
+                  marks: Math.round(semGroup[sNum].total / semGroup[sNum].count),
+                };
+              })
+              .sort((a, b) => a.semester.localeCompare(b.semester));
             setMarksPerformanceData(formattedMarks);
           }
 
@@ -110,24 +112,39 @@ export function ParentDashboard() {
             if (attRes.data?.success && attRes.data?.data) {
               const { monthly } = attRes.data.data;
               if (monthly && monthly.length > 0) {
-                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                const formatted = monthly.map((m: any) => {
-                  const parts = m.month.split("-");
-                  const year = Number(parts[0]);
-                  const monthIdx = Number(parts[1]) - 1;
-                  const date = new Date(year, monthIdx, 1);
-                  return {
-                    month: monthNames[date.getMonth()],
-                    percentage: m.percentage
-                  };
-                }).reverse();
+                const monthNames = [
+                  'Jan',
+                  'Feb',
+                  'Mar',
+                  'Apr',
+                  'May',
+                  'Jun',
+                  'Jul',
+                  'Aug',
+                  'Sep',
+                  'Oct',
+                  'Nov',
+                  'Dec',
+                ];
+                const formatted = monthly
+                  .map((m: any) => {
+                    const parts = m.month.split('-');
+                    const year = Number(parts[0]);
+                    const monthIdx = Number(parts[1]) - 1;
+                    const date = new Date(year, monthIdx, 1);
+                    return {
+                      month: monthNames[date.getMonth()],
+                      percentage: m.percentage,
+                    };
+                  })
+                  .reverse();
                 setAttendanceHistoryData(formatted);
               }
             }
           }
         }
       } catch (err) {
-        console.error("Error loading parent dashboard child data:", err);
+        console.error('Error loading parent dashboard child data:', err);
       } finally {
         setLoading(false);
       }
@@ -135,18 +152,22 @@ export function ParentDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== "/dashboard/parent" && path !== "/dashboard" && path !== "/dashboard/") {
+  if (path !== '/dashboard/parent' && path !== '/dashboard' && path !== '/dashboard/') {
     return <Outlet />;
   }
 
-  const attendancePctStr = stats.find(s => s.label.includes("Attendance"))?.value || "N/A";
-  const cgpaValueStr = stats.find(s => s.label.includes("CGPA"))?.value || "N/A";
+  const attendancePctStr = stats.find((s) => s.label.includes('Attendance'))?.value || 'N/A';
+  const cgpaValueStr = stats.find((s) => s.label.includes('CGPA'))?.value || 'N/A';
 
   return (
     <div className="space-y-6">
       <PageHeader
         title={`Welcome, ${parentName}`}
-        desc={childInfo ? `Monitoring academic progress for your child: ${childInfo.childName} (${childInfo.rollNumber})` : "Monitoring academic progress for your child."}
+        desc={
+          childInfo
+            ? `Monitoring academic progress for your child: ${childInfo.childName} (${childInfo.rollNumber})`
+            : 'Monitoring academic progress for your child.'
+        }
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -158,8 +179,19 @@ export function ParentDashboard() {
           ))
         ) : stats.length > 0 ? (
           stats.map((stat, i) => (
-            <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-              <StatCard label={stat.label} value={stat.value} change={stat.change} icon={getIcon(stat.label)} gradient={getGradient(stat.label)} />
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+            >
+              <StatCard
+                label={stat.label}
+                value={stat.value}
+                change={stat.change}
+                icon={getIcon(stat.label)}
+                gradient={getGradient(stat.label)}
+              />
             </motion.div>
           ))
         ) : (
@@ -195,7 +227,7 @@ export function ParentDashboard() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                   <Area
                     type="monotone"
                     dataKey="percentage"
@@ -220,10 +252,18 @@ export function ParentDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "View Attendance", tone: "info" as const, to: "/dashboard/parent/attendance" },
-              { label: "Check Marks", tone: "success" as const, to: "/dashboard/parent/marks" },
-              { label: "Pay Fees", tone: "warn" as const, to: "/dashboard/parent/fees" },
-              { label: "Contact Teacher", tone: "info" as const, to: "/dashboard/parent/communication" },
+              {
+                label: 'View Attendance',
+                tone: 'info' as const,
+                to: '/dashboard/parent/attendance',
+              },
+              { label: 'Check Marks', tone: 'success' as const, to: '/dashboard/parent/marks' },
+              { label: 'Pay Fees', tone: 'warn' as const, to: '/dashboard/parent/fees' },
+              {
+                label: 'Contact Teacher',
+                tone: 'info' as const,
+                to: '/dashboard/parent/communication',
+              },
             ].map((item) => (
               <button
                 key={item.label}
@@ -248,7 +288,7 @@ export function ParentDashboard() {
             <Badge tone="success">
               {marksPerformanceData.length > 0
                 ? `${Math.round(marksPerformanceData.reduce((acc, curr) => acc + curr.marks, 0) / marksPerformanceData.length)}%`
-                : "N/A"}
+                : 'N/A'}
             </Badge>
           </div>
           <div className="h-72">
@@ -262,7 +302,7 @@ export function ParentDashboard() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                   <Bar dataKey="marks" fill="#4F46E5" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -281,15 +321,23 @@ export function ParentDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Name", value: childInfo?.childName || "Loading..." },
-              { label: "Roll Number", value: childInfo?.rollNumber || "Loading..." },
-              { label: "Current Semester", value: childInfo ? `Sem ${childInfo.semester}` : "Loading..." },
-              { label: "Overall GPA", value: cgpaValueStr },
-              { label: "Attendance", value: attendancePctStr },
-            ].map(item => (
-              <div key={item.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
+              { label: 'Name', value: childInfo?.childName || 'Loading...' },
+              { label: 'Roll Number', value: childInfo?.rollNumber || 'Loading...' },
+              {
+                label: 'Current Semester',
+                value: childInfo ? `Sem ${childInfo.semester}` : 'Loading...',
+              },
+              { label: 'Overall GPA', value: cgpaValueStr },
+              { label: 'Attendance', value: attendancePctStr },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
+              >
                 <span className="text-sm text-muted-foreground">{item.label}</span>
-                <span className="font-bold text-xs max-w-[150px] truncate text-right">{item.value}</span>
+                <span className="font-bold text-xs max-w-[150px] truncate text-right">
+                  {item.value}
+                </span>
               </div>
             ))}
           </div>
@@ -317,8 +365,8 @@ export function ParentDashboard() {
                     {activity.actor.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 text-sm">
-                    <span className="font-medium">{activity.actor}</span>{" "}
-                    <span className="text-muted-foreground">{activity.action}</span>{" "}
+                    <span className="font-medium">{activity.actor}</span>{' '}
+                    <span className="text-muted-foreground">{activity.action}</span>{' '}
                     <span className="font-medium">{activity.target}</span>
                     <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
                   </div>
@@ -347,7 +395,7 @@ export function ParentDashboard() {
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50" : "hover:bg-accent/50"}`}
+                  className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50' : 'hover:bg-accent/50'}`}
                 >
                   <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                   <div className="flex-1 min-w-0">
@@ -356,11 +404,11 @@ export function ParentDashboard() {
                   </div>
                   <Badge
                     tone={
-                      notification.type === "Alert"
-                        ? "danger"
-                        : notification.type === "Exam"
-                          ? "warn"
-                          : "info"
+                      notification.type === 'Alert'
+                        ? 'danger'
+                        : notification.type === 'Exam'
+                          ? 'warn'
+                          : 'info'
                     }
                   >
                     {notification.type}
@@ -378,4 +426,3 @@ export function ParentDashboard() {
     </div>
   );
 }
-

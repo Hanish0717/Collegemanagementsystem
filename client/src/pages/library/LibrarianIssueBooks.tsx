@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Calendar, CheckCircle2, Loader2 } from "lucide-react";
-import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
+import { useState, useEffect } from 'react';
+import { Calendar, CheckCircle2, Loader2 } from 'lucide-react';
+import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
 import {
   fetchBooks,
   issueBook,
@@ -8,10 +8,10 @@ import {
   deleteIssueRecord,
   type BookItem,
   type IssuedBookItem,
-} from "@/services/libraryService";
-import api from "@/lib/api";
-import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+} from '@/services/libraryService';
+import api from '@/lib/api';
+import { toast } from 'sonner';
+import { Trash2 } from 'lucide-react';
 
 interface StudentListItem {
   _id: string;
@@ -29,17 +29,19 @@ export function LibrarianIssueBooks() {
   const [loading, setLoading] = useState(true);
 
   // Form State
-  const [selectedStudent, setSelectedStudent] = useState("");
-  const [selectedBook, setSelectedBook] = useState("");
-  const [issueDate, setIssueDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [selectedStudent, setSelectedStudent] = useState('');
+  const [selectedBook, setSelectedBook] = useState('');
+  const [issueDate, setIssueDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState(() => {
     const fourteenDaysLater = new Date();
     fourteenDaysLater.setDate(fourteenDaysLater.getDate() + 14);
-    return fourteenDaysLater.toISOString().split("T")[0];
+    return fourteenDaysLater.toISOString().split('T')[0];
   });
   const [submitting, setSubmitting] = useState(false);
 
-  const sections = Array.from(new Set(students.map((student) => student.section).filter(Boolean))) as string[];
+  const sections = Array.from(
+    new Set(students.map((student) => student.section).filter(Boolean)),
+  ) as string[];
   const tags = Array.from(new Set(books.map((book) => book.category).filter(Boolean))) as string[];
 
   const selectedStudentData = students.find((student) => student._id === selectedStudent);
@@ -51,17 +53,19 @@ export function LibrarianIssueBooks() {
       const [booksData, historyData, studentsRes] = await Promise.all([
         fetchBooks({ limit: 1000 }),
         fetchIssuedBooks(),
-        api.get<{ success: boolean; data: { students: StudentListItem[] } }>("/api/students", {
+        api.get<{ success: boolean; data: { students: StudentListItem[] } }>('/api/students', {
           params: { limit: 1000 },
         }),
       ]);
       setBooks(booksData);
-      setIssuedHistory(historyData.filter((issue) => issue.status === "issued" || issue.status === "overdue"));
-      setReturnedHistory(historyData.filter((issue) => issue.status === "returned"));
+      setIssuedHistory(
+        historyData.filter((issue) => issue.status === 'issued' || issue.status === 'overdue'),
+      );
+      setReturnedHistory(historyData.filter((issue) => issue.status === 'returned'));
       setStudents(studentsRes.data.data.students);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to load data from live database");
+      toast.error('Failed to load data from live database');
     } finally {
       setLoading(false);
     }
@@ -74,7 +78,7 @@ export function LibrarianIssueBooks() {
   const handleIssueBook = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStudent || !selectedBook || !dueDate) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
       return;
     }
     setSubmitting(true);
@@ -84,12 +88,12 @@ export function LibrarianIssueBooks() {
         bookId: selectedBook,
         dueDate,
       });
-      toast.success("Book successfully issued and recorded in database!");
-      setSelectedStudent("");
-      setSelectedBook("");
+      toast.success('Book successfully issued and recorded in database!');
+      setSelectedStudent('');
+      setSelectedBook('');
       loadData();
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Failed to issue book";
+      const msg = err.response?.data?.message || err.message || 'Failed to issue book';
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -97,23 +101,23 @@ export function LibrarianIssueBooks() {
   };
 
   const handleClear = () => {
-    setSelectedStudent("");
-    setSelectedBook("");
-    setIssueDate(new Date().toISOString().split("T")[0]);
+    setSelectedStudent('');
+    setSelectedBook('');
+    setIssueDate(new Date().toISOString().split('T')[0]);
     const fourteenDaysLater = new Date();
     fourteenDaysLater.setDate(fourteenDaysLater.getDate() + 14);
-    setDueDate(fourteenDaysLater.toISOString().split("T")[0]);
-    toast.info("Issue form reset.");
+    setDueDate(fourteenDaysLater.toISOString().split('T')[0]);
+    toast.info('Issue form reset.');
   };
 
   const handleDeleteReturnedRecord = async (issueId: string) => {
-    if (!confirm("Delete this returned record from history?")) return;
+    if (!confirm('Delete this returned record from history?')) return;
     try {
       await deleteIssueRecord(issueId);
-      toast.success("Returned record deleted.");
+      toast.success('Returned record deleted.');
       loadData();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || "Failed to delete record");
+      toast.error(err.response?.data?.message || err.message || 'Failed to delete record');
     }
   };
 
@@ -151,14 +155,14 @@ export function LibrarianIssueBooks() {
                     <option value="">Choose student...</option>
                     {students.map((s) => (
                       <option key={s._id} value={s._id}>
-                        {s.fullName} ({s.rollNumber}){s.section ? ` - Section ${s.section}` : ""}
+                        {s.fullName} ({s.rollNumber}){s.section ? ` - Section ${s.section}` : ''}
                       </option>
                     ))}
                   </select>
                   {selectedStudentData && (
                     <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
                       <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
-                        Section: {selectedStudentData.section || "N/A"}
+                        Section: {selectedStudentData.section || 'N/A'}
                       </span>
                       <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
                         Dept: {selectedStudentData.department}
@@ -180,7 +184,7 @@ export function LibrarianIssueBooks() {
                     <option value="">Choose book...</option>
                     {availableBooks.map((b) => (
                       <option key={b._id} value={b._id}>
-                        {b.title} (ISBN: {b.isbn}){b.category ? ` - ${b.category}` : ""}
+                        {b.title} (ISBN: {b.isbn}){b.category ? ` - ${b.category}` : ''}
                       </option>
                     ))}
                   </select>
@@ -199,13 +203,18 @@ export function LibrarianIssueBooks() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl border bg-gradient-soft">
-                  <div className="text-xs font-semibold text-muted-foreground mb-2">All Sections</div>
+                  <div className="text-xs font-semibold text-muted-foreground mb-2">
+                    All Sections
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {sections.length === 0 ? (
                       <span className="text-xs text-muted-foreground">No section data loaded</span>
                     ) : (
                       sections.map((section) => (
-                        <span key={section} className="px-2.5 py-1 rounded-full bg-background border text-xs">
+                        <span
+                          key={section}
+                          className="px-2.5 py-1 rounded-full bg-background border text-xs"
+                        >
                           {section}
                         </span>
                       ))
@@ -220,7 +229,10 @@ export function LibrarianIssueBooks() {
                       <span className="text-xs text-muted-foreground">No book tags loaded</span>
                     ) : (
                       tags.map((tag) => (
-                        <span key={tag} className="px-2.5 py-1 rounded-full bg-background border text-xs">
+                        <span
+                          key={tag}
+                          className="px-2.5 py-1 rounded-full bg-background border text-xs"
+                        >
                           {tag}
                         </span>
                       ))
@@ -294,9 +306,9 @@ export function LibrarianIssueBooks() {
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
                   {issuedHistory.slice(0, 10).map((issue) => {
                     const studentName =
-                      typeof issue.student === "object" ? issue.student?.fullName : "Student";
-                    const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
-                    const title = typeof issue.book === "object" ? issue.book?.title : "Book";
+                      typeof issue.student === 'object' ? issue.student?.fullName : 'Student';
+                    const roll = typeof issue.student === 'object' ? issue.student?.rollNumber : '';
+                    const title = typeof issue.book === 'object' ? issue.book?.title : 'Book';
                     return (
                       <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
                         <div className="flex items-start justify-between gap-3 mb-2">
@@ -307,7 +319,7 @@ export function LibrarianIssueBooks() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge tone={issue.status === "returned" ? "success" : "danger"}>
+                            <Badge tone={issue.status === 'returned' ? 'success' : 'danger'}>
                               {issue.status}
                             </Badge>
                             <button
@@ -329,7 +341,10 @@ export function LibrarianIssueBooks() {
                             Deadline: {new Date(issue.dueDate).toLocaleDateString()}
                           </span>
                           <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
-                            Section: {typeof issue.student === "object" ? issue.student?.section || "N/A" : "N/A"}
+                            Section:{' '}
+                            {typeof issue.student === 'object'
+                              ? issue.student?.section || 'N/A'
+                              : 'N/A'}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -350,7 +365,7 @@ export function LibrarianIssueBooks() {
                   <div className="text-xs text-muted-foreground mb-1">Total Active Loans</div>
                   <div className="text-3xl font-bold">
                     {
-                      issuedHistory.filter((i) => i.status === "issued" || i.status === "overdue")
+                      issuedHistory.filter((i) => i.status === 'issued' || i.status === 'overdue')
                         .length
                     }
                   </div>
@@ -362,7 +377,7 @@ export function LibrarianIssueBooks() {
                 <div className="p-4 rounded-xl bg-gradient-soft border">
                   <div className="text-xs text-muted-foreground mb-1">Overdue Books</div>
                   <div className="text-3xl font-bold text-rose-600">
-                    {issuedHistory.filter((i) => i.status === "overdue").length}
+                    {issuedHistory.filter((i) => i.status === 'overdue').length}
                   </div>
                   <div className="text-xs text-rose-600 mt-1">⚠ Require follow-up</div>
                 </div>
@@ -380,9 +395,9 @@ export function LibrarianIssueBooks() {
               <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
                 {returnedHistory.map((issue) => {
                   const studentName =
-                    typeof issue.student === "object" ? issue.student?.fullName : "Student";
-                  const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
-                  const title = typeof issue.book === "object" ? issue.book?.title : "Book";
+                    typeof issue.student === 'object' ? issue.student?.fullName : 'Student';
+                  const roll = typeof issue.student === 'object' ? issue.student?.rollNumber : '';
+                  const title = typeof issue.book === 'object' ? issue.book?.title : 'Book';
 
                   return (
                     <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
@@ -404,7 +419,10 @@ export function LibrarianIssueBooks() {
                       </div>
                       <div className="flex flex-wrap gap-2 text-[11px]">
                         <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
-                          Returned: {issue.returnDate ? new Date(issue.returnDate).toLocaleDateString() : "N/A"}
+                          Returned:{' '}
+                          {issue.returnDate
+                            ? new Date(issue.returnDate).toLocaleDateString()
+                            : 'N/A'}
                         </span>
                         <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
                           Deadline: {new Date(issue.dueDate).toLocaleDateString()}

@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   AlertTriangle,
   Plus,
@@ -12,35 +12,35 @@ import {
   Loader2,
   AlertCircle,
   X,
-} from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { toast } from "sonner";
+} from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
 import {
   fetchHostelComplaints,
   updateComplaintStatus,
   createComplaint,
   fetchResidents,
-} from "@/services/hostelService";
+} from '@/services/hostelService';
 
 export function HostelComplaints() {
   const queryClient = useQueryClient();
 
   // Search & Filter State
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedPriority, setSelectedPriority] = useState("All Priority");
-  const [selectedStatus, setSelectedStatus] = useState("All Status");
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const [selectedPriority, setSelectedPriority] = useState('All Priority');
+  const [selectedStatus, setSelectedStatus] = useState('All Status');
 
   // Modal State
   const [selectedComplaint, setSelectedComplaint] = useState<any>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // New Complaint Form State
-  const [newTitle, setNewTitle] = useState("");
-  const [newDesc, setNewDesc] = useState("");
-  const [newCat, setNewCat] = useState("Maintenance");
-  const [newPriority, setNewPriority] = useState("Medium");
-  const [selectedStudentId, setSelectedStudentId] = useState("");
+  const [newTitle, setNewTitle] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  const [newCat, setNewCat] = useState('Maintenance');
+  const [newPriority, setNewPriority] = useState('Medium');
+  const [selectedStudentId, setSelectedStudentId] = useState('');
 
   // Queries
   const {
@@ -49,7 +49,7 @@ export function HostelComplaints() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["complaints", search, selectedCategory, selectedPriority, selectedStatus],
+    queryKey: ['complaints', search, selectedCategory, selectedPriority, selectedStatus],
     queryFn: () =>
       fetchHostelComplaints({
         search,
@@ -60,47 +60,47 @@ export function HostelComplaints() {
   });
 
   const { data: residents = [] } = useQuery({
-    queryKey: ["residents-lookup"],
+    queryKey: ['residents-lookup'],
     queryFn: () => fetchResidents(),
   });
 
   // Mutations
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: "Pending" | "In-Progress" | "Resolved" }) =>
+    mutationFn: ({ id, status }: { id: string; status: 'Pending' | 'In-Progress' | 'Resolved' }) =>
       updateComplaintStatus(id, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["complaints"] });
-      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
-      toast.success("Complaint status updated!");
+      queryClient.invalidateQueries({ queryKey: ['complaints'] });
+      queryClient.invalidateQueries({ queryKey: ['hostel-charts'] });
+      toast.success('Complaint status updated!');
       setSelectedComplaint(null);
     },
     onError: (err: any) => {
-      toast.error(err.message || "Failed to update complaint status");
+      toast.error(err.message || 'Failed to update complaint status');
     },
   });
 
   const createComplaintMutation = useMutation({
     mutationFn: (payload: any) => createComplaint(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["complaints"] });
-      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
-      toast.success("Complaint registered successfully!");
+      queryClient.invalidateQueries({ queryKey: ['complaints'] });
+      queryClient.invalidateQueries({ queryKey: ['hostel-charts'] });
+      toast.success('Complaint registered successfully!');
       setIsCreateOpen(false);
       // Reset
-      setNewTitle("");
-      setNewDesc("");
-      setSelectedStudentId("");
+      setNewTitle('');
+      setNewDesc('');
+      setSelectedStudentId('');
     },
     onError: (err: any) => {
-      toast.error(err.message || "Failed to create complaint");
+      toast.error(err.message || 'Failed to create complaint');
     },
   });
 
   // Stats
   const totalCount = complaintsList.length;
-  const resolvedCount = complaintsList.filter((c) => c.status === "Resolved").length;
-  const inProgressCount = complaintsList.filter((c) => c.status === "In-Progress").length;
-  const pendingCount = complaintsList.filter((c) => c.status === "Pending").length;
+  const resolvedCount = complaintsList.filter((c) => c.status === 'Resolved').length;
+  const inProgressCount = complaintsList.filter((c) => c.status === 'In-Progress').length;
+  const pendingCount = complaintsList.filter((c) => c.status === 'Pending').length;
 
   const complaintAnalytics = useMemo(() => {
     const counts: Record<string, number> = {
@@ -127,7 +127,7 @@ export function HostelComplaints() {
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newDesc.trim()) {
-      toast.error("Please fill in title and description");
+      toast.error('Please fill in title and description');
       return;
     }
 
@@ -141,7 +141,7 @@ export function HostelComplaints() {
       description: newDesc,
       category: newCat,
       priority: newPriority,
-      status: "Pending",
+      status: 'Pending',
     };
 
     createComplaintMutation.mutate(payload);
@@ -164,10 +164,10 @@ export function HostelComplaints() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Complaints", value: String(totalCount), tone: "info" as const },
-          { label: "Resolved", value: String(resolvedCount), tone: "success" as const },
-          { label: "In Progress", value: String(inProgressCount), tone: "warn" as const },
-          { label: "Pending", value: String(pendingCount), tone: "danger" as const },
+          { label: 'Total Complaints', value: String(totalCount), tone: 'info' as const },
+          { label: 'Resolved', value: String(resolvedCount), tone: 'success' as const },
+          { label: 'In Progress', value: String(inProgressCount), tone: 'warn' as const },
+          { label: 'Pending', value: String(pendingCount), tone: 'danger' as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -195,9 +195,11 @@ export function HostelComplaints() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {["All Categories", "Maintenance", "Mess", "Security", "Electrical", "Other"].map(
+            {['All Categories', 'Maintenance', 'Mess', 'Security', 'Electrical', 'Other'].map(
               (c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c}>
+                  {c}
+                </option>
               ),
             )}
           </select>
@@ -206,8 +208,10 @@ export function HostelComplaints() {
             onChange={(e) => setSelectedPriority(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {["All Priority", "High", "Medium", "Low"].map((p) => (
-              <option key={p} value={p}>{p}</option>
+            {['All Priority', 'High', 'Medium', 'Low'].map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
             ))}
           </select>
           <select
@@ -215,8 +219,10 @@ export function HostelComplaints() {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {["All Status", "Resolved", "In-Progress", "Pending"].map((s) => (
-              <option key={s} value={s}>{s}</option>
+            {['All Status', 'Resolved', 'In-Progress', 'Pending'].map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -233,7 +239,7 @@ export function HostelComplaints() {
           ) : isError ? (
             <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-3">
               <AlertCircle className="size-8 mx-auto text-rose-500" />
-              <p>{error instanceof Error ? error.message : "Failed to load complaints."}</p>
+              <p>{error instanceof Error ? error.message : 'Failed to load complaints.'}</p>
             </div>
           ) : complaintsList.length === 0 ? (
             <div className="py-12 px-6 text-center text-sm text-muted-foreground">
@@ -245,13 +251,13 @@ export function HostelComplaints() {
                 <thead className="border-b">
                   <tr>
                     {[
-                      "Complaint ID",
-                      "Student Name",
-                      "Category",
-                      "Title",
-                      "Priority",
-                      "Status",
-                      "Actions",
+                      'Complaint ID',
+                      'Student Name',
+                      'Category',
+                      'Title',
+                      'Priority',
+                      'Status',
+                      'Actions',
                     ].map((column) => (
                       <th
                         key={column}
@@ -265,7 +271,9 @@ export function HostelComplaints() {
                 <tbody className="divide-y">
                   {complaintsList.map((complaint) => (
                     <tr key={complaint.id} className="hover:bg-accent/50 transition">
-                      <td className="py-3 px-4 font-medium text-xs">#{complaint.id.substring(0, 8)}</td>
+                      <td className="py-3 px-4 font-medium text-xs">
+                        #{complaint.id.substring(0, 8)}
+                      </td>
                       <td className="py-3 px-4">{complaint.studentName}</td>
                       <td className="py-3 px-4">
                         <Badge tone="info">{complaint.category}</Badge>
@@ -274,24 +282,24 @@ export function HostelComplaints() {
                       <td className="py-3 px-4">
                         <Badge
                           tone={
-                            complaint.priority === "High"
-                              ? "danger"
-                              : complaint.priority === "Medium"
-                                ? "warn"
-                                : "success"
+                            complaint.priority === 'High'
+                              ? 'danger'
+                              : complaint.priority === 'Medium'
+                                ? 'warn'
+                                : 'success'
                           }
                         >
-                          {complaint.priority || "Medium"}
+                          {complaint.priority || 'Medium'}
                         </Badge>
                       </td>
                       <td className="py-3 px-4">
                         <Badge
                           tone={
-                            complaint.status === "Resolved"
-                              ? "success"
-                              : complaint.status === "In-Progress"
-                                ? "warn"
-                                : "info"
+                            complaint.status === 'Resolved'
+                              ? 'success'
+                              : complaint.status === 'In-Progress'
+                                ? 'warn'
+                                : 'info'
                           }
                         >
                           {complaint.status}
@@ -324,7 +332,7 @@ export function HostelComplaints() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="category" stroke="#64748B" fontSize={11} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Bar dataKey="count" fill="#4F46E5" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -340,7 +348,7 @@ export function HostelComplaints() {
           </div>
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {complaintsList
-              .filter((c) => c.status === "Pending")
+              .filter((c) => c.status === 'Pending')
               .map((complaint) => (
                 <div
                   key={complaint.id}
@@ -354,13 +362,13 @@ export function HostelComplaints() {
                         {complaint.studentName} • {complaint.category}
                       </div>
                     </div>
-                    <Badge tone={complaint.priority === "High" ? "danger" : "warn"}>
-                      {complaint.priority || "Medium"}
+                    <Badge tone={complaint.priority === 'High' ? 'danger' : 'warn'}>
+                      {complaint.priority || 'Medium'}
                     </Badge>
                   </div>
                 </div>
               ))}
-            {complaintsList.filter((c) => c.status === "Pending").length === 0 && (
+            {complaintsList.filter((c) => c.status === 'Pending').length === 0 && (
               <div className="text-center text-sm text-muted-foreground py-8">
                 No pending complaints
               </div>
@@ -375,7 +383,7 @@ export function HostelComplaints() {
           </div>
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {complaintsList
-              .filter((c) => c.priority === "High" && c.status !== "Resolved")
+              .filter((c) => c.priority === 'High' && c.status !== 'Resolved')
               .map((complaint) => (
                 <div
                   key={complaint.id}
@@ -391,10 +399,13 @@ export function HostelComplaints() {
                     </div>
                     <Badge tone="danger">High</Badge>
                   </div>
-                  <div className="text-[11px] text-rose-500/80 mt-1">Requires immediate attention</div>
+                  <div className="text-[11px] text-rose-500/80 mt-1">
+                    Requires immediate attention
+                  </div>
                 </div>
               ))}
-            {complaintsList.filter((c) => c.priority === "High" && c.status !== "Resolved").length === 0 && (
+            {complaintsList.filter((c) => c.priority === 'High' && c.status !== 'Resolved')
+              .length === 0 && (
               <div className="text-center text-sm text-muted-foreground py-8">
                 No high priority alerts
               </div>
@@ -410,7 +421,9 @@ export function HostelComplaints() {
             <div className="p-6 border-b flex justify-between items-center bg-gradient-soft">
               <div>
                 <h3 className="font-semibold text-base">Complaint Details</h3>
-                <span className="text-xs text-muted-foreground">Ticket #{selectedComplaint.id.substring(0, 8)}</span>
+                <span className="text-xs text-muted-foreground">
+                  Ticket #{selectedComplaint.id.substring(0, 8)}
+                </span>
               </div>
               <button
                 onClick={() => setSelectedComplaint(null)}
@@ -437,7 +450,9 @@ export function HostelComplaints() {
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Room Number</div>
-                  <div className="text-sm font-medium mt-0.5">{selectedComplaint.roomNumber || "General"}</div>
+                  <div className="text-sm font-medium mt-0.5">
+                    {selectedComplaint.roomNumber || 'General'}
+                  </div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Category</div>
@@ -448,8 +463,8 @@ export function HostelComplaints() {
                 <div>
                   <div className="text-xs text-muted-foreground">Priority</div>
                   <div className="mt-1">
-                    <Badge tone={selectedComplaint.priority === "High" ? "danger" : "warn"}>
-                      {selectedComplaint.priority || "Medium"}
+                    <Badge tone={selectedComplaint.priority === 'High' ? 'danger' : 'warn'}>
+                      {selectedComplaint.priority || 'Medium'}
                     </Badge>
                   </div>
                 </div>
@@ -457,20 +472,20 @@ export function HostelComplaints() {
               <div>
                 <div className="text-xs text-muted-foreground">Current Status</div>
                 <div className="mt-1">
-                  <Badge tone={selectedComplaint.status === "Resolved" ? "success" : "info"}>
+                  <Badge tone={selectedComplaint.status === 'Resolved' ? 'success' : 'info'}>
                     {selectedComplaint.status}
                   </Badge>
                 </div>
               </div>
             </div>
-            {selectedComplaint.status !== "Resolved" && (
+            {selectedComplaint.status !== 'Resolved' && (
               <div className="p-6 bg-gradient-soft border-t flex justify-end gap-2">
-                {selectedComplaint.status === "Pending" && (
+                {selectedComplaint.status === 'Pending' && (
                   <button
                     onClick={() =>
                       updateStatusMutation.mutate({
                         id: selectedComplaint.id,
-                        status: "In-Progress",
+                        status: 'In-Progress',
                       })
                     }
                     className="px-4 py-2 text-xs rounded-xl border bg-background hover:bg-accent cursor-pointer transition"
@@ -483,7 +498,7 @@ export function HostelComplaints() {
                   onClick={() =>
                     updateStatusMutation.mutate({
                       id: selectedComplaint.id,
-                      status: "Resolved",
+                      status: 'Resolved',
                     })
                   }
                   className="px-4 py-2 text-xs rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-95 transition"
@@ -516,7 +531,9 @@ export function HostelComplaints() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs text-muted-foreground mb-1 font-medium">Select Resident Student</label>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">
+                  Select Resident Student
+                </label>
                 <select
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
@@ -532,32 +549,42 @@ export function HostelComplaints() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Category</label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
+                    Category
+                  </label>
                   <select
                     value={newCat}
                     onChange={(e) => setNewCat(e.target.value)}
                     className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
                   >
-                    {["Maintenance", "Mess", "Security", "Electrical", "Other"].map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    {['Maintenance', 'Mess', 'Security', 'Electrical', 'Other'].map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Priority</label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
+                    Priority
+                  </label>
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value)}
                     className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
                   >
-                    {["Low", "Medium", "High"].map((p) => (
-                      <option key={p} value={p}>{p}</option>
+                    {['Low', 'Medium', 'High'].map((p) => (
+                      <option key={p} value={p}>
+                        {p}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1 font-medium">Complaint Title</label>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">
+                  Complaint Title
+                </label>
                 <input
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
@@ -567,7 +594,9 @@ export function HostelComplaints() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1 font-medium">Detailed Description</label>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">
+                  Detailed Description
+                </label>
                 <textarea
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
@@ -591,7 +620,7 @@ export function HostelComplaints() {
                 className="px-4 py-2 text-xs rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-95 transition"
                 disabled={createComplaintMutation.isPending}
               >
-                {createComplaintMutation.isPending ? "Submitting..." : "Submit Complaint"}
+                {createComplaintMutation.isPending ? 'Submitting...' : 'Submit Complaint'}
               </button>
             </div>
           </form>

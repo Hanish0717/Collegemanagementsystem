@@ -1,44 +1,44 @@
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User, ShieldCheck, Lock, Bell, Save } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { User, ShieldCheck, Lock, Bell, Save } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
 import {
   fetchSystemSettings,
   saveProfile,
   saveSecuritySettings,
   saveNotificationPrefs,
-  updatePassword
-} from "@/services/superAdminService";
-import { Skeleton } from "@/components/ui/skeleton";
+  updatePassword,
+} from '@/services/superAdminService';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function SuperAdminSettings() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["superAdminSystemSettings"],
+    queryKey: ['superAdminSystemSettings'],
     queryFn: fetchSystemSettings,
   });
 
   // Profile states
-  const [profileName, setProfileName] = useState("");
-  const [profileEmail, setProfileEmail] = useState("");
-  const [profilePhone, setProfilePhone] = useState("");
-  const [profileRole, setProfileRole] = useState("");
-  const [profileBio, setProfileBio] = useState("");
+  const [profileName, setProfileName] = useState('');
+  const [profileEmail, setProfileEmail] = useState('');
+  const [profilePhone, setProfilePhone] = useState('');
+  const [profileRole, setProfileRole] = useState('');
+  const [profileBio, setProfileBio] = useState('');
 
   // Password states
-  const [currPassword, setCurrPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confPassword, setConfPassword] = useState("");
+  const [currPassword, setCurrPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confPassword, setConfPassword] = useState('');
 
   useEffect(() => {
     if (data?.profile) {
-      setProfileName(data.profile.profileName || "");
-      setProfileEmail(data.profile.profileEmail || "");
-      setProfilePhone(data.profile.profilePhone || "");
-      setProfileRole(data.profile.profileRole || "");
-      setProfileBio(data.profile.profileBio || "");
+      setProfileName(data.profile.profileName || '');
+      setProfileEmail(data.profile.profileEmail || '');
+      setProfilePhone(data.profile.profilePhone || '');
+      setProfileRole(data.profile.profileRole || '');
+      setProfileBio(data.profile.profileBio || '');
     }
   }, [data]);
 
@@ -48,45 +48,47 @@ export function SuperAdminSettings() {
   const profileMutation = useMutation({
     mutationFn: saveProfile,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["superAdminSystemSettings"] });
-      toast.success("Profile details saved successfully.");
+      queryClient.invalidateQueries({ queryKey: ['superAdminSystemSettings'] });
+      toast.success('Profile details saved successfully.');
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to save profile");
-    }
+      toast.error(err.response?.data?.message || err.message || 'Failed to save profile');
+    },
   });
 
   const securityMutation = useMutation({
     mutationFn: saveSecuritySettings,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["superAdminSystemSettings"] });
+      queryClient.invalidateQueries({ queryKey: ['superAdminSystemSettings'] });
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to save security settings");
-    }
+      toast.error(err.response?.data?.message || err.message || 'Failed to save security settings');
+    },
   });
 
   const notifPrefsMutation = useMutation({
     mutationFn: saveNotificationPrefs,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["superAdminSystemSettings"] });
+      queryClient.invalidateQueries({ queryKey: ['superAdminSystemSettings'] });
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to save notification preferences");
-    }
+      toast.error(
+        err.response?.data?.message || err.message || 'Failed to save notification preferences',
+      );
+    },
   });
 
   const updatePasswordMutation = useMutation({
     mutationFn: updatePassword,
     onSuccess: () => {
-      toast.success("Password updated successfully.");
-      setCurrPassword("");
-      setNewPassword("");
-      setConfPassword("");
+      toast.success('Password updated successfully.');
+      setCurrPassword('');
+      setNewPassword('');
+      setConfPassword('');
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to update password");
-    }
+      toast.error(err.response?.data?.message || err.message || 'Failed to update password');
+    },
   });
 
   const handleSaveProfile = (e: React.FormEvent) => {
@@ -97,19 +99,19 @@ export function SuperAdminSettings() {
   const handleUpdatePassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currPassword) {
-      toast.error("Please enter your current password");
+      toast.error('Please enter your current password');
       return;
     }
     if (!newPassword || !confPassword) {
-      toast.error("Please fill in both new and confirm password fields");
+      toast.error('Please fill in both new and confirm password fields');
       return;
     }
     if (newPassword !== confPassword) {
-      toast.error("New passwords do not match");
+      toast.error('New passwords do not match');
       return;
     }
     if (newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters long");
+      toast.error('New password must be at least 6 characters long');
       return;
     }
     updatePasswordMutation.mutate({ currentPassword: currPassword, newPassword });
@@ -119,7 +121,7 @@ export function SuperAdminSettings() {
     const updated = [...securityOpts];
     updated[index] = !updated[index];
     securityMutation.mutate(updated);
-    toast.success(`${name} is now ${updated[index] ? "enabled" : "disabled"}`);
+    toast.success(`${name} is now ${updated[index] ? 'enabled' : 'disabled'}`);
   };
 
   const handleToggleNotifPref = (index: number, name: string) => {
@@ -129,8 +131,18 @@ export function SuperAdminSettings() {
     toast.success(`${name} preferences updated`);
   };
 
-  const securityNames = ["Two-factor authentication", "Session timeout", "IP monitoring", "Login alerts"];
-  const notifNames = ["Critical system alerts", "Approval requests", "Security warnings", "Weekly summaries"];
+  const securityNames = [
+    'Two-factor authentication',
+    'Session timeout',
+    'IP monitoring',
+    'Login alerts',
+  ];
+  const notifNames = [
+    'Critical system alerts',
+    'Approval requests',
+    'Security warnings',
+    'Weekly summaries',
+  ];
 
   return (
     <div className="space-y-6">
@@ -152,10 +164,15 @@ export function SuperAdminSettings() {
               <Skeleton className="h-10 w-full" />
             </div>
           ) : (
-            <form onSubmit={handleSaveProfile} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+            <form
+              onSubmit={handleSaveProfile}
+              className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
+            >
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Full Name</label>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                    Full Name
+                  </label>
                   <input
                     value={profileName}
                     onChange={(e) => setProfileName(e.target.value)}
@@ -164,7 +181,9 @@ export function SuperAdminSettings() {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Email Address</label>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                    Email Address
+                  </label>
                   <input
                     type="email"
                     value={profileEmail}
@@ -174,7 +193,9 @@ export function SuperAdminSettings() {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Contact Number</label>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                    Contact Number
+                  </label>
                   <input
                     value={profilePhone}
                     onChange={(e) => setProfilePhone(e.target.value)}
@@ -183,7 +204,9 @@ export function SuperAdminSettings() {
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase">Role Designation</label>
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                    Role Designation
+                  </label>
                   <input
                     value={profileRole}
                     onChange={(e) => setProfileRole(e.target.value)}
@@ -193,7 +216,9 @@ export function SuperAdminSettings() {
                 </div>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase">Governance Mandate / Bio</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Governance Mandate / Bio
+                </label>
                 <textarea
                   value={profileBio}
                   onChange={(e) => setProfileBio(e.target.value)}
@@ -220,20 +245,20 @@ export function SuperAdminSettings() {
           </div>
           <div className="space-y-3">
             {[
-              "User management",
-              "System configuration",
-              "Financial reports",
-              "Security audit logs",
-              "Backup restore access",
-              "Automation controls",
+              'User management',
+              'System configuration',
+              'Financial reports',
+              'Security audit logs',
+              'Backup restore access',
+              'Automation controls',
             ].map((permission, index) => (
               <div
                 key={permission}
                 className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
               >
                 <span className="text-sm font-medium">{permission}</span>
-                <Badge tone={index < 5 ? "success" : "warn"}>
-                  {index < 5 ? "Full Access" : "Approval"}
+                <Badge tone={index < 5 ? 'success' : 'warn'}>
+                  {index < 5 ? 'Full Access' : 'Approval'}
                 </Badge>
               </div>
             ))}
@@ -296,10 +321,10 @@ export function SuperAdminSettings() {
                   <span className="text-sm">{setting}</span>
                   <button
                     onClick={() => handleToggleSecurity(index, setting)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${securityOpts[index] ? "bg-emerald-500" : "bg-muted"}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${securityOpts[index] ? 'bg-emerald-500' : 'bg-muted'}`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${securityOpts[index] ? "translate-x-6" : "translate-x-1"}`}
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${securityOpts[index] ? 'translate-x-6' : 'translate-x-1'}`}
                     />
                   </button>
                 </div>

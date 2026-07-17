@@ -10,3 +10,245 @@
     at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
 [2026-07-17T09:08:53.626Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:23:56.740Z] Supabase.js module loading starting
+[2026-07-17T10:23:56.743Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:23:56.743Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:23:56.749Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:23:56.822Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:24:02.857Z] Supabase.js module loading starting
+[2026-07-17T10:24:02.860Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:24:02.860Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:24:03.646Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:24:03.727Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:30:18.906Z] Supabase.js module loading starting
+[2026-07-17T10:30:18.909Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:30:18.909Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:30:19.494Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:30:19.572Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:30:24.174Z] Supabase.js module loading starting
+[2026-07-17T10:30:24.176Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:30:24.176Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:30:24.181Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:30:24.255Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:30:24.807Z] Supabase.js module loading starting
+[2026-07-17T10:30:24.810Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:30:24.810Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:30:25.325Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:30:25.401Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:30:30.149Z] Supabase.js module loading starting
+[2026-07-17T10:30:30.152Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:30:30.153Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:30:30.677Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:30:30.752Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:31:29.258Z] Supabase.js module loading starting
+[2026-07-17T10:31:29.262Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:31:29.262Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:31:29.814Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:31:29.888Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:37:53.408Z] Supabase.js module loading starting
+[2026-07-17T10:37:53.411Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:37:53.411Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:37:54.535Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:37:54.612Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:39:24.845Z] Supabase.js module loading starting
+[2026-07-17T10:39:24.847Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:39:24.848Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:39:25.356Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:39:25.430Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:39:34.622Z] Supabase.js module loading starting
+[2026-07-17T10:39:34.625Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:39:34.625Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:39:35.362Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:39:35.448Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:40:02.452Z] Supabase.js module loading starting
+[2026-07-17T10:40:02.455Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:40:02.455Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:40:03.002Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:40:03.078Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:40:22.885Z] Supabase.js module loading starting
+[2026-07-17T10:40:22.888Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:40:22.889Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:40:23.441Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:40:23.518Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:40:33.766Z] Supabase.js module loading starting
+[2026-07-17T10:40:33.768Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:40:33.769Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:40:34.288Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:40:34.364Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:40:41.033Z] Supabase.js module loading starting
+[2026-07-17T10:40:41.035Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:40:41.036Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:40:41.572Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:40:41.649Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:40:53.684Z] Supabase.js module loading starting
+[2026-07-17T10:40:53.687Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:40:53.687Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:40:54.225Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:40:54.301Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:41:35.759Z] Supabase.js module loading starting
+[2026-07-17T10:41:35.762Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:41:35.762Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:41:36.726Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:41:36.807Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:41:49.446Z] Supabase.js module loading starting
+[2026-07-17T10:41:49.448Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:41:49.449Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:41:49.969Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:41:50.043Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:47:47.605Z] Supabase.js module loading starting
+[2026-07-17T10:47:47.608Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:47:47.608Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:47:48.153Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:47:48.231Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:52:23.615Z] Supabase.js module loading starting
+[2026-07-17T10:52:23.618Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:52:23.618Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:52:24.147Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:52:24.228Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:52:33.019Z] Supabase.js module loading starting
+[2026-07-17T10:52:33.022Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:52:33.022Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:52:33.565Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:52:33.640Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:55:06.321Z] Supabase.js module loading starting
+[2026-07-17T10:55:06.324Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:55:06.324Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:55:06.863Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:55:06.939Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:57:56.866Z] Supabase.js module loading starting
+[2026-07-17T10:57:56.869Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-17T10:57:56.869Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-17T10:57:57.404Z] TCP check error: TCP port 5433 is unreachable, stack: Error: TCP port 5433 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T10:57:57.481Z] Supabase.js module loading completed successfully!
+[2026-07-17T10:58:25.268Z] Supabase.js module loading starting
+[2026-07-17T10:58:25.271Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T10:58:25.271Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T10:58:25.803Z] TCP check succeeded!
+[2026-07-17T10:58:25.805Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:00:12.143Z] Supabase.js module loading starting
+[2026-07-17T11:00:12.147Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:00:12.147Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:00:12.731Z] TCP check error: TCP port 5432 is unreachable, stack: Error: TCP port 5432 is unreachable
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:86:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[2026-07-17T11:00:12.810Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:00:26.126Z] Supabase.js module loading starting
+[2026-07-17T11:00:26.129Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:00:26.130Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:00:26.135Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:00:26.325Z] Supabase.js module loading starting
+[2026-07-17T11:00:26.329Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:00:26.330Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:00:26.333Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:01:51.604Z] Supabase.js module loading starting
+[2026-07-17T11:01:51.607Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:01:51.607Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:01:51.609Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:02:40.145Z] Supabase.js module loading starting
+[2026-07-17T11:02:40.147Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:02:40.148Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:02:40.151Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:02:40.306Z] Supabase.js module loading starting
+[2026-07-17T11:02:40.308Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:02:40.309Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:02:40.310Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:04:07.206Z] Supabase.js module loading starting
+[2026-07-17T11:04:07.211Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:04:07.211Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:04:07.214Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:04:39.219Z] Supabase.js module loading starting
+[2026-07-17T11:04:39.222Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:04:39.222Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:04:39.225Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:05:32.145Z] Supabase.js module loading starting
+[2026-07-17T11:05:32.149Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:05:32.150Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:05:32.151Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:05:32.323Z] Supabase.js module loading starting
+[2026-07-17T11:05:32.327Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:05:32.327Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:05:32.329Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:05:50.671Z] Supabase.js module loading starting
+[2026-07-17T11:05:50.675Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:05:50.675Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:05:50.679Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:05:50.837Z] Supabase.js module loading starting
+[2026-07-17T11:05:50.840Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:05:50.840Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:05:50.842Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:05:55.982Z] Supabase.js module loading starting
+[2026-07-17T11:05:55.986Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:05:55.987Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:05:55.988Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:05:56.181Z] Supabase.js module loading starting
+[2026-07-17T11:05:56.184Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:05:56.184Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:05:56.187Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:05:59.959Z] Supabase.js module loading starting
+[2026-07-17T11:05:59.961Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:05:59.961Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:05:59.964Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:06:00.113Z] Supabase.js module loading starting
+[2026-07-17T11:06:00.116Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:06:00.116Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:06:00.118Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:06:04.689Z] Supabase.js module loading starting
+[2026-07-17T11:06:04.692Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:06:04.692Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:06:04.693Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:06:04.847Z] Supabase.js module loading starting
+[2026-07-17T11:06:04.851Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:06:04.851Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:06:04.853Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:08:47.605Z] Supabase.js module loading starting
+[2026-07-17T11:08:47.608Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:08:47.609Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:08:47.610Z] Supabase.js module loading completed successfully!
+[2026-07-17T11:08:47.612Z] Supabase.js module loading starting
+[2026-07-17T11:08:47.615Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-17T11:08:47.616Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-17T11:08:47.618Z] Supabase.js module loading completed successfully!
