@@ -1,8 +1,4 @@
-import { useAlumni } from "../AdminAlumni";
-import { EventGalleryTab } from "../AlumniExtraTabs";
-
+import React from "react";
 export function GalleryPage() {
-  const { eventList } = useAlumni();
-
-  return <EventGalleryTab eventList={eventList} />;
+  return <div className="p-6">Gallery Coming Soon</div>;
 }

@@ -1024,7 +1024,7 @@ export function DashboardLayout() {
                         Switch ERP Workspace
                       </div>
                       <div className="space-y-0.5 mt-1">
-                        {ROLE_LIST.map((r) => {
+                        {ROLE_LIST.filter(r => r.id !== 'alumni').map((r) => {
                           const IconComp = r.icon;
                           const active = r.id === role.id;
                           return (

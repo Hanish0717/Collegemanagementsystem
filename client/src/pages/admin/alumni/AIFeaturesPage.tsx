@@ -1,7 +1,4 @@
-import { useAlumni, AIFeaturesTab } from "../AdminAlumni";
-
+import React from "react";
 export function AIFeaturesPage() {
-  const { currentAlumniId } = useAlumni();
-
-  return <AIFeaturesTab currentAlumniId={currentAlumniId} />;
+  return <div className="p-6">AI Features Coming Soon</div>;
 }

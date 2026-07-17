@@ -14,6 +14,7 @@ import {
   Home,
   Bed,
 } from "lucide-react";
+import { Navigate } from "@tanstack/react-router";
 import {
   Area,
   AreaChart,
@@ -184,7 +185,7 @@ export function DashboardIndex() {
     return <AccountsDashboard />;
   }
   if (activeRole.id === "alumni" || activeRole.id === "alumni_coordinator") {
-    return <AdminAlumni />;
+    return <Navigate to="/dashboard/admin/alumni" />;
   }
   if (activeRole.id === "transport") {
     return <TransportDashboard />;

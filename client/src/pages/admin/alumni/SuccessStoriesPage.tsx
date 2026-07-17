@@ -3,7 +3,7 @@ import { GradientHeader, GlassCard } from "./components/CardElements";
 import { Award, Star, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function StoriesPage() {
+export function SuccessStoriesPage() {
   const stories = [
     { id: 1, title: "From Campus to Y Combinator", name: "David Chen", batch: "2018", excerpt: "How our alumni network helped secure initial funding...", image: "https://images.unsplash.com/photo-1552581234-26160f608093?w=800&q=80" },
     { id: 2, title: "Pioneering Green Tech", name: "Sarah Connor", batch: "2015", excerpt: "Building sustainable solutions for the future of urban transport...", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" }
