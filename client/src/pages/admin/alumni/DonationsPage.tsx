@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import * as XLSX from "xlsx";
 import { useAlumni } from "../AdminAlumni";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { recordDonation } from "@/services/alumniService";
@@ -140,17 +141,39 @@ export function DonationsPage() {
   };
 
   const downloadStatement = () => {
-    const completedDonations = donationsList.filter((d: any) => d.status === "Completed");
-    if (completedDonations.length === 0) {
-      toast.error("No completed donations found to export.");
+    if (donationsList.length === 0) {
+      toast.error("No donation records found to export.");
       return;
     }
 
-    // Build CSV content
-    const headers = ["Donation ID", "Donor Name", "Batch", "Amount (INR)", "Category", "Payment Method", "Reference No", "Date", "Status", "Notes"];
+    const wb = XLSX.utils.book_new();
+
+    // ── Sheet 1: Summary ──
+    const summaryData = [
+      ["ALUMNI DONATIONS — FINANCIAL STATEMENT"],
+      [],
+      ["Generated On", new Date().toLocaleString("en-IN")],
+      ["Total Donations (Completed)", `₹${totalDonations.toLocaleString("en-IN")}`],
+      ["This Month Collection", `₹${thisMonthDonations.toLocaleString("en-IN")}`],
+      ["Pending Checks", pendingCount],
+      ["Completed Receipts", completedCount],
+      ["Average Contribution", `₹${averageDonation.toLocaleString("en-IN")}`],
+      ["Top Donor", topDonor],
+    ];
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    summarySheet["!cols"] = [{ wch: 32 }, { wch: 30 }];
+    summarySheet["A1"] = { v: "ALUMNI DONATIONS — FINANCIAL STATEMENT", t: "s" };
+    XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
+
+    // ── Sheet 2: Donations Detail ──
+    const headers = [
+      "Donation ID", "Donor Name", "Batch",
+      "Amount (INR)", "Category", "Payment Method",
+      "Reference No", "Date", "Status", "Notes"
+    ];
     const rows = donationsList.map((d: any) => [
       d.id,
-      `"${d.donorName}"`,
+      d.donorName,
       d.batch,
       d.amount,
       d.category,
@@ -158,33 +181,28 @@ export function DonationsPage() {
       d.refNo,
       new Date(d.date).toLocaleDateString("en-IN"),
       d.status,
-      `"${d.notes || ""}"`
+      d.notes || ""
     ]);
 
-    const summaryLines = [
-      ["ALUMNI DONATIONS FINANCIAL STATEMENT"],
-      [`Generated on: ${new Date().toLocaleString("en-IN")}`],
-      [`Total Donations (Completed): ₹${totalDonations.toLocaleString("en-IN")}`],
-      [`This Month Collection: ₹${thisMonthDonations.toLocaleString("en-IN")}`],
-      [`Total Completed Receipts: ${completedCount}`],
-      [`Average Contribution: ₹${averageDonation.toLocaleString("en-IN")}`],
-      [`Top Donor: ${topDonor}`],
-      [],
-      headers,
-      ...rows
+    const detailSheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    detailSheet["!cols"] = [
+      { wch: 16 }, // Donation ID
+      { wch: 24 }, // Donor Name
+      { wch: 10 }, // Batch
+      { wch: 16 }, // Amount
+      { wch: 18 }, // Category
+      { wch: 18 }, // Payment Method
+      { wch: 20 }, // Reference No
+      { wch: 14 }, // Date
+      { wch: 12 }, // Status
+      { wch: 30 }, // Notes
     ];
+    XLSX.utils.book_append_sheet(wb, detailSheet, "Donations Detail");
 
-    const csvContent = summaryLines.map(row => row.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Donations_Statement_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    toast.success(`Statement downloaded — ${donationsList.length} records exported.`);
+    // Write and download
+    const filename = `Donations_Statement_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    toast.success(`Excel statement downloaded — ${donationsList.length} records exported.`);
   };
 
   return (
