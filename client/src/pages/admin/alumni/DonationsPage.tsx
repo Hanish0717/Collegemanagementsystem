@@ -432,7 +432,7 @@ export function DonationsPage() {
                 <textarea value={donationForm.notes} onChange={e => setDonationForm({...donationForm, notes: e.target.value})} placeholder="Earmarked for any specific lab setups or memorial funds..." className="w-full rounded-xl border bg-background/50 p-3 text-sm focus-visible:ring-1 focus-visible:ring-green-500 min-h-[100px]" />
               </FormGroup>
               <FormGroup label="Attach Receipt / Bank Deposit Slip" description="Upload JPG, PNG or PDF (Max 2MB)">
-                <FileUploadZone label="Drag document here" subLabel="Bank slips, transfer receipts" />
+                <FileUploadZone label="Drag document here" subLabel="Bank slips, transfer receipts" accept="image/jpeg,image/png,.pdf" maxSize={5} />
               </FormGroup>
             </form>
 

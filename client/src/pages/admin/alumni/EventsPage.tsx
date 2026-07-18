@@ -397,7 +397,7 @@ export function EventsPage() {
                 <textarea value={eventForm.agenda} onChange={e => setEventForm({...eventForm, agenda: e.target.value})} placeholder="e.g. 05:00 PM: Networking | 06:00 PM: Panel talks" className="w-full rounded-xl border bg-background/50 p-3 text-sm focus-visible:ring-1 focus-visible:ring-rose-500 min-h-[60px]" />
               </FormGroup>
               <FormGroup label="Upload Event Banner Artwork" description="Recommended: 16:9 Aspect Ratio">
-                <FileUploadZone label="Click or Drag image file" subLabel="Recommended size: 1200 x 675px" />
+                <FileUploadZone label="Click or Drag image file" subLabel="Recommended size: 1200 x 675px" accept="image/jpeg,image/png,image/jpg,image/webp" maxSize={5} />
               </FormGroup>
             </form>
 

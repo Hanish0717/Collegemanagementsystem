@@ -430,7 +430,27 @@
       "remarks": "Sick leave"
     }
   ],
-  "alumni_profiles": [],
+  "alumni_profiles": [
+    {
+      "created_at": "2026-07-18T09:27:00.083Z",
+      "updated_at": "2026-07-18T09:27:00.083Z",
+      "full_name": "Ashok",
+      "email": "ashok@gmail.com",
+      "phone": "8765432113",
+      "graduation_year": 2021,
+      "department": "Mechanical Engineering",
+      "roll_number": "23341A4229",
+      "current_company": "spacex",
+      "designation": "",
+      "location": "",
+      "linkedin": "",
+      "portfolio": "",
+      "skills": [],
+      "biography": "",
+      "status": "Approved",
+      "profile_completion": 70
+    }
+  ],
   "alumni_events": [],
   "alumni_jobs": [],
   "alumni_donations": [

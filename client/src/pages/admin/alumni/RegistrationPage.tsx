@@ -563,10 +563,10 @@ export function RegistrationPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
                     <FormGroup label="Alumni Headshot Photo" description="Upload JPG or PNG (Max 2MB)">
-                      <FileUploadZone label="Click or Drag Photo" subLabel="JPG, PNG file only" />
+                      <FileUploadZone label="Click or Drag Photo" subLabel="JPG, PNG file only" accept="image/jpeg,image/png,image/jpg" maxSize={2} />
                     </FormGroup>
                     <FormGroup label="Verification ID / Degree Cert" description="Upload PDF file (Max 5MB)">
-                      <FileUploadZone label="Click or Drag PDF" subLabel="PDF, JPG files only" />
+                      <FileUploadZone label="Click or Drag PDF" subLabel="PDF, JPG files only" accept=".pdf,image/jpeg,image/jpg" maxSize={5} />
                     </FormGroup>
                   </div>
                 </div>
