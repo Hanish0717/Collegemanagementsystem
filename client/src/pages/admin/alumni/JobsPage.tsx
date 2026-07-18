@@ -44,7 +44,7 @@ export function JobsPage() {
         color="from-purple-600 to-indigo-600"
       >
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10"><Bookmark className="w-4 h-4 mr-2" /> Saved Jobs</Button>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10"><Bookmark className="w-4 h-4 mr-2" /> Saved Jobs</Button>
           <Button className="rounded-xl bg-white text-indigo-600 hover:bg-white/90">Post a Job</Button>
         </div>
       </GradientHeader>

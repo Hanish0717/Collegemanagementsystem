@@ -230,10 +230,10 @@ export function RegistrationPage() {
         color="from-emerald-600 to-teal-600"
       >
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10" onClick={() => toast.info("CSV template downloaded. Prepare columns: Name, Email, Phone, Batch, Department.")}>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={() => toast.info("CSV template downloaded. Prepare columns: Name, Email, Phone, Batch, Department.")}>
             <Upload className="w-4 h-4 mr-2" /> Import CSV
           </Button>
-          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10" onClick={() => toast.success("Exporting directory database as CSV...")}>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={() => toast.success("Exporting directory database as CSV...")}>
             <FileSpreadsheet className="w-4 h-4 mr-2" /> Export CSV
           </Button>
           <Button className="rounded-xl bg-white text-emerald-600 hover:bg-white/90" onClick={() => setIsAddDrawerOpen(true)}>

@@ -169,7 +169,7 @@ export function EventsPage() {
         color="from-rose-500 to-red-600"
       >
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10" onClick={() => toast.success("Downloading events ledger report...")}>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={() => toast.success("Downloading events ledger report...")}>
             <Download className="w-4 h-4 mr-2" /> Download Report
           </Button>
           <Button className="rounded-xl bg-white text-rose-600 hover:bg-white/90" onClick={() => setIsCreateOpen(true)}>

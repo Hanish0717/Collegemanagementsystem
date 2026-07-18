@@ -36,7 +36,7 @@ export function ReportsPage() {
         color="from-indigo-600 to-purple-700"
       >
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10"><Printer className="w-4 h-4 mr-2" /> Print</Button>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10"><Printer className="w-4 h-4 mr-2" /> Print</Button>
           <Button className="rounded-xl bg-white text-indigo-600 hover:bg-white/90"><Download className="w-4 h-4 mr-2"/> Export PDF</Button>
         </div>
       </GradientHeader>

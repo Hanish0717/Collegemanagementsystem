@@ -19,8 +19,8 @@ export function NotificationsPage() {
         color="from-purple-600 to-pink-600"
       >
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10"><CheckCheck className="w-4 h-4 mr-2" /> Mark All Read</Button>
-          <Button variant="outline" size="icon" className="rounded-xl border-white/20 text-white hover:bg-white/10"><Settings className="w-4 h-4"/></Button>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10"><CheckCheck className="w-4 h-4 mr-2" /> Mark All Read</Button>
+          <Button variant="outline" size="icon" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10"><Settings className="w-4 h-4"/></Button>
         </div>
       </GradientHeader>
 
