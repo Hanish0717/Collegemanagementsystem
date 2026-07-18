@@ -41,6 +41,8 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS students CASCADE;
 DROP TABLE IF EXISTS admins CASCADE;
 DROP TABLE IF EXISTS faculty CASCADE;
+DROP TABLE IF EXISTS student_course_registrations CASCADE;
+DROP TABLE IF EXISTS courses CASCADE;
 DROP TABLE IF EXISTS assignments CASCADE;
 DROP TABLE IF EXISTS attendance CASCADE;
 DROP TABLE IF EXISTS faculty_attendance CASCADE;
@@ -363,6 +365,8 @@ CREATE TABLE IF NOT EXISTS otps (
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+
+
 -- 14. PLACEMENT_COMPANIES Table
 CREATE TABLE IF NOT EXISTS placement_companies (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -521,6 +525,47 @@ async function runSetup() {
 
       ALTER TABLE attendance ADD COLUMN IF NOT EXISTS period integer;
       ALTER TABLE attendance ADD COLUMN IF NOT EXISTS time varchar(50);
+
+      -- Create Courses Table (Relocated after faculty table exists)
+      CREATE TABLE IF NOT EXISTS courses (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        course_code varchar(50) UNIQUE NOT NULL,
+        course_name varchar(255) NOT NULL,
+        credits numeric(3,1) NOT NULL,
+        course_type varchar(50) NOT NULL CHECK (course_type IN ('Open Elective', 'Integrated Subject', 'Normal Subject', 'Lab')),
+        department varchar(50) REFERENCES departments(code) ON DELETE CASCADE,
+        year integer NOT NULL CHECK (year BETWEEN 1 AND 4),
+        semester integer NOT NULL CHECK (semester BETWEEN 1 AND 8),
+        mentor_id uuid REFERENCES faculty(id) ON DELETE SET NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create Student Course Registrations Table (Relocated after courses table exists)
+      CREATE TABLE IF NOT EXISTS student_course_registrations (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        course_id uuid REFERENCES courses(id) ON DELETE CASCADE,
+        semester integer NOT NULL CHECK (semester BETWEEN 1 AND 8),
+        year integer NOT NULL CHECK (year BETWEEN 1 AND 4),
+        registration_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        status varchar(50) DEFAULT 'Registered' CHECK (status IN ('Registered', 'Approved', 'Pending')),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        UNIQUE(student_id, course_id)
+      );
+
+      -- Create Exam Registrations Table
+      CREATE TABLE IF NOT EXISTS exam_registrations (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        course_id uuid REFERENCES courses(id) ON DELETE CASCADE,
+        semester integer NOT NULL CHECK (semester BETWEEN 1 AND 8),
+        year integer NOT NULL CHECK (year BETWEEN 1 AND 4),
+        registration_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        status varchar(50) DEFAULT 'Registered' CHECK (status IN ('Registered', 'Approved', 'Pending')),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        UNIQUE(student_id, course_id)
+      );
     `;
     await client.query(alterTablesSql);
 

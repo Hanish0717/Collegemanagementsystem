@@ -837,3 +837,361 @@ export async function getExamAnalytics(req, res, next) {
     next(err);
   }
 }
+
+/**
+ * 15. Create offered course (Exam Cell / Admin)
+ */
+export async function createCourse(req, res, next) {
+  try {
+    const { course_code, course_name, credits, course_type, department, year, semester, mentor_id } = req.body;
+    if (!course_code || !course_name || credits === undefined || !course_type || !department || !year || !semester) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    const { data, error } = await supabase
+      .from('courses')
+      .insert({
+        course_code,
+        course_name,
+        credits: Number(credits),
+        course_type,
+        department,
+        year: Number(year),
+        semester: Number(semester),
+        mentor_id: mentor_id || null
+      })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505' || error.message?.includes('duplicate key') || error.message?.includes('UNIQUE')) {
+        return res.status(400).json({ success: false, message: 'Course Code must be unique. A course with this code already exists.' });
+      }
+      throw error;
+    }
+    res.status(201).json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 16. Get offered courses (shared)
+ */
+export async function getCourses(req, res, next) {
+  try {
+    const { department, year, semester } = req.query;
+    let query = supabase.from('courses').select('*, mentor:faculty(*)');
+    if (department) query = query.eq('department', department);
+    if (year) query = query.eq('year', Number(year));
+    if (semester) query = query.eq('semester', Number(semester));
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 17. Register a student for a course (Student)
+ */
+export async function registerCourse(req, res, next) {
+  try {
+    const { courseId } = req.body;
+    if (!courseId) {
+      return res.status(400).json({ success: false, message: 'courseId is required' });
+    }
+
+    // Find student profile matching the logged-in user
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id, year, semester')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (studentError || !student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    // Verify course exists
+    const { data: course, error: courseError } = await supabase
+      .from('courses')
+      .select('*')
+      .eq('id', courseId)
+      .single();
+
+    if (courseError || !course) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+
+    // Insert course registration
+    const { data, error } = await supabase
+      .from('student_course_registrations')
+      .insert({
+        student_id: student.id,
+        course_id: courseId,
+        semester: course.semester,
+        year: course.year,
+        status: 'Registered'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505' || error.message?.includes('duplicate key') || error.message?.includes('UNIQUE')) {
+        return res.status(400).json({ success: false, message: 'You have already registered for this course' });
+      }
+      throw error;
+    }
+
+    res.status(201).json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 18. Get my registrations (Student)
+ */
+export async function getMyRegistrations(req, res, next) {
+  try {
+    // Find student profile
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (studentError || !student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    const { data: registrations, error } = await supabase
+      .from('student_course_registrations')
+      .select('*, courses:courses(*)')
+      .eq('student_id', student.id);
+
+    if (error) throw error;
+
+    // Fetch mentors for the courses if any exist to solve nested relation limitation in the query builder
+    const courseIds = registrations.map(r => r.courses?.id).filter(Boolean);
+    if (courseIds.length > 0) {
+      const { data: coursesWithMentors } = await supabase
+        .from('courses')
+        .select('*, mentor:faculty(*)')
+        .in('id', courseIds);
+
+      if (coursesWithMentors) {
+        const courseMap = new Map(coursesWithMentors.map(c => [c.id, c]));
+        registrations.forEach(r => {
+          if (r.courses?.id) {
+            r.courses = courseMap.get(r.courses.id) || r.courses;
+          }
+        });
+      }
+    }
+
+    res.json({ success: true, data: registrations });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 19. Get Course registration statistics (Exam Cell / Admin)
+ */
+export async function getCourseAnalytics(req, res, next) {
+  try {
+    // Fetch all courses
+    const { data: courses, error: coursesError } = await supabase
+      .from('courses')
+      .select('*, mentor:faculty(*)');
+    if (coursesError) throw coursesError;
+
+    // Fetch all student course registrations
+    const { data: registrations, error: regError } = await supabase
+      .from('student_course_registrations')
+      .select('*, student:students(*)');
+    if (regError) throw regError;
+
+    // Fetch all student exam registrations
+    const { data: examRegs, error: examRegsError } = await supabase
+      .from('exam_registrations')
+      .select('*, student:students(*)');
+    if (examRegsError) throw examRegsError;
+
+    // Fetch all students for totals
+    const { data: students, error: studentsError } = await supabase
+      .from('students')
+      .select('id, department');
+    if (studentsError) throw studentsError;
+
+    // Count registrations per course
+    const courseRegs = {};
+    registrations.forEach(r => {
+      courseRegs[r.course_id] = (courseRegs[r.course_id] || 0) + 1;
+    });
+
+    const coursesWithCounts = courses.map(c => ({
+      ...c,
+      registration_count: courseRegs[c.id] || 0
+    }));
+
+    // Department breakdown for courses
+    const deptStats = {};
+    const semStats = {};
+
+    registrations.forEach(r => {
+      const dept = r.student?.department || 'Unknown';
+      deptStats[dept] = (deptStats[dept] || 0) + 1;
+
+      const sem = `Semester ${r.semester}`;
+      semStats[sem] = (semStats[sem] || 0) + 1;
+    });
+
+    // Department breakdown for exams and total students
+    const totalStudentsPerDept = {};
+    students.forEach(s => {
+      const dept = s.department || 'Unknown';
+      totalStudentsPerDept[dept] = (totalStudentsPerDept[dept] || 0) + 1;
+    });
+
+    const examRegsPerDept = {};
+    examRegs.forEach(er => {
+      const dept = er.student?.department || 'Unknown';
+      examRegsPerDept[dept] = (examRegsPerDept[dept] || 0) + 1;
+    });
+
+    // Keep all departments (from the total students list) to prevent missing branches
+    const deptExamBreakdown = Object.keys(totalStudentsPerDept).map(dept => ({
+      department: dept,
+      registeredCount: examRegsPerDept[dept] || 0,
+      totalStudents: totalStudentsPerDept[dept] || 0
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        courses: coursesWithCounts,
+        departmentBreakdown: Object.keys(deptStats).map(dept => ({ department: dept, count: deptStats[dept] })),
+        semesterBreakdown: Object.keys(semStats).map(sem => ({ semester: sem, count: semStats[sem] })),
+        examStats: {
+          totalExamRegistrations: examRegs.length,
+          deptExamBreakdown
+        }
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 20. Get Faculty by Department (Exam Cell / Admin helper)
+ */
+export async function getFacultyByDepartment(req, res, next) {
+  try {
+    const { department } = req.query;
+    let query = supabase.from('faculty').select('id, full_name, department');
+    if (department) {
+      query = query.eq('department', department);
+    }
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 21. Register for exam (Student)
+ */
+export async function registerExam(req, res, next) {
+  try {
+    const { courseId } = req.body;
+    if (!courseId) {
+      return res.status(400).json({ success: false, message: 'courseId is required' });
+    }
+
+    // 1. Resolve student profile
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id, year, semester')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (studentError || !student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    // 2. Verify course info to populate year and semester of the exam registration
+    const { data: course, error: courseError } = await supabase
+      .from('courses')
+      .select('id, year, semester')
+      .eq('id', courseId)
+      .single();
+
+    if (courseError || !course) {
+      return res.status(404).json({ success: false, message: 'Course not found.' });
+    }
+
+    // 4. Create the exam registration record
+    const { data, error } = await supabase
+      .from('exam_registrations')
+      .insert({
+        student_id: student.id,
+        course_id: course.id,
+        semester: course.semester,
+        year: course.year,
+        status: 'Registered'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') { // Unique constraint violation
+        return res.status(400).json({ success: false, message: 'You have already registered for this exam.' });
+      }
+      throw error;
+    }
+
+    res.status(201).json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 22. Get my exam registrations (Student)
+ */
+export async function getMyExamRegistrations(req, res, next) {
+  try {
+    // 1. Resolve student profile
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (studentError || !student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    // 2. Fetch exam registrations
+    const { data, error } = await supabase
+      .from('exam_registrations')
+      .select('*, courses:courses(*)')
+      .eq('student_id', student.id);
+
+    if (error) throw error;
+
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+

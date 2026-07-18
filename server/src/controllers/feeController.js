@@ -571,7 +571,7 @@ export const getFeesReport = async (req, res, next) => {
       studentIds = students ? students.map(s => s.id) : [];
     }
 
-    let query = supabase.from('fees').select('*, student:students(department)');
+    let query = supabase.from('fees').select('*, student:students(*)');
 
     if (academicYear) query = query.eq('academic_year', academicYear);
     if (semester) query = query.eq('semester', Number(semester));

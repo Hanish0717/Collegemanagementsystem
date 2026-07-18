@@ -876,12 +876,13 @@ if (isMockMode) {
             }
 
             for (const rel of relations) {
-              const ids = rows.map(r => r[rel.fieldName] || r[`${rel.fieldName}_id`]).filter(Boolean);
+              const singular = rel.fieldName.replace(/s$/, '');
+              const ids = rows.map(r => r[rel.fieldName] || r[`${rel.fieldName}_id`] || r[`${singular}_id`]).filter(Boolean);
               if (ids.length > 0) {
                 const relRes = await pool.query(`SELECT * FROM "${rel.relationTable}" WHERE id IN (${ids.map((_, i) => `$${i+1}`).join(', ')})`, ids);
                 const relMap = new Map(relRes.rows.map(r => [r.id, r]));
                 rows.forEach(r => {
-                  const foreignId = r[rel.fieldName] || r[`${rel.fieldName}_id`];
+                  const foreignId = r[rel.fieldName] || r[`${rel.fieldName}_id`] || r[`${singular}_id`];
                   r[rel.fieldName] = relMap.get(foreignId) || null;
                 });
               }

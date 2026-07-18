@@ -502,6 +502,31 @@ export function SettingsPage() {
                 </label>
                 <div className="text-xs font-bold text-slate-700 mt-1 font-mono">{idValue}</div>
               </div>
+
+              {role === "student" && (
+                <>
+                  <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Academic Year
+                    </label>
+                    <div className="text-xs font-bold text-slate-700 mt-1">Year {studentProfile?.year || "N/A"}</div>
+                  </div>
+
+                  <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Current Semester
+                    </label>
+                    <div className="text-xs font-bold text-slate-700 mt-1">Semester {studentProfile?.semester || "N/A"}</div>
+                  </div>
+
+                  <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Branch / Department
+                    </label>
+                    <div className="text-xs font-bold text-slate-700 mt-1">{studentProfile?.department || "N/A"}</div>
+                  </div>
+                </>
+              )}
             </div>
           </Card>
         </div>
