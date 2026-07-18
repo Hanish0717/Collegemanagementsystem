@@ -139,6 +139,54 @@ export function DonationsPage() {
     toast.success(`Generating official PDF receipt for transaction ${don.id}...`);
   };
 
+  const downloadStatement = () => {
+    const completedDonations = donationsList.filter((d: any) => d.status === "Completed");
+    if (completedDonations.length === 0) {
+      toast.error("No completed donations found to export.");
+      return;
+    }
+
+    // Build CSV content
+    const headers = ["Donation ID", "Donor Name", "Batch", "Amount (INR)", "Category", "Payment Method", "Reference No", "Date", "Status", "Notes"];
+    const rows = donationsList.map((d: any) => [
+      d.id,
+      `"${d.donorName}"`,
+      d.batch,
+      d.amount,
+      d.category,
+      d.paymentMethod,
+      d.refNo,
+      new Date(d.date).toLocaleDateString("en-IN"),
+      d.status,
+      `"${d.notes || ""}"`
+    ]);
+
+    const summaryLines = [
+      ["ALUMNI DONATIONS FINANCIAL STATEMENT"],
+      [`Generated on: ${new Date().toLocaleString("en-IN")}`],
+      [`Total Donations (Completed): ₹${totalDonations.toLocaleString("en-IN")}`],
+      [`This Month Collection: ₹${thisMonthDonations.toLocaleString("en-IN")}`],
+      [`Total Completed Receipts: ${completedCount}`],
+      [`Average Contribution: ₹${averageDonation.toLocaleString("en-IN")}`],
+      [`Top Donor: ${topDonor}`],
+      [],
+      headers,
+      ...rows
+    ];
+
+    const csvContent = summaryLines.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Donations_Statement_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast.success(`Statement downloaded — ${donationsList.length} records exported.`);
+  };
+
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto pb-24">
       {/* Header */}
@@ -149,7 +197,7 @@ export function DonationsPage() {
         color="from-green-500 to-teal-600"
       >
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10" onClick={() => toast.success("Exporting financial statement report...")}>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white hover:bg-white/10" onClick={downloadStatement}>
             <Download className="w-4 h-4 mr-2" /> Download Statement
           </Button>
           <Button className="rounded-xl bg-white text-green-600 hover:bg-white/90" onClick={() => setIsAddOpen(true)}>
@@ -256,7 +304,7 @@ export function DonationsPage() {
               <option value="Pending">Pending</option>
             </select>
           </div>
-          <Button variant="outline" className="rounded-xl border-muted" onClick={() => toast.success("Exporting spreadsheet data...")}>
+          <Button variant="outline" className="rounded-xl border-muted" onClick={downloadStatement}>
             <FileText className="w-4 h-4 mr-2" /> Export Report
           </Button>
         </div>
