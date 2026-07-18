@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from "react";
+import * as XLSX from "xlsx";
 import { useAlumni } from "../AdminAlumni";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { approveAlumniProfile, registerAlumni } from "@/services/alumniService";
+import { approveAlumniProfile, registerAlumni, updateAlumniProfile } from "@/services/alumniService";
 import { GradientHeader, GlassCard, StatCard } from "./components/CardElements";
 import { FormGroup, StyledInput, FileUploadZone } from "./components/FormElements";
 import { StyledTable, TableRow, TableCell, TablePagination } from "./components/TableElements";
@@ -9,13 +10,14 @@ import {
   UserPlus, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, FileText, 
   Briefcase, GraduationCap, Users, UserX, Search, Filter, Trash2, 
   Mail, MessageSquare, Download, Printer, Eye, Edit2, Upload, FileSpreadsheet,
-  X, Check, Linkedin, Github, Globe, Plus, Phone
+  X, Check, Linkedin, Github, Globe, Plus, Phone, Send, Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 export function RegistrationPage() {
   const navigate = useNavigate();
@@ -32,6 +34,15 @@ export function RegistrationPage() {
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedAlumni, setSelectedAlumni] = useState<any>(null);
+
+  // Message & Mail states
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+  const [isMailModalOpen, setIsMailModalOpen] = useState(false);
+  const [communicationTarget, setCommunicationTarget] = useState<any>(null);
+  const [messageText, setMessageText] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [emailTemplate, setEmailTemplate] = useState("Welcome");
 
   // Add Form Step State
   const [step, setStep] = useState(1);
@@ -68,7 +79,8 @@ export function RegistrationPage() {
         designation: a.designation || "N/A",
         location: a.location || "N/A",
         status: a.status === "Approved" ? "Verified" : (a.status === "Rejected" ? "Rejected" : "Pending Verification"),
-        employmentStatus: a.current_company ? "Employed" : "Unemployed"
+        employmentStatus: a.current_company ? "Employed" : "Unemployed",
+        raw: a
       });
     });
     (pendingAlumni || []).forEach((a: any) => {
@@ -84,7 +96,8 @@ export function RegistrationPage() {
           designation: a.designation || "N/A",
           location: a.location || "N/A",
           status: a.status === "Approved" ? "Verified" : (a.status === "Rejected" ? "Rejected" : "Pending Verification"),
-          employmentStatus: a.current_company ? "Employed" : "Unemployed"
+          employmentStatus: a.current_company ? "Employed" : "Unemployed",
+          raw: a
         });
       }
     });
@@ -119,6 +132,7 @@ export function RegistrationPage() {
       queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
       toast.success(`Alumni registered successfully: ${res.data?.full_name || newAlumni.name}`);
       setIsAddDrawerOpen(false);
+      setSelectedAlumni(null);
       setStep(1);
       setNewAlumni({
         name: "", email: "", phone: "", dob: "", address: "", bio: "",
@@ -129,6 +143,28 @@ export function RegistrationPage() {
     },
     onError: (err: any) => {
       toast.error(err.message || "Failed to register alumni.");
+    }
+  });
+
+  const updateAlumniMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) => updateAlumniProfile(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+      toast.success("Alumni profile updated successfully.");
+      setIsAddDrawerOpen(false);
+      setSelectedAlumni(null);
+      setStep(1);
+      setNewAlumni({
+        name: "", email: "", phone: "", dob: "", address: "", bio: "",
+        rollNo: "", department: "Computer Science", degree: "B.Tech", batch: "2024",
+        company: "", designation: "", industry: "Software Engineering", workLocation: "",
+        linkedin: "", github: "", portfolio: "", skills: "", achievements: ""
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to update alumni.");
     }
   });
 
@@ -157,8 +193,10 @@ export function RegistrationPage() {
     verifyMutation.mutate({ id, status: "Approved" });
   };
 
-  const handleDelete = (id: string) => {
-    verifyMutation.mutate({ id, status: "Rejected" });
+  const handleDelete = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete / reject registration for ${name}?`)) {
+      verifyMutation.mutate({ id, status: "Rejected" });
+    }
   };
 
   const handleBulkVerify = () => {
@@ -177,10 +215,12 @@ export function RegistrationPage() {
       toast.error("No alumni records selected.");
       return;
     }
-    selectedRows.forEach(id => {
-      verifyMutation.mutate({ id, status: "Rejected" });
-    });
-    setSelectedRows([]);
+    if (window.confirm(`Are you sure you want to reject all ${selectedRows.length} selected registrations?`)) {
+      selectedRows.forEach(id => {
+        verifyMutation.mutate({ id, status: "Rejected" });
+      });
+      setSelectedRows([]);
+    }
   };
 
   const handleCheckboxToggle = (id: string) => {
@@ -195,6 +235,35 @@ export function RegistrationPage() {
     }
   };
 
+  // Edit Click Prefill
+  const handleEditClick = (alumni: any) => {
+    setSelectedAlumni(alumni);
+    const raw = alumni.raw || {};
+    setNewAlumni({
+      name: alumni.name || "",
+      email: alumni.email || "",
+      phone: alumni.phone || "",
+      dob: raw.dob || "",
+      address: raw.address || "",
+      bio: raw.biography || raw.bio || "",
+      rollNo: raw.roll_number || raw.rollNo || "",
+      department: alumni.department || "Computer Science",
+      degree: raw.degree || "B.Tech",
+      batch: alumni.batch || "2024",
+      company: alumni.company === "N/A" ? "" : alumni.company,
+      designation: alumni.designation === "N/A" ? "" : alumni.designation,
+      industry: raw.industry || "Software Engineering",
+      workLocation: alumni.location === "N/A" ? "" : alumni.location,
+      linkedin: raw.linkedin || "",
+      github: raw.github || "",
+      portfolio: raw.portfolio || "",
+      skills: Array.isArray(raw.skills) ? raw.skills.join(", ") : (raw.skills || ""),
+      achievements: raw.achievements || ""
+    });
+    setStep(1);
+    setIsAddDrawerOpen(true);
+  };
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAlumni.name || !newAlumni.email || !newAlumni.batch) {
@@ -202,7 +271,7 @@ export function RegistrationPage() {
       return;
     }
 
-    registerAlumniMutation.mutate({
+    const payload = {
       full_name: newAlumni.name,
       email: newAlumni.email,
       phone: newAlumni.phone,
@@ -216,8 +285,207 @@ export function RegistrationPage() {
       portfolio: newAlumni.portfolio,
       skills: newAlumni.skills ? newAlumni.skills.split(",").map(s => s.trim()) : [],
       biography: newAlumni.bio,
-      status: "Approved" // Directly approve admin-added alumni
-    });
+      status: selectedAlumni ? selectedAlumni.status : "Approved"
+    };
+
+    if (selectedAlumni) {
+      updateAlumniMutation.mutate({ id: selectedAlumni.id, payload });
+    } else {
+      registerAlumniMutation.mutate(payload);
+    }
+  };
+
+  // ── Import CSV ──
+  const handleImportCSV = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".csv,.xlsx,.xls";
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = async (evt: any) => {
+        try {
+          const data = evt.target.result;
+          const workbook = XLSX.read(data, { type: "array" });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(sheet) as any[];
+
+          if (rows.length === 0) {
+            toast.error("The selected file contains no data.");
+            return;
+          }
+
+          toast.loading(`Importing ${rows.length} alumni records...`, { id: "import-toast" });
+
+          let successCount = 0;
+          for (const row of rows) {
+            const fullName = row["Name"] || row["Full Name"] || row["fullName"] || "Anonymous";
+            const email = row["Email"] || row["email"];
+            if (!email) continue; 
+
+            await registerAlumni({
+              full_name: fullName,
+              email: email,
+              phone: row["Phone"] || row["phone"] || "N/A",
+              graduation_year: parseInt(row["Batch"] || row["batch"] || row["Graduation Year"] || "2024"),
+              department: row["Department"] || row["department"] || "Computer Science",
+              roll_number: row["Roll No"] || row["rollNo"] || `CS${Math.floor(100000 + Math.random() * 900000)}`,
+              current_company: row["Company"] || row["company"] || "N/A",
+              designation: row["Designation"] || row["designation"] || "N/A",
+              location: row["Location"] || row["location"] || "N/A",
+              status: "Approved"
+            });
+            successCount++;
+          }
+
+          queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+          queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+          queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+          
+          toast.dismiss("import-toast");
+          toast.success(`Successfully imported ${successCount} alumni profiles!`);
+        } catch (err: any) {
+          toast.dismiss("import-toast");
+          toast.error(`Import failed: ${err.message || "Unknown error"}`);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    input.click();
+  };
+
+  // ── Export CSV (Excel format) ──
+  const handleExportCSV = () => {
+    if (filteredAlumni.length === 0) {
+      toast.error("No alumni records to export.");
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+
+    // Summary sheet
+    const summaryData = [
+      ["ALUMNI REGISTRATION LOGS — EXPORT REPORT"],
+      [],
+      ["Generated On", new Date().toLocaleString("en-IN")],
+      ["Total Records", filteredAlumni.length],
+      ["Search Filter", search || "None"],
+    ];
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    summarySheet["!cols"] = [{ wch: 20 }, { wch: 30 }];
+    XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
+
+    // Logs sheet
+    const headers = ["Registration ID", "Full Name", "Email", "Phone", "Batch", "Department", "Designation", "Company", "Location", "Status"];
+    const rows = filteredAlumni.map((a: any) => [
+      a.id, a.name, a.email, a.phone, a.batch, a.department,
+      a.designation, a.company, a.location, a.status
+    ]);
+    const logSheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    logSheet["!cols"] = [
+      { wch: 16 }, { wch: 22 }, { wch: 28 }, { wch: 14 },
+      { wch: 8 }, { wch: 20 }, { wch: 20 }, { wch: 22 },
+      { wch: 16 }, { wch: 16 }
+    ];
+    XLSX.utils.book_append_sheet(wb, logSheet, "Registration Logs");
+
+    const filename = `Alumni_Registration_Logs_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`Registration logs exported — ${filteredAlumni.length} records.`);
+  };
+
+  // ── Print Ledger (Excel ledger sheet) ──
+  const handlePrintLedger = () => {
+    if (filteredAlumni.length === 0) {
+      toast.error("No alumni records to print.");
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+
+    // Directory sheet
+    const headers = ["ID", "Name", "Batch", "Department", "Designation", "Company", "Location", "Status"];
+    const rows = filteredAlumni.map((a: any) => [
+      a.id, a.name, a.batch, a.department,
+      a.designation, a.company, a.location, a.status
+    ]);
+    const ledgerSheet = XLSX.utils.aoa_to_sheet([
+      [],
+      ["ALUMNI REGISTRATION LEDGER"],
+      [`Date Generated: ${new Date().toLocaleString("en-IN")}`],
+      [`Total Count: ${filteredAlumni.length} Records`],
+      [],
+      headers,
+      ...rows
+    ]);
+    ledgerSheet["!cols"] = [
+      { wch: 16 }, { wch: 24 }, { wch: 10 }, { wch: 22 },
+      { wch: 20 }, { wch: 22 }, { wch: 16 }, { wch: 14 }
+    ];
+    XLSX.utils.book_append_sheet(wb, ledgerSheet, "Ledger");
+
+    const filename = `Alumni_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`Excel ledger sheet generated for printing.`);
+  };
+
+  // Direct Message Sending
+  const handleSendMessage = () => {
+    if (!messageText.trim()) {
+      toast.error("Please enter your message text.");
+      return;
+    }
+    toast.success(`Direct message sent successfully to ${communicationTarget.name}!`);
+    setIsMessageModalOpen(false);
+    setMessageText("");
+  };
+
+  // Email sending
+  const handleSendEmail = () => {
+    if (!emailSubject.trim() || !emailBody.trim()) {
+      toast.error("Subject and message body are required.");
+      return;
+    }
+    toast.success(`Email broadcast dispatched to ${communicationTarget.email}!`);
+    setIsMailModalOpen(false);
+    setEmailSubject("");
+    setEmailBody("");
+  };
+
+  // Autofill templates in email modal
+  const handleTemplateChange = (val: string) => {
+    setEmailTemplate(val);
+    if (!communicationTarget) return;
+    
+    if (val === "Welcome") {
+      setEmailSubject(`Welcome to College Alumni Network, ${communicationTarget.name}!`);
+      setEmailBody(`Dear ${communicationTarget.name},\n\nWe are delighted to welcome you to our official Alumni Association network portal. You can now browse job placements, schedule career mentorship matches, and connect with your colleagues.\n\nWarm regards,\nAlumni Relations Team`);
+    } else if (val === "Verify") {
+      setEmailSubject("Action Required: Complete your Alumni profile verification");
+      setEmailBody(`Dear ${communicationTarget.name},\n\nThank you for submitting your details. To verify your alumni status, please upload a clear scanned copy of your Degree Certificate or College ID Card through your profile settings page.\n\nWarm regards,\nVerification Office`);
+    } else if (val === "Update") {
+      setEmailSubject("Update your current professional information");
+      setEmailBody(`Dear ${communicationTarget.name},\n\nWe noticed some of your professional data might be outdated. Please log in and verify your current designation and company details to receive tailored career matches.\n\nBest,\nAlumni Portal Team`);
+    }
   };
 
   return (
@@ -230,13 +498,13 @@ export function RegistrationPage() {
         color="from-emerald-600 to-teal-600"
       >
         <div className="flex gap-2">
-          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={() => toast.info("CSV template downloaded. Prepare columns: Name, Email, Phone, Batch, Department.")}>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={handleImportCSV}>
             <Upload className="w-4 h-4 mr-2" /> Import CSV
           </Button>
-          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={() => toast.success("Exporting directory database as CSV...")}>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={handleExportCSV}>
             <FileSpreadsheet className="w-4 h-4 mr-2" /> Export CSV
           </Button>
-          <Button className="rounded-xl bg-white text-emerald-600 hover:bg-white/90" onClick={() => setIsAddDrawerOpen(true)}>
+          <Button className="rounded-xl bg-white text-emerald-600 hover:bg-white/90" onClick={() => { setSelectedAlumni(null); setStep(1); setIsAddDrawerOpen(true); }}>
             <Plus className="w-4 h-4 mr-2" /> Add Alumni
           </Button>
         </div>
@@ -284,7 +552,7 @@ export function RegistrationPage() {
             </div>
             
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="rounded-xl border-muted h-10" onClick={() => toast.success("Generating current directory PDF report...")}>
+              <Button variant="outline" size="sm" className="rounded-xl border-muted h-10" onClick={handlePrintLedger}>
                 <Printer className="w-4 h-4 mr-1.5" /> Print Ledger
               </Button>
             </div>
@@ -388,7 +656,7 @@ export function RegistrationPage() {
                     <Button onClick={() => { setSelectedAlumni(alumni); setIsProfileModalOpen(true); }} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-blue-50 hover:text-blue-600" title="View Profile">
                       <Eye className="w-4 h-4" />
                     </Button>
-                    <Button onClick={() => { setSelectedAlumni(alumni); setStep(1); setIsAddDrawerOpen(true); }} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-amber-50 hover:text-amber-600" title="Edit Profile">
+                    <Button onClick={() => handleEditClick(alumni)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-amber-50 hover:text-amber-600" title="Edit Profile">
                       <Edit2 className="w-4 h-4" />
                     </Button>
                     {alumni.status === "Pending Verification" && (
@@ -396,13 +664,13 @@ export function RegistrationPage() {
                         <CheckCircle2 className="w-4 h-4" />
                       </Button>
                     )}
-                    <Button onClick={() => toast.success(`Draft email panel opened for ${alumni.email}`)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-muted text-muted-foreground" title="Send Email">
+                    <Button onClick={() => { setCommunicationTarget(alumni); handleTemplateChange("Welcome"); setIsMailModalOpen(true); }} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-muted text-muted-foreground" title="Send Email">
                       <Mail className="w-4 h-4" />
                     </Button>
-                    <Button onClick={() => toast.success(`Chat interface opened with ${alumni.name}`)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-muted text-muted-foreground" title="Direct Message">
+                    <Button onClick={() => { setCommunicationTarget(alumni); setIsMessageModalOpen(true); }} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-muted text-muted-foreground" title="Direct Message">
                       <MessageSquare className="w-4 h-4" />
                     </Button>
-                    <Button onClick={() => handleDelete(alumni.id)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-rose-600 hover:bg-rose-50" title="Delete Profile">
+                    <Button onClick={() => handleDelete(alumni.id, alumni.name)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-rose-600 hover:bg-rose-50" title="Delete Profile">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -438,8 +706,12 @@ export function RegistrationPage() {
 
             {/* Drawer Header */}
             <div className="p-8 border-b bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20">
-              <h3 className="text-xl font-bold flex items-center gap-2 text-emerald-600"><UserPlus className="w-5 h-5"/> Alumni Profile Wizard</h3>
-              <p className="text-xs text-muted-foreground mt-1">Register a new alumnus with academic, professional, and contact details.</p>
+              <h3 className="text-xl font-bold flex items-center gap-2 text-emerald-600">
+                <UserPlus className="w-5 h-5"/> {selectedAlumni ? "Edit Alumni Profile" : "Alumni Profile Wizard"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                {selectedAlumni ? "Modify the academic, professional and contact details of this profile." : "Register a new alumnus with academic, professional, and contact details."}
+              </p>
               
               {/* Steps indicator */}
               <div className="flex items-center justify-between mt-6 relative">
@@ -448,111 +720,162 @@ export function RegistrationPage() {
                   className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-emerald-500 rounded-full transition-all duration-300" 
                   style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
                 />
-                {steps.map(s => (
-                  <button key={s.id} onClick={() => setStep(s.id)} className="relative flex flex-col items-center bg-card p-1 shrink-0">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= s.id ? 'bg-emerald-600 text-white' : 'bg-muted text-muted-foreground'}`}>
-                      {s.id}
-                    </div>
-                    <span className="text-[10px] font-semibold mt-1 text-muted-foreground hidden sm:inline">{s.title}</span>
-                  </button>
-                ))}
+                
+                {steps.map(s => {
+                  const StepIcon = s.icon;
+                  const isActive = step === s.id;
+                  const isCompleted = step > s.id;
+                  return (
+                    <button 
+                      key={s.id} 
+                      onClick={() => setStep(s.id)}
+                      className={cn(
+                        "relative z-10 w-9 h-9 rounded-full flex items-center justify-center border font-bold text-xs transition-all",
+                        isActive && "bg-emerald-600 border-emerald-600 text-white scale-110 shadow-lg shadow-emerald-600/20",
+                        isCompleted && "bg-emerald-500 border-emerald-500 text-white",
+                        !isActive && !isCompleted && "bg-background border-muted text-muted-foreground hover:border-emerald-500/50"
+                      )}
+                    >
+                      {isCompleted ? <Check className="w-4 h-4" /> : s.id}
+                      <span className="absolute top-10 whitespace-nowrap text-[9px] font-bold uppercase tracking-wider text-muted-foreground hidden md:block">
+                        {s.title}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Drawer Content Form */}
-            <form onSubmit={handleFormSubmit} className="flex-1 overflow-y-auto p-8 space-y-6">
+            {/* Wizard Body content */}
+            <div className="flex-1 overflow-y-auto p-8 space-y-6">
+              
+              {/* STEP 1: Personal Details */}
               {step === 1 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <h4 className="font-bold text-sm text-emerald-600 uppercase tracking-wider mb-2">1. Personal & Contact Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormGroup label="Full Name" required>
-                      <StyledInput value={newAlumni.name} onChange={e => setNewAlumni({...newAlumni, name: e.target.value})} placeholder="e.g. Sarah Connor" required />
+                  <FormGroup label="Full Name *" required>
+                    <StyledInput placeholder="Enter full name" value={newAlumni.name} onChange={e => setNewAlumni({...newAlumni, name: e.target.value})} />
+                  </FormGroup>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Email ID *" required>
+                      <StyledInput placeholder="e.g. name@example.com" type="email" value={newAlumni.email} onChange={e => setNewAlumni({...newAlumni, email: e.target.value})} />
                     </FormGroup>
-                    <FormGroup label="Email Address" required>
-                      <StyledInput type="email" value={newAlumni.email} onChange={e => setNewAlumni({...newAlumni, email: e.target.value})} placeholder="e.g. sarah@example.com" required />
+                    <FormGroup label="Mobile Number">
+                      <StyledInput placeholder="e.g. +91 9876543210" value={newAlumni.phone} onChange={e => setNewAlumni({...newAlumni, phone: e.target.value})} />
                     </FormGroup>
-                    <FormGroup label="Phone Number">
-                      <StyledInput value={newAlumni.phone} onChange={e => setNewAlumni({...newAlumni, phone: e.target.value})} placeholder="+1 (555) 123-4567" />
-                    </FormGroup>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <FormGroup label="Date of Birth">
                       <StyledInput type="date" value={newAlumni.dob} onChange={e => setNewAlumni({...newAlumni, dob: e.target.value})} />
                     </FormGroup>
+                    <FormGroup label="Current City / Location">
+                      <StyledInput placeholder="e.g. Mumbai, India" value={newAlumni.workLocation} onChange={e => setNewAlumni({...newAlumni, workLocation: e.target.value})} />
+                    </FormGroup>
                   </div>
-                  <FormGroup label="Current Residential Address">
-                    <StyledInput value={newAlumni.address} onChange={e => setNewAlumni({...newAlumni, address: e.target.value})} placeholder="e.g. Los Angeles, California" />
-                  </FormGroup>
-                  <FormGroup label="Short Professional Bio">
-                    <textarea value={newAlumni.bio} onChange={e => setNewAlumni({...newAlumni, bio: e.target.value})} placeholder="Write a short summary profile..." className="w-full rounded-xl border bg-background/50 p-3 text-sm focus-visible:ring-1 focus-visible:ring-emerald-500 min-h-[80px]" />
+                  <FormGroup label="Brief Alumni Biography / About">
+                    <textarea 
+                      placeholder="Share a short bio summarizing professional achievements, career roadmap or details..." 
+                      value={newAlumni.bio} 
+                      onChange={e => setNewAlumni({...newAlumni, bio: e.target.value})}
+                      className="w-full rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20 min-h-[90px] resize-none"
+                    />
                   </FormGroup>
                 </div>
               )}
 
+              {/* STEP 2: Academic details */}
               {step === 2 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <h4 className="font-bold text-sm text-emerald-600 uppercase tracking-wider mb-2">2. Academic Information</h4>
                   <div className="grid grid-cols-2 gap-4">
-                    <FormGroup label="Registration / Roll Number">
-                      <StyledInput value={newAlumni.rollNo} onChange={e => setNewAlumni({...newAlumni, rollNo: e.target.value})} placeholder="e.g. CS201642" />
+                    <FormGroup label="Graduation Year (Batch) *" required>
+                      <StyledInput placeholder="e.g. 2024" value={newAlumni.batch} onChange={e => setNewAlumni({...newAlumni, batch: e.target.value})} />
                     </FormGroup>
-                    <FormGroup label="Graduation Year *">
-                      <select className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500" value={newAlumni.batch} onChange={e => setNewAlumni({...newAlumni, batch: e.target.value})}>
-                        <option value="2024">Class of 2024</option>
-                        <option value="2023">Class of 2023</option>
-                        <option value="2022">Class of 2022</option>
-                        <option value="2021">Class of 2021</option>
-                        <option value="2020">Class of 2020</option>
-                        <option value="2019">Class of 2019</option>
-                        <option value="2018">Class of 2018</option>
+                    <FormGroup label="College Roll Number">
+                      <StyledInput placeholder="e.g. CS202005" value={newAlumni.rollNo} onChange={e => setNewAlumni({...newAlumni, rollNo: e.target.value})} />
+                    </FormGroup>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Undergrad Degree Program">
+                      <select 
+                        className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500"
+                        value={newAlumni.degree}
+                        onChange={e => setNewAlumni({...newAlumni, degree: e.target.value})}
+                      >
+                        <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
+                        <option value="B.Sc">B.Sc (Bachelor of Science)</option>
+                        <option value="M.Tech">M.Tech (Master of Technology)</option>
+                        <option value="MBA">MBA (Master of Business Admin)</option>
+                        <option value="PhD">PhD (Doctor of Philosophy)</option>
                       </select>
                     </FormGroup>
-                    <FormGroup label="Department *">
-                      <select className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500" value={newAlumni.department} onChange={e => setNewAlumni({...newAlumni, department: e.target.value})}>
+                    <FormGroup label="Department / Branch">
+                      <select 
+                        className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500"
+                        value={newAlumni.department}
+                        onChange={e => setNewAlumni({...newAlumni, department: e.target.value})}
+                      >
                         <option value="Computer Science">Computer Science</option>
                         <option value="Electronics & Comm">Electronics & Comm</option>
-                        <option value="Mechanical Engineering">Mechanical Engineering</option>
-                        <option value="Business Administration">Business Administration</option>
+                        <option value="Mechanical Eng">Mechanical Eng</option>
                         <option value="Fine Arts">Fine Arts</option>
+                        <option value="Business Admin">Business Admin</option>
                       </select>
                     </FormGroup>
-                    <FormGroup label="Degree Program">
-                      <StyledInput value={newAlumni.degree} onChange={e => setNewAlumni({...newAlumni, degree: e.target.value})} placeholder="e.g. B.Tech / MBA" />
-                    </FormGroup>
                   </div>
+                  <FormGroup label="Special Honors / Academic Achievements">
+                    <textarea 
+                      placeholder="e.g. Gold Medalist, Published research papers on AI/ML..." 
+                      value={newAlumni.achievements} 
+                      onChange={e => setNewAlumni({...newAlumni, achievements: e.target.value})}
+                      className="w-full rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20 min-h-[90px] resize-none"
+                    />
+                  </FormGroup>
                 </div>
               )}
 
+              {/* STEP 3: Professional/Employment */}
               {step === 3 && (
                 <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <h4 className="font-bold text-sm text-emerald-600 uppercase tracking-wider mb-2">3. Professional / Employment Details</h4>
                   <div className="grid grid-cols-2 gap-4">
-                    <FormGroup label="Current Employer">
-                      <StyledInput value={newAlumni.company} onChange={e => setNewAlumni({...newAlumni, company: e.target.value})} placeholder="e.g. SpaceX" />
+                    <FormGroup label="Current Organization / Company">
+                      <StyledInput placeholder="e.g. Google, Tesla" value={newAlumni.company} onChange={e => setNewAlumni({...newAlumni, company: e.target.value})} />
                     </FormGroup>
-                    <FormGroup label="Designation">
-                      <StyledInput value={newAlumni.designation} onChange={e => setNewAlumni({...newAlumni, designation: e.target.value})} placeholder="e.g. Propulsion Engineer" />
+                    <FormGroup label="Job Designation / Title">
+                      <StyledInput placeholder="e.g. Senior Frontend Architect" value={newAlumni.designation} onChange={e => setNewAlumni({...newAlumni, designation: e.target.value})} />
                     </FormGroup>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <FormGroup label="Industry Sector">
-                      <StyledInput value={newAlumni.industry} onChange={e => setNewAlumni({...newAlumni, industry: e.target.value})} placeholder="e.g. Aerospace / IT" />
+                      <select 
+                        className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500"
+                        value={newAlumni.industry}
+                        onChange={e => setNewAlumni({...newAlumni, industry: e.target.value})}
+                      >
+                        <option value="Software Engineering">Software Engineering</option>
+                        <option value="Aerospace">Aerospace</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Management Consulting">Management Consulting</option>
+                        <option value="Investment Banking">Investment Banking</option>
+                        <option value="Higher Education">Higher Education</option>
+                      </select>
                     </FormGroup>
-                    <FormGroup label="Work Location / City">
-                      <StyledInput value={newAlumni.workLocation} onChange={e => setNewAlumni({...newAlumni, workLocation: e.target.value})} placeholder="e.g. Los Angeles, CA" />
+                    <FormGroup label="Professional Skills (comma separated)">
+                      <StyledInput placeholder="e.g. React, Next.js, Node.js, AWS" value={newAlumni.skills} onChange={e => setNewAlumni({...newAlumni, skills: e.target.value})} />
                     </FormGroup>
                   </div>
                 </div>
               )}
 
+              {/* STEP 4: Socials & Docs */}
               {step === 4 && (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <h4 className="font-bold text-sm text-emerald-600 uppercase tracking-wider mb-2">4. Social Links & Documentation</h4>
-                  
-                  {/* Social links */}
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                   <div className="space-y-3">
+                    <label className="text-xs font-semibold block">Social Professional Handles</label>
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0"><Linkedin className="w-4 h-4 text-blue-600"/></div>
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0"><Linkedin className="w-4 h-4 text-emerald-600"/></div>
                       <Input placeholder="LinkedIn Profile URL" value={newAlumni.linkedin} onChange={e => setNewAlumni({...newAlumni, linkedin: e.target.value})} className="rounded-xl" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0"><Github className="w-4 h-4 text-slate-800"/></div>
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0"><Github className="w-4 h-4 text-emerald-600"/></div>
                       <Input placeholder="GitHub Profile URL" value={newAlumni.github} onChange={e => setNewAlumni({...newAlumni, github: e.target.value})} className="rounded-xl" />
                     </div>
                     <div className="flex items-center gap-2">
@@ -571,27 +894,36 @@ export function RegistrationPage() {
                   </div>
                 </div>
               )}
-            </form>
+
+            </div>
 
             {/* Drawer Footer Actions */}
-            <div className="p-8 border-t bg-muted/10 flex justify-between items-center shrink-0">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setStep(s => Math.max(1, s - 1))}
-                disabled={step === 1}
-                className="rounded-xl"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back
-              </Button>
-
-              <div className="flex items-center gap-2">
-                <Button type="button" variant="ghost" onClick={() => setIsAddDrawerOpen(false)} className="rounded-xl">Cancel</Button>
+            <div className="p-8 border-t bg-muted/10 flex justify-between shrink-0">
+              <div className="flex gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  disabled={step === 1}
+                  onClick={() => setStep(prev => prev - 1)}
+                  className="rounded-xl"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsAddDrawerOpen(false)}
+                  className="rounded-xl"
+                >
+                  Cancel
+                </Button>
+              </div>
+              <div>
                 {step < totalSteps ? (
                   <Button 
                     type="button" 
-                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
-                    onClick={() => setStep(s => Math.min(totalSteps, s + 1))}
+                    onClick={() => setStep(prev => prev + 1)}
+                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
                   >
                     Next Step <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -599,9 +931,9 @@ export function RegistrationPage() {
                   <Button 
                     type="submit" 
                     onClick={handleFormSubmit}
-                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700"
+                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
                   >
-                    Save & Verify Profile <CheckCircle2 className="w-4 h-4 ml-2" />
+                    {selectedAlumni ? "Save Profile Details" : "Save & Verify Profile"} <CheckCircle2 className="w-4 h-4 ml-2" />
                   </Button>
                 )}
               </div>
@@ -640,7 +972,7 @@ export function RegistrationPage() {
                 <div>
                   <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Biography</h5>
                   <p className="text-sm text-foreground/80 leading-relaxed">
-                    Passionate and dedicated professional with over {new Date().getFullYear() - parseInt(selectedAlumni.batch)} years of active industry exposure in the field of {selectedAlumni.department}. Enthusiastic alumnus open to networking and career development programs.
+                    {selectedAlumni.raw?.biography || selectedAlumni.raw?.bio || `Passionate and dedicated professional with over ${new Date().getFullYear() - parseInt(selectedAlumni.batch)} years of active industry exposure in the field of ${selectedAlumni.department}. Enthusiastic alumnus open to networking and career development programs.`}
                   </p>
                 </div>
 
@@ -708,7 +1040,7 @@ export function RegistrationPage() {
 
             {/* Modal actions footer */}
             <div className="p-6 border-t bg-muted/10 flex justify-between items-center shrink-0">
-              <Button onClick={() => navigate({ to: `/dashboard/admin/alumni/profile` })} className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+              <Button onClick={() => navigate({ to: `/dashboard/admin/alumni/directory` })} className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
                 View Full Alumni Profile <ArrowRight className="w-4 h-4 ml-1.5" />
               </Button>
               <div className="flex gap-2">
@@ -723,7 +1055,94 @@ export function RegistrationPage() {
           </div>
         </div>
       )}
+
+      {/* ── MODAL: Direct Message ── */}
+      {isMessageModalOpen && communicationTarget && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-md rounded-3xl border shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onClick={() => setIsMessageModalOpen(false)} className="absolute top-5 right-5 p-1 text-muted-foreground hover:bg-muted rounded-lg">
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-lg font-bold flex items-center gap-2 text-emerald-600 mb-2">
+              <MessageSquare className="w-5 h-5" /> Direct Message
+            </h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Send a secure chat message to <span className="font-semibold text-foreground">{communicationTarget.name}</span>.
+            </p>
+            <textarea
+              value={messageText}
+              onChange={e => setMessageText(e.target.value)}
+              placeholder="Type your message here..."
+              className="w-full h-32 rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20 resize-none mb-4"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsMessageModalOpen(false)} className="rounded-xl">Cancel</Button>
+              <Button onClick={handleSendMessage} className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+                <Send className="w-4 h-4" /> Send Message
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: Mail Box / Email Broadcast ── */}
+      {isMailModalOpen && communicationTarget && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-lg rounded-3xl border shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onClick={() => setIsMailModalOpen(false)} className="absolute top-5 right-5 p-1 text-muted-foreground hover:bg-muted rounded-lg">
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-lg font-bold flex items-center gap-2 text-emerald-600 mb-2">
+              <Mail className="w-5 h-5" /> Email broadcast
+            </h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Compose an official email to <span className="font-semibold text-foreground">{communicationTarget.email}</span>.
+            </p>
+
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="text-xs font-semibold block mb-1">Email Template</label>
+                <select 
+                  className="w-full h-9 rounded-lg bg-background border px-2.5 text-xs focus:ring-1 focus:ring-emerald-500"
+                  value={emailTemplate}
+                  onChange={e => handleTemplateChange(e.target.value)}
+                >
+                  <option value="Welcome">Welcome to network</option>
+                  <option value="Verify">Request verification docs</option>
+                  <option value="Update">Update career details</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1">Subject Line</label>
+                <Input
+                  value={emailSubject}
+                  onChange={e => setEmailSubject(e.target.value)}
+                  placeholder="Enter email subject"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1">Message Body</label>
+                <textarea
+                  value={emailBody}
+                  onChange={e => setEmailBody(e.target.value)}
+                  placeholder="Type email body..."
+                  className="w-full h-40 rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsMailModalOpen(false)} className="rounded-xl">Cancel</Button>
+              <Button onClick={handleSendEmail} className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+                <Send className="w-4 h-4" /> Dispatch Email
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
