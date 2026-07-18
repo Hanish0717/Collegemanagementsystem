@@ -8,7 +8,7 @@ export function GradientAreaChart({ data, dataKey, xKey, color = "#8b5cf6", titl
       {title && <h3 className="font-semibold text-lg mb-6">{title}</h3>}
       <div className="flex-1 min-h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id={`color-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={color} stopOpacity={0.3}/>
@@ -35,7 +35,7 @@ export function StyledBarChart({ data, dataKey, xKey, color = "#0ea5e9", title }
       {title && <h3 className="font-semibold text-lg mb-6">{title}</h3>}
       <div className="flex-1 min-h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="opacity-10" />
             <XAxis dataKey={xKey} axisLine={false} tickLine={false} tick={{ fontSize: 12 }} className="text-muted-foreground" />
             <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} className="text-muted-foreground" />

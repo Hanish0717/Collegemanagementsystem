@@ -164,8 +164,8 @@ export function DonationsPage() {
         <StatCard title="This Month Collection" value={`$${thisMonthDonations.toLocaleString()}`} icon={TrendingUp} color="blue" />
         <StatCard title="Pending Checks" value={pendingCount} icon={Calendar} color="orange" />
         <StatCard title="Completed Receipts" value={completedCount} icon={ShieldCheck} color="green" />
-        <StatCard title="Average Contribution" value={`$${averageDonation}`} icon={Heart} color="rose" />
-        <StatCard title="Top Donor Entity" value="Wayne Ent." icon={Award} color="purple" className="truncate" />
+        <StatCard title="Average Contribution" value={`$${averageDonation.toLocaleString()}`} icon={Heart} color="rose" />
+        <StatCard title="Top Donor Entity" value={topDonor} icon={Award} color="purple" />
       </div>
 
       {/* Recharts Visualizations */}
@@ -175,7 +175,7 @@ export function DonationsPage() {
             <h3 className="font-bold text-lg mb-6">Monthly Donations Trend</h3>
             <div className="flex-1 min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyDonationsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={monthlyDonationsData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
@@ -184,7 +184,7 @@ export function DonationsPage() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="opacity-10" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} tickFormatter={(val) => `$${val / 1000}k`} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
                   <Area type="monotone" dataKey="amount" stroke="#10b981" strokeWidth={3} fill="url(#colorAmount)" />
                 </AreaChart>

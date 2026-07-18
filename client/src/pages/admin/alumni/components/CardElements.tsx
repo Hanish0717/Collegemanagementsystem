@@ -28,21 +28,23 @@ export function StatCard({
     indigo: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400",
   };
 
+  const isLongValue = typeof value === 'string' && value.length > 12;
+
   return (
     <div className={cn("p-6 rounded-3xl border bg-card/50 backdrop-blur-xl shadow-sm hover:shadow-md transition-all duration-300 group", className)}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</h3>
         <div className={cn("p-3 rounded-2xl transition-transform duration-300 group-hover:scale-110", colorStyles[color])}>
           <Icon className="w-5 h-5" />
         </div>
       </div>
       
-      <div className="flex items-end gap-3">
-        <div className="text-3xl font-bold tracking-tight">{value}</div>
+      <div className="flex flex-col gap-1">
+        <div className={cn("font-bold tracking-tight text-foreground", isLongValue ? "text-base md:text-lg break-words leading-tight" : "text-3xl")}>{value}</div>
         {trend && (
-          <div className={cn("flex items-center text-sm font-medium mb-1", trend.isPositive ? "text-emerald-500" : "text-rose-500")}>
+          <div className={cn("flex items-center text-xs font-medium mt-1", trend.isPositive ? "text-emerald-500" : "text-rose-500")}>
             {trend.isPositive ? "+" : "-"}{Math.abs(trend.value)}%
-            {trendLabel && <span className="text-muted-foreground ml-1.5 text-xs">{trendLabel}</span>}
+            {trendLabel && <span className="text-muted-foreground ml-1 text-[10px]">{trendLabel}</span>}
           </div>
         )}
       </div>
@@ -64,18 +66,24 @@ export function GlassCard({ children, className, glow = false }: { children: Rea
 
 export function GradientHeader({ title, description, icon: Icon, color = "from-blue-600 to-indigo-600", children }: { title: string, description?: string, icon?: LucideIcon, color?: string, children?: React.ReactNode }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border mb-6">
-      <div className={cn("absolute inset-0 bg-gradient-to-r opacity-10", color)}></div>
-      <div className="relative p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <div className="relative overflow-hidden rounded-3xl border border-white/10 mb-6 bg-card shadow-lg">
+      {/* Background Gradient */}
+      <div className={cn("absolute inset-0 bg-gradient-to-r", color)}></div>
+      
+      {/* Glassmorphic decorative shapes */}
+      <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/10 blur-2xl"></div>
+      <div className="absolute -bottom-8 left-1/3 w-32 h-32 rounded-full bg-white/5 blur-xl"></div>
+
+      <div className="relative p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 z-10">
         <div className="flex items-center gap-5">
           {Icon && (
-            <div className={cn("p-4 rounded-2xl text-white shadow-lg bg-gradient-to-br", color)}>
+            <div className="p-4 rounded-2xl text-white bg-white/15 backdrop-blur-md shadow-inner border border-white/20">
               <Icon className="w-8 h-8" />
             </div>
           )}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-            {description && <p className="text-muted-foreground mt-1.5 text-base">{description}</p>}
+            <h1 className="text-3xl font-bold tracking-tight text-white">{title}</h1>
+            {description && <p className="text-white/85 mt-1.5 text-sm md:text-base font-medium max-w-2xl">{description}</p>}
           </div>
         </div>
         {children && (
