@@ -432,6 +432,7 @@
   ],
   "alumni_profiles": [
     {
+      "id": "alm-001",
       "created_at": "2026-07-18T09:27:00.083Z",
       "updated_at": "2026-07-18T09:27:00.083Z",
       "full_name": "Ashok",
@@ -451,6 +452,7 @@
       "profile_completion": 70
     },
     {
+      "id": "alm-002",
       "created_at": "2026-07-18T10:40:10.987Z",
       "updated_at": "2026-07-18T10:40:10.987Z",
       "full_name": "Jane Doe",
@@ -499,5 +501,12 @@
   "alumni_success_stories": [],
   "alumni_communication_logs": [],
   "alumni_connections": [],
-  "alumni_posts": []
+  "alumni_posts": [],
+  "alumni_post_likes": [],
+  "alumni_post_comments": [],
+  "alumni_messages": [],
+  "mentorship_sessions": [],
+  "alumni_employment": [],
+  "alumni_education": [],
+  "alumni_job_applications": []
 }

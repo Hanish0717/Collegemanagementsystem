@@ -7,7 +7,7 @@ import { hashOTP } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES } from '../../config.js';
 import { generateAdmissionNumber } from '../utils/admissionUtils.js';
 
-const isUUID = (str) => typeof str === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str);
+const isUUID = (str) => typeof str === 'string' && /^[0-9a-zA-Z]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str);
 
 
 // Helper to format student object keys

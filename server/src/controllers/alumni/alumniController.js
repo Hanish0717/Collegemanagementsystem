@@ -1,7 +1,4 @@
-import { supabase } from '../../config/supabase.js';
-
-// Helper: check if we are in mock mode
-const isMockMode = process.env.DATABASE_MOCK_MODE === 'true';
+import { supabase, isMockMode } from '../../config/supabase.js';
 
 // ── 1. DASHBOARD STATS ───────────────────────────────────
 export async function getAlumniDashboardStats(req, res) {
@@ -270,6 +267,7 @@ export async function getAlumniProfile(req, res) {
       }
     });
   } catch (err) {
+    console.error("Error in getAlumniProfile:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 }

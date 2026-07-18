@@ -19,7 +19,7 @@ export const protect = async (req, res, next) => {
       let user = null;
 
       const isUUID = typeof decoded.id === 'string' &&
-        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(decoded.id);
+        /^[0-9a-zA-Z]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(decoded.id);
 
       if (isUUID) {
         const { data, error } = await supabase
