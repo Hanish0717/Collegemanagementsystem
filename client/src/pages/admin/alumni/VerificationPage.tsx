@@ -5,11 +5,28 @@ import { StyledTable, TableRow, TableCell, TablePagination, AdvancedTableToolbar
 import { ShieldCheck, CheckCircle2, XCircle, Clock, Eye, FileText, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { approveAlumniProfile } from "@/services/alumniService";
+import { toast } from "sonner";
 
 export function VerificationPage() {
   const { pendingAlumni, pendingLoading } = useAlumni();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [search, setSearch] = useState("");
+  const queryClient = useQueryClient();
+
+  const verifyMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "Approved" | "Rejected" }) => approveAlumniProfile(id, status),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+      toast.success(`Profile has been ${variables.status.toLowerCase()} successfully.`);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to update status.");
+    }
+  });
 
   if (pendingLoading) {
     return (
@@ -118,10 +135,24 @@ export function VerificationPage() {
                   <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-xl bg-muted/50 hover:bg-muted" title="Review Docs">
                     <Eye className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-xl text-emerald-600 hover:bg-emerald-50" title="Approve">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 rounded-xl text-emerald-600 hover:bg-emerald-50" 
+                    title="Approve"
+                    onClick={() => verifyMutation.mutate({ id: app.id, status: "Approved" })}
+                    disabled={verifyMutation.isPending}
+                  >
                     <CheckCircle2 className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-xl text-rose-600 hover:bg-rose-50" title="Reject">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-8 w-8 p-0 rounded-xl text-rose-600 hover:bg-rose-50" 
+                    title="Reject"
+                    onClick={() => verifyMutation.mutate({ id: app.id, status: "Rejected" })}
+                    disabled={verifyMutation.isPending}
+                  >
                     <XCircle className="w-4 h-4" />
                   </Button>
                 </div>

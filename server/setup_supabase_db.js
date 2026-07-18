@@ -449,7 +449,7 @@ const demoUsers = [
   { name: 'HOD CSE', email: 'hod@college.com', role: 'hod' },
   { name: 'Exam Cell Officer', email: 'examcell@college.com', role: 'exam-cell' },
   { name: 'Accounts Manager', email: 'accounts@college.com', role: 'accounts' },
-  { name: 'Alumni Coordinator', email: 'alumnicoord@college.com', role: 'alumni-coordinator' },
+  { name: 'Alumni Coordinator', email: 'alumni.coordinator@college.com', role: 'alumni-coordinator' },
   { name: 'Alumni Student', email: 'alumni@college.com', role: 'alumni' }
 ];
 

@@ -26,6 +26,7 @@ import {
   matchMentorship,
   recordDonation,
   fetchDonationLeaderboard,
+  fetchDonationsList,
   fetchSuccessStories,
   createSuccessStory,
   sendAnnouncement,
@@ -94,6 +95,11 @@ export function AdminAlumni() { console.log("AdminAlumni Rendered");
     queryFn: fetchDonationLeaderboard
   });
 
+  const { data: donationsList = [], isLoading: donationsLoading } = useQuery({
+    queryKey: ["alumni-donations"],
+    queryFn: fetchDonationsList
+  });
+
   const { data: successStories = [], isLoading: storiesLoading } = useQuery({
     queryKey: ["alumni-stories"],
     queryFn: fetchSuccessStories
@@ -136,6 +142,8 @@ export function AdminAlumni() { console.log("AdminAlumni Rendered");
     mentorLoading,
     donationLeaderboard,
     leaderboardLoading,
+    donationsList,
+    donationsLoading,
     successStories,
     storiesLoading,
     announcementLogs,

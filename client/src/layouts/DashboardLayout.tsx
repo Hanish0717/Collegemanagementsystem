@@ -25,6 +25,10 @@ import {
   Check,
   Trash2,
   AlertTriangle,
+  DollarSign,
+  Send,
+  Calendar,
+  Users,
 } from "lucide-react";
 import { getActiveRole, type Role, ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
 import { getDashboardForRole, toBackendRole } from "@/services/authService";
@@ -1037,6 +1041,10 @@ export function DashboardLayout() {
                                     setActiveRole(r.id);
                                     setRole(r);
                                     toast.success(`Switched to ${r.name} workspace!`);
+                                    if (r.id === "alumni" || r.id === "alumni_coordinator") {
+                                      navigate({ to: "/alumni/dashboard" });
+                                      return;
+                                    }
                                     navigate({ to: "/dashboard" });
                                   })
                                   .catch((error) => {
@@ -1064,7 +1072,7 @@ export function DashboardLayout() {
               </div>
 
               {/* Plus/New Dropdown */}
-              {(role.id === "warden" || role.id === "librarian") && (
+              {(role.id === "warden" || role.id === "librarian" || role.id === "alumni_coordinator") && (
                 <div className="relative">
                   <button
                     onClick={() => setShowNewActions(!showNewActions)}
@@ -1077,7 +1085,7 @@ export function DashboardLayout() {
                       <div className="fixed inset-0 z-40" onClick={() => setShowNewActions(false)} />
                       <div className="absolute right-0 top-full mt-2 w-56 bg-background border rounded-xl shadow-lg z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150 text-left">
                         <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">Quick Actions</div>
-                        {isWarden ? (
+                        {role.id === "warden" ? (
                           <>
                             <button
                               onClick={() => {
@@ -1120,6 +1128,59 @@ export function DashboardLayout() {
                               <span>Broadcast Announcement</span>
                             </button>
                           </>
+                        ) : role.id === "alumni_coordinator" ? (
+                          <>
+                            <button
+                              onClick={() => {
+                                navigate({ to: "/dashboard/admin/alumni/registration" });
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <UserPlus className="size-3.5 text-pink-500" />
+                              <span>Register Alumni</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                navigate({ to: "/dashboard/admin/alumni/events" });
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <Calendar className="size-3.5 text-rose-500" />
+                              <span>Create Event</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                navigate({ to: "/dashboard/admin/alumni/donations" });
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <DollarSign className="size-3.5 text-emerald-500" />
+                              <span>Record Donation</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                navigate({ to: "/dashboard/admin/alumni/mentorship" });
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <Users className="size-3.5 text-indigo-500" />
+                              <span>Match Mentor</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                navigate({ to: "/dashboard/admin/alumni/announcements" });
+                                setShowNewActions(false);
+                              }}
+                              className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
+                            >
+                              <Send className="size-3.5 text-amber-500" />
+                              <span>Broadcast Announcement</span>
+                            </button>
+                          </>
                         ) : (
                           <>
                             <button
@@ -1144,8 +1205,6 @@ export function DashboardLayout() {
                             </button>
                             <button
                               onClick={() => {
-                                setActiveQuickAction("addMember");
-                                setShowNewActions(false);
                                 setActiveQuickAction("addMember");
                                 setShowNewActions(false);
                               }}

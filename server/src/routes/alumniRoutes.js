@@ -16,6 +16,7 @@ import {
   getMentorshipRequests,
   matchMentorship,
   createDonation,
+  listDonations,
   getDonationLeaderboard,
   getSuccessStories,
   createSuccessStory,
@@ -61,6 +62,7 @@ router.post('/jobs/:id/apply', applyAlumniJob);
 router.get('/mentorship/requests', getMentorshipRequests);
 router.post('/mentorship/match', matchMentorship);
 router.post('/donations', createDonation);
+router.get('/donations', listDonations);
 router.get('/donations/leaderboard', getDonationLeaderboard);
 router.get('/stories', getSuccessStories);
 router.post('/stories', createSuccessStory);

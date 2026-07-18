@@ -17,6 +17,9 @@ const demoCredentialsByRole: Record<RoleId, { email: string; password: string }>
   hod: { email: "hod@college.com", password: "password123" },
   exam_cell: { email: "examcell@college.com", password: "password123" },
   accounts: { email: "accounts@college.com", password: "password123" },
+  lms: { email: "lms@college.com", password: "password123" },
+  alumni_coordinator: { email: "alumni.coordinator@college.com", password: "password123" },
+  alumni: { email: "alumni@college.com", password: "password123" },
 };
 
 // ── Role Mapping (backend ↔ frontend) ───────────────────
@@ -89,8 +92,8 @@ const roleDashboardMap: Record<string, string> = {
   hod: "/dashboard",
   "exam-cell": "/dashboard",
   accounts: "/dashboard",
-  "alumni-coordinator": "/dashboard/admin/alumni",
-  alumni: "/dashboard/admin/alumni",
+  "alumni-coordinator": "/alumni/dashboard",
+  alumni: "/alumni/dashboard",
 };
 
 /** Get the correct dashboard path for a backend role */

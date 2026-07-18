@@ -185,7 +185,7 @@ export function DashboardIndex() {
     return <AccountsDashboard />;
   }
   if (activeRole.id === "alumni" || activeRole.id === "alumni_coordinator") {
-    return <Navigate to="/dashboard/admin/alumni" />;
+    return <Navigate to="/alumni/dashboard" />;
   }
   if (activeRole.id === "transport") {
     return <TransportDashboard />;

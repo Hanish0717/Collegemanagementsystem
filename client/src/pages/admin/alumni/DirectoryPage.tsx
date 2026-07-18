@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useAlumni } from "../AdminAlumni";
 import { GradientHeader, GlassCard } from "./components/CardElements";
 import { AdvancedTableToolbar, StyledTable, TableRow, TableCell, TablePagination } from "./components/TableElements";
@@ -20,10 +20,26 @@ export function DirectoryPage() { console.log("DirectoryPage Rendered");
     );
   }
 
-  // Filter and pagination logic mock
-  const filtered = (directoryList || []).filter((a: any) => 
+  // Filter and pagination logic mapping database keys to UI keys
+  const directory = useMemo(() => {
+    return (directoryList || []).map((a: any) => ({
+      id: a.id,
+      name: a.full_name || a.name || "Anonymous",
+      email: a.email,
+      batch: String(a.graduation_year || a.batch || 2024),
+      department: a.department || "Computer Science",
+      designation: a.designation || "Engineer",
+      company: a.current_company || a.company || "Tech Inc",
+      location: a.location || "Global",
+      status: a.status === "Approved" ? "Verified" : (a.status || "Verified"),
+      image: a.photo || a.image
+    }));
+  }, [directoryList]);
+
+  const filtered = directory.filter((a: any) => 
     a.name?.toLowerCase().includes(search.toLowerCase()) || 
-    a.company?.toLowerCase().includes(search.toLowerCase())
+    a.company?.toLowerCase().includes(search.toLowerCase()) ||
+    a.batch?.includes(search)
   );
   
   const limit = 10;
