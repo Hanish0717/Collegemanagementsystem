@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import * as XLSX from "xlsx";
 import { useAlumni } from "../AdminAlumni";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { matchMentorship, bookMentorshipSession } from "@/services/alumniService";
@@ -163,6 +164,53 @@ export function MentorshipPage() {
     });
   };
 
+  const handleExportStatement = () => {
+    if (filteredMentorships.length === 0) {
+      toast.error("No mentorship data records to export.");
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+
+    // Summary sheet
+    const summaryData = [
+      ["MENTORSHIP NETWORK HUB — EXPORT SUMMARY"],
+      [],
+      ["Generated On", new Date().toLocaleString("en-IN")],
+      ["Total Active Pairings", filteredMentorships.length],
+    ];
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    summarySheet["!cols"] = [{ wch: 30 }, { wch: 25 }];
+    XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
+
+    // Pairings sheet
+    const headers = ["Mentor Name", "Mentor Designation", "Mentor Company", "Mentee Name", "Mentee Roll No", "Department", "Industry Core", "Program", "Start Date", "Status", "Rating"];
+    const rows = filteredMentorships.map((m: any) => [
+      m.mentor?.name, m.mentor?.designation, m.mentor?.company,
+      m.mentee?.name, m.mentee?.rollNo, m.department, m.industry,
+      m.program, m.startDate, m.status, m.rating
+    ]);
+    const pairSheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    pairSheet["!cols"] = [
+      { wch: 20 }, { wch: 22 }, { wch: 22 }, { wch: 20 },
+      { wch: 14 }, { wch: 20 }, { wch: 20 }, { wch: 24 },
+      { wch: 16 }, { wch: 10 }, { wch: 8 }
+    ];
+    XLSX.utils.book_append_sheet(wb, pairSheet, "Mentorship Pairings");
+
+    const filename = `Mentorship_Pairings_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`Mentorship pairings exported successfully.`);
+  };
+
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto pb-24">
       {/* Header */}
@@ -271,7 +319,7 @@ export function MentorshipPage() {
               <option value="Completed">Completed</option>
             </select>
           </div>
-          <Button variant="outline" className="rounded-xl border-muted" onClick={() => toast.success("Exporting mentorship data logs...")}>
+          <Button variant="outline" className="rounded-xl border-muted" onClick={handleExportStatement}>
             <FileText className="w-4 h-4 mr-2" /> Export Statement
           </Button>
         </div>
