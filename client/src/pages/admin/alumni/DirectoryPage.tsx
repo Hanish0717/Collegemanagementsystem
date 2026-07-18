@@ -86,7 +86,17 @@ export function DirectoryPage() {
     const ws = XLSX.utils.aoa_to_sheet(data);
     ws["!cols"] = [{ wch: 20 }, { wch: 40 }];
     XLSX.utils.book_append_sheet(wb, ws, "Profile");
-    XLSX.writeFile(wb, `Alumni_Profile_${alumni.name.replace(/\s+/g, "_")}.xlsx`);
+    const profileFilename = `Alumni_Profile_${alumni.name.replace(/\s+/g, "_")}.xlsx`;
+    const wbout1 = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob1 = new Blob([wbout1], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url1 = URL.createObjectURL(blob1);
+    const a1 = document.createElement("a");
+    a1.href = url1;
+    a1.download = profileFilename;
+    document.body.appendChild(a1);
+    a1.click();
+    document.body.removeChild(a1);
+    URL.revokeObjectURL(url1);
     toast.success(`Profile of ${alumni.name} downloaded as Excel.`);
   };
 
@@ -126,7 +136,16 @@ export function DirectoryPage() {
     XLSX.utils.book_append_sheet(wb, dirSheet, "Alumni Directory");
 
     const filename = `Alumni_Directory_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    XLSX.writeFile(wb, filename);
+    const wbout2 = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob2 = new Blob([wbout2], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url2 = URL.createObjectURL(blob2);
+    const a2 = document.createElement("a");
+    a2.href = url2;
+    a2.download = filename;
+    document.body.appendChild(a2);
+    a2.click();
+    document.body.removeChild(a2);
+    URL.revokeObjectURL(url2);
     toast.success(`Directory exported — ${filtered.length} alumni records.`);
   };
 

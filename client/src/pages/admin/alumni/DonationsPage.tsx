@@ -199,9 +199,18 @@ export function DonationsPage() {
     ];
     XLSX.utils.book_append_sheet(wb, detailSheet, "Donations Detail");
 
-    // Write and download
+    // Write and trigger download with correct filename
     const filename = `Donations_Statement_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    XLSX.writeFile(wb, filename);
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     toast.success(`Excel statement downloaded — ${donationsList.length} records exported.`);
   };
 
