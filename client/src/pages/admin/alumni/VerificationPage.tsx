@@ -1,19 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useAlumni } from "../AdminAlumni";
 import { GradientHeader, GlassCard } from "./components/CardElements";
 import { StyledTable, TableRow, TableCell, TablePagination, AdvancedTableToolbar } from "./components/TableElements";
-import { ShieldCheck, CheckCircle2, XCircle, Clock, Eye, FileText, X, Award, UserCheck } from "lucide-react";
+import { ShieldCheck, CheckCircle2, XCircle, Clock, Eye, FileText, X, Award, UserCheck, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { approveAlumniProfile } from "@/services/alumniService";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export function VerificationPage() {
-  const { pendingAlumni, pendingLoading } = useAlumni();
+  const { pendingAlumni, pendingLoading, directoryList } = useAlumni();
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [search, setSearch] = useState("");
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Document Review Modal state
   const [selectedApplicant, setSelectedApplicant] = useState<any>(null);
@@ -27,49 +29,86 @@ export function VerificationPage() {
       queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
       queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
       queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
-      toast.success(`Profile has been ${variables.status.toLowerCase()} successfully.`);
+      toast.success(`Profile status has been marked as ${variables.status.toLowerCase()} successfully.`);
     },
     onError: (err: any) => {
-      toast.error(err.message || "Failed to update status.");
+      toast.error(err.message || "Failed to update verification status.");
     }
   });
 
-  if (pendingLoading) {
-    return (
-      <div className="p-8 space-y-6 animate-pulse">
-        <div className="h-40 bg-muted rounded-3xl w-full" />
-        <div className="h-96 bg-muted rounded-3xl w-full" />
-      </div>
+  // Calculate dynamic tab button counts from database
+  const pendingList = useMemo(() => {
+    return (pendingAlumni || []).filter((a: any) => a.status === "Pending" || a.status === "Pending Verification" || !a.status).map((a: any) => ({
+      id: String(a.id),
+      name: a.full_name || a.name || "Anonymous",
+      batch: String(a.graduation_year || a.batch || 2024),
+      department: a.department || "Computer Science",
+      appliedAt: a.created_at || a.appliedAt || new Date().toISOString(),
+      docsCount: 2,
+      email: a.email || "N/A",
+      status: "Pending Verification",
+      raw: a
+    }));
+  }, [pendingAlumni]);
+
+  const approvedList = useMemo(() => {
+    return (directoryList || []).filter((a: any) => a.status === "Approved" || a.status === "Verified").map((a: any) => ({
+      id: String(a.id),
+      name: a.full_name || a.name || "Anonymous",
+      batch: String(a.graduation_year || a.batch || 2024),
+      department: a.department || "Computer Science",
+      appliedAt: a.created_at || a.appliedAt || new Date().toISOString(),
+      docsCount: 2,
+      email: a.email || "N/A",
+      status: "Verified",
+      raw: a
+    }));
+  }, [directoryList]);
+
+  const rejectedList = useMemo(() => {
+    const rejectedPending = (pendingAlumni || []).filter((a: any) => a.status === "Rejected");
+    const rejectedDir = (directoryList || []).filter((a: any) => a.status === "Rejected");
+    return [...rejectedPending, ...rejectedDir].map((a: any) => ({
+      id: String(a.id),
+      name: a.full_name || a.name || "Anonymous",
+      batch: String(a.graduation_year || a.batch || 2024),
+      department: a.department || "Computer Science",
+      appliedAt: a.created_at || a.appliedAt || new Date().toISOString(),
+      docsCount: 2,
+      email: a.email || "N/A",
+      status: "Rejected",
+      raw: a
+    }));
+  }, [pendingAlumni, directoryList]);
+
+  // Select active list
+  const activeList = useMemo(() => {
+    if (activeTab === 'pending') return pendingList;
+    if (activeTab === 'approved') return approvedList;
+    return rejectedList;
+  }, [activeTab, pendingList, approvedList, rejectedList]);
+
+  const filteredList = useMemo(() => {
+    return activeList.filter((a: any) => 
+      a.name?.toLowerCase().includes(search.toLowerCase()) || 
+      a.batch?.includes(search) ||
+      a.department?.toLowerCase().includes(search.toLowerCase())
     );
-  }
+  }, [activeList, search]);
 
-  // List of pending records
-  const pendingList = (pendingAlumni || []).map((a: any) => ({
-    id: String(a.id),
-    name: a.full_name || a.name || "Anonymous",
-    batch: String(a.graduation_year || a.batch || 2024),
-    department: a.department || "Computer Science",
-    appliedAt: a.created_at || a.appliedAt || new Date().toISOString(),
-    docsCount: 2,
-    email: a.email || "N/A",
-    status: a.status || "Pending"
-  }));
-
-  const filteredList = pendingList.filter((a: any) => 
-    a.name?.toLowerCase().includes(search.toLowerCase()) || 
-    a.batch?.includes(search) ||
-    a.department?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  // Tab count
-  const pendingCount = filteredList.filter(a => a.status !== "Approved" && a.status !== "Rejected").length;
+  // Pagination calculations
+  const limit = 10;
+  const totalPages = Math.ceil(filteredList.length / limit) || 1;
+  const paginatedList = useMemo(() => {
+    return filteredList.slice((currentPage - 1) * limit, currentPage * limit);
+  }, [filteredList, currentPage]);
 
   // Checkbox handlers
   const handleSelectAll = () => {
-    if (selectedRows.length === filteredList.length) {
+    if (selectedRows.length === paginatedList.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(filteredList.map(a => a.id));
+      setSelectedRows(paginatedList.map(a => a.id));
     }
   };
 
@@ -110,6 +149,15 @@ export function VerificationPage() {
     setIsReviewOpen(true);
   };
 
+  if (pendingLoading) {
+    return (
+      <div className="p-8 space-y-6 animate-pulse">
+        <div className="h-40 bg-muted rounded-3xl w-full" />
+        <div className="h-96 bg-muted rounded-3xl w-full" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto pb-24">
       <GradientHeader 
@@ -120,22 +168,31 @@ export function VerificationPage() {
       >
         <div className="flex bg-black/20 p-1 rounded-xl">
           <button 
-            onClick={() => setActiveTab('pending')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ${activeTab === 'pending' ? 'bg-white text-orange-600 shadow-sm' : 'text-white hover:bg-white/10'}`}
+            onClick={() => { setActiveTab('pending'); setCurrentPage(1); setSelectedRows([]); }}
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors", 
+              activeTab === 'pending' ? 'bg-white text-orange-600 shadow-sm' : 'text-white hover:bg-white/10'
+            )}
           >
-            Pending ({pendingCount})
+            Pending ({pendingList.length})
           </button>
           <button 
-            onClick={() => setActiveTab('approved')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ${activeTab === 'approved' ? 'bg-white text-orange-600 shadow-sm' : 'text-white hover:bg-white/10'}`}
+            onClick={() => { setActiveTab('approved'); setCurrentPage(1); setSelectedRows([]); }}
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors", 
+              activeTab === 'approved' ? 'bg-white text-orange-600 shadow-sm' : 'text-white hover:bg-white/10'
+            )}
           >
-            Approved
+            Approved ({approvedList.length})
           </button>
           <button 
-            onClick={() => setActiveTab('rejected')}
-            className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ${activeTab === 'rejected' ? 'bg-white text-orange-600 shadow-sm' : 'text-white hover:bg-white/10'}`}
+            onClick={() => { setActiveTab('rejected'); setCurrentPage(1); setSelectedRows([]); }}
+            className={cn(
+              "px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors", 
+              activeTab === 'rejected' ? 'bg-white text-orange-600 shadow-sm' : 'text-white hover:bg-white/10'
+            )}
           >
-            Rejected
+            Rejected ({rejectedList.length})
           </button>
         </div>
       </GradientHeader>
@@ -159,15 +216,15 @@ export function VerificationPage() {
         </div>
 
         <AdvancedTableToolbar 
-          onSearch={setSearch}
+          onSearch={(val) => { setSearch(val); setCurrentPage(1); }}
           searchPlaceholder="Search by applicant name or batch..."
         />
 
         <StyledTable headers={[
-          activeTab === 'pending' ? <input type="checkbox" checked={selectedRows.length === filteredList.length && filteredList.length > 0} onChange={handleSelectAll} className="rounded" /> : null,
+          activeTab === 'pending' ? <input type="checkbox" checked={selectedRows.length === paginatedList.length && paginatedList.length > 0} onChange={handleSelectAll} className="rounded" /> : null,
           "Applicant", "Academic Info", "Submitted On", "Documents", "Actions"
         ].filter(Boolean)}>
-          {filteredList.map((app: any) => (
+          {paginatedList.length > 0 ? paginatedList.map((app: any) => (
             <TableRow key={app.id}>
               {activeTab === 'pending' && (
                 <TableCell>
@@ -205,37 +262,50 @@ export function VerificationPage() {
                   <Button variant="ghost" size="sm" onClick={() => handleReviewClick(app)} className="h-8 w-8 p-0 rounded-xl bg-muted/50 hover:bg-muted" title="Review Docs">
                     <Eye className="w-4 h-4" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0 rounded-xl text-emerald-600 hover:bg-emerald-50" 
-                    title="Approve"
-                    onClick={() => verifyMutation.mutate({ id: app.id, status: "Approved" })}
-                    disabled={verifyMutation.isPending}
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-8 w-8 p-0 rounded-xl text-rose-600 hover:bg-rose-50" 
-                    title="Reject"
-                    onClick={() => {
-                      if (window.confirm(`Are you sure you want to reject registration for ${app.name}?`)) {
-                        verifyMutation.mutate({ id: app.id, status: "Rejected" });
-                      }
-                    }}
-                    disabled={verifyMutation.isPending}
-                  >
-                    <XCircle className="w-4 h-4" />
-                  </Button>
+                  {activeTab === 'pending' && (
+                    <>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0 rounded-xl text-emerald-600 hover:bg-emerald-50" 
+                        title="Approve"
+                        onClick={() => verifyMutation.mutate({ id: app.id, status: "Approved" })}
+                        disabled={verifyMutation.isPending}
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0 rounded-xl text-rose-600 hover:bg-rose-50" 
+                        title="Reject"
+                        onClick={() => {
+                          if (window.confirm(`Are you sure you want to reject registration for ${app.name}?`)) {
+                            verifyMutation.mutate({ id: app.id, status: "Rejected" });
+                          }
+                        }}
+                        disabled={verifyMutation.isPending}
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
-          ))}
+          )) : (
+            <tr>
+              <td colSpan={activeTab === 'pending' ? 6 : 5} className="px-6 py-12 text-center text-muted-foreground">
+                <div className="flex flex-col items-center gap-2">
+                  <Search className="w-8 h-8 opacity-20" />
+                  <p>No applicants found matching current search criteria.</p>
+                </div>
+              </td>
+            </tr>
+          )}
         </StyledTable>
         
-        <TablePagination currentPage={1} totalPages={1} onPageChange={() => {}} />
+        <TablePagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       </GlassCard>
 
       {/* ── MODAL: Document Review Popup ── */}
@@ -298,27 +368,34 @@ export function VerificationPage() {
                 Applicant Email: <span className="font-bold text-foreground">{selectedApplicant.email}</span>
               </span>
               <div className="flex gap-2">
-                <Button 
-                  onClick={() => {
-                    if (window.confirm(`Are you sure you want to reject this application?`)) {
-                      verifyMutation.mutate({ id: selectedApplicant.id, status: "Rejected" });
-                      setIsReviewOpen(false);
-                    }
-                  }}
-                  variant="outline" 
-                  className="rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50 gap-1.5"
-                >
-                  <XCircle className="w-4 h-4" /> Reject
+                <Button variant="outline" onClick={() => setIsReviewOpen(false)} className="rounded-xl">
+                  Close
                 </Button>
-                <Button 
-                  onClick={() => {
-                    verifyMutation.mutate({ id: selectedApplicant.id, status: "Approved" });
-                    setIsReviewOpen(false);
-                  }}
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
-                >
-                  <UserCheck className="w-4 h-4" /> Approve Applicant
-                </Button>
+                {activeTab === 'pending' && (
+                  <>
+                    <Button 
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to reject this application?`)) {
+                          verifyMutation.mutate({ id: selectedApplicant.id, status: "Rejected" });
+                          setIsReviewOpen(false);
+                        }
+                      }}
+                      variant="outline" 
+                      className="rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50 gap-1.5"
+                    >
+                      <XCircle className="w-4 h-4" /> Reject
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        verifyMutation.mutate({ id: selectedApplicant.id, status: "Approved" });
+                        setIsReviewOpen(false);
+                      }}
+                      className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+                    >
+                      <UserCheck className="w-4 h-4" /> Approve Applicant
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
