@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { cn } from "@/lib/utils";
 import { GlassCard } from "./components/CardElements";
 import { useAlumni } from "../AdminAlumni";
 import { Button } from "@/components/ui/button";
@@ -49,11 +50,11 @@ export function ProfilePage() {
   const handleConnect = () => {
     if (connectStatus === "Connect") {
       setConnectStatus("Requested");
-      setConnectionsCount(prev => prev + 1);
+      setConnectionsCount((prev: number) => prev + 1);
       toast.success(`Connection request dispatched to ${profile.name}.`);
     } else {
       setConnectStatus("Connect");
-      setConnectionsCount(prev => prev - 1);
+      setConnectionsCount((prev: number) => prev - 1);
       toast.info(`Connection request retracted.`);
     }
   };

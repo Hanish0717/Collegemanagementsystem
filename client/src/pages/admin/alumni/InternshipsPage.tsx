@@ -271,8 +271,10 @@ export function InternshipsPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold block">Select Resume File (Word or PDF format only) *</label>
                 <FileUploadZone 
-                  value={uploadForm ? { name: uploadForm.name, size: uploadForm.size } : (uploadedResumeFile ? { name: uploadedResumeFile.name, size: uploadedResumeFile.size } : null)}
-                  onChange={(file) => setUploadForm(file)}
+                  onFileSelect={(file: File) => setUploadForm(file)}
+                  accept=".pdf,.doc,.docx"
+                  label="Click or drag resume to upload"
+                  subLabel="PDF, DOC or DOCX (max. 5MB)"
                 />
               </div>
               <div className="pt-4 border-t flex justify-end gap-2">

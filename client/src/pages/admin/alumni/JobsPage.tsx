@@ -410,8 +410,10 @@ export function JobsPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold block">Upload Resume (Word or PDF format only) *</label>
                 <FileUploadZone 
-                  value={applyForm.resumeName ? { name: applyForm.resumeName, size: applyForm.resumeSize } : null}
-                  onChange={(file) => setApplyForm({ ...applyForm, resumeName: file ? file.name : "", resumeSize: file ? file.size : 0 })}
+                  onFileSelect={(file: File) => setApplyForm({ ...applyForm, resumeName: file.name, resumeSize: file.size })}
+                  accept=".pdf,.doc,.docx"
+                  label="Click or drag resume to upload"
+                  subLabel="PDF, DOC or DOCX (max. 5MB)"
                 />
               </div>
               <div className="pt-4 border-t flex justify-end gap-2">
@@ -469,7 +471,7 @@ export function JobsPage() {
                   No saved jobs found. Click the bookmark icon on any job card to save.
                 </div>
               ) : (
-                mockJobs.filter(j => savedJobs.includes(j.id)).map(job => (
+                mockJobs.filter((j: any) => savedJobs.includes(j.id)).map((job: any) => (
                   <div key={job.id} className="p-4 border rounded-2xl flex justify-between items-center">
                     <div className="text-xs">
                       <p className="font-bold text-sm text-foreground">{job.title}</p>

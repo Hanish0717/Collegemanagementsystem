@@ -299,14 +299,14 @@ export function DashboardPage() {
 
     // Graduation Years sheet
     const gradHeaders = ["Graduation Year", "Alumni Count"];
-    const gradRows = gradYearData.map(d => [d.name, d.count]);
+    const gradRows = gradYearData.map((d: { name: string; count: number }) => [d.name, d.count]);
     const gradSheet = XLSX.utils.aoa_to_sheet([gradHeaders, ...gradRows]);
     gradSheet["!cols"] = [{ wch: 20 }, { wch: 15 }];
     XLSX.utils.book_append_sheet(wb, gradSheet, "By Graduation Year");
 
     // Departments sheet
     const deptHeaders = ["Department", "Student Count"];
-    const deptRows = deptData.map(d => [d.name, d.students]);
+    const deptRows = deptData.map((d: { name: string; students: number }) => [d.name, d.students]);
     const deptSheet = XLSX.utils.aoa_to_sheet([deptHeaders, ...deptRows]);
     deptSheet["!cols"] = [{ wch: 28 }, { wch: 15 }];
     XLSX.utils.book_append_sheet(wb, deptSheet, "By Department");

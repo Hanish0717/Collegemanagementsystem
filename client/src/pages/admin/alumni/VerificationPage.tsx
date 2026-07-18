@@ -108,7 +108,7 @@ export function VerificationPage() {
     if (selectedRows.length === paginatedList.length) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(paginatedList.map(a => a.id));
+      setSelectedRows(paginatedList.map((a: any) => a.id));
     }
   };
 
