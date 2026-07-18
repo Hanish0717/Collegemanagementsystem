@@ -28,7 +28,13 @@ export function StatCard({
     indigo: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400",
   };
 
-  const isLongValue = typeof value === 'string' && value.length > 12;
+  const valStr = String(value);
+  let sizeClass = "text-3xl";
+  if (valStr.length > 15) {
+    sizeClass = "text-base md:text-lg break-words leading-tight";
+  } else if (valStr.length > 9) {
+    sizeClass = "text-lg md:text-xl leading-tight";
+  }
 
   return (
     <div className={cn("p-6 rounded-3xl border bg-card/50 backdrop-blur-xl shadow-sm hover:shadow-md transition-all duration-300 group", className)}>
@@ -40,7 +46,7 @@ export function StatCard({
       </div>
       
       <div className="flex flex-col gap-1">
-        <div className={cn("font-bold tracking-tight text-foreground", isLongValue ? "text-base md:text-lg break-words leading-tight" : "text-3xl")}>{value}</div>
+        <div className={cn("font-bold tracking-tight text-foreground", sizeClass)}>{value}</div>
         {trend && (
           <div className={cn("flex items-center text-xs font-medium mt-1", trend.isPositive ? "text-emerald-500" : "text-rose-500")}>
             {trend.isPositive ? "+" : "-"}{Math.abs(trend.value)}%

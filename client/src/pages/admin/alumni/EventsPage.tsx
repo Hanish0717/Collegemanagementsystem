@@ -183,7 +183,7 @@ export function EventsPage() {
         <StatCard title="Upcoming Gatherings" value={upcomingCount} icon={CalendarIcon} color="rose" />
         <StatCard title="Reunions Completed" value={completedCount} icon={CheckCircle} color="green" />
         <StatCard title="Total Ticket Sales" value={totalRegistrations.toLocaleString()} icon={Users} color="blue" />
-        <StatCard title="Campaign Revenue" value={`$${totalRevenue.toLocaleString()}`} icon={DollarSign} color="green" trend={{ value: 12.4, isPositive: true }} />
+        <StatCard title="Campaign Revenue" value={`₹${totalRevenue.toLocaleString("en-IN")}`} icon={DollarSign} color="green" trend={{ value: 12.4, isPositive: true }} />
         <StatCard title="Attendance Rate" value={`${averageAttendance}%`} icon={Award} color="purple" />
         <StatCard title="Average Rating" value={`${feedbackAverage} / 5.0`} icon={Star} color="orange" />
       </div>
@@ -375,7 +375,7 @@ export function EventsPage() {
                 <FormGroup label="Date & Time *" required>
                   <StyledInput type="datetime-local" value={eventForm.date} onChange={e => setEventForm({...eventForm, date: e.target.value})} required />
                 </FormGroup>
-                <FormGroup label="Ticket Price ($) *" required>
+                <FormGroup label="Ticket Price (₹) *" required>
                   <StyledInput type="number" value={eventForm.price} onChange={e => setEventForm({...eventForm, price: e.target.value})} placeholder="0 for Free" required />
                 </FormGroup>
               </div>
@@ -482,7 +482,7 @@ export function EventsPage() {
                   <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Campaign Statistics</h5>
                   <div className="space-y-2">
                     <div className="flex justify-between"><span className="text-muted-foreground">Ticket Type:</span> <span className="font-bold">{selectedEvent.price === 0 ? "Free" : "Paid"}</span></div>
-                    <div className="flex justify-between"><span className="text-muted-foreground">Sales Total:</span> <span className="font-bold text-rose-600">${selectedEvent.revenue.toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Sales Total:</span> <span className="font-bold text-rose-600">₹{selectedEvent.revenue.toLocaleString("en-IN")}</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Attendance:</span> <span className="font-bold">{selectedEvent.attendanceRate}%</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Co-Sponsors:</span> <span className="font-semibold text-foreground">{selectedEvent.sponsors?.join(", ") || "None"}</span></div>
                   </div>
@@ -551,8 +551,8 @@ export function EventsPage() {
               {/* Price Calculations */}
               <div className="p-4 bg-muted/20 border border-muted/50 rounded-2xl flex justify-between items-center">
                 <div>
-                  <span className="font-bold text-[10px] text-muted-foreground uppercase">Grand Total (USD)</span>
-                  <span className="block font-bold text-rose-600 text-lg">${(selectedEvent.price * parseInt(ticketForm.qty || "1")).toLocaleString()}</span>
+                  <span className="font-bold text-[10px] text-muted-foreground uppercase">Grand Total (INR)</span>
+                  <span className="block font-bold text-rose-600 text-lg">₹{(selectedEvent.price * parseInt(ticketForm.qty || "1")).toLocaleString("en-IN")}</span>
                 </div>
                 <div className="text-right">
                   <Badge className="bg-emerald-50 text-emerald-600 border-emerald-200">Payment Secured</Badge>

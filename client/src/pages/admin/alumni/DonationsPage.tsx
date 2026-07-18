@@ -56,7 +56,7 @@ export function DonationsPage() {
   const pendingCount = donationsList.filter((d: any) => d.status === "Pending").length;
   const completedCount = donationsList.filter((d: any) => d.status === "Completed").length + 420;
   const averageDonation = Math.round(totalDonations / completedCount);
-  const topDonor = donationsList.length > 0 ? `${donationsList[0].donorName} ($${donationsList[0].amount.toLocaleString()})` : "Wayne Enterprises ($120,000)";
+  const topDonor = donationsList.length > 0 ? `${donationsList[0].donorName} (₹${donationsList[0].amount.toLocaleString("en-IN")})` : "Wayne Enterprises (₹1,20,000)";
 
   // Charts Mock Data
   const monthlyDonationsData = [
@@ -108,7 +108,7 @@ export function DonationsPage() {
       queryClient.invalidateQueries({ queryKey: ["alumni-donations"] });
       queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
       queryClient.invalidateQueries({ queryKey: ["alumni-leaderboard"] });
-      toast.success(`Donation of $${donationForm.amount} recorded from ${donationForm.donorName}.`);
+      toast.success(`Donation of ₹${donationForm.amount} recorded from ${donationForm.donorName}.`);
       setIsAddOpen(false);
       setDonationForm({
         donorName: "", batch: "2020", amount: "", category: "Scholarship", 
@@ -160,11 +160,11 @@ export function DonationsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-        <StatCard title="Total Donations" value={`$${totalDonations.toLocaleString()}`} icon={DollarSign} color="green" trend={{ value: 14.5, isPositive: true }} trendLabel="vs last year" />
-        <StatCard title="This Month Collection" value={`$${thisMonthDonations.toLocaleString()}`} icon={TrendingUp} color="blue" />
+        <StatCard title="Total Donations" value={`₹${totalDonations.toLocaleString("en-IN")}`} icon={DollarSign} color="green" trend={{ value: 14.5, isPositive: true }} trendLabel="vs last year" />
+        <StatCard title="This Month Collection" value={`₹${thisMonthDonations.toLocaleString("en-IN")}`} icon={TrendingUp} color="blue" />
         <StatCard title="Pending Checks" value={pendingCount} icon={Calendar} color="orange" />
         <StatCard title="Completed Receipts" value={completedCount} icon={ShieldCheck} color="green" />
-        <StatCard title="Average Contribution" value={`$${averageDonation.toLocaleString()}`} icon={Heart} color="rose" />
+        <StatCard title="Average Contribution" value={`₹${averageDonation.toLocaleString("en-IN")}`} icon={Heart} color="rose" />
         <StatCard title="Top Donor Entity" value={topDonor} icon={Award} color="purple" />
       </div>
 
@@ -184,7 +184,7 @@ export function DonationsPage() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="opacity-10" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} tickFormatter={(val) => `$${val / 1000}k`} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} tickFormatter={(val) => `₹${val / 1000}k`} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: 'none' }} />
                   <Area type="monotone" dataKey="amount" stroke="#10b981" strokeWidth={3} fill="url(#colorAmount)" />
                 </AreaChart>
@@ -267,7 +267,7 @@ export function DonationsPage() {
               <TableCell><span className="font-semibold text-xs text-muted-foreground">{don.id}</span></TableCell>
               <TableCell><span className="font-semibold text-sm">{don.donorName}</span></TableCell>
               <TableCell><span className="text-xs">{don.batch}</span></TableCell>
-              <TableCell><span className="font-bold text-sm text-green-600">${don.amount.toLocaleString()}</span></TableCell>
+              <TableCell><span className="font-bold text-sm text-green-600">₹{don.amount.toLocaleString("en-IN")}</span></TableCell>
               <TableCell>
                 <Badge variant="outline" className="text-[10px] bg-green-50 border-green-200 text-green-700">{don.category}</Badge>
               </TableCell>
@@ -333,7 +333,7 @@ export function DonationsPage() {
                 <FormGroup label="Graduation Year / Batch" required>
                   <StyledInput value={donationForm.batch} onChange={e => setDonationForm({...donationForm, batch: e.target.value})} placeholder="e.g. 1995 or Corporate" required />
                 </FormGroup>
-                <FormGroup label="Donation Amount (USD) *" required>
+                <FormGroup label="Donation Amount (INR) *" required>
                   <StyledInput type="number" value={donationForm.amount} onChange={e => setDonationForm({...donationForm, amount: e.target.value})} placeholder="e.g. 25000" required />
                 </FormGroup>
               </div>
@@ -418,7 +418,7 @@ export function DonationsPage() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground block">Amount Contributed</span>
-                  <span className="font-bold text-green-600 text-lg">${selectedDonation.amount.toLocaleString()}</span>
+                  <span className="font-bold text-green-600 text-lg">₹{selectedDonation.amount.toLocaleString("en-IN")}</span>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground block">Payment Method</span>

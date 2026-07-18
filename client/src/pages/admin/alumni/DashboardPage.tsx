@@ -76,7 +76,7 @@ export function DashboardPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
       queryClient.invalidateQueries({ queryKey: ["alumni-leaderboard"] });
-      toast.success(`Donation of $${donationForm.amount} recorded successfully.`);
+      toast.success(`Donation of ₹${donationForm.amount} recorded successfully.`);
       setIsRecordDonationOpen(false);
       setDonationForm({ donor: "", amount: "", category: "Scholarship", mode: "UPI", refNo: "", notes: "" });
     },
@@ -279,7 +279,7 @@ export function DashboardPage() {
         <StatCard title="Total Alumni" value={kpis.totalAlumni.toLocaleString()} icon={Users} color="blue" trend={{ value: 12.5, isPositive: true }} trendLabel="vs last year" />
         <StatCard title="Active Alumni" value={kpis.activeAlumni.toLocaleString()} icon={UserCheck} color="green" trend={{ value: 8.2, isPositive: true }} />
         <StatCard title="Pending Verifications" value={kpis.newRegistrations.toLocaleString()} icon={GraduationCap} color="purple" trend={{ value: 15.4, isPositive: true }} />
-        <StatCard title="Total Donations" value={`$${kpis.totalDonations.toLocaleString()}`} icon={DollarSign} color="green" trend={{ value: 24.5, isPositive: true }} />
+        <StatCard title="Total Donations" value={`₹${kpis.totalDonations.toLocaleString("en-IN")}`} icon={DollarSign} color="green" trend={{ value: 24.5, isPositive: true }} />
         <StatCard title="Upcoming Events" value={String(kpis.upcomingEvents)} icon={Calendar} color="rose" />
         <StatCard title="Active Mentorships" value={String(kpis.mentorshipRequests)} icon={Target} color="orange" trend={{ value: 18.2, isPositive: true }} />
       </div>
@@ -566,7 +566,7 @@ export function DashboardPage() {
                   <Input type="datetime-local" value={eventForm.date} onChange={e => setEventForm({...eventForm, date: e.target.value})} required />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold block mb-1">Ticket Price ($) *</label>
+                  <label className="text-xs font-semibold block mb-1">Ticket Price (₹) *</label>
                   <Input type="number" value={eventForm.price} onChange={e => setEventForm({...eventForm, price: e.target.value})} placeholder="0 (for free)" required />
                 </div>
               </div>
@@ -603,7 +603,7 @@ export function DashboardPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold block mb-1">Amount ($) *</label>
+                  <label className="text-xs font-semibold block mb-1">Amount (₹) *</label>
                   <Input type="number" value={donationForm.amount} onChange={e => setDonationForm({...donationForm, amount: e.target.value})} placeholder="e.g. 5000" required />
                 </div>
                 <div>
