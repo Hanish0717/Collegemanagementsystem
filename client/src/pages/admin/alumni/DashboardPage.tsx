@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import * as XLSX from "xlsx";
+import { useNavigate } from "@tanstack/react-router";
 import { useAlumni } from "../AdminAlumni";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
@@ -23,7 +25,21 @@ import { toast } from "sonner";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 export function DashboardPage() {
+  const navigate = useNavigate();
   const { stats, eventList, jobList, statsLoading } = useAlumni();
+
+  // Custom states for interactive widgets
+  const [pendingMatches, setPendingMatches] = useState([
+    { id: "match-1", student: "Alice Green", dept: "CSE", mentor: "Sarah Connor (OpenAI)", score: 92 },
+    { id: "match-2", student: "Bob Dylan", dept: "ECE", mentor: "David Chen (Stripe)", score: 85 }
+  ]);
+
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "15 self-registrations waiting for verification check.", time: "10 mins ago", type: "warning", icon: Shield, unread: true },
+    { id: 2, text: "Donation receipt generated automatically for Transaction #94320.", time: "1 hr ago", type: "success", icon: DollarSign, unread: true },
+    { id: 3, text: "New mentorship request submitted by Alice Green (2024).", time: "2 hrs ago", type: "info", icon: Target, unread: true },
+    { id: 4, text: "Bulk announcement email sent successfully to 1,200 alumni.", time: "Yesterday", type: "success", icon: Send, unread: true }
+  ]);
 
   // Dialog open states
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
@@ -260,6 +276,65 @@ export function DashboardPage() {
     });
   };
 
+  // Export Overview summary statistics as Excel spreadsheet
+  const handleExportOverviewReport = () => {
+    const wb = XLSX.utils.book_new();
+
+    // Summary stats sheet
+    const summaryData = [
+      ["ALUMNI COORDINATOR DASHBOARD OVERVIEW"],
+      [],
+      ["Generated On", new Date().toLocaleString("en-IN")],
+      ["Total Alumni", kpis.totalAlumni],
+      ["Active Alumni", kpis.activeAlumni],
+      ["Pending Verifications", kpis.newRegistrations],
+      ["Total Donations (INR)", kpis.totalDonations],
+      ["Upcoming Events", kpis.upcomingEvents],
+      ["Active Mentorship Requests", kpis.mentorshipRequests],
+    ];
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    summarySheet["!cols"] = [{ wch: 35 }, { wch: 25 }];
+    XLSX.utils.book_append_sheet(wb, summarySheet, "Overview Summary");
+
+    // Graduation Years sheet
+    const gradHeaders = ["Graduation Year", "Alumni Count"];
+    const gradRows = gradYearData.map(d => [d.name, d.count]);
+    const gradSheet = XLSX.utils.aoa_to_sheet([gradHeaders, ...gradRows]);
+    gradSheet["!cols"] = [{ wch: 20 }, { wch: 15 }];
+    XLSX.utils.book_append_sheet(wb, gradSheet, "By Graduation Year");
+
+    // Departments sheet
+    const deptHeaders = ["Department", "Student Count"];
+    const deptRows = deptData.map(d => [d.name, d.students]);
+    const deptSheet = XLSX.utils.aoa_to_sheet([deptHeaders, ...deptRows]);
+    deptSheet["!cols"] = [{ wch: 28 }, { wch: 15 }];
+    XLSX.utils.book_append_sheet(wb, deptSheet, "By Department");
+
+    // Write and download xlsx file
+    const filename = `Alumni_Overview_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Overview report exported successfully.");
+  };
+
+  const handleApproveMatch = (id: string, student: string, mentor: string) => {
+    toast.success(`Mentorship match pairing between ${student} and ${mentor} approved!`);
+    setPendingMatches(prev => prev.filter(m => m.id !== id));
+  };
+
+  const handleMarkAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+    toast.success("All system notifications marked as read.");
+  };
+
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto pb-24">
       {/* Header */}
@@ -269,7 +344,7 @@ export function DashboardPage() {
         icon={LayoutDashboard}
         color="from-rose-500 to-pink-600"
       >
-        <Button variant="secondary" className="rounded-xl bg-white/20 text-white hover:bg-white/30 border-0">
+        <Button variant="secondary" onClick={handleExportOverviewReport} className="rounded-xl bg-white/20 text-white hover:bg-white/30 border-0">
           Export Overview Report
         </Button>
       </GradientHeader>
@@ -386,7 +461,7 @@ export function DashboardPage() {
         <GlassCard className="p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-lg">Recent Registrations</h3>
-            <Button variant="ghost" size="sm" className="rounded-xl text-primary">View All</Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/dashboard/admin/alumni/registration" })} className="rounded-xl text-primary">View All</Button>
           </div>
           <div className="space-y-4 flex-1 overflow-y-auto max-h-[400px] pr-2">
             {[
@@ -418,23 +493,26 @@ export function DashboardPage() {
             {/* Mentorship requests */}
             <div>
               <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Pending Mentor Matches</h4>
-              <div className="space-y-3">
-                {[
-                  { student: "Alice Green", dept: "CSE", mentor: "Sarah Connor (OpenAI)", score: 92 },
-                  { student: "Bob Dylan", dept: "ECE", mentor: "David Chen (Stripe)", score: 85 }
-                ].map((req, idx) => (
-                  <div key={idx} className="p-3 rounded-xl border bg-card text-xs flex justify-between items-center">
-                    <div>
-                      <p className="font-bold">{req.student} <span className="text-muted-foreground font-normal">({req.dept})</span></p>
-                      <p className="text-muted-foreground mt-1">Suggested: {req.mentor}</p>
+              {pendingMatches.length === 0 ? (
+                <div className="text-center py-6 text-xs text-muted-foreground border border-dashed rounded-xl">
+                  No pending matches
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pendingMatches.map((req, idx) => (
+                    <div key={idx} className="p-3 rounded-xl border bg-card text-xs flex justify-between items-center">
+                      <div>
+                        <p className="font-bold">{req.student} <span className="text-muted-foreground font-normal">({req.dept})</span></p>
+                        <p className="text-muted-foreground mt-1">Suggested: {req.mentor}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-lg">{req.score}% match</span>
+                        <Button size="sm" onClick={() => handleApproveMatch(req.id, req.student, req.mentor)} className="h-7 px-2.5 rounded-lg text-[10px] bg-orange-600 hover:bg-orange-700">Approve</Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-lg">{req.score}% match</span>
-                      <Button size="sm" className="h-7 px-2.5 rounded-lg text-[10px] bg-orange-600 hover:bg-orange-700">Approve</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Recent Donations */}
@@ -450,7 +528,7 @@ export function DashboardPage() {
                       <p className="font-bold">{don.donor} <span className="text-muted-foreground font-normal">({don.batch})</span></p>
                       <p className="text-muted-foreground mt-1">Fund: {don.category}</p>
                     </div>
-                    <span className="font-bold text-emerald-600 text-sm">${don.amount}</span>
+                    <span className="font-bold text-emerald-600 text-sm">₹{don.amount.toLocaleString("en-IN")}</span>
                   </div>
                 ))}
               </div>
@@ -462,15 +540,10 @@ export function DashboardPage() {
         <GlassCard className="p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-lg">System Notifications</h3>
-            <Button variant="ghost" size="sm" className="rounded-xl text-primary">Mark read</Button>
+            <Button variant="ghost" size="sm" onClick={handleMarkAllRead} className="rounded-xl text-primary">Mark read</Button>
           </div>
           <div className="space-y-4 flex-1">
-            {[
-              { text: "15 self-registrations waiting for verification check.", time: "10 mins ago", type: "warning", icon: Shield },
-              { text: "Donation receipt generated automatically for Transaction #94320.", time: "1 hr ago", type: "success", icon: DollarSign },
-              { text: "New mentorship request submitted by Alice Green (2024).", time: "2 hrs ago", type: "info", icon: Target },
-              { text: "Bulk announcement email sent successfully to 1,200 alumni.", time: "Yesterday", type: "success", icon: Send }
-            ].map((item, idx) => {
+            {notifications.map((item, idx) => {
               const colors = {
                 warning: "bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400",
                 success: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400",
@@ -478,12 +551,12 @@ export function DashboardPage() {
               };
               const Icon = item.icon;
               return (
-                <div key={idx} className="flex gap-3 text-xs leading-relaxed">
+                <div key={idx} className={cn("flex gap-3 text-xs leading-relaxed transition-opacity duration-300", !item.unread && "opacity-50")}>
                   <div className={`p-2 rounded-xl shrink-0 h-8 w-8 flex items-center justify-center ${colors[item.type as 'warning'|'success'|'info']}`}>
                     <Icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">{item.text}</p>
+                    <p className={cn("font-medium text-foreground", item.unread ? "font-semibold" : "font-normal")}>{item.text}</p>
                     <span className="text-[10px] text-muted-foreground mt-0.5 block">{item.time}</span>
                   </div>
                 </div>
