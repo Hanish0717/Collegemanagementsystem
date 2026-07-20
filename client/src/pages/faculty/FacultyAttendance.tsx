@@ -1481,9 +1481,9 @@ export function FacultyAttendance() {
           </div>
 
           {/* Main Container */}
-          {(notificationsTab === 'all_students' || notificationsTab === 'recommended') && (
+          {(notificationsTab === 'select_students' || notificationsTab === 'send_notifications') && (
             <div className="space-y-4 animate-fade-in">
-              {notificationsTab === 'recommended' && (
+              {notificationsTab === 'send_notifications' && (
                 <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl flex items-start gap-3">
                   <Info className="size-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
@@ -1649,7 +1649,7 @@ export function FacultyAttendance() {
           )}
 
           {/* Pending HOD signoffs */}
-          {notificationsTab === 'pending' && (
+          {notificationsTab === 'pending_hod' && (
             <Card className="animate-fade-in">
               <div className="border-b pb-3 mb-4">
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -1715,7 +1715,7 @@ export function FacultyAttendance() {
           )}
 
           {/* Approved Alerts (Waiting for dispatch) */}
-          {notificationsTab === 'approved' && (
+          {notificationsTab === 'approved_requests' && (
             <Card className="animate-fade-in">
               <div className="border-b pb-3 mb-4">
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
@@ -1760,7 +1760,10 @@ export function FacultyAttendance() {
                           </td>
                           <td className="py-3.5 px-3 text-right pr-3">
                             <button
-                              onClick={() => handleFinalDispatch(req.id)}
+                              onClick={() => {
+                                setActiveDispatchRequest(req);
+                                handleFinalDispatch();
+                              }}
                               className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-[10px] cursor-pointer transition shadow-sm"
                             >
                               Dispatch Warning
@@ -1776,7 +1779,7 @@ export function FacultyAttendance() {
           )}
 
           {/* Sent history */}
-          {notificationsTab === 'history' && (
+          {notificationsTab === 'sent_history' && (
             <Card className="animate-fade-in">
               <div className="border-b pb-3 mb-4">
                 <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">

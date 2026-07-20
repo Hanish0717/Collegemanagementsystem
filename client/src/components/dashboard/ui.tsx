@@ -7,6 +7,7 @@ export function StatCard({
   change,
   icon: Icon,
   theme = 'blue',
+  gradient,
 }: {
   label: string;
   value: ReactNode;
@@ -14,6 +15,7 @@ export function StatCard({
   change?: string;
   icon: any;
   theme?: 'blue' | 'green' | 'purple' | 'amber';
+  gradient?: string;
 }) {
   // Single Royal Blue design system for all stat cards
   const style = {
