@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import {
   AlertCircle,
   Edit,
@@ -14,15 +14,15 @@ import {
   UserRound,
   Users,
   CheckCircle,
-} from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { toast } from "sonner";
+} from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
 import {
   StudentDeleteAlert,
   StudentFilterModal,
   StudentFormModal,
   StudentVerifyModal,
-} from "./students/StudentDialogs";
+} from './students/StudentDialogs';
 import {
   createStudent,
   deleteStudent,
@@ -34,16 +34,16 @@ import {
   type DepartmentOption,
   type StudentPayload,
   type StudentRecord,
-} from "@/services/studentService";
+} from '@/services/studentService';
 
 const PAGE_SIZE = 8;
 
 const defaultFilters = {
-  department: "All",
-  year: "All",
-  status: "All",
-  attendance: "All",
-  cgpa: "All",
+  department: 'All',
+  year: 'All',
+  status: 'All',
+  attendance: 'All',
+  cgpa: 'All',
 };
 
 const buildPageWindow = (currentPage: number, totalPages: number) => {
@@ -64,10 +64,10 @@ const getDepartmentName = (departmentCode: string, departments: DepartmentOption
 
 const initials = (name: string) =>
   name
-    .split(" ")
+    .split(' ')
     .filter(Boolean)
     .map((value) => value[0])
-    .join("")
+    .join('')
     .slice(0, 2)
     .toUpperCase();
 
@@ -75,7 +75,7 @@ export function StudentsPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [filters, setFilters] = useState(defaultFilters);
   const [page, setPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -85,13 +85,13 @@ export function StudentsPage() {
   const [deleteTarget, setDeleteTarget] = useState<StudentRecord | null>(null);
 
   const { data: departments = [] } = useQuery({
-    queryKey: ["departments"],
+    queryKey: ['departments'],
     queryFn: fetchDepartments,
   });
 
   const { data: statsData, isLoading: isStatsLoading } = useQuery({
     queryKey: [
-      "students-stats",
+      'students-stats',
       search,
       filters.department,
       filters.year,
@@ -120,7 +120,7 @@ export function StudentsPage() {
     error,
   } = useQuery({
     queryKey: [
-      "students",
+      'students',
       search,
       filters.department,
       filters.year,
@@ -155,74 +155,81 @@ export function StudentsPage() {
   const createStudentMutation = useMutation({
     mutationFn: createStudent,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["students"] });
-      await queryClient.invalidateQueries({ queryKey: ["students-stats"] });
-      toast.success("Student added successfully");
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.invalidateQueries({ queryKey: ['students-stats'] });
+      toast.success('Student added successfully');
       setIsFormOpen(false);
       setEditingStudent(null);
-      console.debug("createStudentMutation: success, invalidated queries");
+      console.debug('createStudentMutation: success, invalidated queries');
     },
     onError: (mutationError: unknown) => {
-      const message = mutationError instanceof Error ? mutationError.message : JSON.stringify(mutationError);
-      console.error("createStudent error:", mutationError);
-      toast.error(message || "Failed to add student");
+      const message =
+        mutationError instanceof Error ? mutationError.message : JSON.stringify(mutationError);
+      console.error('createStudent error:', mutationError);
+      toast.error(message || 'Failed to add student');
     },
   });
 
   const updateStudentMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: StudentPayload }) => updateStudent(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: StudentPayload }) =>
+      updateStudent(id, payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["students"] });
-      await queryClient.invalidateQueries({ queryKey: ["students-stats"] });
-      toast.success("Student updated successfully");
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.invalidateQueries({ queryKey: ['students-stats'] });
+      toast.success('Student updated successfully');
       setIsFormOpen(false);
       setEditingStudent(null);
     },
     onError: (mutationError: unknown) => {
-      const message = mutationError instanceof Error ? mutationError.message : JSON.stringify(mutationError);
-      console.error("updateStudent error:", mutationError);
-      toast.error(message || "Failed to update student");
+      const message =
+        mutationError instanceof Error ? mutationError.message : JSON.stringify(mutationError);
+      console.error('updateStudent error:', mutationError);
+      toast.error(message || 'Failed to update student');
     },
   });
 
   const deleteStudentMutation = useMutation({
     mutationFn: deleteStudent,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["students"] });
-      await queryClient.invalidateQueries({ queryKey: ["students-stats"] });
-      toast.success("Student deleted successfully");
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.invalidateQueries({ queryKey: ['students-stats'] });
+      toast.success('Student deleted successfully');
       setDeleteTarget(null);
     },
     onError: (mutationError: unknown) => {
-      const message = mutationError instanceof Error ? mutationError.message : JSON.stringify(mutationError);
-      console.error("deleteStudent error:", mutationError);
-      toast.error(message || "Failed to delete student");
+      const message =
+        mutationError instanceof Error ? mutationError.message : JSON.stringify(mutationError);
+      console.error('deleteStudent error:', mutationError);
+      toast.error(message || 'Failed to delete student');
     },
   });
 
   const activeStudentsCount = useMemo(
-    () => statsStudents.filter((student) => getStudentDisplayStatus(student) === "Active").length,
+    () => statsStudents.filter((student) => getStudentDisplayStatus(student) === 'Active').length,
     [statsStudents],
   );
 
   const warningStudentsCount = useMemo(
-    () => statsStudents.filter((student) => getStudentDisplayStatus(student) === "Warning").length,
+    () => statsStudents.filter((student) => getStudentDisplayStatus(student) === 'Warning').length,
     [statsStudents],
   );
 
   const inactiveStudentsCount = useMemo(
-    () => statsStudents.filter((student) => getStudentDisplayStatus(student) === "Inactive").length,
+    () => statsStudents.filter((student) => getStudentDisplayStatus(student) === 'Inactive').length,
     [statsStudents],
   );
 
   const averageAttendance = useMemo(() => {
-    if (!statsStudents.length) return "0%";
-    const total = statsStudents.reduce((sum, student) => sum + (student.attendancePercentage ?? 0), 0);
+    if (!statsStudents.length) return '0%';
+    const total = statsStudents.reduce(
+      (sum, student) => sum + (student.attendancePercentage ?? 0),
+      0,
+    );
     return `${Math.round(total / statsStudents.length)}%`;
   }, [statsStudents]);
 
   const averageCgpa = useMemo(() => {
-    if (!statsStudents.length) return "0.00";
+    if (!statsStudents.length) return '0.00';
     const total = statsStudents.reduce((sum, student) => sum + (student.cgpa ?? 0), 0);
     return (total / statsStudents.length).toFixed(2);
   }, [statsStudents]);
@@ -235,8 +242,6 @@ export function StudentsPage() {
     setIsFormOpen(true);
   };
 
-
-
   const openEditModal = (student: StudentRecord) => {
     setEditingStudent(student);
     setIsFormOpen(true);
@@ -245,23 +250,23 @@ export function StudentsPage() {
   const handleFormSubmit = async (payload: StudentPayload) => {
     // Prevent duplicate submissions
     if (createStudentMutation.isPending || updateStudentMutation.isPending) {
-      console.debug("Submission blocked: mutation already in progress");
+      console.debug('Submission blocked: mutation already in progress');
       return;
     }
 
-    console.debug("handleFormSubmit payload:", payload);
+    console.debug('handleFormSubmit payload:', payload);
 
     try {
       if (editingStudent) {
         const res = await updateStudentMutation.mutateAsync({ id: editingStudent.id, payload });
-        console.debug("updateStudent result:", res);
+        console.debug('updateStudent result:', res);
         return;
       }
 
       const res = await createStudentMutation.mutateAsync(payload);
-      console.debug("createStudent result:", res);
+      console.debug('createStudent result:', res);
     } catch (err) {
-      console.error("handleFormSubmit caught error:", err);
+      console.error('handleFormSubmit caught error:', err);
     }
   };
 
@@ -375,9 +380,9 @@ export function StudentsPage() {
         ) : isError ? (
           <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-3">
             <AlertCircle className="size-8 mx-auto text-rose-500" />
-            <p>{error instanceof Error ? error.message : "Failed to load students."}</p>
+            <p>{error instanceof Error ? error.message : 'Failed to load students.'}</p>
             <button
-              onClick={() => queryClient.invalidateQueries({ queryKey: ["students"] })}
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['students'] })}
               className="px-4 py-2 rounded-xl border text-sm hover:bg-accent"
             >
               Retry
@@ -394,13 +399,11 @@ export function StudentsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
                   <tr>
-                    {["ID", "Name", "Branch", "Year", "Attendance", "Status", ""].map(
-                      (header) => (
-                        <th key={header} className="text-left px-5 py-3 font-medium">
-                          {header}
-                        </th>
-                      ),
-                    )}
+                    {['ID', 'Name', 'Branch', 'Year', 'Attendance', 'Status', ''].map((header) => (
+                      <th key={header} className="text-left px-5 py-3 font-medium">
+                        {header}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -433,11 +436,11 @@ export function StudentsPage() {
                       <td className="px-5 py-3">
                         <Badge
                           tone={
-                            getStudentDisplayStatus(student) === "Active"
-                              ? "success"
-                              : getStudentDisplayStatus(student) === "Warning"
-                                ? "warn"
-                                : "danger"
+                            getStudentDisplayStatus(student) === 'Active'
+                              ? 'success'
+                              : getStudentDisplayStatus(student) === 'Warning'
+                                ? 'warn'
+                                : 'danger'
                           }
                         >
                           {getStudentDisplayStatus(student)}
@@ -476,7 +479,8 @@ export function StudentsPage() {
             <div className="p-4 flex items-center justify-between text-xs text-muted-foreground border-t">
               <span>
                 Showing {students.length ? (pagination.currentPage - 1) * pagination.limit + 1 : 0}–
-                {(pagination.currentPage - 1) * pagination.limit + students.length} of {pagination.totalStudents}
+                {(pagination.currentPage - 1) * pagination.limit + students.length} of{' '}
+                {pagination.totalStudents}
               </span>
               <div className="flex gap-1 items-center">
                 <button
@@ -492,15 +496,17 @@ export function StudentsPage() {
                     onClick={() => setPage(pageNumber)}
                     className={`px-2.5 py-1 rounded-md ${
                       pageNumber === pagination.currentPage
-                        ? "bg-gradient-primary text-white"
-                        : "border bg-background"
+                        ? 'bg-gradient-primary text-white'
+                        : 'border bg-background'
                     }`}
                   >
                     {pageNumber}
                   </button>
                 ))}
                 <button
-                  onClick={() => setPage((currentPage) => Math.min(pagination.totalPages, currentPage + 1))}
+                  onClick={() =>
+                    setPage((currentPage) => Math.min(pagination.totalPages, currentPage + 1))
+                  }
                   disabled={pagination.currentPage === pagination.totalPages}
                   className="px-2.5 py-1 rounded-md border bg-background disabled:opacity-50"
                 >
@@ -553,8 +559,8 @@ export function StudentsPage() {
           <div>
             <h3 className="font-bold text-lg text-gradient">Realtime Student Registry</h3>
             <p className="text-xs text-muted-foreground max-w-sm mt-1">
-              Manage student records from Supabase with instant create, update, delete, search, filters,
-              profile navigation, and pagination.
+              Manage student records from Supabase with instant create, update, delete, search,
+              filters, profile navigation, and pagination.
             </p>
           </div>
           <button
@@ -577,7 +583,7 @@ export function StudentsPage() {
 
       <StudentFormModal
         open={isFormOpen}
-        mode={editingStudent ? "edit" : "create"}
+        mode={editingStudent ? 'edit' : 'create'}
         student={editingStudent}
         departments={departments}
         submitting={createStudentMutation.isPending || updateStudentMutation.isPending}
@@ -590,7 +596,7 @@ export function StudentsPage() {
 
       <StudentDeleteAlert
         open={Boolean(deleteTarget)}
-        studentName={deleteTarget?.fullName ?? "this student"}
+        studentName={deleteTarget?.fullName ?? 'this student'}
         loading={deleteStudentMutation.isPending}
         onClose={() => setDeleteTarget(null)}
         onConfirm={async () => {

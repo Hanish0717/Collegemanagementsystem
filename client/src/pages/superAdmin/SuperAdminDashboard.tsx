@@ -1,5 +1,5 @@
-import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { Outlet, createFileRoute, useRouterState } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
 import {
   Area,
   AreaChart,
@@ -13,7 +13,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts';
 import {
   Activity,
   Bell,
@@ -25,61 +25,61 @@ import {
   ShieldCheck,
   Users,
   Wallet,
-} from "lucide-react";
-import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
-import { useSuperAdminStats } from "@/hooks/useSuperAdminStats";
-import { Skeleton } from "@/components/ui/skeleton";
+} from 'lucide-react';
+import { Badge, Card, PageHeader, StatCard } from '@/components/dashboard/ui';
+import { useSuperAdminStats } from '@/hooks/useSuperAdminStats';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statsConfig = [
   {
-    label: "Total Colleges/Departments",
-    fallback: "18",
-    change: "+2.4%",
+    label: 'Total Colleges/Departments',
+    fallback: '18',
+    change: '+2.4%',
     icon: Building2,
-    gradient: "bg-gradient-primary",
+    gradient: 'bg-gradient-primary',
   },
   {
-    label: "Total Students",
-    fallback: "0",
+    label: 'Total Students',
+    fallback: '0',
     icon: Users,
-    gradient: "bg-gradient-violet",
+    gradient: 'bg-gradient-violet',
   },
   {
-    label: "Total Faculty",
-    fallback: "0",
+    label: 'Total Faculty',
+    fallback: '0',
     icon: GraduationCap,
-    gradient: "bg-gradient-cyan",
+    gradient: 'bg-gradient-cyan',
   },
   {
-    label: "Total Admins",
-    fallback: "0",
+    label: 'Total Admins',
+    fallback: '0',
     icon: ShieldCheck,
-    gradient: "bg-gradient-primary",
+    gradient: 'bg-gradient-primary',
   },
   {
-    label: "Active Users",
-    fallback: "0",
+    label: 'Active Users',
+    fallback: '0',
     icon: Activity,
-    gradient: "bg-gradient-violet",
+    gradient: 'bg-gradient-violet',
   },
   {
-    label: "Service Uptime",
-    fallback: "99.9%",
-    change: "+0.01%",
+    label: 'Service Uptime',
+    fallback: '99.9%',
+    change: '+0.01%',
     icon: CheckCircle,
-    gradient: "bg-gradient-cyan",
+    gradient: 'bg-gradient-cyan',
   },
   {
-    label: "Database Latency",
-    fallback: "12 ms",
+    label: 'Database Latency',
+    fallback: '12 ms',
     icon: Database,
-    gradient: "bg-gradient-primary",
+    gradient: 'bg-gradient-primary',
   },
   {
-    label: "Pending Approvals",
-    fallback: "0",
+    label: 'Pending Approvals',
+    fallback: '0',
     icon: Clock,
-    gradient: "bg-gradient-violet",
+    gradient: 'bg-gradient-violet',
   },
 ];
 
@@ -93,20 +93,20 @@ export function SuperAdminDashboard() {
   const actLogs = liveStats?.superAdminActivities || [];
   const notifyLogs = liveStats?.superAdminNotifications || [];
 
-  if (path !== "/dashboard/super-admin") {
+  if (path !== '/dashboard/super-admin') {
     return <Outlet />;
   }
 
   const getStatValue = (label: string, fallback: string) => {
     const isLiveKey = [
-      "Total Colleges/Departments",
-      "Total Students",
-      "Total Faculty",
-      "Total Admins",
-      "Active Users",
-      "Pending Approvals",
-      "Service Uptime",
-      "Database Latency",
+      'Total Colleges/Departments',
+      'Total Students',
+      'Total Faculty',
+      'Total Admins',
+      'Active Users',
+      'Pending Approvals',
+      'Service Uptime',
+      'Database Latency',
     ].includes(label);
 
     if (isLiveKey && isLoading) {
@@ -115,21 +115,21 @@ export function SuperAdminDashboard() {
     if (!liveStats) return fallback;
 
     switch (label) {
-      case "Total Colleges/Departments":
-        return liveStats.totalDepartments.toLocaleString("en-IN");
-      case "Total Students":
-        return liveStats.totalStudents.toLocaleString("en-IN");
-      case "Total Faculty":
-        return liveStats.totalFaculty.toLocaleString("en-IN");
-      case "Total Admins":
-        return liveStats.totalAdmins.toLocaleString("en-IN");
-      case "Active Users":
-        return liveStats.activeUsers.toLocaleString("en-IN");
-      case "Pending Approvals":
-        return liveStats.pendingApprovals.toLocaleString("en-IN");
-      case "Service Uptime":
+      case 'Total Colleges/Departments':
+        return liveStats.totalDepartments.toLocaleString('en-IN');
+      case 'Total Students':
+        return liveStats.totalStudents.toLocaleString('en-IN');
+      case 'Total Faculty':
+        return liveStats.totalFaculty.toLocaleString('en-IN');
+      case 'Total Admins':
+        return liveStats.totalAdmins.toLocaleString('en-IN');
+      case 'Active Users':
+        return liveStats.activeUsers.toLocaleString('en-IN');
+      case 'Pending Approvals':
+        return liveStats.pendingApprovals.toLocaleString('en-IN');
+      case 'Service Uptime':
         return liveStats.serviceUptime || fallback;
-      case "Database Latency":
+      case 'Database Latency':
         return liveStats.dbLatency || fallback;
       default:
         return fallback;
@@ -189,7 +189,7 @@ export function SuperAdminDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Area
                   type="monotone"
                   dataKey="users"
@@ -259,7 +259,7 @@ export function SuperAdminDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Bar dataKey="logins" fill="#4F46E5" radius={[8, 8, 0, 0]} />
                 <Bar dataKey="actions" fill="#06B6D4" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -273,12 +273,14 @@ export function SuperAdminDashboard() {
             <Database className="size-4 text-muted-foreground" />
           </div>
           <div className="space-y-3">
-            {(liveStats?.systemStatus || [
-              { label: "Application Server", value: "Operational", tone: "success" as const },
-              { label: "Database Cluster", value: "Operational", tone: "success" as const },
-              { label: "Email Gateway", value: "Monitoring", tone: "warn" as const },
-              { label: "Backup Service", value: "Synced", tone: "info" as const },
-            ]).map((item) => (
+            {(
+              liveStats?.systemStatus || [
+                { label: 'Application Server', value: 'Operational', tone: 'success' as const },
+                { label: 'Database Cluster', value: 'Operational', tone: 'success' as const },
+                { label: 'Email Gateway', value: 'Monitoring', tone: 'warn' as const },
+                { label: 'Backup Service', value: 'Synced', tone: 'info' as const },
+              ]
+            ).map((item) => (
               <div
                 key={item.label}
                 className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
@@ -307,8 +309,8 @@ export function SuperAdminDashboard() {
                   {activity.actor.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1 text-sm">
-                  <span className="font-medium">{activity.actor}</span>{" "}
-                  <span className="text-muted-foreground">{activity.action}</span>{" "}
+                  <span className="font-medium">{activity.actor}</span>{' '}
+                  <span className="text-muted-foreground">{activity.action}</span>{' '}
                   <span className="font-medium">{activity.target}</span>
                   <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
                 </div>
@@ -327,7 +329,7 @@ export function SuperAdminDashboard() {
             {notifyLogs.map((notification) => (
               <div
                 key={notification.id}
-                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200" : "hover:bg-accent/50"}`}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? 'bg-blue-50 border-blue-200' : 'hover:bg-accent/50'}`}
               >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
@@ -336,11 +338,11 @@ export function SuperAdminDashboard() {
                 </div>
                 <Badge
                   tone={
-                    notification.type === "Security"
-                      ? "danger"
-                      : notification.type === "Approval"
-                        ? "warn"
-                        : "info"
+                    notification.type === 'Security'
+                      ? 'danger'
+                      : notification.type === 'Approval'
+                        ? 'warn'
+                        : 'info'
                   }
                 >
                   {notification.type}

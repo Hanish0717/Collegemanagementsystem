@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Plus, Sliders, Check, X, Loader2 } from "lucide-react";
-import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import api from "@/lib/api";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import { Plus, Sliders, Check, X, Loader2 } from 'lucide-react';
+import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
+import api from '@/lib/api';
+import { toast } from 'sonner';
 
 interface StudentItem {
   id: string;
@@ -48,22 +48,46 @@ export function PlacementEligibility() {
     setAppliedSelectedYear(selectedYear);
     setAppliedSelectedSection(selectedSection);
     setAppliedSelectedSkill(selectedSkill);
-    toast.success("Current eligibility criteria successfully applied to student registers!");
+    toast.success('Current eligibility criteria successfully applied to student registers!');
   };
 
   // Criteria Template States
   const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false);
-  const [criteriaName, setCriteriaName] = useState("");
+  const [criteriaName, setCriteriaName] = useState('');
   const [newMinCgpa, setNewMinCgpa] = useState(7.0);
   const [newMaxBacklogs, setNewMaxBacklogs] = useState(0);
-  const [newDept, setNewDept] = useState("");
-  const [newYear, setNewYear] = useState("");
-  const [newSkill, setNewSkill] = useState("");
+  const [newDept, setNewDept] = useState('');
+  const [newYear, setNewYear] = useState('');
+  const [newSkill, setNewSkill] = useState('');
 
   const [savedTemplates, setSavedTemplates] = useState<CriteriaTemplate[]>([
-    { id: "CRIT_1", name: "Google SDE Role", minCgpa: 8.0, maxBacklogs: 0, dept: "Computer Science", year: 4, skill: "React" },
-    { id: "CRIT_2", name: "Goldman Sachs Analyst", minCgpa: 7.5, maxBacklogs: 0, dept: "Business", year: 4, skill: "Data Analysis" },
-    { id: "CRIT_3", name: "Infosys Trainee", minCgpa: 6.0, maxBacklogs: 2, dept: null, year: null, skill: "SQL" }
+    {
+      id: 'CRIT_1',
+      name: 'Google SDE Role',
+      minCgpa: 8.0,
+      maxBacklogs: 0,
+      dept: 'Computer Science',
+      year: 4,
+      skill: 'React',
+    },
+    {
+      id: 'CRIT_2',
+      name: 'Goldman Sachs Analyst',
+      minCgpa: 7.5,
+      maxBacklogs: 0,
+      dept: 'Business',
+      year: 4,
+      skill: 'Data Analysis',
+    },
+    {
+      id: 'CRIT_3',
+      name: 'Infosys Trainee',
+      minCgpa: 6.0,
+      maxBacklogs: 2,
+      dept: null,
+      year: null,
+      skill: 'SQL',
+    },
   ]);
 
   const applyTemplate = (template: CriteriaTemplate) => {
@@ -87,7 +111,7 @@ export function PlacementEligibility() {
   const handleCreateCriteria = (e: React.FormEvent) => {
     e.preventDefault();
     if (!criteriaName.trim()) {
-      toast.error("Template name is required!");
+      toast.error('Template name is required!');
       return;
     }
     const newTemplate: CriteriaTemplate = {
@@ -97,39 +121,45 @@ export function PlacementEligibility() {
       maxBacklogs: newMaxBacklogs,
       dept: newDept || null,
       year: newYear ? parseInt(newYear) : null,
-      skill: newSkill || null
+      skill: newSkill || null,
     };
-    setSavedTemplates(prev => [newTemplate, ...prev]);
+    setSavedTemplates((prev) => [newTemplate, ...prev]);
     applyTemplate(newTemplate);
     setIsCriteriaModalOpen(false);
     // Reset form
-    setCriteriaName("");
+    setCriteriaName('');
     setNewMinCgpa(7.0);
     setNewMaxBacklogs(0);
-    setNewDept("");
-    setNewYear("");
-    setNewSkill("");
+    setNewDept('');
+    setNewYear('');
+    setNewSkill('');
   };
 
   useEffect(() => {
-    api.get("/api/students?limit=1000")
+    api
+      .get('/api/students?limit=1000')
       .then((res) => {
-        if (res.data && res.data.success && res.data.data && Array.isArray(res.data.data.students)) {
+        if (
+          res.data &&
+          res.data.success &&
+          res.data.data &&
+          Array.isArray(res.data.data.students)
+        ) {
           const mapped = res.data.data.students.map((s: any) => ({
             id: s.rollNumber || s.roll_number || s.id,
             name: s.fullName || s.full_name || s.name,
-            dept: s.department || "Computer Science",
+            dept: s.department || 'Computer Science',
             year: s.year || 4,
             cgpa: parseFloat(s.cgpa) || 8.0,
             attendance: parseFloat(s.attendancePercentage || s.attendance_percentage) || 90,
-            section: s.section || "A"
+            section: s.section || 'A',
           }));
           setStudents(mapped);
         }
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Could not query live students:", err);
+        console.error('Could not query live students:', err);
         setStudents([]);
         setLoading(false);
       });
@@ -137,45 +167,49 @@ export function PlacementEligibility() {
 
   const normalizeDept = (dept: string) => {
     const d = dept.toLowerCase().trim();
-    if (d === "computer science & engineering" || d === "computer science" || d === "cse") return "CSE";
-    if (d === "artificial intelligence & machine learning" || d === "aiml") return "AIML";
-    if (d === "artificial intelligence & data science" || d === "aids") return "AIDS";
-    if (d === "electronics & communication engineering" || d === "electronics" || d === "ece") return "ECE";
-    if (d === "electrical & electronics engineering" || d === "eee") return "EEE";
-    if (d === "mechanical engineering" || d === "mechanical" || d === "mech") return "MECH";
-    if (d === "civil engineering" || d === "civil") return "CIVIL";
-    if (d === "information technology" || d === "it") return "IT";
-    if (d === "cybersecurity") return "CYBERSECURITY";
+    if (d === 'computer science & engineering' || d === 'computer science' || d === 'cse')
+      return 'CSE';
+    if (d === 'artificial intelligence & machine learning' || d === 'aiml') return 'AIML';
+    if (d === 'artificial intelligence & data science' || d === 'aids') return 'AIDS';
+    if (d === 'electronics & communication engineering' || d === 'electronics' || d === 'ece')
+      return 'ECE';
+    if (d === 'electrical & electronics engineering' || d === 'eee') return 'EEE';
+    if (d === 'mechanical engineering' || d === 'mechanical' || d === 'mech') return 'MECH';
+    if (d === 'civil engineering' || d === 'civil') return 'CIVIL';
+    if (d === 'information technology' || d === 'it') return 'IT';
+    if (d === 'cybersecurity') return 'CYBERSECURITY';
     return dept.toUpperCase();
   };
 
-  const departments = students.length > 0
-    ? Array.from(new Set(students.map((s) => s.dept).filter(Boolean))).sort()
-    : ["CSE", "AIML", "AIDS", "ECE", "EEE", "MECH", "CIVIL", "IT", "CYBERSECURITY"];
+  const departments =
+    students.length > 0
+      ? Array.from(new Set(students.map((s) => s.dept).filter(Boolean))).sort()
+      : ['CSE', 'AIML', 'AIDS', 'ECE', 'EEE', 'MECH', 'CIVIL', 'IT', 'CYBERSECURITY'];
 
-  const sections = students.length > 0
-    ? Array.from(new Set(students.map((s) => s.section).filter(Boolean))).sort()
-    : ["A", "B", "C"];
+  const sections =
+    students.length > 0
+      ? Array.from(new Set(students.map((s) => s.section).filter(Boolean))).sort()
+      : ['A', 'B', 'C'];
 
   const years = [1, 2, 3, 4];
-  const skills = ["Java", "React", "Python", "SQL", "Communication", "Data Analysis"];
-  
+  const skills = ['Java', 'React', 'Python', 'SQL', 'Communication', 'Data Analysis'];
+
   const getStudentSkills = (studentId: string) => {
     const studentSkillsMock: Record<string, string[]> = {
-      STU001: ["Java", "React", "SQL"],
-      STU002: ["Python", "Data Analysis", "Communication"],
-      STU003: ["Java", "Python"],
-      STU004: ["Communication", "Data Analysis"],
-      STU005: ["React", "SQL"],
-      STU006: ["Communication", "React"],
-      STU007: ["Python", "Data Analysis"],
-      STU008: ["SQL", "Communication"],
+      STU001: ['Java', 'React', 'SQL'],
+      STU002: ['Python', 'Data Analysis', 'Communication'],
+      STU003: ['Java', 'Python'],
+      STU004: ['Communication', 'Data Analysis'],
+      STU005: ['React', 'SQL'],
+      STU006: ['Communication', 'React'],
+      STU007: ['Python', 'Data Analysis'],
+      STU008: ['SQL', 'Communication'],
     };
     if (studentSkillsMock[studentId]) return studentSkillsMock[studentId];
-    
+
     // Deterministic skills based on roll number / ID
-    const allSkills = ["Java", "React", "Python", "SQL", "Communication", "Data Analysis"];
-    const charSum = studentId.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const allSkills = ['Java', 'React', 'Python', 'SQL', 'Communication', 'Data Analysis'];
+    const charSum = studentId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
     const count = 2 + (charSum % 2); // 2 or 3 skills
     const selected: string[] = [];
     for (let i = 0; i < count; i++) {
@@ -201,9 +235,9 @@ export function PlacementEligibility() {
       STU008: 0,
     };
     if (studentBacklogsMock[studentId] !== undefined) return studentBacklogsMock[studentId];
-    
+
     // Deterministic backlogs: 85% chance of 0, 10% chance of 1, 5% chance of 2
-    const charSum = studentId.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    const charSum = studentId.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
     const mod = charSum % 100;
     if (mod < 85) return 0;
     if (mod < 95) return 1;
@@ -211,37 +245,46 @@ export function PlacementEligibility() {
   };
 
   const cohortStudents = students.filter((s) => {
-    const meetsDept = !appliedSelectedDept || normalizeDept(s.dept) === normalizeDept(appliedSelectedDept);
+    const meetsDept =
+      !appliedSelectedDept || normalizeDept(s.dept) === normalizeDept(appliedSelectedDept);
     const meetsYear = !appliedSelectedYear || s.year === appliedSelectedYear;
-    const meetsSection = !appliedSelectedSection || s.section.toLowerCase() === appliedSelectedSection.toLowerCase();
+    const meetsSection =
+      !appliedSelectedSection || s.section.toLowerCase() === appliedSelectedSection.toLowerCase();
     return meetsDept && meetsYear && meetsSection;
   });
 
   const eligibleStudents = cohortStudents.filter((s) => {
     const meetsGPA = s.cgpa >= appliedCgpaFilter;
     const meetsBacklog = getStudentBacklogs(s.id) <= appliedBacklogFilter;
-    const meetsSkill = !appliedSelectedSkill || getStudentSkills(s.id).includes(appliedSelectedSkill);
+    const meetsSkill =
+      !appliedSelectedSkill || getStudentSkills(s.id).includes(appliedSelectedSkill);
     return meetsGPA && meetsBacklog && meetsSkill;
   });
 
-  const ineligibleStudents = cohortStudents.filter((s) => !eligibleStudents.find((e) => e.id === s.id));
+  const ineligibleStudents = cohortStudents.filter(
+    (s) => !eligibleStudents.find((e) => e.id === s.id),
+  );
 
   const eligibilityStats = [
-    { label: "Total Students", value: cohortStudents.length.toString(), gradient: "bg-gradient-cyan" },
     {
-      label: "Eligible",
+      label: 'Total Students',
+      value: cohortStudents.length.toString(),
+      gradient: 'bg-gradient-cyan',
+    },
+    {
+      label: 'Eligible',
       value: eligibleStudents.length.toString(),
-      gradient: "bg-gradient-primary",
+      gradient: 'bg-gradient-primary',
     },
     {
-      label: "Ineligible",
+      label: 'Ineligible',
       value: ineligibleStudents.length.toString(),
-      gradient: "bg-gradient-violet",
+      gradient: 'bg-gradient-violet',
     },
     {
-      label: "Eligibility Rate",
+      label: 'Eligibility Rate',
       value: `${cohortStudents.length > 0 ? Math.round((eligibleStudents.length / cohortStudents.length) * 100) : 0}%`,
-      gradient: "bg-gradient-emerald",
+      gradient: 'bg-gradient-emerald',
     },
   ];
 
@@ -251,7 +294,7 @@ export function PlacementEligibility() {
         title="Eligibility System"
         desc="Set eligibility criteria and manage student qualifications."
         actions={
-          <button 
+          <button
             onClick={() => setIsCriteriaModalOpen(true)}
             className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
           >
@@ -283,7 +326,9 @@ export function PlacementEligibility() {
 
         {/* Saved Templates Quick-Apply */}
         <div className="mb-6 pb-4 border-b border-dashed border-slate-100">
-          <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2.5">Quick Apply Saved Criteria Templates</label>
+          <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2.5">
+            Quick Apply Saved Criteria Templates
+          </label>
           <div className="flex flex-wrap gap-2">
             {savedTemplates.map((t) => (
               <button
@@ -345,7 +390,7 @@ export function PlacementEligibility() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Department</label>
             <select
-              value={selectedDept || ""}
+              value={selectedDept || ''}
               onChange={(e) => setSelectedDept(e.target.value || null)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
             >
@@ -362,7 +407,7 @@ export function PlacementEligibility() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Academic Year</label>
             <select
-              value={selectedYear || ""}
+              value={selectedYear || ''}
               onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : null)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
             >
@@ -379,7 +424,7 @@ export function PlacementEligibility() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Section</label>
             <select
-              value={selectedSection || ""}
+              value={selectedSection || ''}
               onChange={(e) => setSelectedSection(e.target.value || null)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
             >
@@ -396,7 +441,7 @@ export function PlacementEligibility() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Required Skill</label>
             <select
-              value={selectedSkill || ""}
+              value={selectedSkill || ''}
               onChange={(e) => setSelectedSkill(e.target.value || null)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer"
             >
@@ -410,7 +455,7 @@ export function PlacementEligibility() {
           </div>
         </div>
 
-        <button 
+        <button
           onClick={handleApplyChanges}
           className="mt-4 w-full px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:shadow-lg transition cursor-pointer"
         >
@@ -422,7 +467,9 @@ export function PlacementEligibility() {
         <Card className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="size-8 text-primary animate-spin" />
-            <span className="text-sm text-muted-foreground">Evaluating student eligibility records...</span>
+            <span className="text-sm text-muted-foreground">
+              Evaluating student eligibility records...
+            </span>
           </div>
         </Card>
       )}
@@ -449,13 +496,21 @@ export function PlacementEligibility() {
                   <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
                     Department
                   </th>
-                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Year</th>
-                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Section</th>
-                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">CGPA</th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Year
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    Section
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
+                    CGPA
+                  </th>
                   <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                     Backlogs
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Skills</th>
+                  <th className="text-left py-3 px-4 font-semibold text-muted-foreground">
+                    Skills
+                  </th>
                   <th className="text-center py-3 px-4 font-semibold text-muted-foreground">
                     Attendance
                   </th>
@@ -482,9 +537,11 @@ export function PlacementEligibility() {
                     <td className="py-3 px-4 text-center">{getStudentBacklogs(student.id)}</td>
                     <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
-                        {getStudentSkills(student.id).slice(0, 2).map((skill) => (
-                          <Badge key={skill}>{skill}</Badge>
-                        ))}
+                        {getStudentSkills(student.id)
+                          .slice(0, 2)
+                          .map((skill) => (
+                            <Badge key={skill}>{skill}</Badge>
+                          ))}
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center text-sm">{student.attendance}%</td>
@@ -547,7 +604,8 @@ export function PlacementEligibility() {
                         <Badge tone="danger">CGPA below {appliedCgpaFilter.toFixed(1)}</Badge>
                       ) : getStudentBacklogs(student.id) > appliedBacklogFilter ? (
                         <Badge tone="danger">{getStudentBacklogs(student.id)} backlogs</Badge>
-                      ) : appliedSelectedSkill && !getStudentSkills(student.id).includes(appliedSelectedSkill) ? (
+                      ) : appliedSelectedSkill &&
+                        !getStudentSkills(student.id).includes(appliedSelectedSkill) ? (
                         <Badge tone="warn">Missing {appliedSelectedSkill}</Badge>
                       ) : (
                         <Badge tone="warn">Does not meet criteria</Badge>
@@ -570,7 +628,7 @@ export function PlacementEligibility() {
             <ul className="text-xs text-muted-foreground space-y-1">
               <li>• Minimum CGPA: {appliedCgpaFilter.toFixed(1)}</li>
               <li>• Maximum Backlogs: {appliedBacklogFilter}</li>
-              <li>• Required skill: {appliedSelectedSkill || "Any"}</li>
+              <li>• Required skill: {appliedSelectedSkill || 'Any'}</li>
               <li>• No active academic probation</li>
               <li>• All fees paid</li>
             </ul>
@@ -602,7 +660,9 @@ export function PlacementEligibility() {
             </div>
             <form onSubmit={handleCreateCriteria} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">Criteria Template Name *</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Criteria Template Name *
+                </label>
                 <input
                   type="text"
                   required
@@ -615,7 +675,9 @@ export function PlacementEligibility() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Minimum CGPA *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Minimum CGPA *
+                  </label>
                   <input
                     type="number"
                     step="0.1"
@@ -628,7 +690,9 @@ export function PlacementEligibility() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Max Allowed Backlogs *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Max Allowed Backlogs *
+                  </label>
                   <select
                     value={newMaxBacklogs}
                     onChange={(e) => setNewMaxBacklogs(parseInt(e.target.value))}
@@ -646,7 +710,9 @@ export function PlacementEligibility() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Department Limit</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Department Limit
+                  </label>
                   <select
                     value={newDept}
                     onChange={(e) => setNewDept(e.target.value)}
@@ -654,12 +720,16 @@ export function PlacementEligibility() {
                   >
                     <option value="">All Departments</option>
                     {departments.map((dept) => (
-                      <option key={dept} value={dept}>{dept}</option>
+                      <option key={dept} value={dept}>
+                        {dept}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Academic Year Limit</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Academic Year Limit
+                  </label>
                   <select
                     value={newYear}
                     onChange={(e) => setNewYear(e.target.value)}
@@ -667,14 +737,18 @@ export function PlacementEligibility() {
                   >
                     <option value="">All Years</option>
                     {years.map((year) => (
-                      <option key={year} value={year.toString()}>Year {year}</option>
+                      <option key={year} value={year.toString()}>
+                        Year {year}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">Required Core Skill</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Required Core Skill
+                </label>
                 <select
                   value={newSkill}
                   onChange={(e) => setNewSkill(e.target.value)}
@@ -682,7 +756,9 @@ export function PlacementEligibility() {
                 >
                   <option value="">Any Skill</option>
                   {skills.map((skill) => (
-                    <option key={skill} value={skill}>{skill}</option>
+                    <option key={skill} value={skill}>
+                      {skill}
+                    </option>
                   ))}
                 </select>
               </div>

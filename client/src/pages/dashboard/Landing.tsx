@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { Link } from '@tanstack/react-router';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import {
   GraduationCap,
   Users,
@@ -51,15 +51,15 @@ import {
   MessageSquare,
   Send,
   X,
-} from "lucide-react";
-import { createFileRoute } from "@tanstack/react-router";
+} from 'lucide-react';
+import { createFileRoute } from '@tanstack/react-router';
 
 export function Landing() {
-  const [activeSection, setActiveSection] = useState("about");
+  const [activeSection, setActiveSection] = useState('about');
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["about", "departments", "facilities", "placements", "campus", "contact"];
+      const sections = ['about', 'departments', 'facilities', 'placements', 'campus', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -75,24 +75,24 @@ export function Landing() {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   const navItems = [
-    { id: "about", label: "About" },
-    { id: "departments", label: "Departments" },
-    { id: "facilities", label: "Facilities" },
-    { id: "placements", label: "Placements" },
-    { id: "campus", label: "Campus Life" },
-    { id: "contact", label: "Contact" },
+    { id: 'about', label: 'About' },
+    { id: 'departments', label: 'Departments' },
+    { id: 'facilities', label: 'Facilities' },
+    { id: 'placements', label: 'Placements' },
+    { id: 'campus', label: 'Campus Life' },
+    { id: 'contact', label: 'Contact' },
   ];
 
   return (
@@ -114,8 +114,8 @@ export function Landing() {
                   onClick={() => scrollToSection(item.id)}
                   className={`transition relative ${
                     activeSection === item.id
-                      ? "text-gradient font-medium"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? 'text-gradient font-medium'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {item.label}
@@ -124,7 +124,7 @@ export function Landing() {
                       layoutId="activeNav"
                       className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-primary"
                       initial={false}
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
                 </button>
@@ -163,7 +163,7 @@ export function Landing() {
               <span>Excellence in Engineering Education — Since 1981</span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold leading-[1.05]">
-              Empowering Students Through <br />{" "}
+              Empowering Students Through <br />{' '}
               <span className="text-gradient">Smart Digital Campus Management</span>
             </h1>
             <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -215,11 +215,11 @@ export function Landing() {
                 </div>
                 <div className="grid grid-cols-12 gap-3 p-4">
                   <div className="col-span-2 space-y-2">
-                    {["Dashboard", "Students", "Faculty", "Exams", "Fees", "Library"].map(
+                    {['Dashboard', 'Students', 'Faculty', 'Exams', 'Fees', 'Library'].map(
                       (i, idx) => (
                         <div
                           key={i}
-                          className={`text-xs px-2.5 py-2 rounded-lg ${idx === 0 ? "bg-gradient-primary text-white" : "bg-muted/60"}`}
+                          className={`text-xs px-2.5 py-2 rounded-lg ${idx === 0 ? 'bg-gradient-primary text-white' : 'bg-muted/60'}`}
                         >
                           {i}
                         </div>
@@ -296,11 +296,11 @@ export function Landing() {
               </p>
               <ul className="space-y-3">
                 {[
-                  "Academic Excellence through innovative curriculum",
-                  "State-of-the-art infrastructure and facilities",
-                  "Industry partnerships for practical exposure",
-                  "Focus on research and development",
-                  "Holistic student development programs",
+                  'Academic Excellence through innovative curriculum',
+                  'State-of-the-art infrastructure and facilities',
+                  'Industry partnerships for practical exposure',
+                  'Focus on research and development',
+                  'Holistic student development programs',
                 ].map((item, index) => (
                   <li key={index} className="flex items-center gap-2 text-sm">
                     <Check className="size-4 text-indigo" /> {item}
@@ -316,10 +316,10 @@ export function Landing() {
               className="grid grid-cols-2 gap-4"
             >
               {[
-                { v: "5,000+", l: "Students", icon: Users },
-                { v: "250+", l: "Faculty", icon: GradCap },
-                { v: "7", l: "Departments", icon: Building },
-                { v: "92%", l: "Placements", icon: TrendingUp },
+                { v: '5,000+', l: 'Students', icon: Users },
+                { v: '250+', l: 'Faculty', icon: GradCap },
+                { v: '7', l: 'Departments', icon: Building },
+                { v: '92%', l: 'Placements', icon: TrendingUp },
               ].map((stat) => (
                 <div key={stat.l} className="glass-card rounded-2xl p-6 text-center">
                   <stat.icon className="size-8 text-indigo mx-auto mb-2" />
@@ -355,53 +355,53 @@ export function Landing() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[
               {
-                name: "CSE",
+                name: 'CSE',
                 icon: Cpu,
                 faculty: 45,
                 students: 850,
-                desc: "Computer Science & Engineering",
+                desc: 'Computer Science & Engineering',
               },
               {
-                name: "AIML",
+                name: 'AIML',
                 icon: Brain,
                 faculty: 32,
                 students: 380,
-                desc: "Artificial Intelligence & ML",
+                desc: 'Artificial Intelligence & ML',
               },
               {
-                name: "AI&DS",
+                name: 'AI&DS',
                 icon: Database,
                 faculty: 28,
                 students: 350,
-                desc: "AI & Data Science",
+                desc: 'AI & Data Science',
               },
               {
-                name: "ECE",
+                name: 'ECE',
                 icon: Microscope,
                 faculty: 38,
                 students: 620,
-                desc: "Electronics & Communication",
+                desc: 'Electronics & Communication',
               },
               {
-                name: "EEE",
+                name: 'EEE',
                 icon: Zap,
                 faculty: 42,
                 students: 580,
-                desc: "Electrical & Electronics",
+                desc: 'Electrical & Electronics',
               },
               {
-                name: "Mechanical",
+                name: 'Mechanical',
                 icon: Wrench,
                 faculty: 35,
                 students: 520,
-                desc: "Mechanical Engineering",
+                desc: 'Mechanical Engineering',
               },
               {
-                name: "Civil",
+                name: 'Civil',
                 icon: Building,
                 faculty: 28,
                 students: 450,
-                desc: "Civil Engineering",
+                desc: 'Civil Engineering',
               },
             ].map((dept, index) => (
               <motion.div
@@ -449,44 +449,44 @@ export function Landing() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
-                name: "Attendance Management",
+                name: 'Attendance Management',
                 icon: Users,
-                desc: "Real-time attendance tracking with biometric integration",
+                desc: 'Real-time attendance tracking with biometric integration',
               },
               {
-                name: "Fee Management",
+                name: 'Fee Management',
                 icon: Briefcase,
-                desc: "Online payment processing and receipt generation",
+                desc: 'Online payment processing and receipt generation',
               },
               {
-                name: "Library Management",
+                name: 'Library Management',
                 icon: BookOpen,
-                desc: "Digital library with barcode scanning system",
+                desc: 'Digital library with barcode scanning system',
               },
               {
-                name: "Hostel Management",
+                name: 'Hostel Management',
                 icon: Building2,
-                desc: "Room allocation and mess management system",
+                desc: 'Room allocation and mess management system',
               },
               {
-                name: "Transport Management",
+                name: 'Transport Management',
                 icon: Bus,
-                desc: "GPS-enabled fleet tracking and route optimization",
+                desc: 'GPS-enabled fleet tracking and route optimization',
               },
               {
-                name: "Placement Management",
+                name: 'Placement Management',
                 icon: Target,
-                desc: "Complete placement cell management and analytics",
+                desc: 'Complete placement cell management and analytics',
               },
               {
-                name: "AI Analytics",
+                name: 'AI Analytics',
                 icon: Brain,
-                desc: "Predictive analytics for student performance",
+                desc: 'Predictive analytics for student performance',
               },
               {
-                name: "Online Exams",
+                name: 'Online Exams',
                 icon: BarChart3,
-                desc: "Secure online examination platform with AI proctoring",
+                desc: 'Secure online examination platform with AI proctoring',
               },
             ].map((feature, index) => (
               <motion.div
@@ -530,10 +530,10 @@ export function Landing() {
 
           <div className="grid md:grid-cols-4 gap-6 mb-16">
             {[
-              { v: "92%", l: "Placement Rate", icon: Award },
-              { v: "₹24 LPA", l: "Highest Package", icon: TrendingUp },
-              { v: "₹8.5 LPA", l: "Average Package", icon: BarChart3 },
-              { v: "150+", l: "Recruiters", icon: Building2 },
+              { v: '92%', l: 'Placement Rate', icon: Award },
+              { v: '₹24 LPA', l: 'Highest Package', icon: TrendingUp },
+              { v: '₹8.5 LPA', l: 'Average Package', icon: BarChart3 },
+              { v: '150+', l: 'Recruiters', icon: Building2 },
             ].map((stat) => (
               <motion.div
                 key={stat.l}
@@ -559,21 +559,21 @@ export function Landing() {
             <h3 className="text-2xl font-bold text-center mb-8">Top Recruiters</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
               {[
-                { name: "Infosys", icon: Building, label: "Hiring Partner", offers: "150+ Offers" },
-                { name: "TCS", icon: Briefcase, label: "Campus Recruiter", offers: "200+ Offers" },
-                { name: "Wipro", icon: Cpu, label: "Top Recruiter", offers: "180+ Offers" },
-                { name: "Amazon", icon: Package, label: "Placement Partner", offers: "80+ Offers" },
-                { name: "Microsoft", icon: Monitor, label: "Hiring Partner", offers: "60+ Offers" },
-                { name: "Google", icon: Search, label: "Top Recruiter", offers: "40+ Offers" },
+                { name: 'Infosys', icon: Building, label: 'Hiring Partner', offers: '150+ Offers' },
+                { name: 'TCS', icon: Briefcase, label: 'Campus Recruiter', offers: '200+ Offers' },
+                { name: 'Wipro', icon: Cpu, label: 'Top Recruiter', offers: '180+ Offers' },
+                { name: 'Amazon', icon: Package, label: 'Placement Partner', offers: '80+ Offers' },
+                { name: 'Microsoft', icon: Monitor, label: 'Hiring Partner', offers: '60+ Offers' },
+                { name: 'Google', icon: Search, label: 'Top Recruiter', offers: '40+ Offers' },
                 {
-                  name: "Accenture",
+                  name: 'Accenture',
                   icon: Users,
-                  label: "Campus Recruiter",
-                  offers: "120+ Offers",
+                  label: 'Campus Recruiter',
+                  offers: '120+ Offers',
                 },
-                { name: "IBM", icon: Database, label: "Placement Partner", offers: "90+ Offers" },
-                { name: "Oracle", icon: Cloud, label: "Hiring Partner", offers: "70+ Offers" },
-                { name: "Cisco", icon: Network, label: "Mass Recruiter", offers: "100+ Offers" },
+                { name: 'IBM', icon: Database, label: 'Placement Partner', offers: '90+ Offers' },
+                { name: 'Oracle', icon: Cloud, label: 'Hiring Partner', offers: '70+ Offers' },
+                { name: 'Cisco', icon: Network, label: 'Mass Recruiter', offers: '100+ Offers' },
               ].map((company, index) => (
                 <div
                   key={company.name}
@@ -614,24 +614,24 @@ export function Landing() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
-                type: "Exams",
-                title: "End Semester Exams",
-                date: "May 15-30, 2026",
+                type: 'Exams',
+                title: 'End Semester Exams',
+                date: 'May 15-30, 2026',
                 icon: Calendar,
               },
               {
-                type: "Placements",
-                title: "TCS Campus Drive",
-                date: "June 5, 2026",
+                type: 'Placements',
+                title: 'TCS Campus Drive',
+                date: 'June 5, 2026',
                 icon: Briefcase,
               },
               {
-                type: "Admissions",
-                title: "B.Tech Admissions 2026",
-                date: "Open Now",
+                type: 'Admissions',
+                title: 'B.Tech Admissions 2026',
+                date: 'Open Now',
                 icon: GraduationCap,
               },
-              { type: "Events", title: "Tech Fest 2026", date: "June 15-17, 2026", icon: Trophy },
+              { type: 'Events', title: 'Tech Fest 2026', date: 'June 15-17, 2026', icon: Trophy },
             ].map((notice, index) => (
               <motion.div
                 key={notice.title}
@@ -675,25 +675,25 @@ export function Landing() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {[
               {
-                name: "Technical Clubs",
+                name: 'Technical Clubs',
                 icon: Cpu,
                 count: 15,
-                desc: "Robotics, Coding, Innovation",
+                desc: 'Robotics, Coding, Innovation',
               },
-              { name: "Cultural Events", icon: Music, count: 25, desc: "Music, Dance, Drama" },
+              { name: 'Cultural Events', icon: Music, count: 25, desc: 'Music, Dance, Drama' },
               {
-                name: "Sports Activities",
+                name: 'Sports Activities',
                 icon: Trophy,
                 count: 20,
-                desc: "Cricket, Football, Basketball",
+                desc: 'Cricket, Football, Basketball',
               },
-              { name: "Workshops", icon: UsersIcon, count: 30, desc: "Skill development programs" },
-              { name: "Photography Club", icon: Camera, count: 12, desc: "Visual arts and media" },
+              { name: 'Workshops', icon: UsersIcon, count: 30, desc: 'Skill development programs' },
+              { name: 'Photography Club', icon: Camera, count: 12, desc: 'Visual arts and media' },
               {
-                name: "Social Service",
+                name: 'Social Service',
                 icon: Heart,
                 count: 18,
-                desc: "Community outreach programs",
+                desc: 'Community outreach programs',
               },
             ].map((activity, index) => (
               <motion.div
@@ -725,10 +725,10 @@ export function Landing() {
             <h3 className="text-2xl font-bold text-center mb-8">Upcoming Events</h3>
             <div className="space-y-4">
               {[
-                { event: "Annual Tech Fest", date: "June 15-17, 2026", type: "Technical" },
-                { event: "Cultural Night", date: "June 20, 2026", type: "Cultural" },
-                { event: "Sports Week", date: "July 5-10, 2026", type: "Sports" },
-                { event: "Alumni Meet", date: "July 25, 2026", type: "Networking" },
+                { event: 'Annual Tech Fest', date: 'June 15-17, 2026', type: 'Technical' },
+                { event: 'Cultural Night', date: 'June 20, 2026', type: 'Cultural' },
+                { event: 'Sports Week', date: 'July 5-10, 2026', type: 'Sports' },
+                { event: 'Alumni Meet', date: 'July 25, 2026', type: 'Networking' },
               ].map((event, index) => (
                 <div
                   key={event.event}
@@ -776,34 +776,34 @@ export function Landing() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                name: "Central Library",
+                name: 'Central Library',
                 icon: BookOpen,
-                desc: "50,000+ books, digital resources, reading rooms",
+                desc: '50,000+ books, digital resources, reading rooms',
               },
               {
-                name: "Hostel Facilities",
+                name: 'Hostel Facilities',
                 icon: Building2,
-                desc: "AC rooms, mess, 24/7 security, Wi-Fi",
+                desc: 'AC rooms, mess, 24/7 security, Wi-Fi',
               },
               {
-                name: "Transport Service",
+                name: 'Transport Service',
                 icon: Bus,
-                desc: "GPS-enabled buses covering entire city",
+                desc: 'GPS-enabled buses covering entire city',
               },
               {
-                name: "Smart Classrooms",
+                name: 'Smart Classrooms',
                 icon: Monitor,
-                desc: "Projectors, smart boards, video conferencing",
+                desc: 'Projectors, smart boards, video conferencing',
               },
               {
-                name: "Advanced Laboratories",
+                name: 'Advanced Laboratories',
                 icon: FlaskConical,
-                desc: "Well-equipped labs for all departments",
+                desc: 'Well-equipped labs for all departments',
               },
               {
-                name: "Sports Complex",
+                name: 'Sports Complex',
                 icon: Trophy,
-                desc: "Indoor stadium, gym, playgrounds, courts",
+                desc: 'Indoor stadium, gym, playgrounds, courts',
               },
             ].map((facility, index) => (
               <motion.div
@@ -840,10 +840,10 @@ export function Landing() {
             </p>
             <ul className="mt-6 space-y-3">
               {[
-                "Department-Specific Dashboards",
-                "Live Academic Analytics",
-                "Customizable Dashboard Widgets",
-                "24/7 Accessibility & Monitoring",
+                'Department-Specific Dashboards',
+                'Live Academic Analytics',
+                'Customizable Dashboard Widgets',
+                '24/7 Accessibility & Monitoring',
               ].map((x) => (
                 <li key={x} className="flex items-center gap-2 text-sm">
                   <Check className="size-4 text-indigo" /> {x}
@@ -907,20 +907,20 @@ export function Landing() {
           <div className="grid md:grid-cols-3 gap-5">
             {[
               {
-                name: "Dr. Anjali Mehra",
-                role: "Dean of Academic Affairs, IIT",
+                name: 'Dr. Anjali Mehra',
+                role: 'Dean of Academic Affairs, IIT',
                 quote:
-                  "The integrated platform replaced our fragmented systems. Faculty engagement increased by 45%, and administrative load decreased significantly. Best decision we made this decade.",
+                  'The integrated platform replaced our fragmented systems. Faculty engagement increased by 45%, and administrative load decreased significantly. Best decision we made this decade.',
               },
               {
-                name: "Rohan Verma",
-                role: "Registrar & Senior Administrator",
+                name: 'Rohan Verma',
+                role: 'Registrar & Senior Administrator',
                 quote:
-                  "Compliance reporting that took our office weeks now generates in hours. The dashboards provide unprecedented visibility into institutional performance. Our stakeholders are impressed.",
+                  'Compliance reporting that took our office weeks now generates in hours. The dashboards provide unprecedented visibility into institutional performance. Our stakeholders are impressed.',
               },
               {
-                name: "Prof. Sarah Chen",
-                role: "Head of Department, Computer Science",
+                name: 'Prof. Sarah Chen',
+                role: 'Head of Department, Computer Science',
                 quote:
                   "Automated attendance, seamless grading, instant student feedback — it's transformed how we teach and mentor. Students appreciate the transparency, and we have more time for what matters.",
               },
@@ -997,11 +997,11 @@ export function Landing() {
             {[
               {
                 icon: Building,
-                title: "Address",
-                content: "College Campus, Main Road, City - 500001",
+                title: 'Address',
+                content: 'College Campus, Main Road, City - 500001',
               },
-              { icon: Users, title: "Phone", content: "+91 98765 43210" },
-              { icon: Mail, title: "Email", content: "info@college.edu" },
+              { icon: Users, title: 'Phone', content: '+91 98765 43210' },
+              { icon: Mail, title: 'Email', content: 'info@college.edu' },
             ].map((contact, index) => (
               <motion.div
                 key={contact.title}
@@ -1038,10 +1038,10 @@ export function Landing() {
               </p>
               <div className="flex gap-3">
                 {[
-                  { icon: Facebook, label: "Facebook" },
-                  { icon: Twitter, label: "Twitter" },
-                  { icon: Linkedin, label: "LinkedIn" },
-                  { icon: Instagram, label: "Instagram" },
+                  { icon: Facebook, label: 'Facebook' },
+                  { icon: Twitter, label: 'Twitter' },
+                  { icon: Linkedin, label: 'LinkedIn' },
+                  { icon: Instagram, label: 'Instagram' },
                 ].map((social) => (
                   <a
                     key={social.label}
@@ -1063,7 +1063,7 @@ export function Landing() {
                 </li>
                 <li>
                   <button
-                    onClick={() => scrollToSection("about")}
+                    onClick={() => scrollToSection('about')}
                     className="hover:text-foreground transition"
                   >
                     About
@@ -1071,7 +1071,7 @@ export function Landing() {
                 </li>
                 <li>
                   <button
-                    onClick={() => scrollToSection("departments")}
+                    onClick={() => scrollToSection('departments')}
                     className="hover:text-foreground transition"
                   >
                     Departments
@@ -1079,7 +1079,7 @@ export function Landing() {
                 </li>
                 <li>
                   <button
-                    onClick={() => scrollToSection("placements")}
+                    onClick={() => scrollToSection('placements')}
                     className="hover:text-foreground transition"
                   >
                     Placements

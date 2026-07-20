@@ -1,20 +1,20 @@
-import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Loader2 } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect } from 'react';
+import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Loader2 } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 export function HostelSettings() {
   const { user, refreshUser } = useAuth();
 
-  const fullName = user?.fullName || "Warden Member";
-  const email = user?.email || "";
+  const fullName = user?.fullName || 'Warden Member';
+  const email = user?.email || '';
 
   const initials = fullName
-    .split(" ")
+    .split(' ')
     .map((n: string) => n[0])
-    .join("")
+    .join('')
     .substring(0, 2)
     .toUpperCase();
 
@@ -24,13 +24,13 @@ export function HostelSettings() {
   const [saving, setSaving] = useState(false);
 
   // Form states
-  const [aboutMe, setAboutMe] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [aboutMe, setAboutMe] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [socialLinks, setSocialLinks] = useState({
-    github: "",
-    linkedin: "",
-    twitter: "",
-    website: "",
+    github: '',
+    linkedin: '',
+    twitter: '',
+    website: '',
   });
 
   // Load state from Supabase on mount
@@ -40,27 +40,30 @@ export function HostelSettings() {
       try {
         setLoading(true);
         const { data, error } = await supabase
-          .from("users")
-          .select("about, social_links, avatar_url")
-          .eq("email", email)
+          .from('users')
+          .select('about, social_links, avatar_url')
+          .eq('email', email)
           .single();
 
         if (error) throw error;
 
         if (data) {
-          setAboutMe(data.about || "Responsible for hostel administration, resident safety, dining operations, and facility coordination.");
-          setAvatarUrl(data.avatar_url || "");
+          setAboutMe(
+            data.about ||
+              'Responsible for hostel administration, resident safety, dining operations, and facility coordination.',
+          );
+          setAvatarUrl(data.avatar_url || '');
           if (data.social_links) {
             setSocialLinks({
-              github: data.social_links.github || "",
-              linkedin: data.social_links.linkedin || "",
-              twitter: data.social_links.twitter || "",
-              website: data.social_links.website || "",
+              github: data.social_links.github || '',
+              linkedin: data.social_links.linkedin || '',
+              twitter: data.social_links.twitter || '',
+              website: data.social_links.website || '',
             });
           }
         }
       } catch (err) {
-        console.error("Error loading profile from database, falling back:", err);
+        console.error('Error loading profile from database, falling back:', err);
       } finally {
         setLoading(false);
       }
@@ -73,19 +76,19 @@ export function HostelSettings() {
     try {
       setSaving(true);
       const { error } = await supabase
-        .from("users")
+        .from('users')
         .update({
           about: aboutMe,
           social_links: socialLinks,
         })
-        .eq("email", email);
+        .eq('email', email);
 
       if (error) throw error;
 
-      toast.success("Profile changes saved successfully!");
+      toast.success('Profile changes saved successfully!');
       setIsEditing(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to save profile changes");
+      toast.error(err.message || 'Failed to save profile changes');
     } finally {
       setSaving(false);
     }
@@ -96,24 +99,24 @@ export function HostelSettings() {
     if (email) {
       try {
         const { data } = await supabase
-          .from("users")
-          .select("about, social_links")
-          .eq("email", email)
+          .from('users')
+          .select('about, social_links')
+          .eq('email', email)
           .single();
         if (data) {
-          setAboutMe(data.about || "");
+          setAboutMe(data.about || '');
           if (data.social_links) {
             setSocialLinks({
-              github: data.social_links.github || "",
-              linkedin: data.social_links.linkedin || "",
-              twitter: data.social_links.twitter || "",
-              website: data.social_links.website || "",
+              github: data.social_links.github || '',
+              linkedin: data.social_links.linkedin || '',
+              twitter: data.social_links.twitter || '',
+              website: data.social_links.website || '',
             });
           }
         }
       } catch (e) {}
     }
-    toast.info("Changes discarded.");
+    toast.info('Changes discarded.');
     setIsEditing(false);
   };
 
@@ -121,41 +124,42 @@ export function HostelSettings() {
     const file = e.target.files?.[0];
     if (!file || !email) return;
 
-    const fileExt = file.name.split(".").pop();
+    const fileExt = file.name.split('.').pop();
     const filePath = `warden-${email}-${Date.now()}.${fileExt}`;
 
-    const loadingToast = toast.loading("Uploading avatar...");
+    const loadingToast = toast.loading('Uploading avatar...');
     try {
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
-        .from("users")
+        .from('users')
         .update({ avatar_url: publicUrl })
-        .eq("email", email);
+        .eq('email', email);
 
       if (updateError) throw updateError;
 
       setAvatarUrl(publicUrl);
-      toast.success("Avatar updated successfully!", { id: loadingToast });
+      toast.success('Avatar updated successfully!', { id: loadingToast });
       if (refreshUser) {
         await refreshUser();
       }
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || "Failed to upload avatar", { id: loadingToast });
+      toast.error(err.message || 'Failed to upload avatar', { id: loadingToast });
     }
   };
 
-  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
-  const employeeId = user?.employeeId || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#4");
+  const joinedDate = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-GB')
+    : '19/05/2026';
+  const employeeId =
+    user?.employeeId || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : '#4');
 
   if (loading) {
     return (
@@ -195,11 +199,7 @@ export function HostelSettings() {
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium animate-in fade-in zoom-in-95 duration-150"
                 disabled={saving}
               >
-                {saving ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Save className="size-4" />
-                )}
+                {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
                 Save Changes
               </button>
             </div>
@@ -226,7 +226,7 @@ export function HostelSettings() {
                 />
               ) : (
                 <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
-                  {initials || "HW"}
+                  {initials || 'HW'}
                 </div>
               )}
               <label className="absolute -bottom-2 -right-2 p-2 bg-indigo text-white rounded-xl cursor-pointer hover:scale-105 transition shadow-md grid place-items-center">
@@ -301,8 +301,12 @@ export function HostelSettings() {
                   { icon: Globe, value: socialLinks.website },
                 ].map((item, idx) => {
                   const isLinked = !!item.value;
-                  const hrefVal = isLinked ? (item.value.startsWith("http") ? item.value : `https://${item.value}`) : undefined;
-                  
+                  const hrefVal = isLinked
+                    ? item.value.startsWith('http')
+                      ? item.value
+                      : `https://${item.value}`
+                    : undefined;
+
                   return (
                     <div key={idx} className="flex items-center gap-3">
                       {isLinked ? (
@@ -318,7 +322,9 @@ export function HostelSettings() {
                       ) : (
                         <>
                           <item.icon className="size-5 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-muted-foreground/60 italic">Not linked</span>
+                          <span className="text-sm text-muted-foreground/60 italic">
+                            Not linked
+                          </span>
                         </>
                       )}
                     </div>
@@ -345,7 +351,9 @@ export function HostelSettings() {
             ) : (
               <div className="min-h-16 py-1">
                 {aboutMe ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    {aboutMe}
+                  </p>
                 ) : (
                   <p className="text-sm text-muted-foreground/60 italic">
                     No bio provided yet. Add one to let people know who you are!

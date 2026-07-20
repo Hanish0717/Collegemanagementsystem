@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Mail,
   MessageSquare,
@@ -20,10 +20,10 @@ import {
   Briefcase,
   Search,
   Loader2,
-  AlertCircle
-} from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { toast } from "sonner";
+  AlertCircle,
+} from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
 import {
   fetchAdminNotifications,
   markAdminNotificationRead,
@@ -33,44 +33,44 @@ import {
   createBroadcast,
   fetchAudienceCounts,
   type AdminNotification,
-  type BroadcastNotification
-} from "@/services/adminService";
+  type BroadcastNotification,
+} from '@/services/adminService';
 
 export const notificationTemplates = [
   {
-    name: "Fee Reminder",
-    type: "Email",
-    subject: "Fee Payment Reminder",
-    content: "Dear student, your fee payment is due on {date}. Please ensure timely payment.",
+    name: 'Fee Reminder',
+    type: 'Email',
+    subject: 'Fee Payment Reminder',
+    content: 'Dear student, your fee payment is due on {date}. Please ensure timely payment.',
   },
   {
-    name: "Attendance Warning",
-    type: "SMS",
-    subject: "Low Attendance Alert",
-    content: "Your attendance is below 75%. Please attend classes regularly.",
+    name: 'Attendance Warning',
+    type: 'SMS',
+    subject: 'Low Attendance Alert',
+    content: 'Your attendance is below 75%. Please attend classes regularly.',
   },
   {
-    name: "Event Announcement",
-    type: "WhatsApp",
-    subject: "Upcoming Event",
-    content: "Join us for {event} on {date}. Register now!",
+    name: 'Event Announcement',
+    type: 'WhatsApp',
+    subject: 'Upcoming Event',
+    content: 'Join us for {event} on {date}. Register now!',
   },
 ];
 
 export function AdminNotifications() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"inbox" | "broadcasting">("inbox");
+  const [activeTab, setActiveTab] = useState<'inbox' | 'broadcasting'>('inbox');
 
   // Operational Inbox Filters
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedStatus, setSelectedStatus] = useState("Unread"); // Default to Unread so read notifications vanish!
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState('Unread'); // Default to Unread so read notifications vanish!
 
   // Broadcasting Form State
-  const [broadcastType, setBroadcastType] = useState<"Email" | "SMS" | "WhatsApp">("Email");
-  const [subject, setSubject] = useState("");
-  const [audienceType, setAudienceType] = useState("All Students");
-  const [message, setMessage] = useState("");
+  const [broadcastType, setBroadcastType] = useState<'Email' | 'SMS' | 'WhatsApp'>('Email');
+  const [subject, setSubject] = useState('');
+  const [audienceType, setAudienceType] = useState('All Students');
+  const [message, setMessage] = useState('');
 
   // Queries
   const {
@@ -79,88 +79,81 @@ export function AdminNotifications() {
     isError: isNotifsError,
     error: notifsError,
   } = useQuery({
-    queryKey: ["adminNotifications"],
+    queryKey: ['adminNotifications'],
     queryFn: fetchAdminNotifications,
   });
 
-  const {
-    data: broadcasts = [],
-    isLoading: isBroadcastsLoading,
-  } = useQuery({
-    queryKey: ["adminBroadcasts"],
+  const { data: broadcasts = [], isLoading: isBroadcastsLoading } = useQuery({
+    queryKey: ['adminBroadcasts'],
     queryFn: fetchBroadcasts,
-    enabled: activeTab === "broadcasting",
+    enabled: activeTab === 'broadcasting',
   });
 
-  const {
-    data: audienceCounts,
-  } = useQuery({
-    queryKey: ["adminAudienceCounts"],
+  const { data: audienceCounts } = useQuery({
+    queryKey: ['adminAudienceCounts'],
     queryFn: fetchAudienceCounts,
-    enabled: activeTab === "broadcasting",
+    enabled: activeTab === 'broadcasting',
   });
 
   // Mutations
   const markReadMutation = useMutation({
     mutationFn: (id: string) => markAdminNotificationRead(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminNotifications"] });
-      toast.success("Notification marked as read");
+      queryClient.invalidateQueries({ queryKey: ['adminNotifications'] });
+      toast.success('Notification marked as read');
     },
-    onError: () => toast.error("Failed to mark notification as read"),
+    onError: () => toast.error('Failed to mark notification as read'),
   });
 
   const markAllReadMutation = useMutation({
     mutationFn: markAllAdminNotificationsRead,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminNotifications"] });
-      toast.success("All notifications marked as read");
+      queryClient.invalidateQueries({ queryKey: ['adminNotifications'] });
+      toast.success('All notifications marked as read');
     },
-    onError: () => toast.error("Failed to mark all as read"),
+    onError: () => toast.error('Failed to mark all as read'),
   });
 
   const deleteNotifMutation = useMutation({
     mutationFn: (id: string) => deleteAdminNotification(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminNotifications"] });
-      toast.success("Notification deleted");
+      queryClient.invalidateQueries({ queryKey: ['adminNotifications'] });
+      toast.success('Notification deleted');
     },
-    onError: () => toast.error("Failed to delete notification"),
+    onError: () => toast.error('Failed to delete notification'),
   });
 
   const sendBroadcastMutation = useMutation({
     mutationFn: (payload: { title: string; type: string; audience: string; content: string }) =>
       createBroadcast(payload),
     onSuccess: (newBroadcast) => {
-      queryClient.invalidateQueries({ queryKey: ["adminBroadcasts"] });
+      queryClient.invalidateQueries({ queryKey: ['adminBroadcasts'] });
       toast.success(`Broadcast sent via ${newBroadcast.type}!`);
-      setSubject("");
-      setMessage("");
+      setSubject('');
+      setMessage('');
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to send broadcast");
+      toast.error(err.response?.data?.message || err.message || 'Failed to send broadcast');
     },
   });
 
   // Categories list for Operational Inbox
   const categories = [
-    { name: "Academic", icon: BookOpen, tone: "info" as const },
-    { name: "Students", icon: Users, tone: "success" as const },
-    { name: "Faculty", icon: Users, tone: "info" as const },
-    { name: "Fees", icon: Wallet, tone: "warn" as const },
-    { name: "Hostel", icon: Building2, tone: "warn" as const },
-    { name: "Transport", icon: Bus, tone: "info" as const },
-    { name: "Placement", icon: Briefcase, tone: "success" as const },
-    { name: "Library", icon: BookOpen, tone: "info" as const },
+    { name: 'Academic', icon: BookOpen, tone: 'info' as const },
+    { name: 'Students', icon: Users, tone: 'success' as const },
+    { name: 'Faculty', icon: Users, tone: 'info' as const },
+    { name: 'Fees', icon: Wallet, tone: 'warn' as const },
+    { name: 'Hostel', icon: Building2, tone: 'warn' as const },
+    { name: 'Transport', icon: Bus, tone: 'info' as const },
+    { name: 'Placement', icon: Briefcase, tone: 'success' as const },
+    { name: 'Library', icon: BookOpen, tone: 'info' as const },
   ];
 
   // Dynamic calculations for unread counts
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     categories.forEach((cat) => {
-      counts[cat.name] = notifications.filter(
-        (n) => n.category === cat.name && n.unread
-      ).length;
+      counts[cat.name] = notifications.filter((n) => n.category === cat.name && n.unread).length;
     });
     return counts;
   }, [notifications]);
@@ -168,11 +161,11 @@ export function AdminNotifications() {
   const filteredNotifications = useMemo(() => {
     return notifications.filter((n) => {
       const matchesSearch = n.title.toLowerCase().includes(search.toLowerCase());
-      const matchesCategory = selectedCategory === "All" || n.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'All' || n.category === selectedCategory;
       const matchesStatus =
-        selectedStatus === "All" ||
-        (selectedStatus === "Unread" && n.unread) ||
-        (selectedStatus === "Read" && !n.unread);
+        selectedStatus === 'All' ||
+        (selectedStatus === 'Unread' && n.unread) ||
+        (selectedStatus === 'Read' && !n.unread);
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [notifications, search, selectedCategory, selectedStatus]);
@@ -180,14 +173,14 @@ export function AdminNotifications() {
   // Dynamic Broadcast Stats from Database
   const stats = useMemo(() => {
     const total = broadcasts.length;
-    const email = broadcasts.filter((b) => b.type === "Email").length;
-    const sms = broadcasts.filter((b) => b.type === "SMS").length;
-    const whatsapp = broadcasts.filter((b) => b.type === "WhatsApp").length;
+    const email = broadcasts.filter((b) => b.type === 'Email').length;
+    const sms = broadcasts.filter((b) => b.type === 'SMS').length;
+    const whatsapp = broadcasts.filter((b) => b.type === 'WhatsApp').length;
     return [
-      { label: "Total Sent", value: total, tone: "success" as const },
-      { label: "Email Sent", value: email, tone: "info" as const },
-      { label: "SMS Sent", value: sms, tone: "info" as const },
-      { label: "WhatsApp Sent", value: whatsapp, tone: "info" as const },
+      { label: 'Total Sent', value: total, tone: 'success' as const },
+      { label: 'Email Sent', value: email, tone: 'info' as const },
+      { label: 'SMS Sent', value: sms, tone: 'info' as const },
+      { label: 'WhatsApp Sent', value: whatsapp, tone: 'info' as const },
     ];
   }, [broadcasts]);
 
@@ -204,11 +197,11 @@ export function AdminNotifications() {
   // Handler for Send Broadcast Form Submit
   const handleSendBroadcast = () => {
     if (!subject.trim()) {
-      toast.error("Please enter a subject line");
+      toast.error('Please enter a subject line');
       return;
     }
     if (!message.trim()) {
-      toast.error("Please enter message content");
+      toast.error('Please enter message content');
       return;
     }
 
@@ -225,23 +218,23 @@ export function AdminNotifications() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={activeTab === "inbox" ? "Notifications Feed" : "Notification Broadcasting"}
+        title={activeTab === 'inbox' ? 'Notifications Feed' : 'Notification Broadcasting'}
         desc={
-          activeTab === "inbox"
-            ? "Real-time updates and operational alerts from academic, hostel, library, and other modules."
-            : "Send broadcast notifications via email, SMS and WhatsApp to students, faculty and staff."
+          activeTab === 'inbox'
+            ? 'Real-time updates and operational alerts from academic, hostel, library, and other modules.'
+            : 'Send broadcast notifications via email, SMS and WhatsApp to students, faculty and staff.'
         }
         actions={
-          activeTab === "inbox" ? (
+          activeTab === 'inbox' ? (
             <button
-              onClick={() => setActiveTab("broadcasting")}
+              onClick={() => setActiveTab('broadcasting')}
               className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2"
             >
               <Plus className="size-4" /> New Broadcast
             </button>
           ) : (
             <button
-              onClick={() => setActiveTab("inbox")}
+              onClick={() => setActiveTab('inbox')}
               className="px-4 py-2.5 rounded-xl border text-sm hover:bg-accent transition flex items-center gap-2"
             >
               <Inbox className="size-4" /> Back to Inbox
@@ -253,11 +246,11 @@ export function AdminNotifications() {
       {/* Navigation Tabs */}
       <div className="flex gap-4 border-b pb-2">
         <button
-          onClick={() => setActiveTab("inbox")}
+          onClick={() => setActiveTab('inbox')}
           className={`flex items-center gap-2 pb-2 text-sm font-semibold transition border-b-2 px-1 ${
-            activeTab === "inbox"
-              ? "border-primary text-primary"
-              : "border-transparent text-muted-foreground hover:text-foreground"
+            activeTab === 'inbox'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
           <Inbox className="size-4" />
@@ -269,11 +262,11 @@ export function AdminNotifications() {
           )}
         </button>
         <button
-          onClick={() => setActiveTab("broadcasting")}
+          onClick={() => setActiveTab('broadcasting')}
           className={`flex items-center gap-2 pb-2 text-sm font-semibold transition border-b-2 px-1 ${
-            activeTab === "broadcasting"
-              ? "border-primary text-primary"
-              : "border-transparent text-muted-foreground hover:text-foreground"
+            activeTab === 'broadcasting'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
           }`}
         >
           <Send className="size-4" />
@@ -281,7 +274,7 @@ export function AdminNotifications() {
         </button>
       </div>
 
-      {activeTab === "inbox" ? (
+      {activeTab === 'inbox' ? (
         /* ================= OPERATIONAL INBOX ================= */
         <div className="space-y-6">
           {/* Category Counts Grid */}
@@ -294,18 +287,16 @@ export function AdminNotifications() {
               return (
                 <button
                   key={cat.name}
-                  onClick={() => setSelectedCategory(isSelected ? "All" : cat.name)}
+                  onClick={() => setSelectedCategory(isSelected ? 'All' : cat.name)}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition ${
                     isSelected
-                      ? "bg-primary/5 border-primary shadow-sm"
-                      : "bg-card hover:bg-accent/40"
+                      ? 'bg-primary/5 border-primary shadow-sm'
+                      : 'bg-card hover:bg-accent/40'
                   }`}
                 >
                   <div
                     className={`size-8 rounded-lg flex items-center justify-center ${
-                      isSelected
-                        ? "bg-primary text-white"
-                        : "bg-accent text-muted-foreground"
+                      isSelected ? 'bg-primary text-white' : 'bg-accent text-muted-foreground'
                     }`}
                   >
                     <Icon className="size-4.5" />
@@ -374,7 +365,7 @@ export function AdminNotifications() {
                   disabled={markAllReadMutation.isPending}
                   className="text-xs text-primary hover:underline cursor-pointer disabled:opacity-50"
                 >
-                  {markAllReadMutation.isPending ? "Marking..." : "Mark all as read"}
+                  {markAllReadMutation.isPending ? 'Marking...' : 'Mark all as read'}
                 </button>
               )}
             </div>
@@ -388,7 +379,9 @@ export function AdminNotifications() {
               <div className="py-12 text-center space-y-3">
                 <AlertCircle className="size-8 mx-auto text-rose-500" />
                 <p className="text-sm text-muted-foreground">
-                  {notifsError instanceof Error ? notifsError.message : "Failed to load notifications."}
+                  {notifsError instanceof Error
+                    ? notifsError.message
+                    : 'Failed to load notifications.'}
                 </p>
               </div>
             ) : filteredNotifications.length === 0 ? (
@@ -396,8 +389,8 @@ export function AdminNotifications() {
                 <Bell className="size-12 mx-auto text-muted-foreground/30 mb-3" />
                 <p className="text-sm text-muted-foreground">
                   {notifications.length === 0
-                    ? "All clear! No operational notifications in the feed."
-                    : "No alerts match your search or filter settings."}
+                    ? 'All clear! No operational notifications in the feed.'
+                    : 'No alerts match your search or filter settings.'}
                 </p>
               </div>
             ) : (
@@ -405,7 +398,7 @@ export function AdminNotifications() {
                 {filteredNotifications.map((n) => {
                   const catConfig = categories.find((c) => c.name === n.category);
                   const Icon = catConfig?.icon || Bell;
-                  const tone = catConfig?.tone || "info";
+                  const tone = catConfig?.tone || 'info';
 
                   return (
                     <div
@@ -414,19 +407,23 @@ export function AdminNotifications() {
                         if (n.unread) markReadMutation.mutate(n.id);
                       }}
                       className={`flex items-center gap-3 p-4 rounded-xl border hover:bg-accent/40 transition cursor-pointer ${
-                        n.unread ? "bg-indigo-500/5 border-indigo-500/20" : ""
+                        n.unread ? 'bg-indigo-500/5 border-indigo-500/20' : ''
                       }`}
                     >
                       <div
                         className={`size-10 rounded-lg flex items-center justify-center shrink-0 ${
-                          n.unread ? "bg-gradient-primary text-white" : "bg-accent text-muted-foreground"
+                          n.unread
+                            ? 'bg-gradient-primary text-white'
+                            : 'bg-accent text-muted-foreground'
                         }`}
                       >
                         <Icon className="size-4.5" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <span className={`text-sm font-medium truncate ${n.unread ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                          <span
+                            className={`text-sm font-medium truncate ${n.unread ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}
+                          >
                             {n.title}
                           </span>
                           <div className="flex items-center gap-1.5 shrink-0">
@@ -447,9 +444,7 @@ export function AdminNotifications() {
                             </button>
                           </div>
                         </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                          {n.time}
-                        </div>
+                        <div className="text-xs text-muted-foreground mt-0.5">{n.time}</div>
                       </div>
                     </div>
                   );
@@ -478,31 +473,31 @@ export function AdminNotifications() {
           <Card>
             <div className="flex items-center gap-4 border-b pb-4 mb-4">
               <button
-                onClick={() => setBroadcastType("Email")}
+                onClick={() => setBroadcastType('Email')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition ${
-                  broadcastType === "Email"
-                    ? "bg-gradient-primary text-white"
-                    : "border hover:bg-accent"
+                  broadcastType === 'Email'
+                    ? 'bg-gradient-primary text-white'
+                    : 'border hover:bg-accent'
                 }`}
               >
                 <Mail className="size-4" /> Email
               </button>
               <button
-                onClick={() => setBroadcastType("SMS")}
+                onClick={() => setBroadcastType('SMS')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition ${
-                  broadcastType === "SMS"
-                    ? "bg-gradient-primary text-white"
-                    : "border hover:bg-accent"
+                  broadcastType === 'SMS'
+                    ? 'bg-gradient-primary text-white'
+                    : 'border hover:bg-accent'
                 }`}
               >
                 <Smartphone className="size-4" /> SMS
               </button>
               <button
-                onClick={() => setBroadcastType("WhatsApp")}
+                onClick={() => setBroadcastType('WhatsApp')}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition ${
-                  broadcastType === "WhatsApp"
-                    ? "bg-gradient-primary text-white"
-                    : "border hover:bg-accent"
+                  broadcastType === 'WhatsApp'
+                    ? 'bg-gradient-primary text-white'
+                    : 'border hover:bg-accent'
                 }`}
               >
                 <MessageSquare className="size-4" /> WhatsApp
@@ -567,7 +562,7 @@ export function AdminNotifications() {
                   className="px-6 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center gap-2 disabled:opacity-50"
                 >
                   <Send className="size-4" />
-                  {sendBroadcastMutation.isPending ? "Sending..." : "Send Now"}
+                  {sendBroadcastMutation.isPending ? 'Sending...' : 'Send Now'}
                 </button>
               </div>
             </div>
@@ -598,18 +593,18 @@ export function AdminNotifications() {
               <h3 className="font-semibold mb-4 text-base">Audience Selection Counts</h3>
               <div className="space-y-3">
                 {[
-                  { label: "All Students", count: audienceCounts?.students ?? 0 },
-                  { label: "All Faculty", count: audienceCounts?.faculty ?? 0 },
-                  { label: "Computer Science Dept", count: audienceCounts?.departments?.CSE ?? 0 },
-                  { label: "Electronics Dept", count: audienceCounts?.departments?.ECE ?? 0 },
-                  { label: "Mechanical Dept", count: audienceCounts?.departments?.MECH ?? 0 },
-                  { label: "Civil Dept", count: audienceCounts?.departments?.CIVIL ?? 0 },
+                  { label: 'All Students', count: audienceCounts?.students ?? 0 },
+                  { label: 'All Faculty', count: audienceCounts?.faculty ?? 0 },
+                  { label: 'Computer Science Dept', count: audienceCounts?.departments?.CSE ?? 0 },
+                  { label: 'Electronics Dept', count: audienceCounts?.departments?.ECE ?? 0 },
+                  { label: 'Mechanical Dept', count: audienceCounts?.departments?.MECH ?? 0 },
+                  { label: 'Civil Dept', count: audienceCounts?.departments?.CIVIL ?? 0 },
                 ].map((audience) => (
                   <label
                     key={audience.label}
                     onClick={() => setAudienceType(audience.label)}
                     className={`flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${
-                      audienceType === audience.label ? "border-primary bg-primary/5" : ""
+                      audienceType === audience.label ? 'border-primary bg-primary/5' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -653,7 +648,9 @@ export function AdminNotifications() {
                       {broadcast.type.slice(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-foreground truncate">{broadcast.title}</div>
+                      <div className="text-sm font-medium text-foreground truncate">
+                        {broadcast.title}
+                      </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
                         {broadcast.audience} • {broadcast.time}
                       </div>

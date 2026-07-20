@@ -1,43 +1,43 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Filter, Plus, Search, ShieldCheck, UserCog, Loader2, X, Trash2 } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Filter, Plus, Search, ShieldCheck, UserCog, Loader2, X, Trash2 } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
 import {
   fetchAdmins,
   createAdmin,
   updateAdmin,
   deleteAdmin,
   fetchDepartments,
-} from "@/services/adminService";
-import { toast } from "sonner";
-import api from "@/lib/api";
+} from '@/services/adminService';
+import { toast } from 'sonner';
+import api from '@/lib/api';
 
 export function SuperAdminAdmins() {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [departmentFilter, setDepartmentFilter] = useState("All");
+  const [search, setSearch] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('All');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Form Fields
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
-  const [selectedDept, setSelectedDept] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
+  const [selectedDept, setSelectedDept] = useState('');
 
   // OTP Verification States
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
-  const [otpCode, setOtpCode] = useState("");
+  const [otpCode, setOtpCode] = useState('');
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [otpError, setOtpError] = useState<string | null>(null);
 
   // Queries
   const { data: admins = [], isLoading: isAdminsLoading } = useQuery({
-    queryKey: ["admins"],
+    queryKey: ['admins'],
     queryFn: fetchAdmins,
   });
 
   const { data: departments = [] } = useQuery({
-    queryKey: ["departments"],
+    queryKey: ['departments'],
     queryFn: fetchDepartments,
   });
 
@@ -45,14 +45,16 @@ export function SuperAdminAdmins() {
   const createAdminMutation = useMutation({
     mutationFn: createAdmin,
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      queryClient.invalidateQueries({ queryKey: ['admins'] });
       setUnverifiedEmail(variables.email);
       setIsAddModalOpen(false);
-      toast.success("Admin registered successfully. Please enter the OTP sent to their email to complete registration.");
+      toast.success(
+        'Admin registered successfully. Please enter the OTP sent to their email to complete registration.',
+      );
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to create administrator account");
+      toast.error(err.response?.data?.message || 'Failed to create administrator account');
     },
   });
 
@@ -60,12 +62,12 @@ export function SuperAdminAdmins() {
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
       updateAdmin(id, { isActive }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admins"] });
-      toast.success("Administrator account status updated");
+      queryClient.invalidateQueries({ queryKey: ['admins'] });
+      toast.success('Administrator account status updated');
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to update administrator status");
+      toast.error(err.response?.data?.message || 'Failed to update administrator status');
     },
   });
 
@@ -73,24 +75,24 @@ export function SuperAdminAdmins() {
     mutationFn: ({ id, departmentId }: { id: string; departmentId: string | null }) =>
       updateAdmin(id, { department: departmentId }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admins"] });
-      toast.success("Administrator department ownership updated");
+      queryClient.invalidateQueries({ queryKey: ['admins'] });
+      toast.success('Administrator department ownership updated');
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to update department ownership");
+      toast.error(err.response?.data?.message || 'Failed to update department ownership');
     },
   });
 
   const deleteAdminMutation = useMutation({
     mutationFn: deleteAdmin,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admins"] });
-      toast.success("Administrator soft-deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ['admins'] });
+      toast.success('Administrator soft-deleted successfully');
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to delete administrator");
+      toast.error(err.response?.data?.message || 'Failed to delete administrator');
     },
   });
 
@@ -101,10 +103,10 @@ export function SuperAdminAdmins() {
         admin.fullName,
         admin.employeeId,
         admin.email,
-        admin.department?.name || "",
+        admin.department?.name || '',
       ].some((val) => val.toLowerCase().includes(search.toLowerCase()));
 
-      const matchesDept = departmentFilter === "All" || admin.department?._id === departmentFilter;
+      const matchesDept = departmentFilter === 'All' || admin.department?._id === departmentFilter;
 
       return matchesSearch && matchesDept;
     });
@@ -113,7 +115,7 @@ export function SuperAdminAdmins() {
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !email.trim() || !employeeId.trim()) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
       return;
     }
     createAdminMutation.mutate({
@@ -127,32 +129,32 @@ export function SuperAdminAdmins() {
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otpCode.length < 6 || !unverifiedEmail) {
-      toast.error("Please enter a valid 6-digit OTP");
+      toast.error('Please enter a valid 6-digit OTP');
       return;
     }
     setVerifyingOtp(true);
     setOtpError(null);
     try {
-      await api.post("/api/auth/verify-otp", {
+      await api.post('/api/auth/verify-otp', {
         email: unverifiedEmail,
         otp: otpCode,
-        type: "email_verification",
+        type: 'email_verification',
       });
-      toast.success("Admin account successfully verified and registered!");
-      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      toast.success('Admin account successfully verified and registered!');
+      queryClient.invalidateQueries({ queryKey: ['admins'] });
       setUnverifiedEmail(null);
-      setOtpCode("");
+      setOtpCode('');
       // Reset fields
-      setFullName("");
-      setEmail("");
-      setEmployeeId("");
-      setSelectedDept("");
+      setFullName('');
+      setEmail('');
+      setEmployeeId('');
+      setSelectedDept('');
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
         err.response?.data?.error ||
         err.message ||
-        "Verification failed. Please check the OTP.";
+        'Verification failed. Please check the OTP.';
       setOtpError(msg);
     } finally {
       setVerifyingOtp(false);
@@ -215,20 +217,16 @@ export function SuperAdminAdmins() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {[
-                    "Admin ID",
-                    "Name & Email",
-                    "Department Owner",
-                    "Status",
-                    "Actions",
-                  ].map((column) => (
-                    <th
-                      key={column}
-                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
-                    >
-                      {column}
-                    </th>
-                  ))}
+                  {['Admin ID', 'Name & Email', 'Department Owner', 'Status', 'Actions'].map(
+                    (column) => (
+                      <th
+                        key={column}
+                        className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                      >
+                        {column}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -243,7 +241,7 @@ export function SuperAdminAdmins() {
                     </td>
                     <td className="py-3 px-4">
                       <select
-                        value={admin.department?._id || ""}
+                        value={admin.department?._id || ''}
                         onChange={(e) =>
                           updateAdminDeptMutation.mutate({
                             id: admin._id,
@@ -271,8 +269,8 @@ export function SuperAdminAdmins() {
                         className="cursor-pointer"
                         title="Click to toggle status"
                       >
-                        <Badge tone={admin.isActive ? "success" : "danger"}>
-                          {admin.isActive ? "Active" : "Inactive"}
+                        <Badge tone={admin.isActive ? 'success' : 'danger'}>
+                          {admin.isActive ? 'Active' : 'Inactive'}
                         </Badge>
                       </button>
                     </td>
@@ -335,7 +333,15 @@ export function SuperAdminAdmins() {
             </div>
             <div className="p-3 border rounded-xl bg-gradient-soft">
               <div className="text-2xl font-bold text-gradient">
-                {admins.filter((a) => a.department && a.department._id !== "Administration" && a.department._id !== "None" && a.department._id !== "").length}
+                {
+                  admins.filter(
+                    (a) =>
+                      a.department &&
+                      a.department._id !== 'Administration' &&
+                      a.department._id !== 'None' &&
+                      a.department._id !== '',
+                  ).length
+                }
               </div>
               <div className="text-[10px] text-muted-foreground mt-1">Departments Assigned</div>
             </div>
@@ -425,7 +431,7 @@ export function SuperAdminAdmins() {
                   {createAdminMutation.isPending ? (
                     <Loader2 className="size-4 animate-spin" />
                   ) : (
-                    "Register Admin"
+                    'Register Admin'
                   )}
                 </button>
               </div>
@@ -442,7 +448,7 @@ export function SuperAdminAdmins() {
               <button
                 onClick={() => {
                   setUnverifiedEmail(null);
-                  setOtpCode("");
+                  setOtpCode('');
                   setOtpError(null);
                 }}
                 className="text-muted-foreground hover:text-foreground cursor-pointer"
@@ -452,9 +458,9 @@ export function SuperAdminAdmins() {
             </div>
             <form onSubmit={handleOtpSubmit} className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                An OTP verification code has been sent to{" "}
-                <span className="font-semibold text-foreground">{unverifiedEmail}</span>.
-                Please enter the 6-digit code to complete registration.
+                An OTP verification code has been sent to{' '}
+                <span className="font-semibold text-foreground">{unverifiedEmail}</span>. Please
+                enter the 6-digit code to complete registration.
               </p>
               {otpError && (
                 <div className="px-4 py-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl">
@@ -468,7 +474,7 @@ export function SuperAdminAdmins() {
                   maxLength={6}
                   placeholder="••••••"
                   value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                   className="w-full text-center px-4 py-3 rounded-xl border bg-background text-lg font-bold tracking-widest focus:border-primary outline-none"
                 />
               </div>
@@ -477,7 +483,7 @@ export function SuperAdminAdmins() {
                   type="button"
                   onClick={() => {
                     setUnverifiedEmail(null);
-                    setOtpCode("");
+                    setOtpCode('');
                     setOtpError(null);
                   }}
                   className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
@@ -489,11 +495,7 @@ export function SuperAdminAdmins() {
                   disabled={verifyingOtp}
                   className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
-                  {verifyingOtp ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Verify & Complete"
-                  )}
+                  {verifyingOtp ? <Loader2 className="size-4 animate-spin" /> : 'Verify & Complete'}
                 </button>
               </div>
             </form>

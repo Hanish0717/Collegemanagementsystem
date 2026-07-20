@@ -1,17 +1,36 @@
-import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Plus, User, Phone, Mail, GraduationCap } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import {
+  X,
+  Save,
+  Github,
+  Linkedin,
+  Twitter,
+  Globe,
+  Pencil,
+  Plus,
+  User,
+  Phone,
+  Mail,
+  GraduationCap,
+} from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 const getSubHeadline = (role: string) => {
   switch (role) {
-    case "student": return "Learn, submit, and grow";
-    case "parent": return "Track, support, and guide";
-    case "faculty": return "Teach, evaluate, inspire";
-    case "admin": return "Administer, coordinate, and organize";
-    case "super_admin": return "System control and security";
-    default: return "Manage your campus profile and settings";
+    case 'student':
+      return 'Learn, submit, and grow';
+    case 'parent':
+      return 'Track, support, and guide';
+    case 'faculty':
+      return 'Teach, evaluate, inspire';
+    case 'admin':
+      return 'Administer, coordinate, and organize';
+    case 'super_admin':
+      return 'System control and security';
+    default:
+      return 'Manage your campus profile and settings';
   }
 };
 
@@ -20,38 +39,40 @@ export function SettingsPage() {
   const role = user?.role;
 
   // Get student profile if stored and role is student
-  const profileStr = role === "student" ? localStorage.getItem("cms_student_profile") : null;
+  const profileStr = role === 'student' ? localStorage.getItem('cms_student_profile') : null;
   const studentProfile = profileStr ? JSON.parse(profileStr) : null;
 
-  const defaultName = (role === "student" ? studentProfile?.fullName : null) || user?.fullName || "User";
-  const defaultEmail = (role === "student" ? studentProfile?.email : null) || user?.email || "";
-  const defaultDept = (role === "student" ? studentProfile?.department : null) || "Computer Science";
+  const defaultName =
+    (role === 'student' ? studentProfile?.fullName : null) || user?.fullName || 'User';
+  const defaultEmail = (role === 'student' ? studentProfile?.email : null) || user?.email || '';
+  const defaultDept =
+    (role === 'student' ? studentProfile?.department : null) || 'Computer Science';
 
   // Editable Profile States
   const [fullNameVal, setFullNameVal] = useState(defaultName);
   const [emailVal, setEmailVal] = useState(defaultEmail);
-  const [phoneVal, setPhoneVal] = useState("9876543210");
+  const [phoneVal, setPhoneVal] = useState('9876543210');
   const [deptVal, setDeptVal] = useState(defaultDept);
-  
+
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
 
   // Form states
-  const [aboutMe, setAboutMe] = useState("");
-  const [newSkill, setNewSkill] = useState("");
+  const [aboutMe, setAboutMe] = useState('');
+  const [newSkill, setNewSkill] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
   const [socialLinks, setSocialLinks] = useState({
-    github: "",
-    linkedin: "",
-    twitter: "",
-    website: "",
+    github: '',
+    linkedin: '',
+    twitter: '',
+    website: '',
   });
 
   // Load state from localStorage on mount and sync with user context
   useEffect(() => {
     if (!user) return;
     const role = user.role;
-    
+
     const storedName = localStorage.getItem(`cms_${role}_name`);
     setFullNameVal(storedName || defaultName);
 
@@ -59,26 +80,26 @@ export function SettingsPage() {
     setEmailVal(storedEmail || defaultEmail);
 
     const storedPhone = localStorage.getItem(`cms_${role}_phone`);
-    setPhoneVal(storedPhone || user?.phoneNumber || studentProfile?.phoneNumber || "9876543210");
+    setPhoneVal(storedPhone || user?.phoneNumber || studentProfile?.phoneNumber || '9876543210');
 
     const storedDept = localStorage.getItem(`cms_${role}_dept`);
     setDeptVal(storedDept || defaultDept);
 
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "");
+    setAboutMe(storedAbout || '');
 
     const storedSocials = localStorage.getItem(`cms_${role}_socials`);
     if (storedSocials) {
       setSocialLinks(JSON.parse(storedSocials));
     } else {
-      setSocialLinks({ github: "", linkedin: "", twitter: "", website: "" });
+      setSocialLinks({ github: '', linkedin: '', twitter: '', website: '' });
     }
 
     const storedSkills = localStorage.getItem(`cms_${role}_skills`);
     if (storedSkills) {
       setSkills(JSON.parse(storedSkills));
     } else {
-      setSkills(role === "student" ? ["React", "TypeScript", "Node.js", "Python"] : []);
+      setSkills(role === 'student' ? ['React', 'TypeScript', 'Node.js', 'Python'] : []);
     }
   }, [user, defaultName, defaultEmail, defaultDept]);
 
@@ -86,19 +107,19 @@ export function SettingsPage() {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       const updated = [...skills, newSkill.trim()];
       setSkills(updated);
-      setNewSkill("");
+      setNewSkill('');
     }
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
-    const updated = skills.filter(s => s !== skillToRemove);
+    const updated = skills.filter((s) => s !== skillToRemove);
     setSkills(updated);
   };
 
   const handleSave = () => {
     if (!user) return;
     const role = user.role;
-    
+
     // Save details to localStorage
     localStorage.setItem(`cms_${role}_name`, fullNameVal);
     localStorage.setItem(`cms_${role}_email`, emailVal);
@@ -106,29 +127,29 @@ export function SettingsPage() {
     localStorage.setItem(`cms_${role}_dept`, deptVal);
     localStorage.setItem(`cms_${role}_about`, aboutMe);
     localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
-    
-    if (role === "student") {
+
+    if (role === 'student') {
       localStorage.setItem(`cms_${role}_skills`, JSON.stringify(skills));
-      
+
       // Update primary student profile object for consistency in dashboard
       const updatedProfile = {
         ...(studentProfile || {}),
         fullName: fullNameVal,
         email: emailVal,
         phoneNumber: phoneVal,
-        department: deptVal
+        department: deptVal,
       };
-      localStorage.setItem("cms_student_profile", JSON.stringify(updatedProfile));
+      localStorage.setItem('cms_student_profile', JSON.stringify(updatedProfile));
     }
 
-    toast.success("Profile details saved successfully!");
+    toast.success('Profile details saved successfully!');
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     if (!user) return;
     const role = user.role;
-    
+
     const storedName = localStorage.getItem(`cms_${role}_name`);
     setFullNameVal(storedName || defaultName);
 
@@ -136,54 +157,74 @@ export function SettingsPage() {
     setEmailVal(storedEmail || defaultEmail);
 
     const storedPhone = localStorage.getItem(`cms_${role}_phone`);
-    setPhoneVal(storedPhone || user?.phoneNumber || studentProfile?.phoneNumber || "9876543210");
+    setPhoneVal(storedPhone || user?.phoneNumber || studentProfile?.phoneNumber || '9876543210');
 
     const storedDept = localStorage.getItem(`cms_${role}_dept`);
     setDeptVal(storedDept || defaultDept);
-    
+
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "");
+    setAboutMe(storedAbout || '');
 
     const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
+    setSocialLinks(
+      storedSocials
+        ? JSON.parse(storedSocials)
+        : { github: '', linkedin: '', twitter: '', website: '' },
+    );
 
     const storedSkills = localStorage.getItem(`cms_${role}_skills`);
-    setSkills(storedSkills ? JSON.parse(storedSkills) : (role === "student" ? ["React", "TypeScript", "Node.js", "Python"] : []));
-    
-    toast.info("Changes discarded.");
+    setSkills(
+      storedSkills
+        ? JSON.parse(storedSkills)
+        : role === 'student'
+          ? ['React', 'TypeScript', 'Node.js', 'Python']
+          : [],
+    );
+
+    toast.info('Changes discarded.');
     setIsEditing(false);
   };
 
   const initials = fullNameVal
-    .split(" ")
+    .split(' ')
     .map((n: string) => n[0])
-    .join("")
+    .join('')
     .substring(0, 2)
     .toUpperCase();
 
   const formattedRole = user?.role
-    ? user.role.charAt(0).toUpperCase() + user.role.slice(1).replace("-", " ")
-    : "Member";
+    ? user.role.charAt(0).toUpperCase() + user.role.slice(1).replace('-', ' ')
+    : 'Member';
 
-  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
-  
-  let idLabel = "User ID";
-  let idValue = user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#3";
+  const joinedDate = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-GB')
+    : '19/05/2026';
 
-  if (role === "student" || role === "parent") {
-    idLabel = "Roll Number";
-    idValue = user?.rollNumber || studentProfile?.rollNumber || studentProfile?.roll_number || "N/A";
-    if (role === "parent" && idValue === "N/A") {
-      const parentChildStr = localStorage.getItem("cms_parent_child_data");
+  let idLabel = 'User ID';
+  let idValue = user?._id ? `#${user._id.slice(-6).toUpperCase()}` : '#3';
+
+  if (role === 'student' || role === 'parent') {
+    idLabel = 'Roll Number';
+    idValue =
+      user?.rollNumber || studentProfile?.rollNumber || studentProfile?.roll_number || 'N/A';
+    if (role === 'parent' && idValue === 'N/A') {
+      const parentChildStr = localStorage.getItem('cms_parent_child_data');
       const parentChildData = parentChildStr ? JSON.parse(parentChildStr) : null;
-      idValue = parentChildData?.rollNumber || parentChildData?.roll_number || "N/A";
+      idValue = parentChildData?.rollNumber || parentChildData?.roll_number || 'N/A';
     }
-  } else if (role === "admin" || role === "faculty" || role === "librarian" || role === "placement-officer" || role === "hostel-warden" || role === "transport-manager") {
-    idLabel = "Employee ID";
-    idValue = user?.employeeId || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#3");
+  } else if (
+    role === 'admin' ||
+    role === 'faculty' ||
+    role === 'librarian' ||
+    role === 'placement-officer' ||
+    role === 'hostel-warden' ||
+    role === 'transport-manager'
+  ) {
+    idLabel = 'Employee ID';
+    idValue = user?.employeeId || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : '#3');
   }
 
-  const showSkills = user?.role === "student";
+  const showSkills = user?.role === 'student';
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
@@ -192,7 +233,7 @@ export function SettingsPage() {
           {formattedRole} Settings
         </span>
         <h2 className="text-sm font-medium text-slate-500 mt-0.5">
-          {getSubHeadline(user?.role || "")}
+          {getSubHeadline(user?.role || '')}
         </h2>
       </div>
 
@@ -233,14 +274,16 @@ export function SettingsPage() {
             <div className="absolute right-0 top-0 size-28 bg-indigo-50/50 rounded-bl-full -z-10 transition-transform duration-500 group-hover:scale-105" />
             <div className="mx-auto size-28 relative">
               <div className="size-full rounded-2xl bg-gradient-primary grid place-items-center text-white text-3xl font-bold shadow-md">
-                {initials || "US"}
+                {initials || 'US'}
               </div>
             </div>
-            
+
             {isEditing ? (
               <div className="mt-4 space-y-3 animate-fade-in">
                 <div className="space-y-1">
-                  <label className="text-[9px] uppercase font-bold text-slate-400 block text-left">Full Name</label>
+                  <label className="text-[9px] uppercase font-bold text-slate-400 block text-left">
+                    Full Name
+                  </label>
                   <div className="relative">
                     <User className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
                     <input
@@ -253,7 +296,9 @@ export function SettingsPage() {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[9px] uppercase font-bold text-slate-400 block text-left">Department</label>
+                  <label className="text-[9px] uppercase font-bold text-slate-400 block text-left">
+                    Department
+                  </label>
                   <div className="relative">
                     <GraduationCap className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-slate-400" />
                     <input
@@ -270,7 +315,7 @@ export function SettingsPage() {
               <>
                 <div className="mt-4 font-bold text-slate-800 text-base">{fullNameVal}</div>
                 <div className="text-xs text-slate-400 tracking-wider uppercase font-semibold mt-1">
-                  {user?.role || "Member"} {deptVal !== "N/A" && `· ${deptVal}`}
+                  {user?.role || 'Member'} {deptVal !== 'N/A' && `· ${deptVal}`}
                 </div>
               </>
             )}
@@ -333,8 +378,12 @@ export function SettingsPage() {
                   { icon: Globe, value: socialLinks.website },
                 ].map((item, idx) => {
                   const isLinked = !!item.value;
-                  const hrefVal = isLinked ? (item.value.startsWith("http") ? item.value : `https://${item.value}`) : undefined;
-                  
+                  const hrefVal = isLinked
+                    ? item.value.startsWith('http')
+                      ? item.value
+                      : `https://${item.value}`
+                    : undefined;
+
                   return (
                     <div key={idx} className="flex items-center gap-3">
                       {isLinked ? (
@@ -378,7 +427,9 @@ export function SettingsPage() {
             ) : (
               <div className="min-h-16 py-1">
                 {aboutMe ? (
-                  <p className="text-xs text-slate-600 whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
+                  <p className="text-xs text-slate-600 whitespace-pre-wrap leading-relaxed">
+                    {aboutMe}
+                  </p>
                 ) : (
                   <p className="text-xs text-slate-400 italic">
                     No bio provided yet. Add one to let people know who you are!
@@ -401,7 +452,7 @@ export function SettingsPage() {
                       placeholder="Add a skill (e.g. React, Python)"
                       value={newSkill}
                       onChange={(e) => setNewSkill(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
                       className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500"
                     />
                     <button
@@ -414,9 +465,16 @@ export function SettingsPage() {
                   <div className="flex flex-wrap gap-2">
                     {skills.length > 0 ? (
                       skills.map((skill) => (
-                        <Badge key={skill} tone="info" className="flex items-center gap-1 px-2.5 py-0.5 rounded-lg">
+                        <Badge
+                          key={skill}
+                          tone="info"
+                          className="flex items-center gap-1 px-2.5 py-0.5 rounded-lg"
+                        >
                           <span>{skill}</span>
-                          <button onClick={() => handleRemoveSkill(skill)} className="hover:text-rose-500 cursor-pointer">
+                          <button
+                            onClick={() => handleRemoveSkill(skill)}
+                            className="hover:text-rose-500 cursor-pointer"
+                          >
                             <X className="size-3" />
                           </button>
                         </Badge>
@@ -447,7 +505,7 @@ export function SettingsPage() {
             <h3 className="font-bold mb-4 text-xs tracking-wider uppercase text-slate-400">
               Account Metadata
             </h3>
-            
+
             <div className="grid sm:grid-cols-2 gap-4">
               {/* Email */}
               <div className="p-3 border border-slate-100 rounded-xl bg-slate-50/50">

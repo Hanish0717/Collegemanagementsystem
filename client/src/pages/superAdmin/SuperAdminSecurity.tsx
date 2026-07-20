@@ -1,17 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { AlertTriangle, Search, ShieldAlert } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useQuery } from "@tanstack/react-query";
-import { fetchSecurityLogs, SecurityLog } from "@/services/superAdminService";
-import { Skeleton } from "@/components/ui/skeleton";
+import { createFileRoute } from '@tanstack/react-router';
+import { useMemo, useState } from 'react';
+import { AlertTriangle, Search, ShieldAlert } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSecurityLogs, SecurityLog } from '@/services/superAdminService';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function SuperAdminSecurity() {
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("All");
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('All');
 
   const { data, isLoading } = useQuery({
-    queryKey: ["superAdminSecurityLogs"],
+    queryKey: ['superAdminSecurityLogs'],
     queryFn: fetchSecurityLogs,
   });
 
@@ -22,18 +22,20 @@ export function SuperAdminSecurity() {
     () =>
       logs.filter(
         (log) =>
-          (status === "All" || log.status === status) &&
+          (status === 'All' || log.status === status) &&
           [log.id, log.user, log.event, log.ip].some((value) =>
-            String(value || "").toLowerCase().includes(search.toLowerCase())
-          )
+            String(value || '')
+              .toLowerCase()
+              .includes(search.toLowerCase()),
+          ),
       ),
-    [logs, search, status]
+    [logs, search, status],
   );
 
   const stats = useMemo(() => {
     const total = logs.length;
-    const failed = logs.filter((l) => l.status === "Failed").length;
-    const review = logs.filter((l) => l.status === "Review").length;
+    const failed = logs.filter((l) => l.status === 'Failed').length;
+    const review = logs.filter((l) => l.status === 'Review').length;
     return {
       total,
       failed,
@@ -64,7 +66,7 @@ export function SuperAdminSecurity() {
             onChange={(event) => setStatus(event.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary transition"
           >
-            {["All", "Success", "Failed", "Review"].map((item) => (
+            {['All', 'Success', 'Failed', 'Review'].map((item) => (
               <option key={item}>{item}</option>
             ))}
           </select>
@@ -73,9 +75,21 @@ export function SuperAdminSecurity() {
 
       <div className="grid md:grid-cols-3 gap-4">
         {[
-          { label: "Login Activity", value: stats.total.toLocaleString("en-IN"), tone: "info" as const },
-          { label: "Failed Attempts", value: stats.failed.toLocaleString("en-IN"), tone: "danger" as const },
-          { label: "System Alerts", value: stats.review.toLocaleString("en-IN"), tone: "warn" as const },
+          {
+            label: 'Login Activity',
+            value: stats.total.toLocaleString('en-IN'),
+            tone: 'info' as const,
+          },
+          {
+            label: 'Failed Attempts',
+            value: stats.failed.toLocaleString('en-IN'),
+            tone: 'danger' as const,
+          },
+          {
+            label: 'System Alerts',
+            value: stats.review.toLocaleString('en-IN'),
+            tone: 'warn' as const,
+          },
         ].map((item) => (
           <Card key={item.label}>
             <div className="flex items-center justify-between">
@@ -104,7 +118,7 @@ export function SuperAdminSecurity() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Log ID", "User", "Event", "IP Address", "Time", "Status"].map((column) => (
+                  {['Log ID', 'User', 'Event', 'IP Address', 'Time', 'Status'].map((column) => (
                     <th
                       key={column}
                       className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -132,11 +146,11 @@ export function SuperAdminSecurity() {
                       <td className="py-3 px-4">
                         <Badge
                           tone={
-                            log.status === "Success"
-                              ? "success"
-                              : log.status === "Failed"
-                                ? "danger"
-                                : "warn"
+                            log.status === 'Success'
+                              ? 'success'
+                              : log.status === 'Failed'
+                                ? 'danger'
+                                : 'warn'
                           }
                         >
                           {log.status}
@@ -168,11 +182,13 @@ export function SuperAdminSecurity() {
                 <div key={log.id} className="flex gap-3">
                   <div className="flex flex-col items-center">
                     <div
-                      className={`size-8 rounded-lg ${log.status === "Failed" ? "bg-rose-500" : log.status === "Review" ? "bg-amber-500" : "bg-emerald-500"} text-white grid place-items-center text-xs font-bold`}
+                      className={`size-8 rounded-lg ${log.status === 'Failed' ? 'bg-rose-500' : log.status === 'Review' ? 'bg-amber-500' : 'bg-emerald-500'} text-white grid place-items-center text-xs font-bold`}
                     >
                       {index + 1}
                     </div>
-                    {index < Math.min(logs.length, 5) - 1 && <div className="w-px h-8 bg-border mt-2" />}
+                    {index < Math.min(logs.length, 5) - 1 && (
+                      <div className="w-px h-8 bg-border mt-2" />
+                    )}
                   </div>
                   <div className="flex-1 pb-3">
                     <div className="font-medium text-sm">{log.event}</div>
@@ -206,7 +222,7 @@ export function SuperAdminSecurity() {
                     <div className="font-medium text-sm">{item.title}</div>
                     <div className="text-xs text-muted-foreground">{item.time}</div>
                   </div>
-                  <Badge tone={item.type === "Critical" ? "danger" : "warn"}>Alert</Badge>
+                  <Badge tone={item.type === 'Critical' ? 'danger' : 'warn'}>Alert</Badge>
                 </div>
               ))
             )}

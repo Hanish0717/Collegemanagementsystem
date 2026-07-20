@@ -5,11 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tsconfigPaths({ projects: ['./tsconfig.json'] }),
-    tailwindcss(),
-  ],
+  plugins: [react(), tsconfigPaths({ projects: ['./tsconfig.json'] }), tailwindcss()],
   test: {
     globals: true,
     environment: 'jsdom',
