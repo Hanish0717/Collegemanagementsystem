@@ -839,46 +839,46 @@ export function AdminFees() {
 
                 <div className="grid sm:grid-cols-2 gap-4 animate-in fade-in duration-200">
                   {/* Box 1: Source */}
-                  <div className="border rounded-2xl p-4 bg-gradient-to-br from-cyan-50/50 to-white hover:border-cyan-200 transition-all flex flex-col justify-between min-h-24">
+                  <div className="border rounded-2xl p-4 bg-blue-50/50 hover:border-blue-200 transition-all flex flex-col justify-between min-h-24">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-cyan-600">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-blue-600">
                         Starting Place (Source)
                       </span>
-                      <MapPin className="size-4 text-cyan-500" />
+                      <MapPin className="size-4 text-blue-500" />
                     </div>
                     <input
                       type="text"
                       placeholder="e.g. Rajam Bypass"
                       value={sourcePlace}
                       onChange={(e) => setSourcePlace(e.target.value)}
-                      className="w-full bg-white border border-slate-200 focus:border-cyan-500 rounded-xl px-3 py-1.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
+                      className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-xl px-3 py-1.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
                     />
                   </div>
 
                   {/* Box 2: Destination */}
-                  <div className="border rounded-2xl p-4 bg-gradient-to-br from-indigo-50/50 to-white hover:border-indigo-200 transition-all flex flex-col justify-between min-h-24">
+                  <div className="border rounded-2xl p-4 bg-blue-50/50 hover:border-blue-200 transition-all flex flex-col justify-between min-h-24">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-600">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-blue-600">
                         Destination Place
                       </span>
-                      <MapPin className="size-4 text-indigo-500 animate-bounce-slow" />
+                      <MapPin className="size-4 text-blue-500 animate-bounce-slow" />
                     </div>
                     <input
                       type="text"
                       placeholder="e.g. College Campus"
                       value={destPlace}
                       onChange={(e) => setDestPlace(e.target.value)}
-                      className="w-full bg-white border border-slate-200 focus:border-indigo-500 rounded-xl px-3 py-1.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
+                      className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-xl px-3 py-1.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
                     />
                   </div>
 
                   {/* Box 3: Distance and Time */}
-                  <div className="border rounded-2xl p-4 bg-gradient-to-br from-amber-50/50 to-white hover:border-amber-200 transition-all flex flex-col justify-between min-h-24">
+                  <div className="border rounded-2xl p-4 bg-blue-50/50 hover:border-blue-200 transition-all flex flex-col justify-between min-h-24">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-amber-700">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-blue-600">
                         Transit Distance & Time
                       </span>
-                      <Activity className="size-4 text-amber-500 animate-pulse" />
+                      <Activity className="size-4 text-blue-500 animate-pulse" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
@@ -890,7 +890,7 @@ export function AdminFees() {
                           placeholder="e.g. 15"
                           value={distanceKm}
                           onChange={(e) => setDistanceKm(e.target.value)}
-                          className="w-full bg-white border border-slate-200 focus:border-amber-500 rounded-xl px-3 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
+                          className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-xl px-3 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
                         />
                       </div>
                       <div>
@@ -902,19 +902,19 @@ export function AdminFees() {
                           placeholder="e.g. 30"
                           value={timeMins}
                           onChange={(e) => setTimeMins(e.target.value)}
-                          className="w-full bg-white border border-slate-200 focus:border-amber-500 rounded-xl px-3 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
+                          className="w-full bg-white border border-slate-200 focus:border-blue-500 rounded-xl px-3 py-1 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Box 4: Annual Amount */}
-                  <div className="border rounded-2xl p-4 bg-gradient-to-br from-emerald-50/50 to-white hover:border-emerald-200 transition-all flex flex-col justify-between min-h-24">
+                  <div className="border rounded-2xl p-4 bg-blue-50/50 hover:border-blue-200 transition-all flex flex-col justify-between min-h-24">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-650">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-blue-600">
                         Yearly Transport Fee
                       </span>
-                      <DollarSign className="size-4 text-emerald-500" />
+                      <DollarSign className="size-4 text-blue-500" />
                     </div>
                     <div>
                       <input

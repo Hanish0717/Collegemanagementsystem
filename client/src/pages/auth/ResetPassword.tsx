@@ -58,82 +58,82 @@ export function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
-      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-      <div className="absolute -top-32 -right-20 size-96 rounded-full bg-gradient-primary opacity-25 blur-3xl animate-float pointer-events-none" />
-      <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-gradient-violet opacity-25 blur-3xl animate-float pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/80 via-slate-50 to-indigo-50/50 dark:from-slate-950 dark:via-blue-950/40 dark:to-slate-900 p-4 relative">
+      {/* Ambient background glows */}
+      <div className="absolute -top-32 -right-20 size-96 rounded-full bg-blue-500/15 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md glass-card rounded-3xl p-8 shadow-soft relative z-10"
+        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-xl shadow-blue-900/5 relative z-10"
       >
-        <Link to="/" className="inline-flex items-center gap-2 mb-8">
-          <div className="size-9 rounded-xl bg-gradient-primary grid place-items-center text-white">
+        <Link to="/" className="inline-flex items-center gap-2.5 mb-8">
+          <div className="size-9 rounded-xl bg-blue-600 text-white grid place-items-center shadow-md shadow-blue-500/25">
             <GraduationCap className="size-5" />
           </div>
-          <span className="font-bold text-lg">College Management System</span>
+          <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">Campus ERP</span>
         </Link>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="size-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 grid place-items-center text-white shadow-soft shrink-0">
+          <div className="size-12 rounded-2xl bg-blue-600 grid place-items-center text-white shadow-md shadow-blue-500/25 shrink-0">
             <KeySquare className="size-6" />
           </div>
           <div>
-            <h2 className="text-xl font-bold">Set New Password</h2>
-            <p className="text-sm text-muted-foreground mt-0.5">Enter OTP sent to {email}</p>
+            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white">Set New Password</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Enter OTP sent to {email}</p>
           </div>
         </div>
 
         {error && (
-          <div className="mt-4 mb-2 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+          <div className="mt-4 mb-2 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
             {error}
           </div>
         )}
 
         <form className="mt-6 space-y-4" onSubmit={submit}>
           <div>
-            <label className="text-xs font-medium">6-Digit OTP</label>
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">6-Digit OTP Code</label>
             <div className="mt-1 relative">
-              <Hash className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Hash className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="000000"
                 required
-                className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring text-center tracking-widest text-lg font-semibold"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition text-center tracking-widest text-lg"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-medium">New Password</label>
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">New Password</label>
             <div className="mt-1 relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-medium">Confirm New Password</label>
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Confirm New Password</label>
             <div className="mt-1 relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 font-medium text-white bg-gradient-primary shadow-soft disabled:opacity-70 transition-all glow-primary mt-4"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/25 disabled:opacity-70 transition-all duration-200 cursor-pointer mt-4"
           >
             {loading ? (
               <>

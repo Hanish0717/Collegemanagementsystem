@@ -307,11 +307,11 @@ export function HostelMess() {
 
         {/* Student Quick Cards */}
         <div className="grid md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 border-indigo-100 dark:border-indigo-950/40 rounded-2xl p-4">
+          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
             <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
               Subscription Status
             </div>
-            <div className="text-2xl font-extrabold mt-2 text-indigo-600 dark:text-indigo-400">
+            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
               Subscribed
             </div>
             <Badge tone="success" className="mt-3">
@@ -319,11 +319,11 @@ export function HostelMess() {
             </Badge>
           </Card>
 
-          <Card className="bg-gradient-to-br from-rose-500/10 to-rose-600/5 border-rose-100 dark:border-rose-950/40 rounded-2xl p-4">
+          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
             <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
               Pending Dues
             </div>
-            <div className="text-2xl font-extrabold mt-2 text-rose-600 dark:text-rose-400">
+            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
               ₹{totalPending.toLocaleString('en-IN')}
             </div>
             <Badge tone={totalPending > 0 ? 'warn' : 'success'} className="mt-3">
@@ -331,11 +331,11 @@ export function HostelMess() {
             </Badge>
           </Card>
 
-          <Card className="bg-gradient-to-br from-teal-500/10 to-teal-600/5 border-teal-100 dark:border-teal-950/40 rounded-2xl p-4">
+          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
             <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
               Total Paid (This Term)
             </div>
-            <div className="text-2xl font-extrabold mt-2 text-teal-600 dark:text-teal-400">
+            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
               ₹{totalPaid.toLocaleString('en-IN')}
             </div>
             <Badge tone="success" className="mt-3">
@@ -343,11 +343,11 @@ export function HostelMess() {
             </Badge>
           </Card>
 
-          <Card className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border-cyan-100 dark:border-cyan-950/40 rounded-2xl p-4">
+          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
             <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
               Average Rating
             </div>
-            <div className="text-2xl font-extrabold mt-2 text-cyan-600 dark:text-cyan-400">
+            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
               {feedback.length
                 ? (
                     feedback.reduce((sum: number, f: any) => sum + f.rating, 0) / feedback.length

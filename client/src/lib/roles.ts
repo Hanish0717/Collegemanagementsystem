@@ -78,7 +78,7 @@ const base: NavItem = { to: '/dashboard', label: 'Dashboard', icon: LayoutDashbo
 const settings: NavItem = { to: '/dashboard/settings', label: 'Settings', icon: Settings };
 const notif: NavItem = { to: '/dashboard/notifications', label: 'Notifications', icon: Bell };
 
-// ── Full grouped alumni workspace nav (ERPNext-style) ──
+// ── Full grouped alumni workspace nav ──
 const alumniWorkspaceNav: NavItem[] = [
   { to: '/dashboard/admin/alumni', label: 'Dashboard', icon: LayoutDashboard, exact: true },
 
@@ -173,8 +173,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Full system control',
     description: 'Manage admins, automations, global analytics & security.',
     icon: Shield,
-    gradient: 'from-slate-900 to-blue-600',
-    accent: 'bg-blue-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       {
         to: '/dashboard/super-admin',
@@ -183,6 +183,7 @@ export const ROLES: Record<RoleId, Role> = {
         exact: true,
       },
       { to: '/dashboard/super-admin/users', label: 'User Management', icon: Users },
+      { to: '/dashboard/admin/attendance-notifications', label: 'Attendance Alerts', icon: Bell },
       { to: '/dashboard/super-admin/admins', label: 'Admin Management', icon: Users },
       { to: '/dashboard/super-admin/departments', label: 'Departments', icon: Building2 },
       { to: '/dashboard/super-admin/courses', label: 'Courses', icon: BookOpen },
@@ -207,8 +208,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Operations & approvals',
     description: 'Run students, faculty, timetables, fees and reports.',
     icon: Briefcase,
-    gradient: 'from-blue-600 to-cyan-500',
-    accent: 'bg-cyan-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/admin/students', label: 'Students Roster', icon: Users },
@@ -217,6 +218,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: '/dashboard/admin/assignments', label: 'Faculty Assignments', icon: ClipboardList },
       { to: '/dashboard/admin/timetable', label: 'Class Timetable', icon: CalendarCheck },
       { to: '/dashboard/admin/attendance', label: 'Attendance Control', icon: CalendarCheck },
+      { to: '/dashboard/admin/attendance-notifications', label: 'Attendance Alerts', icon: Bell },
       {
         to: '/dashboard/admin/faculty/attendance',
         label: 'Faculty Attendance',
@@ -245,8 +247,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Teaching workspace',
     description: 'Mark attendance, post materials, track students.',
     icon: GraduationCap,
-    gradient: 'from-violet-600 to-blue-600',
-    accent: 'bg-violet-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/faculty/attendance', label: 'Attendance', icon: CalendarCheck },
@@ -266,8 +268,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Digital learning hub',
     description: 'Manage notes, video lectures, quizzes, assignments, forum, and online classes.',
     icon: BookOpen,
-    gradient: 'from-emerald-500 to-teal-600',
-    accent: 'bg-emerald-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       { to: '/dashboard/admin/lms', label: 'LMS Home', icon: LayoutDashboard, exact: true },
       { to: '/dashboard/faculty/materials', label: 'Study Materials', icon: FileText },
@@ -284,8 +286,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Your academic hub',
     description: 'GPA, attendance, fees, assignments and placements.',
     icon: Users,
-    gradient: 'from-cyan-500 to-indigo-600',
-    accent: 'bg-indigo-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/student/attendance', label: 'Attendance', icon: CalendarCheck },
@@ -307,8 +309,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Track your child',
     description: 'Performance, attendance and fee status at a glance.',
     icon: Heart,
-    gradient: 'from-emerald-500 to-cyan-500',
-    accent: 'bg-emerald-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/parent/attendance', label: 'Attendance', icon: CalendarCheck },
@@ -325,8 +327,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Library operations',
     description: 'Books, fines, digital catalog and reports.',
     icon: Library,
-    gradient: 'from-amber-500 to-blue-600',
-    accent: 'bg-amber-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       { to: '/dashboard/librarian', label: 'Library Overview', icon: Library, exact: true },
       { to: '/dashboard/librarian/books', label: 'Book Management', icon: BookOpen },
@@ -347,8 +349,8 @@ export const ROLES: Record<RoleId, Role> = {
     description:
       'Companies, drives, eligibility, applications, interviews, offers, training and reports.',
     icon: FileText,
-    gradient: 'from-purple-600 to-cyan-500',
-    accent: 'bg-purple-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       {
         to: '/dashboard/placement',
@@ -369,8 +371,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Hostel management',
     description: 'Rooms, visitors, complaints and hostel fees.',
     icon: Building2,
-    gradient: 'from-teal-500 to-blue-600',
-    accent: 'bg-teal-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       {
@@ -397,8 +399,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Routes & vehicles',
     description: 'Buses, routes, drivers and live tracking.',
     icon: Bus,
-    gradient: 'from-orange-500 to-blue-600',
-    accent: 'bg-orange-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/transport', label: 'Transport', icon: Bus },
@@ -414,8 +416,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Executive Board',
     description: 'Institution-wide reports, budget approvals, and NAAC accreditation.',
     icon: Shield,
-    gradient: 'from-amber-600 to-rose-600',
-    accent: 'bg-rose-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/admin/admissions', label: 'Admissions Desk', icon: UserPlus },
@@ -433,8 +435,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Curriculum & Exams',
     description: 'Semester schedules, R20/R23 curricula, and Exam Cell liaison.',
     icon: GraduationCap,
-    gradient: 'from-violet-700 to-indigo-800',
-    accent: 'bg-indigo-600',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/admin/timetable', label: 'Academic Timetable', icon: CalendarCheck },
@@ -451,8 +453,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Department Head',
     description: 'Department workloads, staff logs, and student performance monitoring.',
     icon: Building2,
-    gradient: 'from-emerald-600 to-teal-700',
-    accent: 'bg-teal-600',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/admin/students', label: 'Dept Students', icon: Users },
@@ -465,6 +467,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: '/dashboard/admin/timetable', label: 'Dept Timetable', icon: CalendarCheck },
       { to: '/dashboard/admin/academics', label: 'Academic Management', icon: BookOpen },
       { to: '/dashboard/admin/attendance', label: 'Attendance Audit', icon: CalendarCheck },
+      { to: '/dashboard/admin/attendance-approvals', label: 'Attendance Approvals', icon: ClipboardList },
       {
         to: '/dashboard/admin/faculty/attendance',
         label: 'Faculty Attendance',
@@ -480,8 +483,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Testing & Grades',
     description: 'Exam registers, Hall Tickets, Seating charts, CGPA and Grade Cards.',
     icon: Award,
-    gradient: 'from-rose-600 to-violet-600',
-    accent: 'bg-rose-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [
       base,
       { to: '/dashboard/admin/exams/schedule', label: 'Schedule Exam', icon: ClipboardList },
@@ -505,7 +508,7 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Finance & Payroll',
     description: 'Fee structure collection, vendor logs, GST filing, and staff payroll ledger.',
     icon: Wallet,
-    gradient: 'from-cyan-600 to-blue-700',
+    gradient: 'from-blue-600 to-blue-700',
     accent: 'bg-blue-600',
     nav: [
       base,
@@ -521,8 +524,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Alumni & Reunions',
     description: 'Manage alumni registrations, events, mentorship, and donations.',
     icon: Heart,
-    gradient: 'from-pink-500 to-rose-600',
-    accent: 'bg-rose-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [...alumniWorkspaceNav],
   },
   alumni: {
@@ -531,8 +534,8 @@ export const ROLES: Record<RoleId, Role> = {
     short: 'Alumni Workspace',
     description: 'Access job board, networking events, mentorship, and donations.',
     icon: Award,
-    gradient: 'from-indigo-600 to-pink-500',
-    accent: 'bg-indigo-500',
+    gradient: 'from-blue-600 to-blue-700',
+    accent: 'bg-blue-600',
     nav: [...alumniWorkspaceNav],
   },
 };

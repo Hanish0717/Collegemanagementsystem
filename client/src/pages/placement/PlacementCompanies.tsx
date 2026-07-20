@@ -328,17 +328,9 @@ export const getCompanyLogo = (name: string) => {
 
   // Clean fallback card for user-defined new companies
   const char = name.charAt(0).toUpperCase();
-  const colors = [
-    'from-rose-500 to-orange-500',
-    'from-teal-500 to-emerald-500',
-    'from-blue-600 to-indigo-600',
-    'from-purple-600 to-pink-500',
-    'from-amber-500 to-yellow-500',
-  ];
-  const index = name.length % colors.length;
   return (
     <div
-      className={`rounded-xl bg-gradient-to-br ${colors[index]} text-white flex flex-col items-center justify-center size-full p-4 relative overflow-hidden shadow-md`}
+      className={`rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center size-full p-4 relative overflow-hidden shadow-md`}
     >
       <span className="font-sans font-black text-4xl tracking-tighter select-none">{char}</span>
       <span className="text-xs font-bold tracking-wider mt-1 opacity-90 select-none uppercase truncate max-w-[85%]">

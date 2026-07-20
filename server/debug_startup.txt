@@ -252,3 +252,154 @@
 [2026-07-17T11:08:47.615Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
 [2026-07-17T11:08:47.616Z] Starting database TCP check for host: 127.0.0.1, port: 5432
 [2026-07-17T11:08:47.618Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:10:04.199Z] Supabase.js module loading starting
+[2026-07-18T04:10:04.206Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: false
+[2026-07-18T04:10:04.206Z] Starting database TCP check for host: 127.0.0.1, port: 5432
+[2026-07-18T04:10:04.209Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:10:53.805Z] Supabase.js module loading starting
+[2026-07-18T04:10:53.811Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:10:53.976Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:11:34.738Z] Supabase.js module loading starting
+[2026-07-18T04:11:34.744Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:11:34.918Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:12:08.514Z] Supabase.js module loading starting
+[2026-07-18T04:12:08.519Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:12:08.676Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:12:31.986Z] Supabase.js module loading starting
+[2026-07-18T04:12:31.991Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:12:32.156Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:12:56.150Z] Supabase.js module loading starting
+[2026-07-18T04:12:56.154Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:12:56.315Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:13:15.294Z] Supabase.js module loading starting
+[2026-07-18T04:13:15.302Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:13:15.473Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:13:30.541Z] Supabase.js module loading starting
+[2026-07-18T04:13:30.546Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:13:30.714Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:13:59.703Z] Supabase.js module loading starting
+[2026-07-18T04:13:59.709Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:13:59.873Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:14:27.171Z] Supabase.js module loading starting
+[2026-07-18T04:14:27.175Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:14:27.340Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:14:56.079Z] Supabase.js module loading starting
+[2026-07-18T04:14:56.085Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:14:56.258Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:15:26.372Z] Supabase.js module loading starting
+[2026-07-18T04:15:26.376Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:15:26.539Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:16:01.266Z] Supabase.js module loading starting
+[2026-07-18T04:16:01.271Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:16:01.434Z] Supabase.js module loading completed successfully!
+[2026-07-18T04:16:20.958Z] Supabase.js module loading starting
+[2026-07-18T04:16:20.965Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T04:16:21.145Z] Supabase.js module loading completed successfully!
+[2026-07-18T08:56:43.184Z] Supabase.js module loading starting
+[2026-07-18T08:56:43.191Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T08:56:43.357Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:10:01.208Z] Supabase.js module loading starting
+[2026-07-18T09:10:01.214Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:10:01.388Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:10:23.868Z] Supabase.js module loading starting
+[2026-07-18T09:10:23.875Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:10:24.051Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:10:44.303Z] Supabase.js module loading starting
+[2026-07-18T09:10:44.309Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:10:44.480Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:10:56.764Z] Supabase.js module loading starting
+[2026-07-18T09:10:56.772Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:10:56.948Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:11:07.965Z] Supabase.js module loading starting
+[2026-07-18T09:11:07.972Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:11:08.141Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:11:19.437Z] Supabase.js module loading starting
+[2026-07-18T09:11:19.443Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:11:19.620Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:11:28.725Z] Supabase.js module loading starting
+[2026-07-18T09:11:28.731Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:11:28.903Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:11:35.989Z] Supabase.js module loading starting
+[2026-07-18T09:11:35.995Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:11:36.160Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:11:47.986Z] Supabase.js module loading starting
+[2026-07-18T09:11:47.993Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:11:48.172Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:11:57.440Z] Supabase.js module loading starting
+[2026-07-18T09:11:57.445Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:11:57.606Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:27:04.221Z] Supabase.js module loading starting
+[2026-07-18T09:27:04.225Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:27:04.301Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:27:20.025Z] Supabase.js module loading starting
+[2026-07-18T09:27:20.029Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:27:20.103Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:28:00.075Z] Supabase.js module loading starting
+[2026-07-18T09:28:00.078Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:28:00.150Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:28:24.625Z] Supabase.js module loading starting
+[2026-07-18T09:28:24.628Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:28:24.701Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:28:44.308Z] Supabase.js module loading starting
+[2026-07-18T09:28:44.311Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:28:44.389Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:28:49.862Z] Supabase.js module loading starting
+[2026-07-18T09:28:49.864Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:28:49.941Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:29:13.629Z] Supabase.js module loading starting
+[2026-07-18T09:29:13.632Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:29:13.707Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:29:18.830Z] Supabase.js module loading starting
+[2026-07-18T09:29:18.834Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:29:18.909Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:39:20.300Z] Supabase.js module loading starting
+[2026-07-18T09:39:20.304Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:39:20.377Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:39:31.484Z] Supabase.js module loading starting
+[2026-07-18T09:39:31.486Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:39:31.559Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:39:40.170Z] Supabase.js module loading starting
+[2026-07-18T09:39:40.173Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:39:40.246Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:39:54.278Z] Supabase.js module loading starting
+[2026-07-18T09:39:54.281Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:39:54.361Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:40:03.271Z] Supabase.js module loading starting
+[2026-07-18T09:40:03.273Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:40:03.346Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:40:19.499Z] Supabase.js module loading starting
+[2026-07-18T09:40:19.502Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:40:19.576Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:40:28.998Z] Supabase.js module loading starting
+[2026-07-18T09:40:29.001Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:40:29.073Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:40:46.837Z] Supabase.js module loading starting
+[2026-07-18T09:40:46.839Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:40:46.913Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:41:23.250Z] Supabase.js module loading starting
+[2026-07-18T09:41:23.253Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:41:23.330Z] Supabase.js module loading completed successfully!
+[2026-07-18T09:42:32.921Z] Supabase.js module loading starting
+[2026-07-18T09:42:32.924Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T09:42:32.997Z] Supabase.js module loading completed successfully!
+[2026-07-18T10:04:52.735Z] Supabase.js module loading starting
+[2026-07-18T10:04:52.739Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T10:04:52.828Z] Supabase.js module loading completed successfully!
+[2026-07-18T10:08:54.339Z] Supabase.js module loading starting
+[2026-07-18T10:08:54.342Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T10:08:54.421Z] Supabase.js module loading completed successfully!
+[2026-07-18T10:09:17.750Z] Supabase.js module loading starting
+[2026-07-18T10:09:17.752Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T10:09:17.823Z] Supabase.js module loading completed successfully!
+[2026-07-18T10:09:30.641Z] Supabase.js module loading starting
+[2026-07-18T10:09:30.644Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T10:09:30.716Z] Supabase.js module loading completed successfully!
+[2026-07-18T10:09:38.563Z] Supabase.js module loading starting
+[2026-07-18T10:09:38.566Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-18T10:09:38.641Z] Supabase.js module loading completed successfully!
+[2026-07-20T11:10:07.005Z] Supabase.js module loading starting
+[2026-07-20T11:10:07.013Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-20T11:10:07.237Z] Supabase.js module loading completed successfully!
+[2026-07-20T11:33:57.043Z] Supabase.js module loading starting
+[2026-07-20T11:33:57.050Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5432/college_management, isMockMode: true
+[2026-07-20T11:33:57.227Z] Supabase.js module loading completed successfully!

@@ -911,7 +911,7 @@ export function PlacementInterviews() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
             <div className="flex justify-between items-center border-b pb-3 mb-4">
-              <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+              <h3 className="font-bold text-base text-blue-600">
                 Schedule New Interview
               </h3>
               <button
@@ -1093,7 +1093,7 @@ export function PlacementInterviews() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
             <div className="flex justify-between items-center border-b pb-3 mb-4">
-              <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+              <h3 className="font-bold text-base text-blue-600">
                 Edit Interview Details
               </h3>
               <button
@@ -1272,7 +1272,7 @@ export function PlacementInterviews() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
             <div className="flex justify-between items-center border-b pb-3 mb-4">
-              <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+              <h3 className="font-bold text-base text-blue-600">
                 Interview Brief Overview
               </h3>
               <button
@@ -1379,7 +1379,7 @@ export function PlacementInterviews() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 my-8 animate-in fade-in zoom-in-95 duration-150 relative">
             <div className="flex justify-between items-center border-b pb-3 mb-4">
-              <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+              <h3 className="font-bold text-base text-blue-600">
                 {isPanelEditMode ? 'Edit Panelist Details' : 'Add New Panelist'}
               </h3>
               <button

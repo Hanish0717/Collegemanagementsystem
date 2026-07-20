@@ -11,6 +11,8 @@ import {
   Quote,
   BookOpen,
   ChevronDown,
+  Sparkles,
+  MessageSquare,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useGoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
@@ -26,8 +28,8 @@ export function Login() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-primary" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -264,7 +266,6 @@ function LoginForm() {
       const user = result;
 
       if (roleId === 'lms') {
-        // LMS coordinator — use lms frontend role regardless of backend role
         setActiveRole('lms');
         localStorage.setItem('campusly.role', 'lms');
         navigate({ to: '/dashboard/admin/lms' });
@@ -288,7 +289,6 @@ function LoginForm() {
     setGoogleLoading(true);
     setError(null);
     try {
-      // Exchange access token for user info
       const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
       }).then((r) => r.json());
@@ -320,86 +320,95 @@ function LoginForm() {
   });
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-gradient-hero">
+    <div className="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-gradient-to-br from-blue-50/80 via-slate-50 to-indigo-50/50 dark:from-slate-950 dark:via-blue-950/40 dark:to-slate-900 text-slate-900 dark:text-white relative">
       {/* Left — branding & quotation */}
       <div className="relative hidden lg:flex flex-col p-10 xl:p-14 overflow-hidden max-h-screen justify-between">
-        <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-        <div className="absolute -top-32 -right-20 size-96 rounded-full bg-gradient-primary opacity-25 blur-3xl animate-float pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-gradient-violet opacity-25 blur-3xl animate-float pointer-events-none" />
+        {/* Ambient background glows */}
+        <div className="absolute -top-32 -right-20 size-96 rounded-full bg-blue-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
 
-        <Link to="/" className="relative inline-flex items-center gap-2.5 w-fit">
-          <div className="size-10 rounded-xl bg-gradient-primary grid place-items-center text-white shadow-soft">
-            <GraduationCap className="size-5" />
+        {/* Top Brand Logo Header */}
+        <Link to="/" className="relative inline-flex items-center gap-3 w-fit">
+          <div className="size-10 rounded-xl bg-blue-600 text-white grid place-items-center shadow-md shadow-blue-500/25">
+            <GraduationCap className="size-6" />
           </div>
-          <span className="font-bold text-xl tracking-tight bg-slate-900 bg-clip-text">
-            College Management System
-          </span>
+          <div className="leading-tight">
+            <div className="flex items-center gap-1.5 font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
+              <span>Campus ERP</span>
+            </div>
+            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">College Management System</div>
+          </div>
         </Link>
 
+        {/* Center Hero Text & Quotation Block */}
         <div className="flex-1 flex flex-col justify-center max-w-lg relative z-10 py-12">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="space-y-8"
+            className="space-y-7"
           >
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-indigo bg-indigo-50 border border-indigo-100 uppercase mb-4">
-                Empowering Education Through Technology
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold tracking-wider text-blue-700 dark:text-blue-300 bg-blue-100/90 dark:bg-blue-950/70 border border-blue-200/80 dark:border-blue-800 uppercase mb-4 shadow-2xs">
+                <Sparkles className="size-3 text-blue-600" /> EMPOWERING EDUCATION THROUGH TECHNOLOGY
               </span>
-              <h1 className="text-3xl xl:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
+              <h1 className="text-3xl xl:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
                 College Management{' '}
-                <span className="text-gradient bg-gradient-to-r from-cyan-500 to-indigo-600">
+                <span className="text-blue-600 dark:text-blue-400">
                   System
                 </span>
               </h1>
             </div>
 
-            {/* Quotation block with soft glassmorphism and subtle quote icon */}
-            <div className="relative p-7 rounded-3xl border border-white/50 bg-white/40 backdrop-blur-xl shadow-soft">
-              <Quote className="size-10 text-indigo/10 absolute -top-5 -left-3 rotate-180" />
-              <blockquote className="text-lg xl:text-xl font-medium text-slate-800 italic leading-relaxed">
+            {/* Quotation card with soft glassmorphism & modern styling */}
+            <div className="relative p-7 rounded-3xl border border-blue-200/60 dark:border-blue-900/50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-md shadow-blue-500/5">
+              <Quote className="size-10 text-blue-600/15 absolute -top-5 -left-3 rotate-180" />
+              <blockquote className="text-base xl:text-lg font-medium text-slate-800 dark:text-slate-200 italic leading-relaxed">
                 "Education is not the preparation for life; education is life itself."
               </blockquote>
-              <cite className="block mt-4 text-xs font-bold uppercase tracking-wider text-indigo not-italic">
-                — John Dewey
+              <cite className="block mt-4 text-xs font-extrabold uppercase tracking-wider text-blue-600 dark:text-blue-400 not-italic">
+                — JOHN DEWEY
               </cite>
             </div>
 
-            <p className="text-sm text-slate-600 leading-relaxed font-normal max-w-md">
-              Manage academics, attendance, communication, and campus activities through one unified
-              platform.
+            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium max-w-md">
+              Manage academics, attendance, communication, and campus activities through one unified platform.
             </p>
           </motion.div>
         </div>
 
-        <div className="relative text-xs text-muted-foreground">
-          © {new Date().getFullYear()} CMS. All rights reserved.
+        <div className="relative text-xs text-slate-500 font-medium">
+          © 2026 Campus ERP. All rights reserved.
         </div>
       </div>
 
-      {/* Right — form */}
+      {/* Right — Sign-in Form Card */}
       <div className="flex items-center justify-center p-6 md:p-12 overflow-y-auto max-h-screen">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-md glass-card rounded-3xl p-8 shadow-soft my-auto"
+          className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-xl shadow-blue-900/5 my-auto"
         >
-          <div className="lg:hidden flex items-center gap-2 mb-6">
-            <div className="size-9 rounded-xl bg-gradient-primary grid place-items-center text-white">
+          {/* Mobile Header Logo */}
+          <div className="lg:hidden flex items-center gap-2.5 mb-6">
+            <div className="size-9 rounded-xl bg-blue-600 text-white grid place-items-center shadow-md shadow-blue-500/25">
               <GraduationCap className="size-5" />
             </div>
-            <span className="font-bold text-lg">College Management System</span>
+            <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">Campus ERP</span>
           </div>
-          <h2 className="text-xl font-bold">Sign in to your account</h2>
-          <p className="text-sm text-muted-foreground mt-1">
+
+          <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Sign in to your account
+          </h2>
+          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-snug">
             Enter your institutional credentials to access the campus management system
           </p>
+
           {/* Role Selector Dropdown */}
-          <div className="mt-4">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-1.5">
-              Select your role to sign in
+          <div className="mt-5">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 block mb-1.5">
+              SELECT YOUR ROLE TO SIGN IN
             </label>
             <div className="relative">
               <select
@@ -411,7 +420,7 @@ function LoginForm() {
                   setPassword('');
                   setError(null);
                 }}
-                className="w-full appearance-none rounded-xl border bg-background/60 pl-4 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
+                className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/60 pl-4 pr-10 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-600 cursor-pointer transition"
               >
                 {ROLE_LIST.map((r) => (
                   <option key={r.id} value={r.id}>
@@ -419,26 +428,38 @@ function LoginForm() {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
             </div>
             {active && (
               <div
-                className={`mt-2 flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r ${active.gradient} text-white text-xs font-semibold`}
+                className="mt-2.5 flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-semibold shadow-md shadow-blue-500/20"
               >
-                <active.icon className="size-3.5 shrink-0" />
+                <active.icon className="size-4 shrink-0" />
                 <span>{active.description}</span>
               </div>
             )}
           </div>
 
           {error && (
-            <div className="mt-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            <div className="mt-4 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
               {error}
             </div>
           )}
+
+          {/* Preset Demo Role Autofill Banner */}
+          <div className="mt-3 text-center">
+            <button
+              type="button"
+              onClick={() => setIsPinModalOpen(true)}
+              className="text-xs text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-semibold"
+            >
+              Select Demo Role Account (Autofills credentials)
+            </button>
+          </div>
+
           <form className="mt-4 space-y-4" onSubmit={submit}>
             <div>
-              <label className="text-xs font-medium">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 {roleId === 'parent'
                   ? 'Parent Email'
                   : roleId === 'student'
@@ -448,7 +469,7 @@ function LoginForm() {
                       : 'Email'}
               </label>
               <div className="mt-1 relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                 <input
                   type={roleId === 'student' ? 'text' : 'email'}
                   value={email}
@@ -464,16 +485,16 @@ function LoginForm() {
                   }
                   required
                   autoComplete="off"
-                  className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
                 />
               </div>
             </div>
 
             {roleId !== 'parent' ? (
               <div>
-                <label className="text-xs font-medium">Password</label>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
                 <div className="mt-1 relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                   <input
                     type="password"
                     value={password}
@@ -481,35 +502,35 @@ function LoginForm() {
                     placeholder="••••••••"
                     required
                     autoComplete="new-password"
-                    className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
                   />
                 </div>
               </div>
             ) : (
               <div>
-                <label className="text-xs font-medium">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                   Student Admission ID (Admission No or Roll No) *
                 </label>
                 <div className="mt-1 relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                   <input
                     type="text"
                     value={admissionNumber}
                     onChange={(e) => setAdmissionNumber(e.target.value)}
                     placeholder="e.g. ADM2026102"
                     required
-                    className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
                   />
                 </div>
               </div>
             )}
 
             {roleId !== 'parent' && (
-              <div className="flex items-center justify-between text-xs">
-                <label className="flex items-center gap-2">
-                  <input type="checkbox" defaultChecked className="rounded" /> Remember me
+              <div className="flex items-center justify-between text-xs font-medium">
+                <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" /> Remember me
                 </label>
-                <Link to="/forgot-password" className="text-indigo hover:underline">
+                <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -518,7 +539,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-white bg-gradient-to-r ${active ? active.gradient : 'from-cyan-500 to-indigo-600'} shadow-soft disabled:opacity-70`}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl py-3 font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/25 disabled:opacity-70 transition-all duration-200 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -535,9 +556,9 @@ function LoginForm() {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mt-5">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground">or</span>
-            <div className="flex-1 h-px bg-border" />
+            <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+            <span className="text-xs text-slate-400 font-medium">or</span>
+            <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
           </div>
 
           {/* Google Sign-In */}
@@ -545,7 +566,7 @@ function LoginForm() {
             type="button"
             onClick={() => googleLogin()}
             disabled={googleLoading}
-            className="mt-4 w-full flex items-center justify-center gap-3 rounded-xl border border-border bg-background/60 py-2.5 text-sm font-medium hover:bg-muted/50 transition-all disabled:opacity-70"
+            className="mt-4 w-full flex items-center justify-center gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 transition-all cursor-pointer disabled:opacity-70"
           >
             {googleLoading ? (
               <Loader2 className="size-4 animate-spin" />
@@ -572,37 +593,22 @@ function LoginForm() {
             {googleLoading ? 'Signing in…' : 'Continue with Google'}
           </button>
 
-          {/* PIN Toggle Trigger */}
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsPinModalOpen(true)}
-              className="text-xs text-indigo-600 hover:underline cursor-pointer font-medium"
-            >
-              Need Demo Credentials? Click here to view PINs
-            </button>
-          </div>
-
           {/* PIN modal */}
           {isPinModalOpen && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 15 }}
                 transition={{ type: 'spring', duration: 0.4 }}
-                className="bg-white border border-slate-100 shadow-2xl rounded-3xl w-full max-w-sm p-6 overflow-hidden relative"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-3xl w-full max-w-sm p-6 overflow-hidden relative"
               >
-                {/* Ambient gradients */}
-                <div className="absolute -top-24 -left-24 size-48 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-24 -right-24 size-48 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none" />
-
                 <div className="relative">
                   {/* Header */}
-                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                  <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
                     <div className="flex items-center gap-2">
-                      <span className="size-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                      <h3 className="font-bold text-sm bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+                      <span className="size-2 rounded-full bg-blue-600 animate-pulse"></span>
+                      <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                         Demo Autofill Security Pin
                       </h3>
                     </div>
@@ -613,7 +619,7 @@ function LoginForm() {
                         setPin(['', '', '', '']);
                         setPinError(null);
                       }}
-                      className="text-muted-foreground hover:text-foreground cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
+                      className="text-slate-400 hover:text-slate-700 cursor-pointer transition p-1.5 rounded-lg hover:bg-slate-100"
                     >
                       <X className="size-4" />
                     </button>
@@ -621,7 +627,7 @@ function LoginForm() {
 
                   {/* Body */}
                   <div className="mt-4 text-center">
-                    <p className="text-xs text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                    <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
                       Enter your 4-digit security PIN to populate preset credentials.
                     </p>
 
@@ -645,8 +651,8 @@ function LoginForm() {
                                 : pinError
                                   ? 'border-rose-500 bg-rose-50 text-rose-700'
                                   : digit
-                                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-700 shadow-sm'
-                                    : 'border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100'
+                                    ? 'border-blue-600 bg-blue-50/50 text-blue-700 shadow-xs'
+                                    : 'border-slate-200 dark:border-slate-800 bg-slate-50 focus:border-blue-600'
                             }`}
                         />
                       ))}
@@ -674,83 +680,32 @@ function LoginForm() {
                     )}
 
                     {/* Cheat Sheet / Helper */}
-                    <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-3 text-left">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">
+                    <div className="bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 rounded-2xl p-3 text-left">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
                         Available Demo PINs (Click to fill):
                       </span>
-                      <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-700">
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('1111')}
-                        >
-                          <span className="text-muted-foreground">Super Admin</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            1111
-                          </kbd>
-                        </div>
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('1212')}
-                        >
-                          <span className="text-muted-foreground">LMS Coord</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            1212
-                          </kbd>
-                        </div>
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('2222')}
-                        >
-                          <span className="text-muted-foreground">Admin</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            2222
-                          </kbd>
-                        </div>
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('3333')}
-                        >
-                          <span className="text-muted-foreground">Faculty</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            3333
-                          </kbd>
-                        </div>
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('4444')}
-                        >
-                          <span className="text-muted-foreground">Student</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            4444
-                          </kbd>
-                        </div>
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('5555')}
-                        >
-                          <span className="text-muted-foreground">Parent</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            5555
-                          </kbd>
-                        </div>
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('6666')}
-                        >
-                          <span className="text-muted-foreground">Placement</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            6666
-                          </kbd>
-                        </div>
-                        <div
-                          className="flex items-center justify-between p-1 rounded-lg hover:bg-indigo-50/30 transition cursor-pointer"
-                          onClick={() => handleQuickPin('7777')}
-                        >
-                          <span className="text-muted-foreground">Librarian</span>
-                          <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-slate-200 font-bold text-indigo-600 shadow-3xs">
-                            7777
-                          </kbd>
-                        </div>
+                      <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-700 dark:text-slate-300">
+                        {[
+                          { role: 'Super Admin', pin: '1111' },
+                          { role: 'LMS Coord', pin: '1212' },
+                          { role: 'Admin', pin: '2222' },
+                          { role: 'Faculty', pin: '3333' },
+                          { role: 'Student', pin: '4444' },
+                          { role: 'Parent', pin: '5555' },
+                          { role: 'Placement', pin: '6666' },
+                          { role: 'Librarian', pin: '7777' },
+                        ].map((item) => (
+                          <div
+                            key={item.pin}
+                            className="flex items-center justify-between p-1 rounded-lg hover:bg-blue-50/60 dark:hover:bg-slate-800 transition cursor-pointer"
+                            onClick={() => handleQuickPin(item.pin)}
+                          >
+                            <span className="text-slate-500 dark:text-slate-400 font-medium">{item.role}</span>
+                            <kbd className="px-1.5 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-blue-600 shadow-2xs">
+                              {item.pin}
+                            </kbd>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -760,6 +715,16 @@ function LoginForm() {
           )}
         </motion.div>
       </div>
+
+      {/* Floating AI Assistant Chat Bubble (Matches bottom right icon in screenshot) */}
+      <button
+        onClick={() => setIsPinModalOpen(true)}
+        className="fixed bottom-6 right-6 size-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white grid place-items-center shadow-lg shadow-blue-500/35 hover:scale-105 transition-all duration-200 cursor-pointer z-40 group"
+        title="Quick Demo Autofill PINs"
+      >
+        <MessageSquare className="size-5 group-hover:rotate-12 transition-transform" />
+        <span className="absolute -top-1 -right-1 size-3 rounded-full bg-rose-500 border-2 border-white" />
+      </button>
     </div>
   );
 }

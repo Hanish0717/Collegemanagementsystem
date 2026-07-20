@@ -580,31 +580,31 @@ export function AdminExams() {
                 label="Upcoming Exams"
                 value={examStats?.upcoming || 0}
                 icon={Calendar}
-                gradient="from-blue-600 to-indigo-500"
+                gradient="bg-blue-600"
               />
               <StatCard
                 label="Ongoing Exams"
                 value={examStats?.ongoing || 0}
                 icon={Clock}
-                gradient="from-amber-500 to-orange-500"
+                gradient="bg-blue-600"
               />
               <StatCard
                 label="Completed Exams"
                 value={examStats?.completed || 0}
                 icon={CheckCircle}
-                gradient="from-emerald-500 to-teal-500"
+                gradient="bg-blue-600"
               />
               <StatCard
                 label="Results Pending"
                 value={examStats?.pendingResults || 0}
                 icon={FileText}
-                gradient="from-indigo-600 to-purple-500"
+                gradient="bg-blue-600"
               />
               <StatCard
                 label="Published"
                 value={examStats?.resultsPublished || 0}
                 icon={Award}
-                gradient="from-purple-600 to-pink-500"
+                gradient="bg-blue-600"
               />
             </div>
           )}

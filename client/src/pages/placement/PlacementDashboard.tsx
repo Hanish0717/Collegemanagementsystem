@@ -301,7 +301,7 @@ export function PlacementDashboard() {
                   key={drive.id}
                   className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
                 >
-                  <div className="size-10 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-500 text-white grid place-items-center font-bold text-sm shrink-0">
+                  <div className="size-10 rounded-lg bg-blue-600 text-white grid place-items-center font-bold text-sm shrink-0">
                     {drive.company
                       .split(' ')
                       .map((x) => x[0])
@@ -336,7 +336,7 @@ export function PlacementDashboard() {
                 key={offer.id}
                 className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
               >
-                <div className="size-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 text-white grid place-items-center font-bold text-sm shrink-0">
+                <div className="size-10 rounded-lg bg-blue-600 text-white grid place-items-center font-bold text-sm shrink-0">
                   ✓
                 </div>
                 <div className="flex-1 min-w-0">
@@ -367,7 +367,7 @@ export function PlacementDashboard() {
                 key={interview.id}
                 className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
               >
-                <div className="size-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-500 text-white grid place-items-center font-bold text-sm shrink-0">
+                <div className="size-10 rounded-lg bg-blue-600 text-white grid place-items-center font-bold text-sm shrink-0">
                   {interview.round}
                 </div>
                 <div className="flex-1 min-w-0">

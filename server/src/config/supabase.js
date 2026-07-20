@@ -231,7 +231,14 @@ if (isMockMode) {
       'mentorship_sessions',
       'alumni_employment',
       'alumni_education',
-      'alumni_job_applications'
+      'alumni_job_applications',
+      'attendance_notifications',
+      'below_75_students',
+      'attendance_notification_requests',
+      'college_settings',
+      'attendance_notification_templates',
+      'attendance_notification_history',
+      'attendance_notification_logs'
     ];
     let changed = false;
     requiredTables.forEach(table => {
@@ -240,6 +247,66 @@ if (isMockMode) {
         changed = true;
       }
     });
+
+    if (currentDb['college_settings'].length === 0) {
+      currentDb['college_settings'] = [
+        {
+          key: 'attendance_approval_enabled',
+          value: 'false',
+          description: 'Enable/disable HOD approval flow for attendance warnings',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ];
+      changed = true;
+    }
+
+    if (currentDb['attendance_notification_templates'].length === 0) {
+      currentDb['attendance_notification_templates'] = [
+        {
+          id: 'appreciation',
+          name: 'Appreciation',
+          subject: 'Congratulations on Excellent Attendance',
+          body: 'Dear {student_name},\n\nWe are pleased to inform you that you have maintained an excellent attendance of {attendance_percentage}% this month.\n\nKeep up the great work!\n\nBest regards,\nCollege Administration',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'friendly-reminder',
+          name: 'Friendly Reminder',
+          subject: 'Friendly Reminder: Attendance Update',
+          body: 'Dear {student_name},\n\nThis is a friendly reminder that your overall attendance is currently at {attendance_percentage}%.\n\nPlease attend your classes regularly to keep your attendance above the required 75% threshold.\n\nBest regards,\nClass Teacher',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'warning',
+          name: 'Warning',
+          subject: 'Attendance Warning Alert',
+          body: 'Dear {student_name},\n\nYour attendance is currently at {attendance_percentage}%, which is below the required 75% threshold.\n\nPlease take immediate steps to attend your classes regularly to avoid academic penalty.\n\nBest regards,\nClass Teacher',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'critical-warning',
+          name: 'Critical Warning',
+          subject: 'Critical Attendance Warning',
+          body: 'Dear Parent / Student,\n\nThis is to notify you that the attendance of {student_name} ({roll_number}) is critical at {attendance_percentage}%.\n\nPlease meet your department HOD immediately to resolve this.\n\nBest regards,\nDepartment Head',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 'detention-alert',
+          name: 'Detention Alert',
+          subject: 'Detention Risk Alert',
+          body: 'Dear Parent / Student,\n\nYour overall attendance has fallen to {attendance_percentage}%, putting you at immediate risk of detention.\n\nKindly note that you will not be allowed to write the semester exams if this is not resolved.\n\nBest regards,\nPrincipal',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ];
+      changed = true;
+    }
+
     if (changed) {
       saveDb(currentDb);
     }

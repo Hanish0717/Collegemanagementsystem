@@ -733,35 +733,24 @@ export function DashboardLayout() {
 
   const SidebarContent = ({ isMobile = false }) => (
     <>
-      <div className="p-4 flex items-center gap-2.5 border-b border-sidebar-border h-16">
-        <div
-          className={`size-9 rounded-xl bg-gradient-to-br ${role.gradient} grid place-items-center text-white shrink-0`}
-        >
-          <GraduationCap className="size-5" />
-        </div>
-        {(!collapsed || isMobile) && (
-          <div className="leading-tight">
-            <div className="font-bold text-base tracking-tight">College Management</div>
-            <div className="text-[10px] text-muted-foreground">{role.name} workspace</div>
+      {/* Brand Header */}
+      <div className="p-4 border-b border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <div className="size-10 rounded-xl bg-blue-600 text-white grid place-items-center shadow-md shadow-blue-500/25 shrink-0">
+            <GraduationCap className="size-6" />
           </div>
-        )}
+          {(!collapsed || isMobile) && (
+            <div className="leading-tight min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">Campus ERP</span>
+              </div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                College Management System
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-
-      {(!collapsed || isMobile) && (
-        <div className="px-3 pt-3">
-          <div
-            className={`flex items-center gap-2 rounded-xl p-2.5 bg-gradient-to-br ${role.gradient} text-white shadow-soft`}
-          >
-            <div className="size-8 rounded-lg bg-white/15 grid place-items-center backdrop-blur">
-              <RoleIcon className="size-4" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-xs font-semibold">{role.name}</div>
-              <div className="text-[10px] opacity-80">{role.short}</div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
         {role.nav.map((item) => {
@@ -923,13 +912,14 @@ export function DashboardLayout() {
           );
         })}
       </nav>
+
       <div className="p-3 border-t border-sidebar-border">
         <button
           onClick={() => {
             if (isMobile) setMobileOpen(false);
             setShowLogoutConfirm(true);
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground hover:text-rose-600 transition cursor-pointer"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 transition cursor-pointer"
         >
           <LogOut className="size-4" />
           {(!collapsed || isMobile) && <span>Logout</span>}
@@ -1226,23 +1216,23 @@ export function DashboardLayout() {
               {/* Theme Toggle */}
               <button
                 onClick={() => setDark(!dark)}
-                className="p-2 rounded-lg hover:bg-accent cursor-pointer transition"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition text-slate-600 dark:text-slate-300"
                 aria-label="Toggle Theme"
               >
                 {dark ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
               </button>
 
-              {/* Notifications Dropdown */}
+              {/* Notifications Dropdown with vivid Red Badge */}
               <div className="relative">
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 rounded-lg hover:bg-accent cursor-pointer transition"
+                  className="relative p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition text-slate-600 dark:text-slate-300"
                   aria-label="View notifications"
                 >
                   <Bell className="size-4" />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-gradient-primary animate-pulse" />
-                  )}
+                  <span className="absolute -top-0.5 -right-0.5 min-w-4 h-4 px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                    6
+                  </span>
                 </button>
                 {showNotifications && (
                   <>
@@ -1250,16 +1240,16 @@ export function DashboardLayout() {
                       className="fixed inset-0 z-40"
                       onClick={() => setShowNotifications(false)}
                     />
-                    <div className="absolute right-0 top-full mt-2 w-80 bg-background border rounded-xl shadow-lg z-50 p-3 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-normal">
+                    <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 p-3 animate-in fade-in slide-in-from-top-2 duration-150 text-left font-normal">
                       <div className="flex items-center justify-between border-b pb-2 mb-2">
-                        <span className="font-semibold text-xs">Alerts & Notifications</span>
+                        <span className="font-bold text-xs text-slate-900 dark:text-white">Alerts & Notifications</span>
                         {unreadCount > 0 && (
                           <button
                             onClick={() => {
                               markAllNotificationsRead();
                               setShowNotifications(false);
                             }}
-                            className="text-[10px] text-indigo-600 hover:underline cursor-pointer font-semibold"
+                            className="text-[10px] text-blue-600 hover:underline cursor-pointer font-semibold"
                           >
                             Mark all read
                           </button>
@@ -1277,7 +1267,7 @@ export function DashboardLayout() {
                               onClick={() => {
                                 markSingleRead(notif.id);
                               }}
-                              className={`p-2 rounded-lg border text-xs cursor-pointer transition relative group ${notif.unread ? 'bg-indigo-50/40 border-indigo-200 dark:bg-indigo-950/20 dark:border-indigo-900/40 font-medium' : 'hover:bg-accent/40'}`}
+                              className={`p-2 rounded-xl border text-xs cursor-pointer transition relative group ${notif.unread ? 'bg-blue-50/70 border-blue-200 dark:bg-blue-950/40 dark:border-blue-900/40 font-medium' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                             >
                               <div className="flex justify-between items-start gap-2">
                                 <span className="pr-4">{notif.title}</span>
@@ -1286,7 +1276,7 @@ export function DashboardLayout() {
                                 </span>
                               </div>
                               {notif.unread && (
-                                <span className="absolute top-2 right-2 size-1.5 rounded-full bg-indigo-500" />
+                                <span className="absolute top-2 right-2 size-1.5 rounded-full bg-blue-600" />
                               )}
                             </div>
                           ))
@@ -1297,18 +1287,29 @@ export function DashboardLayout() {
                 )}
               </div>
 
+              {/* Message Bubble Icon */}
+              <button
+                onClick={() => navigate({ to: '/dashboard/faculty/communication' })}
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition text-slate-600 dark:text-slate-300 hidden sm:block"
+                title="Messages"
+              >
+                <FileText className="size-4" />
+              </button>
+
               {/* Profile Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                  className="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-xl hover:bg-accent cursor-pointer transition"
+                  className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition border border-transparent hover:border-slate-200"
                 >
-                  <div className={`size-7 rounded-lg bg-gradient-to-br ${role.gradient}`} />
-                  <div className="hidden md:block text-left leading-tight">
-                    <div className="text-xs font-semibold">{displayName}</div>
-                    <div className="text-[10px] text-muted-foreground">{role.name}</div>
+                  <div className="size-8 rounded-full bg-blue-600 text-white font-bold grid place-items-center text-xs overflow-hidden shadow-xs ring-2 ring-blue-100 dark:ring-blue-950">
+                    {displayName.split(' ').map(n=>n[0]).join('').slice(0, 2)}
                   </div>
-                  <ChevronDown className="size-3.5 text-muted-foreground" />
+                  <div className="hidden md:block text-left leading-tight">
+                    <div className="text-xs font-bold text-slate-900 dark:text-white">{displayName}</div>
+                    <div className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{role.name}</div>
+                  </div>
+                  <ChevronDown className="size-3.5 text-slate-400" />
                 </button>
                 {showProfileDropdown && (
                   <>

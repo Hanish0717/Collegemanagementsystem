@@ -700,7 +700,7 @@ export function TransportDashboard() {
     const campusIcon = (window as any).L.divIcon({
       html: `
         <div class="relative flex flex-col items-center select-none">
-          <div class="size-7 bg-gradient-to-br from-indigo-600 to-violet-600 border-2 border-white rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/30">
+          <div class="size-7 bg-blue-600 border-2 border-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30">
             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-white animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 16.2 16.2 7.8 16.2 7.8 7.8 16.2 7.8"/></svg>
           </div>
         </div>
@@ -1003,7 +1003,7 @@ export function TransportDashboard() {
                 <button
                   onClick={() => handleVerify()}
                   disabled={verifying}
-                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-sm font-semibold flex items-center gap-1.5 shadow-sm shadow-indigo-600/10 transition-all duration-300 active:scale-95 shrink-0"
+                  className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-sm font-semibold flex items-center gap-1.5 shadow-sm shadow-indigo-600/10 transition-all duration-300 active:scale-95 shrink-0"
                 >
                   {verifying ? 'Verifying...' : 'Verify'}
                 </button>
@@ -1150,9 +1150,9 @@ export function TransportDashboard() {
 
           {/* New Route Form (appears below cards when toggled) */}
           {showNewRouteForm && (
-            <div className="mt-5 p-5 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="mt-5 p-5 rounded-2xl border border-blue-200 bg-blue-50/50 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="flex items-center gap-2 mb-4">
-                <PlusCircle className="size-5 text-emerald-600" />
+                <PlusCircle className="size-5 text-blue-600" />
                 <h4 className="font-bold text-slate-800 text-sm">Create New Travel Route</h4>
               </div>
               <div className="grid sm:grid-cols-2 gap-4 mb-4">
@@ -1165,7 +1165,7 @@ export function TransportDashboard() {
                     placeholder="e.g. Hyderabad, Visakhapatnam"
                     value={newRouteStart}
                     onChange={(e) => setNewRouteStart(e.target.value)}
-                    className="w-full bg-white border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 transition-all"
+                    className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
                   />
                 </div>
                 <div>
@@ -1177,7 +1177,7 @@ export function TransportDashboard() {
                     placeholder="e.g. Rajam, Srikakulam"
                     value={newRouteEnd}
                     onChange={(e) => setNewRouteEnd(e.target.value)}
-                    className="w-full bg-white border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-200 transition-all"
+                    className="w-full bg-white border border-slate-200 focus:border-blue-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all"
                   />
                 </div>
               </div>
@@ -1185,7 +1185,7 @@ export function TransportDashboard() {
                 <button
                   onClick={handleSaveNewRoute}
                   disabled={savingRoute || !newRouteStart.trim() || !newRouteEnd.trim()}
-                  className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {savingRoute ? (
                     <>
@@ -1286,7 +1286,7 @@ export function TransportDashboard() {
                       <button
                         type="button"
                         onClick={() => handleConfirmRoute3D(activeRoute)}
-                        className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs font-bold shadow-sm shadow-indigo-600/10 flex items-center gap-2 transition-all active:scale-95"
+                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-indigo-500 hover:to-violet-500 text-white rounded-xl text-xs font-bold shadow-sm shadow-indigo-600/10 flex items-center gap-2 transition-all active:scale-95"
                       >
                         <Navigation className="size-3.5 animate-bounce-slow" /> Confirm Route & Open
                         3D Map
@@ -1317,13 +1317,13 @@ export function TransportDashboard() {
                   </Badge>
                 </div>
 
-                {/* Glassmorphic ID Card Design (Light Vibrant Blue Gradients) */}
-                <div className="relative rounded-2xl p-4 bg-gradient-to-br from-indigo-50 via-slate-50 to-white border border-indigo-150 shadow-sm mb-6 overflow-hidden">
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-indigo-200/30 to-cyan-200/30 rounded-full blur-xl opacity-50" />
+                {/* Glassmorphic ID Card Design */}
+                <div className="relative rounded-2xl p-4 bg-blue-50/50 border border-blue-100 shadow-sm mb-6 overflow-hidden">
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-blue-100/30 rounded-full blur-xl opacity-50" />
 
                   <div className="flex items-start gap-4">
                     {/* Student Profile Initials Avatar */}
-                    <div className="size-16 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-bold text-xl flex items-center justify-center shadow-md">
+                    <div className="size-16 rounded-xl bg-blue-600 text-white font-bold text-xl flex items-center justify-center shadow-md">
                       {verifiedData.student.fullName
                         .split(' ')
                         .map((n) => n[0])
@@ -1570,7 +1570,7 @@ export function TransportDashboard() {
                 <button
                   type="button"
                   onClick={() => setIs3DActive(!is3DActive)}
-                  className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all duration-200 flex items-center gap-1 ${is3DActive ? 'bg-gradient-to-r from-indigo-600 to-pink-500 text-white shadow-sm' : 'text-slate-500 hover:text-slate-755'}`}
+                  className={`px-2 py-1 text-[10px] font-bold rounded-lg transition-all duration-200 flex items-center gap-1 ${is3DActive ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-755'}`}
                 >
                   <Layers className={`size-3 ${is3DActive ? 'animate-spin-slow' : ''}`} /> 3D View
                 </button>

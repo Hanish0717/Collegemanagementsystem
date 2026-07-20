@@ -1800,8 +1800,8 @@ export function AdminStudents() {
                     {sisTab === 'idcard' && (
                       <div className="flex flex-col items-center gap-4">
                         {/* Visual ID Card Mockup */}
-                        <div className="w-[340px] h-[200px] rounded-2xl border bg-gradient-to-br from-indigo-900 to-indigo-950 text-white p-4 relative overflow-hidden shadow-lg select-none">
-                          <div className="absolute top-0 right-0 size-24 bg-cyan-500/10 rounded-full blur-xl pointer-events-none" />
+                        <div className="w-[340px] h-[200px] rounded-2xl border bg-blue-900 text-white p-4 relative overflow-hidden shadow-lg select-none">
+                          <div className="absolute top-0 right-0 size-24 bg-blue-500/10 rounded-full blur-xl pointer-events-none" />
 
                           {/* Logo header */}
                           <div className="flex items-center gap-1.5 border-b border-indigo-800 pb-2">

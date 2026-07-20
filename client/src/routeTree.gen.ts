@@ -102,6 +102,7 @@ import { Route as DashboardFacultyMarksRouteImport } from './routes/dashboard/fa
 import { Route as DashboardFacultyLeaveRouteImport } from './routes/dashboard/faculty/leave'
 import { Route as DashboardFacultyCommunicationRouteImport } from './routes/dashboard/faculty/communication'
 import { Route as DashboardFacultyClassesRouteImport } from './routes/dashboard/faculty/classes'
+import { Route as DashboardFacultyAttendanceWarningsRouteImport } from './routes/dashboard/faculty/attendance-warnings'
 import { Route as DashboardFacultyAttendanceRouteImport } from './routes/dashboard/faculty/attendance'
 import { Route as DashboardAiSettingsRouteImport } from './routes/dashboard/ai/settings'
 import { Route as DashboardAiRiskRouteImport } from './routes/dashboard/ai/risk'
@@ -128,6 +129,8 @@ import { Route as DashboardAdminEventsRouteImport } from './routes/dashboard/adm
 import { Route as DashboardAdminCommunicationRouteImport } from './routes/dashboard/admin/communication'
 import { Route as DashboardAdminClubsRouteImport } from './routes/dashboard/admin/clubs'
 import { Route as DashboardAdminCalendarRouteImport } from './routes/dashboard/admin/calendar'
+import { Route as DashboardAdminAttendanceNotificationsRouteImport } from './routes/dashboard/admin/attendance-notifications'
+import { Route as DashboardAdminAttendanceApprovalsRouteImport } from './routes/dashboard/admin/attendance-approvals'
 import { Route as DashboardAdminAttendanceRouteImport } from './routes/dashboard/admin/attendance'
 import { Route as DashboardAdminAssignmentsRouteImport } from './routes/dashboard/admin/assignments'
 import { Route as DashboardAdminAlumniRouteImport } from './routes/dashboard/admin/alumni'
@@ -678,6 +681,12 @@ const DashboardFacultyClassesRoute = DashboardFacultyClassesRouteImport.update({
   path: '/classes',
   getParentRoute: () => DashboardFacultyRoute,
 } as any)
+const DashboardFacultyAttendanceWarningsRoute =
+  DashboardFacultyAttendanceWarningsRouteImport.update({
+    id: '/attendance-warnings',
+    path: '/attendance-warnings',
+    getParentRoute: () => DashboardFacultyRoute,
+  } as any)
 const DashboardFacultyAttendanceRoute =
   DashboardFacultyAttendanceRouteImport.update({
     id: '/attendance',
@@ -812,6 +821,18 @@ const DashboardAdminCalendarRoute = DashboardAdminCalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+const DashboardAdminAttendanceNotificationsRoute =
+  DashboardAdminAttendanceNotificationsRouteImport.update({
+    id: '/attendance-notifications',
+    path: '/attendance-notifications',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminAttendanceApprovalsRoute =
+  DashboardAdminAttendanceApprovalsRouteImport.update({
+    id: '/attendance-approvals',
+    path: '/attendance-approvals',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
 const DashboardAdminAttendanceRoute =
   DashboardAdminAttendanceRouteImport.update({
     id: '/attendance',
@@ -1084,6 +1105,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
+  '/dashboard/admin/attendance-approvals': typeof DashboardAdminAttendanceApprovalsRoute
+  '/dashboard/admin/attendance-notifications': typeof DashboardAdminAttendanceNotificationsRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
@@ -1110,6 +1133,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
+  '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
@@ -1242,6 +1266,8 @@ export interface FileRoutesByTo {
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
+  '/dashboard/admin/attendance-approvals': typeof DashboardAdminAttendanceApprovalsRoute
+  '/dashboard/admin/attendance-notifications': typeof DashboardAdminAttendanceNotificationsRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
@@ -1268,6 +1294,7 @@ export interface FileRoutesByTo {
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
+  '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
@@ -1404,6 +1431,8 @@ export interface FileRoutesById {
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
+  '/dashboard/admin/attendance-approvals': typeof DashboardAdminAttendanceApprovalsRoute
+  '/dashboard/admin/attendance-notifications': typeof DashboardAdminAttendanceNotificationsRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
@@ -1430,6 +1459,7 @@ export interface FileRoutesById {
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
+  '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
@@ -1567,6 +1597,8 @@ export interface FileRouteTypes {
     | '/dashboard/admin/alumni'
     | '/dashboard/admin/assignments'
     | '/dashboard/admin/attendance'
+    | '/dashboard/admin/attendance-approvals'
+    | '/dashboard/admin/attendance-notifications'
     | '/dashboard/admin/calendar'
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
@@ -1593,6 +1625,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
     | '/dashboard/faculty/attendance'
+    | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
     | '/dashboard/faculty/leave'
@@ -1725,6 +1758,8 @@ export interface FileRouteTypes {
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/assignments'
     | '/dashboard/admin/attendance'
+    | '/dashboard/admin/attendance-approvals'
+    | '/dashboard/admin/attendance-notifications'
     | '/dashboard/admin/calendar'
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
@@ -1751,6 +1786,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
     | '/dashboard/faculty/attendance'
+    | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
     | '/dashboard/faculty/leave'
@@ -1886,6 +1922,8 @@ export interface FileRouteTypes {
     | '/dashboard/admin/alumni'
     | '/dashboard/admin/assignments'
     | '/dashboard/admin/attendance'
+    | '/dashboard/admin/attendance-approvals'
+    | '/dashboard/admin/attendance-notifications'
     | '/dashboard/admin/calendar'
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
@@ -1912,6 +1950,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
     | '/dashboard/faculty/attendance'
+    | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
     | '/dashboard/faculty/leave'
@@ -2678,6 +2717,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFacultyClassesRouteImport
       parentRoute: typeof DashboardFacultyRoute
     }
+    '/dashboard/faculty/attendance-warnings': {
+      id: '/dashboard/faculty/attendance-warnings'
+      path: '/attendance-warnings'
+      fullPath: '/dashboard/faculty/attendance-warnings'
+      preLoaderRoute: typeof DashboardFacultyAttendanceWarningsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
     '/dashboard/faculty/attendance': {
       id: '/dashboard/faculty/attendance'
       path: '/attendance'
@@ -2858,6 +2904,20 @@ declare module '@tanstack/react-router' {
       path: '/calendar'
       fullPath: '/dashboard/admin/calendar'
       preLoaderRoute: typeof DashboardAdminCalendarRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/attendance-notifications': {
+      id: '/dashboard/admin/attendance-notifications'
+      path: '/attendance-notifications'
+      fullPath: '/dashboard/admin/attendance-notifications'
+      preLoaderRoute: typeof DashboardAdminAttendanceNotificationsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/attendance-approvals': {
+      id: '/dashboard/admin/attendance-approvals'
+      path: '/attendance-approvals'
+      fullPath: '/dashboard/admin/attendance-approvals'
+      preLoaderRoute: typeof DashboardAdminAttendanceApprovalsRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
     '/dashboard/admin/attendance': {
@@ -3203,6 +3263,8 @@ interface DashboardAdminRouteChildren {
   DashboardAdminAlumniRoute: typeof DashboardAdminAlumniRouteWithChildren
   DashboardAdminAssignmentsRoute: typeof DashboardAdminAssignmentsRoute
   DashboardAdminAttendanceRoute: typeof DashboardAdminAttendanceRoute
+  DashboardAdminAttendanceApprovalsRoute: typeof DashboardAdminAttendanceApprovalsRoute
+  DashboardAdminAttendanceNotificationsRoute: typeof DashboardAdminAttendanceNotificationsRoute
   DashboardAdminCalendarRoute: typeof DashboardAdminCalendarRoute
   DashboardAdminClubsRoute: typeof DashboardAdminClubsRoute
   DashboardAdminCommunicationRoute: typeof DashboardAdminCommunicationRoute
@@ -3239,6 +3301,10 @@ const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminAlumniRoute: DashboardAdminAlumniRouteWithChildren,
   DashboardAdminAssignmentsRoute: DashboardAdminAssignmentsRoute,
   DashboardAdminAttendanceRoute: DashboardAdminAttendanceRoute,
+  DashboardAdminAttendanceApprovalsRoute:
+    DashboardAdminAttendanceApprovalsRoute,
+  DashboardAdminAttendanceNotificationsRoute:
+    DashboardAdminAttendanceNotificationsRoute,
   DashboardAdminCalendarRoute: DashboardAdminCalendarRoute,
   DashboardAdminClubsRoute: DashboardAdminClubsRoute,
   DashboardAdminCommunicationRoute: DashboardAdminCommunicationRoute,
@@ -3300,6 +3366,7 @@ const DashboardAiRouteWithChildren = DashboardAiRoute._addFileChildren(
 
 interface DashboardFacultyRouteChildren {
   DashboardFacultyAttendanceRoute: typeof DashboardFacultyAttendanceRoute
+  DashboardFacultyAttendanceWarningsRoute: typeof DashboardFacultyAttendanceWarningsRoute
   DashboardFacultyClassesRoute: typeof DashboardFacultyClassesRoute
   DashboardFacultyCommunicationRoute: typeof DashboardFacultyCommunicationRoute
   DashboardFacultyLeaveRoute: typeof DashboardFacultyLeaveRoute
@@ -3315,6 +3382,8 @@ interface DashboardFacultyRouteChildren {
 
 const DashboardFacultyRouteChildren: DashboardFacultyRouteChildren = {
   DashboardFacultyAttendanceRoute: DashboardFacultyAttendanceRoute,
+  DashboardFacultyAttendanceWarningsRoute:
+    DashboardFacultyAttendanceWarningsRoute,
   DashboardFacultyClassesRoute: DashboardFacultyClassesRoute,
   DashboardFacultyCommunicationRoute: DashboardFacultyCommunicationRoute,
   DashboardFacultyLeaveRoute: DashboardFacultyLeaveRoute,

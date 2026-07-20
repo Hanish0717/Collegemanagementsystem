@@ -520,7 +520,7 @@ export function HostelDashboard() {
                     ) : null}
                     {/* Fallback gradient placeholder if no image or fails to load */}
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex flex-col items-center justify-center text-white ${b.image_url ? 'hidden' : ''}`}
+                      className={`absolute inset-0 bg-blue-600 flex flex-col items-center justify-center text-white ${b.image_url ? 'hidden' : ''}`}
                     >
                       <Building2 className="size-12 animate-pulse mb-1 text-white/90" />
                       <span className="text-[10px] uppercase tracking-widest font-bold text-white/80">
@@ -607,13 +607,7 @@ export function HostelDashboard() {
                       </div>
                       <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden p-[2px]">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 shadow-xs ${
-                            occupancyPercentage >= 95
-                              ? 'bg-gradient-to-r from-rose-500 to-red-600'
-                              : occupancyPercentage >= 75
-                                ? 'bg-gradient-to-r from-amber-400 to-amber-600'
-                                : 'bg-gradient-to-r from-teal-400 to-emerald-600'
-                          }`}
+                          className="h-full rounded-full transition-all duration-500 shadow-xs bg-blue-600"
                           style={{ width: `${Math.min(100, occupancyPercentage)}%` }}
                         />
                       </div>

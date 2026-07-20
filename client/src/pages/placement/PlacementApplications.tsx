@@ -480,7 +480,7 @@ export function PlacementApplications() {
             (status, idx) => (
               <div key={status} className="flex items-center gap-2">
                 <div className="flex flex-col items-center">
-                  <div className="size-10 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-500 text-white grid place-items-center font-bold text-sm shrink-0">
+                  <div className="size-10 rounded-lg bg-blue-600 text-white grid place-items-center font-bold text-sm shrink-0">
                     {idx + 1}
                   </div>
                   <div className="text-xs text-muted-foreground mt-2 text-center whitespace-nowrap max-w-[80px]">
@@ -502,7 +502,7 @@ export function PlacementApplications() {
             <div className="flex justify-between items-center border-b pb-3 mb-4">
               <div className="flex items-center gap-2">
                 <FileSpreadsheet className="size-5 text-indigo-600 animate-pulse" />
-                <h3 className="font-bold text-base bg-gradient-to-r from-indigo-600 to-cyan-600 bg-clip-text text-transparent">
+                <h3 className="font-bold text-base text-blue-600">
                   Import Student Applications
                 </h3>
               </div>
