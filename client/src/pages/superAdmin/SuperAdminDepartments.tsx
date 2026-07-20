@@ -8,6 +8,8 @@ import { Department } from '../../services/superAdminService';
 import { useDepartments } from '@/hooks/useDepartments';
 
 export function SuperAdminDepartments() {
+  const [academicTab, setAcademicTab] = useState('Departments');
+
   const {
     data: departments = [],
     isLoading: loading,
@@ -129,8 +131,8 @@ export function SuperAdminDepartments() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Department Management"
-        desc="Monitor departments, heads, faculty strength, student distribution and operational status."
+        title="Academic Structure & Department Governance"
+        desc="Manage departments, degree programs, course offerings, curriculum frameworks, semesters, and academic years."
         actions={
           <button
             onClick={handleOpenAdd}
@@ -140,6 +142,30 @@ export function SuperAdminDepartments() {
           </button>
         }
       />
+
+      {/* Academic Structure Sub-Tabs */}
+      <div className="flex flex-wrap gap-1.5 p-1.5 bg-accent/20 border rounded-xl overflow-x-auto">
+        {[
+          'Departments',
+          'Programs',
+          'Courses',
+          'Curriculum',
+          'Semesters',
+          'Academic Years',
+        ].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setAcademicTab(tab)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              academicTab === tab
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
       <Card>
         <div className="flex flex-col lg:flex-row gap-3">

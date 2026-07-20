@@ -44,6 +44,28 @@ const userSchema = new mongoose.Schema(
       },
       default: 'student',
     },
+    designation: {
+      type: String,
+      enum: [
+        'Principal',
+        'Vice Principal',
+        'Dean',
+        'HOD',
+        'Professor',
+        'Associate Professor',
+        'Assistant Professor',
+        'Guest Faculty',
+        'Lab Assistant',
+        'Student',
+        'Staff',
+      ],
+      trim: true,
+    },
+    employeeStatus: {
+      type: String,
+      enum: ['Active', 'On Leave', 'Suspended', 'Resigned', 'Retired', 'Relieved'],
+      default: 'Active',
+    },
     phoneNumber: {
       type: String,
       trim: true,

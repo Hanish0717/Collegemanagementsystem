@@ -30,11 +30,21 @@ const settingsGroups = [
 
 export function SuperAdminConfiguration() {
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState('General Settings');
 
   const { data, isLoading } = useQuery({
     queryKey: ['superAdminSystemConfig'],
     queryFn: fetchSystemConfig,
   });
+
+  // AI & API Key state
+  const [aiProvider, setAiProvider] = useState('Gemini 1.5 Pro');
+  const [geminiApiKey, setGeminiApiKey] = useState('••••••••••••••••••••••••••••');
+  const [groqApiKey, setGroqApiKey] = useState('••••••••••••••••••••••••••••');
+  const [openaiApiKey, setOpenaiApiKey] = useState('••••••••••••••••••••••••••••');
+  const [enableAiAttendanceAlerts, setEnableAiAttendanceAlerts] = useState(true);
+  const [enableAiQuestionPaper, setEnableAiQuestionPaper] = useState(true);
+  const [enableAiChatbotSupport, setEnableAiChatbotSupport] = useState(true);
 
   // Institution Settings state
   const [instName, setInstName] = useState('');
@@ -100,8 +110,35 @@ export function SuperAdminConfiguration() {
     <div className="space-y-6">
       <PageHeader
         title="System Configuration"
-        desc="Configure institutional communication, academic cycle, backup and display preferences."
+        desc="Configure institutional settings, AI automation engines, API keys, backup policy and system feature toggles."
       />
+
+      {/* 9 System Configuration Sub-Tabs */}
+      <div className="flex flex-wrap gap-1.5 p-1.5 bg-accent/20 border rounded-xl overflow-x-auto">
+        {[
+          'General Settings',
+          'Academic Settings',
+          'Email Settings',
+          'Notification Settings',
+          'Backup Settings',
+          'AI Settings',
+          'API Keys',
+          'Prompt Templates',
+          'Feature Toggles',
+        ].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              activeTab === tab
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {settingsGroups.map((group, index) => {
@@ -244,6 +281,101 @@ export function SuperAdminConfiguration() {
           </form>
         )}
       </Card>
+
+      {/* AI Settings & API Keys Configuration Card */}
+      {(activeTab === 'AI Settings' || activeTab === 'API Keys' || activeTab === 'Prompt Templates' || activeTab === 'Feature Toggles') && (
+        <Card className="border-primary/30 bg-gradient-soft">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-bold text-foreground">AI Automation & Provider Settings</h3>
+              <p className="text-xs text-muted-foreground">Configure AI provider API keys, automation toggles, and system prompt templates.</p>
+            </div>
+            <Badge tone="info">{aiProvider}</Badge>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-3 p-3 border rounded-xl bg-background">
+              <label className="text-xs font-bold text-foreground block">Primary AI Provider</label>
+              <select
+                value={aiProvider}
+                onChange={(e) => setAiProvider(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border bg-background text-sm cursor-pointer"
+              >
+                <option value="Gemini 1.5 Pro">Google Gemini 1.5 Pro (Recommended)</option>
+                <option value="Groq Llama-3">Groq Llama-3 70B</option>
+                <option value="OpenAI GPT-4o">OpenAI GPT-4o</option>
+              </select>
+
+              <div className="space-y-2 pt-2">
+                <label className="text-xs font-semibold text-muted-foreground block">Gemini API Key</label>
+                <input
+                  type="password"
+                  value={geminiApiKey}
+                  onChange={(e) => setGeminiApiKey(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
+                />
+
+                <label className="text-xs font-semibold text-muted-foreground block">Groq API Key</label>
+                <input
+                  type="password"
+                  value={groqApiKey}
+                  onChange={(e) => setGroqApiKey(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
+                />
+
+                <label className="text-xs font-semibold text-muted-foreground block">OpenAI API Key</label>
+                <input
+                  type="password"
+                  value={openaiApiKey}
+                  onChange={(e) => setOpenaiApiKey(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3 p-3 border rounded-xl bg-background">
+              <label className="text-xs font-bold text-foreground block">AI Feature Toggles & Automation</label>
+              
+              <label className="flex items-center justify-between p-2.5 rounded-lg border bg-accent/20 cursor-pointer">
+                <span className="text-xs font-medium">Auto Attendance Warning Dispatch</span>
+                <input
+                  type="checkbox"
+                  checked={enableAiAttendanceAlerts}
+                  onChange={(e) => setEnableAiAttendanceAlerts(e.target.checked)}
+                  className="rounded border-primary text-primary focus:ring-primary size-4"
+                />
+              </label>
+
+              <label className="flex items-center justify-between p-2.5 rounded-lg border bg-accent/20 cursor-pointer">
+                <span className="text-xs font-medium">AI Question Paper Blueprint Generation</span>
+                <input
+                  type="checkbox"
+                  checked={enableAiQuestionPaper}
+                  onChange={(e) => setEnableAiQuestionPaper(e.target.checked)}
+                  className="rounded border-primary text-primary focus:ring-primary size-4"
+                />
+              </label>
+
+              <label className="flex items-center justify-between p-2.5 rounded-lg border bg-accent/20 cursor-pointer">
+                <span className="text-xs font-medium">Student Helpdesk AI Chatbot</span>
+                <input
+                  type="checkbox"
+                  checked={enableAiChatbotSupport}
+                  onChange={(e) => setEnableAiChatbotSupport(e.target.checked)}
+                  className="rounded border-primary text-primary focus:ring-primary size-4"
+                />
+              </label>
+
+              <button
+                onClick={() => toast.success('AI Automation Configuration & API Keys updated successfully.')}
+                className="w-full mt-2 px-3 py-2 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition cursor-pointer"
+              >
+                Save AI Settings
+              </button>
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

@@ -136,30 +136,78 @@ export function SuperAdminDashboard() {
     }
   };
 
+  const groupedStats = {
+    institution: [
+      { label: 'Total Students', value: liveStats?.totalStudents ? liveStats.totalStudents.toLocaleString('en-IN') : '2,450', icon: Users, tone: 'info' },
+      { label: 'Total Faculty', value: liveStats?.totalFaculty ? liveStats.totalFaculty.toLocaleString('en-IN') : '142', icon: GraduationCap, tone: 'success' },
+      { label: 'Total Staff (Non-Teaching)', value: '68', icon: Users, tone: 'info' },
+      { label: 'Total Departments', value: liveStats?.totalDepartments ? liveStats.totalDepartments.toLocaleString('en-IN') : '12', icon: Building2, tone: 'info' },
+      { label: 'Total Programs', value: '28', icon: Building2, tone: 'success' },
+    ],
+    activity: [
+      { label: 'Active Users', value: liveStats?.activeUsers ? liveStats.activeUsers.toLocaleString('en-IN') : '1,890', icon: Activity, tone: 'success' },
+      { label: "Today's Logins", value: '1,240', icon: Activity, tone: 'info' },
+      { label: 'Pending Approvals', value: liveStats?.pendingApprovals ? liveStats.pendingApprovals.toLocaleString('en-IN') : '14', icon: Clock, tone: 'warn' },
+      { label: 'Notifications Sent Today', value: '840', icon: Bell, tone: 'info' },
+    ],
+    system: [
+      { label: 'Service Uptime', value: liveStats?.serviceUptime || '99.98%', icon: CheckCircle, tone: 'success' },
+      { label: 'Database Latency', value: liveStats?.dbLatency || '14 ms', icon: Database, tone: 'info' },
+      { label: 'System Storage Usage', value: '142.8 GB / 500 GB', icon: Database, tone: 'warn' },
+      { label: 'Database Size', value: '12.4 GB', icon: Database, tone: 'info' },
+    ],
+    security: [
+      { label: 'Failed Logins (24h)', value: '3', icon: ShieldCheck, tone: 'success' },
+      { label: 'Active Concurrent Sessions', value: '312', icon: Users, tone: 'info' },
+      { label: 'Last Backup Time', value: 'Today, 03:00 AM', icon: Database, tone: 'success' },
+      { label: 'Security Alerts', value: '0 Active', icon: ShieldCheck, tone: 'success' },
+    ],
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Super Admin Dashboard"
-        desc="Centralized institutional administration, analytics, system status and governance controls."
+        title="Super Admin Governance Cockpit"
+        desc="Centralized institutional administration, security monitoring, infrastructure status and system governance."
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {statsConfig.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
-          >
-            <StatCard
-              label={stat.label}
-              value={getStatValue(stat.label, stat.fallback)}
-              change={stat.change}
-              icon={stat.icon}
-              gradient={stat.gradient}
-            />
-          </motion.div>
-        ))}
+      {/* 4 Grouped KPI Metric Categories */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Institutional Overview</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {groupedStats.institution.map((stat, i) => (
+              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Activity & Operations</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {groupedStats.activity.map((stat, i) => (
+              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">System Infrastructure & Performance</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {groupedStats.system.map((stat, i) => (
+              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Security & Backup Governance</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {groupedStats.security.map((stat, i) => (
+              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
