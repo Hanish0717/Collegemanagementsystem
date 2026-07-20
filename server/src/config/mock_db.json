@@ -683,6 +683,12 @@
   "hostel_fees": [],
   "hostel_fee_payments": [],
   "hostel_fee_receipts": [],
+  "transport_allocations": [],
+  "departments": [],
+  "transport_routes": [],
+  "transport_buses": [],
+  "ebooks": [],
+  "issued_books": [],
   "system_notifications": [
     {
       "id": "HN-933087",

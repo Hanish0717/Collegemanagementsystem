@@ -296,12 +296,6 @@ export function StudentsPage() {
               <Filter className="size-4" /> Filter
             </button>
             <button
-              onClick={openCreateModal}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-primary text-white text-sm glow-primary"
-            >
-              <Plus className="size-4" /> Add Student
-            </button>
-            <button
               onClick={() => setIsVerifyOpen(true)}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm hover:opacity-90 transition"
             >

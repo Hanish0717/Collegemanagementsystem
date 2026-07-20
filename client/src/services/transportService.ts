@@ -69,12 +69,13 @@ export async function fetchTransportData(): Promise<{ buses: BusItem[] }> {
 }
 
 export async function verifyStudentTransportApi(
-  rollNumber: string,
-  branchName: string,
+  rollNumber?: string,
+  branchName?: string,
+  fullName?: string,
 ): Promise<StudentTransportDetails> {
   const { data } = await api.post<{ success: boolean; data: StudentTransportDetails }>(
     '/api/transport/verify-student',
-    { rollNumber, branchName },
+    { rollNumber, branchName, fullName },
   );
   return data.data;
 }
