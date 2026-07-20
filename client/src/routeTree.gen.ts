@@ -28,6 +28,7 @@ import { Route as DashboardPlacementRouteImport } from './routes/dashboard/place
 import { Route as DashboardParentRouteImport } from './routes/dashboard/parent'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard/library'
+import { Route as DashboardLibrarianRouteImport } from './routes/dashboard/librarian'
 import { Route as DashboardHostelRouteImport } from './routes/dashboard/hostel'
 import { Route as DashboardFeesRouteImport } from './routes/dashboard/fees'
 import { Route as DashboardFacultyRouteImport } from './routes/dashboard/faculty'
@@ -116,6 +117,7 @@ import { Route as DashboardFacultyMarksRouteImport } from './routes/dashboard/fa
 import { Route as DashboardFacultyLeaveRouteImport } from './routes/dashboard/faculty/leave'
 import { Route as DashboardFacultyCommunicationRouteImport } from './routes/dashboard/faculty/communication'
 import { Route as DashboardFacultyClassesRouteImport } from './routes/dashboard/faculty/classes'
+import { Route as DashboardFacultyAttendanceWarningsRouteImport } from './routes/dashboard/faculty/attendance-warnings'
 import { Route as DashboardFacultyAttendanceRouteImport } from './routes/dashboard/faculty/attendance'
 import { Route as DashboardAiSettingsRouteImport } from './routes/dashboard/ai/settings'
 import { Route as DashboardAiRiskRouteImport } from './routes/dashboard/ai/risk'
@@ -142,11 +144,14 @@ import { Route as DashboardAdminEventsRouteImport } from './routes/dashboard/adm
 import { Route as DashboardAdminCommunicationRouteImport } from './routes/dashboard/admin/communication'
 import { Route as DashboardAdminClubsRouteImport } from './routes/dashboard/admin/clubs'
 import { Route as DashboardAdminCalendarRouteImport } from './routes/dashboard/admin/calendar'
+import { Route as DashboardAdminAttendanceNotificationsRouteImport } from './routes/dashboard/admin/attendance-notifications'
+import { Route as DashboardAdminAttendanceApprovalsRouteImport } from './routes/dashboard/admin/attendance-approvals'
 import { Route as DashboardAdminAttendanceRouteImport } from './routes/dashboard/admin/attendance'
 import { Route as DashboardAdminAssignmentsRouteImport } from './routes/dashboard/admin/assignments'
 import { Route as DashboardAdminAlumniRouteImport } from './routes/dashboard/admin/alumni'
 import { Route as DashboardAdminAdmissionsRouteImport } from './routes/dashboard/admin/admissions'
 import { Route as DashboardAdminAccreditationRouteImport } from './routes/dashboard/admin/accreditation'
+import { Route as DashboardAdminAcademicsRouteImport } from './routes/dashboard/admin/academics'
 import { Route as AlumniProfileIdRouteImport } from './routes/alumni/profile/$id'
 import { Route as AlumniEventsEventIdRouteImport } from './routes/alumni/events/$eventId'
 import { Route as DashboardAdminFacultyIndexRouteImport } from './routes/dashboard/admin/faculty/index'
@@ -279,6 +284,11 @@ const DashboardLibraryRoute = DashboardLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardLibrarianRoute = DashboardLibrarianRouteImport.update({
+  id: '/librarian',
+  path: '/librarian',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardHostelRoute = DashboardHostelRouteImport.update({
   id: '/hostel',
   path: '/hostel',
@@ -390,9 +400,9 @@ const AlumniAnalyticsRoute = AlumniAnalyticsRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
-  id: '/librarian/',
-  path: '/librarian/',
-  getParentRoute: () => DashboardRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardSuperAdminUsersRoute =
   DashboardSuperAdminUsersRouteImport.update({
@@ -598,54 +608,54 @@ const DashboardParentAttendanceRoute =
   } as any)
 const DashboardLibrarianSettingsRoute =
   DashboardLibrarianSettingsRouteImport.update({
-    id: '/librarian/settings',
-    path: '/librarian/settings',
-    getParentRoute: () => DashboardRoute,
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianReturnRoute =
   DashboardLibrarianReturnRouteImport.update({
-    id: '/librarian/return',
-    path: '/librarian/return',
-    getParentRoute: () => DashboardRoute,
+    id: '/return',
+    path: '/return',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianReportsRoute =
   DashboardLibrarianReportsRouteImport.update({
-    id: '/librarian/reports',
-    path: '/librarian/reports',
-    getParentRoute: () => DashboardRoute,
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianNotificationsRoute =
   DashboardLibrarianNotificationsRouteImport.update({
-    id: '/librarian/notifications',
-    path: '/librarian/notifications',
-    getParentRoute: () => DashboardRoute,
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianMembersRoute =
   DashboardLibrarianMembersRouteImport.update({
-    id: '/librarian/members',
-    path: '/librarian/members',
-    getParentRoute: () => DashboardRoute,
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianIssueRoute = DashboardLibrarianIssueRouteImport.update({
-  id: '/librarian/issue',
-  path: '/librarian/issue',
-  getParentRoute: () => DashboardRoute,
+  id: '/issue',
+  path: '/issue',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardLibrarianFinesRoute = DashboardLibrarianFinesRouteImport.update({
-  id: '/librarian/fines',
-  path: '/librarian/fines',
-  getParentRoute: () => DashboardRoute,
+  id: '/fines',
+  path: '/fines',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardLibrarianDigitalRoute =
   DashboardLibrarianDigitalRouteImport.update({
-    id: '/librarian/digital',
-    path: '/librarian/digital',
-    getParentRoute: () => DashboardRoute,
+    id: '/digital',
+    path: '/digital',
+    getParentRoute: () => DashboardLibrarianRoute,
   } as any)
 const DashboardLibrarianBooksRoute = DashboardLibrarianBooksRouteImport.update({
-  id: '/librarian/books',
-  path: '/librarian/books',
-  getParentRoute: () => DashboardRoute,
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => DashboardLibrarianRoute,
 } as any)
 const DashboardHostelVisitorsRoute = DashboardHostelVisitorsRouteImport.update({
   id: '/visitors',
@@ -763,6 +773,12 @@ const DashboardFacultyClassesRoute = DashboardFacultyClassesRouteImport.update({
   path: '/classes',
   getParentRoute: () => DashboardFacultyRoute,
 } as any)
+const DashboardFacultyAttendanceWarningsRoute =
+  DashboardFacultyAttendanceWarningsRouteImport.update({
+    id: '/attendance-warnings',
+    path: '/attendance-warnings',
+    getParentRoute: () => DashboardFacultyRoute,
+  } as any)
 const DashboardFacultyAttendanceRoute =
   DashboardFacultyAttendanceRouteImport.update({
     id: '/attendance',
@@ -897,6 +913,18 @@ const DashboardAdminCalendarRoute = DashboardAdminCalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+const DashboardAdminAttendanceNotificationsRoute =
+  DashboardAdminAttendanceNotificationsRouteImport.update({
+    id: '/attendance-notifications',
+    path: '/attendance-notifications',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminAttendanceApprovalsRoute =
+  DashboardAdminAttendanceApprovalsRouteImport.update({
+    id: '/attendance-approvals',
+    path: '/attendance-approvals',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
 const DashboardAdminAttendanceRoute =
   DashboardAdminAttendanceRouteImport.update({
     id: '/attendance',
@@ -926,6 +954,11 @@ const DashboardAdminAccreditationRoute =
     path: '/accreditation',
     getParentRoute: () => DashboardAdminRoute,
   } as any)
+const DashboardAdminAcademicsRoute = DashboardAdminAcademicsRouteImport.update({
+  id: '/academics',
+  path: '/academics',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
 const AlumniProfileIdRoute = AlumniProfileIdRouteImport.update({
   id: '/alumni/profile/$id',
   path: '/alumni/profile/$id',
@@ -1171,6 +1204,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/faculty': typeof DashboardFacultyRouteWithChildren
   '/dashboard/fees': typeof DashboardFeesRoute
   '/dashboard/hostel': typeof DashboardHostelRouteWithChildren
+  '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parent': typeof DashboardParentRouteWithChildren
@@ -1184,11 +1218,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
+  '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
+  '/dashboard/admin/attendance-approvals': typeof DashboardAdminAttendanceApprovalsRoute
+  '/dashboard/admin/attendance-notifications': typeof DashboardAdminAttendanceNotificationsRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
@@ -1215,6 +1252,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
+  '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
@@ -1359,10 +1397,13 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
+  '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
+  '/dashboard/admin/attendance-approvals': typeof DashboardAdminAttendanceApprovalsRoute
+  '/dashboard/admin/attendance-notifications': typeof DashboardAdminAttendanceNotificationsRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
@@ -1389,6 +1430,7 @@ export interface FileRoutesByTo {
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
+  '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
@@ -1522,6 +1564,7 @@ export interface FileRoutesById {
   '/dashboard/faculty': typeof DashboardFacultyRouteWithChildren
   '/dashboard/fees': typeof DashboardFeesRoute
   '/dashboard/hostel': typeof DashboardHostelRouteWithChildren
+  '/dashboard/librarian': typeof DashboardLibrarianRouteWithChildren
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parent': typeof DashboardParentRouteWithChildren
@@ -1535,11 +1578,14 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
+  '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
   '/dashboard/admin/attendance': typeof DashboardAdminAttendanceRoute
+  '/dashboard/admin/attendance-approvals': typeof DashboardAdminAttendanceApprovalsRoute
+  '/dashboard/admin/attendance-notifications': typeof DashboardAdminAttendanceNotificationsRoute
   '/dashboard/admin/calendar': typeof DashboardAdminCalendarRoute
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
@@ -1566,6 +1612,7 @@ export interface FileRoutesById {
   '/dashboard/ai/risk': typeof DashboardAiRiskRoute
   '/dashboard/ai/settings': typeof DashboardAiSettingsRoute
   '/dashboard/faculty/attendance': typeof DashboardFacultyAttendanceRoute
+  '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
@@ -1700,6 +1747,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty'
     | '/dashboard/fees'
     | '/dashboard/hostel'
+    | '/dashboard/librarian'
     | '/dashboard/library'
     | '/dashboard/notifications'
     | '/dashboard/parent'
@@ -1713,11 +1761,14 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
+    | '/dashboard/admin/academics'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/alumni'
     | '/dashboard/admin/assignments'
     | '/dashboard/admin/attendance'
+    | '/dashboard/admin/attendance-approvals'
+    | '/dashboard/admin/attendance-notifications'
     | '/dashboard/admin/calendar'
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
@@ -1744,6 +1795,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
     | '/dashboard/faculty/attendance'
+    | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
     | '/dashboard/faculty/leave'
@@ -1888,10 +1940,13 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
+    | '/dashboard/admin/academics'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/assignments'
     | '/dashboard/admin/attendance'
+    | '/dashboard/admin/attendance-approvals'
+    | '/dashboard/admin/attendance-notifications'
     | '/dashboard/admin/calendar'
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
@@ -1918,6 +1973,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
     | '/dashboard/faculty/attendance'
+    | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
     | '/dashboard/faculty/leave'
@@ -2050,6 +2106,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty'
     | '/dashboard/fees'
     | '/dashboard/hostel'
+    | '/dashboard/librarian'
     | '/dashboard/library'
     | '/dashboard/notifications'
     | '/dashboard/parent'
@@ -2063,11 +2120,14 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
+    | '/dashboard/admin/academics'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/alumni'
     | '/dashboard/admin/assignments'
     | '/dashboard/admin/attendance'
+    | '/dashboard/admin/attendance-approvals'
+    | '/dashboard/admin/attendance-notifications'
     | '/dashboard/admin/calendar'
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
@@ -2094,6 +2154,7 @@ export interface FileRouteTypes {
     | '/dashboard/ai/risk'
     | '/dashboard/ai/settings'
     | '/dashboard/faculty/attendance'
+    | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
     | '/dashboard/faculty/leave'
@@ -2358,6 +2419,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLibraryRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/librarian': {
+      id: '/dashboard/librarian'
+      path: '/librarian'
+      fullPath: '/dashboard/librarian'
+      preLoaderRoute: typeof DashboardLibrarianRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/hostel': {
       id: '/dashboard/hostel'
       path: '/hostel'
@@ -2514,10 +2582,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/librarian/': {
       id: '/dashboard/librarian/'
-      path: '/librarian'
+      path: '/'
       fullPath: '/dashboard/librarian/'
       preLoaderRoute: typeof DashboardLibrarianIndexRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/super-admin/users': {
       id: '/dashboard/super-admin/users'
@@ -2766,66 +2834,66 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/librarian/settings': {
       id: '/dashboard/librarian/settings'
-      path: '/librarian/settings'
+      path: '/settings'
       fullPath: '/dashboard/librarian/settings'
       preLoaderRoute: typeof DashboardLibrarianSettingsRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/return': {
       id: '/dashboard/librarian/return'
-      path: '/librarian/return'
+      path: '/return'
       fullPath: '/dashboard/librarian/return'
       preLoaderRoute: typeof DashboardLibrarianReturnRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/reports': {
       id: '/dashboard/librarian/reports'
-      path: '/librarian/reports'
+      path: '/reports'
       fullPath: '/dashboard/librarian/reports'
       preLoaderRoute: typeof DashboardLibrarianReportsRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/notifications': {
       id: '/dashboard/librarian/notifications'
-      path: '/librarian/notifications'
+      path: '/notifications'
       fullPath: '/dashboard/librarian/notifications'
       preLoaderRoute: typeof DashboardLibrarianNotificationsRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/members': {
       id: '/dashboard/librarian/members'
-      path: '/librarian/members'
+      path: '/members'
       fullPath: '/dashboard/librarian/members'
       preLoaderRoute: typeof DashboardLibrarianMembersRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/issue': {
       id: '/dashboard/librarian/issue'
-      path: '/librarian/issue'
+      path: '/issue'
       fullPath: '/dashboard/librarian/issue'
       preLoaderRoute: typeof DashboardLibrarianIssueRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/fines': {
       id: '/dashboard/librarian/fines'
-      path: '/librarian/fines'
+      path: '/fines'
       fullPath: '/dashboard/librarian/fines'
       preLoaderRoute: typeof DashboardLibrarianFinesRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/digital': {
       id: '/dashboard/librarian/digital'
-      path: '/librarian/digital'
+      path: '/digital'
       fullPath: '/dashboard/librarian/digital'
       preLoaderRoute: typeof DashboardLibrarianDigitalRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/librarian/books': {
       id: '/dashboard/librarian/books'
-      path: '/librarian/books'
+      path: '/books'
       fullPath: '/dashboard/librarian/books'
       preLoaderRoute: typeof DashboardLibrarianBooksRouteImport
-      parentRoute: typeof DashboardRoute
+      parentRoute: typeof DashboardLibrarianRoute
     }
     '/dashboard/hostel/visitors': {
       id: '/dashboard/hostel/visitors'
@@ -2972,6 +3040,13 @@ declare module '@tanstack/react-router' {
       path: '/classes'
       fullPath: '/dashboard/faculty/classes'
       preLoaderRoute: typeof DashboardFacultyClassesRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/attendance-warnings': {
+      id: '/dashboard/faculty/attendance-warnings'
+      path: '/attendance-warnings'
+      fullPath: '/dashboard/faculty/attendance-warnings'
+      preLoaderRoute: typeof DashboardFacultyAttendanceWarningsRouteImport
       parentRoute: typeof DashboardFacultyRoute
     }
     '/dashboard/faculty/attendance': {
@@ -3156,6 +3231,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminCalendarRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/admin/attendance-notifications': {
+      id: '/dashboard/admin/attendance-notifications'
+      path: '/attendance-notifications'
+      fullPath: '/dashboard/admin/attendance-notifications'
+      preLoaderRoute: typeof DashboardAdminAttendanceNotificationsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/attendance-approvals': {
+      id: '/dashboard/admin/attendance-approvals'
+      path: '/attendance-approvals'
+      fullPath: '/dashboard/admin/attendance-approvals'
+      preLoaderRoute: typeof DashboardAdminAttendanceApprovalsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/attendance': {
       id: '/dashboard/admin/attendance'
       path: '/attendance'
@@ -3189,6 +3278,13 @@ declare module '@tanstack/react-router' {
       path: '/accreditation'
       fullPath: '/dashboard/admin/accreditation'
       preLoaderRoute: typeof DashboardAdminAccreditationRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/academics': {
+      id: '/dashboard/admin/academics'
+      path: '/academics'
+      fullPath: '/dashboard/admin/academics'
+      preLoaderRoute: typeof DashboardAdminAcademicsRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
     '/alumni/profile/$id': {
@@ -3500,11 +3596,14 @@ const DashboardAdminAlumniRouteWithChildren =
   DashboardAdminAlumniRoute._addFileChildren(DashboardAdminAlumniRouteChildren)
 
 interface DashboardAdminRouteChildren {
+  DashboardAdminAcademicsRoute: typeof DashboardAdminAcademicsRoute
   DashboardAdminAccreditationRoute: typeof DashboardAdminAccreditationRoute
   DashboardAdminAdmissionsRoute: typeof DashboardAdminAdmissionsRoute
   DashboardAdminAlumniRoute: typeof DashboardAdminAlumniRouteWithChildren
   DashboardAdminAssignmentsRoute: typeof DashboardAdminAssignmentsRoute
   DashboardAdminAttendanceRoute: typeof DashboardAdminAttendanceRoute
+  DashboardAdminAttendanceApprovalsRoute: typeof DashboardAdminAttendanceApprovalsRoute
+  DashboardAdminAttendanceNotificationsRoute: typeof DashboardAdminAttendanceNotificationsRoute
   DashboardAdminCalendarRoute: typeof DashboardAdminCalendarRoute
   DashboardAdminClubsRoute: typeof DashboardAdminClubsRoute
   DashboardAdminCommunicationRoute: typeof DashboardAdminCommunicationRoute
@@ -3535,11 +3634,16 @@ interface DashboardAdminRouteChildren {
 }
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
+  DashboardAdminAcademicsRoute: DashboardAdminAcademicsRoute,
   DashboardAdminAccreditationRoute: DashboardAdminAccreditationRoute,
   DashboardAdminAdmissionsRoute: DashboardAdminAdmissionsRoute,
   DashboardAdminAlumniRoute: DashboardAdminAlumniRouteWithChildren,
   DashboardAdminAssignmentsRoute: DashboardAdminAssignmentsRoute,
   DashboardAdminAttendanceRoute: DashboardAdminAttendanceRoute,
+  DashboardAdminAttendanceApprovalsRoute:
+    DashboardAdminAttendanceApprovalsRoute,
+  DashboardAdminAttendanceNotificationsRoute:
+    DashboardAdminAttendanceNotificationsRoute,
   DashboardAdminCalendarRoute: DashboardAdminCalendarRoute,
   DashboardAdminClubsRoute: DashboardAdminClubsRoute,
   DashboardAdminCommunicationRoute: DashboardAdminCommunicationRoute,
@@ -3601,6 +3705,7 @@ const DashboardAiRouteWithChildren = DashboardAiRoute._addFileChildren(
 
 interface DashboardFacultyRouteChildren {
   DashboardFacultyAttendanceRoute: typeof DashboardFacultyAttendanceRoute
+  DashboardFacultyAttendanceWarningsRoute: typeof DashboardFacultyAttendanceWarningsRoute
   DashboardFacultyClassesRoute: typeof DashboardFacultyClassesRoute
   DashboardFacultyCommunicationRoute: typeof DashboardFacultyCommunicationRoute
   DashboardFacultyLeaveRoute: typeof DashboardFacultyLeaveRoute
@@ -3616,6 +3721,8 @@ interface DashboardFacultyRouteChildren {
 
 const DashboardFacultyRouteChildren: DashboardFacultyRouteChildren = {
   DashboardFacultyAttendanceRoute: DashboardFacultyAttendanceRoute,
+  DashboardFacultyAttendanceWarningsRoute:
+    DashboardFacultyAttendanceWarningsRoute,
   DashboardFacultyClassesRoute: DashboardFacultyClassesRoute,
   DashboardFacultyCommunicationRoute: DashboardFacultyCommunicationRoute,
   DashboardFacultyLeaveRoute: DashboardFacultyLeaveRoute,
@@ -3676,6 +3783,35 @@ const DashboardHostelRouteChildren: DashboardHostelRouteChildren = {
 const DashboardHostelRouteWithChildren = DashboardHostelRoute._addFileChildren(
   DashboardHostelRouteChildren,
 )
+
+interface DashboardLibrarianRouteChildren {
+  DashboardLibrarianBooksRoute: typeof DashboardLibrarianBooksRoute
+  DashboardLibrarianDigitalRoute: typeof DashboardLibrarianDigitalRoute
+  DashboardLibrarianFinesRoute: typeof DashboardLibrarianFinesRoute
+  DashboardLibrarianIssueRoute: typeof DashboardLibrarianIssueRoute
+  DashboardLibrarianMembersRoute: typeof DashboardLibrarianMembersRoute
+  DashboardLibrarianNotificationsRoute: typeof DashboardLibrarianNotificationsRoute
+  DashboardLibrarianReportsRoute: typeof DashboardLibrarianReportsRoute
+  DashboardLibrarianReturnRoute: typeof DashboardLibrarianReturnRoute
+  DashboardLibrarianSettingsRoute: typeof DashboardLibrarianSettingsRoute
+  DashboardLibrarianIndexRoute: typeof DashboardLibrarianIndexRoute
+}
+
+const DashboardLibrarianRouteChildren: DashboardLibrarianRouteChildren = {
+  DashboardLibrarianBooksRoute: DashboardLibrarianBooksRoute,
+  DashboardLibrarianDigitalRoute: DashboardLibrarianDigitalRoute,
+  DashboardLibrarianFinesRoute: DashboardLibrarianFinesRoute,
+  DashboardLibrarianIssueRoute: DashboardLibrarianIssueRoute,
+  DashboardLibrarianMembersRoute: DashboardLibrarianMembersRoute,
+  DashboardLibrarianNotificationsRoute: DashboardLibrarianNotificationsRoute,
+  DashboardLibrarianReportsRoute: DashboardLibrarianReportsRoute,
+  DashboardLibrarianReturnRoute: DashboardLibrarianReturnRoute,
+  DashboardLibrarianSettingsRoute: DashboardLibrarianSettingsRoute,
+  DashboardLibrarianIndexRoute: DashboardLibrarianIndexRoute,
+}
+
+const DashboardLibrarianRouteWithChildren =
+  DashboardLibrarianRoute._addFileChildren(DashboardLibrarianRouteChildren)
 
 interface DashboardParentRouteChildren {
   DashboardParentAttendanceRoute: typeof DashboardParentAttendanceRoute
@@ -3802,6 +3938,7 @@ interface DashboardRouteChildren {
   DashboardFacultyRoute: typeof DashboardFacultyRouteWithChildren
   DashboardFeesRoute: typeof DashboardFeesRoute
   DashboardHostelRoute: typeof DashboardHostelRouteWithChildren
+  DashboardLibrarianRoute: typeof DashboardLibrarianRouteWithChildren
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardParentRoute: typeof DashboardParentRouteWithChildren
@@ -3812,16 +3949,6 @@ interface DashboardRouteChildren {
   DashboardSuperAdminRoute: typeof DashboardSuperAdminRouteWithChildren
   DashboardTransportRoute: typeof DashboardTransportRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardLibrarianBooksRoute: typeof DashboardLibrarianBooksRoute
-  DashboardLibrarianDigitalRoute: typeof DashboardLibrarianDigitalRoute
-  DashboardLibrarianFinesRoute: typeof DashboardLibrarianFinesRoute
-  DashboardLibrarianIssueRoute: typeof DashboardLibrarianIssueRoute
-  DashboardLibrarianMembersRoute: typeof DashboardLibrarianMembersRoute
-  DashboardLibrarianNotificationsRoute: typeof DashboardLibrarianNotificationsRoute
-  DashboardLibrarianReportsRoute: typeof DashboardLibrarianReportsRoute
-  DashboardLibrarianReturnRoute: typeof DashboardLibrarianReturnRoute
-  DashboardLibrarianSettingsRoute: typeof DashboardLibrarianSettingsRoute
-  DashboardLibrarianIndexRoute: typeof DashboardLibrarianIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -3833,6 +3960,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFacultyRoute: DashboardFacultyRouteWithChildren,
   DashboardFeesRoute: DashboardFeesRoute,
   DashboardHostelRoute: DashboardHostelRouteWithChildren,
+  DashboardLibrarianRoute: DashboardLibrarianRouteWithChildren,
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardParentRoute: DashboardParentRouteWithChildren,
@@ -3843,16 +3971,6 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSuperAdminRoute: DashboardSuperAdminRouteWithChildren,
   DashboardTransportRoute: DashboardTransportRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  DashboardLibrarianBooksRoute: DashboardLibrarianBooksRoute,
-  DashboardLibrarianDigitalRoute: DashboardLibrarianDigitalRoute,
-  DashboardLibrarianFinesRoute: DashboardLibrarianFinesRoute,
-  DashboardLibrarianIssueRoute: DashboardLibrarianIssueRoute,
-  DashboardLibrarianMembersRoute: DashboardLibrarianMembersRoute,
-  DashboardLibrarianNotificationsRoute: DashboardLibrarianNotificationsRoute,
-  DashboardLibrarianReportsRoute: DashboardLibrarianReportsRoute,
-  DashboardLibrarianReturnRoute: DashboardLibrarianReturnRoute,
-  DashboardLibrarianSettingsRoute: DashboardLibrarianSettingsRoute,
-  DashboardLibrarianIndexRoute: DashboardLibrarianIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
