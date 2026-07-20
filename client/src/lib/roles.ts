@@ -292,6 +292,7 @@ export const ROLES: Record<RoleId, Role> = {
       base,
       { to: '/dashboard/student/attendance', label: 'Attendance', icon: CalendarCheck },
       { to: '/dashboard/student/timetable', label: 'Class Timetable', icon: Clock },
+      { to: '/dashboard/student/course-registration', label: 'Course & Exam Reg', icon: BookOpen },
       { to: '/dashboard/student/results', label: 'Results & GPA', icon: BookOpen },
       { to: '/dashboard/student/fees', label: 'Fees Registry', icon: Wallet },
       { to: '/dashboard/library', label: 'Library Catalog', icon: Library },
@@ -488,13 +489,10 @@ export const ROLES: Record<RoleId, Role> = {
     nav: [
       base,
       { to: '/dashboard/admin/exams/schedule', label: 'Schedule Exam', icon: ClipboardList },
+      { to: '/dashboard/admin/exams/course-registration', label: 'Course & Exam Enroll', icon: BookOpen },
       { to: '/dashboard/admin/exams/timetable', label: 'Timetable Builder', icon: CalendarCheck },
       { to: '/dashboard/admin/exams/questions', label: 'Question Bank', icon: Database },
-      {
-        to: '/dashboard/admin/exams/invigilation',
-        label: 'Invigilation Duty',
-        icon: ClipboardList,
-      },
+      { to: '/dashboard/admin/exams/invigilation', label: 'Invigilation Duty', icon: ClipboardList },
       { to: '/dashboard/admin/exams/hall-tickets', label: 'Hall Ticket Control', icon: Users },
       { to: '/dashboard/admin/exams/results', label: 'Results Publisher', icon: Award },
       { to: '/dashboard/admin/exams/analytics', label: 'Exam Analytics', icon: Activity },

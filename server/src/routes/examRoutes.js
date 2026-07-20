@@ -11,7 +11,15 @@ import {
   approveHallTicket,
   getExamResults,
   saveExamResults,
-  getExamAnalytics
+  getExamAnalytics,
+  createCourse,
+  getCourses,
+  registerCourse,
+  getMyRegistrations,
+  getCourseAnalytics,
+  getFacultyByDepartment,
+  registerExam,
+  getMyExamRegistrations
 } from '../controllers/examController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -27,8 +35,20 @@ router.get('/stats', getExamStats);
 // Get/Create/Update/Delete exams
 router.get('/', getExams);
 
-// Admin-only management routes
-router.use(authorizeRoles('admin', 'super-admin'));
+// Course registration endpoints for students
+router.get('/courses', getCourses);
+router.post('/courses/register', authorizeRoles('student'), registerCourse);
+router.get('/courses/my-registrations', authorizeRoles('student'), getMyRegistrations);
+router.post('/courses/register-exam', authorizeRoles('student'), registerExam);
+router.get('/courses/my-exam-registrations', authorizeRoles('student'), getMyExamRegistrations);
+
+// Admin / Exam Cell management routes
+router.use(authorizeRoles('admin', 'super-admin', 'exam-cell'));
+
+// Offered Course Creation & Analytics (Officers)
+router.post('/courses', createCourse);
+router.get('/courses/analytics', getCourseAnalytics);
+router.get('/faculty', getFacultyByDepartment);
 
 router.post('/', createExam);
 router.route('/:id')

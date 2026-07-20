@@ -173,6 +173,9 @@ async function seed() {
       TRUNCATE TABLE admins CASCADE;
       TRUNCATE TABLE faculty CASCADE;
       TRUNCATE TABLE students CASCADE;
+      TRUNCATE TABLE student_course_registrations CASCADE;
+      TRUNCATE TABLE exam_registrations CASCADE;
+      TRUNCATE TABLE courses CASCADE;
       DELETE FROM users WHERE email NOT IN (
         'superadmin@college.com', 'admin@college.com', 'faculty@college.com',
         'student@college.com', 'parent@college.com', 'librarian@college.com',
@@ -260,6 +263,8 @@ async function seed() {
       );
       allStudentsList.push({ id: defaultStudentId, email: 'student@college.com' });
     }
+
+
 
     // ----------------------------------------------------
     // SEED HOSTELS, BLOCKS, ROOMS
@@ -481,175 +486,193 @@ async function seed() {
         });
       }
 
-      let deptHostelLeft = 5;
-      let deptTransportLeft = 5;
-      let deptDayLeft = 5;
+      // Seed 1 HOD per department
+      const hodName = `${dept} HOD`;
+      const hodEmail = `hod.${dept.toLowerCase()}@college.com`;
+      const hodUserId = crypto.randomUUID();
+      batchUsers.push({
+        id: hodUserId,
+        name: hodName,
+        full_name: hodName,
+        email: hodEmail,
+        password: passwordHash,
+        temp_password: 'password123',
+        role: 'hod',
+        child_email: null,
+        is_verified: true,
+        is_active: true
+      });
 
-      for (let sIdx = 1; sIdx <= 15; sIdx++) {
-        const gender = sIdx <= 8 ? 'Male' : 'Female';
-        const nameData = generateName(gender, sIdx, dept);
-        
-        // Year & Semester limits
-        const year = ((sIdx - 1) % 4) + 1;
-        const semester = (year - 1) * 2 + (sIdx % 2 === 0 ? 2 : 1);
-        const section = SECTIONS[sIdx % 2];
+      // 24 students per department, 6 students per year, odd semesters (1, 3, 5, 7)
+      let deptHostelLeft = 8;
+      let deptTransportLeft = 8;
+      let deptDayLeft = 8;
 
-        const rollNum = `${dept}26${String(sIdx).padStart(3, '0')}`;
-        const admissionNum = `ADM2026${dept}${String(sIdx).padStart(3, '0')}`;
+      for (let year = 1; year <= 4; year++) {
+        const semester = (year - 1) * 2 + 1; // 1, 3, 5, 7
+        for (let yearStuIdx = 1; yearStuIdx <= 6; yearStuIdx++) {
+          const sIdx = (year - 1) * 6 + yearStuIdx; // 1 to 24
+          const gender = sIdx <= 12 ? 'Male' : 'Female';
+          const nameData = generateName(gender, sIdx + (DEPARTMENTS.indexOf(dept) * 100), dept);
+          
+          const section = SECTIONS[sIdx % 2];
+          const rollNum = `${dept}26${String(sIdx).padStart(3, '0')}`;
+          const admissionNum = `ADM2026${dept}${String(sIdx).padStart(3, '0')}`;
 
-        // Pre-generate IDs
-        const studentUserId = crypto.randomUUID();
-        const parentUserId = crypto.randomUUID();
-        const studentId = crypto.randomUUID();
+          // Pre-generate IDs
+          const studentUserId = crypto.randomUUID();
+          const parentUserId = crypto.randomUUID();
+          const studentId = crypto.randomUUID();
 
-        // 1. Add Student User
-        batchUsers.push({
-          id: studentUserId,
-          name: nameData.fullName,
-          full_name: nameData.fullName,
-          email: nameData.email,
-          password: passwordHash,
-          temp_password: 'password123',
-          role: 'student',
-          child_email: null,
-          is_verified: true,
-          is_active: true
-        });
+          // 1. Add Student User
+          batchUsers.push({
+            id: studentUserId,
+            name: nameData.fullName,
+            full_name: nameData.fullName,
+            email: nameData.email,
+            password: passwordHash,
+            temp_password: 'password123',
+            role: 'student',
+            child_email: null,
+            is_verified: true,
+            is_active: true
+          });
 
-        // 2. Add Parent User
-        const parentName = gender === 'Male' ? `Sri ${nameData.fullName.split(' ')[0]} Ramana` : `Sri ${nameData.fullName.split(' ')[0]} Prasad`;
-        const parentEmail = `parent.${nameData.email}`;
-        batchUsers.push({
-          id: parentUserId,
-          name: parentName,
-          full_name: parentName,
-          email: parentEmail,
-          password: passwordHash,
-          temp_password: 'password123',
-          role: 'parent',
-          child_email: nameData.email,
-          is_verified: true,
-          is_active: true
-        });
+          // 2. Add Parent User
+          const parentName = gender === 'Male' ? `Sri ${nameData.fullName.split(' ')[0]} Ramana` : `Sri ${nameData.fullName.split(' ')[0]} Prasad`;
+          const parentEmail = `parent.${nameData.email}`;
+          batchUsers.push({
+            id: parentUserId,
+            name: parentName,
+            full_name: parentName,
+            email: parentEmail,
+            password: passwordHash,
+            temp_password: 'password123',
+            role: 'parent',
+            child_email: nameData.email,
+            is_verified: true,
+            is_active: true
+          });
 
-        // 3. Add Student Profile
-        batchStudents.push({
-          id: studentId,
-          user_id: studentUserId,
-          full_name: nameData.fullName,
-          roll_number: rollNum,
-          admission_number: admissionNum,
-          email: nameData.email,
-          phone_number: '9876543211',
-          gender,
-          date_of_birth: '2005-08-15',
-          department: dept,
-          year,
-          semester,
-          section,
-          address: 'Plot 102, Hyderabad, Telangana',
-          parent_name: parentName,
-          parent_phone: '9876543222',
-          parent_email: parentEmail,
-          cgpa: 8.2,
-          attendance_percentage: 88.0,
-          is_active: true
-        });
+          // 3. Add Student Profile
+          batchStudents.push({
+            id: studentId,
+            user_id: studentUserId,
+            full_name: nameData.fullName,
+            roll_number: rollNum,
+            admission_number: admissionNum,
+            email: nameData.email,
+            phone_number: '9876543211',
+            gender,
+            date_of_birth: '2005-08-15',
+            department: dept,
+            year,
+            semester,
+            section,
+            address: 'Plot 102, Hyderabad, Telangana',
+            parent_name: parentName,
+            parent_phone: '9876543222',
+            parent_email: parentEmail,
+            cgpa: 8.2,
+            attendance_percentage: 88.0,
+            is_active: true
+          });
 
-        allStudentsList.push({
-          id: studentId,
-          userId: studentUserId,
-          year,
-          semester
-        });
+          allStudentsList.push({
+            id: studentId,
+            userId: studentUserId,
+            year,
+            semester
+          });
 
-        // Allocation logic
-        let allocationType = 'Day';
-        if (deptHostelLeft > 0) {
-          allocationType = 'Hostel';
-          deptHostelLeft--;
-          hostelAllocationCount++;
-        } else if (deptTransportLeft > 0) {
-          allocationType = 'Transport';
-          deptTransportLeft--;
-          transportAllocationCount++;
-        } else {
-          deptDayLeft--;
-          dayScholarCount++;
-        }
+          // Allocation logic
+          let allocationType = 'Day';
+          if (deptHostelLeft > 0) {
+            allocationType = 'Hostel';
+            deptHostelLeft--;
+            hostelAllocationCount++;
+          } else if (deptTransportLeft > 0) {
+            allocationType = 'Transport';
+            deptTransportLeft--;
+            transportAllocationCount++;
+          } else {
+            deptDayLeft--;
+            dayScholarCount++;
+          }
 
-        if (allocationType === 'Hostel') {
-          const targetGender = gender === 'Male' ? 'Boys' : 'Girls';
-          const availableRoom = hostelRoomsList.find(r => r.gender === targetGender && r.occupants < 4);
+          if (allocationType === 'Hostel') {
+            const targetGender = gender === 'Male' ? 'Boys' : 'Girls';
+            const availableRoom = hostelRoomsList.find(r => r.gender === targetGender && r.occupants < 4);
 
-          if (availableRoom) {
-            availableRoom.occupants++;
-            batchHostelAllocations.push({
+            if (availableRoom) {
+              availableRoom.occupants++;
+              batchHostelAllocations.push({
+                student_id: studentId,
+                hostel_id: availableRoom.hostelId,
+                block_id: availableRoom.blockId,
+                room_id: availableRoom.roomId,
+                bed_number: availableRoom.occupants,
+                status: 'Active',
+                academic_year: '2026-2027'
+              });
+
+              batchHostelFees.push({
+                student_id: studentId,
+                hostel_id: availableRoom.hostelId,
+                month: 'June',
+                year: 2026,
+                total_amount: 5500,
+                paid_amount: 5500,
+                due_date: '2026-06-10',
+                status: 'Paid'
+              });
+            }
+          } else if (allocationType === 'Transport') {
+            const routeObj = routeIds[Math.floor(Math.random() * routeIds.length)];
+            const stopObj = routeObj.stops[Math.floor(Math.random() * routeObj.stops.length)];
+            const passNum = `TP2026${String(studentIndex).padStart(4, '0')}`;
+            const tAllocId = crypto.randomUUID();
+
+            batchTransportAllocations.push({
+              id: tAllocId,
               student_id: studentId,
-              hostel_id: availableRoom.hostelId,
-              block_id: availableRoom.blockId,
-              room_id: availableRoom.roomId,
-              bed_number: availableRoom.occupants,
-              status: 'Active',
-              academic_year: '2026-2027'
+              route_id: routeObj.id,
+              pickup_stop_id: stopObj.id,
+              drop_stop_id: stopObj.id,
+              academic_year: '2026-2027',
+              monthly_fare: stopObj.fare,
+              pass_number: passNum,
+              status: 'Active'
             });
 
-            batchHostelFees.push({
+            batchTransportFees.push({
               student_id: studentId,
-              hostel_id: availableRoom.hostelId,
+              allocation_id: tAllocId,
+              route_id: routeObj.id,
+              academic_year: '2026-2027',
               month: 'June',
               year: 2026,
-              total_amount: 5500,
-              paid_amount: 5500,
+              total_amount: stopObj.fare,
+              paid_amount: 0,
               due_date: '2026-06-10',
-              status: 'Paid'
+              status: 'Unpaid'
             });
           }
-        } else if (allocationType === 'Transport') {
-          const routeObj = routeIds[Math.floor(Math.random() * routeIds.length)];
-          const stopObj = routeObj.stops[Math.floor(Math.random() * routeObj.stops.length)];
-          const passNum = `TP2026${String(studentIndex).padStart(4, '0')}`;
-          const tAllocId = crypto.randomUUID();
 
-          batchTransportAllocations.push({
-            id: tAllocId,
-            student_id: studentId,
-            route_id: routeObj.id,
-            pickup_stop_id: stopObj.id,
-            drop_stop_id: stopObj.id,
-            academic_year: '2026-2027',
-            monthly_fare: stopObj.fare,
-            pass_number: passNum,
-            status: 'Active'
-          });
-
-          batchTransportFees.push({
-            student_id: studentId,
-            allocation_id: tAllocId,
-            route_id: routeObj.id,
-            academic_year: '2026-2027',
-            month: 'June',
-            year: 2026,
-            total_amount: stopObj.fare,
+          // General fee
+          batchGeneralFees.push({
+            student: studentId,
+            amount: 75000,
+            type: 'Tuition Fee',
+            due_date: '2026-07-15',
+            status: 'Unpaid',
             paid_amount: 0,
-            due_date: '2026-06-10',
-            status: 'Unpaid'
+            academic_year: '2026-2027',
+            semester: semester
           });
+
+          studentIndex++;
         }
-
-        // General fee
-        batchGeneralFees.push({
-          student: studentId,
-          amount: 75000,
-          type: 'Tuition Fee',
-          due_date: '2026-07-15',
-          status: 'Unpaid',
-          paid_amount: 0,
-          academic_year: '2026-2027',
-          semester
-        });
-
-        studentIndex++;
       }
     }
 
@@ -706,6 +729,80 @@ async function seed() {
       'student', 'amount', 'type', 'due_date', 'status', 'paid_amount', 'academic_year', 'semester'
     ], batchGeneralFees);
     console.log("✅ Tuition Fees inserted.");
+
+    // Fetch seeded faculty members to assign them as mentors
+    const facultyRowsRes = await client.query("SELECT id, department FROM faculty");
+    const seededFacultyByDept = {};
+    for (const row of facultyRowsRes.rows) {
+      if (!seededFacultyByDept[row.department]) {
+        seededFacultyByDept[row.department] = [];
+      }
+      seededFacultyByDept[row.department].push(row.id);
+    }
+
+    console.log("⏳ Seeding offered courses...");
+    const coursesData = [
+      // CSE Sem 5 (Year 3)
+      { code: 'CS301', name: 'Computer Networks', credits: 3.0, type: 'Normal Subject', dept: 'CSE', year: 3, sem: 5 },
+      { code: 'CS302', name: 'Database Management Systems', credits: 4.0, type: 'Integrated Subject', dept: 'CSE', year: 3, sem: 5 },
+      { code: 'CS303', name: 'Advanced Java Programming Lab', credits: 1.5, type: 'Lab', dept: 'CSE', year: 3, sem: 5 },
+      { code: 'OE311', name: 'Intellectual Property Rights', credits: 3.0, type: 'Open Elective', dept: 'CSE', year: 3, sem: 5 },
+      // CSE Sem 1 (Year 1)
+      { code: 'CS101', name: 'Programming in C', credits: 4.0, type: 'Integrated Subject', dept: 'CSE', year: 1, sem: 1 },
+      // AIML Sem 5 (Year 3)
+      { code: 'AI301', name: 'Machine Learning Foundations', credits: 4.0, type: 'Integrated Subject', dept: 'AIML', year: 3, sem: 5 },
+      { code: 'AI302', name: 'Artificial Intelligence', credits: 3.0, type: 'Normal Subject', dept: 'AIML', year: 3, sem: 5 },
+      // ECE Sem 5 (Year 3)
+      { code: 'EC301', name: 'Microprocessors and Microcontrollers', credits: 4.0, type: 'Integrated Subject', dept: 'ECE', year: 3, sem: 5 },
+      { code: 'EC302', name: 'Digital Signal Processing', credits: 3.0, type: 'Normal Subject', dept: 'ECE', year: 3, sem: 5 }
+    ];
+
+    const coursesMap = {}; // Key: "dept_year_sem", Value: Array of { id, year, sem }
+    for (const c of coursesData) {
+      // Pick a random faculty mentor from the department if available
+      const mentors = seededFacultyByDept[c.dept] || [];
+      const mentorId = mentors.length > 0 ? mentors[Math.floor(Math.random() * mentors.length)] : null;
+
+      const cRes = await client.query(
+        `INSERT INTO courses (course_code, course_name, credits, course_type, department, year, semester, mentor_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+        [c.code, c.name, c.credits, c.type, c.dept, c.year, c.sem, mentorId]
+      );
+      const courseId = cRes.rows[0].id;
+      const key = `${c.dept}_${c.year}_${c.sem}`;
+      if (!coursesMap[key]) coursesMap[key] = [];
+      coursesMap[key].push({ id: courseId, year: c.year, sem: c.sem });
+    }
+    console.log("✅ Offered courses seeded.");
+
+    console.log("⏳ Enrolling students in offered courses...");
+    const studentRowsRes = await client.query("SELECT id, department, year, semester FROM students");
+    const enrollments = [];
+    for (const stu of studentRowsRes.rows) {
+      const courseKey = `${stu.department}_${stu.year}_${stu.semester}`;
+      const offeredCourses = coursesMap[courseKey] || [];
+      for (const oCourse of offeredCourses) {
+        enrollments.push([stu.id, oCourse.id, oCourse.sem, oCourse.year]);
+      }
+    }
+
+    if (enrollments.length > 0) {
+      const enrolValues = [];
+      const enrolValueStrings = [];
+      let enrolIdx = 1;
+      for (const e of enrollments) {
+        enrolValueStrings.push(`($${enrolIdx}, $${enrolIdx+1}, $${enrolIdx+2}, $${enrolIdx+3})`);
+        enrolValues.push(e[0], e[1], e[2], e[3]);
+        enrolIdx += 4;
+      }
+      await client.query(
+        `INSERT INTO student_course_registrations (student_id, course_id, semester, year)
+         VALUES ${enrolValueStrings.join(', ')}
+         ON CONFLICT (student_id, course_id) DO NOTHING`,
+        enrolValues
+      );
+    }
+    console.log("✅ Student course enrollments completed.");
 
     // Update Hostel Rooms occupants column via SQL aggregation
     console.log("⏳ Syncing hostel room occupants counts...");
