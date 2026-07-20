@@ -1,69 +1,127 @@
-import { useState, useEffect } from "react";
-import { Search, Plus, Grid, List, Loader2, X, Trash2 } from "lucide-react";
-import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchPlacementData, createCompany, updateCompany, deleteCompany, CompanyItem, DriveItem } from "@/services/placementService";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import { Search, Plus, Grid, List, Loader2, X, Trash2 } from 'lucide-react';
+import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
+import {
+  fetchPlacementData,
+  createCompany,
+  updateCompany,
+  deleteCompany,
+  CompanyItem,
+  DriveItem,
+} from '@/services/placementService';
+import { toast } from 'sonner';
 
 // Helper to return beautiful vector SVG logos for top companies
 export const getCompanyLogo = (name: string) => {
   const clean = name.toLowerCase().trim();
-  if (clean.includes("google")) {
+  if (clean.includes('google')) {
     return (
       <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute -top-12 -left-12 size-24 bg-blue-500/5 rounded-full blur-xl"></div>
         <div className="absolute -bottom-12 -right-12 size-24 bg-red-500/5 rounded-full blur-xl"></div>
         <div className="size-16 flex items-center justify-center relative">
-          <svg viewBox="0 0 24 24" className="size-14 drop-shadow-[0_2px_8px_rgba(66,133,244,0.15)]">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          <svg
+            viewBox="0 0 24 24"
+            className="size-14 drop-shadow-[0_2px_8px_rgba(66,133,244,0.15)]"
+          >
+            <path
+              fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+            />
           </svg>
         </div>
-        <span className="text-slate-700 font-sans font-bold text-sm tracking-wide mt-1 select-none">Google</span>
+        <span className="text-slate-700 font-sans font-bold text-sm tracking-wide mt-1 select-none">
+          Google
+        </span>
       </div>
     );
   }
-  if (clean.includes("microsoft")) {
+  if (clean.includes('microsoft')) {
     return (
       <div className="bg-[#f5f5f5] rounded-xl flex items-center justify-center size-full p-4 border shadow-inner">
         <svg viewBox="0 0 23 23" className="size-12">
-          <rect x="0" y="0" width="10" height="10" fill="#F25022"/>
-          <rect x="11" y="0" width="10" height="10" fill="#7FBA00"/>
-          <rect x="0" y="11" width="10" height="10" fill="#00A4EF"/>
-          <rect x="11" y="11" width="10" height="10" fill="#FFB900"/>
+          <rect x="0" y="0" width="10" height="10" fill="#F25022" />
+          <rect x="11" y="0" width="10" height="10" fill="#7FBA00" />
+          <rect x="0" y="11" width="10" height="10" fill="#00A4EF" />
+          <rect x="11" y="11" width="10" height="10" fill="#FFB900" />
         </svg>
-        <span className="text-[#737373] font-sans font-semibold text-lg ml-2 tracking-tight">Microsoft</span>
+        <span className="text-[#737373] font-sans font-semibold text-lg ml-2 tracking-tight">
+          Microsoft
+        </span>
       </div>
     );
   }
-  if (clean.includes("amazon")) {
+  if (clean.includes('amazon')) {
     return (
       <div className="bg-gradient-to-tr from-[#0F1115] to-[#1D212A] rounded-xl flex flex-col items-center justify-center size-full p-4 border border-slate-800 shadow-md relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute top-0 right-0 w-16 h-16 bg-[#FF9900]/5 rounded-full blur-xl"></div>
         <div className="w-full flex items-center justify-center py-2">
-          <svg viewBox="0 0 120 38" className="w-[85%] h-auto drop-shadow-[0_2px_8px_rgba(255,153,0,0.2)]" fill="none">
+          <svg
+            viewBox="0 0 120 38"
+            className="w-[85%] h-auto drop-shadow-[0_2px_8px_rgba(255,153,0,0.2)]"
+            fill="none"
+          >
             {/* amazon text in bold modern sans */}
-            <text x="52%" y="16" dominantBaseline="middle" textAnchor="middle" fill="#FFFFFF" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="19" letterSpacing="0.8">amazon</text>
+            <text
+              x="52%"
+              y="16"
+              dominantBaseline="middle"
+              textAnchor="middle"
+              fill="#FFFFFF"
+              fontFamily="system-ui, sans-serif"
+              fontWeight="900"
+              fontSize="19"
+              letterSpacing="0.8"
+            >
+              amazon
+            </text>
             {/* orange smile curve */}
-            <path d="M12 25 C34 32 72 32 94 25" stroke="#FF9900" strokeWidth="2.8" strokeLinecap="round" />
+            <path
+              d="M12 25 C34 32 72 32 94 25"
+              stroke="#FF9900"
+              strokeWidth="2.8"
+              strokeLinecap="round"
+            />
             {/* smile arrowhead */}
-            <path d="M89 22.5 L95.5 25.5 L91 30.5" stroke="#FF9900" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="#FF9900" />
+            <path
+              d="M89 22.5 L95.5 25.5 L91 30.5"
+              stroke="#FF9900"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="#FF9900"
+            />
           </svg>
         </div>
-        <span className="text-slate-400 font-sans font-semibold text-xs tracking-widest mt-2.5 uppercase select-none">Amazon</span>
+        <span className="text-slate-400 font-sans font-semibold text-xs tracking-widest mt-2.5 uppercase select-none">
+          Amazon
+        </span>
       </div>
     );
   }
-  if (clean.includes("goldman")) {
+  if (clean.includes('goldman')) {
     return (
       <div className="flex flex-col items-center justify-center bg-[#072448] text-white rounded-xl size-full p-3 shadow-md">
         <span className="font-serif text-2xl font-bold tracking-tight">Goldman</span>
-        <span className="font-serif text-sm font-light tracking-widest -mt-1 opacity-90">Sachs</span>
+        <span className="font-serif text-sm font-light tracking-widest -mt-1 opacity-90">
+          Sachs
+        </span>
       </div>
     );
   }
-  if (clean.includes("accenture")) {
+  if (clean.includes('accenture')) {
     return (
       <div className="flex items-center justify-center bg-black text-white rounded-xl size-full p-4 relative shadow-md">
         <span className="font-sans font-bold text-2xl tracking-tighter">accenture</span>
@@ -71,98 +129,150 @@ export const getCompanyLogo = (name: string) => {
       </div>
     );
   }
-  if (clean.includes("tcs") || clean.includes("tata consultancy")) {
+  if (clean.includes('tcs') || clean.includes('tata consultancy')) {
     return (
       <div className="flex flex-col items-center justify-center bg-gradient-to-tr from-[#003366] to-[#0066cc] text-white rounded-xl size-full p-2 shadow-md">
         <span className="font-sans font-black text-2xl tracking-widest">TCS</span>
-        <span className="text-[9px] uppercase tracking-widest opacity-80 mt-0.5 text-center">TATA CONSULTANCY SERVICES</span>
+        <span className="text-[9px] uppercase tracking-widest opacity-80 mt-0.5 text-center">
+          TATA CONSULTANCY SERVICES
+        </span>
       </div>
     );
   }
-  if (clean.includes("infosys")) {
+  if (clean.includes('infosys')) {
     return (
       <div className="flex items-center justify-center bg-white text-[#007CC3] size-full border border-blue-100 rounded-xl p-3 shadow-inner">
         <span className="font-sans font-black text-3xl tracking-tighter italic">Infosys</span>
       </div>
     );
   }
-  if (clean.includes("oracle")) {
+  if (clean.includes('oracle')) {
     return (
       <div className="bg-gradient-to-br from-[#A50909] to-[#E51212] rounded-xl flex flex-col items-center justify-center size-full p-4 shadow-md border border-[#8C0707] relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent"></div>
         <div className="size-16 flex items-center justify-center relative">
-          <svg viewBox="0 0 260 56" className="w-[85%] h-auto drop-shadow-[0_2px_12px_rgba(255,255,255,0.2)]">
+          <svg
+            viewBox="0 0 260 56"
+            className="w-[85%] h-auto drop-shadow-[0_2px_12px_rgba(255,255,255,0.2)]"
+          >
             {/* O */}
-            <path fill="#ffffff" d="M30 48c11.046 0 20-8.954 20-20S41.046 8 30 8s-20 8.954-20 20 8.954 20 20 20zm0-7.5c-6.904 0-12.5-5.596-12.5-12.5S23.096 15.5 30 15.5s12.5 5.596 12.5 12.5-5.596 12.5-12.5 12.5z"/>
+            <path
+              fill="#ffffff"
+              d="M30 48c11.046 0 20-8.954 20-20S41.046 8 30 8s-20 8.954-20 20 8.954 20 20 20zm0-7.5c-6.904 0-12.5-5.596-12.5-12.5S23.096 15.5 30 15.5s12.5 5.596 12.5 12.5-5.596 12.5-12.5 12.5z"
+            />
             {/* R */}
-            <path fill="#ffffff" d="M68 8h17.5c7.5 0 12.5 3.5 12.5 10c0 5-3.5 8.5-8.5 9.5l10.5 19.5c.3.5.3 1 0 1.5H89.5l-9.5-19.5H75.5V48H68V8zm7.5 14h8.5c3.5 0 5.5-1.5 5.5-4s-2-4-5.5-4h-8.5v8z"/>
+            <path
+              fill="#ffffff"
+              d="M68 8h17.5c7.5 0 12.5 3.5 12.5 10c0 5-3.5 8.5-8.5 9.5l10.5 19.5c.3.5.3 1 0 1.5H89.5l-9.5-19.5H75.5V48H68V8zm7.5 14h8.5c3.5 0 5.5-1.5 5.5-4s-2-4-5.5-4h-8.5v8z"
+            />
             {/* A */}
-            <path fill="#ffffff" d="M125.5 8l17 40h-8l-4-10.5h-15L111.5 48h-8l17-40h5zm2.5 23l-5-13.5-5 13.5h10z"/>
+            <path
+              fill="#ffffff"
+              d="M125.5 8l17 40h-8l-4-10.5h-15L111.5 48h-8l17-40h5zm2.5 23l-5-13.5-5 13.5h10z"
+            />
             {/* C */}
-            <path fill="#ffffff" d="M180.5 48c-11.046 0-20-8.954-20-20s8.954-20 20-20c7.5 0 13.5 3.5 16.5 9.5l-6.5 3.5c-2-4.5-5.5-6.5-10-6.5-6.904 0-12.5 5.596-12.5 12.5s5.596 12.5 12.5 12.5c4.5 0 8-2 10-6.5l6.5 3.5c-3 6-9 9.5-16.5 9.5z"/>
+            <path
+              fill="#ffffff"
+              d="M180.5 48c-11.046 0-20-8.954-20-20s8.954-20 20-20c7.5 0 13.5 3.5 16.5 9.5l-6.5 3.5c-2-4.5-5.5-6.5-10-6.5-6.904 0-12.5 5.596-12.5 12.5s5.596 12.5 12.5 12.5c4.5 0 8-2 10-6.5l6.5 3.5c-3 6-9 9.5-16.5 9.5z"
+            />
             {/* L */}
-            <path fill="#ffffff" d="M211 8v32.5h15.5V48H203.5V8H211z"/>
+            <path fill="#ffffff" d="M211 8v32.5h15.5V48H203.5V8H211z" />
             {/* E */}
-            <path fill="#ffffff" d="M231.5 8h22v7.5h-14.5v9h12.5v7.5h-12.5v9h14.5V48h-22V8z"/>
+            <path fill="#ffffff" d="M231.5 8h22v7.5h-14.5v9h12.5v7.5h-12.5v9h14.5V48h-22V8z" />
           </svg>
         </div>
-        <span className="text-white/80 font-sans font-bold text-xs tracking-wider mt-1 uppercase select-none">Oracle</span>
+        <span className="text-white/80 font-sans font-bold text-xs tracking-wider mt-1 uppercase select-none">
+          Oracle
+        </span>
       </div>
     );
   }
-  if (clean.includes("capgemini")) {
+  if (clean.includes('capgemini')) {
     return (
       <div className="bg-gradient-to-tr from-[#0A2540] to-[#0070AD] rounded-xl flex flex-col items-center justify-center size-full p-4 border border-blue-900 shadow-md relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute top-0 right-0 w-20 h-20 bg-[#0070AD]/10 rounded-full blur-xl"></div>
         <div className="w-full flex items-center justify-center py-1">
-          <svg viewBox="0 0 120 45" className="w-[85%] h-auto drop-shadow-[0_2px_8px_rgba(0,112,173,0.4)]" fill="none">
+          <svg
+            viewBox="0 0 120 45"
+            className="w-[85%] h-auto drop-shadow-[0_2px_8px_rgba(0,112,173,0.4)]"
+            fill="none"
+          >
             {/* Capgemini Spade/Ace Icon */}
-            <path d="M 22 10 C 18 10, 16 14, 18 18 C 19 21, 20 22, 17 25 C 15 27, 18 30, 22 30 C 26 30, 29 27, 27 25 C 24 22, 25 21, 26 18 C 28 14, 26 10, 22 10 Z" fill="#0070AD" />
+            <path
+              d="M 22 10 C 18 10, 16 14, 18 18 C 19 21, 20 22, 17 25 C 15 27, 18 30, 22 30 C 26 30, 29 27, 27 25 C 24 22, 25 21, 26 18 C 28 14, 26 10, 22 10 Z"
+              fill="#0070AD"
+            />
             <path d="M 20 27 L 22 23 L 24 27 Z" fill="#0070AD" />
             {/* Modern Capgemini Text */}
-            <text x="75" y="25" dominantBaseline="middle" textAnchor="middle" fill="#FFFFFF" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="13" letterSpacing="0.2">Capgemini</text>
+            <text
+              x="75"
+              y="25"
+              dominantBaseline="middle"
+              textAnchor="middle"
+              fill="#FFFFFF"
+              fontFamily="system-ui, sans-serif"
+              fontWeight="800"
+              fontSize="13"
+              letterSpacing="0.2"
+            >
+              Capgemini
+            </text>
           </svg>
         </div>
-        <span className="text-blue-300 font-sans font-semibold text-[9px] tracking-widest mt-2 uppercase select-none">Capgemini</span>
+        <span className="text-blue-300 font-sans font-semibold text-[9px] tracking-widest mt-2 uppercase select-none">
+          Capgemini
+        </span>
       </div>
     );
   }
-  if (clean.includes("apple")) {
+  if (clean.includes('apple')) {
     return (
       <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute -top-12 -left-12 size-24 bg-slate-500/5 rounded-full blur-xl"></div>
         <div className="size-16 flex items-center justify-center relative">
-          <svg viewBox="0 0 170 170" className="size-12 fill-slate-800 drop-shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
-            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.34.13-9.04-1.93-14.12-6.17-3.55-2.99-7.37-7.79-11.47-14.38-5.35-8.62-9.53-19.14-12.54-31.55-3.01-12.41-4.52-24.16-4.52-35.24 0-15.66 3.62-28.43 10.87-38.31 7.25-9.88 16.48-14.88 27.69-15.01 4.58 0 9.87 1.37 15.86 4.13 6 2.76 10.02 4.13 12.06 4.13 1.87 0 6.01-1.49 12.41-4.48 6.4-2.98 11.83-4.38 16.31-4.21 12.75.51 22.84 5.21 30.29 14.1 6.2 7.42 9.88 15.93 11.05 25.53-15.66 7.41-23.27 18.42-22.85 33.02.43 10.74 4.59 19.53 12.5 26.36 7.91 6.83 17 10.37 27.27 10.63.13 2.11-.26 5.09-1.16 8.92zM119.22 32.41c0-7.82 2.8-15.22 8.4-22.18 5.6-6.96 12.28-10.96 20.04-12 1.02 8.33-1.61 16.14-7.91 23.42-6.29 7.28-13.26 11.23-20.53 10.76z"/>
+          <svg
+            viewBox="0 0 170 170"
+            className="size-12 fill-slate-800 drop-shadow-[0_2px_8px_rgba(0,0,0,0.1)]"
+          >
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.34.13-9.04-1.93-14.12-6.17-3.55-2.99-7.37-7.79-11.47-14.38-5.35-8.62-9.53-19.14-12.54-31.55-3.01-12.41-4.52-24.16-4.52-35.24 0-15.66 3.62-28.43 10.87-38.31 7.25-9.88 16.48-14.88 27.69-15.01 4.58 0 9.87 1.37 15.86 4.13 6 2.76 10.02 4.13 12.06 4.13 1.87 0 6.01-1.49 12.41-4.48 6.4-2.98 11.83-4.38 16.31-4.21 12.75.51 22.84 5.21 30.29 14.1 6.2 7.42 9.88 15.93 11.05 25.53-15.66 7.41-23.27 18.42-22.85 33.02.43 10.74 4.59 19.53 12.5 26.36 7.91 6.83 17 10.37 27.27 10.63.13 2.11-.26 5.09-1.16 8.92zM119.22 32.41c0-7.82 2.8-15.22 8.4-22.18 5.6-6.96 12.28-10.96 20.04-12 1.02 8.33-1.61 16.14-7.91 23.42-6.29 7.28-13.26 11.23-20.53 10.76z" />
           </svg>
         </div>
-        <span className="text-slate-700 font-sans font-bold text-sm tracking-wide mt-1 select-none">Apple</span>
+        <span className="text-slate-700 font-sans font-bold text-sm tracking-wide mt-1 select-none">
+          Apple
+        </span>
       </div>
     );
   }
-  if (clean.includes("meta") || clean.includes("facebook")) {
+  if (clean.includes('meta') || clean.includes('facebook')) {
     return (
       <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute -top-12 -left-12 size-24 bg-blue-500/5 rounded-full blur-xl"></div>
         <div className="size-16 flex items-center justify-center relative">
-          <svg viewBox="0 0 24 24" className="size-12 fill-[#0064E0] drop-shadow-[0_2px_8px_rgba(0,100,224,0.15)]">
-            <path d="M17.437 6c-1.391 0-2.617.51-3.606 1.48L12 9.17l-1.83-1.69c-.99-.97-2.215-1.48-3.607-1.48-2.915 0-5.286 2.378-5.286 5.3 0 1.395.512 2.624 1.485 3.616L12 23l9.238-8.084c.973-.992 1.485-2.22 1.485-3.616 0-2.922-2.37-5.3-5.286-5.3zm-10.26 8.6c-.63 0-1.185-.231-1.63-.676-.445-.444-.678-.999-.678-1.624 0-.625.233-1.18.678-1.624.445-.445 1-.676 1.63-.676.626 0 1.18.231 1.625.676.444.444.677.999.677 1.624 0 .625-.233 1.18-.677 1.624-.445.445-.999.676-1.625.676zm10.26 0c-.626 0-1.18-.231-1.625-.676-.444-.444-.677-.999-.677-1.624 0-.625.233-1.18.677-1.624.445-.445 1-.676 1.625-.676.63 0 1.185.231 1.63.676.444.444.677.999.677 1.624 0 .625-.233 1.18-.677 1.624-.445.445-.999.676-1.63.676z"/>
+          <svg
+            viewBox="0 0 24 24"
+            className="size-12 fill-[#0064E0] drop-shadow-[0_2px_8px_rgba(0,100,224,0.15)]"
+          >
+            <path d="M17.437 6c-1.391 0-2.617.51-3.606 1.48L12 9.17l-1.83-1.69c-.99-.97-2.215-1.48-3.607-1.48-2.915 0-5.286 2.378-5.286 5.3 0 1.395.512 2.624 1.485 3.616L12 23l9.238-8.084c.973-.992 1.485-2.22 1.485-3.616 0-2.922-2.37-5.3-5.286-5.3zm-10.26 8.6c-.63 0-1.185-.231-1.63-.676-.445-.444-.678-.999-.678-1.624 0-.625.233-1.18.678-1.624.445-.445 1-.676 1.63-.676.626 0 1.18.231 1.625.676.444.444.677.999.677 1.624 0 .625-.233 1.18-.677 1.624-.445.445-.999.676-1.625.676zm10.26 0c-.626 0-1.18-.231-1.625-.676-.444-.444-.677-.999-.677-1.624 0-.625.233-1.18.677-1.624.445-.445 1-.676 1.625-.676.63 0 1.185.231 1.63.676.444.444.677.999.677 1.624 0 .625-.233 1.18-.677 1.624-.445.445-.999.676-1.63.676z" />
           </svg>
         </div>
-        <span className="text-[#0064E0] font-sans font-bold text-sm tracking-wide mt-1 select-none">Meta</span>
+        <span className="text-[#0064E0] font-sans font-bold text-sm tracking-wide mt-1 select-none">
+          Meta
+        </span>
       </div>
     );
   }
-  if (clean.includes("jpmorgan") || clean.includes("jp morgan")) {
+  if (clean.includes('jpmorgan') || clean.includes('jp morgan')) {
     return (
       <div className="bg-[#112E51] text-white rounded-xl flex flex-col items-center justify-center size-full p-4 border border-[#0d223c] shadow-md relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-full blur-xl"></div>
         <span className="font-serif text-lg font-bold tracking-tight">J.P. Morgan</span>
-        <span className="text-[9px] uppercase tracking-widest opacity-80 mt-1 select-none">CHASE & CO.</span>
+        <span className="text-[9px] uppercase tracking-widest opacity-80 mt-1 select-none">
+          CHASE & CO.
+        </span>
       </div>
     );
   }
-  if (clean.includes("mckinsey")) {
+  if (clean.includes('mckinsey')) {
     return (
       <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute top-0 left-0 w-2 h-full bg-[#051C2C]"></div>
@@ -171,22 +281,40 @@ export const getCompanyLogo = (name: string) => {
       </div>
     );
   }
-  if (clean.includes("wipro")) {
+  if (clean.includes('wipro')) {
     return (
       <div className="bg-white rounded-xl flex flex-col items-center justify-center size-full border border-slate-100 shadow-md p-4 relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="size-14 flex items-center justify-center relative">
           <svg viewBox="0 0 100 100" className="size-full">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="#2563EB" strokeWidth="2" strokeDasharray="3 3" />
-            <circle cx="50" cy="50" r="30" fill="none" stroke="#EC4899" strokeWidth="2" strokeDasharray="4 4" />
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="#2563EB"
+              strokeWidth="2"
+              strokeDasharray="3 3"
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r="30"
+              fill="none"
+              stroke="#EC4899"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+            />
             <circle cx="50" cy="50" r="20" fill="none" stroke="#10B981" strokeWidth="2" />
             <circle cx="50" cy="50" r="10" fill="#F59E0B" />
           </svg>
         </div>
-        <span className="text-slate-800 font-sans font-black text-sm tracking-widest mt-1 select-none">WIPRO</span>
+        <span className="text-slate-800 font-sans font-black text-sm tracking-widest mt-1 select-none">
+          WIPRO
+        </span>
       </div>
     );
   }
-  if (clean.includes("flipkart")) {
+  if (clean.includes('flipkart')) {
     return (
       <div className="bg-[#2874F0] text-white rounded-xl flex flex-col items-center justify-center size-full p-4 shadow-md border border-[#1b63dd] relative overflow-hidden transition-all duration-300 hover:shadow-xl">
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-yellow-400/10 rounded-full blur-xl"></div>
@@ -197,21 +325,17 @@ export const getCompanyLogo = (name: string) => {
       </div>
     );
   }
-  
+
   // Clean fallback card for user-defined new companies
   const char = name.charAt(0).toUpperCase();
-  const colors = [
-    "from-rose-500 to-orange-500",
-    "from-teal-500 to-emerald-500",
-    "from-blue-600 to-indigo-600",
-    "from-purple-600 to-pink-500",
-    "from-amber-500 to-yellow-500"
-  ];
-  const index = name.length % colors.length;
   return (
-    <div className={`rounded-xl bg-gradient-to-br ${colors[index]} text-white flex flex-col items-center justify-center size-full p-4 relative overflow-hidden shadow-md`}>
+    <div
+      className={`rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center size-full p-4 relative overflow-hidden shadow-md`}
+    >
       <span className="font-sans font-black text-4xl tracking-tighter select-none">{char}</span>
-      <span className="text-xs font-bold tracking-wider mt-1 opacity-90 select-none uppercase truncate max-w-[85%]">{name}</span>
+      <span className="text-xs font-bold tracking-wider mt-1 opacity-90 select-none uppercase truncate max-w-[85%]">
+        {name}
+      </span>
     </div>
   );
 };
@@ -220,9 +344,9 @@ export function PlacementCompanies() {
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [drives, setDrives] = useState<DriveItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedIndustry, setSelectedIndustry] = useState("All");
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedIndustry, setSelectedIndustry] = useState('All');
 
   // Modal & Saving state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -234,16 +358,14 @@ export function PlacementCompanies() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Form input states
-  const [name, setName] = useState("");
-  const [industry, setIndustry] = useState("Technology");
-  const [hrContact, setHrContact] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [packageAmount, setPackageAmount] = useState("");
+  const [name, setName] = useState('');
+  const [industry, setIndustry] = useState('Technology');
+  const [hrContact, setHrContact] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [packageAmount, setPackageAmount] = useState('');
   const [previousYearHires, setPreviousYearHires] = useState(0);
-  const [hiringStatus, setHiringStatus] = useState("Active");
-
-
+  const [hiringStatus, setHiringStatus] = useState('Active');
 
   useEffect(() => {
     fetchPlacementData()
@@ -253,16 +375,16 @@ export function PlacementCompanies() {
         setLoading(false);
       })
       .catch((err) => {
-        console.warn("Failed to fetch live companies list:", err);
+        console.warn('Failed to fetch live companies list:', err);
         setLoading(false);
       });
   }, []);
 
-  const industries = ["All", "Technology", "Finance", "Consulting", "IT Services", "E-commerce"];
+  const industries = ['All', 'Technology', 'Finance', 'Consulting', 'IT Services', 'E-commerce'];
 
   const filteredCompanies = companies.filter(
     (comp) =>
-      (selectedIndustry === "All" || comp.industry === selectedIndustry) &&
+      (selectedIndustry === 'All' || comp.industry === selectedIndustry) &&
       (comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         comp.industry.toLowerCase().includes(searchTerm.toLowerCase())),
   );
@@ -272,14 +394,14 @@ export function PlacementCompanies() {
   };
 
   const resetForm = () => {
-    setName("");
-    setIndustry("Technology");
-    setHrContact("");
-    setEmail("");
-    setPhone("");
-    setPackageAmount("");
+    setName('');
+    setIndustry('Technology');
+    setHrContact('');
+    setEmail('');
+    setPhone('');
+    setPackageAmount('');
     setPreviousYearHires(0);
-    setHiringStatus("Active");
+    setHiringStatus('Active');
   };
 
   const openViewModal = (company: CompanyItem) => {
@@ -292,8 +414,8 @@ export function PlacementCompanies() {
     setName(company.name);
     setIndustry(company.industry);
     setHrContact(company.hrContact);
-    setEmail(company.email || "");
-    setPhone(company.phone || "");
+    setEmail(company.email || '');
+    setPhone(company.phone || '');
     setPackageAmount(company.package);
     setPreviousYearHires(company.previousYearHires);
     setHiringStatus(company.hiringStatus);
@@ -303,7 +425,7 @@ export function PlacementCompanies() {
   const handleAddCompany = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("Company name is required");
+      toast.error('Company name is required');
       return;
     }
     setIsSaving(true);
@@ -314,16 +436,16 @@ export function PlacementCompanies() {
         hrContact,
         email,
         phone,
-        package: packageAmount || "8.0 LPA",
+        package: packageAmount || '8.0 LPA',
         previousYearHires: Number(previousYearHires) || 0,
-        hiringStatus
+        hiringStatus,
       });
       setCompanies((prev) => [newCompany, ...prev]);
-      toast.success("Company added successfully!");
+      toast.success('Company added successfully!');
       setIsAddModalOpen(false);
       resetForm();
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Failed to add company";
+      const msg = err.response?.data?.message || err.message || 'Failed to add company';
       toast.error(msg);
     } finally {
       setIsSaving(false);
@@ -334,7 +456,7 @@ export function PlacementCompanies() {
     e.preventDefault();
     if (!selectedCompany) return;
     if (!name.trim()) {
-      toast.error("Company name is required");
+      toast.error('Company name is required');
       return;
     }
     setIsSaving(true);
@@ -347,14 +469,14 @@ export function PlacementCompanies() {
         phone,
         package: packageAmount,
         previousYearHires: Number(previousYearHires) || 0,
-        hiringStatus
+        hiringStatus,
       });
       setCompanies((prev) => prev.map((c) => (c.id === selectedCompany.id ? updated : c)));
-      toast.success("Company updated successfully!");
+      toast.success('Company updated successfully!');
       setIsEditModalOpen(false);
       resetForm();
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Failed to update company";
+      const msg = err.response?.data?.message || err.message || 'Failed to update company';
       toast.error(msg);
     } finally {
       setIsSaving(false);
@@ -362,13 +484,18 @@ export function PlacementCompanies() {
   };
 
   const handleDeleteCompany = async (id: string) => {
-    if (!window.confirm("Are you sure you want to remove this company? This will delete all associated data.")) return;
+    if (
+      !window.confirm(
+        'Are you sure you want to remove this company? This will delete all associated data.',
+      )
+    )
+      return;
     try {
       await deleteCompany(id);
       setCompanies((prev) => prev.filter((c) => c.id !== id));
-      toast.success("Company removed successfully!");
+      toast.success('Company removed successfully!');
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Failed to remove company";
+      const msg = err.response?.data?.message || err.message || 'Failed to remove company';
       toast.error(msg);
     }
   };
@@ -379,8 +506,11 @@ export function PlacementCompanies() {
         title="Company Management"
         desc="Manage recruiting companies, job openings and partnerships."
         actions={
-          <button 
-            onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+          <button
+            onClick={() => {
+              resetForm();
+              setIsAddModalOpen(true);
+            }}
             className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
           >
             <Plus className="size-4" /> Add Company
@@ -403,14 +533,14 @@ export function PlacementCompanies() {
             </div>
             <div className="flex items-center gap-2 border rounded-xl p-1">
               <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition ${viewMode === "grid" ? "bg-gradient-primary text-white" : "text-muted-foreground"}`}
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition ${viewMode === 'grid' ? 'bg-gradient-primary text-white' : 'text-muted-foreground'}`}
               >
                 <Grid className="size-4" />
               </button>
               <button
-                onClick={() => setViewMode("table")}
-                className={`p-2 rounded-lg transition ${viewMode === "table" ? "bg-gradient-primary text-white" : "text-muted-foreground"}`}
+                onClick={() => setViewMode('table')}
+                className={`p-2 rounded-lg transition ${viewMode === 'table' ? 'bg-gradient-primary text-white' : 'text-muted-foreground'}`}
               >
                 <List className="size-4" />
               </button>
@@ -425,8 +555,8 @@ export function PlacementCompanies() {
                 onClick={() => setSelectedIndustry(ind)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition ${
                   selectedIndustry === ind
-                    ? "bg-gradient-primary text-white"
-                    : "bg-background border text-muted-foreground hover:border-primary"
+                    ? 'bg-gradient-primary text-white'
+                    : 'bg-background border text-muted-foreground hover:border-primary'
                 }`}
               >
                 {ind}
@@ -446,13 +576,11 @@ export function PlacementCompanies() {
       )}
 
       {/* Grid View */}
-      {!loading && viewMode === "grid" && (
+      {!loading && viewMode === 'grid' && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredCompanies.map((company) => (
             <Card key={company.id} className="hover:-translate-y-1 transition flex flex-col">
-              <div className="aspect-video w-full mb-4">
-                {getCompanyLogo(company.name)}
-              </div>
+              <div className="aspect-video w-full mb-4">{getCompanyLogo(company.name)}</div>
               <div className="flex-1">
                 <div className="font-semibold">{company.name}</div>
                 <div className="text-xs text-muted-foreground mt-1">{company.industry}</div>
@@ -474,7 +602,7 @@ export function PlacementCompanies() {
 
                 <div className="mt-4 flex items-center justify-between">
                   <Badge tone="info">{company.industry}</Badge>
-                  <Badge tone={company.hiringStatus === "Active" ? "success" : "warn"}>
+                  <Badge tone={company.hiringStatus === 'Active' ? 'success' : 'warn'}>
                     {company.hiringStatus}
                   </Badge>
                 </div>
@@ -487,19 +615,19 @@ export function PlacementCompanies() {
                 </div>
               </div>
               <div className="flex gap-2 mt-4">
-                <button 
+                <button
                   onClick={() => openViewModal(company)}
                   className="flex-1 px-2.5 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
                 >
                   View
                 </button>
-                <button 
+                <button
                   onClick={() => openEditModal(company)}
                   className="flex-1 px-2.5 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
                 >
                   Edit
                 </button>
-                <button 
+                <button
                   onClick={() => handleDeleteCompany(company.id)}
                   className="px-2.5 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition cursor-pointer flex items-center justify-center"
                   title="Remove Company"
@@ -513,7 +641,7 @@ export function PlacementCompanies() {
       )}
 
       {/* Table View */}
-      {!loading && viewMode === "table" && (
+      {!loading && viewMode === 'table' && (
         <Card>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -560,7 +688,7 @@ export function PlacementCompanies() {
                       <div className="text-xs text-muted-foreground">{company.phone}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <Badge tone={company.hiringStatus === "Active" ? "success" : "warn"}>
+                      <Badge tone={company.hiringStatus === 'Active' ? 'success' : 'warn'}>
                         {company.hiringStatus}
                       </Badge>
                     </td>
@@ -569,19 +697,19 @@ export function PlacementCompanies() {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1 justify-center">
-                        <button 
+                        <button
                           onClick={() => openViewModal(company)}
                           className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer"
                         >
                           View
                         </button>
-                        <button 
+                        <button
                           onClick={() => openEditModal(company)}
                           className="px-2 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer"
                         >
                           Edit
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDeleteCompany(company.id)}
                           className="px-2 py-1 rounded text-xs text-red-600 hover:bg-red-50 hover:text-red-700 transition cursor-pointer"
                         >
@@ -596,7 +724,6 @@ export function PlacementCompanies() {
           </div>
         </Card>
       )}
-
 
       {/* Add Company Modal */}
       {isAddModalOpen && (
@@ -613,7 +740,9 @@ export function PlacementCompanies() {
             </div>
             <form onSubmit={handleAddCompany} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">Company Name *</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Company Name *
+                </label>
                 <input
                   type="text"
                   required
@@ -640,7 +769,9 @@ export function PlacementCompanies() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Salary Package (LPA) *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Salary Package (LPA) *
+                  </label>
                   <input
                     type="text"
                     required
@@ -654,7 +785,9 @@ export function PlacementCompanies() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">HR Contact Person *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    HR Contact Person *
+                  </label>
                   <input
                     type="text"
                     required
@@ -665,7 +798,9 @@ export function PlacementCompanies() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Contact Phone *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Contact Phone *
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g. 9876543210"
@@ -677,7 +812,9 @@ export function PlacementCompanies() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">HR Email Address *</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  HR Email Address *
+                </label>
                 <input
                   type="email"
                   required
@@ -690,7 +827,9 @@ export function PlacementCompanies() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Previous Hires Count</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Previous Hires Count
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -700,7 +839,9 @@ export function PlacementCompanies() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Hiring Status</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Hiring Status
+                  </label>
                   <select
                     value={hiringStatus}
                     onChange={(e) => setHiringStatus(e.target.value)}
@@ -725,11 +866,7 @@ export function PlacementCompanies() {
                   disabled={isSaving}
                   className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
-                  {isSaving ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Add Company"
-                  )}
+                  {isSaving ? <Loader2 className="size-4 animate-spin" /> : 'Add Company'}
                 </button>
               </div>
             </form>
@@ -750,12 +887,10 @@ export function PlacementCompanies() {
                 <X className="size-5" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-soft border">
-                <div className="size-16 flex-shrink-0">
-                  {getCompanyLogo(selectedCompany.name)}
-                </div>
+                <div className="size-16 flex-shrink-0">{getCompanyLogo(selectedCompany.name)}</div>
                 <div>
                   <h4 className="font-bold text-lg">{selectedCompany.name}</h4>
                   <p className="text-xs text-muted-foreground">{selectedCompany.industry}</p>
@@ -765,18 +900,25 @@ export function PlacementCompanies() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 border rounded-xl bg-background/50">
                   <span className="text-xs text-muted-foreground block">Salary Package</span>
-                  <span className="font-bold text-sm text-emerald-600">{selectedCompany.package}</span>
+                  <span className="font-bold text-sm text-emerald-600">
+                    {selectedCompany.package}
+                  </span>
                 </div>
                 <div className="p-3 border rounded-xl bg-background/50">
                   <span className="text-xs text-muted-foreground block">Hiring Status</span>
-                  <Badge tone={selectedCompany.hiringStatus === "Active" ? "success" : "warn"} className="mt-1">
+                  <Badge
+                    tone={selectedCompany.hiringStatus === 'Active' ? 'success' : 'warn'}
+                    className="mt-1"
+                  >
                     {selectedCompany.hiringStatus}
                   </Badge>
                 </div>
               </div>
 
               <div className="p-4 border rounded-xl bg-background/30 space-y-2.5">
-                <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">HR & Contact Info</h5>
+                <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  HR & Contact Info
+                </h5>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
                     <span className="text-xs text-muted-foreground block">HR Contact</span>
@@ -784,11 +926,13 @@ export function PlacementCompanies() {
                   </div>
                   <div>
                     <span className="text-xs text-muted-foreground block">Phone</span>
-                    <span className="font-medium">{selectedCompany.phone || "N/A"}</span>
+                    <span className="font-medium">{selectedCompany.phone || 'N/A'}</span>
                   </div>
                   <div className="col-span-2 mt-1">
                     <span className="text-xs text-muted-foreground block">Email Address</span>
-                    <span className="font-medium text-primary select-all">{selectedCompany.email}</span>
+                    <span className="font-medium text-primary select-all">
+                      {selectedCompany.email}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -796,11 +940,15 @@ export function PlacementCompanies() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 border rounded-xl text-center">
                   <span className="text-xs text-muted-foreground block">Previous Year Hires</span>
-                  <span className="font-bold text-base mt-1 block">{selectedCompany.previousYearHires}</span>
+                  <span className="font-bold text-base mt-1 block">
+                    {selectedCompany.previousYearHires}
+                  </span>
                 </div>
                 <div className="p-3 border rounded-xl text-center">
                   <span className="text-xs text-muted-foreground block">Active Drives</span>
-                  <span className="font-bold text-base mt-1 block">{getCompanyDrives(selectedCompany.name)}</span>
+                  <span className="font-bold text-base mt-1 block">
+                    {getCompanyDrives(selectedCompany.name)}
+                  </span>
                 </div>
               </div>
 
@@ -832,7 +980,9 @@ export function PlacementCompanies() {
             </div>
             <form onSubmit={handleEditCompany} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">Company Name *</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  Company Name *
+                </label>
                 <input
                   type="text"
                   required
@@ -859,7 +1009,9 @@ export function PlacementCompanies() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Salary Package (LPA) *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Salary Package (LPA) *
+                  </label>
                   <input
                     type="text"
                     required
@@ -873,7 +1025,9 @@ export function PlacementCompanies() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">HR Contact Person *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    HR Contact Person *
+                  </label>
                   <input
                     type="text"
                     required
@@ -884,7 +1038,9 @@ export function PlacementCompanies() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Contact Phone *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Contact Phone *
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g. 9876543210"
@@ -896,7 +1052,9 @@ export function PlacementCompanies() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">HR Email Address *</label>
+                <label className="text-xs font-semibold text-muted-foreground">
+                  HR Email Address *
+                </label>
                 <input
                   type="email"
                   required
@@ -909,7 +1067,9 @@ export function PlacementCompanies() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Previous Hires Count</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Previous Hires Count
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -919,7 +1079,9 @@ export function PlacementCompanies() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Hiring Status</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Hiring Status
+                  </label>
                   <select
                     value={hiringStatus}
                     onChange={(e) => setHiringStatus(e.target.value)}
@@ -944,19 +1106,13 @@ export function PlacementCompanies() {
                   disabled={isSaving}
                   className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
-                  {isSaving ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Save Changes"
-                  )}
+                  {isSaving ? <Loader2 className="size-4 animate-spin" /> : 'Save Changes'}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-
     </div>
   );
 }

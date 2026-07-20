@@ -1,4 +1,4 @@
-import api from "../lib/api";
+import api from '../lib/api';
 
 export interface BookItem {
   _id: string;
@@ -39,7 +39,7 @@ export interface IssuedBookItem {
   dueDate: string;
   returnDate?: string | null;
   fineAmount?: number;
-  status: "issued" | "returned" | "overdue";
+  status: 'issued' | 'returned' | 'overdue';
 }
 
 export interface LibraryReportData {
@@ -72,7 +72,7 @@ export async function fetchBooks(params?: {
   page?: number;
 }): Promise<BookItem[]> {
   const { data } = await api.get<{ success: boolean; data: { books: BookItem[] } }>(
-    "/api/library/books",
+    '/api/library/books',
     { params },
   );
   return data.data.books;
@@ -80,7 +80,7 @@ export async function fetchBooks(params?: {
 
 export async function createBook(payload: Partial<BookItem>): Promise<BookItem> {
   const { data } = await api.post<{ success: boolean; data: BookItem }>(
-    "/api/library/books",
+    '/api/library/books',
     payload,
   );
   return data.data;
@@ -104,7 +104,7 @@ export async function issueBook(payload: {
   dueDate: string;
 }): Promise<IssuedBookItem> {
   const { data } = await api.post<{ success: boolean; data: IssuedBookItem }>(
-    "/api/library/issue",
+    '/api/library/issue',
     payload,
   );
   return data.data;
@@ -128,7 +128,7 @@ export async function fetchIssuedBooks(params?: {
   studentId?: string;
 }): Promise<IssuedBookItem[]> {
   const { data } = await api.get<{ success: boolean; data: IssuedBookItem[] }>(
-    "/api/library/issued",
+    '/api/library/issued',
     { params },
   );
   return data.data;
@@ -136,7 +136,7 @@ export async function fetchIssuedBooks(params?: {
 
 export async function fetchLibraryReport(): Promise<LibraryReportData> {
   const { data } = await api.get<{ success: boolean; data: LibraryReportData }>(
-    "/api/library/report",
+    '/api/library/report',
   );
   return data.data;
 }
@@ -159,7 +159,7 @@ export async function fetchEBooks(params?: {
   category?: string;
 }): Promise<EBookItem[]> {
   const { data } = await api.get<{ success: boolean; data: { ebooks: EBookItem[] } }>(
-    "/api/library/ebooks",
+    '/api/library/ebooks',
     { params },
   );
   return data.data.ebooks;
@@ -174,7 +174,7 @@ export async function downloadEBook(id: string): Promise<EBookItem> {
 
 export async function createEBook(payload: Partial<EBookItem>): Promise<EBookItem> {
   const { data } = await api.post<{ success: boolean; data: EBookItem }>(
-    "/api/library/ebooks",
+    '/api/library/ebooks',
     payload,
   );
   return data.data;
@@ -198,7 +198,7 @@ export interface LibraryNotification {
   message: string;
   type: string;
   unread: boolean;
-  urgency: "high" | "medium" | "low";
+  urgency: 'high' | 'medium' | 'low';
   is_archived?: boolean;
   created_at?: string;
 }
@@ -211,7 +211,7 @@ export interface LibrarySetting {
 
 export async function fetchLibraryNotifications(): Promise<LibraryNotification[]> {
   const { data } = await api.get<{ success: boolean; data: LibraryNotification[] }>(
-    "/api/library/notifications",
+    '/api/library/notifications',
   );
   return data.data;
 }
@@ -223,7 +223,7 @@ export async function createLibraryNotification(payload: {
   urgency?: string;
 }): Promise<LibraryNotification> {
   const { data } = await api.post<{ success: boolean; data: LibraryNotification }>(
-    "/api/library/notifications",
+    '/api/library/notifications',
     payload,
   );
   return data.data;
@@ -245,16 +245,15 @@ export async function archiveLibraryNotification(id: string): Promise<LibraryNot
 
 export async function fetchLibrarySettings(): Promise<LibrarySetting[]> {
   const { data } = await api.get<{ success: boolean; data: LibrarySetting[] }>(
-    "/api/library/settings",
+    '/api/library/settings',
   );
   return data.data;
 }
 
 export async function updateLibrarySettings(settings: LibrarySetting[]): Promise<LibrarySetting[]> {
   const { data } = await api.put<{ success: boolean; data: LibrarySetting[] }>(
-    "/api/library/settings",
+    '/api/library/settings',
     { settings },
   );
   return data.data;
 }
-

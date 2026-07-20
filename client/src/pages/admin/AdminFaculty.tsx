@@ -1,48 +1,48 @@
-import { useMemo, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Filter, Plus, Search, UserCheck, Loader2, Trash2 } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useMemo, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Filter, Plus, Search, UserCheck, Loader2, Trash2 } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
 import {
   fetchFaculty,
   createFaculty,
   updateFaculty,
   deleteFaculty,
   fetchDepartments,
-} from "@/services/adminService";
-import { toast } from "sonner";
-import api from "@/lib/api";
+} from '@/services/adminService';
+import { toast } from 'sonner';
+import api from '@/lib/api';
 
 export function AdminFaculty() {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [deptFilter, setDeptFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [search, setSearch] = useState('');
+  const [deptFilter, setDeptFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
 
   // Form Fields
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
-  const [selectedDept, setSelectedDept] = useState("");
-  const [designation, setDesignation] = useState("Assistant Professor");
-  const [experience, setExperience] = useState("");
-  const [gender, setGender] = useState("Male");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
+  const [selectedDept, setSelectedDept] = useState('');
+  const [designation, setDesignation] = useState('Assistant Professor');
+  const [experience, setExperience] = useState('');
+  const [gender, setGender] = useState('Male');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
 
   // OTP Verification States
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
-  const [otpCode, setOtpCode] = useState("");
+  const [otpCode, setOtpCode] = useState('');
   const [verifyingOtp, setVerifyingOtp] = useState(false);
   const [otpError, setOtpError] = useState<string | null>(null);
 
   // Queries
   const { data: facultyList = [], isLoading: isFacultyLoading } = useQuery({
-    queryKey: ["faculty"],
+    queryKey: ['faculty'],
     queryFn: fetchFaculty,
   });
 
   const { data: departments = [] } = useQuery({
-    queryKey: ["departments"],
+    queryKey: ['departments'],
     queryFn: fetchDepartments,
   });
 
@@ -51,11 +51,13 @@ export function AdminFaculty() {
     mutationFn: createFaculty,
     onSuccess: (data, variables) => {
       setUnverifiedEmail(variables.email);
-      toast.success("Faculty member registered successfully. Please enter the OTP sent to their email to complete registration.");
+      toast.success(
+        'Faculty member registered successfully. Please enter the OTP sent to their email to complete registration.',
+      );
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to register faculty member");
+      toast.error(err.response?.data?.message || 'Failed to register faculty member');
     },
   });
 
@@ -74,24 +76,24 @@ export function AdminFaculty() {
       };
     }) => updateFaculty(id, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["faculty"] });
-      toast.success("Faculty record updated successfully");
+      queryClient.invalidateQueries({ queryKey: ['faculty'] });
+      toast.success('Faculty record updated successfully');
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to update faculty record");
+      toast.error(err.response?.data?.message || 'Failed to update faculty record');
     },
   });
 
   const deleteFacultyMutation = useMutation({
     mutationFn: deleteFaculty,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["faculty"] });
-      toast.success("Faculty record soft-deleted");
+      queryClient.invalidateQueries({ queryKey: ['faculty'] });
+      toast.success('Faculty record soft-deleted');
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Failed to delete faculty record");
+      toast.error(err.response?.data?.message || 'Failed to delete faculty record');
     },
   });
 
@@ -102,12 +104,12 @@ export function AdminFaculty() {
         val.toLowerCase().includes(search.toLowerCase()),
       );
 
-      const matchesDept = deptFilter === "All" || fac.department?._id === deptFilter;
+      const matchesDept = deptFilter === 'All' || fac.department?._id === deptFilter;
 
       const matchesStatus =
-        statusFilter === "All" ||
-        (statusFilter === "Active" && fac.status?.toLowerCase() === "active") ||
-        (statusFilter === "On Leave" && fac.status?.toLowerCase() === "on-leave");
+        statusFilter === 'All' ||
+        (statusFilter === 'Active' && fac.status?.toLowerCase() === 'active') ||
+        (statusFilter === 'On Leave' && fac.status?.toLowerCase() === 'on-leave');
 
       return matchesSearch && matchesDept && matchesStatus;
     });
@@ -115,8 +117,14 @@ export function AdminFaculty() {
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !email.trim() || !employeeId.trim() || !selectedDept || !password.trim()) {
-      toast.error("Please fill in all required fields (including Password)");
+    if (
+      !fullName.trim() ||
+      !email.trim() ||
+      !employeeId.trim() ||
+      !selectedDept ||
+      !password.trim()
+    ) {
+      toast.error('Please fill in all required fields (including Password)');
       return;
     }
     createFacultyMutation.mutate({
@@ -135,30 +143,34 @@ export function AdminFaculty() {
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otpCode.length < 6 || !unverifiedEmail) {
-      toast.error("Please enter a valid 6-digit OTP");
+      toast.error('Please enter a valid 6-digit OTP');
       return;
     }
     setVerifyingOtp(true);
     setOtpError(null);
     try {
-      await api.post("/api/auth/verify-otp", {
+      await api.post('/api/auth/verify-otp', {
         email: unverifiedEmail,
         otp: otpCode,
-        type: "email_verification",
+        type: 'email_verification',
       });
-      toast.success("Faculty account successfully verified and registered!");
-      queryClient.invalidateQueries({ queryKey: ["faculty"] });
+      toast.success('Faculty account successfully verified and registered!');
+      queryClient.invalidateQueries({ queryKey: ['faculty'] });
       setUnverifiedEmail(null);
-      setOtpCode("");
+      setOtpCode('');
       // Reset form
-      setFullName("");
-      setEmail("");
-      setEmployeeId("");
-      setExperience("");
-      setPhoneNumber("");
-      setPassword("");
+      setFullName('');
+      setEmail('');
+      setEmployeeId('');
+      setExperience('');
+      setPhoneNumber('');
+      setPassword('');
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.response?.data?.error || err.message || "Verification failed. Please check the OTP.";
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Verification failed. Please check the OTP.';
       setOtpError(msg);
     } finally {
       setVerifyingOtp(false);
@@ -166,7 +178,7 @@ export function AdminFaculty() {
   };
 
   // Unique status list
-  const statuses = ["All", "Active", "On Leave"];
+  const statuses = ['All', 'Active', 'On Leave'];
 
   // Department distribution calculation for dynamic dashboard stats
   const deptStats = useMemo(() => {
@@ -231,21 +243,25 @@ export function AdminFaculty() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Faculty", value: facultyList.length.toString(), tone: "info" as const },
+          { label: 'Total Faculty', value: facultyList.length.toString(), tone: 'info' as const },
           {
-            label: "Active Faculty",
-            value: facultyList.filter((f) => f.status?.toLowerCase() === "active").length.toString(),
-            tone: "success" as const,
+            label: 'Active Faculty',
+            value: facultyList
+              .filter((f) => f.status?.toLowerCase() === 'active')
+              .length.toString(),
+            tone: 'success' as const,
           },
           {
-            label: "On Leave",
-            value: facultyList.filter((f) => f.status?.toLowerCase() === "on-leave").length.toString(),
-            tone: "warn" as const,
+            label: 'On Leave',
+            value: facultyList
+              .filter((f) => f.status?.toLowerCase() === 'on-leave')
+              .length.toString(),
+            tone: 'warn' as const,
           },
           {
-            label: "Departments",
+            label: 'Departments',
             value: departments.length.toString(),
-            tone: "info" as const,
+            tone: 'info' as const,
           },
         ].map((stat) => (
           <Card key={stat.label}>
@@ -275,13 +291,13 @@ export function AdminFaculty() {
                 <thead className="border-b">
                   <tr>
                     {[
-                      "Faculty ID",
-                      "Name & Email",
-                      "Department",
-                      "Designation",
-                      "Exp (Yrs)",
-                      "Status",
-                      "Actions",
+                      'Faculty ID',
+                      'Name & Email',
+                      'Department',
+                      'Designation',
+                      'Exp (Yrs)',
+                      'Status',
+                      'Actions',
                     ].map((column) => (
                       <th
                         key={column}
@@ -303,7 +319,7 @@ export function AdminFaculty() {
                         <div className="text-xs text-muted-foreground">{fac.email}</div>
                       </td>
                       <td className="py-3 px-4">
-                        <Badge tone="info">{fac.department?.name || "Unassigned"}</Badge>
+                        <Badge tone="info">{fac.department?.name || 'Unassigned'}</Badge>
                       </td>
                       <td className="py-3 px-4 text-muted-foreground">{fac.designation}</td>
                       <td className="py-3 px-4 font-medium">{fac.experience}</td>
@@ -350,8 +366,9 @@ export function AdminFaculty() {
             {filteredFaculty.length > 10 && (
               <div className="border-t px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 bg-muted/10 text-xs text-muted-foreground rounded-b-2xl">
                 <div>
-                  Showing <span className="font-semibold text-foreground">10</span> of{" "}
-                  <span className="font-semibold text-foreground">{filteredFaculty.length}</span> faculty members
+                  Showing <span className="font-semibold text-foreground">10</span> of{' '}
+                  <span className="font-semibold text-foreground">{filteredFaculty.length}</span>{' '}
+                  faculty members
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 font-semibold">
                   <span>+{filteredFaculty.length - 10} more records exist</span>
@@ -389,7 +406,7 @@ export function AdminFaculty() {
 
         <Card>
           <h3 className="font-semibold mb-4 text-gradient">
-            {unverifiedEmail ? "Verify Faculty Account" : "Add New Faculty"}
+            {unverifiedEmail ? 'Verify Faculty Account' : 'Add New Faculty'}
           </h3>
           {unverifiedEmail ? (
             <form
@@ -398,9 +415,9 @@ export function AdminFaculty() {
             >
               <div className="text-center py-4">
                 <p className="text-sm text-muted-foreground mb-4">
-                  An OTP verification code has been sent to{" "}
-                  <span className="font-semibold text-foreground">{unverifiedEmail}</span>.
-                  Please enter the 6-digit code to complete registration.
+                  An OTP verification code has been sent to{' '}
+                  <span className="font-semibold text-foreground">{unverifiedEmail}</span>. Please
+                  enter the 6-digit code to complete registration.
                 </p>
                 {otpError && (
                   <div className="mb-4 px-4 py-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl text-left">
@@ -414,7 +431,7 @@ export function AdminFaculty() {
                     maxLength={6}
                     placeholder="••••••"
                     value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                     className="w-full text-center px-4 py-3 rounded-xl border bg-background text-lg font-bold tracking-widest focus:border-primary outline-none"
                   />
                 </div>
@@ -424,7 +441,7 @@ export function AdminFaculty() {
                   type="button"
                   onClick={() => {
                     setUnverifiedEmail(null);
-                    setOtpCode("");
+                    setOtpCode('');
                   }}
                   className="flex-1 px-4 py-2 rounded-xl border text-muted-foreground font-semibold hover:bg-accent transition text-xs cursor-pointer"
                 >
@@ -435,11 +452,7 @@ export function AdminFaculty() {
                   disabled={verifyingOtp}
                   className="flex-1 px-4 py-2 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
-                  {verifyingOtp ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Verify & Complete"
-                  )}
+                  {verifyingOtp ? <Loader2 className="size-4 animate-spin" /> : 'Verify & Complete'}
                 </button>
               </div>
             </form>
@@ -507,7 +520,9 @@ export function AdminFaculty() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Designation *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Designation *
+                  </label>
                   <select
                     value={designation}
                     onChange={(e) => setDesignation(e.target.value)}
@@ -547,7 +562,9 @@ export function AdminFaculty() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Phone Number</label>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Phone Number
+                  </label>
                   <input
                     type="text"
                     placeholder="e.g. 9876543210"
@@ -576,7 +593,7 @@ export function AdminFaculty() {
                 {createFacultyMutation.isPending ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  "Register Faculty"
+                  'Register Faculty'
                 )}
               </button>
             </form>

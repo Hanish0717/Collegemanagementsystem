@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
 import {
   Area,
   AreaChart,
@@ -7,33 +7,39 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { Cloud, Database, Plus, RotateCcw } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchBackups, createBackup, restoreBackup, saveBackupSettings, Backup } from "@/services/superAdminService";
-import { Skeleton } from "@/components/ui/skeleton";
+} from 'recharts';
+import { Cloud, Database, Plus, RotateCcw } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  fetchBackups,
+  createBackup,
+  restoreBackup,
+  saveBackupSettings,
+  Backup,
+} from '@/services/superAdminService';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Mock analytics for backup storage sizing chart
 const storageAnalyticsData = [
-  { month: "Jan", users: 12 },
-  { month: "Feb", users: 15 },
-  { month: "Mar", users: 18 },
-  { month: "Apr", users: 24 },
-  { month: "May", users: 30 },
-  { month: "Jun", users: 38 },
+  { month: 'Jan', users: 12 },
+  { month: 'Feb', users: 15 },
+  { month: 'Mar', users: 18 },
+  { month: 'Apr', users: 24 },
+  { month: 'May', users: 30 },
+  { month: 'Jun', users: 38 },
 ];
 
 export function SuperAdminBackups() {
   const queryClient = useQueryClient();
-  const [selectedRestoreId, setSelectedRestoreId] = useState("");
-  const [restoreDetails, setRestoreDetails] = useState("Full restore");
-  const [restoreWindow, setRestoreWindow] = useState("Maintenance window");
+  const [selectedRestoreId, setSelectedRestoreId] = useState('');
+  const [restoreDetails, setRestoreDetails] = useState('Full restore');
+  const [restoreWindow, setRestoreWindow] = useState('Maintenance window');
 
   const { data, isLoading } = useQuery({
-    queryKey: ["superAdminBackups"],
+    queryKey: ['superAdminBackups'],
     queryFn: fetchBackups,
   });
 
@@ -49,15 +55,15 @@ export function SuperAdminBackups() {
   const createMutation = useMutation({
     mutationFn: createBackup,
     onSuccess: (newB) => {
-      queryClient.invalidateQueries({ queryKey: ["superAdminBackups"] });
+      queryClient.invalidateQueries({ queryKey: ['superAdminBackups'] });
       toast.success(`Backup ${newB.id} created and synced successfully.`);
       if (!selectedRestoreId) {
         setSelectedRestoreId(newB.id);
       }
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to create backup");
-    }
+      toast.error(err.response?.data?.message || err.message || 'Failed to create backup');
+    },
   });
 
   const restoreMutation = useMutation({
@@ -66,22 +72,22 @@ export function SuperAdminBackups() {
       toast.success(msg);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to restore backup");
-    }
+      toast.error(err.response?.data?.message || err.message || 'Failed to restore backup');
+    },
   });
 
   const settingsMutation = useMutation({
     mutationFn: saveBackupSettings,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["superAdminBackups"] });
+      queryClient.invalidateQueries({ queryKey: ['superAdminBackups'] });
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || "Failed to save backup settings");
-    }
+      toast.error(err.response?.data?.message || err.message || 'Failed to save backup settings');
+    },
   });
 
   const handleCreateBackup = () => {
-    toast.info("Starting database backup process...");
+    toast.info('Starting database backup process...');
     createMutation.mutate();
   };
 
@@ -90,16 +96,20 @@ export function SuperAdminBackups() {
     updated[index] = !updated[index];
     settingsMutation.mutate(updated);
     const names = [
-      "Daily full backup",
-      "Cloud synchronization",
-      "Retention for 30 days",
-      "Restore verification",
+      'Daily full backup',
+      'Cloud synchronization',
+      'Retention for 30 days',
+      'Restore verification',
     ];
-    toast.success(`${names[index]} is now ${updated[index] ? "enabled" : "disabled"}`);
+    toast.success(`${names[index]} is now ${updated[index] ? 'enabled' : 'disabled'}`);
   };
 
   const handleRestore = (id: string) => {
-    if (confirm(`Are you sure you want to restore the system to point ${id}? This will briefly disconnect active sessions.`)) {
+    if (
+      confirm(
+        `Are you sure you want to restore the system to point ${id}? This will briefly disconnect active sessions.`,
+      )
+    ) {
       toast.info(`Initiating system restore to point ${id}...`);
       restoreMutation.mutate(id);
     }
@@ -108,7 +118,7 @@ export function SuperAdminBackups() {
   const handlePreviewRestore = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRestoreId) {
-      toast.error("Please select a valid backup point");
+      toast.error('Please select a valid backup point');
       return;
     }
     toast.info(`Analyzing backup compatibility for ${selectedRestoreId}...`);
@@ -128,17 +138,18 @@ export function SuperAdminBackups() {
             disabled={createMutation.isPending}
             className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            <Plus className="size-4" /> {createMutation.isPending ? "Backing up..." : "Create Backup"}
+            <Plus className="size-4" />{' '}
+            {createMutation.isPending ? 'Backing up...' : 'Create Backup'}
           </button>
         }
       />
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Storage Used", value: "38.4 GB", icon: Database },
-          { label: "Cloud Sync", value: "96%", icon: Cloud },
-          { label: "Restore Points", value: backups.length.toString(), icon: RotateCcw },
-          { label: "Scheduled Backup", value: "02:00 AM", icon: Database },
+          { label: 'Storage Used', value: '38.4 GB', icon: Database },
+          { label: 'Cloud Sync', value: '96%', icon: Cloud },
+          { label: 'Restore Points', value: backups.length.toString(), icon: RotateCcw },
+          { label: 'Scheduled Backup', value: '02:00 AM', icon: Database },
         ].map((item) => (
           <Card key={item.label}>
             <div className="flex items-center justify-between">
@@ -167,7 +178,7 @@ export function SuperAdminBackups() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Area
                   type="monotone"
                   dataKey="users"
@@ -185,10 +196,10 @@ export function SuperAdminBackups() {
           <h3 className="font-semibold mb-4">Scheduled Backup Settings</h3>
           <div className="space-y-3">
             {[
-              "Daily full backup",
-              "Cloud synchronization",
-              "Retention for 30 days",
-              "Restore verification",
+              'Daily full backup',
+              'Cloud synchronization',
+              'Retention for 30 days',
+              'Restore verification',
             ].map((item, index) => (
               <div
                 key={item}
@@ -197,10 +208,10 @@ export function SuperAdminBackups() {
                 <span className="text-sm">{item}</span>
                 <button
                   onClick={() => handleToggleSetting(index)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${backupSettings[index] ? "bg-emerald-500" : "bg-muted"}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${backupSettings[index] ? 'bg-emerald-500' : 'bg-muted'}`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${backupSettings[index] ? "translate-x-6" : "translate-x-1"}`}
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${backupSettings[index] ? 'translate-x-6' : 'translate-x-1'}`}
                   />
                 </button>
               </div>
@@ -222,13 +233,13 @@ export function SuperAdminBackups() {
               <thead className="border-b">
                 <tr>
                   {[
-                    "Backup ID",
-                    "Type",
-                    "Size",
-                    "Backup Date",
-                    "Status",
-                    "Cloud Sync",
-                    "Actions",
+                    'Backup ID',
+                    'Type',
+                    'Size',
+                    'Backup Date',
+                    'Status',
+                    'Cloud Sync',
+                    'Actions',
                   ].map((column) => (
                     <th
                       key={column}
@@ -254,12 +265,14 @@ export function SuperAdminBackups() {
                       <td className="py-3 px-4 font-medium">{backup.size}</td>
                       <td className="py-3 px-4 text-muted-foreground">{backup.date}</td>
                       <td className="py-3 px-4">
-                        <Badge tone={backup.status === "Completed" ? "success" : "warn"}>
+                        <Badge tone={backup.status === 'Completed' ? 'success' : 'warn'}>
                           {backup.status}
                         </Badge>
                       </td>
                       <td className="py-3 px-4">
-                        <Badge tone={backup.cloud === "Synced" ? "info" : "warn"}>{backup.cloud}</Badge>
+                        <Badge tone={backup.cloud === 'Synced' ? 'info' : 'warn'}>
+                          {backup.cloud}
+                        </Badge>
                       </td>
                       <td className="py-3 px-4">
                         <button
@@ -280,7 +293,10 @@ export function SuperAdminBackups() {
 
       <Card>
         <h3 className="font-semibold mb-4">Restore Backup</h3>
-        <form onSubmit={handlePreviewRestore} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
+        <form
+          onSubmit={handlePreviewRestore}
+          className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
+        >
           <div className="grid sm:grid-cols-3 gap-4">
             <select
               value={selectedRestoreId}
@@ -288,7 +304,9 @@ export function SuperAdminBackups() {
               className="rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
             >
               {backups.map((backup) => (
-                <option key={backup.id} value={backup.id}>{backup.id} ({backup.date})</option>
+                <option key={backup.id} value={backup.id}>
+                  {backup.id} ({backup.date})
+                </option>
               ))}
             </select>
             <input

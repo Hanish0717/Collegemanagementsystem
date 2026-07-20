@@ -1,0 +1,108 @@
+{
+  "modules": {
+    "Admission": {
+      "connected": true,
+      "crud": true
+    },
+    "Student Information": {
+      "connected": true,
+      "crud": true
+    },
+    "Academics": {
+      "connected": true,
+      "crud": true
+    },
+    "Attendance": {
+      "connected": true,
+      "crud": true
+    },
+    "Examination": {
+      "connected": true,
+      "crud": true
+    },
+    "LMS": {
+      "connected": true,
+      "crud": true
+    },
+    "Finance": {
+      "connected": true,
+      "crud": true
+    },
+    "Library": {
+      "connected": true,
+      "crud": true
+    },
+    "Hostel": {
+      "connected": true,
+      "crud": true
+    },
+    "Transport": {
+      "connected": true,
+      "crud": true
+    },
+    "Placement": {
+      "connected": true,
+      "crud": true
+    },
+    "Degree": {
+      "connected": true,
+      "crud": true
+    },
+    "Alumni": {
+      "connected": true,
+      "crud": true
+    }
+  },
+  "database": {
+    "connectivity": true,
+    "tables": {
+      "students": {
+        "status": "ok",
+        "count": 1
+      },
+      "subjects": {
+        "status": "ok",
+        "count": 0
+      },
+      "attendance": {
+        "status": "ok",
+        "count": 3
+      },
+      "results": {
+        "status": "ok",
+        "count": 3
+      },
+      "study_materials": {
+        "status": "ok",
+        "count": 1
+      },
+      "fees": {
+        "status": "ok",
+        "count": 2
+      },
+      "books": {
+        "status": "ok",
+        "count": 2
+      },
+      "hostel_allocations": {
+        "status": "ok",
+        "count": 0
+      },
+      "placements": {
+        "status": "ok",
+        "count": 0
+      },
+      "users": {
+        "status": "ok",
+        "count": 14
+      }
+    },
+    "foreignKeys": true,
+    "rlsPolicies": true
+  },
+  "api": {
+    "auth": false,
+    "validation": true,
+    "errorHandling": true
+  }
+}

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { Outlet, createFileRoute, useRouterState, useNavigate } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
 import {
   Area,
   AreaChart,
@@ -14,7 +14,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts';
 import {
   Activity,
   Bell,
@@ -26,24 +26,25 @@ import {
   GraduationCap,
   Users,
   Zap,
-} from "lucide-react";
-import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
-import api from "@/lib/api";
+} from 'lucide-react';
+import { Badge, Card, PageHeader, StatCard } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 const statIcons = [Users, GraduationCap, BookOpen, CheckCircle, DollarSign, Clock, Calendar, Bell];
 const statGradients = [
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
+  'bg-gradient-primary',
+  'bg-gradient-violet',
+  'bg-gradient-cyan',
+  'bg-gradient-primary',
+  'bg-gradient-violet',
+  'bg-gradient-cyan',
+  'bg-gradient-primary',
+  'bg-gradient-violet',
 ];
 
 export function AdminDashboard() {
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const navigate = useNavigate();
 
   const [stats, setStats] = useState<any[]>([]);
   const [studentAnalytics, setStudentAnalytics] = useState<any[]>([]);
@@ -54,11 +55,11 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path !== "/dashboard/admin") return;
+    if (path !== '/dashboard/admin') return;
 
     const fetchDashboardData = async () => {
       try {
-        const res = await api.get("/api/dashboard/stats");
+        const res = await api.get('/api/dashboard/stats');
         if (res.data?.success && res.data?.data) {
           const {
             stats: dbStats,
@@ -77,7 +78,7 @@ export function AdminDashboard() {
           setNotifications(dbNotifications || []);
         }
       } catch (err) {
-        console.error("Error loading admin dashboard statistics:", err);
+        console.error('Error loading admin dashboard statistics:', err);
       } finally {
         setLoading(false);
       }
@@ -86,7 +87,7 @@ export function AdminDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== "/dashboard/admin") {
+  if (path !== '/dashboard/admin') {
     return <Outlet />;
   }
 
@@ -151,7 +152,7 @@ export function AdminDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Area
                   type="monotone"
                   dataKey="enrolled"
@@ -224,7 +225,7 @@ export function AdminDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Bar dataKey="present" name="Present" fill="#4F46E5" radius={[8, 8, 0, 0]} />
                 <Bar dataKey="absent" name="Absent" fill="#06B6D4" radius={[8, 8, 0, 0]} />
               </BarChart>
@@ -239,13 +240,22 @@ export function AdminDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "Add New Student", tone: "default" as const },
-              { label: "Mark Attendance", tone: "success" as const },
-              { label: "Send Fee Reminder", tone: "warn" as const },
-              { label: "Approve Event", tone: "info" as const },
+              {
+                label: 'Add New Student',
+                tone: 'default' as const,
+                to: '/dashboard/admin/students',
+              },
+              {
+                label: 'Mark Attendance',
+                tone: 'success' as const,
+                to: '/dashboard/admin/attendance',
+              },
+              { label: 'Send Fee Reminder', tone: 'warn' as const, to: '/dashboard/admin/fees' },
+              { label: 'Approve Event', tone: 'info' as const, to: '/dashboard/admin/events' },
             ].map((item) => (
               <button
                 key={item.label}
+                onClick={() => navigate({ to: item.to })}
                 className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer text-left"
               >
                 <span className="text-sm font-medium">{item.label}</span>
@@ -272,8 +282,8 @@ export function AdminDashboard() {
                   {activity.actor.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex-1 text-sm">
-                  <span className="font-medium">{activity.actor}</span>{" "}
-                  <span className="text-muted-foreground">{activity.action}</span>{" "}
+                  <span className="font-medium">{activity.actor}</span>{' '}
+                  <span className="text-muted-foreground">{activity.action}</span>{' '}
                   <span className="font-medium">{activity.target}</span>
                   <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
                 </div>
@@ -292,7 +302,7 @@ export function AdminDashboard() {
             {notifications.map((notification, idx) => (
               <div
                 key={notification.id + idx}
-                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50" : "hover:bg-accent/50"}`}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50' : 'hover:bg-accent/50'}`}
               >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
@@ -301,11 +311,11 @@ export function AdminDashboard() {
                 </div>
                 <Badge
                   tone={
-                    notification.type === "Warning"
-                      ? "danger"
-                      : notification.type === "Approval"
-                        ? "warn"
-                        : "info"
+                    notification.type === 'Warning'
+                      ? 'danger'
+                      : notification.type === 'Approval'
+                        ? 'warn'
+                        : 'info'
                   }
                 >
                   {notification.type}

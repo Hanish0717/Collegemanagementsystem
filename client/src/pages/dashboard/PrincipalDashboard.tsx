@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   TrendingUp,
   Users,
@@ -11,8 +11,8 @@ import {
   AlertTriangle,
   Send,
   Building,
-  BarChart2
-} from "lucide-react";
+  BarChart2,
+} from 'lucide-react';
 import {
   Area,
   AreaChart,
@@ -25,42 +25,60 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
-} from "recharts";
-import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
-import { toast } from "sonner";
+  YAxis,
+} from 'recharts';
+import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
 
 export function PrincipalDashboard() {
   const [loading, setLoading] = useState(false);
   const [approvals, setApprovals] = useState([
-    { id: "APP-01", type: "Research Grant", detail: "₹4.5L for AIML Lab Supercomputer", dept: "AIML", status: "Pending" },
-    { id: "APP-02", type: "Faculty Leave", detail: "Dr. Anjali Mehra (HOD CSE) - 5 Days Medical", dept: "CSE", status: "Pending" },
-    { id: "APP-03", type: "Event Budget", detail: "₹1.2L for National Hackathon 'CodeStorm'", dept: "IT", status: "Pending" },
+    {
+      id: 'APP-01',
+      type: 'Research Grant',
+      detail: '₹4.5L for AIML Lab Supercomputer',
+      dept: 'AIML',
+      status: 'Pending',
+    },
+    {
+      id: 'APP-02',
+      type: 'Faculty Leave',
+      detail: 'Dr. Anjali Mehra (HOD CSE) - 5 Days Medical',
+      dept: 'CSE',
+      status: 'Pending',
+    },
+    {
+      id: 'APP-03',
+      type: 'Event Budget',
+      detail: "₹1.2L for National Hackathon 'CodeStorm'",
+      dept: 'IT',
+      status: 'Pending',
+    },
   ]);
 
   const handleApprove = (id: string, detail: string) => {
-    setApprovals(prev => prev.filter(a => a.id !== id));
+    setApprovals((prev) => prev.filter((a) => a.id !== id));
     toast.success(`Request Approved: ${detail}`);
   };
 
   const handleReject = (id: string, detail: string) => {
-    setApprovals(prev => prev.filter(a => a.id !== id));
+    setApprovals((prev) => prev.filter((a) => a.id !== id));
     toast.warning(`Request Declined: ${detail}`);
   };
 
   // Mock charts
   const financialData = [
-    { name: "Q1", revenue: 120, expense: 85 },
-    { name: "Q2", revenue: 150, expense: 95 },
-    { name: "Q3", revenue: 180, expense: 110 },
-    { name: "Q4", revenue: 210, expense: 125 }
+    { name: 'Q1', revenue: 120, expense: 85 },
+    { name: 'Q2', revenue: 150, expense: 95 },
+    { name: 'Q3', revenue: 180, expense: 110 },
+    { name: 'Q4', revenue: 210, expense: 125 },
   ];
 
   const complianceData = [
-    { name: "Criteria 1 (Curricular)", value: 88, color: "#6366F1" },
-    { name: "Criteria 2 (Teaching)", value: 92, color: "#10B981" },
-    { name: "Criteria 3 (Research)", value: 78, color: "#F59E0B" },
-    { name: "Criteria 4 (Infrastructure)", value: 95, color: "#EC4899" }
+    { name: 'Criteria 1 (Curricular)', value: 88, color: '#6366F1' },
+    { name: 'Criteria 2 (Teaching)', value: 92, color: '#10B981' },
+    { name: 'Criteria 3 (Research)', value: 78, color: '#F59E0B' },
+    { name: 'Criteria 4 (Infrastructure)', value: 95, color: '#EC4899' },
   ];
 
   return (
@@ -108,7 +126,9 @@ export function PrincipalDashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold">Financial Quarters Ledger</h3>
-              <p className="text-xs text-muted-foreground">Revenue collection vs operations expenditure in Lakhs</p>
+              <p className="text-xs text-muted-foreground">
+                Revenue collection vs operations expenditure in Lakhs
+              </p>
             </div>
             <Badge tone="success">FY 2026-27</Badge>
           </div>
@@ -129,8 +149,22 @@ export function PrincipalDashboard() {
                 <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
                 <YAxis stroke="#64748B" fontSize={11} />
                 <Tooltip />
-                <Area type="monotone" dataKey="revenue" name="Revenue Collection (₹)" stroke="#6366F1" fill="url(#revenue)" strokeWidth={2} />
-                <Area type="monotone" dataKey="expense" name="Operational Cost (₹)" stroke="#F43F5E" fill="url(#expense)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  name="Revenue Collection (₹)"
+                  stroke="#6366F1"
+                  fill="url(#revenue)"
+                  strokeWidth={2}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="expense"
+                  name="Operational Cost (₹)"
+                  stroke="#F43F5E"
+                  fill="url(#expense)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -181,21 +215,32 @@ export function PrincipalDashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold text-slate-800 text-sm">Principal Approvals Panel</h3>
-              <p className="text-[10px] text-slate-500">Decisions requiring institutional seal & signature.</p>
+              <p className="text-[10px] text-slate-500">
+                Decisions requiring institutional seal & signature.
+              </p>
             </div>
             <Badge tone="warn">{approvals.length} Pending</Badge>
           </div>
           <div className="space-y-3">
             {approvals.length === 0 ? (
-              <div className="text-xs text-muted-foreground text-center py-6">All approval requests cleared!</div>
+              <div className="text-xs text-muted-foreground text-center py-6">
+                All approval requests cleared!
+              </div>
             ) : (
-              approvals.map(app => (
-                <div key={app.id} className="p-3 border rounded-xl flex items-center justify-between gap-3 text-xs bg-slate-50/50 hover:bg-slate-50 transition">
+              approvals.map((app) => (
+                <div
+                  key={app.id}
+                  className="p-3 border rounded-xl flex items-center justify-between gap-3 text-xs bg-slate-50/50 hover:bg-slate-50 transition"
+                >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-indigo-700 font-mono text-[10px]">{app.id}</span>
+                      <span className="font-bold text-indigo-700 font-mono text-[10px]">
+                        {app.id}
+                      </span>
                       <span className="font-semibold text-slate-800">{app.type}</span>
-                      <Badge tone="info" className="text-[9px] px-1 py-0">{app.dept}</Badge>
+                      <Badge tone="info" className="text-[9px] px-1 py-0">
+                        {app.dept}
+                      </Badge>
                     </div>
                     <p className="text-slate-500 mt-1 font-medium">{app.detail}</p>
                   </div>
@@ -225,8 +270,11 @@ export function PrincipalDashboard() {
           <div className="space-y-2">
             <button
               onClick={() => {
-                toast.loading("Generating NBA Self-Assessment report...", { duration: 1500 });
-                setTimeout(() => toast.success("NBA Criteria Report PDF successfully generated & exported."), 1600);
+                toast.loading('Generating NBA Self-Assessment report...', { duration: 1500 });
+                setTimeout(
+                  () => toast.success('NBA Criteria Report PDF successfully generated & exported.'),
+                  1600,
+                );
               }}
               className="w-full py-2.5 rounded-xl border flex items-center gap-3 justify-center text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
             >
@@ -235,7 +283,7 @@ export function PrincipalDashboard() {
             </button>
             <button
               onClick={() => {
-                toast.success("Emergency Circular broadcasted to all Departments successfully!");
+                toast.success('Emergency Circular broadcasted to all Departments successfully!');
               }}
               className="w-full py-2.5 rounded-xl border flex items-center gap-3 justify-center text-xs font-semibold hover:bg-slate-50 transition cursor-pointer"
             >
@@ -244,7 +292,7 @@ export function PrincipalDashboard() {
             </button>
             <button
               onClick={() => {
-                toast.success("Biometric Attendance logs and RFID entries synced globally.");
+                toast.success('Biometric Attendance logs and RFID entries synced globally.');
               }}
               className="w-full py-2.5 rounded-xl bg-slate-900 text-white flex items-center gap-3 justify-center text-xs font-semibold hover:bg-slate-800 transition cursor-pointer"
             >

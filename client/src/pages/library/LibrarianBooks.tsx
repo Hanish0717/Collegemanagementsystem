@@ -1,21 +1,21 @@
-import { useState, useEffect } from "react";
-import { Search, Plus, BookOpen, Grid, List, Loader2, X, Edit, Eye, Trash2 } from "lucide-react";
-import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
+import { useState, useEffect } from 'react';
+import { Search, Plus, BookOpen, Grid, List, Loader2, X, Edit, Eye, Trash2 } from 'lucide-react';
+import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
 import {
   fetchBooks,
   createBook,
   updateBook,
   deleteBook,
   type BookItem,
-} from "@/services/libraryService";
-import { toast } from "sonner";
+} from '@/services/libraryService';
+import { toast } from 'sonner';
 
 export function LibrarianBooks() {
   const [books, setBooks] = useState<BookItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -24,30 +24,31 @@ export function LibrarianBooks() {
   const [selectedBook, setSelectedBook] = useState<BookItem | null>(null);
 
   // Form states
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [category, setCategory] = useState("Computer Science");
-  const [isbn, setIsbn] = useState("");
-  const [publisher, setPublisher] = useState("");
-  const [totalCopies, setTotalCopies] = useState("10");
-  const [shelfNumber, setShelfNumber] = useState("");
-  const [description, setDescription] = useState("");
-  const [coverImage, setCoverImage] = useState("");
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [category, setCategory] = useState('Computer Science');
+  const [isbn, setIsbn] = useState('');
+  const [publisher, setPublisher] = useState('');
+  const [totalCopies, setTotalCopies] = useState('10');
+  const [shelfNumber, setShelfNumber] = useState('');
+  const [description, setDescription] = useState('');
+  const [coverImage, setCoverImage] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const canSaveBook = title.trim() && author.trim() && isbn.trim() && category.trim() && totalCopies.trim();
+  const canSaveBook =
+    title.trim() && author.trim() && isbn.trim() && category.trim() && totalCopies.trim();
 
   const categories = [
-    "All",
-    "Computer Science",
-    "Software Engineering",
-    "Electronics",
-    "Electrical",
-    "Mechanical",
-    "Civil",
-    "Mathematics",
-    "Physics",
-    "Engineering",
-    "General Knowledge",
+    'All',
+    'Computer Science',
+    'Software Engineering',
+    'Electronics',
+    'Electrical',
+    'Mechanical',
+    'Civil',
+    'Mathematics',
+    'Physics',
+    'Engineering',
+    'General Knowledge',
   ];
 
   const loadBooks = () => {
@@ -59,7 +60,7 @@ export function LibrarianBooks() {
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Failed to load books from live database");
+        toast.error('Failed to load books from live database');
         setLoading(false);
       });
   };
@@ -69,21 +70,21 @@ export function LibrarianBooks() {
   }, []);
 
   const resetForm = () => {
-    setTitle("");
-    setAuthor("");
-    setCategory("Computer Science");
-    setIsbn("");
-    setPublisher("");
-    setTotalCopies("10");
-    setShelfNumber("");
-    setDescription("");
-    setCoverImage("");
+    setTitle('');
+    setAuthor('');
+    setCategory('Computer Science');
+    setIsbn('');
+    setPublisher('');
+    setTotalCopies('10');
+    setShelfNumber('');
+    setDescription('');
+    setCoverImage('');
   };
 
   const handleAddBook = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !author || !isbn) {
-      toast.error("Please fill in required fields");
+      toast.error('Please fill in required fields');
       return;
     }
     setSubmitting(true);
@@ -99,12 +100,12 @@ export function LibrarianBooks() {
         description,
         coverImage,
       });
-      toast.success("Book successfully saved to database!");
+      toast.success('Book successfully saved to database!');
       setIsAddModalOpen(false);
       resetForm();
       loadBooks();
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Failed to save book";
+      const msg = err.response?.data?.message || err.message || 'Failed to save book';
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -115,7 +116,7 @@ export function LibrarianBooks() {
     e.preventDefault();
     if (!selectedBook) return;
     if (!title || !author || !isbn) {
-      toast.error("Please fill in required fields");
+      toast.error('Please fill in required fields');
       return;
     }
     setSubmitting(true);
@@ -131,13 +132,13 @@ export function LibrarianBooks() {
         description,
         coverImage,
       });
-      toast.success("Book successfully updated in database!");
+      toast.success('Book successfully updated in database!');
       setIsEditModalOpen(false);
       resetForm();
       setSelectedBook(null);
       loadBooks();
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Failed to update book";
+      const msg = err.response?.data?.message || err.message || 'Failed to update book';
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -145,13 +146,13 @@ export function LibrarianBooks() {
   };
 
   const handleDeleteBook = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this book?")) return;
+    if (!confirm('Are you sure you want to delete this book?')) return;
     try {
       await deleteBook(id);
-      toast.success("Book successfully deleted!");
+      toast.success('Book successfully deleted!');
       loadBooks();
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete book");
+      toast.error(err.message || 'Failed to delete book');
     }
   };
 
@@ -161,11 +162,11 @@ export function LibrarianBooks() {
     setAuthor(book.author);
     setCategory(book.category);
     setIsbn(book.isbn);
-    setPublisher(book.publisher || "");
+    setPublisher(book.publisher || '');
     setTotalCopies(String(book.totalCopies));
-    setShelfNumber(book.shelfNumber || "");
-    setDescription(book.description || "");
-    setCoverImage(book.coverImage || "");
+    setShelfNumber(book.shelfNumber || '');
+    setDescription(book.description || '');
+    setCoverImage(book.coverImage || '');
     setIsEditModalOpen(true);
   };
 
@@ -175,7 +176,7 @@ export function LibrarianBooks() {
   };
 
   const filteredBooks = books.filter((book) => {
-    const matchesCategory = selectedCategory === "All" || book.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'All' || book.category === selectedCategory;
     const matchesSearch =
       book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -216,21 +217,21 @@ export function LibrarianBooks() {
             </div>
             <div className="flex items-center gap-2 border rounded-xl p-1">
               <button
-                onClick={() => setViewMode("grid")}
+                onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition cursor-pointer ${
-                  viewMode === "grid"
-                    ? "bg-gradient-primary text-white"
-                    : "text-muted-foreground hover:bg-gradient-soft"
+                  viewMode === 'grid'
+                    ? 'bg-gradient-primary text-white'
+                    : 'text-muted-foreground hover:bg-gradient-soft'
                 }`}
               >
                 <Grid className="size-4" />
               </button>
               <button
-                onClick={() => setViewMode("table")}
+                onClick={() => setViewMode('table')}
                 className={`p-2 rounded-lg transition cursor-pointer ${
-                  viewMode === "table"
-                    ? "bg-gradient-primary text-white"
-                    : "text-muted-foreground hover:bg-gradient-soft"
+                  viewMode === 'table'
+                    ? 'bg-gradient-primary text-white'
+                    : 'text-muted-foreground hover:bg-gradient-soft'
                 }`}
               >
                 <List className="size-4" />
@@ -246,8 +247,8 @@ export function LibrarianBooks() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition cursor-pointer ${
                   selectedCategory === cat
-                    ? "bg-gradient-primary text-white"
-                    : "bg-background border text-muted-foreground hover:border-primary"
+                    ? 'bg-gradient-primary text-white'
+                    : 'bg-background border text-muted-foreground hover:border-primary'
                 }`}
               >
                 {cat}
@@ -274,8 +275,8 @@ export function LibrarianBooks() {
               </p>
               <button
                 onClick={() => {
-                  setSearchTerm("");
-                  setSelectedCategory("All");
+                  setSearchTerm('');
+                  setSelectedCategory('All');
                 }}
                 className="mt-4 px-4 py-2 rounded-xl border text-sm font-medium hover:bg-gradient-soft transition cursor-pointer"
               >
@@ -285,7 +286,7 @@ export function LibrarianBooks() {
           )}
 
           {/* Grid View */}
-          {viewMode === "grid" && filteredBooks.length > 0 && (
+          {viewMode === 'grid' && filteredBooks.length > 0 && (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredBooks.map((book) => (
                 <Card
@@ -330,7 +331,7 @@ export function LibrarianBooks() {
                         <div>
                           <div className="text-[10px] text-muted-foreground">Shelf</div>
                           <div className="font-semibold text-muted-foreground">
-                            {book.shelfNumber || "N/A"}
+                            {book.shelfNumber || 'N/A'}
                           </div>
                         </div>
                       </div>
@@ -362,7 +363,7 @@ export function LibrarianBooks() {
           )}
 
           {/* Table View */}
-          {viewMode === "table" && filteredBooks.length > 0 && (
+          {viewMode === 'table' && filteredBooks.length > 0 && (
             <Card>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -399,12 +400,12 @@ export function LibrarianBooks() {
                         </td>
                         <td className="px-4 py-3 text-center font-semibold">{book.totalCopies}</td>
                         <td className="px-4 py-3 text-center">
-                          <Badge tone={book.availableCopies > 0 ? "success" : "danger"}>
+                          <Badge tone={book.availableCopies > 0 ? 'success' : 'danger'}>
                             {book.availableCopies}
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-center text-muted-foreground">
-                          {book.shelfNumber || "N/A"}
+                          {book.shelfNumber || 'N/A'}
                         </td>
                         <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
                           <button
@@ -760,7 +761,7 @@ export function LibrarianBooks() {
                   Written by: {selectedBook.author}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Published by: {selectedBook.publisher || "N/A"}
+                  Published by: {selectedBook.publisher || 'N/A'}
                 </p>
               </div>
               {selectedBook.description && (
@@ -776,9 +777,9 @@ export function LibrarianBooks() {
                 <div>
                   <span className="text-muted-foreground text-xs block">Availability</span>
                   <span
-                    className={`font-semibold ${selectedBook.availableCopies > 0 ? "text-emerald-600" : "text-rose-600"}`}
+                    className={`font-semibold ${selectedBook.availableCopies > 0 ? 'text-emerald-600' : 'text-rose-600'}`}
                   >
-                    {selectedBook.availableCopies > 0 ? "In Stock" : "Out of Stock"}
+                    {selectedBook.availableCopies > 0 ? 'In Stock' : 'Out of Stock'}
                   </span>
                 </div>
               </div>

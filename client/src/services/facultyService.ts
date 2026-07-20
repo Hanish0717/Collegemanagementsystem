@@ -1,4 +1,4 @@
-import api from "@/lib/api";
+import api from '@/lib/api';
 
 export interface FacultyNotification {
   id: string;
@@ -19,36 +19,36 @@ export interface FacultyNotificationSetting {
 
 export async function fetchFacultyNotifications(): Promise<FacultyNotification[]> {
   const { data } = await api.get<{ success: boolean; data: FacultyNotification[] }>(
-    "/api/faculty/notifications"
+    '/api/faculty/notifications',
   );
   return data.data;
 }
 
 export async function markFacultyNotificationRead(id: string): Promise<FacultyNotification> {
   const { data } = await api.put<{ success: boolean; data: FacultyNotification }>(
-    `/api/faculty/notifications/${id}/read`
+    `/api/faculty/notifications/${id}/read`,
   );
   return data.data;
 }
 
 export async function markAllFacultyNotificationsRead(): Promise<void> {
-  await api.post("/api/faculty/notifications/mark-all-read");
+  await api.post('/api/faculty/notifications/mark-all-read');
 }
 
 export async function fetchFacultyNotificationSettings(): Promise<FacultyNotificationSetting[]> {
   const { data } = await api.get<{ success: boolean; data: FacultyNotificationSetting[] }>(
-    "/api/faculty/notification-settings"
+    '/api/faculty/notification-settings',
   );
   return data.data;
 }
 
 export async function updateFacultyNotificationSetting(
   id: string,
-  enabled: boolean
+  enabled: boolean,
 ): Promise<FacultyNotificationSetting> {
   const { data } = await api.put<{ success: boolean; data: FacultyNotificationSetting }>(
     `/api/faculty/notification-settings/${id}`,
-    { enabled }
+    { enabled },
   );
   return data.data;
 }

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router';
 import {
   Line,
   LineChart,
@@ -11,57 +11,57 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { AlertTriangle, TrendingUp, Calendar, Users } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+} from 'recharts';
+import { AlertTriangle, TrendingUp, Calendar, Users } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
 
 export function AiAttendance() {
   const attendanceData = [
-    { name: "John Smith", current: 72, predicted: 75, warningLevel: "High", status: "At Risk" },
-    { name: "Emily Johnson", current: 92, predicted: 94, warningLevel: "Low", status: "Excellent" },
-    { name: "Michael Brown", current: 78, predicted: 80, warningLevel: "Medium", status: "Good" },
-    { name: "Sarah Davis", current: 88, predicted: 90, warningLevel: "Low", status: "Excellent" },
-    { name: "James Wilson", current: 65, predicted: 68, warningLevel: "High", status: "Critical" },
-    { name: "Lisa Anderson", current: 85, predicted: 87, warningLevel: "Low", status: "Good" },
+    { name: 'John Smith', current: 72, predicted: 75, warningLevel: 'High', status: 'At Risk' },
+    { name: 'Emily Johnson', current: 92, predicted: 94, warningLevel: 'Low', status: 'Excellent' },
+    { name: 'Michael Brown', current: 78, predicted: 80, warningLevel: 'Medium', status: 'Good' },
+    { name: 'Sarah Davis', current: 88, predicted: 90, warningLevel: 'Low', status: 'Excellent' },
+    { name: 'James Wilson', current: 65, predicted: 68, warningLevel: 'High', status: 'Critical' },
+    { name: 'Lisa Anderson', current: 85, predicted: 87, warningLevel: 'Low', status: 'Good' },
     {
-      name: "Robert Taylor",
+      name: 'Robert Taylor',
       current: 74,
       predicted: 76,
-      warningLevel: "Medium",
-      status: "At Risk",
+      warningLevel: 'Medium',
+      status: 'At Risk',
     },
     {
-      name: "Jennifer Martinez",
+      name: 'Jennifer Martinez',
       current: 90,
       predicted: 92,
-      warningLevel: "Low",
-      status: "Excellent",
+      warningLevel: 'Low',
+      status: 'Excellent',
     },
   ];
 
   const monthlyTrends = [
-    { month: "Jan", actual: 82, predicted: 84 },
-    { month: "Feb", actual: 78, predicted: 80 },
-    { month: "Mar", actual: 85, predicted: 87 },
-    { month: "Apr", actual: 80, predicted: 82 },
-    { month: "May", actual: 83, predicted: 85 },
-    { month: "Jun", predicted: 86 },
+    { month: 'Jan', actual: 82, predicted: 84 },
+    { month: 'Feb', actual: 78, predicted: 80 },
+    { month: 'Mar', actual: 85, predicted: 87 },
+    { month: 'Apr', actual: 80, predicted: 82 },
+    { month: 'May', actual: 83, predicted: 85 },
+    { month: 'Jun', predicted: 86 },
   ];
 
   const departmentAnalytics = [
-    { department: "Computer Science", current: 88, predicted: 90 },
-    { department: "Electrical Engineering", current: 82, predicted: 84 },
-    { department: "Mechanical Engineering", current: 79, predicted: 81 },
-    { department: "Civil Engineering", current: 85, predicted: 87 },
-    { department: "Business Administration", current: 91, predicted: 93 },
+    { department: 'Computer Science', current: 88, predicted: 90 },
+    { department: 'Electrical Engineering', current: 82, predicted: 84 },
+    { department: 'Mechanical Engineering', current: 79, predicted: 81 },
+    { department: 'Civil Engineering', current: 85, predicted: 87 },
+    { department: 'Business Administration', current: 91, predicted: 93 },
   ];
 
   const warningTimeline = [
-    { date: "May 25", type: "High Risk", count: 5 },
-    { date: "May 24", type: "Medium Risk", count: 8 },
-    { date: "May 23", type: "Low Risk", count: 12 },
-    { date: "May 22", type: "High Risk", count: 3 },
-    { date: "May 21", type: "Medium Risk", count: 6 },
+    { date: 'May 25', type: 'High Risk', count: 5 },
+    { date: 'May 24', type: 'Medium Risk', count: 8 },
+    { date: 'May 23', type: 'Low Risk', count: 12 },
+    { date: 'May 22', type: 'High Risk', count: 3 },
+    { date: 'May 21', type: 'Medium Risk', count: 6 },
   ];
 
   return (
@@ -73,10 +73,10 @@ export function AiAttendance() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Students Tracked", value: "245", tone: "success" as const },
-          { label: "High Risk Alerts", value: "18", tone: "warn" as const },
-          { label: "Average Attendance", value: "84.5%", tone: "info" as const },
-          { label: "Prediction Accuracy", value: "92%", tone: "success" as const },
+          { label: 'Students Tracked', value: '245', tone: 'success' as const },
+          { label: 'High Risk Alerts', value: '18', tone: 'warn' as const },
+          { label: 'Average Attendance', value: '84.5%', tone: 'info' as const },
+          { label: 'Prediction Accuracy', value: '92%', tone: 'success' as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -110,7 +110,7 @@ export function AiAttendance() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Area
                   type="monotone"
                   dataKey="actual"
@@ -149,7 +149,7 @@ export function AiAttendance() {
                   height={80}
                 />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Bar dataKey="current" fill="#4F46E5" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="predicted" fill="#06B6D4" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -165,11 +165,11 @@ export function AiAttendance() {
             <thead className="border-b">
               <tr>
                 {[
-                  "Student Name",
-                  "Current Attendance",
-                  "Predicted Attendance",
-                  "Warning Level",
-                  "Status",
+                  'Student Name',
+                  'Current Attendance',
+                  'Predicted Attendance',
+                  'Warning Level',
+                  'Status',
                 ].map((column) => (
                   <th
                     key={column}
@@ -189,11 +189,11 @@ export function AiAttendance() {
                   <td className="py-3 px-4">
                     <Badge
                       tone={
-                        student.warningLevel === "High"
-                          ? "warn"
-                          : student.warningLevel === "Medium"
-                            ? "info"
-                            : "success"
+                        student.warningLevel === 'High'
+                          ? 'warn'
+                          : student.warningLevel === 'Medium'
+                            ? 'info'
+                            : 'success'
                       }
                     >
                       {student.warningLevel}
@@ -202,11 +202,11 @@ export function AiAttendance() {
                   <td className="py-3 px-4">
                     <Badge
                       tone={
-                        student.status === "Critical"
-                          ? "warn"
-                          : student.status === "At Risk"
-                            ? "info"
-                            : "success"
+                        student.status === 'Critical'
+                          ? 'warn'
+                          : student.status === 'At Risk'
+                            ? 'info'
+                            : 'success'
                       }
                     >
                       {student.status}
@@ -228,36 +228,36 @@ export function AiAttendance() {
           <div className="space-y-3">
             {[
               {
-                student: "James Wilson",
-                attendance: "65%",
-                type: "Critical",
-                action: "Immediate intervention required",
+                student: 'James Wilson',
+                attendance: '65%',
+                type: 'Critical',
+                action: 'Immediate intervention required',
               },
               {
-                student: "John Smith",
-                attendance: "72%",
-                type: "High Risk",
-                action: "Counseling recommended",
+                student: 'John Smith',
+                attendance: '72%',
+                type: 'High Risk',
+                action: 'Counseling recommended',
               },
               {
-                student: "Robert Taylor",
-                attendance: "74%",
-                type: "Medium Risk",
-                action: "Monitor closely",
+                student: 'Robert Taylor',
+                attendance: '74%',
+                type: 'Medium Risk',
+                action: 'Monitor closely',
               },
               {
-                student: "Michael Brown",
-                attendance: "78%",
-                type: "Medium Risk",
-                action: "Regular check-ins",
+                student: 'Michael Brown',
+                attendance: '78%',
+                type: 'Medium Risk',
+                action: 'Regular check-ins',
               },
             ].map((warning, index) => (
               <div
                 key={index}
-                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${warning.type === "Critical" ? "bg-red-50 border-red-200" : warning.type === "High Risk" ? "bg-amber-50 border-amber-200" : ""}`}
+                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${warning.type === 'Critical' ? 'bg-red-50 border-red-200' : warning.type === 'High Risk' ? 'bg-amber-50 border-amber-200' : ''}`}
               >
                 <div
-                  className={`size-10 rounded-lg ${warning.type === "Critical" ? "bg-red-500" : warning.type === "High Risk" ? "bg-amber-500" : "bg-gradient-primary"} text-white grid place-items-center`}
+                  className={`size-10 rounded-lg ${warning.type === 'Critical' ? 'bg-red-500' : warning.type === 'High Risk' ? 'bg-amber-500' : 'bg-gradient-primary'} text-white grid place-items-center`}
                 >
                   <AlertTriangle className="size-4" />
                 </div>
@@ -269,11 +269,11 @@ export function AiAttendance() {
                 </div>
                 <Badge
                   tone={
-                    warning.type === "Critical"
-                      ? "warn"
-                      : warning.type === "High Risk"
-                        ? "warn"
-                        : "info"
+                    warning.type === 'Critical'
+                      ? 'warn'
+                      : warning.type === 'High Risk'
+                        ? 'warn'
+                        : 'info'
                   }
                 >
                   {warning.type}
@@ -303,11 +303,11 @@ export function AiAttendance() {
                 </div>
                 <Badge
                   tone={
-                    item.type === "High Risk"
-                      ? "warn"
-                      : item.type === "Medium Risk"
-                        ? "info"
-                        : "success"
+                    item.type === 'High Risk'
+                      ? 'warn'
+                      : item.type === 'Medium Risk'
+                        ? 'info'
+                        : 'success'
                   }
                 >
                   {item.count} alerts
@@ -326,19 +326,19 @@ export function AiAttendance() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
-              label: "Expected Improvement",
-              value: "+2.5%",
+              label: 'Expected Improvement',
+              value: '+2.5%',
               icon: TrendingUp,
-              color: "bg-gradient-primary",
+              color: 'bg-gradient-primary',
             },
-            { label: "Students at Risk", value: "18", icon: AlertTriangle, color: "bg-red-500" },
+            { label: 'Students at Risk', value: '18', icon: AlertTriangle, color: 'bg-red-500' },
             {
-              label: "Recovery Predicted",
-              value: "12",
+              label: 'Recovery Predicted',
+              value: '12',
               icon: TrendingUp,
-              color: "bg-gradient-cyan",
+              color: 'bg-gradient-cyan',
             },
-            { label: "Stable Attendance", value: "215", icon: Users, color: "bg-gradient-violet" },
+            { label: 'Stable Attendance', value: '215', icon: Users, color: 'bg-gradient-violet' },
           ].map((summary, index) => (
             <div key={index} className="p-4 rounded-xl border hover:bg-accent/50 transition">
               <div className="flex items-center gap-2 mb-2">

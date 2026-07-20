@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { MapPin, User } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import api from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { MapPin, User } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 export function StudentTimetable() {
-  const timeSlots = ["09:00 AM", "11:00 AM", "02:00 PM"];
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const timeSlots = ['09:00 AM', '11:00 AM', '02:00 PM'];
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const todayDay = daysOfWeek[new Date().getDay()];
-  const currentDay = days.includes(todayDay) ? todayDay : "Monday";
+  const currentDay = days.includes(todayDay) ? todayDay : 'Monday';
 
   const [slots, setSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,17 +18,17 @@ export function StudentTimetable() {
   useEffect(() => {
     const fetchTimetable = async () => {
       try {
-        const res = await api.get("/api/student-module/timetable");
+        const res = await api.get('/api/student-module/timetable');
         if (res.data?.success && res.data?.data) {
           const dbSlots = res.data.data.map((s: any) => ({
             ...s,
             faculty: s.faculty_name || s.facultyName || s.faculty,
-            time: s.start_time || s.time
+            time: s.start_time || s.time,
           }));
           setSlots(dbSlots);
         }
       } catch (err) {
-        console.error("Error loading timetable:", err);
+        console.error('Error loading timetable:', err);
       } finally {
         setLoading(false);
       }
@@ -36,7 +36,7 @@ export function StudentTimetable() {
     fetchTimetable();
   }, []);
 
-  const todaySlots = slots.filter(s => s.day === currentDay);
+  const todaySlots = slots.filter((s) => s.day === currentDay);
 
   return (
     <div className="space-y-6">
@@ -46,28 +46,38 @@ export function StudentTimetable() {
       />
 
       <div className="grid md:grid-cols-4 gap-4">
-        {loading ? (
-          [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-24 animate-pulse bg-muted/40">
-              <div />
-            </Card>
-          ))
-        ) : (
-          [
-            { label: "Total Classes", value: String(slots.length), tone: "info" as const },
-            { label: "Today's Classes", value: String(todaySlots.length), tone: "success" as const },
-            { label: "Lab Sessions", value: String(slots.filter(s => s.subject.toLowerCase().includes("lab")).length), tone: "info" as const },
-            { label: "Free Periods", value: String(Math.max(0, 15 - slots.length)), tone: "warn" as const },
-          ].map(stat => (
-            <Card key={stat.label}>
-              <div className="text-xs text-muted-foreground">{stat.label}</div>
-              <div className="text-2xl font-bold mt-2">{stat.value}</div>
-              <Badge tone={stat.tone} className="mt-3">
-                This Week
-              </Badge>
-            </Card>
-          ))
-        )}
+        {loading
+          ? [1, 2, 3, 4].map((n) => (
+              <Card key={n} className="h-24 animate-pulse bg-muted/40">
+                <div />
+              </Card>
+            ))
+          : [
+              { label: 'Total Classes', value: String(slots.length), tone: 'info' as const },
+              {
+                label: "Today's Classes",
+                value: String(todaySlots.length),
+                tone: 'success' as const,
+              },
+              {
+                label: 'Lab Sessions',
+                value: String(slots.filter((s) => s.subject.toLowerCase().includes('lab')).length),
+                tone: 'info' as const,
+              },
+              {
+                label: 'Free Periods',
+                value: String(Math.max(0, 15 - slots.length)),
+                tone: 'warn' as const,
+              },
+            ].map((stat) => (
+              <Card key={stat.label}>
+                <div className="text-xs text-muted-foreground">{stat.label}</div>
+                <div className="text-2xl font-bold mt-2">{stat.value}</div>
+                <Badge tone={stat.tone} className="mt-3">
+                  This Week
+                </Badge>
+              </Card>
+            ))}
       </div>
 
       <Card>
@@ -99,8 +109,8 @@ export function StudentTimetable() {
                 {timeSlots.map((time) => (
                   <tr key={time}>
                     <td className="py-3 px-4 font-medium text-xs bg-gradient-soft">{time}</td>
-                    {days.map(day => {
-                      const slot = slots.find(s => s.day === day && s.time === time);
+                    {days.map((day) => {
+                      const slot = slots.find((s) => s.day === day && s.time === time);
                       return (
                         <td key={day} className="py-2 px-2 text-center">
                           {slot ? (
@@ -137,8 +147,11 @@ export function StudentTimetable() {
               <div key={n} className="h-16 animate-pulse bg-muted/20 border rounded-xl" />
             ))
           ) : todaySlots.length > 0 ? (
-            todaySlots.map(slot => (
-              <div key={slot.time + slot.subject} className="flex items-center gap-4 p-3 rounded-xl border hover:bg-accent/50 transition">
+            todaySlots.map((slot) => (
+              <div
+                key={slot.time + slot.subject}
+                className="flex items-center gap-4 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
                   {slot.time.slice(0, 2)}
                 </div>
@@ -175,19 +188,24 @@ export function StudentTimetable() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from(new Set(slots.filter(s => s.faculty).map(s => s.faculty))).map(faculty => (
-              <div key={faculty} className="p-4 rounded-xl bg-gradient-soft border">
-                <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
-                    {faculty.split(" ").map((n: string) => n[0]).join("")}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium">{faculty}</div>
-                    <div className="text-xs text-muted-foreground">Faculty</div>
+            {Array.from(new Set(slots.filter((s) => s.faculty).map((s) => s.faculty))).map(
+              (faculty) => (
+                <div key={faculty} className="p-4 rounded-xl bg-gradient-soft border">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
+                      {faculty
+                        .split(' ')
+                        .map((n: string) => n[0])
+                        .join('')}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">{faculty}</div>
+                      <div className="text-xs text-muted-foreground">Faculty</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         )}
       </Card>

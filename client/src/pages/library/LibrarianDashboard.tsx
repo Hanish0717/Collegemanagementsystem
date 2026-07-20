@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Link } from "@tanstack/react-router";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from '@tanstack/react-router';
 import {
   AreaChart,
   Area,
@@ -12,7 +12,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from "recharts";
+} from 'recharts';
 import {
   BookOpen,
   BookMarked,
@@ -24,30 +24,30 @@ import {
   MinusCircle,
   UserPlus,
   Settings,
-} from "lucide-react";
-import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
-import { useQuery } from "@tanstack/react-query";
-import { fetchLibraryReport, fetchIssuedBooks } from "@/services/libraryService";
-import { toast } from "sonner";
+} from 'lucide-react';
+import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
+import { useQuery } from '@tanstack/react-query';
+import { fetchLibraryReport, fetchIssuedBooks } from '@/services/libraryService';
+import { toast } from 'sonner';
 
 const statIcons = [BookOpen, BookMarked, Clock, DollarSign];
 const statGradients = [
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
+  'bg-gradient-primary',
+  'bg-gradient-violet',
+  'bg-gradient-cyan',
+  'bg-gradient-primary',
 ];
 
 export function LibrarianDashboard() {
   const [selectedIssueDetail, setSelectedIssueDetail] = useState<any>(null);
 
   const { data: report, isLoading: isReportLoading } = useQuery({
-    queryKey: ["libraryReport"],
+    queryKey: ['libraryReport'],
     queryFn: fetchLibraryReport,
   });
 
   const { data: issuedBooks, isLoading: isIssuedLoading } = useQuery({
-    queryKey: ["issuedBooks"],
+    queryKey: ['issuedBooks'],
     queryFn: () => fetchIssuedBooks(),
   });
 
@@ -79,38 +79,64 @@ export function LibrarianDashboard() {
   };
 
   const librarianStats = [
-    { label: "Total Books", value: totals.totalBooks.toLocaleString(), change: "+3.2% vs last month" },
-    { label: "Issued This Week", value: totals.totalIssued.toLocaleString(), change: "+12.5% vs last month" },
-    { label: "Pending Returns", value: totals.overdueCount.toLocaleString(), change: "-2.1% vs last month" },
-    { label: "Fine Collection", value: `₹${totals.totalFines.toLocaleString('en-IN')}`, change: "+18.7% vs last month" },
+    {
+      label: 'Total Books',
+      value: totals.totalBooks.toLocaleString(),
+      change: '+3.2% vs last month',
+    },
+    {
+      label: 'Issued This Week',
+      value: totals.totalIssued.toLocaleString(),
+      change: '+12.5% vs last month',
+    },
+    {
+      label: 'Pending Returns',
+      value: totals.overdueCount.toLocaleString(),
+      change: '-2.1% vs last month',
+    },
+    {
+      label: 'Fine Collection',
+      value: `₹${totals.totalFines.toLocaleString('en-IN')}`,
+      change: '+18.7% vs last month',
+    },
   ];
 
-  const colors = ["#4F46E5", "#06B6D4", "#F59E0B", "#10B981", "#EC4899", "#8B5CF6", "#6366F1", "#14B8A6"];
+  const colors = [
+    '#4F46E5',
+    '#06B6D4',
+    '#F59E0B',
+    '#10B981',
+    '#EC4899',
+    '#8B5CF6',
+    '#6366F1',
+    '#14B8A6',
+  ];
   const categoryAnalytics = report?.categoryAnalytics || [];
-  const bookCategoriesData = categoryAnalytics.length > 0
-    ? categoryAnalytics.map((item, idx) => ({
-        name: item._id,
-        value: item.count,
-        color: colors[idx % colors.length]
-      }))
-    : [
-        { name: "Computer Science", value: 0, color: "#4F46E5" },
-        { name: "Engineering", value: 0, color: "#06B6D4" },
-        { name: "Business", value: 0, color: "#F59E0B" },
-      ];
+  const bookCategoriesData =
+    categoryAnalytics.length > 0
+      ? categoryAnalytics.map((item, idx) => ({
+          name: item._id,
+          value: item.count,
+          color: colors[idx % colors.length],
+        }))
+      : [
+          { name: 'Computer Science', value: 0, color: '#4F46E5' },
+          { name: 'Engineering', value: 0, color: '#06B6D4' },
+          { name: 'Business', value: 0, color: '#F59E0B' },
+        ];
 
   const getWeeklyCirculationData = () => {
     const weeks = [
-      { week: "W1", issued: 0, returned: 0 },
-      { week: "W2", issued: 0, returned: 0 },
-      { week: "W3", issued: 0, returned: 0 },
-      { week: "W4", issued: 0, returned: 0 },
-      { week: "W5", issued: 0, returned: 0 },
+      { week: 'W1', issued: 0, returned: 0 },
+      { week: 'W2', issued: 0, returned: 0 },
+      { week: 'W3', issued: 0, returned: 0 },
+      { week: 'W4', issued: 0, returned: 0 },
+      { week: 'W5', issued: 0, returned: 0 },
     ];
 
     if (!issuedBooks) return weeks;
 
-    issuedBooks.forEach(issue => {
+    issuedBooks.forEach((issue) => {
       if (!issue.issueDate) return;
       const date = new Date(issue.issueDate);
       const day = date.getDate();
@@ -121,13 +147,13 @@ export function LibrarianDashboard() {
       }
     });
 
-    if (weeks.every(w => w.issued === 0)) {
+    if (weeks.every((w) => w.issued === 0)) {
       return [
-        { week: "W1", issued: 4, returned: 2 },
-        { week: "W2", issued: 6, returned: 4 },
-        { week: "W3", issued: 5, returned: 3 },
-        { week: "W4", issued: 8, returned: 6 },
-        { week: "W5", issued: 7, returned: 5 },
+        { week: 'W1', issued: 4, returned: 2 },
+        { week: 'W2', issued: 6, returned: 4 },
+        { week: 'W3', issued: 5, returned: 3 },
+        { week: 'W4', issued: 8, returned: 6 },
+        { week: 'W5', issued: 7, returned: 5 },
       ];
     }
 
@@ -136,32 +162,56 @@ export function LibrarianDashboard() {
 
   const bookCirculationData = getWeeklyCirculationData();
 
-  const recentIssues = issuedBooks ? issuedBooks.slice(0, 5).map(issue => ({
-    id: issue._id,
-    bookTitle: typeof issue.book === 'object' && issue.book ? issue.book.title : 'Unknown Book',
-    studentName: typeof issue.student === 'object' && issue.student ? issue.student.fullName : 'Unknown Student',
-    studentId: typeof issue.student === 'object' && issue.student ? issue.student.rollNumber : 'N/A',
-    issueDate: issue.issueDate,
-    dueDate: issue.dueDate,
-    status: issue.status === 'issued' ? 'Active' : (issue.status === 'overdue' ? 'Overdue' : 'Returned')
-  })) : [];
+  const recentIssues = issuedBooks
+    ? issuedBooks.slice(0, 5).map((issue) => ({
+        id: issue._id,
+        bookTitle: typeof issue.book === 'object' && issue.book ? issue.book.title : 'Unknown Book',
+        studentName:
+          typeof issue.student === 'object' && issue.student
+            ? issue.student.fullName
+            : 'Unknown Student',
+        studentId:
+          typeof issue.student === 'object' && issue.student ? issue.student.rollNumber : 'N/A',
+        issueDate: issue.issueDate,
+        dueDate: issue.dueDate,
+        status:
+          issue.status === 'issued'
+            ? 'Active'
+            : issue.status === 'overdue'
+              ? 'Overdue'
+              : 'Returned',
+      }))
+    : [];
 
   const overdueAlerts = issuedBooks
     ? issuedBooks
-        .filter(issue => issue.status === 'overdue')
+        .filter((issue) => issue.status === 'overdue')
         .map((issue, idx) => ({
           id: `alert-od-${idx}`,
           title: `Book '${typeof issue.book === 'object' && issue.book ? issue.book.title : 'Unknown'}' is overdue`,
-          time: issue.dueDate ? `Due since ${new Date(issue.dueDate).toLocaleDateString()}` : 'Overdue',
-          urgency: 'high' as const
+          time: issue.dueDate
+            ? `Due since ${new Date(issue.dueDate).toLocaleDateString()}`
+            : 'Overdue',
+          urgency: 'high' as const,
         }))
     : [];
 
-  const libraryNotifications: Array<{ id: string; title: string; time: string; urgency: "high" | "medium" | "low" }> = overdueAlerts.length > 0
-    ? overdueAlerts.slice(0, 4)
-    : [
-        { id: "alert-1", title: "All systems clear - No overdue books currently", time: "Just now", urgency: "low" }
-      ];
+  const libraryNotifications: Array<{
+    id: string;
+    title: string;
+    time: string;
+    urgency: 'high' | 'medium' | 'low';
+  }> =
+    overdueAlerts.length > 0
+      ? overdueAlerts.slice(0, 4)
+      : [
+          {
+            id: 'alert-1',
+            title: 'All systems clear - No overdue books currently',
+            time: 'Just now',
+            urgency: 'low',
+          },
+        ];
 
   const handleStatClick = (label: string, val: string) => {
     toast.info(`Metric Report: ${label} currently stands at ${val}.`);
@@ -274,7 +324,7 @@ export function LibrarianDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="week" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Area
                   type="monotone"
                   dataKey="issued"
@@ -330,7 +380,7 @@ export function LibrarianDashboard() {
                 className="flex items-center gap-2 text-xs cursor-pointer hover:bg-gradient-soft p-1 rounded transition"
               >
                 <span className="size-2.5 rounded-full" style={{ background: d.color }} />
-                <span className="text-muted-foreground truncate">{d.name.split(" ")[0]}</span>
+                <span className="text-muted-foreground truncate">{d.name.split(' ')[0]}</span>
                 <span className="ml-auto font-medium">{d.value}</span>
               </div>
             ))}
@@ -363,7 +413,15 @@ export function LibrarianDashboard() {
                     {issue.studentName} • {issue.issueDate}
                   </div>
                 </div>
-                <Badge tone={issue.status === "Active" ? "success" : (issue.status === "Overdue" ? "danger" : "info")}>
+                <Badge
+                  tone={
+                    issue.status === 'Active'
+                      ? 'success'
+                      : issue.status === 'Overdue'
+                        ? 'danger'
+                        : 'info'
+                  }
+                >
                   {issue.status}
                 </Badge>
               </div>
@@ -385,11 +443,11 @@ export function LibrarianDashboard() {
               >
                 <div
                   className={`size-2 rounded-full mt-1.5 ${
-                    n.urgency === "high"
-                      ? "bg-rose-500"
-                      : n.urgency === "medium"
-                        ? "bg-amber-500"
-                        : "bg-emerald-500"
+                    n.urgency === 'high'
+                      ? 'bg-rose-500'
+                      : n.urgency === 'medium'
+                        ? 'bg-amber-500'
+                        : 'bg-emerald-500'
                   }`}
                 />
                 <div className="min-w-0 flex-1">
@@ -442,7 +500,7 @@ export function LibrarianDashboard() {
               </div>
               <div className="pt-2 border-t flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Allocation status</span>
-                <Badge tone={selectedIssueDetail.status === "Active" ? "success" : "danger"}>
+                <Badge tone={selectedIssueDetail.status === 'Active' ? 'success' : 'danger'}>
                   {selectedIssueDetail.status}
                 </Badge>
               </div>

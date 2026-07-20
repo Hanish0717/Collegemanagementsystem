@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { AlertCircle, CheckCircle2, Loader2, Trash2 } from "lucide-react";
-import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
+import { useState, useEffect } from 'react';
+import { AlertCircle, CheckCircle2, Loader2, Trash2 } from 'lucide-react';
+import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
 import {
   fetchBooks,
   fetchIssuedBooks,
@@ -8,34 +8,34 @@ import {
   deleteIssueRecord,
   type BookItem,
   type IssuedBookItem,
-} from "@/services/libraryService";
-import { toast } from "sonner";
+} from '@/services/libraryService';
+import { toast } from 'sonner';
 
 export function LibrarianReturn() {
   const [issuedBooks, setIssuedBooks] = useState<IssuedBookItem[]>([]);
   const [catalogBooks, setCatalogBooks] = useState<BookItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedIssue, setSelectedIssue] = useState("");
-  const [returnCondition, setReturnCondition] = useState("good");
+  const [selectedIssue, setSelectedIssue] = useState('');
+  const [returnCondition, setReturnCondition] = useState('good');
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [deletingId, setDeletingId] = useState("");
+  const [deletingId, setDeletingId] = useState('');
   const [returnedBooks, setReturnedBooks] = useState<IssuedBookItem[]>([]);
   const [useCustomFine, setUseCustomFine] = useState(false);
-  const [customFineInput, setCustomFineInput] = useState("");
+  const [customFineInput, setCustomFineInput] = useState('');
 
   const loadIssued = () => {
     setLoading(true);
     Promise.all([fetchIssuedBooks(), fetchBooks({ limit: 1000 })])
       .then(([issuedData, booksData]) => {
-        setIssuedBooks(issuedData.filter((b) => b.status === "issued" || b.status === "overdue"));
-        setReturnedBooks(issuedData.filter((b) => b.status === "returned"));
+        setIssuedBooks(issuedData.filter((b) => b.status === 'issued' || b.status === 'overdue'));
+        setReturnedBooks(issuedData.filter((b) => b.status === 'returned'));
         setCatalogBooks(booksData);
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Failed to load active book loans");
+        toast.error('Failed to load active book loans');
         setLoading(false);
       });
   };
@@ -46,29 +46,30 @@ export function LibrarianReturn() {
 
   const selectedBook = issuedBooks.find((b) => b._id === selectedIssue);
   const selectedCatalogBook = catalogBooks.find((book) => {
-    const selectedBookId = typeof selectedBook?.book === "object" ? selectedBook.book._id : selectedBook?.book;
+    const selectedBookId =
+      typeof selectedBook?.book === 'object' ? selectedBook.book._id : selectedBook?.book;
     return book._id === selectedBookId;
   });
 
   const getIssueLabel = (issue: IssuedBookItem) => {
-    const studentName = typeof issue.student === "object" ? issue.student?.fullName : "Student";
-    const issueBookId = typeof issue.book === "object" ? issue.book._id : issue.book;
+    const studentName = typeof issue.student === 'object' ? issue.student?.fullName : 'Student';
+    const issueBookId = typeof issue.book === 'object' ? issue.book._id : issue.book;
     const catalogBook = catalogBooks.find((book) => book._id === issueBookId);
     const title =
       catalogBook?.title ||
-      (typeof issue.book === "object" ? issue.book?.title : "") ||
-      "Unknown Book";
+      (typeof issue.book === 'object' ? issue.book?.title : '') ||
+      'Unknown Book';
     const author =
-      catalogBook?.author ||
-      (typeof issue.book === "object" ? issue.book?.author : "") ||
-      "";
+      catalogBook?.author || (typeof issue.book === 'object' ? issue.book?.author : '') || '';
 
-    return author ? `${title} by ${author} — Issued by ${studentName}` : `${title} — Issued by ${studentName}`;
+    return author
+      ? `${title} by ${author} — Issued by ${studentName}`
+      : `${title} — Issued by ${studentName}`;
   };
 
   const calculateFine = () => {
     if (!selectedBook) return 0;
-    if (selectedBook.status !== "overdue") return 0;
+    if (selectedBook.status !== 'overdue') return 0;
 
     const dueDate = new Date(selectedBook.dueDate);
     const today = new Date();
@@ -76,8 +77,8 @@ export function LibrarianReturn() {
     if (daysOverdue <= 0) return 0;
 
     let fine = daysOverdue * 10; // Rate is ₹10/day
-    if (returnCondition === "damaged") fine += 500;
-    if (returnCondition === "lost") fine = 2000;
+    if (returnCondition === 'damaged') fine += 500;
+    if (returnCondition === 'lost') fine = 2000;
 
     return Math.min(fine, 2500);
   };
@@ -97,14 +98,14 @@ export function LibrarianReturn() {
     try {
       const effectiveFine = getEffectiveFine();
       await returnBook(selectedIssue, effectiveFine);
-      toast.success("Book returned successfully and database updated!");
+      toast.success('Book returned successfully and database updated!');
       setShowConfirm(false);
-      setSelectedIssue("");
+      setSelectedIssue('');
       setUseCustomFine(false);
-      setCustomFineInput("");
+      setCustomFineInput('');
       loadIssued();
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Failed to process return";
+      const msg = err.response?.data?.message || err.message || 'Failed to process return';
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -112,20 +113,20 @@ export function LibrarianReturn() {
   };
 
   const handleDeleteReturnedRecord = async (issueId: string) => {
-    if (!confirm("Delete this returned issue record? This removes it from history only.")) return;
+    if (!confirm('Delete this returned issue record? This removes it from history only.')) return;
     setDeletingId(issueId);
     try {
       await deleteIssueRecord(issueId);
-      toast.success("Returned issue record deleted.");
+      toast.success('Returned issue record deleted.');
       loadIssued();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || "Failed to delete record");
+      toast.error(err.response?.data?.message || err.message || 'Failed to delete record');
     } finally {
-      setDeletingId("");
+      setDeletingId('');
     }
   };
 
-  const overdueBooks = issuedBooks.filter((b) => b.status === "overdue");
+  const overdueBooks = issuedBooks.filter((b) => b.status === 'overdue');
 
   return (
     <div className="space-y-6">
@@ -156,22 +157,24 @@ export function LibrarianReturn() {
                 >
                   <option value="">Choose issued book...</option>
                   {issuedBooks.map((b) => {
-                    const issueBookId = typeof b.book === "object" ? b.book._id : b.book;
+                    const issueBookId = typeof b.book === 'object' ? b.book._id : b.book;
                     const catalogBook = catalogBooks.find((book) => book._id === issueBookId);
                     const title =
                       catalogBook?.title ||
-                      (typeof b.book === "object" ? b.book?.title : "") ||
-                      "Unknown Book";
+                      (typeof b.book === 'object' ? b.book?.title : '') ||
+                      'Unknown Book';
                     const author =
                       catalogBook?.author ||
-                      (typeof b.book === "object" ? b.book?.author : "") ||
-                      "";
-                    const studentName = typeof b.student === "object" ? b.student?.fullName : "Student";
+                      (typeof b.book === 'object' ? b.book?.author : '') ||
+                      '';
+                    const studentName =
+                      typeof b.student === 'object' ? b.student?.fullName : 'Student';
                     const dueDate = new Date(b.dueDate).toLocaleDateString();
 
                     return (
                       <option key={b._id} value={b._id}>
-                        {title}{author ? ` by ${author}` : ""} — {studentName} — Due {dueDate}
+                        {title}
+                        {author ? ` by ${author}` : ''} — {studentName} — Due {dueDate}
                       </option>
                     );
                   })}
@@ -198,9 +201,13 @@ export function LibrarianReturn() {
 
                     <div className="p-4 rounded-xl border bg-gradient-soft flex flex-col justify-center">
                       <span className="text-xs text-muted-foreground">Auto-Calculated Penalty</span>
-                      <span className="text-xl font-bold text-gradient mt-1">₹{calculateFine()}</span>
+                      <span className="text-xl font-bold text-gradient mt-1">
+                        ₹{calculateFine()}
+                      </span>
                       <span className="text-xs text-muted-foreground mt-1">
-                        {selectedBook.status === "overdue" ? "Based on overdue days" : "No overdue fine"}
+                        {selectedBook.status === 'overdue'
+                          ? 'Based on overdue days'
+                          : 'No overdue fine'}
                       </span>
                     </div>
                   </div>
@@ -219,15 +226,15 @@ export function LibrarianReturn() {
                         onClick={() => {
                           setUseCustomFine(!useCustomFine);
                           if (!useCustomFine) setCustomFineInput(String(calculateFine()));
-                          else setCustomFineInput("");
+                          else setCustomFineInput('');
                         }}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
-                          useCustomFine ? "bg-primary" : "bg-muted"
+                          useCustomFine ? 'bg-primary' : 'bg-muted'
                         }`}
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                            useCustomFine ? "translate-x-6" : "translate-x-1"
+                            useCustomFine ? 'translate-x-6' : 'translate-x-1'
                           }`}
                         />
                       </button>
@@ -260,11 +267,13 @@ export function LibrarianReturn() {
                       </div>
                     )}
 
-                    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${
-                      getEffectiveFine() > 0
-                        ? "bg-amber-50 text-amber-700 border border-amber-200"
-                        : "bg-green-50 text-green-700 border border-green-200"
-                    }`}>
+                    <div
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${
+                        getEffectiveFine() > 0
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                          : 'bg-green-50 text-green-700 border border-green-200'
+                      }`}
+                    >
                       <span>Final Penalty to be Applied:</span>
                       <span className="text-base">₹{getEffectiveFine()}</span>
                       {useCustomFine && (
@@ -280,7 +289,7 @@ export function LibrarianReturn() {
               <button
                 onClick={() => {
                   if (!selectedIssue) {
-                    toast.error("Please select a book to return first.");
+                    toast.error('Please select a book to return first.');
                     return;
                   }
                   setShowConfirm(true);
@@ -292,11 +301,11 @@ export function LibrarianReturn() {
               </button>
               <button
                 onClick={() => {
-                  setSelectedIssue("");
-                  setReturnCondition("good");
+                  setSelectedIssue('');
+                  setReturnCondition('good');
                   setShowConfirm(false);
                   setUseCustomFine(false);
-                  setCustomFineInput("");
+                  setCustomFineInput('');
                 }}
                 className="px-4 py-3 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition cursor-pointer"
               >
@@ -317,9 +326,9 @@ export function LibrarianReturn() {
                 <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
                   {issuedBooks.map((issue) => {
                     const studentName =
-                      typeof issue.student === "object" ? issue.student?.fullName : "Student";
-                    const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
-                    const title = typeof issue.book === "object" ? issue.book?.title : "Book";
+                      typeof issue.student === 'object' ? issue.student?.fullName : 'Student';
+                    const roll = typeof issue.student === 'object' ? issue.student?.rollNumber : '';
+                    const title = typeof issue.book === 'object' ? issue.book?.title : 'Book';
                     return (
                       <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
                         <div className="flex items-start justify-between gap-3 mb-2">
@@ -329,7 +338,7 @@ export function LibrarianReturn() {
                               {studentName} ({roll})
                             </div>
                           </div>
-                          <Badge tone={issue.status === "overdue" ? "warn" : "info"}>
+                          <Badge tone={issue.status === 'overdue' ? 'warn' : 'info'}>
                             {issue.status}
                           </Badge>
                         </div>
@@ -374,9 +383,9 @@ export function LibrarianReturn() {
               <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
                 {returnedBooks.map((issue) => {
                   const studentName =
-                    typeof issue.student === "object" ? issue.student?.fullName : "Student";
-                  const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
-                  const title = typeof issue.book === "object" ? issue.book?.title : "Book";
+                    typeof issue.student === 'object' ? issue.student?.fullName : 'Student';
+                  const roll = typeof issue.student === 'object' ? issue.student?.rollNumber : '';
+                  const title = typeof issue.book === 'object' ? issue.book?.title : 'Book';
 
                   return (
                     <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
@@ -405,7 +414,12 @@ export function LibrarianReturn() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Returned: {issue.returnDate ? new Date(issue.returnDate).toLocaleDateString() : "N/A"}</span>
+                        <span>
+                          Returned:{' '}
+                          {issue.returnDate
+                            ? new Date(issue.returnDate).toLocaleDateString()
+                            : 'N/A'}
+                        </span>
                         <span>Due: {new Date(issue.dueDate).toLocaleDateString()}</span>
                       </div>
                     </div>
@@ -432,9 +446,12 @@ export function LibrarianReturn() {
                   <div className="flex items-start gap-3 p-3 rounded-xl border border-blue-100 bg-blue-50/50">
                     <AlertCircle className="size-5 text-blue-600 shrink-0 mt-0.5" />
                     <div className="text-xs text-blue-800 leading-relaxed">
-                      You are about to record the return of{" "}
+                      You are about to record the return of{' '}
                       <strong>
-                        {selectedCatalogBook?.title || (typeof selectedBook.book === "object" ? selectedBook.book?.title : "Book")}
+                        {selectedCatalogBook?.title ||
+                          (typeof selectedBook.book === 'object'
+                            ? selectedBook.book?.title
+                            : 'Book')}
                       </strong>
                       . Please ensure the book details match.
                     </div>
@@ -444,17 +461,17 @@ export function LibrarianReturn() {
                     <div className="flex justify-between border-b pb-2">
                       <span className="text-muted-foreground">Student Name</span>
                       <span className="font-medium">
-                        {typeof selectedBook.student === "object"
+                        {typeof selectedBook.student === 'object'
                           ? selectedBook.student?.fullName
-                          : "Student"}
+                          : 'Student'}
                       </span>
                     </div>
                     <div className="flex justify-between border-b pb-2">
                       <span className="text-muted-foreground">Roll Number</span>
                       <span className="font-medium">
-                        {typeof selectedBook.student === "object"
+                        {typeof selectedBook.student === 'object'
                           ? selectedBook.student?.rollNumber
-                          : "N/A"}
+                          : 'N/A'}
                       </span>
                     </div>
                     <div className="flex justify-between border-b pb-2">

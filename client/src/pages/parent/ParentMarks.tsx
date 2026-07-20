@@ -1,53 +1,55 @@
-import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Download, TrendingUp } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { toast } from "sonner";
-import api from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Download, TrendingUp } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
+import api from '@/lib/api';
 
 export function ParentMarks() {
   const [results, setResults] = useState<any[]>([]);
   const [subjectMarks, setSubjectMarks] = useState<any[]>([]);
   const [stats, setStats] = useState([
-    { label: "Average Marks", value: "0%", tone: "success" as const },
-    { label: "Overall GPA", value: "0.0", tone: "success" as const },
-    { label: "Class Rank", value: "N/A", tone: "info" as const },
-    { label: "Top Subjects", value: "0", tone: "info" as const },
+    { label: 'Average Marks', value: '0%', tone: 'success' as const },
+    { label: 'Overall GPA', value: '0.0', tone: 'success' as const },
+    { label: 'Class Rank', value: 'N/A', tone: 'info' as const },
+    { label: 'Top Subjects', value: '0', tone: 'info' as const },
   ]);
   const [marksPerformanceData, setMarksPerformanceData] = useState<any[]>([]);
 
   const handleDownloadReportCard = () => {
     if (subjectMarks.length === 0) {
-      toast.error("No marks found to download.");
+      toast.error('No marks found to download.');
       return;
     }
 
     try {
-      const headers = ["Subject", "Internal Marks", "External Marks", "Total", "Grade", "Status"];
+      const headers = ['Subject', 'Internal Marks', 'External Marks', 'Total', 'Grade', 'Status'];
       const rows = subjectMarks.map((s) => [
-        s.subject || "-",
-        s.internal !== undefined ? String(s.internal) : "-",
-        s.external !== undefined ? String(s.external) : "-",
-        s.total !== undefined ? String(s.total) : "-",
-        s.grade || "-",
-        s.status || "-"
+        s.subject || '-',
+        s.internal !== undefined ? String(s.internal) : '-',
+        s.external !== undefined ? String(s.external) : '-',
+        s.total !== undefined ? String(s.total) : '-',
+        s.grade || '-',
+        s.status || '-',
       ]);
 
-      const csvContent = [headers, ...rows].map(e => e.map(val => `"${val}"`).join(",")).join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const csvContent = [headers, ...rows]
+        .map((e) => e.map((val) => `"${val}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `report_card_${new Date().toISOString().split('T')[0]}.csv`);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `report_card_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      toast.success("Successfully generated and downloaded report card CSV!");
+      toast.success('Successfully generated and downloaded report card CSV!');
     } catch (err) {
       console.error(err);
-      toast.error("Failed to generate report card.");
+      toast.error('Failed to generate report card.');
     }
   };
 
@@ -56,45 +58,64 @@ export function ParentMarks() {
       try {
         let dbData: any = null;
         // Always query API to ensure real-time data instead of reading stale local cache
-        const res = await api.get("/api/parent-module/student-data");
+        const res = await api.get('/api/parent-module/student-data');
         if (res.data?.success && res.data?.data) {
           dbData = res.data.data;
-          localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
+          localStorage.setItem('cms_parent_child_data', JSON.stringify(dbData));
         }
 
         if (dbData && dbData.results) {
           setResults(dbData.results);
           if (dbData.results.length > 0) {
             const mapped = dbData.results.map((r: any) => {
-              const status = r.marks >= 90 ? "Excellent" : r.marks >= 80 ? "Good" : "Average";
+              const status = r.marks >= 90 ? 'Excellent' : r.marks >= 80 ? 'Good' : 'Average';
               return {
                 subject: r.subject,
                 internal: Math.round(r.marks * 0.3),
                 external: Math.round(r.marks * 0.7),
                 total: r.marks,
                 grade: r.grade,
-                status
+                status,
               };
             });
             setSubjectMarks(mapped);
 
             // Compute statistics
-            const avgMarks = Math.round(dbData.results.reduce((sum: number, r: any) => sum + r.marks, 0) / dbData.results.length);
-            const cgpaVal = dbData.stats?.find((s: any) => s.label.includes("CGPA"))?.value || "3.7";
-            const topCount = mapped.filter((s: any) => s.status === "Excellent" || s.status === "Good").length;
-            const classRankVal = dbData.classRank || "N/A";
+            const avgMarks = Math.round(
+              dbData.results.reduce((sum: number, r: any) => sum + r.marks, 0) /
+                dbData.results.length,
+            );
+            const cgpaVal =
+              dbData.stats?.find((s: any) => s.label.includes('CGPA'))?.value || '3.7';
+            const topCount = mapped.filter(
+              (s: any) => s.status === 'Excellent' || s.status === 'Good',
+            ).length;
+            const classRankVal = dbData.classRank || 'N/A';
 
             setStats([
-              { label: "Average Marks", value: `${avgMarks}%`, tone: "success" as const },
-              { label: "Overall GPA", value: cgpaVal, tone: "success" as const },
-              { label: "Class Rank", value: classRankVal, tone: "info" as const },
-              { label: "Top Subjects", value: String(topCount), tone: "info" as const },
+              { label: 'Average Marks', value: `${avgMarks}%`, tone: 'success' as const },
+              { label: 'Overall GPA', value: cgpaVal, tone: 'success' as const },
+              { label: 'Class Rank', value: classRankVal, tone: 'info' as const },
+              { label: 'Top Subjects', value: String(topCount), tone: 'info' as const },
             ]);
 
             // Calculate monthly performance dynamically
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const months = [
+              'Jan',
+              'Feb',
+              'Mar',
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
+            ];
             const monthlyMap: Record<string, { total: number; count: number }> = {};
-            
+
             const today = new Date();
             for (let i = 4; i >= 0; i--) {
               const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
@@ -112,24 +133,23 @@ export function ParentMarks() {
               }
             });
 
-            let computedPerformance = Object.keys(monthlyMap)
-              .map(mName => {
-                const mData = monthlyMap[mName];
-                return {
-                  month: mName,
-                  marks: mData.count > 0 ? Math.round(mData.total / mData.count) : 0
-                };
-              });
-            
-            const hasAnyMarks = computedPerformance.some(p => p.marks > 0);
+            let computedPerformance = Object.keys(monthlyMap).map((mName) => {
+              const mData = monthlyMap[mName];
+              return {
+                month: mName,
+                marks: mData.count > 0 ? Math.round(mData.total / mData.count) : 0,
+              };
+            });
+
+            const hasAnyMarks = computedPerformance.some((p) => p.marks > 0);
             if (hasAnyMarks) {
-              computedPerformance = computedPerformance.filter(p => p.marks > 0);
+              computedPerformance = computedPerformance.filter((p) => p.marks > 0);
             }
             setMarksPerformanceData(computedPerformance);
           }
         }
       } catch (err) {
-        console.error("Error loading child marks:", err);
+        console.error('Error loading child marks:', err);
       }
     };
     fetchMarks();
@@ -137,7 +157,7 @@ export function ParentMarks() {
 
   // Compute Grade distribution dynamically
   const gradeCounts: Record<string, number> = {};
-  subjectMarks.forEach(s => {
+  subjectMarks.forEach((s) => {
     const g = s.grade.toUpperCase();
     gradeCounts[g] = (gradeCounts[g] || 0) + 1;
   });
@@ -145,7 +165,7 @@ export function ParentMarks() {
   const gradeDistribution = Object.entries(gradeCounts).map(([grade, count]) => ({
     grade,
     count,
-    percentage: `${Math.round((count / totalSubjects) * 100)}%`
+    percentage: `${Math.round((count / totalSubjects) * 100)}%`,
   }));
 
   return (
@@ -154,7 +174,7 @@ export function ParentMarks() {
         title="Marks & Grades"
         desc="View child's subject-wise marks, grades, and academic performance."
         actions={
-          <button 
+          <button
             onClick={handleDownloadReportCard}
             className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-90 transition"
           >
@@ -164,7 +184,7 @@ export function ParentMarks() {
       />
 
       <div className="grid md:grid-cols-4 gap-4">
-        {stats.map(stat => (
+        {stats.map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
@@ -181,7 +201,7 @@ export function ParentMarks() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {["Subject", "Internal Marks", "External Marks", "Total", "Grade", "Status"].map(
+                {['Subject', 'Internal Marks', 'External Marks', 'Total', 'Grade', 'Status'].map(
                   (column) => (
                     <th
                       key={column}
@@ -201,12 +221,12 @@ export function ParentMarks() {
                   <td className="py-3 px-4">{subject.external}</td>
                   <td className="py-3 px-4 font-medium">{subject.total}</td>
                   <td className="py-3 px-4">
-                    <Badge tone={subject.grade.startsWith("A") ? "success" : "info"}>
+                    <Badge tone={subject.grade.startsWith('A') ? 'success' : 'info'}>
                       {subject.grade}
                     </Badge>
                   </td>
                   <td className="py-3 px-4">
-                    <Badge tone={subject.status === "Excellent" ? "success" : "info"}>
+                    <Badge tone={subject.status === 'Excellent' ? 'success' : 'info'}>
                       {subject.status}
                     </Badge>
                   </td>
@@ -229,7 +249,7 @@ export function ParentMarks() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Bar dataKey="marks" fill="#4F46E5" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -243,7 +263,7 @@ export function ParentMarks() {
           </div>
           <div className="space-y-2">
             {subjectMarks
-              .filter((s) => s.status === "Excellent")
+              .filter((s) => s.status === 'Excellent')
               .map((subject, index) => (
                 <div
                   key={index}
@@ -260,7 +280,7 @@ export function ParentMarks() {
       <Card>
         <h3 className="font-semibold mb-4">Grade Distribution</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {gradeDistribution.map(item => (
+          {gradeDistribution.map((item) => (
             <div key={item.grade} className="p-4 rounded-xl bg-gradient-soft border">
               <div className="text-sm font-medium">{item.grade}</div>
               <div className="flex items-center justify-between mt-2">

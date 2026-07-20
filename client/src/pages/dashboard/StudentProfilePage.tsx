@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, ArrowLeft, Edit, Loader2, Trash2, UserRound } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { StudentDeleteAlert, StudentFormModal } from "./students/StudentDialogs";
+import { useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AlertCircle, ArrowLeft, Edit, Loader2, Trash2, UserRound } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { StudentDeleteAlert, StudentFormModal } from './students/StudentDialogs';
 import {
   deleteStudent,
   fetchDepartments,
@@ -11,15 +11,17 @@ import {
   getStudentDisplayStatus,
   updateStudent,
   type StudentPayload,
-} from "@/services/studentService";
-import { toast } from "sonner";
+} from '@/services/studentService';
+import { toast } from 'sonner';
 
 interface StudentProfilePageProps {
   studentId: string;
 }
 
-const displayDepartment = (departmentCode: string, departments: Array<{ code: string; name: string }>) =>
-  departments.find((department) => department.code === departmentCode)?.name ?? departmentCode;
+const displayDepartment = (
+  departmentCode: string,
+  departments: Array<{ code: string; name: string }>,
+) => departments.find((department) => department.code === departmentCode)?.name ?? departmentCode;
 
 export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const { data: departments = [] } = useQuery({
-    queryKey: ["departments"],
+    queryKey: ['departments'],
     queryFn: fetchDepartments,
   });
 
@@ -38,20 +40,21 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
     isError,
     error,
   } = useQuery({
-    queryKey: ["student", studentId],
+    queryKey: ['student', studentId],
     queryFn: () => fetchStudentById(studentId),
   });
 
   const updateMutation = useMutation({
     mutationFn: (payload: StudentPayload) => updateStudent(studentId, payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["students"] });
-      await queryClient.invalidateQueries({ queryKey: ["student", studentId] });
-      toast.success("Student profile updated");
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.invalidateQueries({ queryKey: ['student', studentId] });
+      toast.success('Student profile updated');
       setIsEditOpen(false);
     },
     onError: (mutationError: unknown) => {
-      const message = mutationError instanceof Error ? mutationError.message : "Failed to update profile";
+      const message =
+        mutationError instanceof Error ? mutationError.message : 'Failed to update profile';
       toast.error(message);
     },
   });
@@ -59,12 +62,13 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
   const deleteMutation = useMutation({
     mutationFn: () => deleteStudent(studentId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast.success("Student deleted successfully");
-      navigate({ to: "/dashboard/students" });
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      toast.success('Student deleted successfully');
+      navigate({ to: '/dashboard/students' });
     },
     onError: (mutationError: unknown) => {
-      const message = mutationError instanceof Error ? mutationError.message : "Failed to delete student";
+      const message =
+        mutationError instanceof Error ? mutationError.message : 'Failed to delete student';
       toast.error(message);
     },
   });
@@ -77,7 +81,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
           desc="View and manage student details."
           actions={
             <button
-              onClick={() => navigate({ to: "/dashboard/students" })}
+              onClick={() => navigate({ to: '/dashboard/students' })}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm bg-background/60"
             >
               <ArrowLeft className="size-4" /> Back
@@ -100,7 +104,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
           desc="View and manage student details."
           actions={
             <button
-              onClick={() => navigate({ to: "/dashboard/students" })}
+              onClick={() => navigate({ to: '/dashboard/students' })}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm bg-background/60"
             >
               <ArrowLeft className="size-4" /> Back
@@ -110,10 +114,10 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
         <Card className="py-12 text-center space-y-3">
           <AlertCircle className="size-8 mx-auto text-rose-500" />
           <p className="text-sm text-muted-foreground">
-            {error instanceof Error ? error.message : "Student profile could not be loaded."}
+            {error instanceof Error ? error.message : 'Student profile could not be loaded.'}
           </p>
           <button
-            onClick={() => navigate({ to: "/dashboard/students" })}
+            onClick={() => navigate({ to: '/dashboard/students' })}
             className="px-4 py-2 rounded-xl border text-sm hover:bg-accent"
           >
             Back to students
@@ -133,7 +137,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
         actions={
           <div className="flex gap-2">
             <button
-              onClick={() => navigate({ to: "/dashboard/students" })}
+              onClick={() => navigate({ to: '/dashboard/students' })}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm bg-background/60"
             >
               <ArrowLeft className="size-4" /> Back
@@ -160,10 +164,10 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
             <div className="flex items-center gap-4">
               <div className="size-16 rounded-2xl bg-gradient-primary text-white grid place-items-center text-xl font-bold">
                 {student.fullName
-                  .split(" ")
+                  .split(' ')
                   .filter(Boolean)
                   .map((part) => part[0])
-                  .join("")
+                  .join('')
                   .slice(0, 2)
                   .toUpperCase()}
               </div>
@@ -175,9 +179,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
               </div>
             </div>
             <Badge
-              tone={
-                status === "Active" ? "success" : status === "Warning" ? "warn" : "danger"
-              }
+              tone={status === 'Active' ? 'success' : status === 'Warning' ? 'warn' : 'danger'}
             >
               {status}
             </Badge>
@@ -206,14 +208,14 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
 
           <div className="mt-6 grid md:grid-cols-2 gap-4 text-sm">
             {[
-              ["Email", student.email],
-              ["Phone", student.phoneNumber ?? "-"],
-              ["Admission Number", student.admissionNumber ?? "-"],
-              ["Parent Email", student.parentEmail ?? "-"],
-              ["Parent Name", student.parentName],
-              ["Parent Phone", student.parentPhone],
-              ["Date of Birth", student.dateOfBirth ?? "-"],
-              ["Department", displayDepartment(student.department, departments)],
+              ['Email', student.email],
+              ['Phone', student.phoneNumber ?? '-'],
+              ['Admission Number', student.admissionNumber ?? '-'],
+              ['Parent Email', student.parentEmail ?? '-'],
+              ['Parent Name', student.parentName],
+              ['Parent Phone', student.parentPhone],
+              ['Date of Birth', student.dateOfBirth ?? '-'],
+              ['Department', displayDepartment(student.department, departments)],
             ].map(([label, value]) => (
               <div key={label} className="p-4 rounded-xl border bg-gradient-soft">
                 <div className="text-xs text-muted-foreground">{label}</div>

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   Calendar,
   BookOpen,
@@ -9,48 +9,76 @@ import {
   FileText,
   Plus,
   RefreshCw,
-  Sliders
-} from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis
-} from "recharts";
-import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
-import { toast } from "sonner";
+  Sliders,
+} from 'lucide-react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
 
 export function DeanDashboard() {
   const [electives, setElectives] = useState([
-    { code: "CSE-E81", name: "Cloud Native Systems", registered: 412, capacity: 450, status: "Active" },
-    { code: "CSE-E82", name: "Deep Learning Foundations", registered: 385, capacity: 400, status: "Active" },
-    { code: "CSE-E83", name: "Blockchain & Smart Contracts", registered: 198, capacity: 200, status: "Full" },
-    { code: "ECE-E84", name: "VLSI System Design", registered: 215, capacity: 300, status: "Active" },
-    { code: "AIML-E85", name: "Reinforcement Learning", registered: 310, capacity: 310, status: "Full" }
+    {
+      code: 'CSE-E81',
+      name: 'Cloud Native Systems',
+      registered: 412,
+      capacity: 450,
+      status: 'Active',
+    },
+    {
+      code: 'CSE-E82',
+      name: 'Deep Learning Foundations',
+      registered: 385,
+      capacity: 400,
+      status: 'Active',
+    },
+    {
+      code: 'CSE-E83',
+      name: 'Blockchain & Smart Contracts',
+      registered: 198,
+      capacity: 200,
+      status: 'Full',
+    },
+    {
+      code: 'ECE-E84',
+      name: 'VLSI System Design',
+      registered: 215,
+      capacity: 300,
+      status: 'Active',
+    },
+    {
+      code: 'AIML-E85',
+      name: 'Reinforcement Learning',
+      registered: 310,
+      capacity: 310,
+      status: 'Full',
+    },
   ]);
 
   const [semesters, setSemesters] = useState([
-    { id: "SEM-5", name: "B.Tech Sem 5 (Odd)", syllabusCovered: "82%", status: "In-Progress" },
-    { id: "SEM-7", name: "B.Tech Sem 7 (Odd)", syllabusCovered: "91%", status: "In-Progress" },
-    { id: "SEM-3", name: "B.Tech Sem 3 (Odd)", syllabusCovered: "65%", status: "In-Progress" }
+    { id: 'SEM-5', name: 'B.Tech Sem 5 (Odd)', syllabusCovered: '82%', status: 'In-Progress' },
+    { id: 'SEM-7', name: 'B.Tech Sem 7 (Odd)', syllabusCovered: '91%', status: 'In-Progress' },
+    { id: 'SEM-3', name: 'B.Tech Sem 3 (Odd)', syllabusCovered: '65%', status: 'In-Progress' },
   ]);
 
   const handleComputeResults = () => {
-    toast.loading("Processing grade matrices & computing CGPA variables...", { duration: 1500 });
-    setTimeout(() => toast.success("SGPA/CGPA computations compiled successfully for all active departments!"), 1600);
+    toast.loading('Processing grade matrices & computing CGPA variables...', { duration: 1500 });
+    setTimeout(
+      () =>
+        toast.success('SGPA/CGPA computations compiled successfully for all active departments!'),
+      1600,
+    );
   };
 
   const handleCreateSemester = () => {
-    toast.success("New Academic Semester (Even Term 2026-27) created successfully! R23 guidelines loaded.");
+    toast.success(
+      'New Academic Semester (Even Term 2026-27) created successfully! R23 guidelines loaded.',
+    );
   };
 
-  const electiveData = electives.map(e => ({
+  const electiveData = electives.map((e) => ({
     name: e.code,
     registered: e.registered,
-    available: e.capacity - e.registered
+    available: e.capacity - e.registered,
   }));
 
   return (
@@ -97,7 +125,9 @@ export function DeanDashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold text-slate-800 text-sm">Elective Selections Load</h3>
-              <p className="text-[10px] text-slate-500">Student enrollment counts per elective course code.</p>
+              <p className="text-[10px] text-slate-500">
+                Student enrollment counts per elective course code.
+              </p>
             </div>
             <Badge tone="info">This Semester</Badge>
           </div>
@@ -108,8 +138,18 @@ export function DeanDashboard() {
                 <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
                 <YAxis stroke="#64748B" fontSize={11} />
                 <Tooltip />
-                <Bar dataKey="registered" name="Enrolled Students" fill="#4F46E5" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="available" name="Available Capacity" fill="#E2E8F0" radius={[6, 6, 0, 0]} />
+                <Bar
+                  dataKey="registered"
+                  name="Enrolled Students"
+                  fill="#4F46E5"
+                  radius={[6, 6, 0, 0]}
+                />
+                <Bar
+                  dataKey="available"
+                  name="Available Capacity"
+                  fill="#E2E8F0"
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -127,7 +167,7 @@ export function DeanDashboard() {
             </button>
           </div>
           <div className="space-y-3">
-            {semesters.map(sem => (
+            {semesters.map((sem) => (
               <div key={sem.id} className="p-3 border rounded-xl space-y-2 text-xs bg-slate-50/30">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-slate-800">{sem.name}</span>
@@ -166,14 +206,14 @@ export function DeanDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {electives.map(e => (
+                {electives.map((e) => (
                   <tr key={e.code} className="hover:bg-slate-50">
                     <td className="py-2.5 font-mono font-bold text-indigo-700">{e.code}</td>
                     <td className="py-2.5 font-medium">{e.name}</td>
                     <td className="py-2.5 text-center font-bold">{e.registered}</td>
                     <td className="py-2.5 text-center text-slate-400">{e.capacity}</td>
                     <td className="py-2.5 text-right">
-                      <Badge tone={e.status === "Full" ? "warn" : "success"}>{e.status}</Badge>
+                      <Badge tone={e.status === 'Full' ? 'warn' : 'success'}>{e.status}</Badge>
                     </td>
                   </tr>
                 ))}
@@ -187,7 +227,8 @@ export function DeanDashboard() {
           <div>
             <h3 className="font-semibold mb-2">Grading Cell liaison</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Verify final external/internal marking weightages. Perform automated grade point averaging (SGPA/CGPA) calculations across current student cohorts.
+              Verify final external/internal marking weightages. Perform automated grade point
+              averaging (SGPA/CGPA) calculations across current student cohorts.
             </p>
           </div>
           <div className="space-y-2 mt-4">
@@ -200,7 +241,7 @@ export function DeanDashboard() {
             </button>
             <button
               onClick={() => {
-                toast.success("Semester Timetable Audit log generated! 0 conflicts found.");
+                toast.success('Semester Timetable Audit log generated! 0 conflicts found.');
               }}
               className="w-full py-2.5 rounded-xl border flex items-center gap-2.5 justify-center text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
             >

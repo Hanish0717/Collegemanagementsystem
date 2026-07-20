@@ -1,4 +1,4 @@
-import api from "../lib/api";
+import api from '../lib/api';
 
 export interface EventItem {
   id: string;
@@ -41,37 +41,26 @@ export async function fetchEvents(params?: {
   status?: string;
   type?: string;
 }): Promise<EventItem[]> {
-  const { data } = await api.get<{ success: boolean; data: EventItem[] }>(
-    "/api/events",
-    { params }
-  );
+  const { data } = await api.get<{ success: boolean; data: EventItem[] }>('/api/events', {
+    params,
+  });
   return data.data;
 }
 
 export async function fetchEventStats(): Promise<EventStats> {
-  const { data } = await api.get<{ success: boolean; data: EventStats }>(
-    "/api/events/stats"
-  );
+  const { data } = await api.get<{ success: boolean; data: EventStats }>('/api/events/stats');
   return data.data;
 }
 
-export async function createEvent(
-  payload: CreateEventPayload
-): Promise<EventItem> {
-  const { data } = await api.post<{ success: boolean; data: EventItem }>(
-    "/api/events",
-    payload
-  );
+export async function createEvent(payload: CreateEventPayload): Promise<EventItem> {
+  const { data } = await api.post<{ success: boolean; data: EventItem }>('/api/events', payload);
   return data.data;
 }
 
-export async function updateEventStatus(
-  id: string,
-  status: string
-): Promise<EventItem> {
+export async function updateEventStatus(id: string, status: string): Promise<EventItem> {
   const { data } = await api.put<{ success: boolean; data: EventItem }>(
     `/api/events/${id}/status`,
-    { status }
+    { status },
   );
   return data.data;
 }

@@ -1,33 +1,35 @@
-import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Download, FileText, Search, Video } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import api from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { Download, FileText, Search, Video } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 export function StudentMaterials() {
   const [materials, setMaterials] = useState<any[]>([]);
-  const [search, setSearch] = useState("");
-  const [subjectFilter, setSubjectFilter] = useState("All Subjects");
-  const [typeFilter, setTypeFilter] = useState("All Types");
- 
+  const [search, setSearch] = useState('');
+  const [subjectFilter, setSubjectFilter] = useState('All Subjects');
+  const [typeFilter, setTypeFilter] = useState('All Types');
+
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
-        const res = await api.get("/api/student-module/materials");
+        const res = await api.get('/api/student-module/materials');
         if (res.data?.success && res.data?.data) {
           const dbMaterials = res.data.data.map((m: any) => ({
             id: m._id || m.id,
             title: m.title,
             subject: m.subject,
             type: m.type,
-            uploaded: new Date(m.created_at || m.createdAt || Date.now()).toISOString().split('T')[0],
+            uploaded: new Date(m.created_at || m.createdAt || Date.now())
+              .toISOString()
+              .split('T')[0],
             downloads: m.downloads || 0,
-            fileUrl: m.fileUrl
+            fileUrl: m.fileUrl,
           }));
           setMaterials(dbMaterials);
         }
       } catch (err) {
-        console.error("Error loading study materials:", err);
+        console.error('Error loading study materials:', err);
       }
     };
     fetchMaterials();
@@ -35,43 +37,47 @@ export function StudentMaterials() {
 
   const handleDownload = async (materialId: string, fileUrl: string) => {
     if (!fileUrl) {
-      alert("No download file link available");
+      alert('No download file link available');
       return;
     }
-    
+
     try {
-      window.open(fileUrl, "_blank");
-      
+      window.open(fileUrl, '_blank');
+
       const res = await api.post(`/api/student-module/materials/${materialId}/download`);
       if (res.data?.success) {
-        const materialsRes = await api.get("/api/student-module/materials");
+        const materialsRes = await api.get('/api/student-module/materials');
         if (materialsRes.data?.success && materialsRes.data?.data) {
           const dbMaterials = materialsRes.data.data.map((m: any) => ({
             id: m._id || m.id,
             title: m.title,
             subject: m.subject,
             type: m.type,
-            uploaded: new Date(m.created_at || m.createdAt || Date.now()).toISOString().split('T')[0],
+            uploaded: new Date(m.created_at || m.createdAt || Date.now())
+              .toISOString()
+              .split('T')[0],
             downloads: m.downloads || 0,
-            fileUrl: m.fileUrl
+            fileUrl: m.fileUrl,
           }));
           setMaterials(dbMaterials);
         }
       }
     } catch (err) {
-      console.error("Error logging material download:", err);
+      console.error('Error logging material download:', err);
     }
   };
 
-  const filteredMaterials = materials.filter(m => {
-    const matchesSearch = m.title.toLowerCase().includes(search.toLowerCase()) || m.subject.toLowerCase().includes(search.toLowerCase());
-    const matchesSubject = subjectFilter === "All Subjects" || m.subject === subjectFilter;
-    const matchesType = typeFilter === "All Types" || m.type === typeFilter;
+  const filteredMaterials = materials.filter((m) => {
+    const matchesSearch =
+      m.title.toLowerCase().includes(search.toLowerCase()) ||
+      m.subject.toLowerCase().includes(search.toLowerCase());
+    const matchesSubject = subjectFilter === 'All Subjects' || m.subject === subjectFilter;
+    const matchesType = typeFilter === 'All Types' || m.type === typeFilter;
     return matchesSearch && matchesSubject && matchesType;
   });
 
-  const subjects = ["All Subjects", ...Array.from(new Set(materials.map(m => m.subject)))];
-  const types = ["All Types", "PDF", "Video", "Document"];
+  const subjects = ['All Subjects', ...Array.from(new Set(materials.map((m) => m.subject)))];
+  const types = ['All Types', 'PDF', 'Video', 'Document'];
 
   return (
     <div className="space-y-6">
@@ -82,11 +88,23 @@ export function StudentMaterials() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Total Materials", value: materials.length.toString(), tone: "info" as const },
-          { label: "PDF Documents", value: materials.filter(m => m.type === "PDF").length.toString(), tone: "info" as const },
-          { label: "Videos", value: materials.filter(m => m.type === "Video").length.toString(), tone: "info" as const },
-          { label: "Total Downloads", value: materials.reduce((sum, m) => sum + m.downloads, 0).toLocaleString(), tone: "success" as const },
-        ].map(stat => (
+          { label: 'Total Materials', value: materials.length.toString(), tone: 'info' as const },
+          {
+            label: 'PDF Documents',
+            value: materials.filter((m) => m.type === 'PDF').length.toString(),
+            tone: 'info' as const,
+          },
+          {
+            label: 'Videos',
+            value: materials.filter((m) => m.type === 'Video').length.toString(),
+            tone: 'info' as const,
+          },
+          {
+            label: 'Total Downloads',
+            value: materials.reduce((sum, m) => sum + m.downloads, 0).toLocaleString(),
+            tone: 'success' as const,
+          },
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
@@ -113,14 +131,22 @@ export function StudentMaterials() {
             onChange={(e) => setSubjectFilter(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm"
           >
-            {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+            {subjects.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm"
           >
-            {types.map(t => <option key={t} value={t}>{t}</option>)}
+            {types.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
           </select>
         </div>
       </Card>
@@ -129,11 +155,15 @@ export function StudentMaterials() {
         <h3 className="font-semibold mb-4">Material Cards</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {filteredMaterials.length > 0 ? (
-            filteredMaterials.map(material => (
+            filteredMaterials.map((material) => (
               <Card key={material.id} className="hover:-translate-y-1 transition">
                 <div className="flex items-start justify-between mb-4">
                   <div className="size-11 rounded-xl bg-gradient-violet text-white grid place-items-center">
-                    {material.type === "Video" ? <Video className="size-5" /> : <FileText className="size-5" />}
+                    {material.type === 'Video' ? (
+                      <Video className="size-5" />
+                    ) : (
+                      <FileText className="size-5" />
+                    )}
                   </div>
                   <Badge tone="info">{material.type}</Badge>
                 </div>
@@ -168,10 +198,13 @@ export function StudentMaterials() {
       <Card>
         <h3 className="font-semibold mb-4">Recent Downloads</h3>
         <div className="space-y-2">
-          {materials.slice(0, 4).map(material => (
-            <div key={material.id} className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition">
+          {materials.slice(0, 4).map((material) => (
+            <div
+              key={material.id}
+              className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+            >
               <div className="size-10 rounded-lg bg-gradient-cyan text-white grid place-items-center">
-                {material.type === "Video" ? (
+                {material.type === 'Video' ? (
                   <Video className="size-4" />
                 ) : (
                   <FileText className="size-4" />

@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import { X, Save, Github, Linkedin, Twitter, Globe, Pencil } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export function LibrarianSettings() {
   const { user } = useAuth();
 
-  const fullName = user?.fullName || "Librarian Member";
-  const email = user?.email || "";
+  const fullName = user?.fullName || 'Librarian Member';
+  const email = user?.email || '';
 
   const initials = fullName
-    .split(" ")
+    .split(' ')
     .map((n: string) => n[0])
-    .join("")
+    .join('')
     .substring(0, 2)
     .toUpperCase();
 
@@ -21,52 +21,64 @@ export function LibrarianSettings() {
   const [isEditing, setIsEditing] = useState(false);
 
   // Form states
-  const [aboutMe, setAboutMe] = useState("");
+  const [aboutMe, setAboutMe] = useState('');
   const [socialLinks, setSocialLinks] = useState({
-    github: "",
-    linkedin: "",
-    twitter: "",
-    website: "",
+    github: '',
+    linkedin: '',
+    twitter: '',
+    website: '',
   });
 
   // Load state from localStorage on mount
   useEffect(() => {
-    const role = "librarian";
-    
+    const role = 'librarian';
+
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "Experienced librarian with years of service. Specializing in digital library management and cataloging.");
+    setAboutMe(
+      storedAbout ||
+        'Experienced librarian with years of service. Specializing in digital library management and cataloging.',
+    );
 
     const storedSocials = localStorage.getItem(`cms_${role}_socials`);
     if (storedSocials) {
       setSocialLinks(JSON.parse(storedSocials));
     } else {
-      setSocialLinks({ github: "", linkedin: "", twitter: "", website: "" });
+      setSocialLinks({ github: '', linkedin: '', twitter: '', website: '' });
     }
   }, []);
 
   const handleSave = () => {
-    const role = "librarian";
+    const role = 'librarian';
     localStorage.setItem(`cms_${role}_about`, aboutMe);
     localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
-    toast.success("Profile changes saved successfully!");
+    toast.success('Profile changes saved successfully!');
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    const role = "librarian";
-    
+    const role = 'librarian';
+
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "Experienced librarian with years of service. Specializing in digital library management and cataloging.");
+    setAboutMe(
+      storedAbout ||
+        'Experienced librarian with years of service. Specializing in digital library management and cataloging.',
+    );
 
     const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
-    
-    toast.info("Changes discarded.");
+    setSocialLinks(
+      storedSocials
+        ? JSON.parse(storedSocials)
+        : { github: '', linkedin: '', twitter: '', website: '' },
+    );
+
+    toast.info('Changes discarded.');
     setIsEditing(false);
   };
 
-  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
-  const librarianIdVal = user?.employeeId || "LIB-0001";
+  const joinedDate = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-GB')
+    : '19/05/2026';
+  const librarianIdVal = user?.employeeId || 'LIB-0001';
 
   return (
     <div className="space-y-6">
@@ -114,7 +126,7 @@ export function LibrarianSettings() {
           <Card className="text-center">
             <div className="mx-auto size-32">
               <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
-                {initials || "LB"}
+                {initials || 'LB'}
               </div>
             </div>
             <div className="mt-4 font-bold text-lg">{fullName}</div>
@@ -179,8 +191,12 @@ export function LibrarianSettings() {
                   { icon: Globe, value: socialLinks.website },
                 ].map((item, idx) => {
                   const isLinked = !!item.value;
-                  const hrefVal = isLinked ? (item.value.startsWith("http") ? item.value : `https://${item.value}`) : undefined;
-                  
+                  const hrefVal = isLinked
+                    ? item.value.startsWith('http')
+                      ? item.value
+                      : `https://${item.value}`
+                    : undefined;
+
                   return (
                     <div key={idx} className="flex items-center gap-3">
                       {isLinked ? (
@@ -196,7 +212,9 @@ export function LibrarianSettings() {
                       ) : (
                         <>
                           <item.icon className="size-5 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-muted-foreground/60 italic">Not linked</span>
+                          <span className="text-sm text-muted-foreground/60 italic">
+                            Not linked
+                          </span>
                         </>
                       )}
                     </div>
@@ -223,7 +241,9 @@ export function LibrarianSettings() {
             ) : (
               <div className="min-h-16 py-1">
                 {aboutMe ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    {aboutMe}
+                  </p>
                 ) : (
                   <p className="text-sm text-muted-foreground/60 italic">
                     No bio provided yet. Add one to let people know who you are!

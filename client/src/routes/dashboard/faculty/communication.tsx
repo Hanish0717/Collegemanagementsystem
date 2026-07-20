@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { FacultyCommunication } from "@/pages/faculty/FacultyCommunication";
+import { createFileRoute } from '@tanstack/react-router';
+import { FacultyCommunication } from '@/pages/faculty/FacultyCommunication';
 
-export const Route = createFileRoute("/dashboard/faculty/communication")({
+export const Route = createFileRoute('/dashboard/faculty/communication')({
   component: FacultyCommunication,
 });

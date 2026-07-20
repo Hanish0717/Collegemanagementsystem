@@ -1,16 +1,26 @@
-import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Download, TrendingUp } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import api from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { Download, TrendingUp } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 export function ParentReports() {
   const [stats, setStats] = useState([
-    { label: "Current GPA", value: "0.0", tone: "success" as const },
-    { label: "Overall Attendance", value: "0%", tone: "success" as const },
-    { label: "Class Rank", value: "N/A", tone: "info" as const },
-    { label: "Pending Fees", value: "₹0", tone: "warn" as const },
+    { label: 'Current GPA', value: '0.0', tone: 'success' as const },
+    { label: 'Overall Attendance', value: '0%', tone: 'success' as const },
+    { label: 'Class Rank', value: 'N/A', tone: 'info' as const },
+    { label: 'Pending Fees', value: '₹0', tone: 'warn' as const },
   ]);
   const [performance, setPerformance] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,41 +29,54 @@ export function ParentReports() {
     const fetchReports = async () => {
       try {
         let dbData: any = null;
-        const cached = localStorage.getItem("cms_parent_child_data");
+        const cached = localStorage.getItem('cms_parent_child_data');
         if (cached) {
           dbData = JSON.parse(cached);
         } else {
-          const res = await api.get("/api/parent-module/student-data");
+          const res = await api.get('/api/parent-module/student-data');
           if (res.data?.success && res.data?.data) {
             dbData = res.data.data;
-            localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
+            localStorage.setItem('cms_parent_child_data', JSON.stringify(dbData));
           }
         }
 
         if (dbData) {
-          const attendanceVal = dbData.stats?.find((s: any) => s.label.includes("Attendance"))?.value || "0%";
-          const cgpaVal = dbData.stats?.find((s: any) => s.label.includes("CGPA"))?.value || "0.0";
-          const pendingFeesVal = dbData.stats?.find((s: any) => s.label.includes("Fees"))?.value || "₹0";
+          const attendanceVal =
+            dbData.stats?.find((s: any) => s.label.includes('Attendance'))?.value || '0%';
+          const cgpaVal = dbData.stats?.find((s: any) => s.label.includes('CGPA'))?.value || '0.0';
+          const pendingFeesVal =
+            dbData.stats?.find((s: any) => s.label.includes('Fees'))?.value || '₹0';
 
           setStats([
-            { label: "Current GPA", value: cgpaVal, tone: "success" as const },
-            { label: "Overall Attendance", value: attendanceVal, tone: "success" as const },
-            { label: "Class Rank", value: dbData.classRank || "N/A", tone: "info" as const },
-            { label: "Pending Fees", value: pendingFeesVal, tone: "warn" as const },
+            { label: 'Current GPA', value: cgpaVal, tone: 'success' as const },
+            { label: 'Overall Attendance', value: attendanceVal, tone: 'success' as const },
+            { label: 'Class Rank', value: dbData.classRank || 'N/A', tone: 'info' as const },
+            { label: 'Pending Fees', value: pendingFeesVal, tone: 'warn' as const },
           ]);
 
           if (dbData.results && dbData.results.length > 0) {
-            const semMap: Record<string, { totalPoints: number; totalCredits: number; count: number }> = {};
+            const semMap: Record<
+              string,
+              { totalPoints: number; totalCredits: number; count: number }
+            > = {};
             const gradePoints: Record<string, number> = {
-              "A+": 4.0, "A": 4.0, "A-": 3.7,
-              "B+": 3.3, "B": 3.0, "B-": 2.7,
-              "C+": 2.3, "C": 2.0, "C-": 1.7,
-              "D+": 1.3, "D": 1.0, "F": 0.0
+              'A+': 4.0,
+              A: 4.0,
+              'A-': 3.7,
+              'B+': 3.3,
+              B: 3.0,
+              'B-': 2.7,
+              'C+': 2.3,
+              C: 2.0,
+              'C-': 1.7,
+              'D+': 1.3,
+              D: 1.0,
+              F: 0.0,
             };
 
             dbData.results.forEach((r: any) => {
-              const sem = r.semester || "Sem 5";
-              const grade = r.grade || "A";
+              const sem = r.semester || 'Sem 5';
+              const grade = r.grade || 'A';
               const credits = r.credits || 3;
               const gp = gradePoints[grade] !== undefined ? gradePoints[grade] : 3.0;
 
@@ -67,15 +90,17 @@ export function ParentReports() {
 
             const attPct = parseFloat(attendanceVal) || 90;
 
-            const computedPerformance = Object.keys(semMap).map(sem => {
-              const gpa = Number((semMap[sem].totalPoints / semMap[sem].totalCredits).toFixed(2));
-              return {
-                semester: sem,
-                gpa,
-                attendance: attPct,
-                rank: dbData.classRank || "N/A"
-              };
-            }).sort((a, b) => a.semester.localeCompare(b.semester));
+            const computedPerformance = Object.keys(semMap)
+              .map((sem) => {
+                const gpa = Number((semMap[sem].totalPoints / semMap[sem].totalCredits).toFixed(2));
+                return {
+                  semester: sem,
+                  gpa,
+                  attendance: attPct,
+                  rank: dbData.classRank || 'N/A',
+                };
+              })
+              .sort((a, b) => a.semester.localeCompare(b.semester));
 
             setPerformance(computedPerformance);
           } else {
@@ -83,7 +108,7 @@ export function ParentReports() {
           }
         }
       } catch (err) {
-        console.error("Error loading parent reports data:", err);
+        console.error('Error loading parent reports data:', err);
       } finally {
         setLoading(false);
       }
@@ -113,7 +138,7 @@ export function ParentReports() {
       />
 
       <div className="grid md:grid-cols-4 gap-4">
-        {stats.map(stat => (
+        {stats.map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
@@ -137,8 +162,14 @@ export function ParentReports() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                  <Line type="monotone" name="GPA" dataKey="gpa" stroke="#4F46E5" strokeWidth={2.5} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                  <Line
+                    type="monotone"
+                    name="GPA"
+                    dataKey="gpa"
+                    stroke="#4F46E5"
+                    strokeWidth={2.5}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -165,9 +196,23 @@ export function ParentReports() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                  <Area type="monotone" name="GPA" dataKey="gpa" stroke="#4F46E5" fill="url(#perf-gpa)" strokeWidth={2} />
-                  <Area type="monotone" name="Attendance" dataKey="attendance" stroke="#06B6D4" fill="url(#perf-attendance)" strokeWidth={2} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                  <Area
+                    type="monotone"
+                    name="GPA"
+                    dataKey="gpa"
+                    stroke="#4F46E5"
+                    fill="url(#perf-gpa)"
+                    strokeWidth={2}
+                  />
+                  <Area
+                    type="monotone"
+                    name="Attendance"
+                    dataKey="attendance"
+                    stroke="#06B6D4"
+                    fill="url(#perf-attendance)"
+                    strokeWidth={2}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -186,7 +231,7 @@ export function ParentReports() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Semester", "GPA", "Attendance", "Class Rank", "Status"].map((column) => (
+                  {['Semester', 'GPA', 'Attendance', 'Class Rank', 'Status'].map((column) => (
                     <th
                       key={column}
                       className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -204,8 +249,8 @@ export function ParentReports() {
                     <td className="py-3 px-4">{data.attendance}%</td>
                     <td className="py-3 px-4">{data.rank}</td>
                     <td className="py-3 px-4">
-                      <Badge tone={data.gpa >= 3.5 ? "success" : "info"}>
-                        {data.gpa >= 3.5 ? "Excellent" : "Good"}
+                      <Badge tone={data.gpa >= 3.5 ? 'success' : 'info'}>
+                        {data.gpa >= 3.5 ? 'Excellent' : 'Good'}
                       </Badge>
                     </td>
                   </tr>
@@ -224,12 +269,31 @@ export function ParentReports() {
           </div>
           <div className="space-y-3">
             {[
-              { metric: "GPA Status", value: `${stats[0]?.value} average`, tone: "success" as const },
-              { metric: "Attendance Status", value: `${stats[1]?.value} current`, tone: "info" as const },
-              { metric: "Class Rank Position", value: `${stats[2]?.value}`, tone: "success" as const },
-              { metric: "Academic Profile", value: performance.length > 0 ? "Validated" : "No records", tone: "success" as const },
-            ].map(item => (
-              <div key={item.metric} className="flex items-center justify-between p-3 rounded-xl border">
+              {
+                metric: 'GPA Status',
+                value: `${stats[0]?.value} average`,
+                tone: 'success' as const,
+              },
+              {
+                metric: 'Attendance Status',
+                value: `${stats[1]?.value} current`,
+                tone: 'info' as const,
+              },
+              {
+                metric: 'Class Rank Position',
+                value: `${stats[2]?.value}`,
+                tone: 'success' as const,
+              },
+              {
+                metric: 'Academic Profile',
+                value: performance.length > 0 ? 'Validated' : 'No records',
+                tone: 'success' as const,
+              },
+            ].map((item) => (
+              <div
+                key={item.metric}
+                className="flex items-center justify-between p-3 rounded-xl border"
+              >
                 <span className="text-sm">{item.metric}</span>
                 <Badge tone={item.tone}>{item.value}</Badge>
               </div>
@@ -242,18 +306,18 @@ export function ParentReports() {
           <div className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
               {[
-                "All Semesters",
-                "Semester 5",
-                "Semester 4",
-                "Semester 3",
-                "Semester 2",
-                "Semester 1",
+                'All Semesters',
+                'Semester 5',
+                'Semester 4',
+                'Semester 3',
+                'Semester 2',
+                'Semester 1',
               ].map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </select>
             <select className="w-full rounded-lg border bg-background px-3 py-2 text-sm">
-              {["This Year", "Last 6 Months", "Last 3 Months", "This Month"].map((p) => (
+              {['This Year', 'Last 6 Months', 'Last 3 Months', 'This Month'].map((p) => (
                 <option key={p}>{p}</option>
               ))}
             </select>

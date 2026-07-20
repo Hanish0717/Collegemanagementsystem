@@ -1,46 +1,67 @@
-import { useState } from "react";
-import { Plus, Search, Calendar, Landmark, BookOpen, Trash2 } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Plus, Search, Calendar, Landmark, BookOpen, Trash2 } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
 
 export function ExamSchedule() {
   const [exams, setExams] = useState([
-    { id: "EX01", name: "Semester 5 Mid-Term", type: "Mid-Term", department: "CSE", dates: "2026-07-14 to 2026-07-17", status: "Ongoing" },
-    { id: "EX02", name: "Semester 3 Final Practical", type: "Practical", department: "ECE", dates: "2026-07-22 to 2026-07-25", status: "Scheduled" },
-    { id: "EX03", name: "Semester 1 Theory Finals", type: "Theory End-Sem", department: "MECH", dates: "2026-08-05 to 2026-08-15", status: "Scheduled" }
+    {
+      id: 'EX01',
+      name: 'Semester 5 Mid-Term',
+      type: 'Mid-Term',
+      department: 'CSE',
+      dates: '2026-07-14 to 2026-07-17',
+      status: 'Ongoing',
+    },
+    {
+      id: 'EX02',
+      name: 'Semester 3 Final Practical',
+      type: 'Practical',
+      department: 'ECE',
+      dates: '2026-07-22 to 2026-07-25',
+      status: 'Scheduled',
+    },
+    {
+      id: 'EX03',
+      name: 'Semester 1 Theory Finals',
+      type: 'Theory End-Sem',
+      department: 'MECH',
+      dates: '2026-08-05 to 2026-08-15',
+      status: 'Scheduled',
+    },
   ]);
 
-  const [newName, setNewName] = useState("");
-  const [newType, setNewType] = useState("Theory End-Sem");
-  const [newDept, setNewDept] = useState("CSE");
-  const [newDates, setNewDates] = useState("");
+  const [newName, setNewName] = useState('');
+  const [newType, setNewType] = useState('Theory End-Sem');
+  const [newDept, setNewDept] = useState('CSE');
+  const [newDates, setNewDates] = useState('');
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName || !newDates) {
-      toast.error("Please fill in the exam name and dates.");
+      toast.error('Please fill in the exam name and dates.');
       return;
     }
 
     const item = {
-      id: `EX${String(exams.length + 1).padStart(2, "0")}`,
+      id: `EX${String(exams.length + 1).padStart(2, '0')}`,
       name: newName,
       type: newType,
       department: newDept,
       dates: newDates,
-      status: "Scheduled"
+      status: 'Scheduled',
     };
 
-    setExams(prev => [...prev, item]);
-    toast.success("Exam schedule successfully registered!");
-    setNewName("");
-    setNewDates("");
+    setExams((prev) => [...prev, item]);
+    toast.success('Exam schedule successfully registered!');
+    setNewName('');
+    setNewDates('');
   };
 
   const handleDelete = (id: string) => {
-    if (!window.confirm("Are you sure you want to remove this scheduled exam?")) return;
-    setExams(prev => prev.filter(e => e.id !== id));
-    toast.success("Exam schedule removed.");
+    if (!window.confirm('Are you sure you want to remove this scheduled exam?')) return;
+    setExams((prev) => prev.filter((e) => e.id !== id));
+    toast.success('Exam schedule removed.');
   };
 
   return (
@@ -52,11 +73,19 @@ export function ExamSchedule() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Active Schedules", value: String(exams.length), tone: "info" as const },
-          { label: "Ongoing Exams", value: String(exams.filter(e => e.status === "Ongoing").length), tone: "warn" as const },
-          { label: "Scheduled Exams", value: String(exams.filter(e => e.status === "Scheduled").length), tone: "success" as const },
-          { label: "Departments Covered", value: "3 Departments", tone: "success" as const },
-        ].map(stat => (
+          { label: 'Active Schedules', value: String(exams.length), tone: 'info' as const },
+          {
+            label: 'Ongoing Exams',
+            value: String(exams.filter((e) => e.status === 'Ongoing').length),
+            tone: 'warn' as const,
+          },
+          {
+            label: 'Scheduled Exams',
+            value: String(exams.filter((e) => e.status === 'Scheduled').length),
+            tone: 'success' as const,
+          },
+          { label: 'Departments Covered', value: '3 Departments', tone: 'success' as const },
+        ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
@@ -74,13 +103,25 @@ export function ExamSchedule() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Exam ID & Name", "Type", "Department", "Dates & Duration", "Status", "Actions"].map(col => (
-                    <th key={col} className="text-left py-3 px-4 font-semibold text-muted-foreground">{col}</th>
+                  {[
+                    'Exam ID & Name',
+                    'Type',
+                    'Department',
+                    'Dates & Duration',
+                    'Status',
+                    'Actions',
+                  ].map((col) => (
+                    <th
+                      key={col}
+                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                    >
+                      {col}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {exams.map(e => (
+                {exams.map((e) => (
                   <tr key={e.id} className="hover:bg-accent/40 transition">
                     <td className="py-4 px-4">
                       <div className="font-mono text-xs text-indigo-600 font-bold mb-1">{e.id}</div>
@@ -90,12 +131,13 @@ export function ExamSchedule() {
                     <td className="py-4 px-4 text-xs">{e.department}</td>
                     <td className="py-4 px-4 text-xs text-muted-foreground">{e.dates}</td>
                     <td className="py-4 px-4">
-                      <Badge tone={e.status === "Ongoing" ? "warn" : "success"}>
-                        {e.status}
-                      </Badge>
+                      <Badge tone={e.status === 'Ongoing' ? 'warn' : 'success'}>{e.status}</Badge>
                     </td>
                     <td className="py-4 px-4">
-                      <button onClick={() => handleDelete(e.id)} className="p-1 text-red-600 hover:bg-red-50 rounded">
+                      <button
+                        onClick={() => handleDelete(e.id)}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded"
+                      >
                         <Trash2 className="size-4" />
                       </button>
                     </td>
@@ -137,20 +179,26 @@ export function ExamSchedule() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-muted-foreground">Target Department</label>
+              <label className="text-xs font-semibold text-muted-foreground">
+                Target Department
+              </label>
               <select
                 value={newDept}
                 onChange={(e) => setNewDept(e.target.value)}
                 className="rounded-lg border bg-background px-3 py-2 text-xs focus:outline-none"
               >
-                {["CSE", "AIML", "AIDS", "ECE", "EEE", "MECH", "CIVIL"].map(d => (
-                  <option key={d} value={d}>{d}</option>
+                {['CSE', 'AIML', 'AIDS', 'ECE', 'EEE', 'MECH', 'CIVIL'].map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-muted-foreground">Exam Dates / Duration</label>
+              <label className="text-xs font-semibold text-muted-foreground">
+                Exam Dates / Duration
+              </label>
               <input
                 value={newDates}
                 onChange={(e) => setNewDates(e.target.value)}

@@ -2,6 +2,7 @@ import app from './app.js';
 import dotenv from 'dotenv';
 import pkg from 'pg';
 import { seedIfNeeded } from './seed_lightweight.js';
+import { startScheduler } from './scheduler.js';
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,7 @@ import { isMockMode } from './config/supabase.js';
 
 
 
+// Triggering server restart
 // Startup database migration
 async function runMigrations() {
   if (isMockMode) {
@@ -195,6 +197,145 @@ async function runMigrations() {
       );
       
       ALTER TABLE student_notifications ADD COLUMN IF NOT EXISTS student_id uuid REFERENCES students(id) ON DELETE CASCADE NULL;
+
+      -- Create attendance_notifications table
+      CREATE TABLE IF NOT EXISTS attendance_notifications (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        student_name varchar(255) NOT NULL,
+        roll_number varchar(100) NOT NULL,
+        department varchar(50) NOT NULL,
+        attendance_percentage numeric(5, 2) NOT NULL,
+        notification_type varchar(100) NOT NULL, -- 'Warning', 'Critical Warning', 'Detention Alert'
+        recipient_role varchar(100) NOT NULL, -- 'Student', 'Parent', 'Faculty', 'HOD'
+        recipient_email varchar(255) NOT NULL,
+        status varchar(50) DEFAULT 'Sent', -- 'Sent', 'Failed'
+        error_details text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create below_75_students table
+      CREATE TABLE IF NOT EXISTS below_75_students (
+        id varchar(100) PRIMARY KEY,
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        student_name varchar(255) NOT NULL,
+        roll_number varchar(100) NOT NULL,
+        department varchar(50) NOT NULL,
+        year integer NOT NULL,
+        semester integer NOT NULL,
+        section varchar(50) NOT NULL,
+        attendance_percentage numeric(5, 2) NOT NULL,
+        short_attendance_subjects jsonb DEFAULT '[]'::jsonb,
+        parent_name varchar(255),
+        parent_email varchar(255),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create attendance_notification_requests table
+      CREATE TABLE IF NOT EXISTS attendance_notification_requests (
+        id varchar(100) PRIMARY KEY,
+        teacher_id varchar(100) NOT NULL,
+        teacher_name varchar(255),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        student_name varchar(255) NOT NULL,
+        roll_number varchar(100) NOT NULL,
+        department varchar(50) NOT NULL,
+        attendance_percentage numeric(5, 2) NOT NULL,
+        selected_recipients jsonb DEFAULT '[]'::jsonb,
+        message_type varchar(100) NOT NULL,
+        status varchar(100) NOT NULL DEFAULT 'Pending HOD Approval',
+        remarks text,
+        custom_message text,
+        short_attendance_subjects jsonb DEFAULT '[]'::jsonb,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        approved_by varchar(255),
+        approved_at timestamp with time zone,
+        sent_at timestamp with time zone
+      );
+
+      -- Create college_settings table
+      CREATE TABLE IF NOT EXISTS college_settings (
+        key varchar(255) PRIMARY KEY,
+        value varchar(255) NOT NULL,
+        description text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Seed HOD approval toggle default if not exists
+      INSERT INTO college_settings (key, value, description)
+      VALUES ('attendance_approval_enabled', 'false', 'Enable/disable HOD approval flow for attendance warnings')
+      ON CONFLICT (key) DO NOTHING;
+
+      -- Create attendance_notification_templates table
+      CREATE TABLE IF NOT EXISTS attendance_notification_templates (
+        id varchar(100) PRIMARY KEY,
+        name varchar(255) NOT NULL,
+        subject varchar(255) NOT NULL,
+        body text NOT NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Seed default templates
+      INSERT INTO attendance_notification_templates (id, name, subject, body) VALUES
+      ('appreciation', 'Appreciation', 'Congratulations on Excellent Attendance', 'Dear {student_name},\n\nWe are pleased to inform you that you have maintained an excellent attendance of {attendance_percentage}% this month.\n\nKeep up the great work!\n\nBest regards,\nCollege Administration'),
+      ('friendly-reminder', 'Friendly Reminder', 'Friendly Reminder: Attendance Update', 'Dear {student_name},\n\nThis is a friendly reminder that your overall attendance is currently at {attendance_percentage}%.\n\nPlease attend your classes regularly to keep your attendance above the required 75% threshold.\n\nBest regards,\nClass Teacher'),
+      ('warning', 'Warning', 'Attendance Warning Alert', 'Dear {student_name},\n\nYour attendance is currently at {attendance_percentage}%, which is below the required 75% threshold.\n\nPlease take immediate steps to attend your classes regularly to avoid academic penalty.\n\nBest regards,\nClass Teacher'),
+      ('critical-warning', 'Critical Warning', 'Critical Attendance Warning', 'Dear Parent / Student,\n\nThis is to notify you that the attendance of {student_name} ({roll_number}) is critical at {attendance_percentage}%.\n\nPlease meet your department HOD immediately to resolve this.\n\nBest regards,\nDepartment Head'),
+      ('detention-alert', 'Detention Alert', 'Detention Risk Alert', 'Dear Parent / Student,\n\nYour overall attendance has fallen to {attendance_percentage}%, putting you at immediate risk of detention.\n\nKindly note that you will not be allowed to write the semester exams if this is not resolved.\n\nBest regards,\nPrincipal')
+      ON CONFLICT (id) DO NOTHING;
+
+      -- Create attendance_notification_history table
+      CREATE TABLE IF NOT EXISTS attendance_notification_history (
+        id varchar(100) PRIMARY KEY,
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        student_name varchar(255) NOT NULL,
+        roll_number varchar(100) NOT NULL,
+        department varchar(50) NOT NULL,
+        teacher_id varchar(100) NOT NULL,
+        teacher_name varchar(255),
+        attendance_percentage numeric(5, 2) NOT NULL,
+        selected_recipients jsonb DEFAULT '[]'::jsonb,
+        notification_type varchar(100) NOT NULL,
+        subject text,
+        message text,
+        status varchar(50) NOT NULL DEFAULT 'Sent',
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        sent_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        approved_by varchar(255),
+        approved_at timestamp with time zone,
+        ip_address varchar(100)
+      );
+
+      -- Create attendance_notification_logs table
+      CREATE TABLE IF NOT EXISTS attendance_notification_logs (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        request_id varchar(100),
+        recipient_role varchar(100) NOT NULL,
+        email_address varchar(255) NOT NULL,
+        delivery_status varchar(50) NOT NULL DEFAULT 'Sent',
+        failed_reason text,
+        retry_count integer DEFAULT 0,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Update attendance_notification_requests columns
+      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS subject text;
+      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS message text;
+      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS attachments jsonb DEFAULT '[]'::jsonb;
+      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS ip_address varchar(100);
+      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS approved_date timestamp with time zone;
+      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS sent_date timestamp with time zone;
+      ALTER TABLE attendance_notification_requests ALTER COLUMN student_id DROP NOT NULL;
+      ALTER TABLE attendance_notification_requests ALTER COLUMN student_name DROP NOT NULL;
+      ALTER TABLE attendance_notification_requests ALTER COLUMN roll_number DROP NOT NULL;
+      ALTER TABLE attendance_notification_requests ALTER COLUMN department DROP NOT NULL;
+      ALTER TABLE attendance_notification_requests ALTER COLUMN attendance_percentage DROP NOT NULL;
+      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS student_ids jsonb DEFAULT '[]'::jsonb;
+      ALTER TABLE faculty_notifications ADD COLUMN IF NOT EXISTS faculty_id uuid REFERENCES users(id);
+
+
 
       -- Hostel Blocks Overview Extra Columns
       ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS type varchar(50) DEFAULT 'Boys';
@@ -534,6 +675,7 @@ runMigrations()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      startScheduler();
     });
   })
   .catch((err) => {

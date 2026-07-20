@@ -1,4 +1,4 @@
-import api from "../lib/api";
+import api from '../lib/api';
 
 export interface DashboardStats {
   stats: Array<{ label: string; value: string; change: string; trend: string; color: string }>;
@@ -17,7 +17,7 @@ export interface DashboardStats {
 
 export async function fetchDashboardData(): Promise<DashboardStats> {
   const { data } = await api.get<{ success: boolean; data: DashboardStats }>(
-    "/api/dashboard/stats",
+    '/api/dashboard/stats',
   );
   return data.data;
 }

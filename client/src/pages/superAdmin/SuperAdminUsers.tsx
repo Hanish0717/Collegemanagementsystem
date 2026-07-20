@@ -1,14 +1,23 @@
-import { useState, useMemo } from "react";
-import { Search, Filter, Shield, Users, UserCheck, UserX, Loader2, ArrowUpDown } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useUsers } from "@/hooks/useUsers";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { useState, useMemo } from 'react';
+import {
+  Search,
+  Filter,
+  Shield,
+  Users,
+  UserCheck,
+  UserX,
+  Loader2,
+  ArrowUpDown,
+} from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { useUsers } from '@/hooks/useUsers';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 export function SuperAdminUsers() {
   const { data: users = [], isLoading, toggleStatus, isMutating } = useUsers();
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
 
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
@@ -17,11 +26,10 @@ export function SuperAdminUsers() {
         u.email.toLowerCase().includes(search.toLowerCase()) ||
         u.id.toLowerCase().includes(search.toLowerCase());
 
-      const matchesRole = roleFilter === "All" || u.role === roleFilter;
+      const matchesRole = roleFilter === 'All' || u.role === roleFilter;
 
       const matchesStatus =
-        statusFilter === "All" ||
-        (statusFilter === "Active" ? u.is_active : !u.is_active);
+        statusFilter === 'All' || (statusFilter === 'Active' ? u.is_active : !u.is_active);
 
       return matchesSearch && matchesRole && matchesStatus;
     });
@@ -34,29 +42,29 @@ export function SuperAdminUsers() {
     });
 
     const colors: Record<string, string> = {
-      super_admin: "#F59E0B",
-      admin: "#3B82F6",
-      faculty: "#8B5CF6",
-      student: "#10B981",
-      parent: "#EC4899",
-      librarian: "#14B8A6",
-      placement: "#6366F1",
-      warden: "#F97316",
-      transport: "#84CC16",
+      super_admin: '#F59E0B',
+      admin: '#3B82F6',
+      faculty: '#8B5CF6',
+      student: '#10B981',
+      parent: '#EC4899',
+      librarian: '#14B8A6',
+      placement: '#6366F1',
+      warden: '#F97316',
+      transport: '#84CC16',
     };
 
     return Object.entries(counts).map(([role, count]) => ({
-      name: role.replace("_", " ").toUpperCase(),
+      name: role.replace('_', ' ').toUpperCase(),
       value: count,
-      color: colors[role] || "#6B7280",
+      color: colors[role] || '#6B7280',
     }));
   }, [users]);
 
   const formatRole = (role: string) => {
     return role
-      .split("_")
+      .split('_')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(' ');
   };
 
   return (
@@ -121,11 +129,16 @@ export function SuperAdminUsers() {
               <table className="w-full text-sm">
                 <thead className="border-b">
                   <tr>
-                    {["User details", "Role", "Created At", "Account Status", "Actions"].map((col) => (
-                      <th key={col} className="text-left py-3 px-4 font-semibold text-muted-foreground">
-                        {col}
-                      </th>
-                    ))}
+                    {['User details', 'Role', 'Created At', 'Account Status', 'Actions'].map(
+                      (col) => (
+                        <th
+                          key={col}
+                          className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                        >
+                          {col}
+                        </th>
+                      ),
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -146,11 +159,11 @@ export function SuperAdminUsers() {
                         <Badge tone="info">{formatRole(user.role)}</Badge>
                       </td>
                       <td className="py-3 px-4 text-xs text-muted-foreground">
-                        {new Date(user.created_at).toLocaleDateString("en-IN")}
+                        {new Date(user.created_at).toLocaleDateString('en-IN')}
                       </td>
                       <td className="py-3 px-4">
-                        <Badge tone={user.is_active ? "success" : "danger"}>
-                          {user.is_active ? "Active" : "Inactive"}
+                        <Badge tone={user.is_active ? 'success' : 'danger'}>
+                          {user.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                       </td>
                       <td className="py-3 px-4">
@@ -158,10 +171,10 @@ export function SuperAdminUsers() {
                           onClick={() => toggleStatus({ id: user.id, isActive: !user.is_active })}
                           className={`p-1.5 rounded-lg border text-xs font-medium cursor-pointer transition flex items-center gap-1.5 ${
                             user.is_active
-                              ? "text-rose-600 hover:bg-rose-50 border-rose-200"
-                              : "text-emerald-600 hover:bg-emerald-50 border-emerald-200"
+                              ? 'text-rose-600 hover:bg-rose-50 border-rose-200'
+                              : 'text-emerald-600 hover:bg-emerald-50 border-emerald-200'
                           }`}
-                          title={user.is_active ? "Deactivate User" : "Activate User"}
+                          title={user.is_active ? 'Deactivate User' : 'Activate User'}
                           disabled={isMutating}
                         >
                           {user.is_active ? (
@@ -215,9 +228,15 @@ export function SuperAdminUsers() {
                 </div>
                 <div className="space-y-2 mt-2 max-h-48 overflow-y-auto">
                   {roleDistribution.map((r) => (
-                    <div key={r.name} className="flex items-center justify-between text-xs p-1.5 border-b last:border-0">
+                    <div
+                      key={r.name}
+                      className="flex items-center justify-between text-xs p-1.5 border-b last:border-0"
+                    >
                       <div className="flex items-center gap-2">
-                        <span className="size-2.5 rounded-full shrink-0" style={{ background: r.color }} />
+                        <span
+                          className="size-2.5 rounded-full shrink-0"
+                          style={{ background: r.color }}
+                        />
                         <span className="text-muted-foreground font-medium">{r.name}</span>
                       </div>
                       <span className="font-bold">{r.value}</span>
@@ -238,8 +257,8 @@ export function SuperAdminUsers() {
               immediately.
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed mt-2">
-              Any corresponding child records (e.g. Student Profiles, Department Owner mappings) will
-              reflect this state globally.
+              Any corresponding child records (e.g. Student Profiles, Department Owner mappings)
+              will reflect this state globally.
             </p>
           </Card>
         </div>

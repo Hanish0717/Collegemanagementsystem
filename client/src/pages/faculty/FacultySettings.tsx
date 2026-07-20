@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Plus } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Plus } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export function FacultySettings() {
   const { user } = useAuth();
 
-  const fullName = user?.fullName || "Faculty Member";
-  const email = user?.email || "";
+  const fullName = user?.fullName || 'Faculty Member';
+  const email = user?.email || '';
 
   const initials = fullName
-    .split(" ")
+    .split(' ')
     .map((n: string) => n[0])
-    .join("")
+    .join('')
     .substring(0, 2)
     .toUpperCase();
 
@@ -21,28 +21,28 @@ export function FacultySettings() {
   const [isEditing, setIsEditing] = useState(false);
 
   // Form states
-  const [aboutMe, setAboutMe] = useState("");
-  const [newSkill, setNewSkill] = useState("");
+  const [aboutMe, setAboutMe] = useState('');
+  const [newSkill, setNewSkill] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
   const [socialLinks, setSocialLinks] = useState({
-    github: "",
-    linkedin: "",
-    twitter: "",
-    website: "",
+    github: '',
+    linkedin: '',
+    twitter: '',
+    website: '',
   });
 
   // Load state from localStorage on mount
   useEffect(() => {
-    const role = "faculty";
-    
+    const role = 'faculty';
+
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "");
+    setAboutMe(storedAbout || '');
 
     const storedSocials = localStorage.getItem(`cms_${role}_socials`);
     if (storedSocials) {
       setSocialLinks(JSON.parse(storedSocials));
     } else {
-      setSocialLinks({ github: "", linkedin: "", twitter: "", website: "" });
+      setSocialLinks({ github: '', linkedin: '', twitter: '', website: '' });
     }
 
     const storedSkills = localStorage.getItem(`cms_${role}_skills`);
@@ -57,47 +57,55 @@ export function FacultySettings() {
     if (newSkill.trim() && !skills.includes(newSkill.trim())) {
       const updated = [...skills, newSkill.trim()];
       setSkills(updated);
-      setNewSkill("");
+      setNewSkill('');
     }
   };
 
   const handleRemoveSkill = (skillToRemove: string) => {
-    const updated = skills.filter(s => s !== skillToRemove);
+    const updated = skills.filter((s) => s !== skillToRemove);
     setSkills(updated);
   };
 
   const handleSave = () => {
-    const role = "faculty";
+    const role = 'faculty';
     localStorage.setItem(`cms_${role}_about`, aboutMe);
     localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
     localStorage.setItem(`cms_${role}_skills`, JSON.stringify(skills));
-    toast.success("Profile changes saved successfully!");
+    toast.success('Profile changes saved successfully!');
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    const role = "faculty";
-    
+    const role = 'faculty';
+
     const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "");
+    setAboutMe(storedAbout || '');
 
     const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
+    setSocialLinks(
+      storedSocials
+        ? JSON.parse(storedSocials)
+        : { github: '', linkedin: '', twitter: '', website: '' },
+    );
 
     const storedSkills = localStorage.getItem(`cms_${role}_skills`);
     setSkills(storedSkills ? JSON.parse(storedSkills) : []);
-    
-    toast.info("Changes discarded.");
+
+    toast.info('Changes discarded.');
     setIsEditing(false);
   };
 
-  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
+  const joinedDate = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-GB')
+    : '19/05/2026';
   const [facultyProfile] = useState<any>(() => {
-    const stored = localStorage.getItem("cms_faculty_profile");
+    const stored = localStorage.getItem('cms_faculty_profile');
     return stored ? JSON.parse(stored) : null;
   });
-  const facultyIdVal = facultyProfile?.employeeId || facultyProfile?.employee_id || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#6");
-
+  const facultyIdVal =
+    facultyProfile?.employeeId ||
+    facultyProfile?.employee_id ||
+    (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : '#6');
 
   return (
     <div className="space-y-6">
@@ -105,9 +113,7 @@ export function FacultySettings() {
         <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           Faculty Settings
         </span>
-        <h2 className="text-sm font-medium text-muted-foreground">
-          Teach, evaluate, inspire
-        </h2>
+        <h2 className="text-sm font-medium text-muted-foreground">Teach, evaluate, inspire</h2>
       </div>
 
       <PageHeader
@@ -145,7 +151,7 @@ export function FacultySettings() {
           <Card className="text-center">
             <div className="mx-auto size-32">
               <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
-                {initials || "FM"}
+                {initials || 'FM'}
               </div>
             </div>
             <div className="mt-4 font-bold text-lg">{fullName}</div>
@@ -210,8 +216,12 @@ export function FacultySettings() {
                   { icon: Globe, value: socialLinks.website },
                 ].map((item, idx) => {
                   const isLinked = !!item.value;
-                  const hrefVal = isLinked ? (item.value.startsWith("http") ? item.value : `https://${item.value}`) : undefined;
-                  
+                  const hrefVal = isLinked
+                    ? item.value.startsWith('http')
+                      ? item.value
+                      : `https://${item.value}`
+                    : undefined;
+
                   return (
                     <div key={idx} className="flex items-center gap-3">
                       {isLinked ? (
@@ -227,7 +237,9 @@ export function FacultySettings() {
                       ) : (
                         <>
                           <item.icon className="size-5 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-muted-foreground/60 italic">Not linked</span>
+                          <span className="text-sm text-muted-foreground/60 italic">
+                            Not linked
+                          </span>
                         </>
                       )}
                     </div>
@@ -254,7 +266,9 @@ export function FacultySettings() {
             ) : (
               <div className="min-h-16 py-1">
                 {aboutMe ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    {aboutMe}
+                  </p>
                 ) : (
                   <p className="text-sm text-muted-foreground/60 italic">
                     No bio provided yet. Add one to let people know who you are!
@@ -276,7 +290,7 @@ export function FacultySettings() {
                     placeholder="Add a skill (e.g. React, Python)"
                     value={newSkill}
                     onChange={(e) => setNewSkill(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
                     className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                   <button
@@ -289,9 +303,16 @@ export function FacultySettings() {
                 <div className="flex flex-wrap gap-2">
                   {skills.length > 0 ? (
                     skills.map((skill) => (
-                      <Badge key={skill} tone="info" className="flex items-center gap-1.5 px-3 py-1 rounded-xl">
+                      <Badge
+                        key={skill}
+                        tone="info"
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-xl"
+                      >
                         <span>{skill}</span>
-                        <button onClick={() => handleRemoveSkill(skill)} className="hover:text-rose-500 cursor-pointer">
+                        <button
+                          onClick={() => handleRemoveSkill(skill)}
+                          className="hover:text-rose-500 cursor-pointer"
+                        >
                           <X className="size-3" />
                         </button>
                       </Badge>
@@ -310,7 +331,9 @@ export function FacultySettings() {
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-sm text-muted-foreground/60 italic">No skills added yet.</span>
+                  <span className="text-sm text-muted-foreground/60 italic">
+                    No skills added yet.
+                  </span>
                 )}
               </div>
             )}
@@ -355,5 +378,3 @@ export function FacultySettings() {
     </div>
   );
 }
-
-

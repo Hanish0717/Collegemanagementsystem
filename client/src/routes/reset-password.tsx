@@ -1,8 +1,8 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { ResetPassword } from "@/pages/auth/ResetPassword";
-import { isAuthenticated, getStoredUser, getDashboardForRole } from "@/services/authService";
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { ResetPassword } from '@/pages/auth/ResetPassword';
+import { isAuthenticated, getStoredUser, getDashboardForRole } from '@/services/authService';
 
-export const Route = createFileRoute("/reset-password")({
+export const Route = createFileRoute('/reset-password')({
   beforeLoad: () => {
     if (isAuthenticated()) {
       const user = getStoredUser();
