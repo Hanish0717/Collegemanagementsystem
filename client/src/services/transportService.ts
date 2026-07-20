@@ -68,10 +68,10 @@ export async function fetchTransportData(): Promise<{ buses: BusItem[] }> {
   return data.data;
 }
 
-export async function verifyStudentTransportApi(rollNumber: string, branchName: string): Promise<StudentTransportDetails> {
+export async function verifyStudentTransportApi(rollNumber?: string, fullName?: string): Promise<StudentTransportDetails> {
   const { data } = await api.post<{ success: boolean; data: StudentTransportDetails }>(
     "/api/transport/verify-student",
-    { rollNumber, branchName }
+    { rollNumber, fullName }
   );
   return data.data;
 }

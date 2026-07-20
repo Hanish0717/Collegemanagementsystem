@@ -502,37 +502,49 @@ export const deleteStudent = async (req, res, next) => {
   }
 };
 
-// @desc    Verify student by roll number and department
+// @desc    Verify student by roll number, name, and optional department
 // @route   POST /api/students/verify
 // @access  Private (any authenticated user)
 export const verifyStudent = async (req, res, next) => {
   try {
-    const { rollNumber, department } = req.body;
+    const { rollNumber, fullName, department } = req.body;
 
-    if (!rollNumber || !department) {
-      const error = new Error('Please provide both rollNumber and department');
+    if (!rollNumber && !fullName) {
+      const error = new Error('Please provide either roll number or student name');
       error.statusCode = 400;
       return next(error);
     }
 
-    const cleanRollNumber = rollNumber.toUpperCase().trim();
-
-    const { data: student, error: fetchErr } = await supabase
+    let query = supabase
       .from('students')
       .select('*')
-      .eq('roll_number', cleanRollNumber)
-      .eq('department', department)
-      .eq('is_active', true)
-      .maybeSingle();
+      .eq('is_active', true);
+
+    if (rollNumber) {
+      query = query.eq('roll_number', rollNumber.toUpperCase().trim());
+    }
+
+    if (fullName) {
+      query = query.ilike('full_name', `%${fullName.trim()}%`);
+    }
+
+    if (department) {
+      query = query.eq('department', department);
+    }
+
+    const { data: students, error: fetchErr } = await query;
 
     if (fetchErr) throw fetchErr;
 
-    if (!student) {
+    if (!students || students.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No active student found with this roll number and department.',
+        message: 'No active student found matching these details.',
       });
     }
+
+    // Return the first match if multiple found
+    const student = students[0];
 
     return res.status(200).json({
       success: true,

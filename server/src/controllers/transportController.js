@@ -143,36 +143,21 @@ export const getTransportDashboard = async (req, res, next) => {
  */
 export const verifyStudentTransport = async (req, res, next) => {
   try {
-    const { rollNumber, branchName, query } = req.body;
+    const { rollNumber, fullName, query } = req.body;
     
     // Support either dual fields or singular fallback
     const targetRoll = rollNumber || query;
-    const targetBranch = branchName;
+    const targetName = fullName;
 
-    if (!targetRoll) {
-      return res.status(400).json({ success: false, message: 'Roll number is required for verification' });
+    if (!targetRoll && !targetName) {
+      return res.status(400).json({ success: false, message: 'Roll number or student name is required for verification' });
     }
 
-    let cleanRoll = targetRoll.trim().toUpperCase();
-    const cleanBranch = targetBranch ? targetBranch.trim().toLowerCase() : '';
+    let cleanRoll = targetRoll ? targetRoll.trim().toUpperCase() : '';
 
     // Bulletproof: map the frontend Quick Demo mock roll numbers directly to the live database roll numbers!
     if (cleanRoll === 'STU001') cleanRoll = 'CS2026101'; // Aarav Sharma / Alice Smith
     else if (cleanRoll === 'STU002') cleanRoll = 'EE2026201'; // Priya Patel / Bob Johnson
-
-    const normalizeDept = (dept) => {
-      if (!dept) return '';
-      const d = dept.toLowerCase().replace(/[^a-z0-9]/g, '');
-      // Handle real DB department codes (CSE, AIML, AIDS, ECE, EEE)
-      if (d === 'cse' || d.includes('computer')) return 'cse';
-      if (d === 'aiml' || d.includes('artificial') && d.includes('machine')) return 'aiml';
-      if (d === 'aids' || d.includes('artificial') && d.includes('data')) return 'aids';
-      if (d === 'ece' || d.includes('electronic') && d.includes('comm')) return 'ece';
-      if (d === 'eee' || d.includes('electrical') && d.includes('electronic')) return 'eee';
-      if (d === 'mech' || d === 'me' || d.includes('mechanical')) return 'mech';
-      if (d.includes('business') || d === 'bba' || d === 'mba') return 'business';
-      return d;
-    };
 
     // Only use mock mode if DATABASE_URL is missing or placeholder
     const isMockMode = !process.env.DATABASE_URL ||
@@ -198,8 +183,15 @@ export const verifyStudentTransport = async (req, res, next) => {
         { id: 'stu008-id', full_name: 'Zara Ahmed', roll_number: 'STU008', email: 'zara@college.com', department: 'Biotech', year: 1, semester: 1, cgpa: 9.3, attendance_percentage: 97, phone_number: '9848011228', is_active: true }
       ];
 
-      student = mockStudents.find(s => s.roll_number.toUpperCase() === cleanRoll || s.email.toUpperCase() === cleanRoll);
-      
+      student = mockStudents.find(s => {
+        const matchesRoll = cleanRoll ? (s.roll_number.toUpperCase() === cleanRoll || s.email.toUpperCase() === cleanRoll) : false;
+        const matchesName = targetName ? s.full_name.toLowerCase().includes(targetName.trim().toLowerCase()) : false;
+        if (cleanRoll && targetName) {
+          return matchesRoll && matchesName;
+        }
+        return matchesRoll || matchesName;
+      });
+
       if (student) {
         allocation = {
           pass_number: `PASS-${student.roll_number}`,
@@ -246,58 +238,32 @@ export const verifyStudentTransport = async (req, res, next) => {
 
     if (useMock) {
       runMockLookup();
-      if (student && cleanBranch && normalizeDept(student.department) !== normalizeDept(cleanBranch)) {
-        return res.status(400).json({
-          success: false,
-          message: `Verification Alert: Student found with Roll Number ${targetRoll}, but they belong to branch '${student.department}', not '${targetBranch.toUpperCase()}'.`
-        });
-      }
     } else {
       try {
         // Live database lookup!
-        // Fetch student by roll number OR email
         let dbStudent = null;
-        let dbStudentErr = null;
+        let queryBuilder = supabase.from('students').select('*');
 
-        const { data: studentByRoll, error: rollErr } = await supabase
-          .from('students')
-          .select('*')
-          .eq('roll_number', cleanRoll)
-          .maybeSingle();
-
-        if (studentByRoll) {
-          dbStudent = studentByRoll;
-        } else {
-          const { data: studentByEmail, error: emailErr } = await supabase
-            .from('students')
-            .select('*')
-            .eq('email', cleanRoll.toLowerCase())
-            .maybeSingle();
-          dbStudent = studentByEmail;
-          dbStudentErr = emailErr;
+        if (cleanRoll && targetName) {
+          queryBuilder = queryBuilder.eq('roll_number', cleanRoll).ilike('full_name', `%${targetName.trim()}%`);
+        } else if (cleanRoll) {
+          queryBuilder = queryBuilder.or(`roll_number.eq.${cleanRoll},email.eq.${cleanRoll.toLowerCase()}`);
+        } else if (targetName) {
+          queryBuilder = queryBuilder.ilike('full_name', `%${targetName.trim()}%`);
         }
 
-        if (dbStudentErr) {
-          console.error('DB student lookup error:', dbStudentErr);
-          throw dbStudentErr;
+        const { data: matchedStudents, error: fetchErr } = await queryBuilder;
+
+        if (fetchErr) {
+          console.error('DB student lookup error:', fetchErr);
+          throw fetchErr;
+        }
+
+        if (matchedStudents && matchedStudents.length > 0) {
+          dbStudent = matchedStudents[0];
         }
         student = dbStudent;
-        console.log(`🔍 Roll/Email lookup "${cleanRoll}" → ${student ? `FOUND: ${student.full_name} (${student.department})` : 'NOT FOUND'}`);
-
-        // Verify branch/department matches if provided
-        // Allow match if: codes are equal directly (e.g. "CSE"==="CSE") OR normalized forms match
-        if (student && cleanBranch) {
-          const dbDeptNorm = normalizeDept(student.department);
-          const inputNorm = normalizeDept(cleanBranch);
-          const directMatch = student.department.toLowerCase() === cleanBranch;
-          if (!directMatch && dbDeptNorm !== inputNorm) {
-            console.warn(`⚠️ Branch mismatch: DB="${student.department}" (norm="${dbDeptNorm}") vs Input="${cleanBranch}" (norm="${inputNorm}")`);
-            return res.status(400).json({
-              success: false,
-              message: `Student found but belongs to branch '${student.department}', not '${targetBranch.toUpperCase()}'. Please select the correct branch.`
-            });
-          }
-        }
+        console.log(`🔍 Lookup roll="${cleanRoll}" name="${targetName}" → ${student ? `FOUND: ${student.full_name} (${student.department})` : 'NOT FOUND'}`);
 
         if (student) {
           // Fetch allocation from live transport_allocations
@@ -418,12 +384,6 @@ export const verifyStudentTransport = async (req, res, next) => {
       } catch (dbErr) {
         console.warn("Database lookup failed, falling back to mock lookup:", dbErr.message || dbErr);
         runMockLookup();
-        if (student && cleanBranch && normalizeDept(student.department) !== normalizeDept(cleanBranch)) {
-          return res.status(400).json({
-            success: false,
-            message: `Verification Alert: Student found with Roll Number ${targetRoll}, but they belong to branch '${student.department}', not '${targetBranch.toUpperCase()}'.`
-          });
-        }
       }
     }
 

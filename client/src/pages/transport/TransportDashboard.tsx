@@ -29,7 +29,7 @@ export function TransportDashboard() {
   
   // Verification states
   const [rollNumberInput, setRollNumberInput] = useState("");
-  const [branchNameInput, setBranchNameInput] = useState("");
+  const [fullNameInput, setFullNameInput] = useState("");
   const [verifying, setVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
   const [verifiedData, setVerifiedData] = useState<StudentTransportDetails | null>(null);
@@ -434,19 +434,19 @@ export function TransportDashboard() {
   }, [isDriverSimActive, selectedBusNumber]);
 
   // Handle student verification request
-  const handleVerify = async (manualRoll?: string, manualBranch?: string) => {
-    const activeRoll = manualRoll || rollNumberInput;
-    const activeBranch = manualBranch || branchNameInput;
+  const handleVerify = async (manualRoll?: string, manualName?: string) => {
+    const activeRoll = manualRoll !== undefined ? manualRoll : rollNumberInput;
+    const activeName = manualName !== undefined ? manualName : fullNameInput;
 
-    if (!activeRoll.trim()) {
-      setVerificationError("Verification Alert: Roll Number is required!");
+    if (!activeRoll.trim() && !activeName.trim()) {
+      setVerificationError("Verification Alert: Please enter Student Name or Student ID / Roll Number!");
       return;
     }
 
     setVerifying(true);
     setVerificationError(null);
     try {
-      const data = await verifyStudentTransportApi(activeRoll, activeBranch);
+      const data = await verifyStudentTransportApi(activeRoll.trim() || undefined, activeName.trim() || undefined);
       setVerifiedData(data);
       if (data.bus?.busNumber) {
         setSelectedBusNumber(data.bus.busNumber);
@@ -464,7 +464,7 @@ export function TransportDashboard() {
       console.error("Verification failed:", err);
       setVerificationError(
         err.response?.data?.message || 
-        "No matching student found. Make sure both Roll Number and Branch Name are correct!"
+        "No matching student found. Make sure either Roll Number or Student Name is correct!"
       );
       setVerifiedData(null);
     } finally {
@@ -473,10 +473,10 @@ export function TransportDashboard() {
   };
 
   // Quick Demo Selector tool
-  const triggerQuickVerify = (demoRoll: string, demoBranch: string) => {
+  const triggerQuickVerify = (demoRoll: string, demoName: string) => {
     setRollNumberInput(demoRoll);
-    setBranchNameInput(demoBranch);
-    handleVerify(demoRoll, demoBranch);
+    setFullNameInput(demoName);
+    handleVerify(demoRoll, demoName);
   };
 
   // Confirm and Track chosen route in 3D Satellite projection
@@ -882,34 +882,32 @@ export function TransportDashboard() {
           {/* Form and Search Inputs */}
           <div className="grid md:grid-cols-12 gap-4 items-center">
             <div className="md:col-span-9 grid sm:grid-cols-2 gap-3">
-              {/* Field 1: Roll Number */}
+              {/* Field 1: Student Name */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-450" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-450" />
                 <input
                   type="text"
-                  placeholder="Roll Number (e.g. CS2026101)"
-                  value={rollNumberInput}
-                  onChange={(e) => setRollNumberInput(e.target.value)}
+                  placeholder="Student Name (e.g. Aarav Sharma)"
+                  value={fullNameInput}
+                  onChange={(e) => setFullNameInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleVerify()}
                   className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all duration-300"
                 />
               </div>
 
-              {/* Field 2: Branch Name / Department */}
+              {/* Field 2: Student ID / Roll Number */}
               <div className="flex gap-2">
-                <select
-                  value={branchNameInput}
-                  onChange={(e) => setBranchNameInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleVerify()}
-                  className="flex-1 bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all duration-300 cursor-pointer"
-                >
-                  <option value="" disabled className="text-slate-400">Select Branch</option>
-                  {(departments || []).map((dep) => (
-                    <option key={dep.code} value={dep.code}>
-                      {dep.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-450" />
+                  <input
+                    type="text"
+                    placeholder="Student ID / Roll Number (e.g. CS2026101)"
+                    value={rollNumberInput}
+                    onChange={(e) => setRollNumberInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleVerify()}
+                    className="w-full bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none transition-all duration-300"
+                  />
+                </div>
                 <button
                   onClick={() => handleVerify()}
                   disabled={verifying}
@@ -923,16 +921,16 @@ export function TransportDashboard() {
             <div className="md:col-span-3 flex flex-wrap gap-2 items-center justify-start md:justify-end text-xs text-slate-500">
               <span className="font-medium text-slate-450">Quick Demos:</span>
               <button
-                onClick={() => triggerQuickVerify("CS2026101", "CSE")}
+                onClick={() => triggerQuickVerify("CS2026101", "Aarav Sharma")}
                 className="px-2.5 py-1 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-650 hover:text-indigo-600 rounded-md transition-all duration-200"
               >
-                Hanish (CSE)
+                Aarav Sharma
               </button>
               <button
-                onClick={() => triggerQuickVerify("AM2026102", "AIML")}
+                onClick={() => triggerQuickVerify("EE2026201", "Priya Patel")}
                 className="px-2.5 py-1 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 text-slate-650 hover:text-indigo-600 rounded-md transition-all duration-200"
               >
-                Bhavya (AIML)
+                Priya Patel
               </button>
             </div>
           </div>
@@ -1219,6 +1217,18 @@ export function TransportDashboard() {
                   <div className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-center">
                     <span className="text-slate-400 text-[10px] uppercase block mb-0.5">Monthly Fare</span>
                     <span className="font-bold text-indigo-650 text-sm">{displayFare.split(" /")[0]}</span>
+                  </div>
+                </div>
+
+                {/* Contact & Profile details */}
+                <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs space-y-2 mb-4">
+                  <div className="flex justify-between items-center py-0.5">
+                    <span className="text-slate-400">Email Address</span>
+                    <span className="font-semibold text-slate-700">{verifiedData.student.email}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-0.5 border-t border-slate-250/60 pt-2">
+                    <span className="text-slate-400">Contact Number</span>
+                    <span className="font-semibold text-slate-700">{verifiedData.student.phone || "—"}</span>
                   </div>
                 </div>
               </div>

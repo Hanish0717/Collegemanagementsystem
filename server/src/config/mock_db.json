@@ -508,5 +508,13 @@
   "mentorship_sessions": [],
   "alumni_employment": [],
   "alumni_education": [],
-  "alumni_job_applications": []
+  "alumni_job_applications": [],
+  "hostel_allocations": [],
+  "transport_allocations": [],
+  "student_notifications": [],
+  "departments": [],
+  "transport_routes": [],
+  "transport_buses": [],
+  "ebooks": [],
+  "issued_books": []
 }
