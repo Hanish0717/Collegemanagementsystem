@@ -255,5 +255,3 @@ export async function verifyStudent(
   );
   return mapStudent(data.data);
 }
-  return mapStudent(data.data);
-}
