@@ -1,6 +1,6 @@
-import { QueryClient } from '@tanstack/react-query';
-import { createRouter } from '@tanstack/react-router';
-import { routeTree } from './routeTree.gen';
+import { QueryClient } from "@tanstack/react-query";
+import { createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
 
 export let routerInstance: any = null;
 
@@ -15,7 +15,7 @@ export const getRouter = () => {
   });
 
   routerInstance = router;
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     (window as any).router = router;
   }
 

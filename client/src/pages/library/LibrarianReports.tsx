@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   BarChart,
   Bar,
@@ -10,24 +10,24 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Legend,
-} from 'recharts';
-import { Download, TrendingUp } from 'lucide-react';
-import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
-import { useQuery } from '@tanstack/react-query';
-import { fetchLibraryReport, fetchIssuedBooks } from '@/services/libraryService';
-import { toast } from 'sonner';
+} from "recharts";
+import { Download, TrendingUp } from "lucide-react";
+import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
+import { useQuery } from "@tanstack/react-query";
+import { fetchLibraryReport, fetchIssuedBooks } from "@/services/libraryService";
+import { toast } from "sonner";
 
 export function LibrarianReports() {
   const [timeRange, setTimeRange] = useState(5); // months count
   const [isExporting, setIsExporting] = useState(false);
 
   const { data: report, isLoading: isReportLoading } = useQuery({
-    queryKey: ['libraryReport'],
+    queryKey: ["libraryReport"],
     queryFn: fetchLibraryReport,
   });
 
   const { data: issuedBooks, isLoading: isIssuedLoading } = useQuery({
-    queryKey: ['allIssuedBooks'],
+    queryKey: ["allIssuedBooks"],
     queryFn: () => fetchIssuedBooks(),
   });
 
@@ -40,12 +40,12 @@ export function LibrarianReports() {
 
   // Aggregated dynamic stats
   const totalIssuedRecords = issuedBooks?.length || 0;
-  const totalReturnedRecords = issuedBooks?.filter((i) => i.status === 'returned').length || 0;
+  const totalReturnedRecords = issuedBooks?.filter((i) => i.status === "returned").length || 0;
   const returnRate = totalIssuedRecords > 0 ? (totalReturnedRecords / totalIssuedRecords) * 100 : 0;
 
   const activeMembersSet = new Set();
   issuedBooks?.forEach((i) => {
-    if (typeof i.student === 'object' && i.student) {
+    if (typeof i.student === "object" && i.student) {
       activeMembersSet.add(i.student.rollNumber);
     }
   });
@@ -53,16 +53,13 @@ export function LibrarianReports() {
 
   const avgBooksPerMember = activeMembersCount > 0 ? totalIssuedRecords / activeMembersCount : 0;
   const fineIncidents = issuedBooks?.filter((i) => (i.fineAmount || 0) > 0) || [];
-  const avgFineAmount =
-    fineIncidents.length > 0
-      ? Math.round(
-          fineIncidents.reduce((sum, i) => sum + (i.fineAmount || 0), 0) / fineIncidents.length,
-        )
-      : 0;
+  const avgFineAmount = fineIncidents.length > 0
+    ? Math.round(fineIncidents.reduce((sum, i) => sum + (i.fineAmount || 0), 0) / fineIncidents.length)
+    : 0;
 
   // Real growth and rate calculations
   const getIssuesGrowth = () => {
-    if (!issuedBooks || issuedBooks.length === 0) return '+0.0%';
+    if (!issuedBooks || issuedBooks.length === 0) return "+0.0%";
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
@@ -80,15 +77,15 @@ export function LibrarianReports() {
     }).length;
 
     if (lastMonthIssues === 0) {
-      return thisMonthIssues > 0 ? `+${thisMonthIssues * 100}%` : '+0.0%';
+      return thisMonthIssues > 0 ? `+${thisMonthIssues * 100}%` : "+0.0%";
     }
     const diff = ((thisMonthIssues - lastMonthIssues) / lastMonthIssues) * 100;
-    return `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
+    return `${diff >= 0 ? "+" : ""}${diff.toFixed(1)}%`;
   };
   const issuesGrowth = getIssuesGrowth();
 
   const getMembersGrowth = () => {
-    if (!issuedBooks || issuedBooks.length === 0) return '+0.0%';
+    if (!issuedBooks || issuedBooks.length === 0) return "+0.0%";
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
@@ -97,12 +94,7 @@ export function LibrarianReports() {
       const set = new Set();
       issuedBooks.forEach((i) => {
         const d = new Date(i.issueDate);
-        if (
-          d.getMonth() === m &&
-          d.getFullYear() === y &&
-          typeof i.student === 'object' &&
-          i.student
-        ) {
+        if (d.getMonth() === m && d.getFullYear() === y && typeof i.student === "object" && i.student) {
           set.add(i.student.rollNumber);
         }
       });
@@ -115,19 +107,19 @@ export function LibrarianReports() {
     const lastMonthMembers = getActiveMembersInPeriod(lm, ly);
 
     if (lastMonthMembers === 0) {
-      return thisMonthMembers > 0 ? `+${thisMonthMembers * 100}%` : '+0.0%';
+      return thisMonthMembers > 0 ? `+${thisMonthMembers * 100}%` : "+0.0%";
     }
     const diff = ((thisMonthMembers - lastMonthMembers) / lastMonthMembers) * 100;
-    return `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`;
+    return `${diff >= 0 ? "+" : ""}${diff.toFixed(1)}%`;
   };
   const membersGrowth = getMembersGrowth();
 
   const totalFinesCalculated = issuedBooks
     ? issuedBooks.reduce((sum, i) => {
-        if (i.status === 'returned') {
+        if (i.status === "returned") {
           return sum + (i.fineAmount || 0);
         }
-        if (i.status === 'overdue') {
+        if (i.status === "overdue") {
           const due = new Date(i.dueDate);
           const now = new Date();
           if (now > due) {
@@ -142,48 +134,45 @@ export function LibrarianReports() {
 
   const totalPaidFines = issuedBooks
     ? issuedBooks
-        .filter((i) => i.status === 'returned')
+        .filter((i) => i.status === "returned")
         .reduce((sum, i) => sum + (i.fineAmount || 0), 0)
     : 0;
 
-  const collectionRate =
-    totalFinesCalculated > 0 ? (totalPaidFines / totalFinesCalculated) * 100 : 100;
+  const collectionRate = totalFinesCalculated > 0 ? (totalPaidFines / totalFinesCalculated) * 100 : 100;
 
   const handleExport = () => {
     setIsExporting(true);
-    toast.loading('Compiling library analytics document...');
+    toast.loading("Compiling library analytics document...");
 
     try {
-      const headers = ['Metric', 'Value'];
+      const headers = ["Metric", "Value"];
       const rows = [
-        ['Total Books in Catalog', totals.totalBooks],
-        ['Total Books Issued', totalIssuedRecords],
-        ['Total Books Returned', totalReturnedRecords],
-        ['Return Rate', `${returnRate.toFixed(1)}%`],
-        ['Active Members', activeMembersCount],
-        ['Fine Revenue', `INR ${totals.totalFines}`],
-        ['Avg Books per Member', avgBooksPerMember.toFixed(1)],
-        ['Avg Fine Amount', `INR ${avgFineAmount}`],
-        ['Fine Collection Rate', `${collectionRate.toFixed(1)}%`],
+        ["Total Books in Catalog", totals.totalBooks],
+        ["Total Books Issued", totalIssuedRecords],
+        ["Total Books Returned", totalReturnedRecords],
+        ["Return Rate", `${returnRate.toFixed(1)}%`],
+        ["Active Members", activeMembersCount],
+        ["Fine Revenue", `INR ${totals.totalFines}`],
+        ["Avg Books per Member", avgBooksPerMember.toFixed(1)],
+        ["Avg Fine Amount", `INR ${avgFineAmount}`],
+        ["Fine Collection Rate", `${collectionRate.toFixed(1)}%`]
       ];
 
-      const csvContent = [headers, ...rows]
-        .map((e) => e.map((val) => `"${val}"`).join(','))
-        .join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const csvContent = [headers, ...rows].map(e => e.map(val => `"${val}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `library_report_${new Date().toISOString().split('T')[0]}.csv`);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `library_report_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
       toast.dismiss();
-      toast.success('Successfully generated and downloaded library report CSV!');
+      toast.success("Successfully generated and downloaded library report CSV!");
     } catch (err) {
       toast.dismiss();
-      toast.error('Failed to generate report.');
+      toast.error("Failed to generate report.");
       console.error(err);
     } finally {
       setIsExporting(false);
@@ -206,20 +195,7 @@ export function LibrarianReports() {
 
   // Monthly trends helper
   const getMonthlyTrends = () => {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const now = new Date();
     const currentMonthIdx = now.getMonth();
     const startIndex = Math.max(0, currentMonthIdx - timeRange + 1);
@@ -239,7 +215,7 @@ export function LibrarianReports() {
         const idx = trendMap.findIndex((t) => t.month === issueMonthName);
         if (idx !== -1) {
           trendMap[idx].issued += 1;
-          if (issue.status === 'returned') {
+          if (issue.status === "returned") {
             trendMap[idx].returned += 1;
             if (issue.fineAmount) {
               trendMap[idx].fineCollected += issue.fineAmount;
@@ -256,43 +232,41 @@ export function LibrarianReports() {
 
   const getFineTrendStatus = () => {
     const trend = currentReportsData;
-    if (trend.length < 2) return { text: 'Stable', tone: 'info' as const };
+    if (trend.length < 2) return { text: "Stable", tone: "info" as const };
     const currentVal = trend[trend.length - 1].fineCollected;
     const prevVal = trend[trend.length - 2].fineCollected;
-    if (currentVal > prevVal) return { text: 'Increasing', tone: 'success' as const };
-    if (currentVal < prevVal) return { text: 'Decreasing', tone: 'danger' as const };
-    return { text: 'Stable', tone: 'info' as const };
+    if (currentVal > prevVal) return { text: "Increasing", tone: "success" as const };
+    if (currentVal < prevVal) return { text: "Decreasing", tone: "danger" as const };
+    return { text: "Stable", tone: "info" as const };
   };
   const fineTrendStatus = getFineTrendStatus();
 
   // Most Borrowed Books mapping
-  const mostBorrowedBooks =
-    report?.mostIssuedBooks && report.mostIssuedBooks.length > 0
-      ? report.mostIssuedBooks.map((item, idx) => ({
-          id: `mbb-${idx}`,
-          title: item.title,
-          author: item.author,
-          issued: item.issueCount,
-          available: item.availableQuantity ?? 0,
-        }))
-      : [];
+  const mostBorrowedBooks = report?.mostIssuedBooks && report.mostIssuedBooks.length > 0
+    ? report.mostIssuedBooks.map((item, idx) => ({
+        id: `mbb-${idx}`,
+        title: item.title,
+        author: item.author,
+        issued: item.issueCount,
+        available: item.availableQuantity ?? 0,
+      }))
+    : [];
 
   // Category wise mapping
   const categoryAnalytics = report?.categoryAnalytics || [];
-  const categoryWise =
-    categoryAnalytics.length > 0
-      ? categoryAnalytics.map((item) => {
-          const count = item.count;
-          const total = totals.totalBooks || 1;
-          return {
-            category: item._id,
-            issued: item.issued ?? 0,
-            returned: item.returned ?? 0,
-            active: item.active ?? 0,
-            percentage: Number(((count / total) * 100).toFixed(1)),
-          };
-        })
-      : [];
+  const categoryWise = categoryAnalytics.length > 0
+    ? categoryAnalytics.map((item) => {
+        const count = item.count;
+        const total = totals.totalBooks || 1;
+        return {
+          category: item._id,
+          issued: item.issued ?? 0,
+          returned: item.returned ?? 0,
+          active: item.active ?? 0,
+          percentage: Number(((count / total) * 100).toFixed(1)),
+        };
+      })
+    : [];
 
   const maxIssuedCount = mostBorrowedBooks[0]?.issued || 1;
 
@@ -308,7 +282,7 @@ export function LibrarianReports() {
             className="px-4 py-2.5 rounded-xl border text-muted-foreground text-sm glow-primary flex items-center gap-2 cursor-pointer hover:bg-gradient-soft disabled:opacity-50 transition"
           >
             <Download className="size-4" />
-            {isExporting ? 'Exporting...' : 'Export Report'}
+            {isExporting ? "Exporting..." : "Export Report"}
           </button>
         }
       />
@@ -321,8 +295,8 @@ export function LibrarianReports() {
         </div>
         <div className="flex items-center gap-2 border p-1 rounded-xl bg-background">
           {[
-            { label: '3 Months', value: 3 },
-            { label: '5 Months', value: 5 },
+            { label: "3 Months", value: 3 },
+            { label: "5 Months", value: 5 },
           ].map((range) => (
             <button
               key={range.value}
@@ -332,8 +306,8 @@ export function LibrarianReports() {
               }}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
                 timeRange === range.value
-                  ? 'bg-gradient-primary text-white'
-                  : 'text-muted-foreground hover:bg-gradient-soft'
+                  ? "bg-gradient-primary text-white"
+                  : "text-muted-foreground hover:bg-gradient-soft"
               }`}
             >
               {range.label}
@@ -358,9 +332,7 @@ export function LibrarianReports() {
           <div>
             <div className="text-xs text-muted-foreground font-semibold">Total Books Returned</div>
             <div className="text-3xl font-bold mt-2">{totalReturnedRecords}</div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Return rate: {returnRate.toFixed(1)}%
-            </div>
+            <div className="text-xs text-muted-foreground mt-1">Return rate: {returnRate.toFixed(1)}%</div>
           </div>
         </Card>
 
@@ -377,12 +349,8 @@ export function LibrarianReports() {
         <Card>
           <div>
             <div className="text-xs text-muted-foreground font-semibold">Fine Revenue</div>
-            <div className="text-3xl font-bold mt-2">
-              ₹{totals.totalFines.toLocaleString('en-IN')}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Collection rate: {collectionRate.toFixed(1)}%
-            </div>
+            <div className="text-3xl font-bold mt-2">₹{totals.totalFines.toLocaleString("en-IN")}</div>
+            <div className="text-xs text-muted-foreground mt-1">Collection rate: {collectionRate.toFixed(1)}%</div>
           </div>
         </Card>
       </div>
@@ -403,7 +371,7 @@ export function LibrarianReports() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Legend />
                 <Line
                   type="monotone"
@@ -438,7 +406,7 @@ export function LibrarianReports() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar
                   dataKey="fineCollected"
                   fill="#7C3AED"
@@ -486,7 +454,7 @@ export function LibrarianReports() {
                   <td className="px-4 py-3 text-muted-foreground text-xs">{book.author}</td>
                   <td className="px-4 py-3 text-center font-bold">{book.issued}</td>
                   <td className="px-4 py-3 text-center">
-                    <Badge tone={book.available > 0 ? 'success' : 'danger'}>{book.available}</Badge>
+                    <Badge tone={book.available > 0 ? "success" : "danger"}>{book.available}</Badge>
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="w-full bg-gray-200 rounded-full h-2 max-w-xs mx-auto">
@@ -571,12 +539,12 @@ export function LibrarianReports() {
           <div className="text-4xl font-bold">{returnRate.toFixed(1)}%</div>
           <div className="text-xs text-muted-foreground mt-2 font-medium">
             {returnRate >= 90
-              ? 'Excellent compliance'
+              ? "Excellent compliance"
               : returnRate >= 70
-                ? 'Good compliance'
-                : returnRate >= 50
-                  ? 'Moderate compliance'
-                  : 'Needs attention'}
+              ? "Good compliance"
+              : returnRate >= 50
+              ? "Moderate compliance"
+              : "Needs attention"}
           </div>
         </Card>
 
@@ -584,9 +552,7 @@ export function LibrarianReports() {
           <h3 className="font-semibold mb-2">💰 Key Metric</h3>
           <div className="text-sm text-muted-foreground mb-3 font-medium">Avg Fine Amount</div>
           <div className="text-4xl font-bold">₹{avgFineAmount}</div>
-          <div className="text-xs text-muted-foreground mt-2 font-medium">
-            Per late return incident
-          </div>
+          <div className="text-xs text-muted-foreground mt-2 font-medium">Per late return incident</div>
         </Card>
       </div>
     </div>

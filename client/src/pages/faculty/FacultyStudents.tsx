@@ -1,16 +1,16 @@
-import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Search, Loader2, BookOpen, Users, LayoutGrid, CheckCircle } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { fetchFacultyStudents } from '@/services/adminService';
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Search, Loader2, BookOpen, Users, LayoutGrid, CheckCircle } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { fetchFacultyStudents } from "@/services/adminService";
 
 export function FacultyStudents() {
-  const [search, setSearch] = useState('');
-  const [sectionFilter, setSectionFilter] = useState('All');
+  const [search, setSearch] = useState("");
+  const [sectionFilter, setSectionFilter] = useState("All");
 
   // Query
   const { data, isLoading } = useQuery({
-    queryKey: ['facultyStudents'],
+    queryKey: ["facultyStudents"],
     queryFn: fetchFacultyStudents,
   });
 
@@ -20,7 +20,7 @@ export function FacultyStudents() {
   // Filter sections options from students list
   const sections = useMemo(() => {
     const list = studentsList.map((s) => s.section);
-    return ['All', ...Array.from(new Set(list))];
+    return ["All", ...Array.from(new Set(list))];
   }, [studentsList]);
 
   // Filters & Search
@@ -30,10 +30,10 @@ export function FacultyStudents() {
         stud.fullName,
         stud.rollNumber,
         stud.email,
-        stud.department?.name || '',
+        stud.department?.name || "",
       ].some((val) => val.toLowerCase().includes(search.toLowerCase()));
 
-      const matchesSection = sectionFilter === 'All' || stud.section === sectionFilter;
+      const matchesSection = sectionFilter === "All" || stud.section === sectionFilter;
 
       return matchesSearch && matchesSection;
     });
@@ -70,14 +70,14 @@ export function FacultyStudents() {
             <div className="text-xs text-muted-foreground">Teaching Sections</div>
             <div
               className="text-lg font-bold mt-2 truncate max-w-[200px]"
-              title={facultyProfile?.assignedSections?.join(', ') || 'None'}
+              title={facultyProfile?.assignedSections?.join(", ") || "None"}
             >
               {isLoading ? (
                 <Loader2 className="size-5 animate-spin text-violet-500" />
               ) : facultyProfile?.assignedSections?.length ? (
-                facultyProfile.assignedSections.join(', ')
+                facultyProfile.assignedSections.join(", ")
               ) : (
-                'None'
+                "None"
               )}
             </div>
             <div className="text-[10px] text-muted-foreground mt-1">Assigned classrooms</div>
@@ -123,7 +123,7 @@ export function FacultyStudents() {
           >
             <option value="All">All Sections</option>
             {sections
-              .filter((s) => s !== 'All')
+              .filter((s) => s !== "All")
               .map((sec) => (
                 <option key={sec} value={sec}>
                   Section {sec}
@@ -151,14 +151,14 @@ export function FacultyStudents() {
               <thead className="border-b">
                 <tr>
                   {[
-                    'Roll Number',
-                    'Student Name',
-                    'Email Address',
-                    'Department & Sec',
-                    'Sem & Year',
-                    'CGPA',
-                    'Attendance',
-                    'Status',
+                    "Roll Number",
+                    "Student Name",
+                    "Email Address",
+                    "Department & Sec",
+                    "Sem & Year",
+                    "CGPA",
+                    "Attendance",
+                    "Status",
                   ].map((column) => (
                     <th
                       key={column}
@@ -187,7 +187,7 @@ export function FacultyStudents() {
                       Sem {stud.semester} • Yr {stud.year}
                     </td>
                     <td className="py-3 px-4 font-bold text-gradient">
-                      {stud.cgpa?.toFixed(2) || '0.00'}
+                      {stud.cgpa?.toFixed(2) || "0.00"}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-1.5">
@@ -196,8 +196,8 @@ export function FacultyStudents() {
                           <div
                             className={`h-full rounded-full ${
                               (stud.attendancePercentage || 0) >= 75
-                                ? 'bg-emerald-500'
-                                : 'bg-rose-500'
+                                ? "bg-emerald-500"
+                                : "bg-rose-500"
                             }`}
                             style={{ width: `${Math.min(stud.attendancePercentage || 0, 100)}%` }}
                           />
@@ -205,7 +205,7 @@ export function FacultyStudents() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <Badge tone={stud.status === 'Active' ? 'success' : 'warn'}>
+                      <Badge tone={stud.status === "Active" ? "success" : "warn"}>
                         {stud.status}
                       </Badge>
                     </td>

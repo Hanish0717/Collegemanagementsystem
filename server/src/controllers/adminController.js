@@ -5,7 +5,6 @@ import sendEmail from '../utils/sendEmail.js';
 import { generateOTPTemplate } from '../utils/emailTemplates.js';
 import { hashOTP } from '../utils/otpUtils.js';
 import { OTP_EXPIRY_MINUTES } from '../../config.js';
-import { logActivity } from '../services/activityLogService.js';
 
 
 const DEPT_NAMES = {
@@ -49,33 +48,6 @@ const getDeptCode = (name) => {
   return DEPT_MAP[normalized] || name.toUpperCase().trim();
 };
 
-const generateEmployeeCode = async (designation) => {
-  const PREFIX_MAP = {
-    'Principal': 'PR',
-    'Vice Principal': 'VP',
-    'Dean': 'DN',
-    'HOD': 'HOD',
-    'Professor': 'FAC',
-    'Associate Professor': 'FAC',
-    'Assistant Professor': 'FAC',
-    'Guest Faculty': 'FAC',
-    'Lab Assistant': 'LAB',
-  };
-  const prefix = PREFIX_MAP[designation] || 'FAC';
-  try {
-    const { data } = await supabase
-      .from('faculty')
-      .select('employee_id')
-      .ilike('employee_id', `${prefix}%`);
-      
-    const count = (data ? data.length : 0) + 1;
-    const numStr = count.toString().padStart(3, '0');
-    return `${prefix}${numStr}`;
-  } catch (e) {
-    return `${prefix}${Math.floor(100 + Math.random() * 900)}`;
-  }
-};
-
 const formatFaculty = (f) => {
   if (!f) return null;
   
@@ -116,30 +88,6 @@ const formatFaculty = (f) => {
     employeeId: f.employee_id,
     phoneNumber: f.phone_number,
     isActive: f.is_active,
-    employeeStatus: f.employee_status || 'Active',
-    isActing: Boolean(f.is_acting),
-    designationStartDate: f.designation_start_date || null,
-    designationEndDate: f.designation_end_date || null,
-    secondaryDepartments: Array.isArray(f.secondary_departments) ? f.secondary_departments : [],
-    advisorSections: Array.isArray(f.advisor_sections) ? f.advisor_sections : [],
-    delegatedTo: f.delegated_to || null,
-    reportsTo: f.reports_to || null,
-    permissionProfile: f.permission_profile || 'Faculty Template',
-    lifecycleHistory: Array.isArray(f.lifecycle_history) ? f.lifecycle_history : [
-      {
-        date: f.created_at || new Date().toISOString(),
-        previousStatus: 'None',
-        newStatus: f.employee_status || 'Active',
-        previousDesignation: 'None',
-        newDesignation: f.designation,
-        changedBy: 'System',
-        reason: 'Initial Registration'
-      }
-    ],
-    facultyType: f.faculty_type || (f.designation === 'HOD' ? 'HOD' : f.designation === 'Dean' ? 'Dean' : 'Faculty'),
-    deanResponsibilities: Array.isArray(f.dean_responsibilities) ? f.dean_responsibilities : [],
-    assignedPrograms: Array.isArray(f.assigned_programs) ? f.assigned_programs : [],
-    assignedSemesters: Array.isArray(f.assigned_semesters) ? f.assigned_semesters : [],
     assignedSections: Array.isArray(f.assigned_sections) ? f.assigned_sections : [],
     assignedSubjects: subjects,
     assignedStudentIds: studentIds,
@@ -233,77 +181,19 @@ export const createFaculty = async (req, res, next) => {
     const {
       fullName,
       email,
+      employeeId,
       department,
       designation,
-      facultyType = 'Faculty',
-      deanResponsibilities = [],
-      assignedPrograms = [],
-      assignedSemesters = [],
-      employeeStatus = 'Active',
-      isActing = false,
-      designationStartDate,
-      designationEndDate,
-      secondaryDepartments = [],
-      advisorSections = [],
-      delegatedTo = null,
-      reportsTo = null,
-      permissionProfile = 'Faculty Template',
-      isHOD,
-      isDean,
       experience,
       gender,
       phoneNumber,
       password
     } = req.body;
 
-    const facultyPassword = password || 'password123';
-    let employeeId = req.body.employeeId;
-    if (!employeeId || !employeeId.trim()) {
-      employeeId = await generateEmployeeCode(designation);
-    }
-
-    if (!fullName || !email || !department || !designation) {
-      const error = new Error('Please fill in all required fields (Full Name, Email, Department, Designation)');
+    if (!fullName || !email || !employeeId || !department || !designation || !password) {
+      const error = new Error('Please fill in all required fields (including Password)');
       error.statusCode = 400;
       throw error;
-    }
-
-    // Mutual exclusivity validation
-    if ((facultyType === 'HOD' || isHOD) && (facultyType === 'Dean' || isDean)) {
-      const error = new Error('Validation Error: A faculty member cannot be assigned both HOD and Dean roles simultaneously.');
-      error.statusCode = 400;
-      throw error;
-    }
-
-    const effectiveFacultyType = (isDean || facultyType === 'Dean') ? 'Dean' : (isHOD || facultyType === 'HOD') ? 'HOD' : facultyType;
-
-    if (effectiveFacultyType === 'Dean' && (!deanResponsibilities || deanResponsibilities.length === 0)) {
-      const error = new Error('Validation Error: At least one Dean Responsibility must be selected when Designation is Dean.');
-      error.statusCode = 400;
-      throw error;
-    }
-
-    // Singleton Active Executive Leadership Enforcement (Principal & Vice Principal)
-    if ((designation === 'Principal' || designation === 'Vice Principal') && employeeStatus === 'Active') {
-      const { data: existingExecs } = await supabase
-        .from('faculty')
-        .select('id, user_id, full_name')
-        .eq('designation', designation)
-        .eq('employee_status', 'Active');
-        
-      if (existingExecs && existingExecs.length > 0) {
-        for (const oldExec of existingExecs) {
-          await supabase.from('faculty').update({ is_active: false, employee_status: 'Archived' }).eq('id', oldExec.id);
-          await supabase.from('users').update({ is_active: false }).eq('id', oldExec.user_id);
-          await logActivity({
-            userId: oldExec.user_id,
-            performedBy: req.user?.full_name || 'System Admin',
-            action: 'EXECUTIVE_REPLACED_ARCHIVED',
-            module: 'USER_MANAGEMENT',
-            details: `Auto-archived prior ${designation} ${oldExec.full_name} upon assignment of new ${designation}`,
-          });
-        }
-      }
     }
 
     let adminProfile = null;
@@ -362,7 +252,7 @@ export const createFaculty = async (req, res, next) => {
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(facultyPassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     let user;
     if (existingUser) {
@@ -373,7 +263,7 @@ export const createFaculty = async (req, res, next) => {
           name: fullName,
           full_name: fullName,
           password: hashedPassword,
-          temp_password: facultyPassword,
+          temp_password: password,
           is_active: true
         })
         .eq('id', existingUser.id)
@@ -392,8 +282,8 @@ export const createFaculty = async (req, res, next) => {
           email: cleanEmail,
           role: 'faculty',
           password: hashedPassword,
-          temp_password: facultyPassword,
-          is_verified: true,
+          temp_password: password,
+          is_verified: false,
           is_active: true
         }])
         .select()
@@ -493,14 +383,6 @@ export const createFaculty = async (req, res, next) => {
       html: generateOTPTemplate(otp, 'Email Verification'),
     });
 
-    await logActivity({
-      userId: user.id,
-      performedBy: req.user?.full_name || 'System Admin',
-      action: 'USER_CREATED',
-      module: 'USER_MANAGEMENT',
-      details: `Created new staff ${fullName} (${employeeId}) with designation ${designation}`,
-    });
-
     res.status(201).json({
       success: true,
       message: 'Faculty registered successfully. OTP sent to faculty email for verification.',
@@ -522,33 +404,7 @@ export const createFaculty = async (req, res, next) => {
 // @access  Private (admin)
 export const updateFaculty = async (req, res, next) => {
   try {
-    const {
-      department,
-      designation,
-      facultyType,
-      deanResponsibilities,
-      assignedPrograms,
-      assignedSemesters,
-      employeeStatus,
-      isActing,
-      designationStartDate,
-      designationEndDate,
-      secondaryDepartments,
-      advisorSections,
-      delegatedTo,
-      isHOD,
-      isDean,
-      experience,
-      status,
-      isActive,
-    } = req.body;
-
-    // Mutual exclusivity check
-    if ((facultyType === 'HOD' || isHOD) && (facultyType === 'Dean' || isDean)) {
-      const error = new Error('Validation Error: A faculty member cannot be assigned both HOD and Dean roles simultaneously.');
-      error.statusCode = 400;
-      return next(error);
-    }
+    const { department, designation, experience, status, isActive } = req.body;
 
     const { data: facultyMember, error: findErr } = await supabase
       .from('faculty')
@@ -590,21 +446,6 @@ export const updateFaculty = async (req, res, next) => {
     const updateData = {};
     if (department !== undefined) updateData.department = department;
     if (designation !== undefined) updateData.designation = designation;
-    if (facultyType !== undefined) updateData.faculty_type = facultyType;
-    if (deanResponsibilities !== undefined) updateData.dean_responsibilities = deanResponsibilities;
-    if (assignedPrograms !== undefined) updateData.assigned_programs = assignedPrograms;
-    if (assignedSemesters !== undefined) updateData.assigned_semesters = assignedSemesters;
-    if (employeeStatus !== undefined) {
-      updateData.employee_status = employeeStatus;
-      const isUserActive = employeeStatus === 'Active' || employeeStatus === 'On Leave';
-      await supabase.from('users').update({ is_active: isUserActive }).eq('id', facultyMember.user_id);
-    }
-    if (isActing !== undefined) updateData.is_acting = Boolean(isActing);
-    if (designationStartDate !== undefined) updateData.designation_start_date = designationStartDate;
-    if (designationEndDate !== undefined) updateData.designation_end_date = designationEndDate;
-    if (secondaryDepartments !== undefined) updateData.secondary_departments = secondaryDepartments;
-    if (advisorSections !== undefined) updateData.advisor_sections = advisorSections;
-    if (delegatedTo !== undefined) updateData.delegated_to = delegatedTo;
     if (experience !== undefined) updateData.experience = Number(experience);
     if (status !== undefined) updateData.status = status;
     if (isActive !== undefined) {
@@ -657,14 +498,6 @@ export const deleteFaculty = async (req, res, next) => {
       return next(error);
     }
 
-    // System-critical role protection: Deletion is strictly forbidden for executive/admin roles
-    const criticalRoles = ['Principal', 'Vice Principal', 'System Administrator'];
-    if (criticalRoles.includes(facultyMember.designation)) {
-      const error = new Error(`Deletion Forbidden: System-critical role "${facultyMember.designation}" cannot be deleted. Please use Archive, Replace, or Transfer instead.`);
-      error.statusCode = 403;
-      return next(error);
-    }
-
     let adminProfile = null;
     if (req.user && req.user.role === 'admin') {
       const { data: profile } = await supabase
@@ -692,7 +525,7 @@ export const deleteFaculty = async (req, res, next) => {
 
     const { data: deletedFaculty, error: updateErr } = await supabase
       .from('faculty')
-      .update({ is_active: false, employee_status: 'Archived' })
+      .update({ is_active: false })
       .eq('id', req.params.id)
       .select()
       .single();
@@ -701,17 +534,9 @@ export const deleteFaculty = async (req, res, next) => {
 
     await supabase.from('users').update({ is_active: false }).eq('id', facultyMember.user_id);
 
-    await logActivity({
-      userId: facultyMember.user_id,
-      performedBy: req.user?.full_name || 'System Admin',
-      action: 'SOFT_DELETE_ARCHIVED',
-      module: 'USER_MANAGEMENT',
-      details: `Soft-deleted & archived staff record ${facultyMember.full_name} (${facultyMember.employee_id})`,
-    });
-
     res.status(200).json({
       success: true,
-      message: 'Faculty soft-deleted and archived successfully',
+      message: 'Faculty soft-deleted successfully',
       data: formatFaculty(deletedFaculty),
     });
   } catch (error) {

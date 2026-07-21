@@ -134,7 +134,6 @@ export const getDashboardStats = async (req, res, next) => {
 
     // 5. Execute all database operations in parallel
     const [
-      usersRes,
       studentRes,
       facultyRes,
       booksRes,
@@ -151,16 +150,15 @@ export const getDashboardStats = async (req, res, next) => {
       recentLeavesRes,
       formattedRecentFees
     ] = await Promise.all([
-      supabase.from('users').select('*', { count: 'exact', head: true }),
-      supabase.from('students').select('*', { count: 'exact', head: true }),
-      supabase.from('faculty').select('*', { count: 'exact', head: true }),
+      studentQuery,
+      facultyQuery,
       supabase.from('books').select('*', { count: 'exact', head: true }).eq('is_active', true),
       feeCollectionPromise,
       supabase.from('departments').select('*', { count: 'exact', head: true }).eq('is_active', true),
-      supabase.from('students').select('attendance_percentage').eq('is_active', true),
+      supabase.from('students').select('attendance_percentage, users!inner(is_verified)').eq('is_active', true).eq('users.is_verified', true),
       supabase.from('leave_requests').select('*', { count: 'exact', head: true }).eq('status', 'Pending'),
       supabase.from('complaints').select('*', { count: 'exact', head: true }).eq('status', 'Pending'),
-      supabase.from('students').select('id', { count: 'exact', head: true }).lt('attendance_percentage', 75.0),
+      supabase.from('students').select('id, users!inner(is_verified)', { count: 'exact', head: true }).lt('attendance_percentage', 75.0).eq('is_active', true).eq('users.is_verified', true),
       studentDistQuery,
       supabase.from('attendance').select('status, date'),
       supabase.from('fees').select('paid_amount, payment_date').not('payment_date', 'is', null),
@@ -170,9 +168,8 @@ export const getDashboardStats = async (req, res, next) => {
     ]);
 
     // Unpack results
-    const totalUsers = usersRes.count ?? 17;
-    const totalStudents = studentRes.count ?? 1;
-    const facultyMembers = facultyRes.count ?? 1;
+    const totalStudents = studentRes.count || 0;
+    const facultyMembers = facultyRes.count || 0;
     const totalBooks = booksRes.count || 0;
     const activeDepts = activeDeptsRes.count || 0;
     const attendancePercentages = attendanceRes.data || [];
@@ -394,9 +391,6 @@ export const getDashboardStats = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: {
-        totalUsers,
-        totalStudents,
-        totalFaculty: facultyMembers,
         stats,
         departmentData,
         attendanceMonitoring,

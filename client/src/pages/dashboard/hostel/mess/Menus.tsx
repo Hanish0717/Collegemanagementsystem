@@ -4,21 +4,9 @@ import * as messService from '@/services/messService';
 import { menuSchema, type MenuInput } from '@/lib/validation/messSchemas';
 import { zodToFormErrors } from '@/lib/validation/utils';
 import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import {
-  Calendar,
-  Utensils,
-  Edit2,
-  Trash2,
-  Check,
-  RefreshCw,
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  Plus,
-  X,
-  Info,
-  Clock,
-  Sparkles,
+import { 
+  Calendar, Utensils, Edit2, Trash2, Check, RefreshCw, 
+  ChevronLeft, ChevronRight, Copy, Plus, X, Info, Clock, Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -31,11 +19,11 @@ const formatLocalDate = (date: Date): string => {
 
 export default function MessMenusAdmin() {
   const qc = useQueryClient();
-  const { data: menus = [], isLoading } = useQuery({
-    queryKey: ['mess-menus'],
-    queryFn: () => messService.fetchMenus(),
+  const { data: menus = [], isLoading } = useQuery({ 
+    queryKey: ['mess-menus'], 
+    queryFn: () => messService.fetchMenus() 
   });
-
+  
   // Weekly Navigation State
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const d = new Date();
@@ -46,11 +34,7 @@ export default function MessMenusAdmin() {
     return monday;
   });
 
-  const [form, setForm] = useState<MenuInput>({
-    meal_date: '',
-    meal_type: 'Lunch',
-    food_items: [],
-  });
+  const [form, setForm] = useState<MenuInput>({ meal_date: '', meal_type: 'Lunch', food_items: [] });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showDrawer, setShowDrawer] = useState(false);
@@ -81,39 +65,39 @@ export default function MessMenusAdmin() {
     setCurrentWeekStart(monday);
   };
 
-  const createMut = useMutation({
-    mutationFn: (payload: any) => messService.createMenu(payload),
+  const createMut = useMutation({ 
+    mutationFn: (payload: any) => messService.createMenu(payload), 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['mess-menus'] });
-      toast.success('Menu created successfully!');
+      toast.success("Menu created successfully!");
       closeDrawer();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.error || err.message || 'Failed to create menu');
-    },
+      toast.error(err.response?.data?.error || err.message || "Failed to create menu");
+    }
   });
 
-  const updateMut = useMutation({
-    mutationFn: ({ id, payload }: any) => messService.updateMenu(id, payload),
+  const updateMut = useMutation({ 
+    mutationFn: ({ id, payload }: any) => messService.updateMenu(id, payload), 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['mess-menus'] });
-      toast.success('Menu updated successfully!');
+      toast.success("Menu updated successfully!");
       closeDrawer();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.error || err.message || 'Failed to update menu');
-    },
+      toast.error(err.response?.data?.error || err.message || "Failed to update menu");
+    }
   });
 
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => messService.deleteMenu(id),
+  const deleteMut = useMutation({ 
+    mutationFn: (id: string) => messService.deleteMenu(id), 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['mess-menus'] });
-      toast.success('Menu deleted successfully!');
+      toast.success("Menu deleted successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.error || err.message || 'Failed to delete menu');
-    },
+      toast.error(err.response?.data?.error || err.message || "Failed to delete menu");
+    }
   });
 
   // Bulk clone week menu items to next week
@@ -121,13 +105,13 @@ export default function MessMenusAdmin() {
     mutationFn: async () => {
       const nextWeekStart = new Date(currentWeekStart);
       nextWeekStart.setDate(currentWeekStart.getDate() + 7);
-
+      
       // Get all menus in current week timezone-safely
-      const weekDatesStr = weekDays.map((d) => formatLocalDate(d));
+      const weekDatesStr = weekDays.map(d => formatLocalDate(d));
       const currentWeekMenus = menus.filter((m: any) => weekDatesStr.includes(m.meal_date));
 
       if (currentWeekMenus.length === 0) {
-        throw new Error('No menus scheduled in the current week to copy!');
+        throw new Error("No menus scheduled in the current week to copy!");
       }
 
       // Create new menu schedules for next week
@@ -141,28 +125,25 @@ export default function MessMenusAdmin() {
         const payload = {
           meal_date: formatLocalDate(newMenuDate),
           meal_type: menu.meal_type,
-          food_items: menu.food_items || [],
+          food_items: menu.food_items || []
         };
         await messService.createMenu(payload);
       }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['mess-menus'] });
-      toast.success('Week schedule copied to next week successfully!');
+      toast.success("Week schedule copied to next week successfully!");
       // Jump view to the next week
       const newStart = new Date(currentWeekStart);
       newStart.setDate(currentWeekStart.getDate() + 7);
       setCurrentWeekStart(newStart);
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to clone week schedule');
-    },
+      toast.error(err.message || "Failed to clone week schedule");
+    }
   });
 
-  const openAddDrawer = (
-    dateStr: string,
-    mealType: 'Breakfast' | 'Lunch' | 'Snacks' | 'Dinner',
-  ) => {
+  const openAddDrawer = (dateStr: string, mealType: 'Breakfast' | 'Lunch' | 'Snacks' | 'Dinner') => {
     setForm({ meal_date: dateStr, meal_type: mealType, food_items: [] });
     setEditingId(null);
     setErrors({});
@@ -170,10 +151,10 @@ export default function MessMenusAdmin() {
   };
 
   const openEditDrawer = (m: any) => {
-    setForm({
-      meal_date: m.meal_date,
-      meal_type: m.meal_type,
-      food_items: m.food_items || [],
+    setForm({ 
+      meal_date: m.meal_date, 
+      meal_type: m.meal_type, 
+      food_items: m.food_items || [] 
     });
     setEditingId(m.id);
     setErrors({});
@@ -191,7 +172,7 @@ export default function MessMenusAdmin() {
     const res = menuSchema.safeParse(form);
     if (!res.success) {
       setErrors(zodToFormErrors(res.error));
-      toast.error('Please resolve the validation errors');
+      toast.error("Please resolve the validation errors");
       return;
     }
     setErrors({});
@@ -216,56 +197,42 @@ export default function MessMenusAdmin() {
 
   const getMealIcon = (type: string) => {
     switch (type) {
-      case 'Breakfast':
-        return <Clock className="size-3.5 text-indigo-500" />;
-      case 'Lunch':
-        return <Utensils className="size-3.5 text-emerald-500" />;
-      case 'Snacks':
-        return <Sparkles className="size-3.5 text-amber-500" />;
-      case 'Dinner':
-        return <Utensils className="size-3.5 text-rose-500" />;
-      default:
-        return <Utensils className="size-3.5" />;
+      case 'Breakfast': return <Clock className="size-3.5 text-indigo-500" />;
+      case 'Lunch': return <Utensils className="size-3.5 text-emerald-500" />;
+      case 'Snacks': return <Sparkles className="size-3.5 text-amber-500" />;
+      case 'Dinner': return <Utensils className="size-3.5 text-rose-500" />;
+      default: return <Utensils className="size-3.5" />;
     }
   };
 
   const getMealHeaderClass = (type: string) => {
     switch (type) {
-      case 'Breakfast':
-        return 'bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400 border-indigo-100/50 dark:border-indigo-900/30';
-      case 'Lunch':
-        return 'bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100/50 dark:border-emerald-900/30';
-      case 'Snacks':
-        return 'bg-amber-50/50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-100/50 dark:border-amber-900/30';
-      case 'Dinner':
-        return 'bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-100/50 dark:border-rose-900/30';
-      default:
-        return 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350';
+      case 'Breakfast': return 'bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400 border-indigo-100/50 dark:border-indigo-900/30';
+      case 'Lunch': return 'bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border-emerald-100/50 dark:border-emerald-900/30';
+      case 'Snacks': return 'bg-amber-50/50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-100/50 dark:border-amber-900/30';
+      case 'Dinner': return 'bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-100/50 dark:border-rose-900/30';
+      default: return 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350';
     }
   };
 
   // Helper to determine food tags (Veg/Non-Veg) based on keywords
   const getDietTag = (items: string[]) => {
     const nonVegKeywords = ['chicken', 'egg', 'fish', 'mutton', 'pork', 'meat', 'omelette'];
-    const hasNonVeg = items.some((item) =>
-      nonVegKeywords.some((keyword) => item.toLowerCase().includes(keyword)),
+    const hasNonVeg = items.some(item => 
+      nonVegKeywords.some(keyword => item.toLowerCase().includes(keyword))
     );
     return hasNonVeg ? (
-      <span className="text-[9px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 px-1.5 py-0.5 rounded border border-rose-100 dark:border-rose-900/20">
-        Non-Veg
-      </span>
+      <span className="text-[9px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950/20 px-1.5 py-0.5 rounded border border-rose-100 dark:border-rose-900/20">Non-Veg</span>
     ) : (
-      <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-1.5 py-0.5 rounded border border-emerald-100 dark:border-emerald-900/20">
-        Veg
-      </span>
+      <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-1.5 py-0.5 rounded border border-emerald-100 dark:border-emerald-900/20">Veg</span>
     );
   };
 
   return (
     <div className="space-y-6 text-left relative min-h-screen">
-      <PageHeader
-        title="Mess Menu Scheduler"
-        desc="Schedule, customize, and display meal options in an interactive weekly calendar grid."
+      <PageHeader 
+        title="Mess Menu Scheduler" 
+        desc="Schedule, customize, and display meal options in an interactive weekly calendar grid." 
         actions={
           <div className="flex gap-2">
             <button
@@ -294,21 +261,16 @@ export default function MessMenusAdmin() {
       {/* Week Navigation Header */}
       <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-3">
         <div className="flex items-center gap-1.5">
-          <button
+          <button 
             onClick={() => navigateWeek('prev')}
             className="p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-accent transition cursor-pointer"
           >
             <ChevronLeft className="size-4" />
           </button>
           <span className="text-xs font-bold text-slate-800 dark:text-slate-200 min-w-44 text-center">
-            {weekDays[0].toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} -{' '}
-            {weekDays[6].toLocaleDateString('en-IN', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}
+            {weekDays[0].toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} - {weekDays[6].toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
-          <button
+          <button 
             onClick={() => navigateWeek('next')}
             className="p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-accent transition cursor-pointer"
           >
@@ -344,24 +306,17 @@ export default function MessMenusAdmin() {
             const isToday = new Date().toDateString() === day.toDateString();
 
             return (
-              <div
-                key={dateStr}
-                className={`space-y-3 rounded-2xl p-2.5 border transition-all ${
-                  isToday
-                    ? 'border-indigo-500/80 bg-indigo-500/5 shadow-md shadow-indigo-500/5'
-                    : 'border-slate-200/80 dark:border-slate-800 bg-background/40'
-                }`}
-              >
+              <div key={dateStr} className={`space-y-3 rounded-2xl p-2.5 border transition-all ${
+                isToday 
+                  ? 'border-indigo-500/80 bg-indigo-500/5 shadow-md shadow-indigo-500/5' 
+                  : 'border-slate-200/80 dark:border-slate-800 bg-background/40'
+              }`}>
                 {/* Date header */}
                 <div className="text-center pb-2 border-b border-slate-100 dark:border-slate-800/80">
-                  <div
-                    className={`text-[10px] uppercase font-bold tracking-wider ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-muted-foreground'}`}
-                  >
+                  <div className={`text-[10px] uppercase font-bold tracking-wider ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-muted-foreground'}`}>
                     {day.toLocaleDateString('en-IN', { weekday: 'short' })}
                   </div>
-                  <div
-                    className={`text-base font-extrabold mt-0.5 ${isToday ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-800 dark:text-slate-200'}`}
-                  >
+                  <div className={`text-base font-extrabold mt-0.5 ${isToday ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-800 dark:text-slate-200'}`}>
                     {day.getDate()}
                   </div>
                 </div>
@@ -373,36 +328,29 @@ export default function MessMenusAdmin() {
 
                     if (scheduledMeal) {
                       return (
-                        <div
-                          key={mealType}
+                        <div 
+                          key={mealType} 
                           className="group border border-slate-200/60 dark:border-slate-800/60 rounded-xl bg-white dark:bg-slate-900/60 overflow-hidden shadow-xs hover:shadow-sm transition-all text-xs"
                         >
                           {/* Meal type header bar */}
-                          <div
-                            className={`px-2 py-1 flex items-center justify-between border-b border-inherit ${getMealHeaderClass(mealType)}`}
-                          >
+                          <div className={`px-2 py-1 flex items-center justify-between border-b border-inherit ${getMealHeaderClass(mealType)}`}>
                             <span className="font-bold text-[10px] tracking-wide flex items-center gap-1.5 uppercase">
                               {getMealIcon(mealType)}
                               {mealType}
                             </span>
-
+                            
                             {/* Hover Edit / Delete actions */}
                             <div className="hidden group-hover:flex items-center gap-1">
-                              <button
+                              <button 
                                 onClick={() => openEditDrawer(scheduledMeal)}
                                 className="p-0.5 text-slate-500 hover:text-indigo-600 rounded transition cursor-pointer"
                                 title="Edit"
                               >
                                 <Edit2 className="size-3" />
                               </button>
-                              <button
+                              <button 
                                 onClick={() => {
-                                  if (
-                                    !confirm(
-                                      `Delete ${mealType} menu for ${scheduledMeal.meal_date}?`,
-                                    )
-                                  )
-                                    return;
+                                  if (!confirm(`Delete ${mealType} menu for ${scheduledMeal.meal_date}?`)) return;
                                   deleteMut.mutate(scheduledMeal.id);
                                 }}
                                 className="p-0.5 text-slate-500 hover:text-rose-600 rounded transition cursor-pointer"
@@ -417,12 +365,10 @@ export default function MessMenusAdmin() {
                           <div className="p-2 space-y-1 text-[11px]">
                             <div className="space-y-0.5 text-slate-700 dark:text-slate-355 font-medium leading-relaxed">
                               {scheduledMeal.food_items?.map((item: string, idx: number) => (
-                                <div key={idx} className="truncate">
-                                  • {item}
-                                </div>
+                                <div key={idx} className="truncate">• {item}</div>
                               ))}
                             </div>
-
+                            
                             <div className="pt-1.5 flex justify-end">
                               {getDietTag(scheduledMeal.food_items || [])}
                             </div>
@@ -456,8 +402,8 @@ export default function MessMenusAdmin() {
       {showDrawer && (
         <div className="fixed inset-0 z-50 overflow-hidden flex justify-end">
           {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/45 backdrop-blur-xs transition-opacity"
+          <div 
+            className="absolute inset-0 bg-black/45 backdrop-blur-xs transition-opacity" 
             onClick={closeDrawer}
           />
 
@@ -471,7 +417,7 @@ export default function MessMenusAdmin() {
                   {editingId ? 'Edit Scheduled Meal' : 'Schedule New Meal'}
                 </h3>
               </div>
-              <button
+              <button 
                 onClick={closeDrawer}
                 className="p-1.5 rounded-lg border hover:bg-accent transition cursor-pointer"
               >
@@ -482,79 +428,56 @@ export default function MessMenusAdmin() {
             {/* Form Fields */}
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                  Scheduled Date
-                </label>
-                <input
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
-                  type="date"
-                  value={form.meal_date}
-                  onChange={(e) => setForm((s) => ({ ...s, meal_date: e.target.value }))}
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Scheduled Date</label>
+                <input 
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none" 
+                  type="date" 
+                  value={form.meal_date} 
+                  onChange={e => setForm(s => ({ ...s, meal_date: e.target.value }))} 
                 />
-                {errors.meal_date && (
-                  <div className="text-rose-500 text-[10px] mt-1 font-semibold">
-                    {errors.meal_date}
-                  </div>
-                )}
+                {errors.meal_date && <div className="text-rose-500 text-[10px] mt-1 font-semibold">{errors.meal_date}</div>}
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                  Meal Slot Type
-                </label>
-                <select
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
-                  value={form.meal_type}
-                  onChange={(e) => setForm((s) => ({ ...s, meal_type: e.target.value as any }))}
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Meal Slot Type</label>
+                <select 
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none" 
+                  value={form.meal_type} 
+                  onChange={e => setForm(s => ({ ...s, meal_type: e.target.value as any }))}
                 >
                   <option>Breakfast</option>
                   <option>Lunch</option>
                   <option>Snacks</option>
                   <option>Dinner</option>
                 </select>
-                {errors.meal_type && (
-                  <div className="text-rose-500 text-[10px] mt-1 font-semibold">
-                    {errors.meal_type}
-                  </div>
-                )}
+                {errors.meal_type && <div className="text-rose-500 text-[10px] mt-1 font-semibold">{errors.meal_type}</div>}
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                  Menu Food Items (One per line)
-                </label>
-                <textarea
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none font-sans"
-                  rows={8}
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Menu Food Items (One per line)</label>
+                <textarea 
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none font-sans" 
+                  rows={8} 
                   placeholder="e.g.&#10;Masala Dosa&#10;Sambar&#15;&#10;Coconut Chutney"
-                  value={(form.food_items || []).join('\n')}
-                  onChange={(e) =>
-                    setForm((s) => ({
-                      ...s,
-                      food_items: e.target.value
-                        .split('\n')
-                        .map((l) => l.trim())
-                        .filter(Boolean),
-                    }))
-                  }
+                  value={(form.food_items || []).join('\n')} 
+                  onChange={e => setForm(s => ({ ...s, food_items: e.target.value.split('\n').map(l => l.trim()).filter(Boolean) }))} 
                 />
                 <span className="text-[10px] text-muted-foreground mt-1 block">
-                  Add clean names like 'Paneer Butter Masala' or 'Chicken Biryani'. Veg/Non-Veg
-                  labels are automatically parsed.
+                  Add clean names like 'Paneer Butter Masala' or 'Chicken Biryani'. Veg/Non-Veg labels are automatically parsed.
                 </span>
               </div>
             </div>
 
             {/* Actions Footer */}
             <div className="p-5 border-t bg-slate-50 dark:bg-slate-900/40 flex gap-3">
-              <button
-                className="flex-1 py-3 bg-gradient-primary text-white text-xs font-bold rounded-xl hover:opacity-95 transition shadow-soft cursor-pointer text-center"
+              <button 
+                className="flex-1 py-3 bg-gradient-primary text-white text-xs font-bold rounded-xl hover:opacity-95 transition shadow-soft cursor-pointer text-center" 
                 onClick={validateAndSave}
               >
                 {editingId ? 'Update Schedule' : 'Confirm Slot'}
               </button>
-              <button
-                className="px-5 py-3 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 hover:bg-accent transition cursor-pointer"
+              <button 
+                className="px-5 py-3 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 hover:bg-accent transition cursor-pointer" 
                 onClick={closeDrawer}
               >
                 Cancel

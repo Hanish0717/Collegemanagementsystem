@@ -17,14 +17,8 @@ export default function MessPage() {
   const qc = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const { data: menus = [] } = useQuery({
-    queryKey: ['mess-menus', selectedDate],
-    queryFn: () => fetchMenus({ start: selectedDate, end: selectedDate }),
-  });
-  const { data: residents = [] } = useQuery({
-    queryKey: ['mess-residents'],
-    queryFn: fetchMessResidents,
-  });
+  const { data: menus = [] } = useQuery({ queryKey: ['mess-menus', selectedDate], queryFn: () => fetchMenus({ start: selectedDate, end: selectedDate }) });
+  const { data: residents = [] } = useQuery({ queryKey: ['mess-residents'], queryFn: fetchMessResidents });
   const { data: fees = [] } = useQuery({ queryKey: ['mess-fees'], queryFn: fetchMessFees });
   const { data: feedback = [] } = useQuery({ queryKey: ['mess-feedback'], queryFn: fetchFeedback });
 
@@ -32,9 +26,7 @@ export default function MessPage() {
   const mealsServedToday = menus.length * totalMembers;
   const monthlyRevenue = fees.reduce((s: any, f: any) => s + Number(f.paid_amount || 0), 0);
   const pendingFees = fees.reduce((s: any, f: any) => s + Number(f.pending_amount || 0), 0);
-  const avgRating = feedback.length
-    ? (feedback.reduce((s: any, f: any) => s + (f.rating || 0), 0) / feedback.length).toFixed(2)
-    : 'N/A';
+  const avgRating = feedback.length ? (feedback.reduce((s: any, f: any) => s + (f.rating || 0), 0) / feedback.length).toFixed(2) : 'N/A';
 
   return (
     <div className="space-y-6">
@@ -63,16 +55,12 @@ export default function MessPage() {
         <div className="col-span-2">
           <div className="p-4 border rounded-xl">
             <h3 className="font-semibold mb-3">Today's Menu — {selectedDate}</h3>
-            {menus.length === 0 ? (
-              <div className="text-sm text-muted-foreground">No menu found for this date.</div>
-            ) : (
+            {menus.length === 0 ? <div className="text-sm text-muted-foreground">No menu found for this date.</div> : (
               <div className="space-y-2">
                 {menus.map((m: any) => (
                   <div key={m.id} className="p-3 border rounded">
                     <div className="font-medium">{m.meal_type}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {JSON.stringify(m.food_items)}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{JSON.stringify(m.food_items)}</div>
                   </div>
                 ))}
               </div>

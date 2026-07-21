@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import { Calendar, CheckCircle2, Loader2, Search, UserCheck, Trash2 } from 'lucide-react';
-import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
+import { useState, useEffect } from "react";
+import { Calendar, CheckCircle2, Loader2 } from "lucide-react";
+import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import {
   fetchBooks,
   issueBook,
@@ -8,9 +8,10 @@ import {
   deleteIssueRecord,
   type BookItem,
   type IssuedBookItem,
-} from '@/services/libraryService';
-import api from '@/lib/api';
-import { toast } from 'sonner';
+} from "@/services/libraryService";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 
 interface StudentListItem {
   _id: string;
@@ -28,70 +29,21 @@ export function LibrarianIssueBooks() {
   const [loading, setLoading] = useState(true);
 
   // Form State
-  const [selectedStudent, setSelectedStudent] = useState('');
-  const [studentSearch, setStudentSearch] = useState('');
-  const [showStudentDropdown, setShowStudentDropdown] = useState(false);
-  const [selectedBook, setSelectedBook] = useState('');
-  const [issueDate, setIssueDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [selectedStudent, setSelectedStudent] = useState("");
+  const [selectedBook, setSelectedBook] = useState("");
+  const [issueDate, setIssueDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [dueDate, setDueDate] = useState(() => {
     const fourteenDaysLater = new Date();
     fourteenDaysLater.setDate(fourteenDaysLater.getDate() + 14);
-    return fourteenDaysLater.toISOString().split('T')[0];
+    return fourteenDaysLater.toISOString().split("T")[0];
   });
   const [submitting, setSubmitting] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const sections = Array.from(
-    new Set(students.map((student) => student.section).filter(Boolean)),
-  ) as string[];
+  const sections = Array.from(new Set(students.map((student) => student.section).filter(Boolean))) as string[];
   const tags = Array.from(new Set(books.map((book) => book.category).filter(Boolean))) as string[];
 
   const selectedStudentData = students.find((student) => student._id === selectedStudent);
   const selectedBookData = books.find((book) => book._id === selectedBook);
-
-  const filteredStudents = studentSearch.trim()
-    ? students.filter(
-        (s) =>
-          s.fullName.toLowerCase().includes(studentSearch.toLowerCase()) ||
-          s.rollNumber.toLowerCase().includes(studentSearch.toLowerCase()),
-      )
-    : students;
-
-  const handleStudentInputChange = (val: string) => {
-    setStudentSearch(val);
-    setShowStudentDropdown(true);
-
-    const trimmed = val.trim().toLowerCase();
-    if (!trimmed) {
-      setSelectedStudent('');
-      return;
-    }
-
-    const exactMatch = students.find(
-      (s) => s.rollNumber.toLowerCase() === trimmed || s.fullName.toLowerCase() === trimmed,
-    );
-    if (exactMatch) {
-      setSelectedStudent(exactMatch._id);
-    } else if (selectedStudentData && `${selectedStudentData.fullName} (${selectedStudentData.rollNumber})` !== val) {
-      setSelectedStudent('');
-    }
-  };
-
-  const handleSelectStudent = (student: StudentListItem) => {
-    setSelectedStudent(student._id);
-    setStudentSearch(`${student.fullName} (${student.rollNumber})`);
-    setShowStudentDropdown(false);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowStudentDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -99,19 +51,17 @@ export function LibrarianIssueBooks() {
       const [booksData, historyData, studentsRes] = await Promise.all([
         fetchBooks({ limit: 1000 }),
         fetchIssuedBooks(),
-        api.get<{ success: boolean; data: { students: StudentListItem[] } }>('/api/students', {
+        api.get<{ success: boolean; data: { students: StudentListItem[] } }>("/api/students", {
           params: { limit: 1000 },
         }),
       ]);
       setBooks(booksData);
-      setIssuedHistory(
-        historyData.filter((issue) => issue.status === 'issued' || issue.status === 'overdue'),
-      );
-      setReturnedHistory(historyData.filter((issue) => issue.status === 'returned'));
+      setIssuedHistory(historyData.filter((issue) => issue.status === "issued" || issue.status === "overdue"));
+      setReturnedHistory(historyData.filter((issue) => issue.status === "returned"));
       setStudents(studentsRes.data.data.students);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to load data from live database');
+      toast.error("Failed to load data from live database");
     } finally {
       setLoading(false);
     }
@@ -124,7 +74,7 @@ export function LibrarianIssueBooks() {
   const handleIssueBook = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedStudent || !selectedBook || !dueDate) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
     setSubmitting(true);
@@ -134,13 +84,12 @@ export function LibrarianIssueBooks() {
         bookId: selectedBook,
         dueDate,
       });
-      toast.success('Book successfully issued and recorded in database!');
-      setSelectedStudent('');
-      setStudentSearch('');
-      setSelectedBook('');
+      toast.success("Book successfully issued and recorded in database!");
+      setSelectedStudent("");
+      setSelectedBook("");
       loadData();
     } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || 'Failed to issue book';
+      const msg = err.response?.data?.message || err.message || "Failed to issue book";
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -148,25 +97,23 @@ export function LibrarianIssueBooks() {
   };
 
   const handleClear = () => {
-    setSelectedStudent('');
-    setStudentSearch('');
-    setShowStudentDropdown(false);
-    setSelectedBook('');
-    setIssueDate(new Date().toISOString().split('T')[0]);
+    setSelectedStudent("");
+    setSelectedBook("");
+    setIssueDate(new Date().toISOString().split("T")[0]);
     const fourteenDaysLater = new Date();
     fourteenDaysLater.setDate(fourteenDaysLater.getDate() + 14);
-    setDueDate(fourteenDaysLater.toISOString().split('T')[0]);
-    toast.info('Issue form reset.');
+    setDueDate(fourteenDaysLater.toISOString().split("T")[0]);
+    toast.info("Issue form reset.");
   };
 
   const handleDeleteReturnedRecord = async (issueId: string) => {
-    if (!confirm('Delete this returned record from history?')) return;
+    if (!confirm("Delete this returned record from history?")) return;
     try {
       await deleteIssueRecord(issueId);
-      toast.success('Returned record deleted.');
+      toast.success("Returned record deleted.");
       loadData();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || 'Failed to delete record');
+      toast.error(err.response?.data?.message || err.message || "Failed to delete record");
     }
   };
 
@@ -191,95 +138,31 @@ export function LibrarianIssueBooks() {
             <h3 className="font-semibold mb-4 text-gradient">New Book Issue</h3>
             <form onSubmit={handleIssueBook} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="relative" ref={dropdownRef}>
+                <div>
                   <label className="text-xs font-semibold text-muted-foreground">
                     Select Student *
                   </label>
-                  <div className="relative mt-2">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Enter ID or Name"
-                      value={studentSearch}
-                      onChange={(e) => handleStudentInputChange(e.target.value)}
-                      onFocus={() => setShowStudentDropdown(true)}
-                      required={!selectedStudent}
-                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                    />
-                    {studentSearch && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setStudentSearch('');
-                          setSelectedStudent('');
-                        }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground p-1"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Suggestions dropdown list */}
-                  {showStudentDropdown && filteredStudents.length > 0 && !selectedStudentData && (
-                    <div className="absolute z-20 left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-xl border bg-background shadow-xl py-1 divide-y divide-border/40">
-                      {filteredStudents.map((s) => (
-                        <button
-                          key={s._id}
-                          type="button"
-                          onClick={() => handleSelectStudent(s)}
-                          className="w-full text-left px-4 py-2.5 hover:bg-gradient-soft text-sm flex items-center justify-between cursor-pointer transition"
-                        >
-                          <div>
-                            <span className="font-medium">{s.fullName}</span>
-                            <span className="text-xs text-muted-foreground ml-2">({s.rollNumber})</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground font-mono bg-accent/40 px-2 py-0.5 rounded-md">
-                            {s.department}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Active Student Details Card */}
+                  <select
+                    value={selectedStudent}
+                    onChange={(e) => setSelectedStudent(e.target.value)}
+                    required
+                    className="w-full mt-2 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                  >
+                    <option value="">Choose student...</option>
+                    {students.map((s) => (
+                      <option key={s._id} value={s._id}>
+                        {s.fullName} ({s.rollNumber}){s.section ? ` - Section ${s.section}` : ""}
+                      </option>
+                    ))}
+                  </select>
                   {selectedStudentData && (
-                    <div className="mt-3 p-3.5 rounded-xl border bg-emerald-500/10 border-emerald-500/30 text-xs space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                          <UserCheck className="size-4 text-emerald-500" />
-                          Student Details Active
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedStudent('');
-                            setStudentSearch('');
-                            setShowStudentDropdown(true);
-                          }}
-                          className="text-xs text-emerald-700 dark:text-emerald-300 hover:underline cursor-pointer font-medium"
-                        >
-                          Change Student
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-500/20 text-foreground">
-                        <div>
-                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">Name</span>
-                          <span className="font-medium text-sm">{selectedStudentData.fullName}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">ID / Roll No</span>
-                          <span className="font-medium text-sm">{selectedStudentData.rollNumber}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">Department</span>
-                          <span className="font-medium">{selectedStudentData.department}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">Section</span>
-                          <span className="font-medium">{selectedStudentData.section || 'N/A'}</span>
-                        </div>
-                      </div>
+                    <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
+                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
+                        Section: {selectedStudentData.section || "N/A"}
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
+                        Dept: {selectedStudentData.department}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -297,7 +180,7 @@ export function LibrarianIssueBooks() {
                     <option value="">Choose book...</option>
                     {availableBooks.map((b) => (
                       <option key={b._id} value={b._id}>
-                        {b.title} (ISBN: {b.isbn}){b.category ? ` - ${b.category}` : ''}
+                        {b.title} (ISBN: {b.isbn}){b.category ? ` - ${b.category}` : ""}
                       </option>
                     ))}
                   </select>
@@ -316,18 +199,13 @@ export function LibrarianIssueBooks() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl border bg-gradient-soft">
-                  <div className="text-xs font-semibold text-muted-foreground mb-2">
-                    All Sections
-                  </div>
+                  <div className="text-xs font-semibold text-muted-foreground mb-2">All Sections</div>
                   <div className="flex flex-wrap gap-2">
                     {sections.length === 0 ? (
                       <span className="text-xs text-muted-foreground">No section data loaded</span>
                     ) : (
                       sections.map((section) => (
-                        <span
-                          key={section}
-                          className="px-2.5 py-1 rounded-full bg-background border text-xs"
-                        >
+                        <span key={section} className="px-2.5 py-1 rounded-full bg-background border text-xs">
                           {section}
                         </span>
                       ))
@@ -342,10 +220,7 @@ export function LibrarianIssueBooks() {
                       <span className="text-xs text-muted-foreground">No book tags loaded</span>
                     ) : (
                       tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2.5 py-1 rounded-full bg-background border text-xs"
-                        >
+                        <span key={tag} className="px-2.5 py-1 rounded-full bg-background border text-xs">
                           {tag}
                         </span>
                       ))
@@ -419,9 +294,9 @@ export function LibrarianIssueBooks() {
                 <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
                   {issuedHistory.slice(0, 10).map((issue) => {
                     const studentName =
-                      typeof issue.student === 'object' ? issue.student?.fullName : 'Student';
-                    const roll = typeof issue.student === 'object' ? issue.student?.rollNumber : '';
-                    const title = typeof issue.book === 'object' ? issue.book?.title : 'Book';
+                      typeof issue.student === "object" ? issue.student?.fullName : "Student";
+                    const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
+                    const title = typeof issue.book === "object" ? issue.book?.title : "Book";
                     return (
                       <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
                         <div className="flex items-start justify-between gap-3 mb-2">
@@ -432,7 +307,7 @@ export function LibrarianIssueBooks() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge tone={issue.status === 'returned' ? 'success' : 'danger'}>
+                            <Badge tone={issue.status === "returned" ? "success" : "danger"}>
                               {issue.status}
                             </Badge>
                             <button
@@ -454,10 +329,7 @@ export function LibrarianIssueBooks() {
                             Deadline: {new Date(issue.dueDate).toLocaleDateString()}
                           </span>
                           <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
-                            Section:{' '}
-                            {typeof issue.student === 'object'
-                              ? issue.student?.section || 'N/A'
-                              : 'N/A'}
+                            Section: {typeof issue.student === "object" ? issue.student?.section || "N/A" : "N/A"}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -478,7 +350,7 @@ export function LibrarianIssueBooks() {
                   <div className="text-xs text-muted-foreground mb-1">Total Active Loans</div>
                   <div className="text-3xl font-bold">
                     {
-                      issuedHistory.filter((i) => i.status === 'issued' || i.status === 'overdue')
+                      issuedHistory.filter((i) => i.status === "issued" || i.status === "overdue")
                         .length
                     }
                   </div>
@@ -490,7 +362,7 @@ export function LibrarianIssueBooks() {
                 <div className="p-4 rounded-xl bg-gradient-soft border">
                   <div className="text-xs text-muted-foreground mb-1">Overdue Books</div>
                   <div className="text-3xl font-bold text-rose-600">
-                    {issuedHistory.filter((i) => i.status === 'overdue').length}
+                    {issuedHistory.filter((i) => i.status === "overdue").length}
                   </div>
                   <div className="text-xs text-rose-600 mt-1">⚠ Require follow-up</div>
                 </div>
@@ -508,9 +380,9 @@ export function LibrarianIssueBooks() {
               <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1">
                 {returnedHistory.map((issue) => {
                   const studentName =
-                    typeof issue.student === 'object' ? issue.student?.fullName : 'Student';
-                  const roll = typeof issue.student === 'object' ? issue.student?.rollNumber : '';
-                  const title = typeof issue.book === 'object' ? issue.book?.title : 'Book';
+                    typeof issue.student === "object" ? issue.student?.fullName : "Student";
+                  const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
+                  const title = typeof issue.book === "object" ? issue.book?.title : "Book";
 
                   return (
                     <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
@@ -532,10 +404,7 @@ export function LibrarianIssueBooks() {
                       </div>
                       <div className="flex flex-wrap gap-2 text-[11px]">
                         <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
-                          Returned:{' '}
-                          {issue.returnDate
-                            ? new Date(issue.returnDate).toLocaleDateString()
-                            : 'N/A'}
+                          Returned: {issue.returnDate ? new Date(issue.returnDate).toLocaleDateString() : "N/A"}
                         </span>
                         <span className="px-2 py-1 rounded-full border bg-background text-muted-foreground">
                           Deadline: {new Date(issue.dueDate).toLocaleDateString()}

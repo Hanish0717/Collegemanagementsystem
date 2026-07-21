@@ -114,11 +114,9 @@ router.get('/students', async (req, res, next) => {
 // @access  Private (faculty)
 router.get('/notifications', async (req, res, next) => {
   try {
-    const userId = req.user.id || req.user._id;
     const { data: notifications, error } = await supabase
       .from('faculty_notifications')
       .select('*')
-      .or(`faculty_id.is.null,faculty_id.eq.${userId}`)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

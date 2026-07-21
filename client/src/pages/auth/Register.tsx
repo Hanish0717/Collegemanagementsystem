@@ -1,6 +1,6 @@
-import { Link } from '@tanstack/react-router';
-import { motion } from 'framer-motion';
-import { GraduationCap, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import { GraduationCap, AlertCircle, ArrowLeft } from "lucide-react";
 
 export function Register() {
   return (
@@ -28,8 +28,7 @@ export function Register() {
 
         <h2 className="text-xl font-bold">Self-Registration Disabled</h2>
         <p className="text-sm text-muted-foreground mt-3 mb-6 leading-relaxed">
-          Direct signup for students, parents, and faculty is disabled. Account credentials must be
-          provided by the college administration.
+          Direct signup for students, parents, and faculty is disabled. Account credentials must be provided by the college administration.
         </p>
 
         <Link

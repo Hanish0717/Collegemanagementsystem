@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const menuSchema = z.object({
   meal_date: z.string().min(1, 'Date is required'),
-  meal_type: z.enum(['Breakfast', 'Lunch', 'Snacks', 'Dinner']),
+  meal_type: z.enum(['Breakfast','Lunch','Snacks','Dinner']),
   food_items: z.array(z.string()).optional(),
 });
 

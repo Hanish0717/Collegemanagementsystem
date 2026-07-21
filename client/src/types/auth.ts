@@ -9,7 +9,6 @@ export interface AuthUser {
   updatedAt: string;
   rollNumber?: string;
   employeeId?: string;
-  department?: string;
 }
 
 export interface LoginPayload {

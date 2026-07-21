@@ -1,17 +1,11 @@
 import { supabase } from '../config/supabase.js';
 import { dispatchNotification } from '../services/notificationService.js';
 
-const isUUID = (id) =>
-  typeof id === 'string' &&
-  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
-
 // @desc    Get faculty dashboard stats
 // @route   GET /api/faculty-module/dashboard
 // @access  Private (faculty)
 export const getFacultyDashboard = async (req, res, next) => {
   try {
-    const userId = req.user.id || req.user._id;
-
     // 1. Get students count
     const { count: studentsCount } = await supabase
       .from('students')
@@ -19,11 +13,10 @@ export const getFacultyDashboard = async (req, res, next) => {
       .eq('is_active', true);
 
     // 2. Get study materials count
-    let materialsQuery = supabase.from('study_materials').select('*', { count: 'exact', head: true });
-    if (isUUID(userId)) {
-      materialsQuery = materialsQuery.eq('faculty', userId);
-    }
-    const { count: materialsCount } = await materialsQuery;
+    const { count: materialsCount } = await supabase
+      .from('study_materials')
+      .select('*', { count: 'exact', head: true })
+      .eq('faculty', req.user.id || req.user._id);
 
     // 3. Get pending leave requests
     const { data: leaveRequests } = await supabase
@@ -41,11 +34,12 @@ export const getFacultyDashboard = async (req, res, next) => {
 
     // Fetch dynamic activities
     const activities = [];
-    let recentMatQuery = supabase.from('study_materials').select('*').order('created_at', { ascending: false }).limit(2);
-    if (isUUID(userId)) {
-      recentMatQuery = recentMatQuery.eq('faculty', userId);
-    }
-    const { data: recentMaterials } = await recentMatQuery;
+    const { data: recentMaterials } = await supabase
+      .from('study_materials')
+      .select('*')
+      .eq('faculty', req.user.id || req.user._id)
+      .order('created_at', { ascending: false })
+      .limit(2);
 
     if (recentMaterials) {
       recentMaterials.forEach(m => {
@@ -358,13 +352,10 @@ export const gradeSubmission = async (req, res, next) => {
 // @access  Private (faculty)
 export const getFacultyMaterials = async (req, res, next) => {
   try {
-    const userId = req.user.id || req.user._id;
-    let query = supabase.from('study_materials').select('*');
-    if (isUUID(userId)) {
-      query = query.eq('faculty', userId);
-    }
-
-    const { data: list } = await query;
+    const { data: list } = await supabase
+      .from('study_materials')
+      .select('*')
+      .eq('faculty', req.user.id || req.user._id);
 
     if (!list) {
       return res.status(200).json({ success: true, data: [] });
@@ -394,9 +385,7 @@ export const createFacultyMaterial = async (req, res, next) => {
       return next(error);
     }
 
-    const userId = req.user.id || req.user._id;
-
-    const { data: material, error: insertErr } = await supabase
+    const { data: material } = await supabase
       .from('study_materials')
       .insert([{
         title,
@@ -406,14 +395,10 @@ export const createFacultyMaterial = async (req, res, next) => {
         department,
         year: Number(year),
         semester: Number(semester),
-        faculty: isUUID(userId) ? userId : null
+        faculty: req.user.id || req.user._id
       }])
       .select()
       .single();
-
-    if (insertErr || !material) {
-      throw new Error(insertErr?.message || 'Failed to insert study material record');
-    }
 
     const formatted = {
       ...material,
@@ -520,126 +505,6 @@ export const uploadStudentMarks = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
-  }
-};
-
-// @desc    Get internal mid marks for faculty subject
-// @route   GET /api/faculty-module/internal-marks
-// @access  Private (faculty)
-export const getFacultyInternalMarks = async (req, res, next) => {
-  try {
-    const { course_id, department, year, semester } = req.query;
-
-    let studentQuery = supabase
-      .from('students')
-      .select('id, full_name, roll_number, department, year, semester')
-      .eq('is_active', true)
-      .order('roll_number', { ascending: true });
-
-    if (department) studentQuery = studentQuery.eq('department', department);
-    if (year) studentQuery = studentQuery.eq('year', Number(year));
-    if (semester) studentQuery = studentQuery.eq('semester', Number(semester));
-
-    const { data: studentsList, error: sErr } = await studentQuery;
-    if (sErr) throw sErr;
-
-    const semStr = semester ? (String(semester).startsWith('Sem') ? String(semester) : `Sem ${semester}`) : 'Sem 1';
-
-    let markQuery = supabase.from('internal_marks').select('*');
-    if (course_id) markQuery = markQuery.eq('course_id', course_id);
-    markQuery = markQuery.eq('semester', semStr);
-
-    const { data: marksList } = await markQuery;
-    const marksMap = new Map((marksList || []).map(m => [m.student_id, m]));
-
-    const result = (studentsList || []).map(s => {
-      const existing = marksMap.get(s.id) || {};
-      const mid1 = Number(existing.mid1_marks || 0);
-      const mid2 = Number(existing.mid2_marks || 0);
-      const assignment = Number(existing.assignment_marks || 0);
-      const total_internal = Number(existing.total_internal || 0);
-
-      return {
-        student_id: s.id,
-        student_name: s.full_name,
-        roll_number: s.roll_number,
-        department: s.department,
-        year: s.year,
-        semester: s.semester,
-        mid1_marks: mid1,
-        mid2_marks: mid2,
-        assignment_marks: assignment,
-        total_internal: total_internal,
-        status: existing.id ? 'Submitted' : 'Pending'
-      };
-    });
-
-    res.json({ success: true, data: result });
-  } catch (err) {
-    next(err);
-  }
-};
-
-// @desc    Batch Save Faculty Internal Mid Marks (Max 30 Marks)
-// @route   POST /api/faculty-module/internal-marks
-// @access  Private (faculty)
-export const saveFacultyInternalMarks = async (req, res, next) => {
-  try {
-    const { course_id, semester, marks_data } = req.body;
-    if (!course_id || !marks_data || !Array.isArray(marks_data)) {
-      return res.status(400).json({ success: false, message: 'Course ID and marks data array are required' });
-    }
-
-    const semStr = semester ? (String(semester).startsWith('Sem') ? String(semester) : `Sem ${semester}`) : 'Sem 1';
-    const facultyId = req.user?.id;
-
-    for (const item of marks_data) {
-      const student_id = item.student_id;
-      const mid1 = Math.min(15, Math.max(0, Number(item.mid1_marks || 0)));
-      const mid2 = Math.min(15, Math.max(0, Number(item.mid2_marks || 0)));
-      const assignment = Math.min(5, Math.max(0, Number(item.assignment_marks || 0)));
-      
-      // Calculate Internal Total: (Mid1 + Mid2)/2 + Assignment (Max 30)
-      const total_internal = Math.min(30, Math.round((((mid1 + mid2) / 2) + assignment) * 100) / 100);
-
-      const { data: existing } = await supabase
-        .from('internal_marks')
-        .select('id')
-        .eq('student_id', student_id)
-        .eq('course_id', course_id)
-        .eq('semester', semStr)
-        .maybeSingle();
-
-      if (existing) {
-        await supabase
-          .from('internal_marks')
-          .update({
-            mid1_marks: mid1,
-            mid2_marks: mid2,
-            assignment_marks: assignment,
-            total_internal: total_internal,
-            faculty_id: facultyId
-          })
-          .eq('id', existing.id);
-      } else {
-        await supabase
-          .from('internal_marks')
-          .insert([{
-            student_id,
-            course_id,
-            semester: semStr,
-            mid1_marks: mid1,
-            mid2_marks: mid2,
-            assignment_marks: assignment,
-            total_internal: total_internal,
-            faculty_id: facultyId
-          }]);
-      }
-    }
-
-    res.json({ success: true, message: 'Internal marks saved successfully!' });
-  } catch (err) {
-    next(err);
   }
 };
 

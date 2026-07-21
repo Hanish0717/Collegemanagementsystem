@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -6,11 +6,11 @@ import {
   useRouter,
   HeadContent,
   Scripts,
-} from '@tanstack/react-router';
+} from "@tanstack/react-router";
 
-import appCss from '../styles.css?url';
-import { FloatingChatWidget } from '@/components/dashboard/FloatingChatWidget';
-import { AuthProvider } from '../contexts/AuthContext';
+import appCss from "../styles.css?url";
+import { FloatingChatWidget } from "@/components/dashboard/FloatingChatWidget";
+import { AuthProvider } from "../contexts/AuthContext";
 
 function NotFoundComponent() {
   return (
@@ -64,16 +64,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'College Management System — Premium Educational Platform' },
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "College Management System — Premium Educational Platform" },
       {
-        name: 'description',
+        name: "description",
         content:
-          'A modern, beautiful college management system to run students, faculty, attendance, exams, fees, library and more.',
+          "A modern, beautiful college management system to run students, faculty, attendance, exams, fees, library and more.",
       },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootShell,
   component: RootComponent,

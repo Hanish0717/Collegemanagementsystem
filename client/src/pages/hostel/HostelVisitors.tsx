@@ -1,46 +1,35 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import {
-  UserCheck,
-  Plus,
-  Search,
-  Shield,
-  Clock,
-  Phone,
-  LogOut,
-  Loader2,
-  AlertCircle,
-  X,
-} from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { UserCheck, Plus, Search, Shield, Clock, Phone, LogOut, Loader2, AlertCircle, X } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 import {
   fetchHostelVisitors,
   registerVisitor,
   checkOutVisitor,
   fetchResidents,
-} from '@/services/hostelService';
+} from "@/services/hostelService";
 
 export function HostelVisitors() {
   const queryClient = useQueryClient();
 
   // Search & Filter State
-  const [search, setSearch] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('All Status');
-  const [selectedTimeRange, setSelectedTimeRange] = useState('Today');
+  const [search, setSearch] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("All Status");
+  const [selectedTimeRange, setSelectedTimeRange] = useState("Today");
 
   // Modal State
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   // Form State
-  const [visitorName, setVisitorName] = useState('');
-  const [visitorPhone, setVisitorPhone] = useState('');
-  const [relationship, setRelationship] = useState('Guardian');
-  const [purpose, setPurpose] = useState('Family Visit');
-  const [selectedStudentId, setSelectedStudentId] = useState('');
-  const [idType, setIdType] = useState('Aadhaar Card');
-  const [idNumber, setIdNumber] = useState('');
+  const [visitorName, setVisitorName] = useState("");
+  const [visitorPhone, setVisitorPhone] = useState("");
+  const [relationship, setRelationship] = useState("Guardian");
+  const [purpose, setPurpose] = useState("Family Visit");
+  const [selectedStudentId, setSelectedStudentId] = useState("");
+  const [idType, setIdType] = useState("Aadhaar Card");
+  const [idNumber, setIdNumber] = useState("");
 
   // Queries
   const {
@@ -49,7 +38,7 @@ export function HostelVisitors() {
     isError,
     error,
   } = useQuery({
-    queryKey: ['visitors', search, selectedStatus],
+    queryKey: ["visitors", search, selectedStatus],
     queryFn: () =>
       fetchHostelVisitors({
         search,
@@ -58,7 +47,7 @@ export function HostelVisitors() {
   });
 
   const { data: residents = [] } = useQuery({
-    queryKey: ['residents-lookup'],
+    queryKey: ["residents-lookup"],
     queryFn: () => fetchResidents(),
   });
 
@@ -66,44 +55,44 @@ export function HostelVisitors() {
   const registerMutation = useMutation({
     mutationFn: (payload: any) => registerVisitor(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['visitors'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      toast.success('Visitor registered successfully!');
+      queryClient.invalidateQueries({ queryKey: ["visitors"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      toast.success("Visitor registered successfully!");
       setIsRegisterOpen(false);
       // Reset
-      setVisitorName('');
-      setVisitorPhone('');
-      setSelectedStudentId('');
-      setPurpose('Family Visit');
-      setIdNumber('');
+      setVisitorName("");
+      setVisitorPhone("");
+      setSelectedStudentId("");
+      setPurpose("Family Visit");
+      setIdNumber("");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to register visitor');
+      toast.error(err.message || "Failed to register visitor");
     },
   });
 
   const checkOutMutation = useMutation({
     mutationFn: (id: string) => checkOutVisitor(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['visitors'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      toast.success('Visitor checked out successfully!');
+      queryClient.invalidateQueries({ queryKey: ["visitors"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      toast.success("Visitor checked out successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to checkout visitor');
+      toast.error(err.message || "Failed to checkout visitor");
     },
   });
 
   // Calculations
   const totalToday = visitorsList.length;
-  const insideCount = visitorsList.filter((v) => v.status === 'Inside').length;
-  const checkedOutCount = visitorsList.filter((v) => v.status === 'Checked Out').length;
+  const insideCount = visitorsList.filter((v) => v.status === "Inside").length;
+  const checkedOutCount = visitorsList.filter((v) => v.status === "Checked Out").length;
   const pendingApprovalCount = 0; // We can keep this 0 or mock
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!visitorName.trim() || !visitorPhone.trim()) {
-      toast.error('Please fill in required fields');
+      toast.error("Please fill in required fields");
       return;
     }
 
@@ -120,14 +109,14 @@ export function HostelVisitors() {
       id_type: idType,
       id_number: idNumber || null,
       check_in_time: new Date(),
-      status: 'In',
+      status: "In",
     };
 
     registerMutation.mutate(payload);
   };
 
   const visitorAnalytics = useMemo(() => {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const counts: Record<string, number> = {
       Mon: 0,
       Tue: 0,
@@ -169,14 +158,10 @@ export function HostelVisitors() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Visitors Today', value: String(totalToday), tone: 'info' as const },
-          { label: 'Currently Inside', value: String(insideCount), tone: 'success' as const },
-          { label: 'Checked Out', value: String(checkedOutCount), tone: 'warn' as const },
-          {
-            label: 'Pending Approval',
-            value: String(pendingApprovalCount),
-            tone: 'danger' as const,
-          },
+          { label: "Total Visitors Today", value: String(totalToday), tone: "info" as const },
+          { label: "Currently Inside", value: String(insideCount), tone: "success" as const },
+          { label: "Checked Out", value: String(checkedOutCount), tone: "warn" as const },
+          { label: "Pending Approval", value: String(pendingApprovalCount), tone: "danger" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -204,15 +189,8 @@ export function HostelVisitors() {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {['All Status', 'Inside', 'Checked Out'].map((s) => (
-              <option
-                key={s}
-                value={
-                  s === 'Inside' ? 'Inside' : s === 'Checked Out' ? 'Checked Out' : 'All Status'
-                }
-              >
-                {s}
-              </option>
+            {["All Status", "Inside", "Checked Out"].map((s) => (
+              <option key={s} value={s === "Inside" ? "Inside" : s === "Checked Out" ? "Checked Out" : "All Status"}>{s}</option>
             ))}
           </select>
           <select
@@ -220,10 +198,8 @@ export function HostelVisitors() {
             onChange={(e) => setSelectedTimeRange(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {['Today', 'This Week', 'This Month'].map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
+            {["Today", "This Week", "This Month"].map((t) => (
+              <option key={t} value={t}>{t}</option>
             ))}
           </select>
         </div>
@@ -240,7 +216,7 @@ export function HostelVisitors() {
           ) : isError ? (
             <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-3">
               <AlertCircle className="size-8 mx-auto text-rose-500" />
-              <p>{error instanceof Error ? error.message : 'Failed to load visitors.'}</p>
+              <p>{error instanceof Error ? error.message : "Failed to load visitors."}</p>
             </div>
           ) : visitorsList.length === 0 ? (
             <div className="py-12 px-6 text-center text-sm text-muted-foreground">
@@ -252,13 +228,13 @@ export function HostelVisitors() {
                 <thead className="border-b">
                   <tr>
                     {[
-                      'Visitor Name',
-                      'Student Name',
-                      'Entry Time',
-                      'Exit Time',
-                      'Contact Number',
-                      'Status',
-                      'Actions',
+                      "Visitor Name",
+                      "Student Name",
+                      "Entry Time",
+                      "Exit Time",
+                      "Contact Number",
+                      "Status",
+                      "Actions",
                     ].map((column) => (
                       <th
                         key={column}
@@ -280,12 +256,12 @@ export function HostelVisitors() {
                       </td>
                       <td className="py-3 px-4 text-muted-foreground">{log.visitorPhone}</td>
                       <td className="py-3 px-4">
-                        <Badge tone={log.status === 'Inside' ? 'success' : 'warn'}>
+                        <Badge tone={log.status === "Inside" ? "success" : "warn"}>
                           {log.status}
                         </Badge>
                       </td>
                       <td className="py-3 px-4">
-                        {log.status === 'Inside' ? (
+                        {log.status === "Inside" ? (
                           <button
                             onClick={() => checkOutMutation.mutate(log.id)}
                             className="px-2 py-1 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded font-medium transition cursor-pointer"
@@ -344,7 +320,7 @@ export function HostelVisitors() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="visitors" fill="#4F46E5" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -384,9 +360,7 @@ export function HostelVisitors() {
             <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
-                    Visitor Name *
-                  </label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Visitor Name *</label>
                   <input
                     value={visitorName}
                     onChange={(e) => setVisitorName(e.target.value)}
@@ -396,9 +370,7 @@ export function HostelVisitors() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
-                    Visitor Phone *
-                  </label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Visitor Phone *</label>
                   <input
                     value={visitorPhone}
                     onChange={(e) => setVisitorPhone(e.target.value)}
@@ -410,27 +382,19 @@ export function HostelVisitors() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
-                    Relationship
-                  </label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Relationship</label>
                   <select
                     value={relationship}
                     onChange={(e) => setRelationship(e.target.value)}
                     className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
                   >
-                    {['Parent', 'Guardian', 'Friend', 'Sibling', 'Local Guardian', 'Other'].map(
-                      (rel) => (
-                        <option key={rel} value={rel}>
-                          {rel}
-                        </option>
-                      ),
-                    )}
+                    {["Parent", "Guardian", "Friend", "Sibling", "Local Guardian", "Other"].map((rel) => (
+                      <option key={rel} value={rel}>{rel}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
-                    Purpose of Visit
-                  </label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Purpose of Visit</label>
                   <input
                     value={purpose}
                     onChange={(e) => setPurpose(e.target.value)}
@@ -440,9 +404,7 @@ export function HostelVisitors() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1 font-medium">
-                  Visiting Resident Student
-                </label>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium">Visiting Resident Student</label>
                 <select
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
@@ -459,32 +421,19 @@ export function HostelVisitors() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
-                    Verification ID Type
-                  </label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Verification ID Type</label>
                   <select
                     value={idType}
                     onChange={(e) => setIdType(e.target.value)}
                     className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
                   >
-                    {[
-                      'Aadhaar Card',
-                      'PAN Card',
-                      'Driving License',
-                      'Student ID',
-                      'Passport',
-                      'Other',
-                    ].map((idt) => (
-                      <option key={idt} value={idt}>
-                        {idt}
-                      </option>
+                    {["Aadhaar Card", "PAN Card", "Driving License", "Student ID", "Passport", "Other"].map((idt) => (
+                      <option key={idt} value={idt}>{idt}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-muted-foreground mb-1 font-medium">
-                    Verification ID Number
-                  </label>
+                  <label className="block text-xs text-muted-foreground mb-1 font-medium">Verification ID Number</label>
                   <input
                     value={idNumber}
                     onChange={(e) => setIdNumber(e.target.value)}
@@ -507,7 +456,7 @@ export function HostelVisitors() {
                 className="px-4 py-2 text-xs rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-95 transition"
                 disabled={registerMutation.isPending}
               >
-                {registerMutation.isPending ? 'Registering...' : 'Register Entry'}
+                {registerMutation.isPending ? "Registering..." : "Register Entry"}
               </button>
             </div>
           </form>

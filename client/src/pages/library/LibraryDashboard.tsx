@@ -1,23 +1,23 @@
-import { useState } from 'react';
-import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
-import { Search, BookOpen, Clock, DollarSign, Calendar } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchBooks, fetchIssuedBooks } from '@/services/libraryService';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
+import { Search, BookOpen, Clock, DollarSign, Calendar } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchBooks, fetchIssuedBooks } from "@/services/libraryService";
+import { toast } from "sonner";
 
 export function LibraryDashboard() {
-  const [activeTab, setActiveTab] = useState<'catalog' | 'borrowed'>('catalog');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchVal, setSearchVal] = useState('');
-  const [category, setCategory] = useState('');
+  const [activeTab, setActiveTab] = useState<"catalog" | "borrowed">("catalog");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchVal, setSearchVal] = useState("");
+  const [category, setCategory] = useState("");
 
   const { data: books, isLoading: isBooksLoading } = useQuery({
-    queryKey: ['books', searchVal, category],
+    queryKey: ["books", searchVal, category],
     queryFn: () => fetchBooks({ search: searchVal, category, limit: 1000 }),
   });
 
   const { data: borrowedBooks, isLoading: isBorrowedLoading } = useQuery({
-    queryKey: ['myBorrowedBooks'],
+    queryKey: ["myBorrowedBooks"],
     queryFn: () => fetchIssuedBooks(),
   });
 
@@ -28,7 +28,7 @@ export function LibraryDashboard() {
 
   const handleRequestIssue = (book: any) => {
     toast.info(
-      `To issue "${book.title}", please visit the Library desk. (ISBN: ${book.isbn || 'N/A'}, Shelf: ${book.shelfNumber || 'N/A'})`,
+      `To issue "${book.title}", please visit the Library desk. (ISBN: ${book.isbn || "N/A"}, Shelf: ${book.shelfNumber || "N/A"})`
     );
   };
 
@@ -42,28 +42,28 @@ export function LibraryDashboard() {
       {/* Tabs Menu */}
       <div className="flex gap-2 border-b pb-3">
         <button
-          onClick={() => setActiveTab('catalog')}
+          onClick={() => setActiveTab("catalog")}
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition ${
-            activeTab === 'catalog'
-              ? 'bg-gradient-primary text-white glow-primary'
-              : 'bg-gradient-soft border text-muted-foreground hover:text-foreground'
+            activeTab === "catalog"
+              ? "bg-gradient-primary text-white glow-primary"
+              : "bg-gradient-soft border text-muted-foreground hover:text-foreground"
           }`}
         >
           Book Catalog
         </button>
         <button
-          onClick={() => setActiveTab('borrowed')}
+          onClick={() => setActiveTab("borrowed")}
           className={`px-4 py-2 text-sm font-semibold rounded-xl transition ${
-            activeTab === 'borrowed'
-              ? 'bg-gradient-primary text-white glow-primary'
-              : 'bg-gradient-soft border text-muted-foreground hover:text-foreground'
+            activeTab === "borrowed"
+              ? "bg-gradient-primary text-white glow-primary"
+              : "bg-gradient-soft border text-muted-foreground hover:text-foreground"
           }`}
         >
           My Borrowed Books ({borrowedBooks?.length || 0})
         </button>
       </div>
 
-      {activeTab === 'catalog' ? (
+      {activeTab === "catalog" ? (
         <>
           {/* Catalog Filter Controls */}
           <Card>
@@ -119,10 +119,7 @@ export function LibraryDashboard() {
                 const available = b.availableCopies !== undefined ? b.availableCopies : 1;
 
                 return (
-                  <Card
-                    key={b._id}
-                    className="hover:-translate-y-1 transition duration-200 flex flex-col justify-between"
-                  >
+                  <Card key={b._id} className="hover:-translate-y-1 transition duration-200 flex flex-col justify-between">
                     <div>
                       <div className="aspect-[3/2] rounded-xl bg-gradient-primary text-white grid place-items-center mb-4 relative overflow-hidden">
                         <BookOpen className="size-12 opacity-80" />
@@ -136,9 +133,9 @@ export function LibraryDashboard() {
                       <div className="font-semibold text-sm line-clamp-1">{b.title}</div>
                       <div className="text-xs text-muted-foreground mb-2">{b.author}</div>
                       <div className="flex items-center justify-between mt-3">
-                        <Badge tone="info">{b.category || 'General'}</Badge>
-                        <Badge tone={available > 0 ? 'success' : 'danger'}>
-                          {available > 0 ? `${available}/${total} Available` : 'Unavailable'}
+                        <Badge tone="info">{b.category || "General"}</Badge>
+                        <Badge tone={available > 0 ? "success" : "danger"}>
+                          {available > 0 ? `${available}/${total} Available` : "Unavailable"}
                         </Badge>
                       </div>
                     </div>
@@ -146,7 +143,7 @@ export function LibraryDashboard() {
                       onClick={() => handleRequestIssue(b)}
                       className="mt-5 w-full rounded-xl bg-gradient-primary text-white text-xs font-semibold py-2.5 glow-primary transition"
                     >
-                      {available > 0 ? 'How to Borrow' : 'Notify Availability'}
+                      {available > 0 ? "How to Borrow" : "Notify Availability"}
                     </button>
                   </Card>
                 );
@@ -166,29 +163,20 @@ export function LibraryDashboard() {
           ) : !borrowedBooks || borrowedBooks.length === 0 ? (
             <Card className="text-center py-12">
               <Clock className="size-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-              <p className="text-muted-foreground font-medium">
-                You have no active or historical checkouts.
-              </p>
+              <p className="text-muted-foreground font-medium">You have no active or historical checkouts.</p>
             </Card>
           ) : (
             <div className="space-y-3">
               {borrowedBooks.map((item) => {
-                const bTitle =
-                  typeof item.book === 'object' && item.book ? item.book.title : 'Library Book';
-                const bAuthor =
-                  typeof item.book === 'object' && item.book ? item.book.author : 'Author';
-                const isOverdue = item.status === 'overdue';
-                const isReturned = item.status === 'returned';
+                const bTitle = typeof item.book === "object" && item.book ? item.book.title : "Library Book";
+                const bAuthor = typeof item.book === "object" && item.book ? item.book.author : "Author";
+                const isOverdue = item.status === "overdue";
+                const isReturned = item.status === "returned";
 
                 return (
-                  <Card
-                    key={item._id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4"
-                  >
+                  <Card key={item._id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-4">
                     <div className="flex items-start gap-3">
-                      <div
-                        className={`p-2.5 rounded-xl bg-gradient-soft border ${isOverdue ? 'text-rose-600' : 'text-primary'}`}
-                      >
+                      <div className={`p-2.5 rounded-xl bg-gradient-soft border ${isOverdue ? "text-rose-600" : "text-primary"}`}>
                         <BookOpen className="size-5" />
                       </div>
                       <div>
@@ -206,9 +194,7 @@ export function LibraryDashboard() {
                         </span>
                       </div>
                       <div>
-                        <span className="text-muted-foreground block text-[10px]">
-                          {isReturned ? 'Returned On' : 'Due Date'}
-                        </span>
+                        <span className="text-muted-foreground block text-[10px]">{isReturned ? "Returned On" : "Due Date"}</span>
                         <span className="font-semibold flex items-center gap-1">
                           <Clock className="size-3.5 text-muted-foreground" />
                           {isReturned ? item.returnDate : item.dueDate}
@@ -216,16 +202,14 @@ export function LibraryDashboard() {
                       </div>
                       {item.fineAmount !== undefined && item.fineAmount > 0 && (
                         <div>
-                          <span className="text-muted-foreground block text-[10px]">
-                            Fine Balance
-                          </span>
+                          <span className="text-muted-foreground block text-[10px]">Fine Balance</span>
                           <span className="font-semibold text-rose-600 flex items-center gap-0.5">
                             ₹{item.fineAmount}
                           </span>
                         </div>
                       )}
                       <div className="col-span-2 sm:col-span-1 flex items-center">
-                        <Badge tone={isOverdue ? 'danger' : isReturned ? 'success' : 'info'}>
+                        <Badge tone={isOverdue ? "danger" : isReturned ? "success" : "info"}>
                           {item.status.toUpperCase()}
                         </Badge>
                       </div>

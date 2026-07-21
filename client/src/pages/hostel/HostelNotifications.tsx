@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Bell,
   Search,
@@ -11,25 +11,25 @@ import {
   Trash2,
   Loader2,
   AlertCircle,
-} from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
+} from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 import {
   fetchSystemNotifications,
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
   fetchHostelFees,
-} from '@/services/hostelService';
+} from "@/services/hostelService";
 
 export function HostelNotifications() {
   const queryClient = useQueryClient();
 
   // Search & Filter State
-  const [search, setSearch] = useState('');
-  const [selectedType, setSelectedType] = useState('All Types');
-  const [selectedPriority, setSelectedPriority] = useState('All Priority');
-  const [selectedStatus, setSelectedStatus] = useState('Unread');
+  const [search, setSearch] = useState("");
+  const [selectedType, setSelectedType] = useState("All Types");
+  const [selectedPriority, setSelectedPriority] = useState("All Priority");
+  const [selectedStatus, setSelectedStatus] = useState("Unread");
 
   // Queries
   const {
@@ -38,42 +38,42 @@ export function HostelNotifications() {
     isError,
     error,
   } = useQuery({
-    queryKey: ['notifications'],
+    queryKey: ["notifications"],
     queryFn: fetchSystemNotifications,
   });
 
   const { data: feesList = [] } = useQuery({
-    queryKey: ['fees-lookup'],
-    queryFn: () => fetchHostelFees({ status: 'Pending' }),
+    queryKey: ["fees-lookup"],
+    queryFn: () => fetchHostelFees({ status: "Pending" }),
   });
 
   // Mutations
   const readMutation = useMutation({
     mutationFn: (id: string) => markNotificationRead(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['system-notifications'] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
     },
   });
 
   const readAllMutation = useMutation({
     mutationFn: markAllNotificationsRead,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['system-notifications'] });
-      toast.success('All notifications marked as read!');
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      toast.success("All notifications marked as read!");
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteNotification(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['system-notifications'] });
-      toast.success('Notification deleted');
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      toast.success("Notification deleted");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to delete notification');
+      toast.error(err.message || "Failed to delete notification");
     },
   });
 
@@ -81,23 +81,18 @@ export function HostelNotifications() {
   const filteredNotifications = useMemo(() => {
     return notificationsList.filter((n) => {
       const matchesSearch = n.title.toLowerCase().includes(search.toLowerCase());
-
-      const matchesType =
-        selectedType === 'All Types' ||
-        n.type === selectedType ||
-        (selectedType === 'Emergency' && n.type === 'Alert');
+      
+      const matchesType = selectedType === "All Types" || n.type === selectedType || (selectedType === "Emergency" && n.type === "Alert");
 
       // In db we don't have explicit priority, we map based on type or let it match all
-      const matchesPriority =
-        selectedPriority === 'All Priority' ||
-        (selectedPriority === 'High' && (n.type === 'Alert' || n.type === 'Emergency')) ||
-        (selectedPriority === 'Medium' && n.type === 'Maintenance') ||
-        (selectedPriority === 'Low' && n.type === 'Info');
+      const matchesPriority = selectedPriority === "All Priority" || 
+        (selectedPriority === "High" && (n.type === "Alert" || n.type === "Emergency")) ||
+        (selectedPriority === "Medium" && n.type === "Maintenance") ||
+        (selectedPriority === "Low" && n.type === "Info");
 
-      const matchesStatus =
-        selectedStatus === 'All Status' ||
-        (selectedStatus === 'Unread' && n.unread) ||
-        (selectedStatus === 'Read' && !n.unread);
+      const matchesStatus = selectedStatus === "All Status" || 
+        (selectedStatus === "Unread" && n.unread) || 
+        (selectedStatus === "Read" && !n.unread);
 
       return matchesSearch && matchesType && matchesPriority && matchesStatus;
     });
@@ -106,9 +101,7 @@ export function HostelNotifications() {
   // Counts
   const totalCount = notificationsList.length;
   const unreadCount = notificationsList.filter((n) => n.unread).length;
-  const highPriorityCount = notificationsList.filter(
-    (n) => n.type === 'Alert' || n.type === 'Emergency',
-  ).length;
+  const highPriorityCount = notificationsList.filter((n) => n.type === "Alert" || n.type === "Emergency").length;
   const thisWeekCount = notificationsList.filter((n) => {
     if (!n.created_at) return false;
     const diff = Date.now() - new Date(n.created_at).getTime();
@@ -118,11 +111,11 @@ export function HostelNotifications() {
   const typeCounts = useMemo(() => {
     const counts = { Fee: 0, Complaint: 0, Policy: 0, Mess: 0, Emergency: 0 };
     notificationsList.forEach((n) => {
-      if (n.type === 'Fee') counts.Fee++;
-      else if (n.type === 'Complaint') counts.Complaint++;
-      else if (n.type === 'Policy') counts.Policy++;
-      else if (n.type === 'Mess') counts.Mess++;
-      else if (n.type === 'Alert' || n.type === 'Emergency') counts.Emergency++;
+      if (n.type === "Fee") counts.Fee++;
+      else if (n.type === "Complaint") counts.Complaint++;
+      else if (n.type === "Policy") counts.Policy++;
+      else if (n.type === "Mess") counts.Mess++;
+      else if (n.type === "Alert" || n.type === "Emergency") counts.Emergency++;
     });
     return counts;
   }, [notificationsList]);
@@ -136,10 +129,10 @@ export function HostelNotifications() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Notifications', value: String(totalCount), tone: 'info' as const },
-          { label: 'Unread', value: String(unreadCount), tone: 'warn' as const },
-          { label: 'High Priority', value: String(highPriorityCount), tone: 'danger' as const },
-          { label: 'This Week', value: String(thisWeekCount), tone: 'success' as const },
+          { label: "Total Notifications", value: String(totalCount), tone: "info" as const },
+          { label: "Unread", value: String(unreadCount), tone: "warn" as const },
+          { label: "High Priority", value: String(highPriorityCount), tone: "danger" as const },
+          { label: "This Week", value: String(thisWeekCount), tone: "success" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -167,10 +160,8 @@ export function HostelNotifications() {
             onChange={(e) => setSelectedType(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {['All Types', 'Fee', 'Complaint', 'Policy', 'Mess', 'Emergency'].map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
+            {["All Types", "Fee", "Complaint", "Policy", "Mess", "Emergency"].map((t) => (
+              <option key={t} value={t}>{t}</option>
             ))}
           </select>
           <select
@@ -178,10 +169,8 @@ export function HostelNotifications() {
             onChange={(e) => setSelectedPriority(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {['All Priority', 'High', 'Medium', 'Low'].map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
+            {["All Priority", "High", "Medium", "Low"].map((p) => (
+              <option key={p} value={p}>{p}</option>
             ))}
           </select>
           <select
@@ -189,10 +178,8 @@ export function HostelNotifications() {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {['All Status', 'Unread', 'Read'].map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+            {["All Status", "Unread", "Read"].map((s) => (
+              <option key={s} value={s}>{s}</option>
             ))}
           </select>
         </div>
@@ -211,7 +198,7 @@ export function HostelNotifications() {
               </button>
             )}
           </div>
-
+          
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 gap-2">
               <Loader2 className="size-8 text-primary animate-spin" />
@@ -220,7 +207,7 @@ export function HostelNotifications() {
           ) : isError ? (
             <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-3">
               <AlertCircle className="size-8 mx-auto text-rose-500" />
-              <p>{error instanceof Error ? error.message : 'Failed to load notifications.'}</p>
+              <p>{error instanceof Error ? error.message : "Failed to load notifications."}</p>
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="py-12 px-6 text-center text-sm text-muted-foreground">
@@ -229,9 +216,8 @@ export function HostelNotifications() {
           ) : (
             <div className="space-y-2">
               {filteredNotifications.map((notification) => {
-                const isHigh = notification.type === 'Alert' || notification.type === 'Emergency';
-                const isMed =
-                  notification.type === 'Maintenance' || notification.type === 'Complaint';
+                const isHigh = notification.type === "Alert" || notification.type === "Emergency";
+                const isMed = notification.type === "Maintenance" || notification.type === "Complaint";
                 return (
                   <div
                     key={notification.id}
@@ -240,24 +226,24 @@ export function HostelNotifications() {
                         readMutation.mutate(notification.id);
                       }
                     }}
-                    className={`flex items-center gap-3 p-4 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${notification.unread ? 'bg-indigo/5 border-indigo/20' : ''}`}
+                    className={`flex items-center gap-3 p-4 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${notification.unread ? "bg-indigo/5 border-indigo/20" : ""}`}
                   >
                     <div
-                      className={`size-10 rounded-lg ${isHigh ? 'bg-gradient-primary' : isMed ? 'bg-gradient-violet' : 'bg-gradient-cyan'} text-white grid place-items-center shrink-0`}
+                      className={`size-10 rounded-lg ${isHigh ? "bg-gradient-primary" : isMed ? "bg-gradient-violet" : "bg-gradient-cyan"} text-white grid place-items-center shrink-0`}
                     >
-                      {notification.type === 'Fee' && <DollarSign className="size-4" />}
-                      {notification.type === 'Complaint' && <MessageSquare className="size-4" />}
-                      {notification.type === 'Policy' && <Shield className="size-4" />}
-                      {notification.type === 'Mess' && <Bell className="size-4" />}
-                      {notification.type === 'Alert' && <AlertTriangle className="size-4" />}
-                      {notification.type === 'Emergency' && <AlertTriangle className="size-4" />}
+                      {notification.type === "Fee" && <DollarSign className="size-4" />}
+                      {notification.type === "Complaint" && <MessageSquare className="size-4" />}
+                      {notification.type === "Policy" && <Shield className="size-4" />}
+                      {notification.type === "Mess" && <Bell className="size-4" />}
+                      {notification.type === "Alert" && <AlertTriangle className="size-4" />}
+                      {notification.type === "Emergency" && <AlertTriangle className="size-4" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm font-medium truncate">{notification.title}</span>
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <Badge tone={isHigh ? 'danger' : isMed ? 'warn' : 'success'}>
-                            {isHigh ? 'High' : isMed ? 'Medium' : 'Low'}
+                          <Badge tone={isHigh ? "danger" : isMed ? "warn" : "success"}>
+                            {isHigh ? "High" : isMed ? "Medium" : "Low"}
                           </Badge>
                           <button
                             onClick={(e) => {
@@ -272,7 +258,7 @@ export function HostelNotifications() {
                         </div>
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
-                        {notification.type} • {notification.time || 'Recently'}
+                        {notification.type} • {notification.time || "Recently"}
                       </div>
                     </div>
                   </div>
@@ -289,26 +275,16 @@ export function HostelNotifications() {
           </div>
           <div className="space-y-2">
             {[
-              { label: 'Fee Reminders', count: typeCounts.Fee, icon: DollarSign, value: 'Fee' },
-              {
-                label: 'Complaint Updates',
-                count: typeCounts.Complaint,
-                icon: MessageSquare,
-                value: 'Complaint',
-              },
-              { label: 'Policy Changes', count: typeCounts.Policy, icon: Shield, value: 'Policy' },
-              { label: 'Mess Alerts', count: typeCounts.Mess, icon: Bell, value: 'Mess' },
-              {
-                label: 'Emergency',
-                count: typeCounts.Emergency,
-                icon: AlertTriangle,
-                value: 'Emergency',
-              },
+              { label: "Fee Reminders", count: typeCounts.Fee, icon: DollarSign, value: "Fee" },
+              { label: "Complaint Updates", count: typeCounts.Complaint, icon: MessageSquare, value: "Complaint" },
+              { label: "Policy Changes", count: typeCounts.Policy, icon: Shield, value: "Policy" },
+              { label: "Mess Alerts", count: typeCounts.Mess, icon: Bell, value: "Mess" },
+              { label: "Emergency", count: typeCounts.Emergency, icon: AlertTriangle, value: "Emergency" },
             ].map((filter) => (
               <button
                 key={filter.label}
                 onClick={() => setSelectedType(filter.value)}
-                className={`w-full flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${selectedType === filter.value ? 'bg-accent/60 border-primary' : ''}`}
+                className={`w-full flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${selectedType === filter.value ? "bg-accent/60 border-primary" : ""}`}
               >
                 <div className="flex items-center gap-2">
                   <filter.icon className="size-4 text-muted-foreground" />
@@ -340,9 +316,7 @@ export function HostelNotifications() {
                   </div>
                   <Badge tone="danger">Pending</Badge>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  Amount: {reminder.feeAmount}
-                </div>
+                <div className="text-xs text-muted-foreground mt-1">Amount: {reminder.feeAmount}</div>
               </div>
             ))}
             {feesList.length === 0 && (
@@ -360,7 +334,7 @@ export function HostelNotifications() {
           </div>
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {notificationsList
-              .filter((n) => n.type === 'Alert' || n.type === 'Emergency')
+              .filter((n) => n.type === "Alert" || n.type === "Emergency")
               .slice(0, 3)
               .map((alert) => (
                 <div
@@ -370,16 +344,13 @@ export function HostelNotifications() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-sm font-medium text-rose-600">{alert.title}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {alert.time || 'Recently'}
-                      </div>
+                      <div className="text-xs text-muted-foreground">{alert.time || "Recently"}</div>
                     </div>
                     <Badge tone="danger">Alert</Badge>
                   </div>
                 </div>
               ))}
-            {notificationsList.filter((n) => n.type === 'Alert' || n.type === 'Emergency')
-              .length === 0 && (
+            {notificationsList.filter((n) => n.type === "Alert" || n.type === "Emergency").length === 0 && (
               <div className="text-center text-sm text-muted-foreground py-8">
                 No recent alert alerts
               </div>
@@ -405,7 +376,7 @@ export function HostelNotifications() {
               <div className="flex-1">
                 <div className="text-sm font-medium">{announcement.title}</div>
                 <div className="text-xs text-muted-foreground">
-                  {announcement.type} • {announcement.time || 'Recently'}
+                  {announcement.type} • {announcement.time || "Recently"}
                 </div>
               </div>
               <Badge tone="info">{announcement.type}</Badge>

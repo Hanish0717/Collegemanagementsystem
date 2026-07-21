@@ -1,38 +1,29 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  Users,
-  Search,
-  Phone,
-  Mail,
-  MapPin,
-  Activity,
-  GraduationCap,
-  Edit,
-  Trash2,
-  Loader2,
-  AlertCircle,
-} from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Users, Search, Phone, Mail, MapPin, Activity, GraduationCap, Edit, Trash2, Loader2, AlertCircle } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 import {
   fetchResidents,
   createResident,
   updateResident,
   deleteResident,
   fetchStats,
-} from '@/services/hostelService';
-import { fetchDepartments } from '@/services/studentService';
-import { StudentFormModal, StudentDeleteAlert } from '../dashboard/students/StudentDialogs';
+} from "@/services/hostelService";
+import { fetchDepartments } from "@/services/studentService";
+import {
+  StudentFormModal,
+  StudentDeleteAlert,
+} from "../dashboard/students/StudentDialogs";
 
 export function HostelStudents() {
   const queryClient = useQueryClient();
 
   // Search & Filter State
-  const [search, setSearch] = useState('');
-  const [selectedDept, setSelectedDept] = useState('All Departments');
-  const [selectedStatus, setSelectedStatus] = useState('All Status');
-  const [selectedFloor, setSelectedFloor] = useState('All Floors');
+  const [search, setSearch] = useState("");
+  const [selectedDept, setSelectedDept] = useState("All Departments");
+  const [selectedStatus, setSelectedStatus] = useState("All Status");
+  const [selectedFloor, setSelectedFloor] = useState("All Floors");
 
   // Modal State
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -41,12 +32,12 @@ export function HostelStudents() {
 
   // Queries
   const { data: departments = [] } = useQuery({
-    queryKey: ['departments'],
+    queryKey: ["departments"],
     queryFn: fetchDepartments,
   });
 
   const { data: statsList = [], isLoading: isStatsLoading } = useQuery({
-    queryKey: ['hostel-stats'],
+    queryKey: ["hostel-stats"],
     queryFn: fetchStats,
   });
 
@@ -56,7 +47,7 @@ export function HostelStudents() {
     isError,
     error,
   } = useQuery({
-    queryKey: ['residents', search, selectedDept, selectedStatus, selectedFloor],
+    queryKey: ["residents", search, selectedDept, selectedStatus, selectedFloor],
     queryFn: () =>
       fetchResidents({
         search,
@@ -71,19 +62,19 @@ export function HostelStudents() {
     mutationFn: ({ student, allocation }: { student: any; allocation: any }) =>
       createResident(student, allocation),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['residents'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-charts'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-dashboard-charts'] });
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['fees-lookup'] });
-      queryClient.invalidateQueries({ queryKey: ['system-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success('Resident added and room allocated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-dashboard-charts"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["fees-lookup"] });
+      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      toast.success("Resident added and room allocated successfully!");
       setIsFormOpen(false);
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to create resident');
+      toast.error(err.message || "Failed to create resident");
     },
   });
 
@@ -100,46 +91,39 @@ export function HostelStudents() {
       allocation: any;
     }) => updateResident(allocationId, studentId, student, allocation),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['residents'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-charts'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-dashboard-charts'] });
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['system-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success('Resident updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-dashboard-charts"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      toast.success("Resident updated successfully!");
       setIsFormOpen(false);
       setEditingResident(null);
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to update resident');
+      toast.error(err.message || "Failed to update resident");
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: ({
-      allocationId,
-      roomId,
-      studentName,
-    }: {
-      allocationId: string;
-      roomId: string;
-      studentName: string;
-    }) => deleteResident(allocationId, roomId, studentName),
+    mutationFn: ({ allocationId, roomId, studentName }: { allocationId: string; roomId: string; studentName: string }) =>
+      deleteResident(allocationId, roomId, studentName),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['residents'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-charts'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-dashboard-charts'] });
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['fees-lookup'] });
-      queryClient.invalidateQueries({ queryKey: ['system-notifications'] });
-      queryClient.invalidateQueries({ queryKey: ['notifications'] });
-      toast.success('Resident removed and room vacated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-dashboard-charts"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["fees-lookup"] });
+      queryClient.invalidateQueries({ queryKey: ["system-notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      toast.success("Resident removed and room vacated successfully!");
       setDeleteTarget(null);
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to remove resident');
+      toast.error(err.message || "Failed to remove resident");
     },
   });
 
@@ -200,22 +184,22 @@ export function HostelStudents() {
 
   const initials = (name: string) =>
     name
-      .split(' ')
+      .split(" ")
       .filter(Boolean)
       .map((n) => n[0])
-      .join('')
+      .join("")
       .slice(0, 2)
       .toUpperCase();
 
   // Dynamic statistics
-  const totalStudents = statsList.find((s) => s.label === 'Hostel Students')?.value || '0';
-  const activeCount = residentsList.filter((r) => r.status === 'Active').length;
+  const totalStudents = statsList.find((s) => s.label === "Hostel Students")?.value || "0";
+  const activeCount = residentsList.filter((r) => r.status === "Active").length;
   const warningCount = residentsList.filter((r) => parseInt(r.attendance) < 75).length;
-  const inactiveCount = residentsList.filter((r) => r.status === 'Vacated').length;
+  const inactiveCount = residentsList.filter((r) => r.status === "Vacated").length;
 
   const averageAttendance = useMemo(() => {
-    if (!residentsList.length) return '0%';
-    const sum = residentsList.reduce((acc, r) => acc + parseInt(r.attendance || '100'), 0);
+    if (!residentsList.length) return "0%";
+    const sum = residentsList.reduce((acc, r) => acc + parseInt(r.attendance || "100"), 0);
     return `${Math.round(sum / residentsList.length)}%`;
   }, [residentsList]);
 
@@ -247,10 +231,10 @@ export function HostelStudents() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Students', value: totalStudents, tone: 'info' as const },
-          { label: 'Active Residents', value: String(activeCount), tone: 'success' as const },
-          { label: 'Warning (Low Attendance)', value: String(warningCount), tone: 'warn' as const },
-          { label: 'Vacated', value: String(inactiveCount), tone: 'danger' as const },
+          { label: "Total Students", value: totalStudents, tone: "info" as const },
+          { label: "Active Residents", value: String(activeCount), tone: "success" as const },
+          { label: "Warning (Low Attendance)", value: String(warningCount), tone: "warn" as const },
+          { label: "Vacated", value: String(inactiveCount), tone: "danger" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -290,10 +274,8 @@ export function HostelStudents() {
             onChange={(e) => setSelectedStatus(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {['All Status', 'Active', 'Vacated', 'Suspended'].map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+            {["All Status", "Active", "Vacated", "Suspended"].map((s) => (
+              <option key={s} value={s}>{s}</option>
             ))}
           </select>
           <select
@@ -301,10 +283,8 @@ export function HostelStudents() {
             onChange={(e) => setSelectedFloor(e.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary"
           >
-            {['All Floors', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor'].map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
+            {["All Floors", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"].map((f) => (
+              <option key={f} value={f}>{f}</option>
             ))}
           </select>
         </div>
@@ -318,7 +298,7 @@ export function HostelStudents() {
       ) : isError ? (
         <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-3">
           <AlertCircle className="size-8 mx-auto text-rose-500" />
-          <p>{error instanceof Error ? error.message : 'Failed to load residents.'}</p>
+          <p>{error instanceof Error ? error.message : "Failed to load residents."}</p>
         </div>
       ) : residentsList.length === 0 ? (
         <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-2">
@@ -344,19 +324,17 @@ export function HostelStudents() {
                         </div>
                         <div>
                           <div className="font-medium text-sm">{student.fullName}</div>
-                          <div className="text-[11px] text-muted-foreground">
-                            {student.department}
-                          </div>
+                          <div className="text-[11px] text-muted-foreground">{student.department}</div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1.5">
                         <Badge
                           tone={
-                            student.status === 'Active'
-                              ? 'success'
-                              : student.status === 'Suspended'
-                                ? 'danger'
-                                : 'warn'
+                            student.status === "Active"
+                              ? "success"
+                              : student.status === "Suspended"
+                                ? "danger"
+                                : "warn"
                           }
                         >
                           {student.status}
@@ -412,10 +390,7 @@ export function HostelStudents() {
             </div>
             <div className="space-y-3">
               {studentAnalytics.map((dept) => (
-                <div
-                  key={dept.department}
-                  className="flex justify-between items-center text-xs p-2 rounded-lg border bg-background/50"
-                >
+                <div key={dept.department} className="flex justify-between items-center text-xs p-2 rounded-lg border bg-background/50">
                   <span className="font-medium text-muted-foreground">{dept.department}</span>
                   <Badge tone="info">{dept.count} Students</Badge>
                 </div>
@@ -463,16 +438,10 @@ export function HostelStudents() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { label: 'Average Attendance', value: averageAttendance, icon: '📊' },
-              {
-                label: 'Room Occupancy Rate',
-                value: statsList.find((s) => s.label === 'Occupied Rooms')
-                  ? `${Math.round((parseInt(statsList.find((s) => s.label === 'Occupied Rooms')?.value || '0') / parseInt(statsList.find((s) => s.label === 'Total Rooms')?.value || '250')) * 100)}%`
-                  : '79%',
-                icon: '🏠',
-              },
-              { label: 'Fee Compliance', value: '95%', icon: '💰' },
-              { label: 'Complaint Rate', value: '12%', icon: '📝' },
+              { label: "Average Attendance", value: averageAttendance, icon: "📊" },
+              { label: "Room Occupancy Rate", value: statsList.find((s) => s.label === "Occupied Rooms") ? `${Math.round((parseInt(statsList.find((s) => s.label === "Occupied Rooms")?.value || "0") / parseInt(statsList.find((s) => s.label === "Total Rooms")?.value || "250")) * 100)}%` : "79%", icon: "🏠" },
+              { label: "Fee Compliance", value: "95%", icon: "💰" },
+              { label: "Complaint Rate", value: "12%", icon: "📝" },
             ].map((stat) => (
               <div key={stat.label} className="p-4 rounded-xl bg-gradient-soft border">
                 <div className="text-2xl mb-2">{stat.icon}</div>
@@ -487,7 +456,7 @@ export function HostelStudents() {
       {/* Form Dialog Modal */}
       <StudentFormModal
         open={isFormOpen}
-        mode={editingResident ? 'edit' : 'create'}
+        mode={editingResident ? "edit" : "create"}
         student={editingResident}
         departments={departments}
         submitting={createMutation.isPending || updateMutation.isPending}
@@ -502,7 +471,7 @@ export function HostelStudents() {
       {/* Delete/Vacate Dialog */}
       <StudentDeleteAlert
         open={Boolean(deleteTarget)}
-        studentName={deleteTarget?.fullName ?? 'this student'}
+        studentName={deleteTarget?.fullName ?? "this student"}
         loading={deleteMutation.isPending}
         onClose={() => setDeleteTarget(null)}
         onConfirm={async () => {

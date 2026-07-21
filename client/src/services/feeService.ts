@@ -1,4 +1,4 @@
-import api from '@/lib/api';
+import api from "@/lib/api";
 
 export interface StudentDetail {
   id: string;
@@ -56,9 +56,9 @@ export interface MonthlyAnalyticsItem {
 }
 
 export interface DueCounts {
-  'Tuition Fee': number;
-  'Hostel Fee': number;
-  'Lab Fee': number;
+  "Tuition Fee": number;
+  "Hostel Fee": number;
+  "Lab Fee": number;
 }
 
 export interface FeesReportData {
@@ -94,42 +94,46 @@ export async function fetchFees(params: {
   page?: number;
   limit?: number;
 }): Promise<FeesListResponse> {
-  const { data } = await api.get<{ success: boolean; data: FeesListResponse }>('/api/fees', {
-    params,
-  });
+  const { data } = await api.get<{ success: boolean; data: FeesListResponse }>(
+    "/api/fees",
+    { params }
+  );
   return data.data;
 }
 
 // Fetch general fees report
 export async function fetchFeesReport(): Promise<FeesReportData> {
-  const { data } = await api.get<{ success: boolean; data: FeesReportData }>('/api/fees/report');
+  const { data } = await api.get<{ success: boolean; data: FeesReportData }>(
+    "/api/fees/report"
+  );
   return data.data;
 }
 
 // Fetch student specific fees
 export async function fetchStudentFees(studentId: string): Promise<FeeRecord[]> {
   const { data } = await api.get<{ success: boolean; data: FeeRecord[] }>(
-    `/api/fees/student/${studentId}`,
+    `/api/fees/student/${studentId}`
   );
   return data.data;
 }
 
 // Process record payment
-export async function recordFeePayment(feeId: string, payload: PayFeePayload): Promise<FeeRecord> {
+export async function recordFeePayment(
+  feeId: string,
+  payload: PayFeePayload
+): Promise<FeeRecord> {
   const { data } = await api.post<{ success: boolean; data: FeeRecord }>(
     `/api/fees/pay/${feeId}`,
-    payload,
+    payload
   );
   return data.data;
 }
 
 // Send fee reminder to students
-export async function sendFeeReminder(
-  feeType: string,
-): Promise<{ message: string; count: number }> {
+export async function sendFeeReminder(feeType: string): Promise<{ message: string; count: number }> {
   const { data } = await api.post<{ success: boolean; message: string; count: number }>(
-    '/api/fees/remind',
-    { feeType },
+    "/api/fees/remind",
+    { feeType }
   );
   return { message: data.message, count: data.count };
 }
@@ -144,6 +148,9 @@ export async function createFee(payload: {
   dueDate: string;
   remarks?: string;
 }): Promise<FeeRecord> {
-  const { data } = await api.post<{ success: boolean; data: FeeRecord }>('/api/fees', payload);
+  const { data } = await api.post<{ success: boolean; data: FeeRecord }>(
+    "/api/fees",
+    payload
+  );
   return data.data;
 }

@@ -1,24 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import {
-  Bed,
-  Plus,
-  Search,
-  Building2,
-  User,
-  Loader2,
-  AlertCircle,
-  Eye,
-  Edit,
-  Trash2,
-  ArrowUpDown,
-  SlidersHorizontal,
-  Phone,
-  X,
-} from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
+import { useEffect, useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bed, Plus, Search, Building2, User, Loader2, AlertCircle, Eye, Edit, Trash2, ArrowUpDown, SlidersHorizontal, Phone, X } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 import {
   fetchHostelRooms,
   fetchStats,
@@ -34,35 +19,35 @@ import {
   fetchHostels,
   fetchHostelBlocks,
   fetchRoomsForBlock,
-  type RoomRecord,
-} from '@/services/hostelService';
-import { fetchDepartments } from '@/services/studentService';
-import { StudentFormModal } from '../dashboard/students/StudentDialogs';
-import { supabase } from '@/lib/supabaseClient';
+  type RoomRecord
+} from "@/services/hostelService";
+import { fetchDepartments } from "@/services/studentService";
+import { StudentFormModal } from "../dashboard/students/StudentDialogs";
+import { supabase } from "@/lib/supabaseClient";
 
 export function HostelRooms() {
   const queryClient = useQueryClient();
 
   // Active Tab: allocations vs rooms
-  const [activeTab, setActiveTab] = useState<'allocations' | 'rooms'>('allocations');
+  const [activeTab, setActiveTab] = useState<"allocations" | "rooms">("allocations");
 
   // Search & Filter State (Allocation Tab)
-  const [search, setSearch] = useState('');
-  const [selectedFloor, setSelectedFloor] = useState('All Floors');
-  const [selectedBlock, setSelectedBlock] = useState('All Blocks');
-  const [selectedStatus, setSelectedStatus] = useState('All Status');
+  const [search, setSearch] = useState("");
+  const [selectedFloor, setSelectedFloor] = useState("All Floors");
+  const [selectedBlock, setSelectedBlock] = useState("All Blocks");
+  const [selectedStatus, setSelectedStatus] = useState("All Status");
 
   // Room Management Filters State (Rooms Tab)
-  const [roomSearch, setRoomSearch] = useState('');
-  const [roomBlock, setRoomBlock] = useState('All');
-  const [roomFloor, setRoomFloor] = useState('All');
-  const [roomStatus, setRoomStatus] = useState('All');
-  const [roomType, setRoomType] = useState('All');
-  const [roomAcType, setRoomAcType] = useState('All');
+  const [roomSearch, setRoomSearch] = useState("");
+  const [roomBlock, setRoomBlock] = useState("All");
+  const [roomFloor, setRoomFloor] = useState("All");
+  const [roomStatus, setRoomStatus] = useState("All");
+  const [roomType, setRoomType] = useState("All");
+  const [roomAcType, setRoomAcType] = useState("All");
 
   // Sorting (Rooms Tab)
-  const [sortBy, setSortBy] = useState<string>('roomNumber');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<string>("roomNumber");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Pagination (Rooms Tab)
   const [roomPage, setRoomPage] = useState(1);
@@ -75,21 +60,21 @@ export function HostelRooms() {
   const [viewingRoom, setViewingRoom] = useState<any>(null);
 
   // Form Fields State (Room Management Form)
-  const [formRoomNumber, setFormRoomNumber] = useState('');
-  const [formBlockId, setFormBlockId] = useState('');
+  const [formRoomNumber, setFormRoomNumber] = useState("");
+  const [formBlockId, setFormBlockId] = useState("");
   const [formFloor, setFormFloor] = useState(1);
   const [formCapacity, setFormCapacity] = useState(2);
-  const [formRoomType, setFormRoomType] = useState('Double');
-  const [formAcType, setFormAcType] = useState('Non-AC');
-  const [formRoomStatus, setFormRoomStatus] = useState('Vacant');
-  const [formDescription, setFormDescription] = useState('');
+  const [formRoomType, setFormRoomType] = useState("Double");
+  const [formAcType, setFormAcType] = useState("Non-AC");
+  const [formRoomStatus, setFormRoomStatus] = useState("Vacant");
+  const [formDescription, setFormDescription] = useState("");
 
   // Transfer state
   const [isTransferOpen, setIsTransferOpen] = useState(false);
   const [transferTarget, setTransferTarget] = useState<any>(null);
-  const [transferHostelId, setTransferHostelId] = useState('');
-  const [transferBlockId, setTransferBlockId] = useState('');
-  const [transferRoomId, setTransferRoomId] = useState('');
+  const [transferHostelId, setTransferHostelId] = useState("");
+  const [transferBlockId, setTransferBlockId] = useState("");
+  const [transferRoomId, setTransferRoomId] = useState("");
   const [transferBedNumber, setTransferBedNumber] = useState<number>(1);
   const [transferBlocksList, setTransferBlocksList] = useState<any[]>([]);
   const [transferRoomsList, setTransferRoomsList] = useState<any[]>([]);
@@ -114,11 +99,9 @@ export function HostelRooms() {
   // Fetch rooms when block changes in transfer modal
   useEffect(() => {
     if (transferBlockId) {
-      fetchRoomsForBlock(transferBlockId)
-        .then((rms: any[]) => {
-          setTransferRoomsList(rms.filter((r: any) => r.occupants < r.capacity));
-        })
-        .catch(console.error);
+      fetchRoomsForBlock(transferBlockId).then((rms: any[]) => {
+        setTransferRoomsList(rms.filter((r: any) => r.occupants < r.capacity));
+      }).catch(console.error);
     } else {
       setTransferRoomsList([]);
     }
@@ -126,29 +109,29 @@ export function HostelRooms() {
 
   // Queries
   const { data: departments = [] } = useQuery({
-    queryKey: ['departments'],
+    queryKey: ["departments"],
     queryFn: fetchDepartments,
   });
 
   const { data: statsList = [] } = useQuery({
-    queryKey: ['hostel-stats'],
+    queryKey: ["hostel-stats"],
     queryFn: fetchStats,
     staleTime: 0,
   });
 
   const { data: chartData } = useQuery({
-    queryKey: ['hostel-charts'],
+    queryKey: ["hostel-charts"],
     queryFn: fetchDashboardCharts,
     staleTime: 0,
   });
 
   // Query block options for rooms dropdown
   const { data: blockOptions = [] } = useQuery({
-    queryKey: ['block-options'],
+    queryKey: ["block-options"],
     queryFn: async () => {
-      const { data } = await supabase.from('hostel_blocks').select('id, name').order('name');
+      const { data } = await supabase.from("hostel_blocks").select("id, name").order("name");
       return data || [];
-    },
+    }
   });
 
   // Query for rooms in Allocations Tab
@@ -158,7 +141,7 @@ export function HostelRooms() {
     isError,
     error,
   } = useQuery({
-    queryKey: ['rooms', search, selectedBlock, selectedFloor, selectedStatus],
+    queryKey: ["rooms", search, selectedBlock, selectedFloor, selectedStatus],
     queryFn: () =>
       fetchHostelRooms({
         search,
@@ -176,15 +159,23 @@ export function HostelRooms() {
     isError: isManageError,
     error: manageError,
   } = useQuery({
-    queryKey: ['manage-rooms', roomSearch, roomBlock, roomFloor, roomStatus, roomType, roomAcType],
+    queryKey: [
+      "manage-rooms",
+      roomSearch,
+      roomBlock,
+      roomFloor,
+      roomStatus,
+      roomType,
+      roomAcType,
+    ],
     queryFn: () =>
       fetchHostelRooms({
         search: roomSearch,
-        block: roomBlock === 'All' ? undefined : roomBlock,
-        floor: roomFloor === 'All' ? undefined : roomFloor,
-        status: roomStatus === 'All' ? undefined : roomStatus,
-        roomType: roomType === 'All' ? undefined : roomType,
-        acType: roomAcType === 'All' ? undefined : roomAcType,
+        block: roomBlock === "All" ? undefined : roomBlock,
+        floor: roomFloor === "All" ? undefined : roomFloor,
+        status: roomStatus === "All" ? undefined : roomStatus,
+        roomType: roomType === "All" ? undefined : roomType,
+        acType: roomAcType === "All" ? undefined : roomAcType,
       }),
     staleTime: 0,
   });
@@ -193,46 +184,45 @@ export function HostelRooms() {
   const createRoomMutation = useMutation({
     mutationFn: (payload: any) => createHostelRoom(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      toast.success('Room created successfully!');
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      toast.success("Room created successfully!");
       setIsRoomFormOpen(false);
       resetRoomForm();
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to create room.');
-    },
+      toast.error(err.message || "Failed to create room.");
+    }
   });
 
   const updateRoomMutation = useMutation({
-    mutationFn: ({ roomId, payload }: { roomId: string; payload: any }) =>
-      updateHostelRoom(roomId, payload),
+    mutationFn: ({ roomId, payload }: { roomId: string, payload: any }) => updateHostelRoom(roomId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      toast.success('Room updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      toast.success("Room updated successfully!");
       setIsRoomFormOpen(false);
       setEditingRoom(null);
       resetRoomForm();
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to update room.');
-    },
+      toast.error(err.message || "Failed to update room.");
+    }
   });
 
   const deleteRoomMutation = useMutation({
     mutationFn: (roomId: string) => deleteHostelRoom(roomId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      toast.success('Room deleted successfully!');
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      toast.success("Room deleted successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to delete room.');
-    },
+      toast.error(err.message || "Failed to delete room.");
+    }
   });
 
   // Mutations for allocations
@@ -240,82 +230,75 @@ export function HostelRooms() {
     mutationFn: ({ student, allocation }: { student: any; allocation: any }) =>
       createResident(student, allocation),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-charts'] });
-      queryClient.invalidateQueries({ queryKey: ['residents'] });
-      toast.success('Resident added and room allocated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-charts"] });
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      toast.success("Resident added and room allocated successfully!");
       setIsFormOpen(false);
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to create allocation');
+      toast.error(err.message || "Failed to create allocation");
     },
   });
 
   const checkInMutation = useMutation({
     mutationFn: (allocationId: string) => checkInResident(allocationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      toast.success('Resident checked in successfully!');
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      toast.success("Resident checked in successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to check-in resident');
-    },
+      toast.error(err.message || "Failed to check-in resident");
+    }
   });
 
   const checkOutMutation = useMutation({
     mutationFn: (allocationId: string) => checkOutResident(allocationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['residents'] });
-      toast.success('Resident checked out and bed vacated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      toast.success("Resident checked out and bed vacated successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to check-out resident');
-    },
+      toast.error(err.message || "Failed to check-out resident");
+    }
   });
 
   const cancelAllocMutation = useMutation({
     mutationFn: (allocationId: string) => cancelAllocation(allocationId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['residents'] });
-      toast.success('Allocation cancelled successfully!');
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      toast.success("Allocation cancelled successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to cancel allocation');
-    },
+      toast.error(err.message || "Failed to cancel allocation");
+    }
   });
 
   const transferMutation = useMutation({
-    mutationFn: ({
-      allocationId,
-      newRoomId,
-      newBedNumber,
-    }: {
-      allocationId: string;
-      newRoomId: string;
-      newBedNumber: number;
-    }) => transferResident(allocationId, newRoomId, newBedNumber),
+    mutationFn: ({ allocationId, newRoomId, newBedNumber }: { allocationId: string, newRoomId: string, newBedNumber: number }) =>
+      transferResident(allocationId, newRoomId, newBedNumber),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['manage-rooms'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['residents'] });
-      toast.success('Resident transferred successfully!');
+      queryClient.invalidateQueries({ queryKey: ["rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["manage-rooms"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["residents"] });
+      toast.success("Resident transferred successfully!");
       setIsTransferOpen(false);
       setTransferTarget(null);
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to transfer resident');
-    },
+      toast.error(err.message || "Failed to transfer resident");
+    }
   });
 
   // Populate room form for editing
@@ -325,38 +308,38 @@ export function HostelRooms() {
       setFormBlockId(editingRoom.blockId);
       setFormFloor(editingRoom.floor);
       setFormCapacity(editingRoom.capacity);
-      setFormRoomType(editingRoom.roomType || 'Double');
-      setFormAcType(editingRoom.acType || 'Non-AC');
-      setFormRoomStatus(editingRoom.roomStatus || 'Vacant');
-      setFormDescription(editingRoom.description || '');
+      setFormRoomType(editingRoom.roomType || "Double");
+      setFormAcType(editingRoom.acType || "Non-AC");
+      setFormRoomStatus(editingRoom.roomStatus || "Vacant");
+      setFormDescription(editingRoom.description || "");
     } else {
       resetRoomForm();
     }
   }, [editingRoom]);
 
   const resetRoomForm = () => {
-    setFormRoomNumber('');
-    setFormBlockId('');
+    setFormRoomNumber("");
+    setFormBlockId("");
     setFormFloor(1);
     setFormCapacity(2);
-    setFormRoomType('Double');
-    setFormAcType('Non-AC');
-    setFormRoomStatus('Vacant');
-    setFormDescription('');
+    setFormRoomType("Double");
+    setFormAcType("Non-AC");
+    setFormRoomStatus("Vacant");
+    setFormDescription("");
   };
 
   const handleRoomFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formRoomNumber.trim()) {
-      toast.error('Room Number is required.');
+      toast.error("Room Number is required.");
       return;
     }
     if (!formBlockId) {
-      toast.error('Block selection is required.');
+      toast.error("Block selection is required.");
       return;
     }
     if (formCapacity <= 0) {
-      toast.error('Capacity must be greater than 0.');
+      toast.error("Capacity must be greater than 0.");
       return;
     }
 
@@ -376,8 +359,8 @@ export function HostelRooms() {
         roomId: editingRoom.id,
         payload: {
           ...payload,
-          occupants: editingRoom.occupants,
-        },
+          occupants: editingRoom.occupants
+        }
       });
     } else {
       createRoomMutation.mutate(payload);
@@ -421,13 +404,12 @@ export function HostelRooms() {
   };
 
   // Calculations for Stats (Room Allocation tab)
-  const totalRooms = statsList.find((s) => s.label === 'Total Rooms')?.value || '0';
-  const occupiedRooms = statsList.find((s) => s.label === 'Occupied Rooms')?.value || '0';
-  const availableRoomsCount = statsList.find((s) => s.label === 'Available Rooms')?.value || '0';
-  const occupancyRate =
-    totalRooms !== '0'
-      ? `${Math.round((parseInt(occupiedRooms) / parseInt(totalRooms)) * 100)}%`
-      : '0%';
+  const totalRooms = statsList.find((s) => s.label === "Total Rooms")?.value || "0";
+  const occupiedRooms = statsList.find((s) => s.label === "Occupied Rooms")?.value || "0";
+  const availableRoomsCount = statsList.find((s) => s.label === "Available Rooms")?.value || "0";
+  const occupancyRate = totalRooms !== "0"
+    ? `${Math.round((parseInt(occupiedRooms) / parseInt(totalRooms)) * 100)}%`
+    : "0%";
 
   const tableRows = useMemo(() => {
     const rows: any[] = [];
@@ -442,25 +424,25 @@ export function HostelRooms() {
             studentName: a.studentName,
             department: a.department,
             floor: r.floor,
-            roomType: r.roomType || r.type || 'Double',
-            occupancyStatus: 'Occupied',
+            roomType: r.roomType || r.type || "Double",
+            occupancyStatus: "Occupied",
             allocationStatus: a.status,
-            bedNumber: a.bedNumber,
+            bedNumber: a.bedNumber
           });
         });
       } else {
         rows.push({
           id: r.id,
           roomId: r.id,
-          studentId: '',
+          studentId: "",
           roomNumber: r.roomNumber,
-          studentName: '',
-          department: '',
+          studentName: "",
+          department: "",
           floor: r.floor,
-          roomType: r.roomType || r.type || 'Double',
-          occupancyStatus: 'Available',
-          allocationStatus: '',
-          bedNumber: '',
+          roomType: r.roomType || r.type || "Double",
+          occupancyStatus: "Available",
+          allocationStatus: "",
+          bedNumber: ""
         });
       }
     });
@@ -475,21 +457,18 @@ export function HostelRooms() {
   const sortedRooms = useMemo(() => {
     const rooms = [...manageRoomsList];
     rooms.sort((a, b) => {
-      const valA: any = a[sortBy as keyof RoomRecord] || '';
-      const valB: any = b[sortBy as keyof RoomRecord] || '';
+      let valA: any = a[sortBy as keyof RoomRecord] || "";
+      let valB: any = b[sortBy as keyof RoomRecord] || "";
 
-      if (sortBy === 'roomNumber') {
-        return (
-          valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' }) *
-          (sortOrder === 'asc' ? 1 : -1)
-        );
+      if (sortBy === "roomNumber") {
+        return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' }) * (sortOrder === "asc" ? 1 : -1);
       }
-
-      if (typeof valA === 'string') {
-        return valA.localeCompare(valB) * (sortOrder === 'asc' ? 1 : -1);
+      
+      if (typeof valA === "string") {
+        return valA.localeCompare(valB) * (sortOrder === "asc" ? 1 : -1);
       }
-
-      return (valA - valB) * (sortOrder === 'asc' ? 1 : -1);
+      
+      return (valA - valB) * (sortOrder === "asc" ? 1 : -1);
     });
     return rooms;
   }, [manageRoomsList, sortBy, sortOrder]);
@@ -506,10 +485,10 @@ export function HostelRooms() {
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
-      setSortOrder('asc');
+      setSortOrder("asc");
     }
   };
 
@@ -520,7 +499,7 @@ export function HostelRooms() {
         desc="Manage room configurations, bed capacities, availability status, and resident allocations."
         actions={
           <div className="flex gap-2">
-            {activeTab === 'rooms' ? (
+            {activeTab === "rooms" ? (
               <button
                 onClick={() => {
                   setEditingRoom(null);
@@ -545,8 +524,8 @@ export function HostelRooms() {
       {/* Tabs Selector */}
       <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6">
         {[
-          { id: 'allocations', label: 'Room Allocations', icon: Bed },
-          { id: 'rooms', label: 'Room Management', icon: Building2 },
+          { id: "allocations", label: "Room Allocations", icon: Bed },
+          { id: "rooms", label: "Room Management", icon: Building2 }
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -556,8 +535,8 @@ export function HostelRooms() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 pb-3.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
                 isActive
-                  ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
+                  ? "border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
               <Icon className="size-4" />
@@ -567,15 +546,15 @@ export function HostelRooms() {
         })}
       </div>
 
-      {activeTab === 'allocations' ? (
+      {activeTab === "allocations" ? (
         <>
           {/* Allocation Statistics */}
           <div className="grid md:grid-cols-4 gap-4">
             {[
-              { label: 'Total Rooms', value: totalRooms, tone: 'info' as const },
-              { label: 'Occupied Rooms', value: occupiedRooms, tone: 'success' as const },
-              { label: 'Available Rooms', value: availableRoomsCount, tone: 'warn' as const },
-              { label: 'Occupancy Rate', value: occupancyRate, tone: 'success' as const },
+              { label: "Total Rooms", value: totalRooms, tone: "info" as const },
+              { label: "Occupied Rooms", value: occupiedRooms, tone: "success" as const },
+              { label: "Available Rooms", value: availableRoomsCount, tone: "warn" as const },
+              { label: "Occupancy Rate", value: occupancyRate, tone: "success" as const },
             ].map((stat) => (
               <Card key={stat.label}>
                 <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -604,10 +583,8 @@ export function HostelRooms() {
                 onChange={(e) => setSelectedFloor(e.target.value)}
                 className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
               >
-                {['All Floors', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor'].map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
+                {["All Floors", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"].map((f) => (
+                  <option key={f} value={f}>{f}</option>
                 ))}
               </select>
               <select
@@ -615,10 +592,8 @@ export function HostelRooms() {
                 onChange={(e) => setSelectedBlock(e.target.value)}
                 className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
               >
-                {['All Blocks', 'Block A', 'Block B', 'Block C', 'Block D'].map((b) => (
-                  <option key={b} value={b}>
-                    {b}
-                  </option>
+                {["All Blocks", "Block A", "Block B", "Block C", "Block D"].map((b) => (
+                  <option key={b} value={b}>{b}</option>
                 ))}
               </select>
               <select
@@ -626,10 +601,8 @@ export function HostelRooms() {
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
               >
-                {['All Status', 'Occupied', 'Available'].map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
+                {["All Status", "Occupied", "Available"].map((s) => (
+                  <option key={s} value={s}>{s}</option>
                 ))}
               </select>
             </div>
@@ -647,7 +620,7 @@ export function HostelRooms() {
               ) : isError ? (
                 <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-3">
                   <AlertCircle className="size-8 mx-auto text-rose-500" />
-                  <p>{error instanceof Error ? error.message : 'Failed to load rooms.'}</p>
+                  <p>{error instanceof Error ? error.message : "Failed to load rooms."}</p>
                 </div>
               ) : tableRows.length === 0 ? (
                 <div className="py-12 px-6 text-center text-sm text-muted-foreground">
@@ -659,13 +632,13 @@ export function HostelRooms() {
                     <thead className="border-b">
                       <tr>
                         {[
-                          'Room Number',
-                          'Student Name',
-                          'Department',
-                          'Floor',
-                          'Room Type',
-                          'Occupancy Status',
-                          'Actions',
+                          "Room Number",
+                          "Student Name",
+                          "Department",
+                          "Floor",
+                          "Room Type",
+                          "Occupancy Status",
+                          "Actions",
                         ].map((column) => (
                           <th
                             key={column}
@@ -678,15 +651,10 @@ export function HostelRooms() {
                     </thead>
                     <tbody className="divide-y text-left">
                       {tableRows.map((allocation, index) => (
-                        <tr
-                          key={`${allocation.roomNumber}-${index}`}
-                          className="hover:bg-accent/50 transition"
-                        >
+                        <tr key={`${allocation.roomNumber}-${index}`} className="hover:bg-accent/50 transition">
                           <td className="py-3 px-4 font-medium">{allocation.roomNumber}</td>
                           <td className="py-3 px-4">
-                            {allocation.studentName || (
-                              <span className="text-muted-foreground">-</span>
-                            )}
+                            {allocation.studentName || <span className="text-muted-foreground">-</span>}
                           </td>
                           <td className="py-3 px-4">
                             {allocation.department ? (
@@ -698,28 +666,20 @@ export function HostelRooms() {
                           <td className="py-3 px-4 text-muted-foreground">{allocation.floor}</td>
                           <td className="py-3 px-4">{allocation.roomType}</td>
                           <td className="py-3 px-4">
-                            <Badge
-                              tone={allocation.occupancyStatus === 'Occupied' ? 'success' : 'warn'}
-                            >
+                            <Badge tone={allocation.occupancyStatus === "Occupied" ? "success" : "warn"}>
                               {allocation.occupancyStatus}
                             </Badge>
                           </td>
                           <td className="py-3 px-4 flex gap-1.5 items-center">
-                            {allocation.occupancyStatus === 'Occupied' ? (
+                            {allocation.occupancyStatus === "Occupied" ? (
                               <>
-                                {allocation.allocationStatus === 'Active' ? (
+                                {allocation.allocationStatus === "Active" ? (
                                   <>
                                     <button
                                       onClick={() => {
                                         setTransferTarget(allocation);
-                                        setTransferHostelId(
-                                          roomsList.find((r) => r.id === allocation.roomId)
-                                            ?.hostelId || '',
-                                        );
-                                        setTransferBlockId(
-                                          roomsList.find((r) => r.id === allocation.roomId)
-                                            ?.blockId || '',
-                                        );
+                                        setTransferHostelId(roomsList.find(r => r.id === allocation.roomId)?.hostelId || "");
+                                        setTransferBlockId(roomsList.find(r => r.id === allocation.roomId)?.blockId || "");
                                         setTransferRoomId(allocation.roomId);
                                         setTransferBedNumber(allocation.bedNumber || 1);
                                         setIsTransferOpen(true);
@@ -730,11 +690,7 @@ export function HostelRooms() {
                                     </button>
                                     <button
                                       onClick={() => {
-                                        if (
-                                          confirm(
-                                            `Are you sure you want to check-out ${allocation.studentName}?`,
-                                          )
-                                        ) {
+                                        if (confirm(`Are you sure you want to check-out ${allocation.studentName}?`)) {
                                           checkOutMutation.mutate(allocation.id);
                                         }
                                       }}
@@ -744,11 +700,7 @@ export function HostelRooms() {
                                     </button>
                                     <button
                                       onClick={() => {
-                                        if (
-                                          confirm(
-                                            `Are you sure you want to cancel the allocation for ${allocation.studentName}?`,
-                                          )
-                                        ) {
+                                        if (confirm(`Are you sure you want to cancel the allocation for ${allocation.studentName}?`)) {
                                           cancelAllocMutation.mutate(allocation.id);
                                         }
                                       }}
@@ -759,9 +711,7 @@ export function HostelRooms() {
                                     </button>
                                   </>
                                 ) : (
-                                  <span className="text-xs text-muted-foreground">
-                                    {allocation.allocationStatus}
-                                  </span>
+                                  <span className="text-xs text-muted-foreground">{allocation.allocationStatus}</span>
                                 )}
                               </>
                             ) : (
@@ -797,8 +747,7 @@ export function HostelRooms() {
                       <Badge tone="success">Available</Badge>
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      Floor {room.floor} • {room.type} • Capacity: {room.capacity} (Occupied:{' '}
-                      {room.occupants})
+                      Floor {room.floor} • {room.type} • Capacity: {room.capacity} (Occupied: {room.occupants})
                     </div>
                   </div>
                 ))}
@@ -824,7 +773,7 @@ export function HostelRooms() {
                       <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                       <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                       <YAxis stroke="#64748B" fontSize={12} />
-                      <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                      <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                       <Bar dataKey="occupied" fill="#4F46E5" radius={[8, 8, 0, 0]} />
                       <Bar dataKey="available" fill="#06B6D4" radius={[8, 8, 0, 0]} />
                     </BarChart>
@@ -844,7 +793,7 @@ export function HostelRooms() {
               </div>
               <div className="space-y-2 max-h-[256px] overflow-y-auto">
                 {hostelActivities
-                  .filter((a) => a.type === 'Allocation' || a.type === 'Removal')
+                  .filter(a => a.type === "Allocation" || a.type === "Removal")
                   .slice(0, 5)
                   .map((history, idx) => (
                     <div
@@ -853,9 +802,9 @@ export function HostelRooms() {
                     >
                       <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold shrink-0">
                         {history.target
-                          .split(' ')
+                          .split(" ")
                           .map((n: string) => n[0])
-                          .join('')
+                          .join("")
                           .slice(0, 2)
                           .toUpperCase()}
                       </div>
@@ -865,13 +814,12 @@ export function HostelRooms() {
                           {history.action} • {history.time}
                         </div>
                       </div>
-                      <Badge tone={history.type === 'Allocation' ? 'success' : 'danger'}>
-                        {history.type === 'Allocation' ? 'Allocated' : 'Vacated'}
+                      <Badge tone={history.type === "Allocation" ? "success" : "danger"}>
+                        {history.type === "Allocation" ? "Allocated" : "Vacated"}
                       </Badge>
                     </div>
                   ))}
-                {hostelActivities.filter((a) => a.type === 'Allocation' || a.type === 'Removal')
-                  .length === 0 && (
+                {hostelActivities.filter(a => a.type === "Allocation" || a.type === "Removal").length === 0 && (
                   <div className="text-center text-xs text-muted-foreground py-12">
                     No allocation history logs
                   </div>
@@ -885,27 +833,10 @@ export function HostelRooms() {
           {/* Room Management Tab View */}
           <div className="grid md:grid-cols-4 gap-4">
             {[
-              { label: 'Total Rooms', value: String(sortedRooms.length), tone: 'info' as const },
-              {
-                label: 'Vacant Rooms',
-                value: String(sortedRooms.filter((r) => r.roomStatus === 'Vacant').length),
-                tone: 'success' as const,
-              },
-              {
-                label: 'Occupied Rooms',
-                value: String(
-                  sortedRooms.filter(
-                    (r) =>
-                      r.roomStatus === 'Fully Occupied' || r.roomStatus === 'Partially Occupied',
-                  ).length,
-                ),
-                tone: 'warn' as const,
-              },
-              {
-                label: 'Maintenance',
-                value: String(sortedRooms.filter((r) => r.roomStatus === 'Maintenance').length),
-                tone: 'danger' as const,
-              },
+              { label: "Total Rooms", value: String(sortedRooms.length), tone: "info" as const },
+              { label: "Vacant Rooms", value: String(sortedRooms.filter(r => r.roomStatus === "Vacant").length), tone: "success" as const },
+              { label: "Occupied Rooms", value: String(sortedRooms.filter(r => r.roomStatus === "Fully Occupied" || r.roomStatus === "Partially Occupied").length), tone: "warn" as const },
+              { label: "Maintenance", value: String(sortedRooms.filter(r => r.roomStatus === "Maintenance").length), tone: "danger" as const },
             ].map((stat) => (
               <Card key={stat.label}>
                 <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -937,41 +868,28 @@ export function HostelRooms() {
                 <div className="flex flex-wrap gap-2">
                   <select
                     value={roomBlock}
-                    onChange={(e) => {
-                      setRoomBlock(e.target.value);
-                      setRoomPage(1);
-                    }}
+                    onChange={(e) => { setRoomBlock(e.target.value); setRoomPage(1); }}
                     className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
                   >
                     <option value="All">All Blocks</option>
                     {blockOptions.map((b: any) => (
-                      <option key={b.id} value={b.name}>
-                        {b.name}
-                      </option>
+                      <option key={b.id} value={b.name}>{b.name}</option>
                     ))}
                   </select>
 
                   <select
                     value={roomFloor}
-                    onChange={(e) => {
-                      setRoomFloor(e.target.value);
-                      setRoomPage(1);
-                    }}
+                    onChange={(e) => { setRoomFloor(e.target.value); setRoomPage(1); }}
                     className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
                   >
-                    {['All', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor'].map((f) => (
-                      <option key={f} value={f === 'All' ? 'All' : f}>
-                        {f === 'All' ? 'All Floors' : f}
-                      </option>
+                    {["All", "1st Floor", "2nd Floor", "3rd Floor", "4th Floor"].map((f) => (
+                      <option key={f} value={f === "All" ? "All" : f}>{f === "All" ? "All Floors" : f}</option>
                     ))}
                   </select>
 
                   <select
                     value={roomStatus}
-                    onChange={(e) => {
-                      setRoomStatus(e.target.value);
-                      setRoomPage(1);
-                    }}
+                    onChange={(e) => { setRoomStatus(e.target.value); setRoomPage(1); }}
                     className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
                   >
                     <option value="All">All Statuses</option>
@@ -983,10 +901,7 @@ export function HostelRooms() {
 
                   <select
                     value={roomType}
-                    onChange={(e) => {
-                      setRoomType(e.target.value);
-                      setRoomPage(1);
-                    }}
+                    onChange={(e) => { setRoomType(e.target.value); setRoomPage(1); }}
                     className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
                   >
                     <option value="All">All Types</option>
@@ -998,10 +913,7 @@ export function HostelRooms() {
 
                   <select
                     value={roomAcType}
-                    onChange={(e) => {
-                      setRoomAcType(e.target.value);
-                      setRoomPage(1);
-                    }}
+                    onChange={(e) => { setRoomAcType(e.target.value); setRoomPage(1); }}
                     className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm cursor-pointer outline-none focus:border-primary text-foreground bg-background"
                   >
                     <option value="All">All AC Status</option>
@@ -1017,9 +929,7 @@ export function HostelRooms() {
           <Card>
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-semibold text-left">Room Inventory Directory</h3>
-              <div className="text-xs text-muted-foreground">
-                Showing {paginatedRooms.length} of {sortedRooms.length} rooms
-              </div>
+              <div className="text-xs text-muted-foreground">Showing {paginatedRooms.length} of {sortedRooms.length} rooms</div>
             </div>
 
             {isManageLoading ? (
@@ -1030,9 +940,7 @@ export function HostelRooms() {
             ) : isManageError ? (
               <div className="py-12 px-6 text-center text-sm text-muted-foreground space-y-3">
                 <AlertCircle className="size-8 mx-auto text-rose-500" />
-                <p>
-                  {manageError instanceof Error ? manageError.message : 'Failed to load rooms.'}
-                </p>
+                <p>{manageError instanceof Error ? manageError.message : "Failed to load rooms."}</p>
               </div>
             ) : paginatedRooms.length === 0 ? (
               <div className="py-12 px-6 text-center text-sm text-muted-foreground">
@@ -1045,15 +953,15 @@ export function HostelRooms() {
                     <thead className="border-b">
                       <tr>
                         {[
-                          { label: 'Room Number', field: 'roomNumber' },
-                          { label: 'Hostel Block', field: 'blockName' },
-                          { label: 'Floor', field: 'floor' },
-                          { label: 'AC/Non-AC', field: 'acType' },
-                          { label: 'Room Type', field: 'roomType' },
-                          { label: 'Capacity (Beds)', field: 'capacity' },
-                          { label: 'Current Occupants', field: 'occupants' },
-                          { label: 'Status', field: 'roomStatus' },
-                          { label: 'Actions', field: null },
+                          { label: "Room Number", field: "roomNumber" },
+                          { label: "Hostel Block", field: "blockName" },
+                          { label: "Floor", field: "floor" },
+                          { label: "AC/Non-AC", field: "acType" },
+                          { label: "Room Type", field: "roomType" },
+                          { label: "Capacity (Beds)", field: "capacity" },
+                          { label: "Current Occupants", field: "occupants" },
+                          { label: "Status", field: "roomStatus" },
+                          { label: "Actions", field: null }
                         ].map((col) => (
                           <th
                             key={col.label}
@@ -1078,13 +986,9 @@ export function HostelRooms() {
                       {paginatedRooms.map((room) => {
                         const isFull = room.occupants >= room.capacity;
                         const badgeTone =
-                          room.roomStatus === 'Maintenance'
-                            ? 'danger'
-                            : room.roomStatus === 'Fully Occupied'
-                              ? 'danger'
-                              : room.roomStatus === 'Partially Occupied'
-                                ? 'warn'
-                                : 'success';
+                          room.roomStatus === "Maintenance" ? "danger" :
+                          room.roomStatus === "Fully Occupied" ? "danger" :
+                          room.roomStatus === "Partially Occupied" ? "warn" : "success";
 
                         return (
                           <tr key={room.id} className="hover:bg-accent/50 transition">
@@ -1092,18 +996,17 @@ export function HostelRooms() {
                             <td className="py-3 px-4">{room.blockName}</td>
                             <td className="py-3 px-4">Floor {room.floor}</td>
                             <td className="py-3 px-4">
-                              <Badge tone={room.acType === 'AC' ? 'info' : 'warn'}>
-                                {room.acType}
-                              </Badge>
+                              <Badge tone={room.acType === "AC" ? "info" : "warn"}>{room.acType}</Badge>
                             </td>
-                            <td className="py-3 px-4">{room.roomType || 'Double'}</td>
+                            <td className="py-3 px-4">{room.roomType || "Double"}</td>
                             <td className="py-3 px-4 font-medium">{room.capacity} beds</td>
                             <td className="py-3 px-4">
-                              <span className="font-semibold">{room.occupants}</span> /{' '}
-                              {room.capacity}
+                              <span className="font-semibold">{room.occupants}</span> / {room.capacity}
                             </td>
                             <td className="py-3 px-4">
-                              <Badge tone={badgeTone}>{room.roomStatus}</Badge>
+                              <Badge tone={badgeTone}>
+                                {room.roomStatus}
+                              </Badge>
                             </td>
                             <td className="py-3 px-4 flex gap-1.5 items-center">
                               <button
@@ -1122,11 +1025,7 @@ export function HostelRooms() {
                               </button>
                               <button
                                 onClick={() => {
-                                  if (
-                                    confirm(
-                                      `Are you sure you want to delete Room ${room.roomNumber}?`,
-                                    )
-                                  ) {
+                                  if (confirm(`Are you sure you want to delete Room ${room.roomNumber}?`)) {
                                     deleteRoomMutation.mutate(room.id);
                                   }
                                 }}
@@ -1148,17 +1047,15 @@ export function HostelRooms() {
                 {totalRoomPages > 1 && (
                   <div className="flex justify-between items-center pt-4 border-t shrink-0">
                     <button
-                      onClick={() => setRoomPage((prev) => Math.max(1, prev - 1))}
+                      onClick={() => setRoomPage(prev => Math.max(1, prev - 1))}
                       disabled={roomPage === 1}
                       className="px-3.5 py-1.5 border rounded-xl text-xs font-semibold cursor-pointer disabled:opacity-40 hover:bg-accent transition"
                     >
                       Previous
                     </button>
-                    <span className="text-xs text-muted-foreground">
-                      Page {roomPage} of {totalRoomPages}
-                    </span>
+                    <span className="text-xs text-muted-foreground">Page {roomPage} of {totalRoomPages}</span>
                     <button
-                      onClick={() => setRoomPage((prev) => Math.min(totalRoomPages, prev + 1))}
+                      onClick={() => setRoomPage(prev => Math.min(totalRoomPages, prev + 1))}
                       disabled={roomPage === totalRoomPages}
                       className="px-3.5 py-1.5 border rounded-xl text-xs font-semibold cursor-pointer disabled:opacity-40 hover:bg-accent transition"
                     >
@@ -1215,9 +1112,7 @@ export function HostelRooms() {
                 >
                   <option value="">Select Hostel</option>
                   {hostelsList.map((h: any) => (
-                    <option key={h.id} value={h.id}>
-                      {h.name}
-                    </option>
+                    <option key={h.id} value={h.id}>{h.name}</option>
                   ))}
                 </select>
               </div>
@@ -1232,9 +1127,7 @@ export function HostelRooms() {
                 >
                   <option value="">Select Block</option>
                   {transferBlocksList.map((b: any) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name}
-                    </option>
+                    <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
                 </select>
               </div>
@@ -1249,17 +1142,13 @@ export function HostelRooms() {
                 >
                   <option value="">Select Room</option>
                   {transferRoomsList.map((r: any) => (
-                    <option key={r.id} value={r.id}>
-                      {r.room_number || r.roomNumber} ({r.type}, Occ: {r.occupants}/{r.capacity})
-                    </option>
+                    <option key={r.id} value={r.id}>{r.room_number || r.roomNumber} ({r.type}, Occ: {r.occupants}/{r.capacity})</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Select Bed Number
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Select Bed Number</label>
                 <select
                   value={transferBedNumber}
                   onChange={(e) => setTransferBedNumber(Number(e.target.value))}
@@ -1267,9 +1156,7 @@ export function HostelRooms() {
                   className="w-full mt-1.5 px-3 py-2.5 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-50 cursor-pointer text-foreground bg-background"
                 >
                   {[1, 2, 3, 4].map((n) => (
-                    <option key={n} value={n}>
-                      Bed {n}
-                    </option>
+                    <option key={n} value={n}>Bed {n}</option>
                   ))}
                 </select>
               </div>
@@ -1288,13 +1175,13 @@ export function HostelRooms() {
                 <button
                   onClick={() => {
                     if (!transferRoomId || !transferBedNumber) {
-                      toast.error('Please select a target room and bed number.');
+                      toast.error("Please select a target room and bed number.");
                       return;
                     }
                     transferMutation.mutate({
                       allocationId: transferTarget.id,
                       newRoomId: transferRoomId,
-                      newBedNumber: transferBedNumber,
+                      newBedNumber: transferBedNumber
                     });
                   }}
                   disabled={transferMutation.isPending}
@@ -1316,7 +1203,7 @@ export function HostelRooms() {
             <div className="flex justify-between items-center border-b p-4 px-5 shrink-0">
               <h3 className="font-semibold text-base text-foreground flex items-center gap-2">
                 <Building2 className="size-5 text-indigo-600 dark:text-indigo-400" />
-                <span>{editingRoom ? `Edit Room: ${editingRoom.roomNumber}` : 'Add New Room'}</span>
+                <span>{editingRoom ? `Edit Room: ${editingRoom.roomNumber}` : "Add New Room"}</span>
               </h3>
               <button
                 onClick={() => {
@@ -1329,7 +1216,7 @@ export function HostelRooms() {
                 ✕
               </button>
             </div>
-
+            
             <form onSubmit={handleRoomFormSubmit} className="p-5 space-y-4 overflow-y-auto">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground">Room Number *</label>
@@ -1344,9 +1231,7 @@ export function HostelRooms() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Hostel Block *
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Hostel Block *</label>
                 <select
                   required
                   value={formBlockId}
@@ -1355,18 +1240,14 @@ export function HostelRooms() {
                 >
                   <option value="">Select Block</option>
                   {blockOptions.map((b: any) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name}
-                    </option>
+                    <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
                 </select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Floor Number *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Floor Number *</label>
                   <input
                     type="number"
                     required
@@ -1377,9 +1258,7 @@ export function HostelRooms() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Capacity (Beds) *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Capacity (Beds) *</label>
                   <input
                     type="number"
                     required
@@ -1459,10 +1338,8 @@ export function HostelRooms() {
                   disabled={createRoomMutation.isPending || updateRoomMutation.isPending}
                   className="flex-1 px-3 py-2.5 rounded-xl bg-gradient-primary text-white text-xs font-semibold hover:opacity-90 transition cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  {(createRoomMutation.isPending || updateRoomMutation.isPending) && (
-                    <Loader2 className="size-3.5 animate-spin" />
-                  )}
-                  <span>{editingRoom ? 'Save Changes' : 'Create Room'}</span>
+                  {(createRoomMutation.isPending || updateRoomMutation.isPending) && <Loader2 className="size-3.5 animate-spin" />}
+                  <span>{editingRoom ? "Save Changes" : "Create Room"}</span>
                 </button>
               </div>
             </form>
@@ -1486,111 +1363,73 @@ export function HostelRooms() {
                 ✕
               </button>
             </div>
-
+            
             <div className="p-5 space-y-4">
               <div className="grid grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-900/40 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
                 <div>
-                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">
-                    Block
-                  </span>
+                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">Block</span>
                   <span className="font-bold text-foreground">{viewingRoom.blockName}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">
-                    Floor
-                  </span>
+                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">Floor</span>
                   <span className="font-bold text-foreground">Floor {viewingRoom.floor}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">
-                    Room Type
-                  </span>
-                  <span className="font-bold text-foreground">
-                    {viewingRoom.roomType || 'Double'}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">Room Type</span>
+                  <span className="font-bold text-foreground">{viewingRoom.roomType || "Double"}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">
-                    AC Status
-                  </span>
-                  <span className="font-bold text-foreground">
-                    {viewingRoom.acType || 'Non-AC'}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">AC Status</span>
+                  <span className="font-bold text-foreground">{viewingRoom.acType || "Non-AC"}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">
-                    Capacity
-                  </span>
+                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">Capacity</span>
                   <span className="font-bold text-foreground">{viewingRoom.capacity} beds</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">
-                    Occupancy
-                  </span>
-                  <span className="font-bold text-foreground">
-                    {viewingRoom.occupants} occupants
-                  </span>
+                  <span className="text-[10px] text-muted-foreground block uppercase font-medium">Occupancy</span>
+                  <span className="font-bold text-foreground">{viewingRoom.occupants} occupants</span>
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-muted-foreground">Available Beds:</span>
-                  <span className="text-teal-600 font-bold">
-                    {Math.max(0, viewingRoom.capacity - viewingRoom.occupants)} beds
-                  </span>
+                  <span className="text-teal-600 font-bold">{Math.max(0, viewingRoom.capacity - viewingRoom.occupants)} beds</span>
                 </div>
                 <div className="flex justify-between items-center text-xs font-semibold">
                   <span className="text-muted-foreground">Room Status:</span>
-                  <Badge
-                    tone={
-                      viewingRoom.roomStatus === 'Maintenance'
-                        ? 'danger'
-                        : viewingRoom.roomStatus === 'Fully Occupied'
-                          ? 'danger'
-                          : viewingRoom.roomStatus === 'Partially Occupied'
-                            ? 'warn'
-                            : 'success'
-                    }
-                  >
-                    {viewingRoom.roomStatus || 'Vacant'}
+                  <Badge tone={
+                    viewingRoom.roomStatus === "Maintenance" ? "danger" :
+                    viewingRoom.roomStatus === "Fully Occupied" ? "danger" :
+                    viewingRoom.roomStatus === "Partially Occupied" ? "warn" : "success"
+                  }>
+                    {viewingRoom.roomStatus || "Vacant"}
                   </Badge>
                 </div>
               </div>
 
               {viewingRoom.description && (
                 <div className="text-xs border rounded-xl p-3 bg-muted/20">
-                  <span className="text-[10px] text-muted-foreground block uppercase font-bold tracking-wider mb-1">
-                    Description
-                  </span>
+                  <span className="text-[10px] text-muted-foreground block uppercase font-bold tracking-wider mb-1">Description</span>
                   <span className="text-foreground">{viewingRoom.description}</span>
                 </div>
               )}
 
               <div className="border-t pt-4 space-y-2">
-                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                  Current Occupants
-                </h4>
-                {viewingRoom.allocations &&
-                viewingRoom.allocations.filter((a: any) => a.status === 'Active').length > 0 ? (
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Occupants</h4>
+                {viewingRoom.allocations && viewingRoom.allocations.filter((a: any) => a.status === "Active").length > 0 ? (
                   <div className="space-y-2 max-h-36 overflow-y-auto">
-                    {viewingRoom.allocations
-                      .filter((a: any) => a.status === 'Active')
-                      .map((alloc: any) => (
-                        <div
-                          key={alloc.id}
-                          className="flex justify-between items-center text-xs p-2.5 rounded-xl border bg-background/50"
-                        >
-                          <div className="flex items-center gap-2">
-                            <User className="size-3.5 text-muted-foreground" />
-                            <span className="font-medium text-foreground">{alloc.studentName}</span>
-                            <span className="text-[10px] text-muted-foreground">
-                              ({alloc.department})
-                            </span>
-                          </div>
-                          <Badge tone="info">Bed {alloc.bedNumber}</Badge>
+                    {viewingRoom.allocations.filter((a: any) => a.status === "Active").map((alloc: any) => (
+                      <div key={alloc.id} className="flex justify-between items-center text-xs p-2.5 rounded-xl border bg-background/50">
+                        <div className="flex items-center gap-2">
+                          <User className="size-3.5 text-muted-foreground" />
+                          <span className="font-medium text-foreground">{alloc.studentName}</span>
+                          <span className="text-[10px] text-muted-foreground">({alloc.department})</span>
                         </div>
-                      ))}
+                        <Badge tone="info">Bed {alloc.bedNumber}</Badge>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="text-center py-4 text-xs text-muted-foreground border border-dashed rounded-xl">

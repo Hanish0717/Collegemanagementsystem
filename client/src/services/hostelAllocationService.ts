@@ -20,18 +20,9 @@ export async function deleteAllocation(id: string) {
   return resp.data;
 }
 
-export async function transferAllocation(
-  id: string,
-  payload: { newRoomId: string; newBedNumber: number; newBlockId?: string },
-) {
+export async function transferAllocation(id: string, payload: { newRoomId: string; newBedNumber: number; newBlockId?: string }) {
   const resp = await api.post(`/api/hostel/allocations/${id}/transfer`, payload);
   return resp.data;
 }
 
-export default {
-  fetchAllocations,
-  createAllocation,
-  updateAllocation,
-  deleteAllocation,
-  transferAllocation,
-};
+export default { fetchAllocations, createAllocation, updateAllocation, deleteAllocation, transferAllocation };

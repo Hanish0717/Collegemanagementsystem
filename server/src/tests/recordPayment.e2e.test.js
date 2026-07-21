@@ -1,8 +1,7 @@
 import request from 'supertest';
 import { test, expect, beforeAll, afterAll } from 'vitest';
-import jwt from 'jsonwebtoken';
-import app from '../app.js';
-import { supabase } from '../config/supabase.js';
+import app from '../../app.js';
+import { supabase } from '../../config/supabase.js';
 
 // This E2E test will create minimal fixtures (student, allocation, fee) when
 // TEST_FEE_ID is not provided. It cleans up created rows afterwards.
@@ -16,17 +15,10 @@ const TEST_SERVER_URL = process.env.TEST_SERVER_URL;
 let createdStudentId = null;
 let createdAllocationId = null;
 let createdFeeId = null;
-let adminToken = '';
 
 const makeRequest = () => (TEST_SERVER_URL ? request(TEST_SERVER_URL) : request(app));
 
 beforeAll(async () => {
-  adminToken = jwt.sign(
-    { id: '88888888-8888-8888-8888-888888888888' },
-    process.env.JWT_SECRET || 'super_secret_jwt_key_12345_college_management',
-    { expiresIn: '1h' }
-  );
-
   if (TEST_FEE_ID) {
     createdFeeId = TEST_FEE_ID;
     return;
@@ -66,7 +58,7 @@ beforeAll(async () => {
 
   // Create a lightweight allocation (if hostel_allocations table exists)
   try {
-    const allocPayload = {
+    const allocPayload: any = {
       student_id: createdStudentId,
       hostel_id: hostelId,
       block_id: blockId,
@@ -81,7 +73,7 @@ beforeAll(async () => {
   }
 
   // Create an unpaid hostel fee linked to the above
-  const feePayload = {
+  const feePayload: any = {
     student_id: createdStudentId,
     hostel_id: hostelId,
     block_id: blockId,
@@ -136,11 +128,9 @@ test('recordPayment endpoint records a payment and returns updated fee', async (
   const txn = `E2E-TXN-${Date.now()}`;
   const res = await makeRequest()
     .post(`/api/hostel/fees/${feeToUse}/pay`)
-    .set('Authorization', `Bearer ${adminToken}`)
     .send({ amount: 1, paymentMethod: 'E2E-Test', transactionId: txn })
     .set('Accept', 'application/json');
 
-  console.log('DEBUG RES BODY:', res.body);
   expect([200, 201]).toContain(res.status);
   expect(res.body).toBeDefined();
   expect(res.body.success).toBeTruthy();

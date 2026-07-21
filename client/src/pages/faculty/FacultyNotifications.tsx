@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bell, Check, Filter, Loader2, AlertCircle, AlertTriangle } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bell, Check, Filter, Loader2, AlertCircle, AlertTriangle } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 import {
   fetchFacultyNotifications,
   markFacultyNotificationRead,
@@ -11,13 +11,11 @@ import {
   updateFacultyNotificationSetting,
   type FacultyNotification,
   type FacultyNotificationSetting,
-} from '@/services/facultyService';
+} from "@/services/facultyService";
 
 export function FacultyNotifications() {
   const queryClient = useQueryClient();
-  const [activeFilter, setActiveFilter] = useState<'All' | 'Unread' | 'High' | 'Medium' | 'Low'>(
-    'All',
-  );
+  const [activeFilter, setActiveFilter] = useState<"All" | "Unread" | "High" | "Medium" | "Low">("All");
 
   // Queries
   const {
@@ -26,12 +24,15 @@ export function FacultyNotifications() {
     isError: isNotifsError,
     error: notifsError,
   } = useQuery({
-    queryKey: ['facultyNotifications'],
+    queryKey: ["facultyNotifications"],
     queryFn: fetchFacultyNotifications,
   });
 
-  const { data: settings = [], isLoading: isSettingsLoading } = useQuery({
-    queryKey: ['facultyNotificationSettings'],
+  const {
+    data: settings = [],
+    isLoading: isSettingsLoading,
+  } = useQuery({
+    queryKey: ["facultyNotificationSettings"],
     queryFn: fetchFacultyNotificationSettings,
   });
 
@@ -39,29 +40,29 @@ export function FacultyNotifications() {
   const markReadMutation = useMutation({
     mutationFn: (id: string) => markFacultyNotificationRead(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['facultyNotifications'] });
-      toast.success('Notification marked as read');
+      queryClient.invalidateQueries({ queryKey: ["facultyNotifications"] });
+      toast.success("Notification marked as read");
     },
-    onError: () => toast.error('Failed to mark notification as read'),
+    onError: () => toast.error("Failed to mark notification as read"),
   });
 
   const markAllReadMutation = useMutation({
     mutationFn: markAllFacultyNotificationsRead,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['facultyNotifications'] });
-      toast.success('All notifications marked as read');
+      queryClient.invalidateQueries({ queryKey: ["facultyNotifications"] });
+      toast.success("All notifications marked as read");
     },
-    onError: () => toast.error('Failed to mark all as read'),
+    onError: () => toast.error("Failed to mark all as read"),
   });
 
   const updateSettingMutation = useMutation({
     mutationFn: ({ id, enabled }: { id: string; enabled: boolean }) =>
       updateFacultyNotificationSetting(id, enabled),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['facultyNotificationSettings'] });
-      toast.success('Notification preference updated');
+      queryClient.invalidateQueries({ queryKey: ["facultyNotificationSettings"] });
+      toast.success("Notification preference updated");
     },
-    onError: () => toast.error('Failed to update notification setting'),
+    onError: () => toast.error("Failed to update notification setting"),
   });
 
   const unreadNotifications = useMemo(() => {
@@ -70,27 +71,27 @@ export function FacultyNotifications() {
 
   // Filters setup
   const filters = [
-    { label: 'All', value: 'All' as const },
-    { label: 'Unread', value: 'Unread' as const },
-    { label: 'High Priority', value: 'High' as const },
-    { label: 'Medium Priority', value: 'Medium' as const },
-    { label: 'Low Priority', value: 'Low' as const },
+    { label: "All", value: "All" as const },
+    { label: "Unread", value: "Unread" as const },
+    { label: "High Priority", value: "High" as const },
+    { label: "Medium Priority", value: "Medium" as const },
+    { label: "Low Priority", value: "Low" as const },
   ];
 
   const filteredNotifications = useMemo(() => {
     return notifications.filter((n) => {
-      if (activeFilter === 'All') return true;
-      if (activeFilter === 'Unread') return n.unread;
-      if (activeFilter === 'High') return n.priority === 'High';
-      if (activeFilter === 'Medium') return n.priority === 'Medium';
-      if (activeFilter === 'Low') return n.priority === 'Low';
+      if (activeFilter === "All") return true;
+      if (activeFilter === "Unread") return n.unread;
+      if (activeFilter === "High") return n.priority === "High";
+      if (activeFilter === "Medium") return n.priority === "Medium";
+      if (activeFilter === "Low") return n.priority === "Low";
       return true;
     });
   }, [notifications, activeFilter]);
 
   // Calculate dynamic category counts
   const categorySummary = useMemo(() => {
-    const categories = ['Assignment', 'Class', 'Meeting', 'System'];
+    const categories = ["Assignment", "Class", "Meeting", "System"];
     return categories.map((cat) => {
       const catNotifs = notifications.filter((n) => n.type === cat);
       return {
@@ -112,24 +113,24 @@ export function FacultyNotifications() {
       <div className="grid md:grid-cols-4 gap-4">
         {[
           {
-            label: 'Total Notifications',
+            label: "Total Notifications",
             value: notifications.length.toString(),
-            tone: 'info' as const,
+            tone: "info" as const,
           },
           {
-            label: 'Unread',
+            label: "Unread",
             value: unreadNotifications.length.toString(),
-            tone: 'warn' as const,
+            tone: "warn" as const,
           },
           {
-            label: 'High Priority',
-            value: unreadNotifications.filter((n) => n.priority === 'High').length.toString(),
-            tone: 'danger' as const,
+            label: "High Priority",
+            value: unreadNotifications.filter((n) => n.priority === "High").length.toString(),
+            tone: "danger" as const,
           },
           {
-            label: 'This Week',
+            label: "This Week",
             value: notifications.length.toString(),
-            tone: 'info' as const,
+            tone: "info" as const,
           },
         ].map((stat) => (
           <Card key={stat.label}>
@@ -151,8 +152,8 @@ export function FacultyNotifications() {
               onClick={() => setActiveFilter(f.value)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
                 activeFilter === f.value
-                  ? 'bg-gradient-primary text-white'
-                  : 'border hover:bg-accent'
+                  ? "bg-gradient-primary text-white"
+                  : "border hover:bg-accent"
               }`}
             >
               {f.label}
@@ -174,7 +175,7 @@ export function FacultyNotifications() {
               disabled={markAllReadMutation.isPending}
               className="text-sm text-primary hover:underline cursor-pointer disabled:opacity-50"
             >
-              {markAllReadMutation.isPending ? 'Marking...' : 'Mark all as read'}
+              {markAllReadMutation.isPending ? "Marking..." : "Mark all as read"}
             </button>
           )}
         </div>
@@ -188,7 +189,7 @@ export function FacultyNotifications() {
           <div className="py-12 text-center space-y-2">
             <AlertCircle className="size-8 mx-auto text-rose-500" />
             <p className="text-sm text-muted-foreground">
-              {notifsError instanceof Error ? notifsError.message : 'Failed to load notifications.'}
+              {notifsError instanceof Error ? notifsError.message : "Failed to load notifications."}
             </p>
           </div>
         ) : filteredNotifications.length === 0 ? (
@@ -202,8 +203,8 @@ export function FacultyNotifications() {
                 key={notification.id}
                 className={`flex items-start gap-4 p-4 rounded-xl border hover:bg-accent/50 transition ${
                   notification.unread
-                    ? 'bg-blue-50/50 border-blue-200/40 dark:bg-blue-950/20 dark:border-blue-800/30'
-                    : 'bg-card'
+                    ? "bg-blue-50/50 border-blue-200/40 dark:bg-blue-950/20 dark:border-blue-800/30"
+                    : "bg-card"
                 }`}
               >
                 {notification.unread ? (
@@ -213,18 +214,16 @@ export function FacultyNotifications() {
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <div
-                      className={`text-sm ${notification.unread ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}
-                    >
+                    <div className={`text-sm ${notification.unread ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
                       {notification.title}
                     </div>
                     <Badge
                       tone={
-                        notification.priority === 'High'
-                          ? 'danger'
-                          : notification.priority === 'Medium'
-                            ? 'warn'
-                            : 'info'
+                        notification.priority === "High"
+                          ? "danger"
+                          : notification.priority === "Medium"
+                            ? "warn"
+                            : "info"
                       }
                     >
                       {notification.priority}
@@ -276,12 +275,12 @@ export function FacultyNotifications() {
                     }
                     disabled={updateSettingMutation.isPending}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer disabled:opacity-50 ${
-                      setting.enabled ? 'bg-emerald-500' : 'bg-muted'
+                      setting.enabled ? "bg-emerald-500" : "bg-muted"
                     }`}
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                        setting.enabled ? 'translate-x-6' : 'translate-x-1'
+                        setting.enabled ? "translate-x-6" : "translate-x-1"
                       }`}
                     />
                   </button>
@@ -299,7 +298,7 @@ export function FacultyNotifications() {
               <div
                 key={item.category}
                 onClick={() => {
-                  if (item.category === 'Assignment') setActiveFilter('All'); // Quick action
+                  if (item.category === "Assignment") setActiveFilter("All"); // Quick action
                 }}
                 className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer"
               >
@@ -309,7 +308,7 @@ export function FacultyNotifications() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">{item.count} total</span>
-                  <Badge tone={item.unread > 0 ? 'warn' : 'info'}>{item.unread} unread</Badge>
+                  <Badge tone={item.unread > 0 ? "warn" : "info"}>{item.unread} unread</Badge>
                 </div>
               </div>
             ))}

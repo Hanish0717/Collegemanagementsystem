@@ -1,18 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Bot, Play, Settings2, X } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  fetchAutomations,
-  toggleAutomation,
-  saveAutomationSettings,
-  Automation,
-  AutomationLog,
-} from '@/services/superAdminService';
-import { Skeleton } from '@/components/ui/skeleton';
+import { createFileRoute } from "@tanstack/react-router";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bot, Play, Settings2, X } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchAutomations, toggleAutomation, saveAutomationSettings, Automation, AutomationLog } from "@/services/superAdminService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SuperAdminAutomation() {
   const queryClient = useQueryClient();
@@ -20,12 +14,12 @@ export function SuperAdminAutomation() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Trigger Form states
-  const [triggerName, setTriggerName] = useState('');
-  const [triggerFreq, setTriggerFreq] = useState('Daily');
-  const [triggerTarget, setTriggerTarget] = useState('All Students');
+  const [triggerName, setTriggerName] = useState("");
+  const [triggerFreq, setTriggerFreq] = useState("Daily");
+  const [triggerTarget, setTriggerTarget] = useState("All Students");
 
   const { data, isLoading } = useQuery({
-    queryKey: ['superAdminAutomations'],
+    queryKey: ["superAdminAutomations"],
     queryFn: fetchAutomations,
   });
 
@@ -33,35 +27,27 @@ export function SuperAdminAutomation() {
   const automationLogs = data?.logs || [];
 
   const toggleMutation = useMutation({
-    mutationFn: ({ name, enabled }: { name: string; enabled: boolean }) =>
-      toggleAutomation(name, enabled),
+    mutationFn: ({ name, enabled }: { name: string; enabled: boolean }) => toggleAutomation(name, enabled),
     onSuccess: (updated) => {
-      queryClient.invalidateQueries({ queryKey: ['superAdminAutomations'] });
-      toast.success(`${updated.name} automation ${updated.enabled ? 'enabled' : 'disabled'}`);
+      queryClient.invalidateQueries({ queryKey: ["superAdminAutomations"] });
+      toast.success(`${updated.name} automation ${updated.enabled ? "enabled" : "disabled"}`);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || 'Failed to toggle automation');
-    },
+      toast.error(err.response?.data?.message || err.message || "Failed to toggle automation");
+    }
   });
 
   const saveSettingsMutation = useMutation({
-    mutationFn: ({
-      name,
-      frequency,
-      target,
-    }: {
-      name: string;
-      frequency: string;
-      target: string;
-    }) => saveAutomationSettings(name, frequency, target),
+    mutationFn: ({ name, frequency, target }: { name: string; frequency: string; target: string }) =>
+      saveAutomationSettings(name, frequency, target),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['superAdminAutomations'] });
+      queryClient.invalidateQueries({ queryKey: ["superAdminAutomations"] });
       toast.success(`Trigger configuration saved for ${triggerName}`);
       setIsModalOpen(false);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || 'Failed to save settings');
-    },
+      toast.error(err.response?.data?.message || err.message || "Failed to save settings");
+    }
   });
 
   const handleToggle = (name: string, currentEnabled: boolean) => {
@@ -71,8 +57,8 @@ export function SuperAdminAutomation() {
   const handleOpenSettings = (card: Automation) => {
     setEditingCard(card);
     setTriggerName(card.name);
-    setTriggerFreq(card.frequency || 'Daily');
-    setTriggerTarget(card.target || 'All Students');
+    setTriggerFreq(card.frequency || "Daily");
+    setTriggerTarget(card.target || "All Students");
     setIsModalOpen(true);
   };
 
@@ -93,49 +79,51 @@ export function SuperAdminAutomation() {
       />
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {isLoading
-          ? Array.from({ length: 4 }).map((_, idx) => (
-              <Card key={idx} className="space-y-3">
-                <Skeleton className="h-11 w-11 rounded-xl" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-1/2" />
-              </Card>
-            ))
-          : cards.map((card) => (
-              <Card key={card.name} className="hover:-translate-y-1 transition">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center">
-                    <Bot className="size-5" />
-                  </div>
-                  <button
-                    onClick={() => handleToggle(card.name, card.enabled)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${card.enabled ? 'bg-emerald-500' : 'bg-muted'}`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${card.enabled ? 'translate-x-6' : 'translate-x-1'}`}
-                    />
-                  </button>
-                </div>
-                <h3 className="font-semibold text-sm">{card.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1">{card.trigger}</p>
-                <div className="grid grid-cols-2 gap-2 mt-4">
-                  <div className="p-2 rounded-lg bg-gradient-soft border text-center">
-                    <div className="text-xs text-muted-foreground">Runs</div>
-                    <div className="font-bold">{card.runs}</div>
-                  </div>
-                  <div className="p-2 rounded-lg bg-gradient-soft border text-center">
-                    <div className="text-xs text-muted-foreground">Success</div>
-                    <div className="font-bold text-emerald-600">{card.success}%</div>
-                  </div>
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, idx) => (
+            <Card key={idx} className="space-y-3">
+              <Skeleton className="h-11 w-11 rounded-xl" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+            </Card>
+          ))
+        ) : (
+          cards.map((card) => (
+            <Card key={card.name} className="hover:-translate-y-1 transition">
+              <div className="flex items-start justify-between mb-4">
+                <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center">
+                  <Bot className="size-5" />
                 </div>
                 <button
-                  onClick={() => handleOpenSettings(card)}
-                  className="mt-4 w-full px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition flex items-center justify-center gap-1 cursor-pointer"
+                  onClick={() => handleToggle(card.name, card.enabled)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${card.enabled ? "bg-emerald-500" : "bg-muted"}`}
                 >
-                  <Settings2 className="size-3.5" /> Trigger Settings
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${card.enabled ? "translate-x-6" : "translate-x-1"}`}
+                  />
                 </button>
-              </Card>
-            ))}
+              </div>
+              <h3 className="font-semibold text-sm">{card.name}</h3>
+              <p className="text-xs text-muted-foreground mt-1">{card.trigger}</p>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                <div className="p-2 rounded-lg bg-gradient-soft border text-center">
+                  <div className="text-xs text-muted-foreground">Runs</div>
+                  <div className="font-bold">{card.runs}</div>
+                </div>
+                <div className="p-2 rounded-lg bg-gradient-soft border text-center">
+                  <div className="text-xs text-muted-foreground">Success</div>
+                  <div className="font-bold text-emerald-600">{card.success}%</div>
+                </div>
+              </div>
+              <button
+                onClick={() => handleOpenSettings(card)}
+                className="mt-4 w-full px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <Settings2 className="size-3.5" /> Trigger Settings
+              </button>
+            </Card>
+          ))
+        )}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
@@ -153,14 +141,9 @@ export function SuperAdminAutomation() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="name" stroke="#64748B" fontSize={10} interval={0} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                   <Bar dataKey="runs" fill="#4F46E5" radius={[8, 8, 0, 0]} name="Runs" />
-                  <Bar
-                    dataKey="success"
-                    fill="#06B6D4"
-                    radius={[8, 8, 0, 0]}
-                    name="Success Rate %"
-                  />
+                  <Bar dataKey="success" fill="#06B6D4" radius={[8, 8, 0, 0]} name="Success Rate %" />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -188,7 +171,7 @@ export function SuperAdminAutomation() {
                         {log.result} • {log.time}
                       </div>
                     </div>
-                    <Badge tone={log.status === 'Success' ? 'success' : 'warn'}>{log.status}</Badge>
+                    <Badge tone={log.status === "Success" ? "success" : "warn"}>{log.status}</Badge>
                   </div>
                 </div>
               ))
@@ -223,9 +206,7 @@ export function SuperAdminAutomation() {
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Frequency Schedule
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Frequency Schedule</label>
                 <select
                   value={triggerFreq}
                   onChange={(e) => setTriggerFreq(e.target.value)}
@@ -238,9 +219,7 @@ export function SuperAdminAutomation() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Target Audience
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Target Audience</label>
                 <select
                   value={triggerTarget}
                   onChange={(e) => setTriggerTarget(e.target.value)}

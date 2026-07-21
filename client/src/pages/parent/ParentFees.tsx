@@ -1,126 +1,96 @@
-import { useState, useEffect } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { AlertTriangle, DollarSign, Download } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
-import api from '@/lib/api';
+import { useState, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { AlertTriangle, DollarSign, Download } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
+import api from "@/lib/api";
 
 export function ParentFees() {
   const [fees, setFees] = useState<any[]>([]);
   const [feeRecords, setFeeRecords] = useState<any[]>([]);
   const [stats, setStats] = useState([
-    { label: 'Total Due', value: '₹0', tone: 'warn' as const },
-    { label: 'Overdue', value: '₹0', tone: 'danger' as const },
-    { label: 'Paid This Year', value: '₹0', tone: 'success' as const },
-    { label: 'Next Due', value: 'None', tone: 'info' as const },
+    { label: "Total Due", value: "₹0", tone: "warn" as const },
+    { label: "Overdue", value: "₹0", tone: "danger" as const },
+    { label: "Paid This Year", value: "₹0", tone: "success" as const },
+    { label: "Next Due", value: "None", tone: "info" as const },
   ]);
   const [scholarship, setScholarship] = useState({
-    type: 'None',
-    discount: '0%',
-    validUntil: '-',
-    status: 'Inactive',
-    isActive: false,
+    type: "None",
+    discount: "0%",
+    validUntil: "-",
+    status: "Inactive",
+    isActive: false
   });
 
   const fetchFees = async () => {
     try {
       let dbData: any = null;
       // Fetch fresh data from the server directly to bypass any stale local storage
-      const res = await api.get('/api/parent-module/student-data');
+      const res = await api.get("/api/parent-module/student-data");
       if (res.data?.success && res.data?.data) {
         dbData = res.data.data;
-        localStorage.setItem('cms_parent_child_data', JSON.stringify(dbData));
+        localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
       }
 
       if (dbData && dbData.fees) {
         setFees(dbData.fees);
         if (dbData.fees.length > 0) {
           const mapped = dbData.fees.map((f: any) => {
-            const capType = f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + ' Fee';
-            const statusStr =
-              f.paymentStatus === 'paid'
-                ? 'Paid'
-                : f.paymentStatus === 'overdue'
-                  ? 'Overdue'
-                  : 'Pending';
+            const capType = f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + " Fee";
+            const statusStr = f.paymentStatus === "paid" ? "Paid" : f.paymentStatus === "overdue" ? "Overdue" : "Pending";
             return {
               id: f.id || f._id,
               feeType: capType,
               amount: `₹${Number(f.totalAmount).toLocaleString('en-IN')}`,
               dueDate: new Date(f.dueDate).toISOString().split('T')[0],
               status: statusStr,
-              receipt: f.transactionId || '-',
+              receipt: f.transactionId || "-",
               remaining: f.totalAmount - f.paidAmount,
               paid: f.paidAmount,
-              remainingAmount: f.totalAmount - f.paidAmount,
+              remainingAmount: f.totalAmount - f.paidAmount
             };
           });
           setFeeRecords(mapped);
 
           // Compute statistics
-          const totalDue = mapped
-            .filter((r: any) => r.status !== 'Paid')
-            .reduce((sum: number, r: any) => sum + r.remaining, 0);
-          const totalOverdue = mapped
-            .filter((r: any) => r.status === 'Overdue')
-            .reduce((sum: number, r: any) => sum + r.remaining, 0);
+          const totalDue = mapped.filter((r: any) => r.status !== "Paid").reduce((sum: number, r: any) => sum + r.remaining, 0);
+          const totalOverdue = mapped.filter((r: any) => r.status === "Overdue").reduce((sum: number, r: any) => sum + r.remaining, 0);
           const totalPaid = mapped.reduce((sum: number, r: any) => sum + r.paid, 0);
-
-          const nextDueItem = mapped
-            .filter((r: any) => r.status !== 'Paid')
-            .sort(
-              (a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-            )[0];
-          const nextDueStr = nextDueItem
-            ? new Date(nextDueItem.dueDate).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-              })
-            : 'None';
+          
+          const nextDueItem = mapped.filter((r: any) => r.status !== "Paid").sort((a: any, b: any) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
+          const nextDueStr = nextDueItem ? new Date(nextDueItem.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "None";
 
           setStats([
-            {
-              label: 'Total Due',
-              value: `₹${Number(totalDue).toLocaleString('en-IN')}`,
-              tone: 'warn' as const,
-            },
-            {
-              label: 'Overdue',
-              value: `₹${Number(totalOverdue).toLocaleString('en-IN')}`,
-              tone: 'danger' as const,
-            },
-            {
-              label: 'Paid This Year',
-              value: `₹${Number(totalPaid).toLocaleString('en-IN')}`,
-              tone: 'success' as const,
-            },
-            { label: 'Next Due', value: nextDueStr, tone: 'info' as const },
+            { label: "Total Due", value: `₹${Number(totalDue).toLocaleString('en-IN')}`, tone: "warn" as const },
+            { label: "Overdue", value: `₹${Number(totalOverdue).toLocaleString('en-IN')}`, tone: "danger" as const },
+            { label: "Paid This Year", value: `₹${Number(totalPaid).toLocaleString('en-IN')}`, tone: "success" as const },
+            { label: "Next Due", value: nextDueStr, tone: "info" as const },
           ]);
 
           // Compute dynamic merit scholarship details based on dynamic CGPA
-          const cgpaItem = dbData.stats?.find((s: any) => s.label.includes('CGPA'));
+          const cgpaItem = dbData.stats?.find((s: any) => s.label.includes("CGPA"));
           const cgpaVal = cgpaItem ? Number(cgpaItem.value) : 0;
           if (cgpaVal >= 8.5) {
             setScholarship({
-              type: 'Merit Scholarship',
-              discount: '10% on Tuition Fee',
-              validUntil: 'Semester 8',
-              status: 'Active',
-              isActive: true,
+              type: "Merit Scholarship",
+              discount: "10% on Tuition Fee",
+              validUntil: "Semester 8",
+              status: "Active",
+              isActive: true
             });
           } else {
             setScholarship({
-              type: 'None',
-              discount: '0%',
-              validUntil: '-',
-              status: 'Inactive',
-              isActive: false,
+              type: "None",
+              discount: "0%",
+              validUntil: "-",
+              status: "Inactive",
+              isActive: false
             });
           }
         }
       }
     } catch (err) {
-      console.error('Error loading parent fees:', err);
+      console.error("Error loading parent fees:", err);
     }
   };
 
@@ -128,20 +98,20 @@ export function ParentFees() {
     try {
       const res = await api.post(`/api/fees/pay/${feeId}`, {
         amount: remainingAmount,
-        paymentMethod: 'Card',
+        paymentMethod: "Card",
         transactionId: `TXN-${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
-        remarks: 'Paid online by parent',
+        remarks: "Paid online by parent"
       });
 
       if (res.data?.success) {
-        toast.success('Payment processed successfully!');
+        toast.success("Payment processed successfully!");
         fetchFees();
       } else {
-        toast.error('Failed to process payment');
+        toast.error("Failed to process payment");
       }
     } catch (err: any) {
       console.error(err);
-      toast.error(err.response?.data?.message || 'Failed to process payment');
+      toast.error(err.response?.data?.message || "Failed to process payment");
     }
   };
 
@@ -157,7 +127,7 @@ export function ParentFees() {
       />
 
       <div className="grid md:grid-cols-4 gap-4">
-        {stats.map((stat) => (
+        {stats.map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
@@ -174,7 +144,7 @@ export function ParentFees() {
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr>
-                {['Fee Type', 'Amount', 'Due Date', 'Payment Status', 'Receipt'].map((column) => (
+                {["Fee Type", "Amount", "Due Date", "Payment Status", "Receipt"].map((column) => (
                   <th
                     key={column}
                     className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -193,21 +163,19 @@ export function ParentFees() {
                   <td className="py-3 px-4">
                     <Badge
                       tone={
-                        record.status === 'Paid'
-                          ? 'success'
-                          : record.status === 'Overdue'
-                            ? 'danger'
-                            : 'warn'
+                        record.status === "Paid"
+                          ? "success"
+                          : record.status === "Overdue"
+                            ? "danger"
+                            : "warn"
                       }
                     >
                       {record.status}
                     </Badge>
                   </td>
                   <td className="py-3 px-4">
-                    {record.status === 'Paid' ? (
-                      <span className="text-xs font-semibold text-muted-foreground">
-                        {record.receipt}
-                      </span>
+                    {record.status === "Paid" ? (
+                      <span className="text-xs font-semibold text-muted-foreground">{record.receipt}</span>
                     ) : (
                       <button
                         onClick={() => handlePayFee(record.id, record.remainingAmount)}
@@ -231,7 +199,7 @@ export function ParentFees() {
         </div>
         <div className="space-y-2">
           {feeRecords
-            .filter((f) => f.status !== 'Paid')
+            .filter((f) => f.status !== "Paid")
             .map((record, index) => (
               <div
                 key={index}
@@ -244,7 +212,7 @@ export function ParentFees() {
                 <div className="flex items-center gap-3">
                   <div className="text-right">
                     <div className="text-sm font-medium">{record.amount}</div>
-                    <Badge tone={record.status === 'Overdue' ? 'danger' : 'warn'}>
+                    <Badge tone={record.status === "Overdue" ? "danger" : "warn"}>
                       {record.status}
                     </Badge>
                   </div>
@@ -278,7 +246,7 @@ export function ParentFees() {
             </div>
             <div>
               <div className="text-xs text-muted-foreground">Status</div>
-              <Badge tone={scholarship.isActive ? 'success' : 'info'} className="mt-1">
+              <Badge tone={scholarship.isActive ? "success" : "info"} className="mt-1">
                 {scholarship.status}
               </Badge>
             </div>

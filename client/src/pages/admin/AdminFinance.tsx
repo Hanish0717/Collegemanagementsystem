@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Wallet,
   DollarSign,
@@ -9,50 +9,32 @@ import {
   Plus,
   Trash2,
   FileSpreadsheet,
-  Layers,
-} from 'lucide-react';
-import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
+  Layers
+} from "lucide-react";
+import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 
 export function AdminFinance() {
   const [scholarships, setScholarships] = useState([
-    {
-      id: 'SCH-101',
-      studentName: 'Priya Sharma',
-      type: 'Academic Merit Scholarship',
-      waiver: '50% Tuition',
-      status: 'Approved',
-    },
-    {
-      id: 'SCH-102',
-      studentName: 'Varun Verma',
-      type: 'Sports Excellence Waiver',
-      waiver: '100% Sports Fee',
-      status: 'Approved',
-    },
-    {
-      id: 'SCH-103',
-      studentName: 'Nikita Reddy',
-      type: 'Need-based Financial Aid',
-      waiver: '30% Tuition',
-      status: 'Approved',
-    },
+    { id: "SCH-101", studentName: "Priya Sharma", type: "Academic Merit Scholarship", waiver: "50% Tuition", status: "Approved" },
+    { id: "SCH-102", studentName: "Varun Verma", type: "Sports Excellence Waiver", waiver: "100% Sports Fee", status: "Approved" },
+    { id: "SCH-103", studentName: "Nikita Reddy", type: "Need-based Financial Aid", waiver: "30% Tuition", status: "Approved" }
   ]);
 
   const [feeCategories, setFeeCategories] = useState([
-    { name: 'Academic Tuition Fees', rate: 75000, collected: 24500000, pending: 1500000 },
-    { name: 'Hostel Lodging Fees', rate: 45000, collected: 3200000, pending: 250000 },
-    { name: 'Transport Fleet Pass', rate: 18000, collected: 720000, pending: 120000 },
+    { name: "Academic Tuition Fees", rate: 75000, collected: 24500000, pending: 1500000 },
+    { name: "Hostel Lodging Fees", rate: 45000, collected: 3200000, pending: 250000 },
+    { name: "Transport Fleet Pass", rate: 18000, collected: 720000, pending: 120000 }
   ]);
 
-  const [studentWaiverName, setStudentWaiverName] = useState('');
-  const [waiverType, setWaiverType] = useState('Academic Merit Scholarship');
-  const [waiverVal, setWaiverVal] = useState('50% Tuition');
+  const [studentWaiverName, setStudentWaiverName] = useState("");
+  const [waiverType, setWaiverType] = useState("Academic Merit Scholarship");
+  const [waiverVal, setWaiverVal] = useState("50% Tuition");
 
   const handleRecordWaiver = (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentWaiverName.trim()) {
-      toast.error('Please enter Student Name!');
+      toast.error("Please enter Student Name!");
       return;
     }
     const newSch = {
@@ -60,15 +42,15 @@ export function AdminFinance() {
       studentName: studentWaiverName,
       type: waiverType,
       waiver: waiverVal,
-      status: 'Approved',
+      status: "Approved"
     };
     setScholarships([...scholarships, newSch]);
     toast.success(`Scholarship Waiver of ${waiverVal} allocated to ${studentWaiverName}!`);
-    setStudentWaiverName('');
+    setStudentWaiverName("");
   };
 
   const handleRevokeWaiver = (id: string, name: string) => {
-    setScholarships((prev) => prev.filter((s) => s.id !== id));
+    setScholarships(prev => prev.filter(s => s.id !== id));
     toast.warning(`Scholarship waiver revoked for ${name}`);
   };
 
@@ -125,18 +107,12 @@ export function AdminFinance() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {feeCategories.map((row) => (
+                {feeCategories.map(row => (
                   <tr key={row.name}>
                     <td className="py-2.5 font-bold text-slate-800">{row.name}</td>
-                    <td className="py-2.5 font-mono text-slate-500">
-                      ₹{row.rate.toLocaleString()}
-                    </td>
-                    <td className="py-2.5 text-center font-mono font-bold text-emerald-600">
-                      ₹{row.collected.toLocaleString()}
-                    </td>
-                    <td className="py-2.5 text-right font-mono font-bold text-rose-600">
-                      ₹{row.pending.toLocaleString()}
-                    </td>
+                    <td className="py-2.5 font-mono text-slate-500">₹{row.rate.toLocaleString()}</td>
+                    <td className="py-2.5 text-center font-mono font-bold text-emerald-600">₹{row.collected.toLocaleString()}</td>
+                    <td className="py-2.5 text-right font-mono font-bold text-rose-600">₹{row.pending.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -147,9 +123,7 @@ export function AdminFinance() {
         {/* Allocate scholarship waiver */}
         <Card>
           <h3 className="font-semibold mb-2">Allocate Scholarship Waiver</h3>
-          <p className="text-xs text-muted-foreground mb-4">
-            Waive tuition or lab fees for merit/sports students.
-          </p>
+          <p className="text-xs text-muted-foreground mb-4">Waive tuition or lab fees for merit/sports students.</p>
           <form onSubmit={handleRecordWaiver} className="space-y-3">
             <div>
               <label className="text-xs font-semibold text-muted-foreground">Student Name *</label>
@@ -175,9 +149,7 @@ export function AdminFinance() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-semibold text-muted-foreground">
-                Scholarship Value
-              </label>
+              <label className="text-xs font-semibold text-muted-foreground">Scholarship Value</label>
               <select
                 value={waiverVal}
                 onChange={(e) => setWaiverVal(e.target.value)}
@@ -215,7 +187,7 @@ export function AdminFinance() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {scholarships.map((row) => (
+              {scholarships.map(row => (
                 <tr key={row.id} className="hover:bg-slate-50">
                   <td className="py-2.5 font-mono font-bold text-slate-400">{row.id}</td>
                   <td className="py-2.5 font-bold text-slate-800">{row.studentName}</td>

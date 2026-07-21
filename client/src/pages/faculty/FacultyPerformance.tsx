@@ -1,74 +1,46 @@
-import { useState, useEffect } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import { Download, Filter, TrendingUp, AlertTriangle } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import api from '@/lib/api';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Download, Filter, TrendingUp, AlertTriangle } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import api from "@/lib/api";
 
 export function FacultyPerformance() {
   const [performance, setPerformance] = useState<any[]>([]);
-  const [filterType, setFilterType] = useState('All Students');
+  const [filterType, setFilterType] = useState("All Students");
 
   useEffect(() => {
     const fetchPerformance = async () => {
       try {
-        const res = await api.get('/api/faculty-module/performance');
+        const res = await api.get("/api/faculty-module/performance");
         if (res.data?.success && res.data?.data) {
           setPerformance(res.data.data);
         }
       } catch (err) {
-        console.error('Error loading performance data:', err);
+        console.error("Error loading performance data:", err);
       }
     };
     fetchPerformance();
   }, []);
 
-  const topPerformers = performance.filter((s) => s.overall >= 85);
-  const atRisk = performance.filter((s) => s.overall < 80);
-
-  const avgScore =
-    performance.length > 0
-      ? Math.round(performance.reduce((sum, s) => sum + s.overall, 0) / performance.length)
-      : 83;
-
-  const avgAttendance =
-    performance.length > 0
-      ? Math.round(performance.reduce((sum, s) => sum + s.attendance, 0) / performance.length)
-      : 87;
+  const topPerformers = performance.filter(s => s.overall >= 85);
+  const atRisk = performance.filter(s => s.overall < 80);
+  
+  const avgScore = performance.length > 0 
+    ? Math.round(performance.reduce((sum, s) => sum + s.overall, 0) / performance.length) 
+    : 83;
+    
+  const avgAttendance = performance.length > 0 
+    ? Math.round(performance.reduce((sum, s) => sum + s.attendance, 0) / performance.length) 
+    : 87;
 
   // Filter students based on filterType
-  const filteredPerformance = performance.filter((student) => {
-    if (filterType === 'Top Performers') return student.overall >= 85;
-    if (filterType === 'At Risk') return student.overall < 80;
-    if (filterType === 'Improving') return student.overall >= 80 && student.overall < 85;
+  const filteredPerformance = performance.filter(student => {
+    if (filterType === "Top Performers") return student.overall >= 85;
+    if (filterType === "At Risk") return student.overall < 80;
+    if (filterType === "Improving") return student.overall >= 80 && student.overall < 85;
     return true; // "All Students"
   });
-
-  const handleDownloadReport = () => {
-    toast.success('Compiling Student Performance Report...');
-    const csvContent = "Student Name,Overall Score,Attendance %,Assignments %,Quizzes %\n" +
-      performance.map(s => `"${s.student}",${s.overall},${s.attendance},${s.assignments},${s.quizzes}`).join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "student_performance_report.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success('Performance Report downloaded successfully!');
-  };
 
   return (
     <div className="space-y-6">
@@ -76,10 +48,7 @@ export function FacultyPerformance() {
         title="Student Performance Tracking"
         desc="Monitor student performance, track attendance vs marks, and identify at-risk students."
         actions={
-          <button
-            onClick={handleDownloadReport}
-            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer"
-          >
+          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
             <Download className="size-4" /> Download Report
           </button>
         }
@@ -87,15 +56,11 @@ export function FacultyPerformance() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          {
-            label: 'Top Performers',
-            value: String(topPerformers.length),
-            tone: 'success' as const,
-          },
-          { label: 'At Risk', value: String(atRisk.length), tone: 'danger' as const },
-          { label: 'Average Score', value: `${avgScore}%`, tone: 'info' as const },
-          { label: 'Avg Attendance', value: `${avgAttendance}%`, tone: 'success' as const },
-        ].map((stat) => (
+          { label: "Top Performers", value: String(topPerformers.length), tone: "success" as const },
+          { label: "At Risk", value: String(atRisk.length), tone: "danger" as const },
+          { label: "Average Score", value: `${avgScore}%`, tone: "info" as const },
+          { label: "Avg Attendance", value: `${avgAttendance}%`, tone: "success" as const },
+        ].map(stat => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
             <div className="text-2xl font-bold mt-2">{stat.value}</div>
@@ -108,11 +73,11 @@ export function FacultyPerformance() {
 
       <Card>
         <div className="flex flex-wrap gap-2">
-          {['All Students', 'Top Performers', 'At Risk', 'Improving'].map((filter) => (
-            <button
-              key={filter}
+          {["All Students", "Top Performers", "At Risk", "Improving"].map((filter) => (
+            <button 
+              key={filter} 
               onClick={() => setFilterType(filter)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${filterType === filter ? 'bg-gradient-primary text-white' : 'border hover:bg-accent'}`}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${filterType === filter ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}
             >
               {filter}
             </button>
@@ -129,21 +94,9 @@ export function FacultyPerformance() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="student" stroke="#64748B" fontSize={10} />
                 <YAxis stroke="#64748B" fontSize={10} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
-                <Line
-                  type="monotone"
-                  name="Attendance (%)"
-                  dataKey="attendance"
-                  stroke="#4F46E5"
-                  strokeWidth={2.5}
-                />
-                <Line
-                  type="monotone"
-                  name="Marks (%)"
-                  dataKey="overall"
-                  stroke="#06B6D4"
-                  strokeWidth={2.5}
-                />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Line type="monotone" name="Attendance (%)" dataKey="attendance" stroke="#4F46E5" strokeWidth={2.5} />
+                <Line type="monotone" name="Marks (%)" dataKey="overall" stroke="#06B6D4" strokeWidth={2.5} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -167,23 +120,9 @@ export function FacultyPerformance() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="student" stroke="#64748B" fontSize={10} />
                 <YAxis stroke="#64748B" fontSize={10} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
-                <Area
-                  type="monotone"
-                  name="Attendance"
-                  dataKey="attendance"
-                  stroke="#4F46E5"
-                  fill="url(#perf-attendance)"
-                  strokeWidth={2}
-                />
-                <Area
-                  type="monotone"
-                  name="Assignments"
-                  dataKey="assignments"
-                  stroke="#06B6D4"
-                  fill="url(#perf-marks)"
-                  strokeWidth={2}
-                />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                <Area type="monotone" name="Attendance" dataKey="attendance" stroke="#4F46E5" fill="url(#perf-attendance)" strokeWidth={2} />
+                <Area type="monotone" name="Assignments" dataKey="assignments" stroke="#06B6D4" fill="url(#perf-marks)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -193,17 +132,14 @@ export function FacultyPerformance() {
       <Card>
         <h3 className="font-semibold mb-4">Student Performance Cards</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredPerformance.map((student) => (
+          {filteredPerformance.map(student => (
             <Card key={student.student} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {student.student
-                    .split(' ')
-                    .map((n: string) => n[0])
-                    .join('')}
+                  {student.student.split(" ").map((n: string) => n[0]).join("")}
                 </div>
                 <Badge
-                  tone={student.overall >= 85 ? 'success' : student.overall >= 75 ? 'info' : 'warn'}
+                  tone={student.overall >= 85 ? "success" : student.overall >= 75 ? "info" : "warn"}
                 >
                   {student.overall}%
                 </Badge>
@@ -235,11 +171,8 @@ export function FacultyPerformance() {
             <h3 className="font-semibold">Top Performers</h3>
           </div>
           <div className="space-y-2">
-            {topPerformers.map((student) => (
-              <div
-                key={student.student}
-                className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
-              >
+            {topPerformers.map(student => (
+              <div key={student.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
                 <span className="text-sm font-medium">{student.student}</span>
                 <Badge tone="success">{student.overall}%</Badge>
               </div>
@@ -253,11 +186,8 @@ export function FacultyPerformance() {
             <h3 className="font-semibold">Low Performance Alerts</h3>
           </div>
           <div className="space-y-2">
-            {atRisk.map((student) => (
-              <div
-                key={student.student}
-                className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
-              >
+            {atRisk.map(student => (
+              <div key={student.student} className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition">
                 <span className="text-sm font-medium">{student.student}</span>
                 <Badge tone="danger">{student.overall}%</Badge>
               </div>

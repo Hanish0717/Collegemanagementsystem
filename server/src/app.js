@@ -38,61 +38,10 @@ import hostelComplaintRoutes from './routes/hostel/complaintRoutes.js';
 import hostelAttendanceRoutes from './routes/hostel/attendanceRoutes.js';
 import visitorRoutes from './routes/hostel/visitorRoutes.js';
 import alumniRoutes from './routes/alumniRoutes.js';
-import accreditationRoutes from './routes/accreditationRoutes.js';
-import communicationRoutes from './routes/communicationRoutes.js';
-import attendanceNotificationRoutes from './routes/attendanceNotificationRoutes.js';
-import attendanceApprovalRoutes from './routes/attendanceApprovalRoutes.js';
-import hodRoutes from './routes/hodRoutes.js';
-import deanRoutes from './routes/deanRoutes.js';
-
-import helmet from 'helmet';
-import { rateLimit } from 'express-rate-limit';
 
 dotenv.config();
 
 const app = express();
-
-// Standard HTTP Security Headers using Helmet
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https://images.unsplash.com"],
-      connectSrc: ["'self'", "http://localhost:5000", "http://localhost:5173", "https://rdzitvvxxdhtbzzqoasd.supabase.co"]
-    }
-  }
-}));
-
-// Set up general rate limiter (200 requests per 15 minutes per IP)
-const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many requests from this IP, please try again after 15 minutes.' }
-});
-
-// Set up auth rate limiter (15 login/OTP/reset requests per 5 minutes per IP)
-const authLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  max: 15,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { success: false, message: 'Too many authentication attempts, please try again after 5 minutes.' }
-});
-
-// Apply rate limiting
-if (process.env.NODE_ENV !== 'test' && process.env.DISABLE_RATE_LIMIT !== 'true' && process.env.FORCE_MOCK_MODE !== 'true') {
-  app.use('/api', generalLimiter);
-  app.use('/api/auth/login', authLimiter);
-  app.use('/api/auth/register', authLimiter);
-  app.use('/api/auth/send-otp', authLimiter);
-  app.use('/api/auth/verify-otp', authLimiter);
-  app.use('/api/auth/forgot-password', authLimiter);
-  app.use('/api/auth/reset-password', authLimiter);
-}
 
 // Robust CORS middleware supporting dynamic localhost and 127.0.0.1 development ports
 const allowedOrigins = [
@@ -133,11 +82,10 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
-
 
 // Routes
 app.get('/', (req, res) => {
@@ -161,8 +109,6 @@ app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/attendance', attendanceRoutes);
-app.use('/api/attendance', attendanceApprovalRoutes);
-app.use('/api/attendance-notifications', attendanceNotificationRoutes);
 app.use('/api/faculty-attendance', facultyAttendanceRoutes);
 app.use('/api/fees', feeRoutes);
 app.use('/api/library', libraryRoutes);
@@ -174,7 +120,6 @@ app.use('/api/academic', academicRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/faculty', facultyRoutes);
-app.use('/api/dean', deanRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/transport', transportRoutes);
 app.use('/api/placement', placementRoutes);
@@ -203,10 +148,6 @@ app.use('/api/hostel/complaints', hostelComplaintRoutes);
 app.use('/api/hostel/attendance', hostelAttendanceRoutes);
 app.use('/api/hostel/visitors', visitorRoutes);
 app.use('/api/alumni', alumniRoutes);
-app.use('/api/accreditation', accreditationRoutes);
-app.use('/api/communication', communicationRoutes);
-app.use('/api/attendance-notifications', attendanceNotificationRoutes);
-app.use('/api/hod', hodRoutes);
 
 // 404 handler
 app.use(notFound);

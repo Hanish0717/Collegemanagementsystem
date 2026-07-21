@@ -1,12 +1,5 @@
 import { supabase } from '../config/supabase.js';
 
-// In-Memory Fallback store for eBooks when database table 'ebooks' doesn't exist
-let inMemoryEBooks = [
-  { id: 'eb111111-1111-1111-1111-111111111111', title: 'Eloquent JavaScript', author: 'Marijn Haverbeke', category: 'Computer Science', format: 'PDF', size: '4.2 MB', downloads: 124, file_url: 'https://eloquentjavascript.net/', created_at: new Date().toISOString() },
-  { id: 'eb222222-2222-2222-2222-222222222222', title: 'You Don\'t Know JS', author: 'Kyle Simpson', category: 'Computer Science', format: 'EPUB', size: '2.8 MB', downloads: 85, file_url: 'https://github.com/getify/You-Dont-Know-JS', created_at: new Date().toISOString() },
-  { id: 'eb333333-3333-3333-3333-333333333333', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', category: 'Algorithms', format: 'PDF', size: '12.5 MB', downloads: 310, file_url: 'https://mitpress.mit.edu/9780262033848/introduction-to-algorithms/', created_at: new Date().toISOString() }
-];
-
 // Helper: Format a book row from Supabase back to camelCase MongoDB structure
 const formatBook = (b) => {
   if (!b) return null;
@@ -825,202 +818,106 @@ export const getLibraryReport = async (req, res, next) => {
   try {
     await updateOverdueIssues();
 
-    // We will attempt to run optimized raw SQL database-level aggregations
-    // to handle high data loads (millions of rows) without memory overhead or server crash.
-    let totalBooks = 0;
-    let totalIssued = 0;
-    let overdueCount = 0;
-    let totalFines = 0;
-    let categoryAnalytics = [];
-    let mostIssuedBooks = [];
-    let rawSqlSucceeded = false;
+    // 1. Total books
+    const { count: totalBooks } = await supabase
+      .from('books')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true);
 
-    // Check if isMockMode is true. If not, try raw SQL query
-    const { isMockMode } = await import('../config/supabase.js');
+    // 2. Total active issues
+    const { count: totalIssued } = await supabase
+      .from('issued_books')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['Issued', 'issued', 'Overdue', 'overdue']);
 
-    if (!isMockMode) {
-      try {
-        // 1. Fetch counts and sums in a single raw query or parallel raw queries
-        const countsQuery = await supabase.query(`
-          SELECT 
-            (SELECT COUNT(*) FROM books WHERE is_active = true) as total_books,
-            (SELECT COUNT(*) FROM issued_books WHERE status IN ('Issued', 'issued', 'Overdue', 'overdue')) as total_issued,
-            (SELECT COUNT(*) FROM issued_books WHERE status IN ('Overdue', 'overdue')) as overdue_count,
-            (SELECT COALESCE(SUM(fine_amount), 0) FROM issued_books WHERE status IN ('Returned', 'returned')) as total_fines
-        `);
+    // 3. Overdue count
+    const { count: overdueCount } = await supabase
+      .from('issued_books')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['Overdue', 'overdue']);
 
-        if (countsQuery && countsQuery.rows && countsQuery.rows.length > 0) {
-          const row = countsQuery.rows[0];
-          totalBooks = parseInt(row.total_books, 10);
-          totalIssued = parseInt(row.total_issued, 10);
-          overdueCount = parseInt(row.overdue_count, 10);
-          totalFines = parseFloat(row.total_fines);
+    // 4. Total fine collected
+    const { data: fineData } = await supabase
+      .from('issued_books')
+      .select('fine_amount')
+      .in('status', ['Returned', 'returned']);
+    const totalFines = fineData ? fineData.reduce((sum, item) => sum + Number(item.fine_amount || 0), 0) : 0;
+
+    // 5. Category analytics (with checkouts)
+    const { data: allBooks } = await supabase.from('books').select('category').eq('is_active', true);
+    const { data: allIssuesWithBooks } = await supabase
+      .from('issued_books')
+      .select('status, book:books(category)');
+
+    const categoryMap = {};
+    if (allBooks) {
+      allBooks.forEach(b => {
+        const cat = b.category || 'Uncategorized';
+        if (!categoryMap[cat]) {
+          categoryMap[cat] = { totalBooks: 0, issued: 0, returned: 0, active: 0 };
         }
-
-        // 2. Fetch category analytics with database grouping
-        const catQuery = await supabase.query(`
-          SELECT 
-            COALESCE(b.category, 'Uncategorized') as category,
-            COUNT(DISTINCT b.id) as total_books,
-            COUNT(DISTINCT ib.id) as issued,
-            SUM(CASE WHEN ib.status IN ('Returned', 'returned') THEN 1 ELSE 0 END) as returned,
-            SUM(CASE WHEN ib.status NOT IN ('Returned', 'returned') AND ib.id IS NOT NULL THEN 1 ELSE 0 END) as active
-          FROM books b
-          LEFT JOIN issued_books ib ON ib.book = b.id
-          WHERE b.is_active = true
-          GROUP BY b.category
-        `);
-
-        if (catQuery && catQuery.rows) {
-          categoryAnalytics = catQuery.rows.map(r => ({
-            _id: r.category,
-            count: parseInt(r.total_books, 10),
-            issued: parseInt(r.issued, 10),
-            returned: parseInt(r.returned, 10),
-            active: parseInt(r.active, 10)
-          }));
-        }
-
-        // 3. Fetch top 5 most issued books
-        const topBooksQuery = await supabase.query(`
-          SELECT 
-            b.id as book_id,
-            b.title,
-            b.author,
-            COALESCE(b.available_quantity, 0) as available_quantity,
-            COUNT(ib.id) as issue_count
-          FROM issued_books ib
-          JOIN books b ON ib.book = b.id
-          GROUP BY b.id, b.title, b.author, b.available_quantity
-          ORDER BY issue_count DESC
-          LIMIT 5
-        `);
-
-        if (topBooksQuery && topBooksQuery.rows) {
-          mostIssuedBooks = topBooksQuery.rows.map(r => ({
-            bookId: r.book_id,
-            title: r.title,
-            author: r.author,
-            availableQuantity: parseInt(r.available_quantity, 10),
-            issueCount: parseInt(r.issue_count, 10)
-          }));
-        }
-
-        rawSqlSucceeded = true;
-      } catch (sqlErr) {
-        console.warn("⚠️ Optimized database report aggregation failed, falling back to query-builder calculations:", sqlErr.message || sqlErr);
-      }
+        categoryMap[cat].totalBooks += 1;
+      });
     }
 
-    if (!rawSqlSucceeded) {
-      // Graceful degradation fallback using limited query-builder logic
-      // to guarantee we never exhaust Node memory even on fallback.
-      
-      // 1. Total books
-      const { count: booksCount } = await supabase
-        .from('books')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_active', true);
-      totalBooks = booksCount || 0;
-
-      // 2. Total active issues
-      const { count: issuedCount } = await supabase
-        .from('issued_books')
-        .select('*', { count: 'exact', head: true })
-        .in('status', ['Issued', 'issued', 'Overdue', 'overdue']);
-      totalIssued = issuedCount || 0;
-
-      // 3. Overdue count
-      const { count: overduesCount } = await supabase
-        .from('issued_books')
-        .select('*', { count: 'exact', head: true })
-        .in('status', ['Overdue', 'overdue']);
-      overdueCount = overduesCount || 0;
-
-      // 4. Total fine collected (Limit to 1000 records to prevent memory crash)
-      const { data: fineData } = await supabase
-        .from('issued_books')
-        .select('fine_amount')
-        .in('status', ['Returned', 'returned'])
-        .limit(1000);
-      totalFines = fineData ? fineData.reduce((sum, item) => sum + Number(item.fine_amount || 0), 0) : 0;
-
-      // 5. Category analytics (Limit to 1000 records to prevent memory crash)
-      const { data: allBooks } = await supabase.from('books').select('category').eq('is_active', true).limit(1000);
-      const { data: allIssuesWithBooks } = await supabase
-        .from('issued_books')
-        .select('status, book:books(category)')
-        .limit(1000);
-
-      const categoryMap = {};
-      if (allBooks) {
-        allBooks.forEach(b => {
-          const cat = b.category || 'Uncategorized';
-          if (!categoryMap[cat]) {
-            categoryMap[cat] = { totalBooks: 0, issued: 0, returned: 0, active: 0 };
-          }
-          categoryMap[cat].totalBooks += 1;
-        });
-      }
-
-      if (allIssuesWithBooks) {
-        allIssuesWithBooks.forEach(issue => {
-          const cat = issue.book?.category || 'Uncategorized';
-          if (!categoryMap[cat]) {
-            categoryMap[cat] = { totalBooks: 0, issued: 0, returned: 0, active: 0 };
-          }
-          categoryMap[cat].issued += 1;
-          const status = String(issue.status).toLowerCase();
-          if (status === 'returned') {
-            categoryMap[cat].returned += 1;
-          } else {
-            categoryMap[cat].active += 1;
-          }
-        });
-      }
-
-      categoryAnalytics = Object.keys(categoryMap).map(cat => {
-        const data = categoryMap[cat];
-        return {
-          _id: cat,
-          count: data.totalBooks,
-          issued: data.issued,
-          returned: data.returned,
-          active: data.active
-        };
-      });
-
-      // 6. Most issued books (top 5)
-      const { data: allIssues } = await supabase.from('issued_books').select('book').limit(1000);
-      const issueCounts = {};
-      if (allIssues) {
-        allIssues.forEach(i => {
-          if (i.book) {
-            issueCounts[i.book] = (issueCounts[i.book] || 0) + 1;
-          }
-        });
-      }
-
-      const topBookIds = Object.keys(issueCounts)
-        .sort((a, b) => issueCounts[b] - issueCounts[a])
-        .slice(0, 5);
-
-      if (topBookIds.length > 0) {
-        const { data: bookDetails } = await supabase.from('books').select('id, title, author, available_quantity').in('id', topBookIds);
-        if (bookDetails) {
-          topBookIds.forEach(id => {
-            const book = bookDetails.find(b => b.id === id);
-            if (book) {
-              mostIssuedBooks.push({
-                bookId: book.id,
-                title: book.title,
-                author: book.author,
-                availableQuantity: Number(book.available_quantity || 0),
-                issueCount: issueCounts[id]
-              });
-            }
-          });
+    if (allIssuesWithBooks) {
+      allIssuesWithBooks.forEach(issue => {
+        const cat = issue.book?.category || 'Uncategorized';
+        if (!categoryMap[cat]) {
+          categoryMap[cat] = { totalBooks: 0, issued: 0, returned: 0, active: 0 };
         }
+        categoryMap[cat].issued += 1;
+        const status = String(issue.status).toLowerCase();
+        if (status === 'returned') {
+          categoryMap[cat].returned += 1;
+        } else {
+          categoryMap[cat].active += 1;
+        }
+      });
+    }
+
+    const categoryAnalytics = Object.keys(categoryMap).map(cat => {
+      const data = categoryMap[cat];
+      return {
+        _id: cat,
+        count: data.totalBooks,
+        issued: data.issued,
+        returned: data.returned,
+        active: data.active
+      };
+    });
+
+    // 6. Most issued books (top 5)
+    const { data: allIssues } = await supabase.from('issued_books').select('book');
+    const issueCounts = {};
+    if (allIssues) {
+      allIssues.forEach(i => {
+        if (i.book) {
+          issueCounts[i.book] = (issueCounts[i.book] || 0) + 1;
+        }
+      });
+    }
+
+    const topBookIds = Object.keys(issueCounts)
+      .sort((a, b) => issueCounts[b] - issueCounts[a])
+      .slice(0, 5);
+
+    const mostIssuedBooks = [];
+    if (topBookIds.length > 0) {
+      const { data: bookDetails } = await supabase.from('books').select('id, title, author, available_quantity').in('id', topBookIds);
+      if (bookDetails) {
+        topBookIds.forEach(id => {
+          const book = bookDetails.find(b => b.id === id);
+          if (book) {
+            mostIssuedBooks.push({
+              bookId: book.id,
+              title: book.title,
+              author: book.author,
+              availableQuantity: Number(book.available_quantity || 0),
+              issueCount: issueCounts[id]
+            });
+          }
+        });
       }
     }
 
@@ -1029,9 +926,9 @@ export const getLibraryReport = async (req, res, next) => {
       message: 'Library report generated',
       data: {
         totals: {
-          totalBooks,
-          totalIssued,
-          overdueCount,
+          totalBooks: totalBooks || 0,
+          totalIssued: totalIssued || 0,
+          overdueCount: overdueCount || 0,
           totalFines
         },
         categoryAnalytics,
@@ -1068,40 +965,14 @@ const formatEBook = (e) => {
 export const getEBooks = async (req, res, next) => {
   try {
     const { search, category } = req.query;
-    let ebooks = [];
-    let useFallback = false;
+    let query = supabase.from('ebooks').select('*');
 
-    try {
-      let query = supabase.from('ebooks').select('*');
-      if (category && category !== 'All') {
-        query = query.ilike('category', `%${category}%`);
-      }
-      const { data, error } = await query.order('created_at', { ascending: false });
-      if (error) {
-        if (error.code === '42P01' || String(error.message).includes('does not exist')) {
-          useFallback = true;
-        } else {
-          throw error;
-        }
-      } else {
-        ebooks = data || [];
-      }
-    } catch (dbErr) {
-      if (dbErr.code === '42P01' || String(dbErr.message).includes('does not exist')) {
-        useFallback = true;
-      } else {
-        throw dbErr;
-      }
+    if (category && category !== 'All') {
+      query = query.ilike('category', `%${category}%`);
     }
 
-    if (useFallback) {
-      console.warn("⚠️ 'ebooks' table not found in database. Falling back to high-fidelity mock eBooks.");
-      ebooks = inMemoryEBooks;
-      if (category && category !== 'All') {
-        const lowerCat = category.toLowerCase();
-        ebooks = ebooks.filter(e => e.category.toLowerCase().includes(lowerCat));
-      }
-    }
+    const { data: ebooks, error } = await query.order('created_at', { ascending: false });
+    if (error) throw error;
 
     let filtered = ebooks;
     if (search) {
@@ -1136,55 +1007,21 @@ export const addEBook = async (req, res, next) => {
       return next(err);
     }
 
-    let ebook = null;
-    let useFallback = false;
-
-    try {
-      const { data, error } = await supabase
-        .from('ebooks')
-        .insert([{
-          title,
-          author,
-          category,
-          format: format || 'PDF',
-          size,
-          file_url: fileUrl || '',
-          downloads: 0
-        }])
-        .select()
-        .single();
-
-      if (error) {
-        if (error.code === '42P01' || String(error.message).includes('does not exist')) {
-          useFallback = true;
-        } else {
-          throw error;
-        }
-      } else {
-        ebook = data;
-      }
-    } catch (dbErr) {
-      if (dbErr.code === '42P01' || String(dbErr.message).includes('does not exist')) {
-        useFallback = true;
-      } else {
-        throw dbErr;
-      }
-    }
-
-    if (useFallback) {
-      ebook = {
-        id: `eb-${Date.now()}`,
+    const { data: ebook, error } = await supabase
+      .from('ebooks')
+      .insert([{
         title,
         author,
         category,
         format: format || 'PDF',
         size,
         file_url: fileUrl || '',
-        downloads: 0,
-        created_at: new Date().toISOString()
-      };
-      inMemoryEBooks.push(ebook);
-    }
+        downloads: 0
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
 
     res.status(201).json({
       success: true,
@@ -1204,62 +1041,22 @@ export const updateEBook = async (req, res, next) => {
     const { id } = req.params;
     const { title, author, category, format, size, fileUrl } = req.body;
 
-    let ebook = null;
-    let useFallback = false;
+    const { data: ebook, error } = await supabase
+      .from('ebooks')
+      .update({
+        title,
+        author,
+        category,
+        format,
+        size,
+        file_url: fileUrl,
+        updated_at: new Date()
+      })
+      .eq('id', id)
+      .select()
+      .single();
 
-    try {
-      const { data, error } = await supabase
-        .from('ebooks')
-        .update({
-          title,
-          author,
-          category,
-          format,
-          size,
-          file_url: fileUrl,
-          updated_at: new Date()
-        })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) {
-        if (error.code === '42P01' || String(error.message).includes('does not exist')) {
-          useFallback = true;
-        } else {
-          throw error;
-        }
-      } else {
-        ebook = data;
-      }
-    } catch (dbErr) {
-      if (dbErr.code === '42P01' || String(dbErr.message).includes('does not exist')) {
-        useFallback = true;
-      } else {
-        throw dbErr;
-      }
-    }
-
-    if (useFallback) {
-      const idx = inMemoryEBooks.findIndex(e => e.id === id);
-      if (idx !== -1) {
-        inMemoryEBooks[idx] = {
-          ...inMemoryEBooks[idx],
-          title: title !== undefined ? title : inMemoryEBooks[idx].title,
-          author: author !== undefined ? author : inMemoryEBooks[idx].author,
-          category: category !== undefined ? category : inMemoryEBooks[idx].category,
-          format: format !== undefined ? format : inMemoryEBooks[idx].format,
-          size: size !== undefined ? size : inMemoryEBooks[idx].size,
-          file_url: fileUrl !== undefined ? fileUrl : inMemoryEBooks[idx].file_url,
-          updated_at: new Date().toISOString()
-        };
-        ebook = inMemoryEBooks[idx];
-      } else {
-        const err = new Error('EBook not found');
-        err.statusCode = 404;
-        return next(err);
-      }
-    }
+    if (error) throw error;
 
     res.status(200).json({
       success: true,
@@ -1277,35 +1074,8 @@ export const updateEBook = async (req, res, next) => {
 export const deleteEBook = async (req, res, next) => {
   try {
     const { id } = req.params;
-    let useFallback = false;
-
-    try {
-      const { error } = await supabase.from('ebooks').delete().eq('id', id);
-      if (error) {
-        if (error.code === '42P01' || String(error.message).includes('does not exist')) {
-          useFallback = true;
-        } else {
-          throw error;
-        }
-      }
-    } catch (dbErr) {
-      if (dbErr.code === '42P01' || String(dbErr.message).includes('does not exist')) {
-        useFallback = true;
-      } else {
-        throw dbErr;
-      }
-    }
-
-    if (useFallback) {
-      const idx = inMemoryEBooks.findIndex(e => e.id === id);
-      if (idx !== -1) {
-        inMemoryEBooks.splice(idx, 1);
-      } else {
-        const err = new Error('EBook not found');
-        err.statusCode = 404;
-        return next(err);
-      }
-    }
+    const { error } = await supabase.from('ebooks').delete().eq('id', id);
+    if (error) throw error;
 
     res.status(200).json({
       success: true,
@@ -1322,62 +1092,36 @@ export const deleteEBook = async (req, res, next) => {
 export const downloadEBook = async (req, res, next) => {
   try {
     const { id } = req.params;
-    let ebook = null;
-    let useFallback = false;
 
-    try {
-      const { data: current, error: fetchErr } = await supabase
-        .from('ebooks')
-        .select('downloads')
-        .eq('id', id)
-        .maybeSingle();
+    // Fetch current download count
+    const { data: current, error: fetchErr } = await supabase
+      .from('ebooks')
+      .select('downloads')
+      .eq('id', id)
+      .maybeSingle();
 
-      if (fetchErr) {
-        if (fetchErr.code === '42P01' || String(fetchErr.message).includes('does not exist')) {
-          useFallback = true;
-        } else {
-          throw fetchErr;
-        }
-      } else if (!current) {
-        const err = new Error('EBook not found');
-        err.statusCode = 404;
-        return next(err);
-      } else {
-        const newDownloads = (current.downloads || 0) + 1;
-        const { data: updated, error: updateErr } = await supabase
-          .from('ebooks')
-          .update({ downloads: newDownloads })
-          .eq('id', id)
-          .select()
-          .single();
-
-        if (updateErr) throw updateErr;
-        ebook = updated;
-      }
-    } catch (dbErr) {
-      if (dbErr.code === '42P01' || String(dbErr.message).includes('does not exist')) {
-        useFallback = true;
-      } else {
-        throw dbErr;
-      }
+    if (fetchErr) throw fetchErr;
+    if (!current) {
+      const err = new Error('EBook not found');
+      err.statusCode = 404;
+      return next(err);
     }
 
-    if (useFallback) {
-      const idx = inMemoryEBooks.findIndex(e => e.id === id);
-      if (idx !== -1) {
-        inMemoryEBooks[idx].downloads = (inMemoryEBooks[idx].downloads || 0) + 1;
-        ebook = inMemoryEBooks[idx];
-      } else {
-        const err = new Error('EBook not found');
-        err.statusCode = 404;
-        return next(err);
-      }
-    }
+    const newDownloads = (current.downloads || 0) + 1;
+
+    const { data: updated, error: updateErr } = await supabase
+      .from('ebooks')
+      .update({ downloads: newDownloads })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
 
     res.status(200).json({
       success: true,
       message: 'EBook download counted',
-      data: formatEBook(ebook)
+      data: formatEBook(updated)
     });
   } catch (error) {
     next(error);

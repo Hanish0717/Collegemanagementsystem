@@ -536,7 +536,6 @@ export const recordPayment = async (req, res) => {
     if (error) throw error;
 
     // Record payment history for audit/receipts
-    let insertedPayment = null;
     try {
       const paymentRow = {
         fee_id: id,
@@ -561,7 +560,7 @@ export const recordPayment = async (req, res) => {
         console.error('Failed to insert payment history:', paymentError);
       }
 
-      insertedPayment = paymentData || null;
+      const insertedPayment = paymentData || null;
     } catch (err) {
       console.error('Unexpected error inserting payment history:', err);
     }

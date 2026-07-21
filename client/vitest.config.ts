@@ -1,16 +1,18 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 
-
 export default defineConfig({
-  plugins: [react(), tsconfigPaths({ projects: ['./tsconfig.json'] })],
+  plugins: [
+    react(),
+    tsconfigPaths({ projects: ['./tsconfig.json'] }),
+    tailwindcss(),
+  ],
   test: {
     globals: true,
-    environment: 'happy-dom',
-    include: ['src/**/*.test.{ts,tsx}'],
-    exclude: ['node_modules/**'],
+    environment: 'jsdom',
   },
   resolve: {
     alias: {

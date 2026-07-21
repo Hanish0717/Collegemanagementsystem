@@ -1,34 +1,51 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import {
-  Users, GraduationCap, CalendarCheck, Wallet, Bus, Compass,
-  Activity, BookOpen, Clock, AlertTriangle, Home, Bed,
-} from 'lucide-react';
-import { Navigate } from '@tanstack/react-router';
+  Users,
+  GraduationCap,
+  CalendarCheck,
+  Wallet,
+  Bus,
+  Compass,
+  Activity,
+  BookOpen,
+  Clock,
+  AlertTriangle,
+  Home,
+  Bed,
+} from "lucide-react";
+import { Navigate } from "@tanstack/react-router";
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
-  Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
-} from 'recharts';
-import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
-import { supabase } from '@/lib/supabaseClient';
-import { fetchDashboardData, type DashboardStats } from '@/services/dashboardService';
-import { getActiveRole } from '@/lib/roles';
-import { getStoredUser } from '@/services/authService';
-import { fetchStats as fetchWardenStats, fetchDashboardCharts as fetchWardenCharts } from '@/services/hostelService';
-import { fetchTransportData } from '@/services/transportService';
-import { ParentDashboard } from '@/pages/parent/ParentDashboard';
-import { StudentDashboard } from '@/pages/student/StudentDashboard';
-import { FacultyDashboard } from '@/pages/faculty/FacultyDashboard';
-import { PrincipalDashboard } from '@/pages/principal/PrincipalDashboard';
-import { VicePrincipalDashboard } from '@/pages/vicePrincipal/VicePrincipalDashboard';
-import { DeanDashboard } from '@/pages/dashboard/DeanDashboard';
-import { HodDashboard } from '@/pages/hod/HodDashboard';
-import { AccountantDashboard } from '@/pages/accountant/AccountantDashboard';
-import { ReceptionistDashboard } from '@/pages/receptionist/ReceptionistDashboard';
-import { ExamCellDashboard } from './ExamCellDashboard';
-import { AccountsDashboard } from './AccountsDashboard';
-import { AdminAlumni } from '@/pages/admin/AdminAlumni';
-import { TransportDashboard } from '@/pages/transport/TransportDashboard';
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
+import { supabase } from "@/lib/supabaseClient";
+import { fetchDashboardData, type DashboardStats } from "@/services/dashboardService";
+import { getActiveRole } from "@/lib/roles";
+import { getStoredUser } from "@/services/authService";
+import { fetchStats as fetchWardenStats, fetchDashboardCharts as fetchWardenCharts } from "@/services/hostelService";
+import { fetchTransportData } from "@/services/transportService";
+import { ParentDashboard } from "@/pages/parent/ParentDashboard";
+import { StudentDashboard } from "@/pages/student/StudentDashboard";
+import { FacultyDashboard } from "@/pages/faculty/FacultyDashboard";
+import { PrincipalDashboard } from "./PrincipalDashboard";
+import { DeanDashboard } from "./DeanDashboard";
+import { HodDashboard } from "./HodDashboard";
+import { ExamCellDashboard } from "./ExamCellDashboard";
+import { AccountsDashboard } from "./AccountsDashboard";
+import { AdminAlumni } from "@/pages/admin/AdminAlumni";
+import { TransportDashboard } from "@/pages/transport/TransportDashboard";
 
 const statIcons: Record<string, any> = {
   "Total Students": Users,
@@ -143,16 +160,36 @@ export function DashboardIndex() {
     };
   }, []);
 
-  if (activeRole.id === 'parent') return <ParentDashboard />;
-  if (activeRole.id === 'student') return <StudentDashboard />;
-  if (activeRole.id === 'faculty') return <FacultyDashboard />;
-  if (activeRole.id === 'principal') return <PrincipalDashboard />;
-  if (activeRole.id === 'dean') return <DeanDashboard />;
-  if (activeRole.id === 'hod') return <HodDashboard />;
-  if (activeRole.id === 'exam_cell') return <ExamCellDashboard />;
-  if (activeRole.id === 'accounts') return <AccountsDashboard />;
-  if (activeRole.id === 'alumni' || activeRole.id === 'alumni_coordinator') return <Navigate to="/dashboard/admin/alumni" />;
-  if (activeRole.id === 'transport') return <TransportDashboard />;
+  if (activeRole.id === "parent") {
+    return <ParentDashboard />;
+  }
+  if (activeRole.id === "student") {
+    return <StudentDashboard />;
+  }
+  if (activeRole.id === "faculty") {
+    return <FacultyDashboard />;
+  }
+  if (activeRole.id === "principal") {
+    return <PrincipalDashboard />;
+  }
+  if (activeRole.id === "dean") {
+    return <DeanDashboard />;
+  }
+  if (activeRole.id === "hod") {
+    return <HodDashboard />;
+  }
+  if (activeRole.id === "exam_cell") {
+    return <ExamCellDashboard />;
+  }
+  if (activeRole.id === "accounts") {
+    return <AccountsDashboard />;
+  }
+  if (activeRole.id === "alumni" || activeRole.id === "alumni_coordinator") {
+    return <Navigate to="/alumni/dashboard" />;
+  }
+  if (activeRole.id === "transport") {
+    return <TransportDashboard />;
+  }
 
   // Extraction of real-time data or fallback mocks
   const stats = data?.stats || [];

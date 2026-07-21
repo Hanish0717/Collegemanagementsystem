@@ -1,36 +1,28 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  SlidersHorizontal,
-  Download,
-  Printer,
-  MoreHorizontal,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, SlidersHorizontal, Download, Printer, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export function AdvancedTableToolbar({
-  onSearch,
-  onFilter,
-  onExport,
-  onPrint,
-  searchPlaceholder = 'Search...',
-}: {
-  onSearch?: (val: string) => void;
-  onFilter?: () => void;
-  onExport?: () => void;
-  onPrint?: () => void;
-  searchPlaceholder?: string;
+export function AdvancedTableToolbar({ 
+  onSearch, 
+  onFilter, 
+  onExport, 
+  onPrint, 
+  searchPlaceholder = "Search..." 
+}: { 
+  onSearch?: (val: string) => void, 
+  onFilter?: () => void, 
+  onExport?: () => void, 
+  onPrint?: () => void,
+  searchPlaceholder?: string
 }) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
       <div className="relative w-full sm:max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder={searchPlaceholder}
+        <Input 
+          placeholder={searchPlaceholder} 
           className="pl-9 rounded-xl bg-background/50 border-muted"
           onChange={(e) => onSearch && onSearch(e.target.value)}
         />
@@ -56,12 +48,12 @@ export function AdvancedTableToolbar({
   );
 }
 
-export function StyledTable({
-  headers,
-  children,
-}: {
-  headers: React.ReactNode[];
-  children: React.ReactNode;
+export function StyledTable({ 
+  headers, 
+  children 
+}: { 
+  headers: React.ReactNode[], 
+  children: React.ReactNode 
 }) {
   return (
     <div className="w-full overflow-hidden rounded-2xl border bg-card/50 backdrop-blur-xl shadow-sm">
@@ -76,53 +68,50 @@ export function StyledTable({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border/50">{children}</tbody>
+          <tbody className="divide-y divide-border/50">
+            {children}
+          </tbody>
         </table>
       </div>
     </div>
   );
 }
 
-export function TableRow({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return <tr className={cn('hover:bg-muted/30 transition-colors group', className)}>{children}</tr>;
+export function TableRow({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <tr className={cn("hover:bg-muted/30 transition-colors group", className)}>
+      {children}
+    </tr>
+  );
 }
 
-export function TableCell({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return <td className={cn('px-6 py-4 whitespace-nowrap', className)}>{children}</td>;
+export function TableCell({ children, className }: { children: React.ReactNode, className?: string }) {
+  return (
+    <td className={cn("px-6 py-4 whitespace-nowrap", className)}>
+      {children}
+    </td>
+  );
 }
 
-export function TablePagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
+export function TablePagination({ 
+  currentPage, 
+  totalPages, 
+  onPageChange 
+}: { 
+  currentPage: number, 
+  totalPages: number, 
+  onPageChange: (page: number) => void 
 }) {
   return (
     <div className="flex items-center justify-between mt-6 px-2">
       <p className="text-sm text-muted-foreground">
-        Showing page <span className="font-medium text-foreground">{currentPage}</span> of{' '}
-        <span className="font-medium text-foreground">{totalPages}</span>
+        Showing page <span className="font-medium text-foreground">{currentPage}</span> of <span className="font-medium text-foreground">{totalPages}</span>
       </p>
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="rounded-xl h-8 w-8 p-0"
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="rounded-xl h-8 w-8 p-0" 
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
         >
@@ -133,19 +122,16 @@ export function TablePagination({
             // Simple pagination logic for demo, usually involves ellipses
             let pageNum = i + 1;
             if (totalPages > 5 && currentPage > 3) {
-              pageNum = currentPage - 2 + i;
-              if (pageNum > totalPages) return null;
+               pageNum = currentPage - 2 + i;
+               if (pageNum > totalPages) return null;
             }
-
+            
             return (
               <Button
                 key={pageNum}
-                variant={currentPage === pageNum ? 'default' : 'ghost'}
+                variant={currentPage === pageNum ? "default" : "ghost"}
                 size="sm"
-                className={cn(
-                  'rounded-xl h-8 w-8 p-0',
-                  currentPage === pageNum && 'bg-primary text-primary-foreground shadow-sm',
-                )}
+                className={cn("rounded-xl h-8 w-8 p-0", currentPage === pageNum && "bg-primary text-primary-foreground shadow-sm")}
                 onClick={() => onPageChange(pageNum)}
               >
                 {pageNum}
@@ -153,9 +139,9 @@ export function TablePagination({
             );
           })}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
+        <Button 
+          variant="outline" 
+          size="sm" 
           className="rounded-xl h-8 w-8 p-0"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}

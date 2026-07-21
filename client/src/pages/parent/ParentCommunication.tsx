@@ -1,35 +1,35 @@
-import { useState, useEffect } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { MessageSquare, Paperclip, Send, Users } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import api from '@/lib/api';
+import { useState, useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { MessageSquare, Paperclip, Send, Users } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import api from "@/lib/api";
 
 export function ParentCommunication() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
-  const [selectedTeacher, setSelectedTeacher] = useState('');
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState("");
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         let dbData: any = null;
-        const cached = localStorage.getItem('cms_parent_child_data');
+        const cached = localStorage.getItem("cms_parent_child_data");
         if (cached) {
           dbData = JSON.parse(cached);
         } else {
-          const res = await api.get('/api/parent-module/student-data');
+          const res = await api.get("/api/parent-module/student-data");
           if (res.data?.success && res.data?.data) {
             dbData = res.data.data;
-            localStorage.setItem('cms_parent_child_data', JSON.stringify(dbData));
+            localStorage.setItem("cms_parent_child_data", JSON.stringify(dbData));
           }
         }
         if (dbData && dbData.notifications) {
           setAnnouncements(dbData.notifications);
         }
       } catch (err) {
-        console.error('Error loading parent announcements:', err);
+        console.error("Error loading parent announcements:", err);
       } finally {
         setLoading(false);
       }
@@ -40,13 +40,13 @@ export function ParentCommunication() {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedTeacher || !subject || !message) {
-      alert('Please fill in all fields.');
+      alert("Please fill in all fields.");
       return;
     }
     alert(`Message successfully sent to ${selectedTeacher}! We will notify you when they reply.`);
-    setSubject('');
-    setMessage('');
-    setSelectedTeacher('');
+    setSubject("");
+    setMessage("");
+    setSelectedTeacher("");
   };
 
   if (loading) {
@@ -68,17 +68,13 @@ export function ParentCommunication() {
       <div className="grid md:grid-cols-4 gap-4">
         {[
           {
-            label: 'Total Announcements',
+            label: "Total Announcements",
             value: announcements.length.toString(),
-            tone: 'info' as const,
+            tone: "info" as const,
           },
-          {
-            label: 'Unread Alerts',
-            value: announcements.filter((a) => a.unread).length.toString(),
-            tone: 'warn' as const,
-          },
-          { label: 'Active Threads', value: '0', tone: 'success' as const },
-          { label: 'Meetings Today', value: '0', tone: 'info' as const },
+          { label: "Unread Alerts", value: announcements.filter(a => a.unread).length.toString(), tone: "warn" as const },
+          { label: "Active Threads", value: "0", tone: "success" as const },
+          { label: "Meetings Today", value: "0", tone: "info" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -101,19 +97,19 @@ export function ParentCommunication() {
               announcements.slice(0, 5).map((comm, idx) => (
                 <div
                   key={comm.id || idx}
-                  className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${comm.unread ? 'bg-blue-50/50 border-blue-200' : ''}`}
+                  className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition cursor-pointer ${comm.unread ? "bg-blue-50/50 border-blue-200" : ""}`}
                 >
                   <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                    {comm.type ? comm.type.slice(0, 2) : 'AL'}
+                    {comm.type ? comm.type.slice(0, 2) : "AL"}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{comm.type || 'Alert'}</span>
+                      <span className="text-sm font-medium">{comm.type || "Alert"}</span>
                       {comm.unread && <div className="size-2 rounded-full bg-primary" />}
                     </div>
                     <div className="text-xs text-muted-foreground truncate">{comm.title}</div>
                   </div>
-                  <span className="text-xs text-muted-foreground">{comm.time || 'Recent'}</span>
+                  <span className="text-xs text-muted-foreground">{comm.time || "Recent"}</span>
                 </div>
               ))
             ) : (
@@ -126,10 +122,7 @@ export function ParentCommunication() {
 
         <Card>
           <h3 className="font-semibold mb-4">Send Message to Faculty</h3>
-          <form
-            onSubmit={handleSendMessage}
-            className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
-          >
+          <form onSubmit={handleSendMessage} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <select
               value={selectedTeacher}
               onChange={(e) => setSelectedTeacher(e.target.value)}
@@ -137,11 +130,11 @@ export function ParentCommunication() {
               required
             >
               <option value="">Select Teacher</option>
-              {['Dr. Rajesh Kumar', 'Prof. Emily Chen', 'Dr. Marco Rossi'].map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
+              {["Dr. Rajesh Kumar", "Prof. Emily Chen", "Dr. Marco Rossi"].map(
+                (t) => (
+                  <option key={t} value={t}>{t}</option>
+                ),
+              )}
             </select>
             <input
               placeholder="Subject"
@@ -165,10 +158,7 @@ export function ParentCommunication() {
               </label>
               <input type="file" className="text-sm" />
             </div>
-            <button
-              type="submit"
-              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2"
-            >
+            <button type="submit" className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2">
               <Send className="size-4" /> Send Message
             </button>
           </form>
@@ -193,7 +183,7 @@ export function ParentCommunication() {
                 <div className="flex-1">
                   <div className="text-sm font-medium">{announcement.title}</div>
                   <div className="text-xs text-muted-foreground">
-                    {announcement.type} • {announcement.time || 'Recent'}
+                    {announcement.type} • {announcement.time || "Recent"}
                   </div>
                 </div>
                 <Badge tone="info">{announcement.type}</Badge>
