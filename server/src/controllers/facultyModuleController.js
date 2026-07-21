@@ -512,6 +512,126 @@ export const uploadStudentMarks = async (req, res, next) => {
   }
 };
 
+// @desc    Get internal mid marks for faculty subject
+// @route   GET /api/faculty-module/internal-marks
+// @access  Private (faculty)
+export const getFacultyInternalMarks = async (req, res, next) => {
+  try {
+    const { course_id, department, year, semester } = req.query;
+
+    let studentQuery = supabase
+      .from('students')
+      .select('id, full_name, roll_number, department, year, semester')
+      .eq('is_active', true)
+      .order('roll_number', { ascending: true });
+
+    if (department) studentQuery = studentQuery.eq('department', department);
+    if (year) studentQuery = studentQuery.eq('year', Number(year));
+    if (semester) studentQuery = studentQuery.eq('semester', Number(semester));
+
+    const { data: studentsList, error: sErr } = await studentQuery;
+    if (sErr) throw sErr;
+
+    const semStr = semester ? (String(semester).startsWith('Sem') ? String(semester) : `Sem ${semester}`) : 'Sem 1';
+
+    let markQuery = supabase.from('internal_marks').select('*');
+    if (course_id) markQuery = markQuery.eq('course_id', course_id);
+    markQuery = markQuery.eq('semester', semStr);
+
+    const { data: marksList } = await markQuery;
+    const marksMap = new Map((marksList || []).map(m => [m.student_id, m]));
+
+    const result = (studentsList || []).map(s => {
+      const existing = marksMap.get(s.id) || {};
+      const mid1 = Number(existing.mid1_marks || 0);
+      const mid2 = Number(existing.mid2_marks || 0);
+      const assignment = Number(existing.assignment_marks || 0);
+      const total_internal = Number(existing.total_internal || 0);
+
+      return {
+        student_id: s.id,
+        student_name: s.full_name,
+        roll_number: s.roll_number,
+        department: s.department,
+        year: s.year,
+        semester: s.semester,
+        mid1_marks: mid1,
+        mid2_marks: mid2,
+        assignment_marks: assignment,
+        total_internal: total_internal,
+        status: existing.id ? 'Submitted' : 'Pending'
+      };
+    });
+
+    res.json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Batch Save Faculty Internal Mid Marks (Max 30 Marks)
+// @route   POST /api/faculty-module/internal-marks
+// @access  Private (faculty)
+export const saveFacultyInternalMarks = async (req, res, next) => {
+  try {
+    const { course_id, semester, marks_data } = req.body;
+    if (!course_id || !marks_data || !Array.isArray(marks_data)) {
+      return res.status(400).json({ success: false, message: 'Course ID and marks data array are required' });
+    }
+
+    const semStr = semester ? (String(semester).startsWith('Sem') ? String(semester) : `Sem ${semester}`) : 'Sem 1';
+    const facultyId = req.user?.id;
+
+    for (const item of marks_data) {
+      const student_id = item.student_id;
+      const mid1 = Math.min(15, Math.max(0, Number(item.mid1_marks || 0)));
+      const mid2 = Math.min(15, Math.max(0, Number(item.mid2_marks || 0)));
+      const assignment = Math.min(5, Math.max(0, Number(item.assignment_marks || 0)));
+      
+      // Calculate Internal Total: (Mid1 + Mid2)/2 + Assignment (Max 30)
+      const total_internal = Math.min(30, Math.round((((mid1 + mid2) / 2) + assignment) * 100) / 100);
+
+      const { data: existing } = await supabase
+        .from('internal_marks')
+        .select('id')
+        .eq('student_id', student_id)
+        .eq('course_id', course_id)
+        .eq('semester', semStr)
+        .maybeSingle();
+
+      if (existing) {
+        await supabase
+          .from('internal_marks')
+          .update({
+            mid1_marks: mid1,
+            mid2_marks: mid2,
+            assignment_marks: assignment,
+            total_internal: total_internal,
+            faculty_id: facultyId
+          })
+          .eq('id', existing.id);
+      } else {
+        await supabase
+          .from('internal_marks')
+          .insert([{
+            student_id,
+            course_id,
+            semester: semStr,
+            mid1_marks: mid1,
+            mid2_marks: mid2,
+            assignment_marks: assignment,
+            total_internal: total_internal,
+            faculty_id: facultyId
+          }]);
+      }
+    }
+
+    res.json({ success: true, message: 'Internal marks saved successfully!' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // @desc    Get faculty leave requests
 // @route   GET /api/faculty-module/leave
 // @access  Private (faculty)

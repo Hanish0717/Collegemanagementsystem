@@ -679,63 +679,68 @@ export async function approveHallTicket(req, res, next) {
 export async function getExamResults(req, res, next) {
   try {
     const { id: exam_id } = req.params;
-    const { subject } = req.query; // Filter by subject
+    const { subject, department, semester } = req.query;
 
-    const { data: exam } = await supabase.from('exams').select('*').eq('id', exam_id).single();
-    if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
+    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(exam_id);
 
-    // Get students in this exam
+    let deptToUse = department || 'CSE';
+    let semToUse = Number(semester || 1);
+
+    if (isUuid) {
+      const { data: exam } = await supabase.from('exams').select('*').eq('id', exam_id).maybeSingle();
+      if (exam) {
+        deptToUse = exam.department;
+        semToUse = exam.semester;
+      }
+    }
+
+    // Get students in this department and semester
     const { data: students } = await supabase
       .from('students')
       .select('id, user_id, full_name, roll_number, email')
-      .eq('department', exam.department)
-      .eq('year', exam.year)
-      .eq('semester', exam.semester);
+      .eq('department', deptToUse)
+      .eq('semester', semToUse)
+      .eq('is_active', true)
+      .order('roll_number', { ascending: true });
 
-    if (!students) return res.json({ success: true, data: [] });
+    if (!students || students.length === 0) return res.json({ success: true, data: [] });
 
-    // Get student users reference ids to join results
-    const { data: users } = await supabase.from('users').select('id, email').eq('role', 'student');
-    const userMap = {};
-    if (users) {
-      users.forEach(u => {
-        userMap[u.email.toLowerCase()] = u.id;
-      });
-    }
+    // Fetch results matching semester
+    let query = supabase.from('results').select('*').eq('semester', semToUse);
+    if (isUuid) query = query.eq('exam_id', exam_id);
+    const { data: resultsList } = await query;
 
-    // Get marks records
-    const { data: resultsList } = await supabase
-      .from('results')
-      .select('*')
-      .eq('semester', exam.semester)
-      .eq('exam_id', exam_id);
-
-    const resultMap = {};
+    const resultMap = new Map();
     if (resultsList) {
       resultsList.forEach(r => {
-        const key = `${r.student}_${r.subject.toLowerCase()}`;
-        resultMap[key] = r;
+        if (r.student) resultMap.set(r.student, r);
       });
     }
 
     const data = students.map(s => {
-      const studentUserId = s.user_id || userMap[s.email.toLowerCase()] || s.id;
-      const key = `${studentUserId}_${(subject || '').toLowerCase()}`;
-      const resRecord = resultMap[key];
+      const studentUserId = s.user_id || s.id;
+      const resRecord = resultMap.get(studentUserId) || resultMap.get(s.id) || {};
+
+      const intM = Number(resRecord.internal_marks || 0);
+      const extM = Number(resRecord.external_marks || 0);
+      const totM = Number(resRecord.total_marks || resRecord.marks || 0);
+      const gr = resRecord.grade || (totM >= 40 ? 'C' : 'F');
+      const stat = resRecord.status || (totM >= 40 || (gr && gr !== 'F') ? 'Pass' : 'Fail');
 
       return {
-        result_id: resRecord ? resRecord.id : null,
+        result_id: resRecord.id || null,
         student_id: s.id,
         user_id: studentUserId,
+        student_name: s.full_name,
         full_name: s.full_name,
         roll_number: s.roll_number,
-        marks: resRecord ? resRecord.marks : null,
-        internal_marks: resRecord ? resRecord.internal_marks : null,
-        external_marks: resRecord ? resRecord.external_marks : null,
-        grace_applied: resRecord ? resRecord.grace_applied : false,
-        grace_marks: resRecord ? resRecord.grace_marks : 0,
-        grade: resRecord ? resRecord.grade : '',
-        credits: resRecord ? resRecord.credits : 3
+        marks: totM,
+        total_marks: totM,
+        internal_marks: intM,
+        external_marks: extM,
+        grade: gr,
+        status: stat,
+        credits: resRecord.credits || 4
       };
     });
 
@@ -2001,6 +2006,179 @@ export async function serveEvaluationPdf(req, res, next) {
     } else {
       return res.status(404).send('Answer sheet PDF data is invalid or expired. Please upload the PDF copy again in Exam Cell portal.');
     }
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 29. Consolidate Internal 30M + External 70M Exam Results
+ */
+export async function consolidateExamResults(req, res, next) {
+  try {
+    const { exam_id, department, year, semester } = req.body;
+    if (!exam_id && (!department || !semester)) {
+      return res.status(400).json({ success: false, message: 'Exam ID or Department and Semester are required' });
+    }
+
+    let examData = null;
+    if (exam_id) {
+      const { data: e } = await supabase.from('exams').select('*').eq('id', exam_id).single();
+      examData = e;
+    }
+
+    const deptToUse = department || examData?.department || 'CSE';
+    const semToUse = Number(semester || examData?.semester || 1);
+    const semStr = `Sem ${semToUse}`;
+
+    // 1. Fetch Students in Cohort
+    const { data: studentsList } = await supabase
+      .from('students')
+      .select('id, full_name, roll_number, email, user_id, department, semester')
+      .eq('department', deptToUse)
+      .eq('semester', semToUse)
+      .eq('is_active', true);
+
+    if (!studentsList || studentsList.length === 0) {
+      return res.status(404).json({ success: false, message: 'No active students found in this cohort.' });
+    }
+
+    // 2. Fetch Internal Marks (30M)
+    const { data: internalList } = await supabase
+      .from('internal_marks')
+      .select('*')
+      .eq('semester', semStr);
+
+    const internalMap = new Map((internalList || []).map(i => [i.student_id, i]));
+
+    // 3. Fetch External Evaluated PDF Copies (70M)
+    let evalQuery = supabase.from('exam_evaluations').select('*');
+    if (exam_id) evalQuery = evalQuery.eq('exam_id', exam_id);
+    const { data: evalList } = await evalQuery;
+
+    const evalMap = new Map((evalList || []).map(e => [e.student_id, e]));
+
+    // 4. Consolidate and Compute Grades (10-Point Scale)
+    let passedCount = 0;
+    let failedCount = 0;
+    const consolidated = [];
+
+    for (const student of studentsList) {
+      const intObj = internalMap.get(student.id) || {};
+      const extObj = evalMap.get(student.id) || {};
+
+      const intMarks = Number(intObj.total_internal || 0);
+      const extMarks = Number(extObj.total_score || 0);
+      const totalMarks = Math.min(100, Math.round((intMarks + extMarks) * 100) / 100);
+
+      // Grade Calculator
+      let grade = 'F';
+      let gradePoint = 0.0;
+      let statusStr = 'Fail';
+
+      if (totalMarks >= 90) { grade = 'O'; gradePoint = 10.0; statusStr = 'Pass'; }
+      else if (totalMarks >= 80) { grade = 'A+'; gradePoint = 9.0; statusStr = 'Pass'; }
+      else if (totalMarks >= 70) { grade = 'A'; gradePoint = 8.0; statusStr = 'Pass'; }
+      else if (totalMarks >= 60) { grade = 'B+'; gradePoint = 7.0; statusStr = 'Pass'; }
+      else if (totalMarks >= 50) { grade = 'B'; gradePoint = 6.0; statusStr = 'Pass'; }
+      else if (totalMarks >= 40) { grade = 'C'; gradePoint = 5.0; statusStr = 'Pass'; }
+      else { grade = 'F'; gradePoint = 0.0; statusStr = 'Fail'; }
+
+      if (statusStr === 'Pass') passedCount++;
+      else failedCount++;
+
+      const studentUserId = student.user_id || student.id;
+
+      // Upsert into results table
+      const { data: existing } = await supabase
+        .from('results')
+        .select('id')
+        .eq('student', studentUserId)
+        .eq('semester', semToUse)
+        .maybeSingle();
+
+      if (existing) {
+        await supabase
+          .from('results')
+          .update({
+            internal_marks: intMarks,
+            external_marks: extMarks,
+            total_marks: totalMarks,
+            marks: totalMarks,
+            grade,
+            grade_point: gradePoint,
+            status: statusStr,
+            is_published: false
+          })
+          .eq('id', existing.id);
+      } else {
+        await supabase
+          .from('results')
+          .insert([{
+            student: studentUserId,
+            exam_id: exam_id || null,
+            subject: examData?.name || `${deptToUse} Sem ${semToUse} Comprehensive Exam`,
+            semester: semToUse,
+            credits: 4,
+            internal_marks: intMarks,
+            external_marks: extMarks,
+            total_marks: totalMarks,
+            marks: totalMarks,
+            grade,
+            grade_point: gradePoint,
+            status: statusStr,
+            is_published: false
+          }]);
+      }
+
+      consolidated.push({
+        student_id: student.id,
+        roll_number: student.roll_number,
+        student_name: student.full_name,
+        internal_marks: intMarks,
+        external_marks: extMarks,
+        total_marks: totalMarks,
+        grade,
+        status: statusStr
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Consolidated results for ${consolidated.length} students.`,
+      stats: {
+        total: consolidated.length,
+        passed: passedCount,
+        failed: failedCount,
+        passPercentage: consolidated.length > 0 ? Math.round((passedCount / consolidated.length) * 100) : 0
+      },
+      data: consolidated
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 30. Publish Exam Results & Trigger Student Notifications
+ */
+export async function publishExamResults(req, res, next) {
+  try {
+    const { exam_id, semester } = req.body;
+    const semToUse = Number(semester || 1);
+
+    let query = supabase.from('results').update({ is_published: true });
+    if (exam_id) query = query.eq('exam_id', exam_id);
+    else query = query.eq('semester', semToUse);
+
+    const { error } = await query;
+    if (error) throw error;
+
+    if (exam_id) {
+      await supabase.from('exams').update({ status: 'Published' }).eq('id', exam_id);
+    }
+
+    res.json({ success: true, message: 'Semester results published successfully! Students can now view their grade cards.' });
   } catch (err) {
     next(err);
   }

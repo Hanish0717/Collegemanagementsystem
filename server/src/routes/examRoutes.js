@@ -30,7 +30,9 @@ import {
   getOfficerEvaluations,
   getFacultyEvaluations,
   submitFacultyEvaluation,
-  serveEvaluationPdf
+  serveEvaluationPdf,
+  consolidateExamResults,
+  publishExamResults
 } from '../controllers/examController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -98,6 +100,8 @@ router.get('/:id/hall-tickets', getHallTicketsEligibility);
 router.post('/:id/hall-tickets/approve', approveHallTicket);
 
 // Results
+router.post('/results/consolidate', consolidateExamResults);
+router.post('/results/publish', publishExamResults);
 router.route('/:id/results')
   .get(getExamResults)
   .post(saveExamResults);

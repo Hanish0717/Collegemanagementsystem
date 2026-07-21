@@ -488,29 +488,4 @@
 [2026-07-21T12:43:30.859Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
 [2026-07-21T12:43:30.859Z] Starting database TCP check for host: 127.0.0.1, port: 5433
 [2026-07-21T12:43:31.716Z] TCP check succeeded!
-[2026-07-21T12:43:31.718Z] Supabase.js module loading completed successfully!
-[2026-07-21T13:42:53.586Z] Supabase.js module loading starting
-[2026-07-21T13:42:53.592Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T13:42:53.593Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T13:42:54.263Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T13:42:54.265Z] Supabase.js module loading completed successfully!
-[2026-07-21T13:43:00.219Z] Supabase.js module loading starting
-[2026-07-21T13:43:00.221Z] databaseUrl: undefined, isMockMode: true
-[2026-07-21T13:43:00.296Z] Supabase.js module loading completed successfully!
-[2026-07-21T13:46:21.336Z] Supabase.js module loading starting
-[2026-07-21T13:46:21.339Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T13:46:21.340Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T13:46:21.836Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T13:46:21.838Z] Supabase.js module loading completed successfully!
-[2026-07-21T13:51:05.570Z] Supabase.js module loading starting
-[2026-07-21T13:51:05.573Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T13:51:05.574Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T13:51:06.179Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T13:51:06.183Z] Supabase.js module loading completed successfully!
-[2026-07-21T14:05:21.516Z] Supabase.js module loading starting
-[2026-07-21T14:05:21.522Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T14:05:21.523Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T14:05:23.702Z] TCP check error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout), stack: Error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout)
-    at file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/config/supabase.js:82:13
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-[2026-07-21T14:05:23.793Z] Supabase.js module loading completed successfully!
+[2026-07-21T14:11:57.171Z] Supabase.js module loading completed successfully!

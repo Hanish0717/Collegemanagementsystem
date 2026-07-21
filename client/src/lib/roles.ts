@@ -277,6 +277,7 @@ export const ROLES: Record<RoleId, Role> = {
       base,
       { to: '/dashboard/faculty/attendance', label: 'Attendance', icon: CalendarCheck },
       { to: '/dashboard/faculty/evaluations', label: 'Paper Evaluation', icon: FileText },
+      { to: '/dashboard/faculty/marks', label: 'Internal Mid Marks', icon: ClipboardList },
       { to: '/dashboard/faculty/materials', label: 'Materials', icon: BookOpen },
       { to: '/dashboard/faculty/research', label: 'Research', icon: FlaskConical },
       { to: '/dashboard/faculty/publications', label: 'Publications', icon: FileText },
