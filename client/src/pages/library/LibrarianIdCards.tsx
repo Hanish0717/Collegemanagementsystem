@@ -165,10 +165,11 @@ export function LibrarianIdCards() {
   // Mutations
   const issueMutation = useMutation({
     mutationFn: (payload: { studentId: string; requestType: string; reason?: string }) => createIDCardRequest(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['idCardStats'] });
-      queryClient.invalidateQueries({ queryKey: ['idCardHistory'] });
-      queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile'] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['idCardStats'] });
+      await queryClient.invalidateQueries({ queryKey: ['idCardHistory'] });
+      await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile'] });
+      await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile', selectedStudentId] });
       toast.success('Active Student ID Card generated & profile stored successfully!');
       setShowIssueModal(false);
       if (selectedStudentId) {

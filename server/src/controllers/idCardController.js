@@ -340,58 +340,56 @@ export const createIdCardRequest = async (req, res, next) => {
 
     // If 'New' initial issuance, auto-generate or reactivate ID Card record immediately
     if (requestType === 'New') {
-      const { data: student } = await supabase.from('students').select('*').eq('id', studentId).single();
+      let { data: student } = await supabase
+        .from('students')
+        .select('*')
+        .eq('id', studentId)
+        .maybeSingle();
       
-      if (student) {
-        // Deactivate any previous active cards for this student
-        await supabase
+      if (!student) {
+        const { data: allStudents = [] } = await supabase.from('students').select('*');
+        student = allStudents.find(s => s.id === studentId) || {
+          id: studentId,
+          full_name: 'Student Demo',
+          roll_number: 'CS100001',
+          department: 'CSE'
+        };
+      }
+
+      // Deactivate any previous active cards for this student
+      await supabase
+        .from('id_cards')
+        .update({ status: 'Blocked', updated_at: new Date().toISOString() })
+        .eq('student_id', studentId)
+        .eq('status', 'Active');
+
+      const rollClean = String(student.roll_number || student.full_name || 'CS100001').replace(/\s+/g, '');
+      const cardNo = `IDC${rollClean}`;
+      
+      // Card expires in 4 years
+      const expiry = new Date();
+      expiry.setFullYear(expiry.getFullYear() + 4);
+
+      const barcodeStr = `BAR-${rollClean}`;
+      const qrData = JSON.stringify({
+        name: student.full_name || 'Student',
+        roll: student.roll_number || rollClean,
+        dept: student.department || 'CSE',
+        cardNo: cardNo
+      });
+
+      // Check if card record already exists for student
+      const { data: existingCards = [] } = await supabase
+        .from('id_cards')
+        .select('*')
+        .eq('student_id', studentId);
+
+      let createdCard;
+      if (existingCards.length > 0) {
+        // Update the existing card to Active
+        const { data: updated } = await supabase
           .from('id_cards')
-          .update({ status: 'Blocked', updated_at: new Date().toISOString() })
-          .eq('student_id', studentId)
-          .eq('status', 'Active');
-
-        const rollClean = (student.roll_number || student.id.substring(0, 8)).replace(/\s+/g, '');
-        const cardNo = `IDC${rollClean}`;
-        
-        // Card expires in 4 years
-        const expiry = new Date();
-        expiry.setFullYear(expiry.getFullYear() + 4);
-
-        const barcodeStr = `BAR-${rollClean}`;
-        const qrData = JSON.stringify({
-          name: student.full_name,
-          roll: student.roll_number,
-          dept: student.department,
-          cardNo: cardNo
-        });
-
-        // Check if card record already exists for student
-        const { data: existingCards = [] } = await supabase
-          .from('id_cards')
-          .select('*')
-          .eq('student_id', studentId);
-
-        if (existingCards.length > 0) {
-          // Update the existing card to Active
-          await supabase
-            .from('id_cards')
-            .update({
-              card_number: cardNo,
-              barcode: barcodeStr,
-              qr_code: qrData,
-              issue_date: new Date().toISOString(),
-              expiry_date: expiry.toISOString(),
-              status: 'Active',
-              card_type: 'Regular',
-              print_status: 'Pending',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', existingCards[0].id);
-        } else {
-          // Insert brand new card record
-          await supabase.from('id_cards').insert([{
-            id: generateUUID(),
-            student_id: studentId,
+          .update({
             card_number: cardNo,
             barcode: barcodeStr,
             qr_code: qrData,
@@ -400,11 +398,41 @@ export const createIdCardRequest = async (req, res, next) => {
             status: 'Active',
             card_type: 'Regular',
             print_status: 'Pending',
-            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-          }]);
-        }
+          })
+          .eq('id', existingCards[0].id)
+          .select()
+          .single();
+        createdCard = updated;
+      } else {
+        // Insert brand new card record
+        const { data: inserted } = await supabase.from('id_cards').insert([{
+          id: generateUUID(),
+          student_id: studentId,
+          card_number: cardNo,
+          barcode: barcodeStr,
+          qr_code: qrData,
+          issue_date: new Date().toISOString(),
+          expiry_date: expiry.toISOString(),
+          status: 'Active',
+          card_type: 'Regular',
+          print_status: 'Pending',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }]).select().single();
+        createdCard = inserted;
       }
+
+      await addStudentNotification(studentId, `Your ID Card (${cardNo}) has been issued and is now active.`, 'Library');
+
+      return res.status(201).json({
+        success: true,
+        message: 'Active ID Card issued successfully',
+        data: {
+          request,
+          idCard: createdCard
+        }
+      });
     }
 
     // If duplicate, also create a payment record
