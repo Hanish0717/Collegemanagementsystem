@@ -8,6 +8,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    include: ['src/**/*.test.{ts,tsx}'],
+    exclude: ['node_modules/**'],
+    server: {
+      deps: {
+        inline: [/jsdom/, /html-encoding-sniffer/, /@exodus\/bytes/],
+      },
+    },
   },
   resolve: {
     alias: {
