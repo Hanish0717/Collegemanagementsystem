@@ -165,15 +165,18 @@ export function LibrarianIdCards() {
   // Mutations
   const issueMutation = useMutation({
     mutationFn: (payload: { studentId: string; requestType: string; reason?: string }) => createIDCardRequest(payload),
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['idCardStats'] });
-      // If it's regular card request, auto-approve it in backend
-      toast.success('ID Card request generated successfully!');
+      queryClient.invalidateQueries({ queryKey: ['idCardHistory'] });
+      queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile'] });
+      toast.success('Active Student ID Card generated & profile stored successfully!');
       setShowIssueModal(false);
-      if (selectedStudentId) refetchProfile();
+      if (selectedStudentId) {
+        refetchProfile();
+      }
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to submit request');
+      toast.error(err.response?.data?.message || 'Failed to issue ID Card');
     }
   });
 

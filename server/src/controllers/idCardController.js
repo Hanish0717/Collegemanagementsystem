@@ -309,6 +309,7 @@ export const createIdCardRequest = async (req, res, next) => {
 
     const requiresPayment = requestType === 'Duplicate' || requestType === 'Replacement';
     const paymentStatus = requiresPayment ? 'Pending' : 'Waived';
+    const initialStatus = requestType === 'New' ? 'Approved' : 'Pending';
 
     const { data: request, error: reqErr } = await supabase
       .from('id_card_requests')
@@ -317,7 +318,7 @@ export const createIdCardRequest = async (req, res, next) => {
         student_id: studentId,
         request_type: requestType,
         reason: reason || '',
-        status: 'Pending',
+        status: initialStatus,
         payment_status: paymentStatus,
         rejection_reason: '',
         created_at: new Date().toISOString(),
@@ -327,6 +328,50 @@ export const createIdCardRequest = async (req, res, next) => {
       .single();
 
     if (reqErr) throw reqErr;
+
+    // If 'New' initial issuance, auto-generate active ID Card record immediately
+    if (requestType === 'New') {
+      const { data: student } = await supabase.from('students').select('*').eq('id', studentId).single();
+      
+      if (student) {
+        // Deactivate any previous active cards for this student
+        await supabase
+          .from('id_cards')
+          .update({ status: 'Blocked', updated_at: new Date().toISOString() })
+          .eq('student_id', studentId)
+          .eq('status', 'Active');
+
+        const rollClean = (student.roll_number || 'STD').replace(/\s+/g, '');
+        const cardNo = `IDC${rollClean}`;
+        
+        // Card expires in 4 years
+        const expiry = new Date();
+        expiry.setFullYear(expiry.getFullYear() + 4);
+
+        const barcodeStr = `BAR-${rollClean}`;
+        const qrData = JSON.stringify({
+          name: student.full_name,
+          roll: student.roll_number,
+          dept: student.department,
+          cardNo: cardNo
+        });
+
+        await supabase.from('id_cards').insert([{
+          id: generateUUID(),
+          student_id: studentId,
+          card_number: cardNo,
+          barcode: barcodeStr,
+          qr_code: qrData,
+          issue_date: new Date().toISOString(),
+          expiry_date: expiry.toISOString(),
+          status: 'Active',
+          card_type: 'Regular',
+          print_status: 'Pending',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }]);
+      }
+    }
 
     // If duplicate, also create a payment record
     if (requiresPayment) {
@@ -343,7 +388,7 @@ export const createIdCardRequest = async (req, res, next) => {
       }]);
     }
 
-    await addStudentNotification(studentId, `Your ID Card request (${requestType}) has been submitted. Status: Pending.`, 'Library');
+    await addStudentNotification(studentId, `Your ID Card (${requestType}) has been issued. Status: ${initialStatus}.`, 'Library');
 
     res.status(201).json({
       success: true,
