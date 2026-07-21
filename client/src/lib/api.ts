@@ -50,6 +50,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+let isRedirectingToLogin = false;
+
 // Handle 401 responses — clear auth state (but preserve faculty local sessions)
 api.interceptors.response.use(
   (res) => res,
@@ -64,16 +66,27 @@ api.interceptors.response.use(
             localStorage.removeItem('cms_token');
             localStorage.removeItem('cms_user');
             localStorage.removeItem('campusly.role');
-            toast.error('Session expired. Redirecting to login.');
+
+            const isAlreadyOnLogin = window.location.pathname === '/login';
+            if (!isAlreadyOnLogin && !isRedirectingToLogin) {
+              isRedirectingToLogin = true;
+              toast.error('Session expired. Redirecting to login.');
+              setTimeout(() => {
+                isRedirectingToLogin = false;
+              }, 3000);
+            }
+
             try {
               const { routerInstance } = await import('../router');
-              if (routerInstance) {
+              if (routerInstance && !isAlreadyOnLogin) {
                 routerInstance.navigate({ to: '/login', replace: true });
-              } else {
+              } else if (!isAlreadyOnLogin) {
                 window.location.href = '/login';
               }
             } catch (e) {
-              window.location.href = '/login';
+              if (!isAlreadyOnLogin) {
+                window.location.href = '/login';
+              }
             }
           }
         }
