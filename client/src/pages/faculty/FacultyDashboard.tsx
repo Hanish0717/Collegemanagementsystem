@@ -32,10 +32,13 @@ import {
   HelpCircle,
   PieChart,
   Check,
+  HeartHandshake,
 } from 'lucide-react';
 import { Badge, Card, StatCard } from '@/components/dashboard/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
+
+import { getStoredFacultyProfile } from '@/services/facultyProfileService';
 
 export function FacultyDashboard() {
   const path = useRouterState({ select: (r) => r.location.pathname });
@@ -45,32 +48,59 @@ export function FacultyDashboard() {
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(20);
 
-  // Class performance overview data for chart
+  const profile = getStoredFacultyProfile();
+  const displayName = profile.name || user?.fullName || 'Kondapalli Bhargav';
+
   const classPerformanceData = [
-    { class: '10A', classAvg: 72, topScore: 94 },
-    { class: '10B', classAvg: 68, topScore: 89 },
-    { class: '11A', classAvg: 78, topScore: 98 },
-    { class: '11B', classAvg: 74, topScore: 91 },
-    { class: '12A', classAvg: 81, topScore: 96 },
+    { class: 'Section A', classAvg: 78, topScore: 96 },
+    { class: 'Section B', classAvg: 72, topScore: 91 },
+    { class: 'Section C', classAvg: 83, topScore: 98 },
+    { class: 'Section D', classAvg: 75, topScore: 94 },
   ];
 
-  if (path !== '/dashboard/faculty' && path !== '/dashboard' && path !== '/dashboard/') {
+  // Only show Outlet for nested sub-routes — render dashboard content on the main paths
+  const isFacultyDashboardPath =
+    path === '/faculty/dashboard' ||
+    path === '/faculty/' ||
+    path === '/faculty' ||
+    path === '/dashboard/faculty' ||
+    path === '/dashboard';
+
+  if (!isFacultyDashboardPath) {
     return <Outlet />;
   }
-
-  const displayName = user?.fullName ?? 'Ms. Ria';
 
   return (
     <div className="space-y-6 pb-12">
       {/* ── 1. Page Header & Hero Welcome Banner ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Teacher Dashboard
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <span>Faculty Dashboard</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200">
+              {profile.department}
+            </span>
           </h1>
           <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Welcome back! Here is your daily teaching and class overview.
+            Welcome back, Prof. {displayName}! Here is your personalized teaching & academic overview.
           </p>
+        </div>
+
+        {/* Personalized Profile Quick Badge */}
+        <div className="flex items-center gap-3 px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-soft">
+          <img
+            src={profile.avatar}
+            alt={profile.name}
+            className="size-10 rounded-full object-cover ring-2 ring-indigo-500/30 shrink-0"
+          />
+          <div className="text-xs leading-tight">
+            <div className="font-extrabold text-slate-900 dark:text-white">
+              Prof. {profile.name}
+            </div>
+            <div className="text-indigo-600 dark:text-indigo-400 font-semibold text-[11px]">
+              {profile.designation} • ID: {profile.employeeId}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -81,17 +111,16 @@ export function FacultyDashboard() {
           <div className="lg:col-span-7 space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/10 text-blue-700 dark:text-blue-300 text-xs font-semibold">
               <Sparkles className="size-3.5 text-blue-600" />
-              <span>Campus ERP System</span>
+              <span>Personalized Faculty Portal — {profile.departmentFullName}</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Good morning, {displayName}! 👋
+              Good morning, Prof. {displayName}! 👋
             </h2>
             <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-              Empower minds. Inspire futures.
+              {profile.designation} — Department of {profile.departmentFullName}
             </p>
             <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300">
-              You have <span className="font-bold text-slate-900 dark:text-white">3 classes today</span> and{' '}
-              <span className="font-bold text-blue-600 dark:text-blue-400">12 pending tasks</span>.
+              Employee ID: <span className="font-mono font-extrabold text-slate-900 dark:text-white">{profile.employeeId}</span> • You have <span className="font-bold text-slate-900 dark:text-white">3 classes today</span> and <span className="font-bold text-blue-600 dark:text-blue-400">12 pending tasks</span>.
             </p>
 
             <div className="pt-2">
@@ -188,7 +217,7 @@ export function FacultyDashboard() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
           {[
-            { label: 'Class Roster', icon: Users, to: '/dashboard/faculty/students' },
+            { label: 'Counselling', icon: HeartHandshake, to: '/dashboard/faculty/students' },
             { label: 'Timetable', icon: CalendarIcon, to: '/dashboard/faculty/classes' },
             { label: 'Lesson Plans', icon: BookOpen, to: '/dashboard/faculty/materials' },
             { label: 'Attendance', icon: CheckSquare, to: '/dashboard/faculty/attendance' },

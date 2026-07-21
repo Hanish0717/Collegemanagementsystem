@@ -1,0 +1,247 @@
+﻿
+========================================
+       STUDENTS IN DATABASE             
+========================================
+
+Available tables: admin_notifications, admins, alumni_activity_logs, alumni_communication_logs, alumni_connections, alumni_donations, alumni_education, alumni_employment, alumni_event_registrations, alumni_events, alumni_job_applications, alumni_jobs, alumni_mentorship_requests, alumni_messages, alumni_post_comments, alumni_post_likes, alumni_posts, alumni_profiles, alumni_success_stories, assignments, attendance, attendance_notification_history, attendance_notification_logs, attendance_notification_requests, attendance_notification_templates, attendance_notifications, below_75_students, books, broadcast_notifications, buses, chat_conversations, chat_messages, college_settings, companies, complaints, courses, departments, drive_rounds, drivers, events, exam_registrations, exam_timetables, exams, faculty, faculty_attendance, faculty_notification_settings, faculty_notifications, fee_notifications, fee_structures, fees, hall_tickets, hostel_allocations, hostel_attendance, hostel_blocks, hostel_complaints, hostel_fee_payments, hostel_fee_receipts, hostel_fees, hostel_rooms, hostel_visitors, hostels, issued_books, leave_requests, library_notifications, library_settings, marks_correction_requests, mentorship_sessions, notification_logs, notification_preferences, otps, placement_companies, placement_drives, placement_interviews, placement_notifications, placement_training, placements, resident_fees, results, routes, selected_students, stops, student_applications, student_course_registrations, student_notifications, students, study_materials, subjects, timetable, transport_allocations, transport_fees, users, vehicle_maintenance
+
+Total Students Found: 217
+
+
+--- AIDS (24 students) ---
+  001. Meka Vamsi                          | Roll: AIDS26001       | vamsi.meka@college.com                   | Sem 1 Sec B
+  002. Gottipati Nikhil                    | Roll: AIDS26002       | nikhil.gottipati@college.com             | Sem 1 Sec A
+  003. Jasti Vamsi                         | Roll: AIDS26003       | vamsi.jasti@college.com                  | Sem 1 Sec B
+  004. Chava Ganesh                        | Roll: AIDS26004       | ganesh.chava@college.com                 | Sem 1 Sec A
+  005. Bandla Nikhil                       | Roll: AIDS26005       | nikhil.bandla@college.com                | Sem 1 Sec B
+  006. Gottipati Satish                    | Roll: AIDS26006       | satish.gottipati@college.com             | Sem 1 Sec A
+  007. Katta Aditya                        | Roll: AIDS26007       | aditya.katta@college.com                 | Sem 3 Sec B
+  008. Pasupuleti Tarun                    | Roll: AIDS26008       | tarun.pasupuleti@college.com             | Sem 3 Sec A
+  009. Devineni Venkatesh                  | Roll: AIDS26009       | venkatesh.devineni@college.com           | Sem 3 Sec B
+  010. Thota Venkatesh                     | Roll: AIDS26010       | venkatesh.thota@college.com              | Sem 3 Sec A
+  011. Maddineni Charan                    | Roll: AIDS26011       | charan.maddineni@college.com             | Sem 3 Sec B
+  012. Katta Kiran                         | Roll: AIDS26012       | kiran.katta@college.com                  | Sem 3 Sec A
+  013. Kondapalli Sindhu                   | Roll: AIDS26013       | sindhu.kondapalli@college.com            | Sem 5 Sec B
+  014. Gudipati Ananya                     | Roll: AIDS26014       | ananya.gudipati214_1@college.com         | Sem 5 Sec A
+  015. Gudipati Sujatha                    | Roll: AIDS26015       | sujatha.gudipati@college.com             | Sem 5 Sec B
+  016. Kolli Ramya                         | Roll: AIDS26016       | ramya.kolli@college.com                  | Sem 5 Sec A
+  017. Kambhampati Sireesha                | Roll: AIDS26017       | sireesha.kambhampati@college.com         | Sem 5 Sec B
+  018. Devineni Ramya                      | Roll: AIDS26018       | ramya.devineni@college.com               | Sem 5 Sec A
+  019. Kondapalli Amrutha                  | Roll: AIDS26019       | amrutha.kondapalli@college.com           | Sem 7 Sec B
+  020. Pendyala Sushma                     | Roll: AIDS26020       | sushma.pendyala@college.com              | Sem 7 Sec A
+  021. Cherukuri Geetha                    | Roll: AIDS26021       | geetha.cherukuri@college.com             | Sem 7 Sec B
+  022. Adusumilli Roopa                    | Roll: AIDS26022       | roopa.adusumilli@college.com             | Sem 7 Sec A
+  023. Meka Himabindu                      | Roll: AIDS26023       | himabindu.meka@college.com               | Sem 7 Sec B
+  024. Vallabhaneni Madhuri                | Roll: AIDS26024       | madhuri.vallabhaneni@college.com         | Sem 7 Sec A
+
+--- AIML (24 students) ---
+  001. Duggirala Charan                    | Roll: AIML26001       | charan.duggirala@college.com             | Sem 1 Sec B
+  002. Jasti Ravi                          | Roll: AIML26002       | ravi.jasti@college.com                   | Sem 1 Sec A
+  003. Challa Mohan                        | Roll: AIML26003       | mohan.challa@college.com                 | Sem 1 Sec B
+  004. Kamineni Teja                       | Roll: AIML26004       | teja.kamineni@college.com                | Sem 1 Sec A
+  005. Vadlamudi Surya                     | Roll: AIML26005       | surya.vadlamudi@college.com              | Sem 1 Sec B
+  006. Maddineni Chandra                   | Roll: AIML26006       | chandra.maddineni@college.com            | Sem 1 Sec A
+  007. Nandamuri Jaswanth                  | Roll: AIML26007       | jaswanth.nandamuri@college.com           | Sem 3 Sec B
+  008. Adusumilli Sai                      | Roll: AIML26008       | sai.adusumilli@college.com               | Sem 3 Sec A
+  009. Pasupuleti Ganesh                   | Roll: AIML26009       | ganesh.pasupuleti@college.com            | Sem 3 Sec B
+  010. Maddineni Satish                    | Roll: AIML26010       | satish.maddineni@college.com             | Sem 3 Sec A
+  011. Adusumilli Sandeep                  | Roll: AIML26011       | sandeep.adusumilli@college.com           | Sem 3 Sec B
+  012. Gorantla Kiran                      | Roll: AIML26012       | kiran.gorantla@college.com               | Sem 3 Sec A
+  013. Gorantla Nandini                    | Roll: AIML26013       | nandini.gorantla@college.com             | Sem 5 Sec B
+  014. Kolli Amrutha                       | Roll: AIML26014       | amrutha.kolli@college.com                | Sem 5 Sec A
+  015. Devineni Priyanka                   | Roll: AIML26015       | priyanka.devineni@college.com            | Sem 5 Sec B
+  016. Nallamothu Sravanthi                | Roll: AIML26016       | sravanthi.nallamothu@college.com         | Sem 5 Sec A
+  017. Pasupuleti Sireesha                 | Roll: AIML26017       | sireesha.pasupuleti@college.com          | Sem 5 Sec B
+  018. Boddu Lakshmi                       | Roll: AIML26018       | lakshmi.boddu@college.com                | Sem 5 Sec A
+  019. Vallabhaneni Kavitha                | Roll: AIML26019       | kavitha.vallabhaneni@college.com         | Sem 7 Sec B
+  020. Kanneganti Sirisha                  | Roll: AIML26020       | sirisha.kanneganti@college.com           | Sem 7 Sec A
+  021. Gottipati Ananya                    | Roll: AIML26021       | ananya.gottipati@college.com             | Sem 7 Sec B
+  022. Duggirala Divya                     | Roll: AIML26022       | divya.duggirala@college.com              | Sem 7 Sec A
+  023. Vemuri Ananya                       | Roll: AIML26023       | ananya.vemuri@college.com                | Sem 7 Sec B
+  024. Kolli Sirisha                       | Roll: AIML26024       | sirisha.kolli@college.com                | Sem 7 Sec A
+
+--- CIVIL (24 students) ---
+  001. Paritala Abhinay                    | Roll: CIVIL26001      | abhinay.paritala@college.com             | Sem 1 Sec B
+  002. Maddineni Krishna                   | Roll: CIVIL26002      | krishna.maddineni@college.com            | Sem 1 Sec A
+  003. Nallamothu Mohan                    | Roll: CIVIL26003      | mohan.nallamothu@college.com             | Sem 1 Sec B
+  004. Devineni Ramesh                     | Roll: CIVIL26004      | ramesh.devineni@college.com              | Sem 1 Sec A
+  005. Pasupuleti Vivek                    | Roll: CIVIL26005      | vivek.pasupuleti@college.com             | Sem 1 Sec B
+  006. Alapati Kiran                       | Roll: CIVIL26006      | kiran.alapati@college.com                | Sem 1 Sec A
+  007. Adusumilli Teja                     | Roll: CIVIL26007      | teja.adusumilli@college.com              | Sem 3 Sec B
+  008. Gorantla Prasad                     | Roll: CIVIL26008      | prasad.gorantla@college.com              | Sem 3 Sec A
+  009. Kamineni Hari                       | Roll: CIVIL26009      | hari.kamineni@college.com                | Sem 3 Sec B
+  010. Kolli Hari                          | Roll: CIVIL26010      | hari.kolli@college.com                   | Sem 3 Sec A
+  011. Vadlamudi Siva                      | Roll: CIVIL26011      | siva.vadlamudi@college.com               | Sem 3 Sec B
+  012. Challa Venkatesh                    | Roll: CIVIL26012      | venkatesh.challa@college.com             | Sem 3 Sec A
+  013. Galla Sireesha                      | Roll: CIVIL26013      | sireesha.galla@college.com               | Sem 5 Sec B
+  014. Devineni Himabindu                  | Roll: CIVIL26014      | himabindu.devineni@college.com           | Sem 5 Sec A
+  015. Nallamothu Jyothi                   | Roll: CIVIL26015      | jyothi.nallamothu@college.com            | Sem 5 Sec B
+  016. Yerra Madhuri                       | Roll: CIVIL26016      | madhuri.yerra@college.com                | Sem 5 Sec A
+  017. Thota Nandini                       | Roll: CIVIL26017      | nandini.thota@college.com                | Sem 5 Sec B
+  018. Vemuri Kavitha                      | Roll: CIVIL26018      | kavitha.vemuri@college.com               | Sem 5 Sec A
+  019. Vemuri Sriya                        | Roll: CIVIL26019      | sriya.vemuri@college.com                 | Sem 7 Sec B
+  020. Katta Sravani                       | Roll: CIVIL26020      | sravani.katta@college.com                | Sem 7 Sec A
+  021. Yelamanchili Kavitha                | Roll: CIVIL26021      | kavitha.yelamanchili@college.com         | Sem 7 Sec B
+  022. Duggirala Madhuri                   | Roll: CIVIL26022      | madhuri.duggirala@college.com            | Sem 7 Sec A
+  023. Nallamothu Sujatha                  | Roll: CIVIL26023      | sujatha.nallamothu@college.com           | Sem 7 Sec B
+  024. Gorantla Divya                      | Roll: CIVIL26024      | divya.gorantla@college.com               | Sem 7 Sec A
+
+--- CSE (25 students) ---
+  001. Student Demo                        | Roll: CS100001        | student@college.com                      | Sem 5 Sec A
+  002. Gudipati Chandra                    | Roll: CSE26001        | chandra.gudipati@college.com             | Sem 1 Sec B
+  003. Duggirala Prasad                    | Roll: CSE26002        | prasad.duggirala@college.com             | Sem 1 Sec A
+  004. Vallabhaneni Karthik                | Roll: CSE26003        | karthik.vallabhaneni@college.com         | Sem 1 Sec B
+  005. Meka Chandra                        | Roll: CSE26004        | chandra.meka@college.com                 | Sem 1 Sec A
+  006. Alapati Nikhil                      | Roll: CSE26005        | nikhil.alapati@college.com               | Sem 1 Sec B
+  007. Yelamarthi Nikhil                   | Roll: CSE26006        | nikhil.yelamarthi@college.com            | Sem 1 Sec A
+  008. Thota Anand                         | Roll: CSE26007        | anand.thota@college.com                  | Sem 3 Sec B
+  009. Gottipati Bhargav                   | Roll: CSE26008        | bhargav.gottipati@college.com            | Sem 3 Sec A
+  010. Gummadi Anand                       | Roll: CSE26009        | anand.gummadi@college.com                | Sem 3 Sec B
+  011. Koneru Srinivas                     | Roll: CSE26010        | srinivas.koneru@college.com              | Sem 3 Sec A
+  012. Kolli Nikhil                        | Roll: CSE26011        | nikhil.kolli@college.com                 | Sem 3 Sec B
+  013. Adusumilli Mohan                    | Roll: CSE26012        | mohan.adusumilli@college.com             | Sem 3 Sec A
+  014. Alapati Sirisha                     | Roll: CSE26013        | sirisha.alapati@college.com              | Sem 5 Sec B
+  015. Pendyala Keerthi                    | Roll: CSE26014        | keerthi.pendyala@college.com             | Sem 5 Sec A
+  016. Vallabhaneni Navyasree              | Roll: CSE26015        | navyasree.vallabhaneni@college.com       | Sem 5 Sec B
+  017. Gudipati Sunitha                    | Roll: CSE26016        | sunitha.gudipati@college.com             | Sem 5 Sec A
+  018. Gudipati Ananya                     | Roll: CSE26017        | ananya.gudipati@college.com              | Sem 5 Sec B
+  019. Kondapalli Yamini                   | Roll: CSE26018        | yamini.kondapalli@college.com            | Sem 5 Sec A
+  020. Nallamothu Aishwarya                | Roll: CSE26019        | aishwarya.nallamothu@college.com         | Sem 7 Sec B
+  021. Bandla Madhuri                      | Roll: CSE26020        | madhuri.bandla@college.com               | Sem 7 Sec A
+  022. Vemuri Sireesha                     | Roll: CSE26021        | sireesha.vemuri@college.com              | Sem 7 Sec B
+  023. Kondapalli Harika                   | Roll: CSE26022        | harika.kondapalli@college.com            | Sem 7 Sec A
+  024. Vadlamudi Keerthi                   | Roll: CSE26023        | keerthi.vadlamudi@college.com            | Sem 7 Sec B
+  025. Nallamothu Geetha                   | Roll: CSE26024        | geetha.nallamothu@college.com            | Sem 7 Sec A
+
+--- CYBERSECURITY (24 students) ---
+  001. Paritala Surya                      | Roll: CYBERSECURITY26001 | surya.paritala@college.com               | Sem 1 Sec B
+  002. Vallabhaneni Venkatesh              | Roll: CYBERSECURITY26002 | venkatesh.vallabhaneni@college.com       | Sem 1 Sec A
+  003. Vemuri Aditya                       | Roll: CYBERSECURITY26003 | aditya.vemuri@college.com                | Sem 1 Sec B
+  004. Kolli Sai                           | Roll: CYBERSECURITY26004 | sai.kolli@college.com                    | Sem 1 Sec A
+  005. Nandamuri Rajesh                    | Roll: CYBERSECURITY26005 | rajesh.nandamuri@college.com             | Sem 1 Sec B
+  006. Thota Mohan                         | Roll: CYBERSECURITY26006 | mohan.thota@college.com                  | Sem 1 Sec A
+  007. Katta Rajesh                        | Roll: CYBERSECURITY26007 | rajesh.katta@college.com                 | Sem 3 Sec B
+  008. Yelamarthi Anand                    | Roll: CYBERSECURITY26008 | anand.yelamarthi@college.com             | Sem 3 Sec A
+  009. Kanneganti Mohan                    | Roll: CYBERSECURITY26009 | mohan.kanneganti@college.com             | Sem 3 Sec B
+  010. Yelamarthi Akhil                    | Roll: CYBERSECURITY26010 | akhil.yelamarthi@college.com             | Sem 3 Sec A
+  011. Galla Mohan                         | Roll: CYBERSECURITY26011 | mohan.galla@college.com                  | Sem 3 Sec B
+  012. Nallamothu Karthik                  | Roll: CYBERSECURITY26012 | karthik.nallamothu@college.com           | Sem 3 Sec A
+  013. Katta Bhavana                       | Roll: CYBERSECURITY26013 | bhavana.katta@college.com                | Sem 5 Sec B
+  014. Challa Nandini                      | Roll: CYBERSECURITY26014 | nandini.challa@college.com               | Sem 5 Sec A
+  015. Chava Sindhu                        | Roll: CYBERSECURITY26015 | sindhu.chava@college.com                 | Sem 5 Sec B
+  016. Koneru Keerthi                      | Roll: CYBERSECURITY26016 | keerthi.koneru@college.com               | Sem 5 Sec A
+  017. Koneru Divya                        | Roll: CYBERSECURITY26017 | divya.koneru@college.com                 | Sem 5 Sec B
+  018. Meka Sravani                        | Roll: CYBERSECURITY26018 | sravani.meka@college.com                 | Sem 5 Sec A
+  019. Bandla Swathi                       | Roll: CYBERSECURITY26019 | swathi.bandla@college.com                | Sem 7 Sec B
+  020. Vemuri Meghana                      | Roll: CYBERSECURITY26020 | meghana.vemuri@college.com               | Sem 7 Sec A
+  021. Nallamothu Aishwarya                | Roll: CYBERSECURITY26021 | aishwarya.nallamothu321_1@college.com    | Sem 7 Sec B
+  022. Gorantla Mounika                    | Roll: CYBERSECURITY26022 | mounika.gorantla@college.com             | Sem 7 Sec A
+  023. Katta Sushma                        | Roll: CYBERSECURITY26023 | sushma.katta@college.com                 | Sem 7 Sec B
+  024. Gorantla Swathi                     | Roll: CYBERSECURITY26024 | swathi.gorantla@college.com              | Sem 7 Sec A
+
+--- ECE (24 students) ---
+  001. Gummadi Kalyan                      | Roll: ECE26001        | kalyan.gummadi@college.com               | Sem 1 Sec B
+  002. Bandla Rajesh                       | Roll: ECE26002        | rajesh.bandla@college.com                | Sem 1 Sec A
+  003. Boddu Venkatesh                     | Roll: ECE26003        | venkatesh.boddu@college.com              | Sem 1 Sec B
+  004. Gorantla Suresh                     | Roll: ECE26004        | suresh.gorantla@college.com              | Sem 1 Sec A
+  005. Gottipati Satish                    | Roll: ECE26005        | satish.gottipati505_1@college.com        | Sem 1 Sec B
+  006. Yelamanchili Charan                 | Roll: ECE26006        | charan.yelamanchili@college.com          | Sem 1 Sec A
+  007. Alapati Kalyan                      | Roll: ECE26007        | kalyan.alapati@college.com               | Sem 3 Sec B
+  008. Cherukuri Kiran                     | Roll: ECE26008        | kiran.cherukuri@college.com              | Sem 3 Sec A
+  009. Thota Srinivas                      | Roll: ECE26009        | srinivas.thota@college.com               | Sem 3 Sec B
+  010. Vadlamudi Varun                     | Roll: ECE26010        | varun.vadlamudi@college.com              | Sem 3 Sec A
+  011. Pasupuleti Satish                   | Roll: ECE26011        | satish.pasupuleti@college.com            | Sem 3 Sec B
+  012. Gudipati Vamsi                      | Roll: ECE26012        | vamsi.gudipati@college.com               | Sem 3 Sec A
+  013. Kondapalli Sravanthi                | Roll: ECE26013        | sravanthi.kondapalli@college.com         | Sem 5 Sec B
+  014. Adusumilli Mounika                  | Roll: ECE26014        | mounika.adusumilli@college.com           | Sem 5 Sec A
+  015. Maddineni Sahithi                   | Roll: ECE26015        | sahithi.maddineni@college.com            | Sem 5 Sec B
+  016. Gottipati Sujatha                   | Roll: ECE26016        | sujatha.gottipati@college.com            | Sem 5 Sec A
+  017. Kambhampati Swathi                  | Roll: ECE26017        | swathi.kambhampati@college.com           | Sem 5 Sec B
+  018. Vadlamudi Nandini                   | Roll: ECE26018        | nandini.vadlamudi@college.com            | Sem 5 Sec A
+  019. Maddineni Sahithi                   | Roll: ECE26019        | sahithi.maddineni519_1@college.com       | Sem 7 Sec B
+  020. Nandamuri Tejaswi                   | Roll: ECE26020        | tejaswi.nandamuri@college.com            | Sem 7 Sec A
+  021. Kanneganti Harika                   | Roll: ECE26021        | harika.kanneganti@college.com            | Sem 7 Sec B
+  022. Yelamarthi Kavitha                  | Roll: ECE26022        | kavitha.yelamarthi@college.com           | Sem 7 Sec A
+  023. Meka Geetha                         | Roll: ECE26023        | geetha.meka@college.com                  | Sem 7 Sec B
+  024. Pendyala Yamini                     | Roll: ECE26024        | yamini.pendyala@college.com              | Sem 7 Sec A
+
+--- EEE (24 students) ---
+  001. Bandla Rajesh                       | Roll: EEE26001        | rajesh.bandla601_1@college.com           | Sem 1 Sec B
+  002. Boddu Rajesh                        | Roll: EEE26002        | rajesh.boddu@college.com                 | Sem 1 Sec A
+  003. Nallamothu Sravan                   | Roll: EEE26003        | sravan.nallamothu@college.com            | Sem 1 Sec B
+  004. Katta Akhil                         | Roll: EEE26004        | akhil.katta@college.com                  | Sem 1 Sec A
+  005. Gummadi Charan                      | Roll: EEE26005        | charan.gummadi@college.com               | Sem 1 Sec B
+  006. Nandamuri Harish                    | Roll: EEE26006        | harish.nandamuri@college.com             | Sem 1 Sec A
+  007. Alapati Krishna                     | Roll: EEE26007        | krishna.alapati@college.com              | Sem 3 Sec B
+  008. Ravipati Vivek                      | Roll: EEE26008        | vivek.ravipati@college.com               | Sem 3 Sec A
+  009. Kondapalli Abhinay                  | Roll: EEE26009        | abhinay.kondapalli@college.com           | Sem 3 Sec B
+  010. Pendyala Satish                     | Roll: EEE26010        | satish.pendyala@college.com              | Sem 3 Sec A
+  011. Duggirala Ganesh                    | Roll: EEE26011        | ganesh.duggirala@college.com             | Sem 3 Sec B
+  012. Gummadi Kalyan                      | Roll: EEE26012        | kalyan.gummadi612_1@college.com          | Sem 3 Sec A
+  013. Yerra Swathi                        | Roll: EEE26013        | swathi.yerra@college.com                 | Sem 5 Sec B
+  014. Kothapalli Ananya                   | Roll: EEE26014        | ananya.kothapalli@college.com            | Sem 5 Sec A
+  015. Gudipati Harika                     | Roll: EEE26015        | harika.gudipati@college.com              | Sem 5 Sec B
+  016. Boddu Keerthi                       | Roll: EEE26016        | keerthi.boddu@college.com                | Sem 5 Sec A
+  017. Adusumilli Ramya                    | Roll: EEE26017        | ramya.adusumilli@college.com             | Sem 5 Sec B
+  018. Yelamarthi Sahithi                  | Roll: EEE26018        | sahithi.yelamarthi@college.com           | Sem 5 Sec A
+  019. Gummadi Sahithi                     | Roll: EEE26019        | sahithi.gummadi@college.com              | Sem 7 Sec B
+  020. Kolli Bhavana                       | Roll: EEE26020        | bhavana.kolli@college.com                | Sem 7 Sec A
+  021. Gudipati Amrutha                    | Roll: EEE26021        | amrutha.gudipati@college.com             | Sem 7 Sec B
+  022. Koneru Jyothi                       | Roll: EEE26022        | jyothi.koneru@college.com                | Sem 7 Sec A
+  023. Kondapalli Meghana                  | Roll: EEE26023        | meghana.kondapalli@college.com           | Sem 7 Sec B
+  024. Gudipati Sahithi                    | Roll: EEE26024        | sahithi.gudipati@college.com             | Sem 7 Sec A
+
+--- IT (24 students) ---
+  001. Galla Hari                          | Roll: IT26001         | hari.galla@college.com                   | Sem 1 Sec B
+  002. Ravipati Avinash                    | Roll: IT26002         | avinash.ravipati@college.com             | Sem 1 Sec A
+  003. Pasupuleti Avinash                  | Roll: IT26003         | avinash.pasupuleti@college.com           | Sem 1 Sec B
+  004. Yelamanchili Bhargav                | Roll: IT26004         | bhargav.yelamanchili@college.com         | Sem 1 Sec A
+  005. Vallabhaneni Rajesh                 | Roll: IT26005         | rajesh.vallabhaneni@college.com          | Sem 1 Sec B
+  006. Nandamuri Kiran                     | Roll: IT26006         | kiran.nandamuri@college.com              | Sem 1 Sec A
+  007. Galla Srinivas                      | Roll: IT26007         | srinivas.galla@college.com               | Sem 3 Sec B
+  008. Katta Suresh                        | Roll: IT26008         | suresh.katta@college.com                 | Sem 3 Sec A
+  009. Ravipati Prathyush                  | Roll: IT26009         | prathyush.ravipati@college.com           | Sem 3 Sec B
+  010. Gudipati Surya                      | Roll: IT26010         | surya.gudipati@college.com               | Sem 3 Sec A
+  011. Vadlamudi Ganesh                    | Roll: IT26011         | ganesh.vadlamudi@college.com             | Sem 3 Sec B
+  012. Maddineni Pawan                     | Roll: IT26012         | pawan.maddineni@college.com              | Sem 3 Sec A
+  013. Pasupuleti Sai Pranathi             | Roll: IT26013         | saipranathi.pasupuleti@college.com       | Sem 5 Sec B
+  014. Paritala Ananya                     | Roll: IT26014         | ananya.paritala@college.com              | Sem 5 Sec A
+  015. Kondapalli Sneha                    | Roll: IT26015         | sneha.kondapalli@college.com             | Sem 5 Sec B
+  016. Yelamanchili Sireesha               | Roll: IT26016         | sireesha.yelamanchili@college.com        | Sem 5 Sec A
+  017. Gottipati Bhavana                   | Roll: IT26017         | bhavana.gottipati@college.com            | Sem 5 Sec B
+  018. Vadlamudi Mounika                   | Roll: IT26018         | mounika.vadlamudi@college.com            | Sem 5 Sec A
+  019. Kanneganti Pranitha                 | Roll: IT26019         | pranitha.kanneganti@college.com          | Sem 7 Sec B
+  020. Kolli Ananya                        | Roll: IT26020         | ananya.kolli@college.com                 | Sem 7 Sec A
+  021. Ravipati Tejaswi                    | Roll: IT26021         | tejaswi.ravipati@college.com             | Sem 7 Sec B
+  022. Vemuri Bhavana                      | Roll: IT26022         | bhavana.vemuri@college.com               | Sem 7 Sec A
+  023. Gudipati Sirisha                    | Roll: IT26023         | sirisha.gudipati@college.com             | Sem 7 Sec B
+  024. Pasupuleti Yamini                   | Roll: IT26024         | yamini.pasupuleti@college.com            | Sem 7 Sec A
+
+--- MECH (24 students) ---
+  001. Gudipati Charan                     | Roll: MECH26001       | charan.gudipati@college.com              | Sem 1 Sec B
+  002. Kanneganti Prathyush                | Roll: MECH26002       | prathyush.kanneganti@college.com         | Sem 1 Sec A
+  003. Katta Nikhil                        | Roll: MECH26003       | nikhil.katta@college.com                 | Sem 1 Sec B
+  004. Paritala Prasad                     | Roll: MECH26004       | prasad.paritala@college.com              | Sem 1 Sec A
+  005. Yerra Satish                        | Roll: MECH26005       | satish.yerra@college.com                 | Sem 1 Sec B
+  006. Vallabhaneni Sravan                 | Roll: MECH26006       | sravan.vallabhaneni@college.com          | Sem 1 Sec A
+  007. Alapati Prathyush                   | Roll: MECH26007       | prathyush.alapati@college.com            | Sem 3 Sec B
+  008. Gummadi Nikhil                      | Roll: MECH26008       | nikhil.gummadi@college.com               | Sem 3 Sec A
+  009. Vadlamudi Prathyush                 | Roll: MECH26009       | prathyush.vadlamudi@college.com          | Sem 3 Sec B
+  010. Jasti Karthik                       | Roll: MECH26010       | karthik.jasti@college.com                | Sem 3 Sec A
+  011. Paritala Mohan                      | Roll: MECH26011       | mohan.paritala@college.com               | Sem 3 Sec B
+  012. Gottipati Suresh                    | Roll: MECH26012       | suresh.gottipati@college.com             | Sem 3 Sec A
+  013. Kamineni Tejaswi                    | Roll: MECH26013       | tejaswi.kamineni@college.com             | Sem 5 Sec B
+  014. Nallamothu Sunitha                  | Roll: MECH26014       | sunitha.nallamothu@college.com           | Sem 5 Sec A
+  015. Bandla Tejaswi                      | Roll: MECH26015       | tejaswi.bandla@college.com               | Sem 5 Sec B
+  016. Chava Bhavana                       | Roll: MECH26016       | bhavana.chava@college.com                | Sem 5 Sec A
+  017. Kondapalli Sirisha                  | Roll: MECH26017       | sirisha.kondapalli@college.com           | Sem 5 Sec B
+  018. Challa Nandini                      | Roll: MECH26018       | nandini.challa718_1@college.com          | Sem 5 Sec A
+  019. Kambhampati Swathi                  | Roll: MECH26019       | swathi.kambhampati719_1@college.com      | Sem 7 Sec B
+  020. Nallamothu Yamini                   | Roll: MECH26020       | yamini.nallamothu@college.com            | Sem 7 Sec A
+  021. Yerra Pranitha                      | Roll: MECH26021       | pranitha.yerra@college.com               | Sem 7 Sec B
+  022. Kamineni Madhuri                    | Roll: MECH26022       | madhuri.kamineni@college.com             | Sem 7 Sec A
+  023. Kambhampati Keerthi                 | Roll: MECH26023       | keerthi.kambhampati@college.com          | Sem 7 Sec B
+  024. Koneru Madhuri                      | Roll: MECH26024       | madhuri.koneru@college.com               | Sem 7 Sec A
+
+========================================
+

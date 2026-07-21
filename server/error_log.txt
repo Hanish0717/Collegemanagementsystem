@@ -255,3 +255,59 @@ Body: {"slots":[{"subject":"Discreate Mathamatics (CS301)","date":"2026-07-21","
 [2026-07-21T09:40:06.527Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"kalyan.nandamuri@college.com","password":"PASSWORD123"}
 [2026-07-21T09:40:31.704Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"kalyan.nandamuri@college.com","password":"PASSWORD123"}
 [2026-07-21T10:02:31.498Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T13:21:34.231Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:22:44.943Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:48.032Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:49.059Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:51.073Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:52.189Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:52.196Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:52.204Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:52.209Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:55.495Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:56.525Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:24:58.542Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:25:09.865Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:12.923Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:13.938Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:15.955Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:19.975Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:22.028Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:22.035Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:24.041Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:25.053Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:27.066Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:31.085Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:56.738Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:57.751Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:27:59.771Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, invalid faculty token - Body: {}
+[2026-07-21T13:37:34.742Z] POST /api/faculty-module/materials - Status: 500 - Error: Cannot read properties of null (reading 'id')
+Stack: TypeError: Cannot read properties of null (reading 'id')
+    at createFacultyMaterial (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/facultyModuleController.js:405:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"title":"roban","subject":"Algorithms","type":"PDF","fileUrl":"https://chatgpt.com/c/6a5e58ed-9464-83e8-88ff-094f7a15e58e","department":"CSE","year":3,"semester":5}
+
+[2026-07-21T13:37:42.000Z] POST /api/faculty-module/materials - Status: 500 - Error: Cannot read properties of null (reading 'id')
+Stack: TypeError: Cannot read properties of null (reading 'id')
+    at createFacultyMaterial (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/facultyModuleController.js:405:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"title":"roban","subject":"Algorithms","type":"PDF","fileUrl":"https://chatgpt.com/c/6a5e58ed-9464-83e8-88ff-094f7a15e58e","department":"CSE","year":3,"semester":5}
+
+[2026-07-21T13:50:12.354Z] POST /api/faculty-module/materials - Status: 500 - Error: Cannot read properties of null (reading 'id')
+Stack: TypeError: Cannot read properties of null (reading 'id')
+    at createFacultyMaterial (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/facultyModuleController.js:405:21)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"title":"os chapter1","subject":"Algorithms","type":"PDF","fileUrl":"https://www.cl.cam.ac.uk/teaching/1011/OpSystems/os-slides-l1.pdf","department":"CSE","year":3,"semester":5}
+
+[2026-07-21T13:53:16.501Z] POST /api/faculty-module/materials - Status: 500 - Error: invalid input syntax for type uuid: "FACCSE1"
+Stack: Error: invalid input syntax for type uuid: "FACCSE1"
+    at createFacultyMaterial (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/facultyModuleController.js:404:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"title":"os","subject":"Algorithms","type":"PDF","fileUrl":"https://www.cl.cam.ac.uk/teaching/1011/OpSystems/os-slides-l1.pdf","department":"CSE","year":3,"semester":5}
+
+[2026-07-21T13:53:34.462Z] POST /api/faculty-module/materials - Status: 500 - Error: invalid input syntax for type uuid: "FACCSE1"
+Stack: Error: invalid input syntax for type uuid: "FACCSE1"
+    at createFacultyMaterial (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/facultyModuleController.js:404:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+Body: {"title":"os","subject":"Algorithms","type":"PDF","fileUrl":"https://www.cl.cam.ac.uk/teaching/1011/OpSystems/os-slides-l1.pdf","department":"CSE","year":3,"semester":5}
+

@@ -34,6 +34,7 @@ import {
   ShieldCheck,
   Image,
   FlaskConical,
+  HeartHandshake,
 } from 'lucide-react';
 
 export type RoleId =
@@ -280,7 +281,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: '/dashboard/faculty/research', label: 'Research', icon: FlaskConical },
       { to: '/dashboard/faculty/publications', label: 'Publications', icon: FileText },
       { to: '/dashboard/admin/lms', label: 'LMS Portal', icon: FileText },
-      { to: '/dashboard/faculty/students', label: 'My Students', icon: Users },
+      { to: '/dashboard/faculty/students', label: 'Counselling', icon: HeartHandshake },
       { to: '/dashboard/faculty/performance', label: 'Student Performance', icon: Activity },
       {
         to: '/dashboard/ai',
@@ -289,6 +290,7 @@ export const ROLES: Record<RoleId, Role> = {
         children: [...aiWorkspaceNav],
       },
       { to: '/dashboard/faculty/communication', label: 'Message Hub', icon: MessageSquare },
+      { to: '/faculty/payroll', label: 'Payroll Management', icon: DollarSign },
       { to: '/dashboard/faculty/notifications', label: 'Notifications', icon: Bell },
       { to: '/dashboard/faculty/settings', label: 'Settings', icon: Settings },
     ],

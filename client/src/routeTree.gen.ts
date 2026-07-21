@@ -16,9 +16,11 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as LmsLoginRouteImport } from './routes/lms-login'
 import { Route as HodRouteImport } from './routes/hod'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as FacultyRouteImport } from './routes/faculty'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HodIndexRouteImport } from './routes/hod/index'
+import { Route as FacultyIndexRouteImport } from './routes/faculty/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AlumniIndexRouteImport } from './routes/alumni/index'
 import { Route as HodTimetableRouteImport } from './routes/hod/timetable'
@@ -42,12 +44,24 @@ import { Route as HodApprovalsRouteImport } from './routes/hod/approvals'
 import { Route as HodAcademicsRouteImport } from './routes/hod/academics'
 import { Route as Hod404RouteImport } from './routes/hod/404'
 import { Route as Hod403RouteImport } from './routes/hod/403'
+import { Route as FacultyStudentsRouteImport } from './routes/faculty/students'
+import { Route as FacultySettingsRouteImport } from './routes/faculty/settings'
+import { Route as FacultyResearchRouteImport } from './routes/faculty/research'
+import { Route as FacultyPublicationsRouteImport } from './routes/faculty/publications'
+import { Route as FacultyPayrollRouteImport } from './routes/faculty/payroll'
+import { Route as FacultyNotificationsRouteImport } from './routes/faculty/notifications'
+import { Route as FacultyMessagesRouteImport } from './routes/faculty/messages'
+import { Route as FacultyMaterialsRouteImport } from './routes/faculty/materials'
+import { Route as FacultyLmsRouteImport } from './routes/faculty/lms'
+import { Route as FacultyDashboardRouteImport } from './routes/faculty/dashboard'
+import { Route as FacultyAttendanceRouteImport } from './routes/faculty/attendance'
 import { Route as DashboardTransportRouteImport } from './routes/dashboard/transport'
 import { Route as DashboardSuperAdminRouteImport } from './routes/dashboard/super-admin'
 import { Route as DashboardStudentsRouteImport } from './routes/dashboard/students'
 import { Route as DashboardStudentRouteImport } from './routes/dashboard/student'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardPlacementRouteImport } from './routes/dashboard/placement'
+import { Route as DashboardPayrollRouteImport } from './routes/dashboard/payroll'
 import { Route as DashboardParentRouteImport } from './routes/dashboard/parent'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard/notifications'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard/library'
@@ -141,6 +155,7 @@ import { Route as DashboardFacultySettingsRouteImport } from './routes/dashboard
 import { Route as DashboardFacultyResearchRouteImport } from './routes/dashboard/faculty/research'
 import { Route as DashboardFacultyPublicationsRouteImport } from './routes/dashboard/faculty/publications'
 import { Route as DashboardFacultyPerformanceRouteImport } from './routes/dashboard/faculty/performance'
+import { Route as DashboardFacultyPayrollRouteImport } from './routes/dashboard/faculty/payroll'
 import { Route as DashboardFacultyNotificationsRouteImport } from './routes/dashboard/faculty/notifications'
 import { Route as DashboardFacultyMaterialsRouteImport } from './routes/dashboard/faculty/materials'
 import { Route as DashboardFacultyMarksRouteImport } from './routes/dashboard/faculty/marks'
@@ -163,6 +178,7 @@ import { Route as DashboardAdminStudentsRouteImport } from './routes/dashboard/a
 import { Route as DashboardAdminSettingsRouteImport } from './routes/dashboard/admin/settings'
 import { Route as DashboardAdminResearchRouteImport } from './routes/dashboard/admin/research'
 import { Route as DashboardAdminReportsRouteImport } from './routes/dashboard/admin/reports'
+import { Route as DashboardAdminPayrollRouteImport } from './routes/dashboard/admin/payroll'
 import { Route as DashboardAdminNotificationsRouteImport } from './routes/dashboard/admin/notifications'
 import { Route as DashboardAdminLmsRouteImport } from './routes/dashboard/admin/lms'
 import { Route as DashboardAdminInventoryRouteImport } from './routes/dashboard/admin/inventory'
@@ -258,6 +274,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FacultyRoute = FacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -272,6 +293,11 @@ const HodIndexRoute = HodIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => HodRoute,
+} as any)
+const FacultyIndexRoute = FacultyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FacultyRoute,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
@@ -388,6 +414,61 @@ const Hod403Route = Hod403RouteImport.update({
   path: '/403',
   getParentRoute: () => HodRoute,
 } as any)
+const FacultyStudentsRoute = FacultyStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultySettingsRoute = FacultySettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyResearchRoute = FacultyResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyPublicationsRoute = FacultyPublicationsRouteImport.update({
+  id: '/publications',
+  path: '/publications',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyPayrollRoute = FacultyPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyNotificationsRoute = FacultyNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyMessagesRoute = FacultyMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyMaterialsRoute = FacultyMaterialsRouteImport.update({
+  id: '/materials',
+  path: '/materials',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyLmsRoute = FacultyLmsRouteImport.update({
+  id: '/lms',
+  path: '/lms',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyDashboardRoute = FacultyDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyAttendanceRoute = FacultyAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => FacultyRoute,
+} as any)
 const DashboardTransportRoute = DashboardTransportRouteImport.update({
   id: '/transport',
   path: '/transport',
@@ -416,6 +497,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
 const DashboardPlacementRoute = DashboardPlacementRouteImport.update({
   id: '/placement',
   path: '/placement',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPayrollRoute = DashboardPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardParentRoute = DashboardParentRouteImport.update({
@@ -926,6 +1012,11 @@ const DashboardFacultyPerformanceRoute =
     path: '/performance',
     getParentRoute: () => DashboardFacultyRoute,
   } as any)
+const DashboardFacultyPayrollRoute = DashboardFacultyPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => DashboardFacultyRoute,
+} as any)
 const DashboardFacultyNotificationsRoute =
   DashboardFacultyNotificationsRouteImport.update({
     id: '/notifications',
@@ -1041,6 +1132,11 @@ const DashboardAdminResearchRoute = DashboardAdminResearchRouteImport.update({
 const DashboardAdminReportsRoute = DashboardAdminReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardAdminPayrollRoute = DashboardAdminPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
 const DashboardAdminNotificationsRoute =
@@ -1386,6 +1482,7 @@ const DashboardAdminAlumniAiFeaturesRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/faculty': typeof FacultyRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/hod': typeof HodRouteWithChildren
   '/lms-login': typeof LmsLoginRoute
@@ -1419,12 +1516,24 @@ export interface FileRoutesByFullPath {
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parent': typeof DashboardParentRouteWithChildren
+  '/dashboard/payroll': typeof DashboardPayrollRoute
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
+  '/faculty/attendance': typeof FacultyAttendanceRoute
+  '/faculty/dashboard': typeof FacultyDashboardRoute
+  '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/materials': typeof FacultyMaterialsRoute
+  '/faculty/messages': typeof FacultyMessagesRoute
+  '/faculty/notifications': typeof FacultyNotificationsRoute
+  '/faculty/payroll': typeof FacultyPayrollRoute
+  '/faculty/publications': typeof FacultyPublicationsRoute
+  '/faculty/research': typeof FacultyResearchRoute
+  '/faculty/settings': typeof FacultySettingsRoute
+  '/faculty/students': typeof FacultyStudentsRoute
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
@@ -1448,6 +1557,7 @@ export interface FileRoutesByFullPath {
   '/hod/timetable': typeof HodTimetableRoute
   '/alumni/': typeof AlumniIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/faculty/': typeof FacultyIndexRoute
   '/hod/': typeof HodIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
@@ -1471,6 +1581,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/inventory': typeof DashboardAdminInventoryRoute
   '/dashboard/admin/lms': typeof DashboardAdminLmsRoute
   '/dashboard/admin/notifications': typeof DashboardAdminNotificationsRoute
+  '/dashboard/admin/payroll': typeof DashboardAdminPayrollRoute
   '/dashboard/admin/reports': typeof DashboardAdminReportsRoute
   '/dashboard/admin/research': typeof DashboardAdminResearchRoute
   '/dashboard/admin/settings': typeof DashboardAdminSettingsRoute
@@ -1493,6 +1604,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/faculty/marks': typeof DashboardFacultyMarksRoute
   '/dashboard/faculty/materials': typeof DashboardFacultyMaterialsRoute
   '/dashboard/faculty/notifications': typeof DashboardFacultyNotificationsRoute
+  '/dashboard/faculty/payroll': typeof DashboardFacultyPayrollRoute
   '/dashboard/faculty/performance': typeof DashboardFacultyPerformanceRoute
   '/dashboard/faculty/publications': typeof DashboardFacultyPublicationsRoute
   '/dashboard/faculty/research': typeof DashboardFacultyResearchRoute
@@ -1631,12 +1743,24 @@ export interface FileRoutesByTo {
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parent': typeof DashboardParentRouteWithChildren
+  '/dashboard/payroll': typeof DashboardPayrollRoute
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
+  '/faculty/attendance': typeof FacultyAttendanceRoute
+  '/faculty/dashboard': typeof FacultyDashboardRoute
+  '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/materials': typeof FacultyMaterialsRoute
+  '/faculty/messages': typeof FacultyMessagesRoute
+  '/faculty/notifications': typeof FacultyNotificationsRoute
+  '/faculty/payroll': typeof FacultyPayrollRoute
+  '/faculty/publications': typeof FacultyPublicationsRoute
+  '/faculty/research': typeof FacultyResearchRoute
+  '/faculty/settings': typeof FacultySettingsRoute
+  '/faculty/students': typeof FacultyStudentsRoute
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
@@ -1660,6 +1784,7 @@ export interface FileRoutesByTo {
   '/hod/timetable': typeof HodTimetableRoute
   '/alumni': typeof AlumniIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/faculty': typeof FacultyIndexRoute
   '/hod': typeof HodIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
@@ -1682,6 +1807,7 @@ export interface FileRoutesByTo {
   '/dashboard/admin/inventory': typeof DashboardAdminInventoryRoute
   '/dashboard/admin/lms': typeof DashboardAdminLmsRoute
   '/dashboard/admin/notifications': typeof DashboardAdminNotificationsRoute
+  '/dashboard/admin/payroll': typeof DashboardAdminPayrollRoute
   '/dashboard/admin/reports': typeof DashboardAdminReportsRoute
   '/dashboard/admin/research': typeof DashboardAdminResearchRoute
   '/dashboard/admin/settings': typeof DashboardAdminSettingsRoute
@@ -1704,6 +1830,7 @@ export interface FileRoutesByTo {
   '/dashboard/faculty/marks': typeof DashboardFacultyMarksRoute
   '/dashboard/faculty/materials': typeof DashboardFacultyMaterialsRoute
   '/dashboard/faculty/notifications': typeof DashboardFacultyNotificationsRoute
+  '/dashboard/faculty/payroll': typeof DashboardFacultyPayrollRoute
   '/dashboard/faculty/performance': typeof DashboardFacultyPerformanceRoute
   '/dashboard/faculty/publications': typeof DashboardFacultyPublicationsRoute
   '/dashboard/faculty/research': typeof DashboardFacultyResearchRoute
@@ -1813,6 +1940,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/faculty': typeof FacultyRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/hod': typeof HodRouteWithChildren
   '/lms-login': typeof LmsLoginRoute
@@ -1846,12 +1974,24 @@ export interface FileRoutesById {
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/parent': typeof DashboardParentRouteWithChildren
+  '/dashboard/payroll': typeof DashboardPayrollRoute
   '/dashboard/placement': typeof DashboardPlacementRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRouteWithChildren
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
+  '/faculty/attendance': typeof FacultyAttendanceRoute
+  '/faculty/dashboard': typeof FacultyDashboardRoute
+  '/faculty/lms': typeof FacultyLmsRoute
+  '/faculty/materials': typeof FacultyMaterialsRoute
+  '/faculty/messages': typeof FacultyMessagesRoute
+  '/faculty/notifications': typeof FacultyNotificationsRoute
+  '/faculty/payroll': typeof FacultyPayrollRoute
+  '/faculty/publications': typeof FacultyPublicationsRoute
+  '/faculty/research': typeof FacultyResearchRoute
+  '/faculty/settings': typeof FacultySettingsRoute
+  '/faculty/students': typeof FacultyStudentsRoute
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
@@ -1875,6 +2015,7 @@ export interface FileRoutesById {
   '/hod/timetable': typeof HodTimetableRoute
   '/alumni/': typeof AlumniIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/faculty/': typeof FacultyIndexRoute
   '/hod/': typeof HodIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
@@ -1898,6 +2039,7 @@ export interface FileRoutesById {
   '/dashboard/admin/inventory': typeof DashboardAdminInventoryRoute
   '/dashboard/admin/lms': typeof DashboardAdminLmsRoute
   '/dashboard/admin/notifications': typeof DashboardAdminNotificationsRoute
+  '/dashboard/admin/payroll': typeof DashboardAdminPayrollRoute
   '/dashboard/admin/reports': typeof DashboardAdminReportsRoute
   '/dashboard/admin/research': typeof DashboardAdminResearchRoute
   '/dashboard/admin/settings': typeof DashboardAdminSettingsRoute
@@ -1920,6 +2062,7 @@ export interface FileRoutesById {
   '/dashboard/faculty/marks': typeof DashboardFacultyMarksRoute
   '/dashboard/faculty/materials': typeof DashboardFacultyMaterialsRoute
   '/dashboard/faculty/notifications': typeof DashboardFacultyNotificationsRoute
+  '/dashboard/faculty/payroll': typeof DashboardFacultyPayrollRoute
   '/dashboard/faculty/performance': typeof DashboardFacultyPerformanceRoute
   '/dashboard/faculty/publications': typeof DashboardFacultyPublicationsRoute
   '/dashboard/faculty/research': typeof DashboardFacultyResearchRoute
@@ -2030,6 +2173,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/faculty'
     | '/forgot-password'
     | '/hod'
     | '/lms-login'
@@ -2063,12 +2207,24 @@ export interface FileRouteTypes {
     | '/dashboard/library'
     | '/dashboard/notifications'
     | '/dashboard/parent'
+    | '/dashboard/payroll'
     | '/dashboard/placement'
     | '/dashboard/settings'
     | '/dashboard/student'
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
+    | '/faculty/attendance'
+    | '/faculty/dashboard'
+    | '/faculty/lms'
+    | '/faculty/materials'
+    | '/faculty/messages'
+    | '/faculty/notifications'
+    | '/faculty/payroll'
+    | '/faculty/publications'
+    | '/faculty/research'
+    | '/faculty/settings'
+    | '/faculty/students'
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
@@ -2092,6 +2248,7 @@ export interface FileRouteTypes {
     | '/hod/timetable'
     | '/alumni/'
     | '/dashboard/'
+    | '/faculty/'
     | '/hod/'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
@@ -2115,6 +2272,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/inventory'
     | '/dashboard/admin/lms'
     | '/dashboard/admin/notifications'
+    | '/dashboard/admin/payroll'
     | '/dashboard/admin/reports'
     | '/dashboard/admin/research'
     | '/dashboard/admin/settings'
@@ -2137,6 +2295,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/marks'
     | '/dashboard/faculty/materials'
     | '/dashboard/faculty/notifications'
+    | '/dashboard/faculty/payroll'
     | '/dashboard/faculty/performance'
     | '/dashboard/faculty/publications'
     | '/dashboard/faculty/research'
@@ -2275,12 +2434,24 @@ export interface FileRouteTypes {
     | '/dashboard/library'
     | '/dashboard/notifications'
     | '/dashboard/parent'
+    | '/dashboard/payroll'
     | '/dashboard/placement'
     | '/dashboard/settings'
     | '/dashboard/student'
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
+    | '/faculty/attendance'
+    | '/faculty/dashboard'
+    | '/faculty/lms'
+    | '/faculty/materials'
+    | '/faculty/messages'
+    | '/faculty/notifications'
+    | '/faculty/payroll'
+    | '/faculty/publications'
+    | '/faculty/research'
+    | '/faculty/settings'
+    | '/faculty/students'
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
@@ -2304,6 +2475,7 @@ export interface FileRouteTypes {
     | '/hod/timetable'
     | '/alumni'
     | '/dashboard'
+    | '/faculty'
     | '/hod'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
@@ -2326,6 +2498,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/inventory'
     | '/dashboard/admin/lms'
     | '/dashboard/admin/notifications'
+    | '/dashboard/admin/payroll'
     | '/dashboard/admin/reports'
     | '/dashboard/admin/research'
     | '/dashboard/admin/settings'
@@ -2348,6 +2521,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/marks'
     | '/dashboard/faculty/materials'
     | '/dashboard/faculty/notifications'
+    | '/dashboard/faculty/payroll'
     | '/dashboard/faculty/performance'
     | '/dashboard/faculty/publications'
     | '/dashboard/faculty/research'
@@ -2456,6 +2630,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/faculty'
     | '/forgot-password'
     | '/hod'
     | '/lms-login'
@@ -2489,12 +2664,24 @@ export interface FileRouteTypes {
     | '/dashboard/library'
     | '/dashboard/notifications'
     | '/dashboard/parent'
+    | '/dashboard/payroll'
     | '/dashboard/placement'
     | '/dashboard/settings'
     | '/dashboard/student'
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
+    | '/faculty/attendance'
+    | '/faculty/dashboard'
+    | '/faculty/lms'
+    | '/faculty/materials'
+    | '/faculty/messages'
+    | '/faculty/notifications'
+    | '/faculty/payroll'
+    | '/faculty/publications'
+    | '/faculty/research'
+    | '/faculty/settings'
+    | '/faculty/students'
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
@@ -2518,6 +2705,7 @@ export interface FileRouteTypes {
     | '/hod/timetable'
     | '/alumni/'
     | '/dashboard/'
+    | '/faculty/'
     | '/hod/'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
@@ -2541,6 +2729,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/inventory'
     | '/dashboard/admin/lms'
     | '/dashboard/admin/notifications'
+    | '/dashboard/admin/payroll'
     | '/dashboard/admin/reports'
     | '/dashboard/admin/research'
     | '/dashboard/admin/settings'
@@ -2563,6 +2752,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/marks'
     | '/dashboard/faculty/materials'
     | '/dashboard/faculty/notifications'
+    | '/dashboard/faculty/payroll'
     | '/dashboard/faculty/performance'
     | '/dashboard/faculty/publications'
     | '/dashboard/faculty/research'
@@ -2672,6 +2862,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  FacultyRoute: typeof FacultyRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HodRoute: typeof HodRouteWithChildren
   LmsLoginRoute: typeof LmsLoginRoute
@@ -2748,6 +2939,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faculty': {
+      id: '/faculty'
+      path: '/faculty'
+      fullPath: '/faculty'
+      preLoaderRoute: typeof FacultyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -2768,6 +2966,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/hod/'
       preLoaderRoute: typeof HodIndexRouteImport
       parentRoute: typeof HodRoute
+    }
+    '/faculty/': {
+      id: '/faculty/'
+      path: '/'
+      fullPath: '/faculty/'
+      preLoaderRoute: typeof FacultyIndexRouteImport
+      parentRoute: typeof FacultyRoute
     }
     '/dashboard/': {
       id: '/dashboard/'
@@ -2930,6 +3135,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Hod403RouteImport
       parentRoute: typeof HodRoute
     }
+    '/faculty/students': {
+      id: '/faculty/students'
+      path: '/students'
+      fullPath: '/faculty/students'
+      preLoaderRoute: typeof FacultyStudentsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/settings': {
+      id: '/faculty/settings'
+      path: '/settings'
+      fullPath: '/faculty/settings'
+      preLoaderRoute: typeof FacultySettingsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/research': {
+      id: '/faculty/research'
+      path: '/research'
+      fullPath: '/faculty/research'
+      preLoaderRoute: typeof FacultyResearchRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/publications': {
+      id: '/faculty/publications'
+      path: '/publications'
+      fullPath: '/faculty/publications'
+      preLoaderRoute: typeof FacultyPublicationsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/payroll': {
+      id: '/faculty/payroll'
+      path: '/payroll'
+      fullPath: '/faculty/payroll'
+      preLoaderRoute: typeof FacultyPayrollRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/notifications': {
+      id: '/faculty/notifications'
+      path: '/notifications'
+      fullPath: '/faculty/notifications'
+      preLoaderRoute: typeof FacultyNotificationsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/messages': {
+      id: '/faculty/messages'
+      path: '/messages'
+      fullPath: '/faculty/messages'
+      preLoaderRoute: typeof FacultyMessagesRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/materials': {
+      id: '/faculty/materials'
+      path: '/materials'
+      fullPath: '/faculty/materials'
+      preLoaderRoute: typeof FacultyMaterialsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/lms': {
+      id: '/faculty/lms'
+      path: '/lms'
+      fullPath: '/faculty/lms'
+      preLoaderRoute: typeof FacultyLmsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/dashboard': {
+      id: '/faculty/dashboard'
+      path: '/dashboard'
+      fullPath: '/faculty/dashboard'
+      preLoaderRoute: typeof FacultyDashboardRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/attendance': {
+      id: '/faculty/attendance'
+      path: '/attendance'
+      fullPath: '/faculty/attendance'
+      preLoaderRoute: typeof FacultyAttendanceRouteImport
+      parentRoute: typeof FacultyRoute
+    }
     '/dashboard/transport': {
       id: '/dashboard/transport'
       path: '/transport'
@@ -2970,6 +3252,13 @@ declare module '@tanstack/react-router' {
       path: '/placement'
       fullPath: '/dashboard/placement'
       preLoaderRoute: typeof DashboardPlacementRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/payroll': {
+      id: '/dashboard/payroll'
+      path: '/payroll'
+      fullPath: '/dashboard/payroll'
+      preLoaderRoute: typeof DashboardPayrollRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/parent': {
@@ -3623,6 +3912,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFacultyPerformanceRouteImport
       parentRoute: typeof DashboardFacultyRoute
     }
+    '/dashboard/faculty/payroll': {
+      id: '/dashboard/faculty/payroll'
+      path: '/payroll'
+      fullPath: '/dashboard/faculty/payroll'
+      preLoaderRoute: typeof DashboardFacultyPayrollRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
     '/dashboard/faculty/notifications': {
       id: '/dashboard/faculty/notifications'
       path: '/notifications'
@@ -3775,6 +4071,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/dashboard/admin/reports'
       preLoaderRoute: typeof DashboardAdminReportsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/payroll': {
+      id: '/dashboard/admin/payroll'
+      path: '/payroll'
+      fullPath: '/dashboard/admin/payroll'
+      preLoaderRoute: typeof DashboardAdminPayrollRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
     '/dashboard/admin/notifications': {
@@ -4267,6 +4570,7 @@ interface DashboardAdminRouteChildren {
   DashboardAdminInventoryRoute: typeof DashboardAdminInventoryRoute
   DashboardAdminLmsRoute: typeof DashboardAdminLmsRoute
   DashboardAdminNotificationsRoute: typeof DashboardAdminNotificationsRoute
+  DashboardAdminPayrollRoute: typeof DashboardAdminPayrollRoute
   DashboardAdminReportsRoute: typeof DashboardAdminReportsRoute
   DashboardAdminResearchRoute: typeof DashboardAdminResearchRoute
   DashboardAdminSettingsRoute: typeof DashboardAdminSettingsRoute
@@ -4310,6 +4614,7 @@ const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminInventoryRoute: DashboardAdminInventoryRoute,
   DashboardAdminLmsRoute: DashboardAdminLmsRoute,
   DashboardAdminNotificationsRoute: DashboardAdminNotificationsRoute,
+  DashboardAdminPayrollRoute: DashboardAdminPayrollRoute,
   DashboardAdminReportsRoute: DashboardAdminReportsRoute,
   DashboardAdminResearchRoute: DashboardAdminResearchRoute,
   DashboardAdminSettingsRoute: DashboardAdminSettingsRoute,
@@ -4371,6 +4676,7 @@ interface DashboardFacultyRouteChildren {
   DashboardFacultyMarksRoute: typeof DashboardFacultyMarksRoute
   DashboardFacultyMaterialsRoute: typeof DashboardFacultyMaterialsRoute
   DashboardFacultyNotificationsRoute: typeof DashboardFacultyNotificationsRoute
+  DashboardFacultyPayrollRoute: typeof DashboardFacultyPayrollRoute
   DashboardFacultyPerformanceRoute: typeof DashboardFacultyPerformanceRoute
   DashboardFacultyPublicationsRoute: typeof DashboardFacultyPublicationsRoute
   DashboardFacultyResearchRoute: typeof DashboardFacultyResearchRoute
@@ -4389,6 +4695,7 @@ const DashboardFacultyRouteChildren: DashboardFacultyRouteChildren = {
   DashboardFacultyMarksRoute: DashboardFacultyMarksRoute,
   DashboardFacultyMaterialsRoute: DashboardFacultyMaterialsRoute,
   DashboardFacultyNotificationsRoute: DashboardFacultyNotificationsRoute,
+  DashboardFacultyPayrollRoute: DashboardFacultyPayrollRoute,
   DashboardFacultyPerformanceRoute: DashboardFacultyPerformanceRoute,
   DashboardFacultyPublicationsRoute: DashboardFacultyPublicationsRoute,
   DashboardFacultyResearchRoute: DashboardFacultyResearchRoute,
@@ -4609,6 +4916,7 @@ interface DashboardRouteChildren {
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardParentRoute: typeof DashboardParentRouteWithChildren
+  DashboardPayrollRoute: typeof DashboardPayrollRoute
   DashboardPlacementRoute: typeof DashboardPlacementRouteWithChildren
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStudentRoute: typeof DashboardStudentRouteWithChildren
@@ -4631,6 +4939,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardParentRoute: DashboardParentRouteWithChildren,
+  DashboardPayrollRoute: DashboardPayrollRoute,
   DashboardPlacementRoute: DashboardPlacementRouteWithChildren,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStudentRoute: DashboardStudentRouteWithChildren,
@@ -4643,6 +4952,39 @@ const DashboardRouteChildren: DashboardRouteChildren = {
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
+
+interface FacultyRouteChildren {
+  FacultyAttendanceRoute: typeof FacultyAttendanceRoute
+  FacultyDashboardRoute: typeof FacultyDashboardRoute
+  FacultyLmsRoute: typeof FacultyLmsRoute
+  FacultyMaterialsRoute: typeof FacultyMaterialsRoute
+  FacultyMessagesRoute: typeof FacultyMessagesRoute
+  FacultyNotificationsRoute: typeof FacultyNotificationsRoute
+  FacultyPayrollRoute: typeof FacultyPayrollRoute
+  FacultyPublicationsRoute: typeof FacultyPublicationsRoute
+  FacultyResearchRoute: typeof FacultyResearchRoute
+  FacultySettingsRoute: typeof FacultySettingsRoute
+  FacultyStudentsRoute: typeof FacultyStudentsRoute
+  FacultyIndexRoute: typeof FacultyIndexRoute
+}
+
+const FacultyRouteChildren: FacultyRouteChildren = {
+  FacultyAttendanceRoute: FacultyAttendanceRoute,
+  FacultyDashboardRoute: FacultyDashboardRoute,
+  FacultyLmsRoute: FacultyLmsRoute,
+  FacultyMaterialsRoute: FacultyMaterialsRoute,
+  FacultyMessagesRoute: FacultyMessagesRoute,
+  FacultyNotificationsRoute: FacultyNotificationsRoute,
+  FacultyPayrollRoute: FacultyPayrollRoute,
+  FacultyPublicationsRoute: FacultyPublicationsRoute,
+  FacultyResearchRoute: FacultyResearchRoute,
+  FacultySettingsRoute: FacultySettingsRoute,
+  FacultyStudentsRoute: FacultyStudentsRoute,
+  FacultyIndexRoute: FacultyIndexRoute,
+}
+
+const FacultyRouteWithChildren =
+  FacultyRoute._addFileChildren(FacultyRouteChildren)
 
 interface HodFacultyRouteChildren {
   HodFacultyProfileRoute: typeof HodFacultyProfileRoute
@@ -4739,6 +5081,7 @@ const AlumniEventsRouteWithChildren = AlumniEventsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  FacultyRoute: FacultyRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   HodRoute: HodRouteWithChildren,
   LmsLoginRoute: LmsLoginRoute,

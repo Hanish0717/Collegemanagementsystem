@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
 import { toast } from 'sonner';
+import { AdminPayroll } from './AdminPayroll';
 
 export function AdminHRMS() {
   const [activeTab, setActiveTab] = useState<
@@ -756,77 +757,7 @@ export function AdminHRMS() {
       )}
 
       {/* SUB-MODULE 5: PAYROLL */}
-      {activeTab === 'payroll' && (
-        <Card>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-            <div>
-              <h3 className="font-semibold text-slate-800 text-sm">Monthly Payroll Disbursement</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Approve basic scales, allowances, deductions and credit salaries.
-              </p>
-            </div>
-            <button
-              onClick={handleDisburseAllPayroll}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-soft"
-            >
-              <Coins className="size-4" /> Disburse All Salaries
-            </button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b text-slate-400">
-                  <th className="text-left pb-2">Payslip ID</th>
-                  <th className="text-left pb-2">Employee Name</th>
-                  <th className="text-right pb-2">Basic Salary</th>
-                  <th className="text-right pb-2">Allowances (HRA/DA)</th>
-                  <th className="text-right pb-2">Deductions (TDS/PF)</th>
-                  <th className="text-right pb-2">Net Pay</th>
-                  <th className="text-center pb-2">Status</th>
-                  <th className="text-right pb-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {payrollLogs.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/50 transition">
-                    <td className="py-3 font-mono font-bold text-slate-400">{p.id}</td>
-                    <td className="py-3 font-bold text-slate-800">{p.employee}</td>
-                    <td className="py-3 text-right font-mono font-semibold">
-                      ₹{p.basic.toLocaleString()}
-                    </td>
-                    <td className="py-3 text-right font-mono text-emerald-600 font-semibold">
-                      +₹{p.allowance.toLocaleString()}
-                    </td>
-                    <td className="py-3 text-right font-mono text-rose-500 font-semibold">
-                      -₹{p.deductions.toLocaleString()}
-                    </td>
-                    <td className="py-3 text-right font-mono font-bold text-indigo-700">
-                      ₹{p.net.toLocaleString()}
-                    </td>
-                    <td className="py-3 text-center">
-                      <Badge tone={p.status === 'Disbursed' ? 'success' : 'warn'}>{p.status}</Badge>
-                    </td>
-                    <td className="py-3 text-right">
-                      {p.status === 'Pending' ? (
-                        <button
-                          onClick={() => handleDisburseSalary(p.id)}
-                          className="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-[10px] font-bold transition cursor-pointer"
-                        >
-                          Release Salary
-                        </button>
-                      ) : (
-                        <span className="text-emerald-600 font-semibold flex items-center justify-end gap-1 text-[10px]">
-                          <CheckCircle className="size-3" /> Credited
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      )}
+      {activeTab === 'payroll' && <AdminPayroll />}
 
       {/* SUB-MODULE 6: PERFORMANCE */}
       {activeTab === 'performance' && (

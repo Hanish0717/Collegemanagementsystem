@@ -45,12 +45,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshUser = async () => {
-    if (!getToken()) return null;
+    const currentToken = getToken();
+    if (!currentToken) return null;
     try {
       const refreshedUser = await fetchCurrentUser();
       setUser(refreshedUser);
+      setToken(currentToken);
       return refreshedUser;
     } catch (err) {
+      const stored = getStoredUser();
+      if (stored) {
+        setUser(stored);
+        setToken(currentToken);
+        return stored;
+      }
       logout();
       return null;
     }

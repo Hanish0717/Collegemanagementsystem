@@ -1,0 +1,2172 @@
+[
+  {
+    "full_name": "Meka Vamsi",
+    "roll_number": "AIDS26001",
+    "email": "vamsi.meka@college.com",
+    "department": "AIDS",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026AIDS001"
+  },
+  {
+    "full_name": "Gottipati Nikhil",
+    "roll_number": "AIDS26002",
+    "email": "nikhil.gottipati@college.com",
+    "department": "AIDS",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026AIDS002"
+  },
+  {
+    "full_name": "Jasti Vamsi",
+    "roll_number": "AIDS26003",
+    "email": "vamsi.jasti@college.com",
+    "department": "AIDS",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026AIDS003"
+  },
+  {
+    "full_name": "Chava Ganesh",
+    "roll_number": "AIDS26004",
+    "email": "ganesh.chava@college.com",
+    "department": "AIDS",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026AIDS004"
+  },
+  {
+    "full_name": "Bandla Nikhil",
+    "roll_number": "AIDS26005",
+    "email": "nikhil.bandla@college.com",
+    "department": "AIDS",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026AIDS005"
+  },
+  {
+    "full_name": "Gottipati Satish",
+    "roll_number": "AIDS26006",
+    "email": "satish.gottipati@college.com",
+    "department": "AIDS",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026AIDS006"
+  },
+  {
+    "full_name": "Katta Aditya",
+    "roll_number": "AIDS26007",
+    "email": "aditya.katta@college.com",
+    "department": "AIDS",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026AIDS007"
+  },
+  {
+    "full_name": "Pasupuleti Tarun",
+    "roll_number": "AIDS26008",
+    "email": "tarun.pasupuleti@college.com",
+    "department": "AIDS",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026AIDS008"
+  },
+  {
+    "full_name": "Devineni Venkatesh",
+    "roll_number": "AIDS26009",
+    "email": "venkatesh.devineni@college.com",
+    "department": "AIDS",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026AIDS009"
+  },
+  {
+    "full_name": "Thota Venkatesh",
+    "roll_number": "AIDS26010",
+    "email": "venkatesh.thota@college.com",
+    "department": "AIDS",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026AIDS010"
+  },
+  {
+    "full_name": "Maddineni Charan",
+    "roll_number": "AIDS26011",
+    "email": "charan.maddineni@college.com",
+    "department": "AIDS",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026AIDS011"
+  },
+  {
+    "full_name": "Katta Kiran",
+    "roll_number": "AIDS26012",
+    "email": "kiran.katta@college.com",
+    "department": "AIDS",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026AIDS012"
+  },
+  {
+    "full_name": "Kondapalli Sindhu",
+    "roll_number": "AIDS26013",
+    "email": "sindhu.kondapalli@college.com",
+    "department": "AIDS",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026AIDS013"
+  },
+  {
+    "full_name": "Gudipati Ananya",
+    "roll_number": "AIDS26014",
+    "email": "ananya.gudipati214_1@college.com",
+    "department": "AIDS",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026AIDS014"
+  },
+  {
+    "full_name": "Gudipati Sujatha",
+    "roll_number": "AIDS26015",
+    "email": "sujatha.gudipati@college.com",
+    "department": "AIDS",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026AIDS015"
+  },
+  {
+    "full_name": "Kolli Ramya",
+    "roll_number": "AIDS26016",
+    "email": "ramya.kolli@college.com",
+    "department": "AIDS",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026AIDS016"
+  },
+  {
+    "full_name": "Kambhampati Sireesha",
+    "roll_number": "AIDS26017",
+    "email": "sireesha.kambhampati@college.com",
+    "department": "AIDS",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026AIDS017"
+  },
+  {
+    "full_name": "Devineni Ramya",
+    "roll_number": "AIDS26018",
+    "email": "ramya.devineni@college.com",
+    "department": "AIDS",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026AIDS018"
+  },
+  {
+    "full_name": "Kondapalli Amrutha",
+    "roll_number": "AIDS26019",
+    "email": "amrutha.kondapalli@college.com",
+    "department": "AIDS",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026AIDS019"
+  },
+  {
+    "full_name": "Pendyala Sushma",
+    "roll_number": "AIDS26020",
+    "email": "sushma.pendyala@college.com",
+    "department": "AIDS",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026AIDS020"
+  },
+  {
+    "full_name": "Cherukuri Geetha",
+    "roll_number": "AIDS26021",
+    "email": "geetha.cherukuri@college.com",
+    "department": "AIDS",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026AIDS021"
+  },
+  {
+    "full_name": "Adusumilli Roopa",
+    "roll_number": "AIDS26022",
+    "email": "roopa.adusumilli@college.com",
+    "department": "AIDS",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026AIDS022"
+  },
+  {
+    "full_name": "Meka Himabindu",
+    "roll_number": "AIDS26023",
+    "email": "himabindu.meka@college.com",
+    "department": "AIDS",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026AIDS023"
+  },
+  {
+    "full_name": "Vallabhaneni Madhuri",
+    "roll_number": "AIDS26024",
+    "email": "madhuri.vallabhaneni@college.com",
+    "department": "AIDS",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026AIDS024"
+  },
+  {
+    "full_name": "Duggirala Charan",
+    "roll_number": "AIML26001",
+    "email": "charan.duggirala@college.com",
+    "department": "AIML",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026AIML001"
+  },
+  {
+    "full_name": "Jasti Ravi",
+    "roll_number": "AIML26002",
+    "email": "ravi.jasti@college.com",
+    "department": "AIML",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026AIML002"
+  },
+  {
+    "full_name": "Challa Mohan",
+    "roll_number": "AIML26003",
+    "email": "mohan.challa@college.com",
+    "department": "AIML",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026AIML003"
+  },
+  {
+    "full_name": "Kamineni Teja",
+    "roll_number": "AIML26004",
+    "email": "teja.kamineni@college.com",
+    "department": "AIML",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026AIML004"
+  },
+  {
+    "full_name": "Vadlamudi Surya",
+    "roll_number": "AIML26005",
+    "email": "surya.vadlamudi@college.com",
+    "department": "AIML",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026AIML005"
+  },
+  {
+    "full_name": "Maddineni Chandra",
+    "roll_number": "AIML26006",
+    "email": "chandra.maddineni@college.com",
+    "department": "AIML",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026AIML006"
+  },
+  {
+    "full_name": "Nandamuri Jaswanth",
+    "roll_number": "AIML26007",
+    "email": "jaswanth.nandamuri@college.com",
+    "department": "AIML",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026AIML007"
+  },
+  {
+    "full_name": "Adusumilli Sai",
+    "roll_number": "AIML26008",
+    "email": "sai.adusumilli@college.com",
+    "department": "AIML",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026AIML008"
+  },
+  {
+    "full_name": "Pasupuleti Ganesh",
+    "roll_number": "AIML26009",
+    "email": "ganesh.pasupuleti@college.com",
+    "department": "AIML",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026AIML009"
+  },
+  {
+    "full_name": "Maddineni Satish",
+    "roll_number": "AIML26010",
+    "email": "satish.maddineni@college.com",
+    "department": "AIML",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026AIML010"
+  },
+  {
+    "full_name": "Adusumilli Sandeep",
+    "roll_number": "AIML26011",
+    "email": "sandeep.adusumilli@college.com",
+    "department": "AIML",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026AIML011"
+  },
+  {
+    "full_name": "Gorantla Kiran",
+    "roll_number": "AIML26012",
+    "email": "kiran.gorantla@college.com",
+    "department": "AIML",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026AIML012"
+  },
+  {
+    "full_name": "Gorantla Nandini",
+    "roll_number": "AIML26013",
+    "email": "nandini.gorantla@college.com",
+    "department": "AIML",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026AIML013"
+  },
+  {
+    "full_name": "Kolli Amrutha",
+    "roll_number": "AIML26014",
+    "email": "amrutha.kolli@college.com",
+    "department": "AIML",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026AIML014"
+  },
+  {
+    "full_name": "Devineni Priyanka",
+    "roll_number": "AIML26015",
+    "email": "priyanka.devineni@college.com",
+    "department": "AIML",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026AIML015"
+  },
+  {
+    "full_name": "Nallamothu Sravanthi",
+    "roll_number": "AIML26016",
+    "email": "sravanthi.nallamothu@college.com",
+    "department": "AIML",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026AIML016"
+  },
+  {
+    "full_name": "Pasupuleti Sireesha",
+    "roll_number": "AIML26017",
+    "email": "sireesha.pasupuleti@college.com",
+    "department": "AIML",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026AIML017"
+  },
+  {
+    "full_name": "Boddu Lakshmi",
+    "roll_number": "AIML26018",
+    "email": "lakshmi.boddu@college.com",
+    "department": "AIML",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026AIML018"
+  },
+  {
+    "full_name": "Vallabhaneni Kavitha",
+    "roll_number": "AIML26019",
+    "email": "kavitha.vallabhaneni@college.com",
+    "department": "AIML",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026AIML019"
+  },
+  {
+    "full_name": "Kanneganti Sirisha",
+    "roll_number": "AIML26020",
+    "email": "sirisha.kanneganti@college.com",
+    "department": "AIML",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026AIML020"
+  },
+  {
+    "full_name": "Gottipati Ananya",
+    "roll_number": "AIML26021",
+    "email": "ananya.gottipati@college.com",
+    "department": "AIML",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026AIML021"
+  },
+  {
+    "full_name": "Duggirala Divya",
+    "roll_number": "AIML26022",
+    "email": "divya.duggirala@college.com",
+    "department": "AIML",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026AIML022"
+  },
+  {
+    "full_name": "Vemuri Ananya",
+    "roll_number": "AIML26023",
+    "email": "ananya.vemuri@college.com",
+    "department": "AIML",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026AIML023"
+  },
+  {
+    "full_name": "Kolli Sirisha",
+    "roll_number": "AIML26024",
+    "email": "sirisha.kolli@college.com",
+    "department": "AIML",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026AIML024"
+  },
+  {
+    "full_name": "Paritala Abhinay",
+    "roll_number": "CIVIL26001",
+    "email": "abhinay.paritala@college.com",
+    "department": "CIVIL",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CIVIL001"
+  },
+  {
+    "full_name": "Maddineni Krishna",
+    "roll_number": "CIVIL26002",
+    "email": "krishna.maddineni@college.com",
+    "department": "CIVIL",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CIVIL002"
+  },
+  {
+    "full_name": "Nallamothu Mohan",
+    "roll_number": "CIVIL26003",
+    "email": "mohan.nallamothu@college.com",
+    "department": "CIVIL",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CIVIL003"
+  },
+  {
+    "full_name": "Devineni Ramesh",
+    "roll_number": "CIVIL26004",
+    "email": "ramesh.devineni@college.com",
+    "department": "CIVIL",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CIVIL004"
+  },
+  {
+    "full_name": "Pasupuleti Vivek",
+    "roll_number": "CIVIL26005",
+    "email": "vivek.pasupuleti@college.com",
+    "department": "CIVIL",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CIVIL005"
+  },
+  {
+    "full_name": "Alapati Kiran",
+    "roll_number": "CIVIL26006",
+    "email": "kiran.alapati@college.com",
+    "department": "CIVIL",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CIVIL006"
+  },
+  {
+    "full_name": "Adusumilli Teja",
+    "roll_number": "CIVIL26007",
+    "email": "teja.adusumilli@college.com",
+    "department": "CIVIL",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CIVIL007"
+  },
+  {
+    "full_name": "Gorantla Prasad",
+    "roll_number": "CIVIL26008",
+    "email": "prasad.gorantla@college.com",
+    "department": "CIVIL",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CIVIL008"
+  },
+  {
+    "full_name": "Kamineni Hari",
+    "roll_number": "CIVIL26009",
+    "email": "hari.kamineni@college.com",
+    "department": "CIVIL",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CIVIL009"
+  },
+  {
+    "full_name": "Kolli Hari",
+    "roll_number": "CIVIL26010",
+    "email": "hari.kolli@college.com",
+    "department": "CIVIL",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CIVIL010"
+  },
+  {
+    "full_name": "Vadlamudi Siva",
+    "roll_number": "CIVIL26011",
+    "email": "siva.vadlamudi@college.com",
+    "department": "CIVIL",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CIVIL011"
+  },
+  {
+    "full_name": "Challa Venkatesh",
+    "roll_number": "CIVIL26012",
+    "email": "venkatesh.challa@college.com",
+    "department": "CIVIL",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CIVIL012"
+  },
+  {
+    "full_name": "Galla Sireesha",
+    "roll_number": "CIVIL26013",
+    "email": "sireesha.galla@college.com",
+    "department": "CIVIL",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CIVIL013"
+  },
+  {
+    "full_name": "Devineni Himabindu",
+    "roll_number": "CIVIL26014",
+    "email": "himabindu.devineni@college.com",
+    "department": "CIVIL",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CIVIL014"
+  },
+  {
+    "full_name": "Nallamothu Jyothi",
+    "roll_number": "CIVIL26015",
+    "email": "jyothi.nallamothu@college.com",
+    "department": "CIVIL",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CIVIL015"
+  },
+  {
+    "full_name": "Yerra Madhuri",
+    "roll_number": "CIVIL26016",
+    "email": "madhuri.yerra@college.com",
+    "department": "CIVIL",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CIVIL016"
+  },
+  {
+    "full_name": "Thota Nandini",
+    "roll_number": "CIVIL26017",
+    "email": "nandini.thota@college.com",
+    "department": "CIVIL",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CIVIL017"
+  },
+  {
+    "full_name": "Vemuri Kavitha",
+    "roll_number": "CIVIL26018",
+    "email": "kavitha.vemuri@college.com",
+    "department": "CIVIL",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CIVIL018"
+  },
+  {
+    "full_name": "Vemuri Sriya",
+    "roll_number": "CIVIL26019",
+    "email": "sriya.vemuri@college.com",
+    "department": "CIVIL",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CIVIL019"
+  },
+  {
+    "full_name": "Katta Sravani",
+    "roll_number": "CIVIL26020",
+    "email": "sravani.katta@college.com",
+    "department": "CIVIL",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CIVIL020"
+  },
+  {
+    "full_name": "Yelamanchili Kavitha",
+    "roll_number": "CIVIL26021",
+    "email": "kavitha.yelamanchili@college.com",
+    "department": "CIVIL",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CIVIL021"
+  },
+  {
+    "full_name": "Duggirala Madhuri",
+    "roll_number": "CIVIL26022",
+    "email": "madhuri.duggirala@college.com",
+    "department": "CIVIL",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CIVIL022"
+  },
+  {
+    "full_name": "Nallamothu Sujatha",
+    "roll_number": "CIVIL26023",
+    "email": "sujatha.nallamothu@college.com",
+    "department": "CIVIL",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CIVIL023"
+  },
+  {
+    "full_name": "Gorantla Divya",
+    "roll_number": "CIVIL26024",
+    "email": "divya.gorantla@college.com",
+    "department": "CIVIL",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CIVIL024"
+  },
+  {
+    "full_name": "Student Demo",
+    "roll_number": "CS100001",
+    "email": "student@college.com",
+    "department": "CSE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CS100001"
+  },
+  {
+    "full_name": "Gudipati Chandra",
+    "roll_number": "CSE26001",
+    "email": "chandra.gudipati@college.com",
+    "department": "CSE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CSE001"
+  },
+  {
+    "full_name": "Duggirala Prasad",
+    "roll_number": "CSE26002",
+    "email": "prasad.duggirala@college.com",
+    "department": "CSE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CSE002"
+  },
+  {
+    "full_name": "Vallabhaneni Karthik",
+    "roll_number": "CSE26003",
+    "email": "karthik.vallabhaneni@college.com",
+    "department": "CSE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CSE003"
+  },
+  {
+    "full_name": "Meka Chandra",
+    "roll_number": "CSE26004",
+    "email": "chandra.meka@college.com",
+    "department": "CSE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CSE004"
+  },
+  {
+    "full_name": "Alapati Nikhil",
+    "roll_number": "CSE26005",
+    "email": "nikhil.alapati@college.com",
+    "department": "CSE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CSE005"
+  },
+  {
+    "full_name": "Yelamarthi Nikhil",
+    "roll_number": "CSE26006",
+    "email": "nikhil.yelamarthi@college.com",
+    "department": "CSE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CSE006"
+  },
+  {
+    "full_name": "Thota Anand",
+    "roll_number": "CSE26007",
+    "email": "anand.thota@college.com",
+    "department": "CSE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CSE007"
+  },
+  {
+    "full_name": "Gottipati Bhargav",
+    "roll_number": "CSE26008",
+    "email": "bhargav.gottipati@college.com",
+    "department": "CSE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CSE008"
+  },
+  {
+    "full_name": "Gummadi Anand",
+    "roll_number": "CSE26009",
+    "email": "anand.gummadi@college.com",
+    "department": "CSE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CSE009"
+  },
+  {
+    "full_name": "Koneru Srinivas",
+    "roll_number": "CSE26010",
+    "email": "srinivas.koneru@college.com",
+    "department": "CSE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CSE010"
+  },
+  {
+    "full_name": "Kolli Nikhil",
+    "roll_number": "CSE26011",
+    "email": "nikhil.kolli@college.com",
+    "department": "CSE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CSE011"
+  },
+  {
+    "full_name": "Adusumilli Mohan",
+    "roll_number": "CSE26012",
+    "email": "mohan.adusumilli@college.com",
+    "department": "CSE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CSE012"
+  },
+  {
+    "full_name": "Alapati Sirisha",
+    "roll_number": "CSE26013",
+    "email": "sirisha.alapati@college.com",
+    "department": "CSE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CSE013"
+  },
+  {
+    "full_name": "Pendyala Keerthi",
+    "roll_number": "CSE26014",
+    "email": "keerthi.pendyala@college.com",
+    "department": "CSE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CSE014"
+  },
+  {
+    "full_name": "Vallabhaneni Navyasree",
+    "roll_number": "CSE26015",
+    "email": "navyasree.vallabhaneni@college.com",
+    "department": "CSE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CSE015"
+  },
+  {
+    "full_name": "Gudipati Sunitha",
+    "roll_number": "CSE26016",
+    "email": "sunitha.gudipati@college.com",
+    "department": "CSE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CSE016"
+  },
+  {
+    "full_name": "Gudipati Ananya",
+    "roll_number": "CSE26017",
+    "email": "ananya.gudipati@college.com",
+    "department": "CSE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CSE017"
+  },
+  {
+    "full_name": "Kondapalli Yamini",
+    "roll_number": "CSE26018",
+    "email": "yamini.kondapalli@college.com",
+    "department": "CSE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CSE018"
+  },
+  {
+    "full_name": "Nallamothu Aishwarya",
+    "roll_number": "CSE26019",
+    "email": "aishwarya.nallamothu@college.com",
+    "department": "CSE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CSE019"
+  },
+  {
+    "full_name": "Bandla Madhuri",
+    "roll_number": "CSE26020",
+    "email": "madhuri.bandla@college.com",
+    "department": "CSE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CSE020"
+  },
+  {
+    "full_name": "Vemuri Sireesha",
+    "roll_number": "CSE26021",
+    "email": "sireesha.vemuri@college.com",
+    "department": "CSE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CSE021"
+  },
+  {
+    "full_name": "Kondapalli Harika",
+    "roll_number": "CSE26022",
+    "email": "harika.kondapalli@college.com",
+    "department": "CSE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CSE022"
+  },
+  {
+    "full_name": "Vadlamudi Keerthi",
+    "roll_number": "CSE26023",
+    "email": "keerthi.vadlamudi@college.com",
+    "department": "CSE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CSE023"
+  },
+  {
+    "full_name": "Nallamothu Geetha",
+    "roll_number": "CSE26024",
+    "email": "geetha.nallamothu@college.com",
+    "department": "CSE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CSE024"
+  },
+  {
+    "full_name": "Paritala Surya",
+    "roll_number": "CYBERSECURITY26001",
+    "email": "surya.paritala@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CYBERSECURITY001"
+  },
+  {
+    "full_name": "Vallabhaneni Venkatesh",
+    "roll_number": "CYBERSECURITY26002",
+    "email": "venkatesh.vallabhaneni@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CYBERSECURITY002"
+  },
+  {
+    "full_name": "Vemuri Aditya",
+    "roll_number": "CYBERSECURITY26003",
+    "email": "aditya.vemuri@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CYBERSECURITY003"
+  },
+  {
+    "full_name": "Kolli Sai",
+    "roll_number": "CYBERSECURITY26004",
+    "email": "sai.kolli@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CYBERSECURITY004"
+  },
+  {
+    "full_name": "Nandamuri Rajesh",
+    "roll_number": "CYBERSECURITY26005",
+    "email": "rajesh.nandamuri@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026CYBERSECURITY005"
+  },
+  {
+    "full_name": "Thota Mohan",
+    "roll_number": "CYBERSECURITY26006",
+    "email": "mohan.thota@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026CYBERSECURITY006"
+  },
+  {
+    "full_name": "Katta Rajesh",
+    "roll_number": "CYBERSECURITY26007",
+    "email": "rajesh.katta@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CYBERSECURITY007"
+  },
+  {
+    "full_name": "Yelamarthi Anand",
+    "roll_number": "CYBERSECURITY26008",
+    "email": "anand.yelamarthi@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CYBERSECURITY008"
+  },
+  {
+    "full_name": "Kanneganti Mohan",
+    "roll_number": "CYBERSECURITY26009",
+    "email": "mohan.kanneganti@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CYBERSECURITY009"
+  },
+  {
+    "full_name": "Yelamarthi Akhil",
+    "roll_number": "CYBERSECURITY26010",
+    "email": "akhil.yelamarthi@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CYBERSECURITY010"
+  },
+  {
+    "full_name": "Galla Mohan",
+    "roll_number": "CYBERSECURITY26011",
+    "email": "mohan.galla@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026CYBERSECURITY011"
+  },
+  {
+    "full_name": "Nallamothu Karthik",
+    "roll_number": "CYBERSECURITY26012",
+    "email": "karthik.nallamothu@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026CYBERSECURITY012"
+  },
+  {
+    "full_name": "Katta Bhavana",
+    "roll_number": "CYBERSECURITY26013",
+    "email": "bhavana.katta@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CYBERSECURITY013"
+  },
+  {
+    "full_name": "Challa Nandini",
+    "roll_number": "CYBERSECURITY26014",
+    "email": "nandini.challa@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CYBERSECURITY014"
+  },
+  {
+    "full_name": "Chava Sindhu",
+    "roll_number": "CYBERSECURITY26015",
+    "email": "sindhu.chava@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CYBERSECURITY015"
+  },
+  {
+    "full_name": "Koneru Keerthi",
+    "roll_number": "CYBERSECURITY26016",
+    "email": "keerthi.koneru@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CYBERSECURITY016"
+  },
+  {
+    "full_name": "Koneru Divya",
+    "roll_number": "CYBERSECURITY26017",
+    "email": "divya.koneru@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026CYBERSECURITY017"
+  },
+  {
+    "full_name": "Meka Sravani",
+    "roll_number": "CYBERSECURITY26018",
+    "email": "sravani.meka@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026CYBERSECURITY018"
+  },
+  {
+    "full_name": "Bandla Swathi",
+    "roll_number": "CYBERSECURITY26019",
+    "email": "swathi.bandla@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CYBERSECURITY019"
+  },
+  {
+    "full_name": "Vemuri Meghana",
+    "roll_number": "CYBERSECURITY26020",
+    "email": "meghana.vemuri@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CYBERSECURITY020"
+  },
+  {
+    "full_name": "Nallamothu Aishwarya",
+    "roll_number": "CYBERSECURITY26021",
+    "email": "aishwarya.nallamothu321_1@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CYBERSECURITY021"
+  },
+  {
+    "full_name": "Gorantla Mounika",
+    "roll_number": "CYBERSECURITY26022",
+    "email": "mounika.gorantla@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CYBERSECURITY022"
+  },
+  {
+    "full_name": "Katta Sushma",
+    "roll_number": "CYBERSECURITY26023",
+    "email": "sushma.katta@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026CYBERSECURITY023"
+  },
+  {
+    "full_name": "Gorantla Swathi",
+    "roll_number": "CYBERSECURITY26024",
+    "email": "swathi.gorantla@college.com",
+    "department": "CYBERSECURITY",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026CYBERSECURITY024"
+  },
+  {
+    "full_name": "Gummadi Kalyan",
+    "roll_number": "ECE26001",
+    "email": "kalyan.gummadi@college.com",
+    "department": "ECE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026ECE001"
+  },
+  {
+    "full_name": "Bandla Rajesh",
+    "roll_number": "ECE26002",
+    "email": "rajesh.bandla@college.com",
+    "department": "ECE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026ECE002"
+  },
+  {
+    "full_name": "Boddu Venkatesh",
+    "roll_number": "ECE26003",
+    "email": "venkatesh.boddu@college.com",
+    "department": "ECE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026ECE003"
+  },
+  {
+    "full_name": "Gorantla Suresh",
+    "roll_number": "ECE26004",
+    "email": "suresh.gorantla@college.com",
+    "department": "ECE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026ECE004"
+  },
+  {
+    "full_name": "Gottipati Satish",
+    "roll_number": "ECE26005",
+    "email": "satish.gottipati505_1@college.com",
+    "department": "ECE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026ECE005"
+  },
+  {
+    "full_name": "Yelamanchili Charan",
+    "roll_number": "ECE26006",
+    "email": "charan.yelamanchili@college.com",
+    "department": "ECE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026ECE006"
+  },
+  {
+    "full_name": "Alapati Kalyan",
+    "roll_number": "ECE26007",
+    "email": "kalyan.alapati@college.com",
+    "department": "ECE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026ECE007"
+  },
+  {
+    "full_name": "Cherukuri Kiran",
+    "roll_number": "ECE26008",
+    "email": "kiran.cherukuri@college.com",
+    "department": "ECE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026ECE008"
+  },
+  {
+    "full_name": "Thota Srinivas",
+    "roll_number": "ECE26009",
+    "email": "srinivas.thota@college.com",
+    "department": "ECE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026ECE009"
+  },
+  {
+    "full_name": "Vadlamudi Varun",
+    "roll_number": "ECE26010",
+    "email": "varun.vadlamudi@college.com",
+    "department": "ECE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026ECE010"
+  },
+  {
+    "full_name": "Pasupuleti Satish",
+    "roll_number": "ECE26011",
+    "email": "satish.pasupuleti@college.com",
+    "department": "ECE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026ECE011"
+  },
+  {
+    "full_name": "Gudipati Vamsi",
+    "roll_number": "ECE26012",
+    "email": "vamsi.gudipati@college.com",
+    "department": "ECE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026ECE012"
+  },
+  {
+    "full_name": "Kondapalli Sravanthi",
+    "roll_number": "ECE26013",
+    "email": "sravanthi.kondapalli@college.com",
+    "department": "ECE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026ECE013"
+  },
+  {
+    "full_name": "Adusumilli Mounika",
+    "roll_number": "ECE26014",
+    "email": "mounika.adusumilli@college.com",
+    "department": "ECE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026ECE014"
+  },
+  {
+    "full_name": "Maddineni Sahithi",
+    "roll_number": "ECE26015",
+    "email": "sahithi.maddineni@college.com",
+    "department": "ECE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026ECE015"
+  },
+  {
+    "full_name": "Gottipati Sujatha",
+    "roll_number": "ECE26016",
+    "email": "sujatha.gottipati@college.com",
+    "department": "ECE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026ECE016"
+  },
+  {
+    "full_name": "Kambhampati Swathi",
+    "roll_number": "ECE26017",
+    "email": "swathi.kambhampati@college.com",
+    "department": "ECE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026ECE017"
+  },
+  {
+    "full_name": "Vadlamudi Nandini",
+    "roll_number": "ECE26018",
+    "email": "nandini.vadlamudi@college.com",
+    "department": "ECE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026ECE018"
+  },
+  {
+    "full_name": "Maddineni Sahithi",
+    "roll_number": "ECE26019",
+    "email": "sahithi.maddineni519_1@college.com",
+    "department": "ECE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026ECE019"
+  },
+  {
+    "full_name": "Nandamuri Tejaswi",
+    "roll_number": "ECE26020",
+    "email": "tejaswi.nandamuri@college.com",
+    "department": "ECE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026ECE020"
+  },
+  {
+    "full_name": "Kanneganti Harika",
+    "roll_number": "ECE26021",
+    "email": "harika.kanneganti@college.com",
+    "department": "ECE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026ECE021"
+  },
+  {
+    "full_name": "Yelamarthi Kavitha",
+    "roll_number": "ECE26022",
+    "email": "kavitha.yelamarthi@college.com",
+    "department": "ECE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026ECE022"
+  },
+  {
+    "full_name": "Meka Geetha",
+    "roll_number": "ECE26023",
+    "email": "geetha.meka@college.com",
+    "department": "ECE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026ECE023"
+  },
+  {
+    "full_name": "Pendyala Yamini",
+    "roll_number": "ECE26024",
+    "email": "yamini.pendyala@college.com",
+    "department": "ECE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026ECE024"
+  },
+  {
+    "full_name": "Bandla Rajesh",
+    "roll_number": "EEE26001",
+    "email": "rajesh.bandla601_1@college.com",
+    "department": "EEE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026EEE001"
+  },
+  {
+    "full_name": "Boddu Rajesh",
+    "roll_number": "EEE26002",
+    "email": "rajesh.boddu@college.com",
+    "department": "EEE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026EEE002"
+  },
+  {
+    "full_name": "Nallamothu Sravan",
+    "roll_number": "EEE26003",
+    "email": "sravan.nallamothu@college.com",
+    "department": "EEE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026EEE003"
+  },
+  {
+    "full_name": "Katta Akhil",
+    "roll_number": "EEE26004",
+    "email": "akhil.katta@college.com",
+    "department": "EEE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026EEE004"
+  },
+  {
+    "full_name": "Gummadi Charan",
+    "roll_number": "EEE26005",
+    "email": "charan.gummadi@college.com",
+    "department": "EEE",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026EEE005"
+  },
+  {
+    "full_name": "Nandamuri Harish",
+    "roll_number": "EEE26006",
+    "email": "harish.nandamuri@college.com",
+    "department": "EEE",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026EEE006"
+  },
+  {
+    "full_name": "Alapati Krishna",
+    "roll_number": "EEE26007",
+    "email": "krishna.alapati@college.com",
+    "department": "EEE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026EEE007"
+  },
+  {
+    "full_name": "Ravipati Vivek",
+    "roll_number": "EEE26008",
+    "email": "vivek.ravipati@college.com",
+    "department": "EEE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026EEE008"
+  },
+  {
+    "full_name": "Kondapalli Abhinay",
+    "roll_number": "EEE26009",
+    "email": "abhinay.kondapalli@college.com",
+    "department": "EEE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026EEE009"
+  },
+  {
+    "full_name": "Pendyala Satish",
+    "roll_number": "EEE26010",
+    "email": "satish.pendyala@college.com",
+    "department": "EEE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026EEE010"
+  },
+  {
+    "full_name": "Duggirala Ganesh",
+    "roll_number": "EEE26011",
+    "email": "ganesh.duggirala@college.com",
+    "department": "EEE",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026EEE011"
+  },
+  {
+    "full_name": "Gummadi Kalyan",
+    "roll_number": "EEE26012",
+    "email": "kalyan.gummadi612_1@college.com",
+    "department": "EEE",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026EEE012"
+  },
+  {
+    "full_name": "Yerra Swathi",
+    "roll_number": "EEE26013",
+    "email": "swathi.yerra@college.com",
+    "department": "EEE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026EEE013"
+  },
+  {
+    "full_name": "Kothapalli Ananya",
+    "roll_number": "EEE26014",
+    "email": "ananya.kothapalli@college.com",
+    "department": "EEE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026EEE014"
+  },
+  {
+    "full_name": "Gudipati Harika",
+    "roll_number": "EEE26015",
+    "email": "harika.gudipati@college.com",
+    "department": "EEE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026EEE015"
+  },
+  {
+    "full_name": "Boddu Keerthi",
+    "roll_number": "EEE26016",
+    "email": "keerthi.boddu@college.com",
+    "department": "EEE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026EEE016"
+  },
+  {
+    "full_name": "Adusumilli Ramya",
+    "roll_number": "EEE26017",
+    "email": "ramya.adusumilli@college.com",
+    "department": "EEE",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026EEE017"
+  },
+  {
+    "full_name": "Yelamarthi Sahithi",
+    "roll_number": "EEE26018",
+    "email": "sahithi.yelamarthi@college.com",
+    "department": "EEE",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026EEE018"
+  },
+  {
+    "full_name": "Gummadi Sahithi",
+    "roll_number": "EEE26019",
+    "email": "sahithi.gummadi@college.com",
+    "department": "EEE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026EEE019"
+  },
+  {
+    "full_name": "Kolli Bhavana",
+    "roll_number": "EEE26020",
+    "email": "bhavana.kolli@college.com",
+    "department": "EEE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026EEE020"
+  },
+  {
+    "full_name": "Gudipati Amrutha",
+    "roll_number": "EEE26021",
+    "email": "amrutha.gudipati@college.com",
+    "department": "EEE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026EEE021"
+  },
+  {
+    "full_name": "Koneru Jyothi",
+    "roll_number": "EEE26022",
+    "email": "jyothi.koneru@college.com",
+    "department": "EEE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026EEE022"
+  },
+  {
+    "full_name": "Kondapalli Meghana",
+    "roll_number": "EEE26023",
+    "email": "meghana.kondapalli@college.com",
+    "department": "EEE",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026EEE023"
+  },
+  {
+    "full_name": "Gudipati Sahithi",
+    "roll_number": "EEE26024",
+    "email": "sahithi.gudipati@college.com",
+    "department": "EEE",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026EEE024"
+  },
+  {
+    "full_name": "Galla Hari",
+    "roll_number": "IT26001",
+    "email": "hari.galla@college.com",
+    "department": "IT",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026IT001"
+  },
+  {
+    "full_name": "Ravipati Avinash",
+    "roll_number": "IT26002",
+    "email": "avinash.ravipati@college.com",
+    "department": "IT",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026IT002"
+  },
+  {
+    "full_name": "Pasupuleti Avinash",
+    "roll_number": "IT26003",
+    "email": "avinash.pasupuleti@college.com",
+    "department": "IT",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026IT003"
+  },
+  {
+    "full_name": "Yelamanchili Bhargav",
+    "roll_number": "IT26004",
+    "email": "bhargav.yelamanchili@college.com",
+    "department": "IT",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026IT004"
+  },
+  {
+    "full_name": "Vallabhaneni Rajesh",
+    "roll_number": "IT26005",
+    "email": "rajesh.vallabhaneni@college.com",
+    "department": "IT",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026IT005"
+  },
+  {
+    "full_name": "Nandamuri Kiran",
+    "roll_number": "IT26006",
+    "email": "kiran.nandamuri@college.com",
+    "department": "IT",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026IT006"
+  },
+  {
+    "full_name": "Galla Srinivas",
+    "roll_number": "IT26007",
+    "email": "srinivas.galla@college.com",
+    "department": "IT",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026IT007"
+  },
+  {
+    "full_name": "Katta Suresh",
+    "roll_number": "IT26008",
+    "email": "suresh.katta@college.com",
+    "department": "IT",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026IT008"
+  },
+  {
+    "full_name": "Ravipati Prathyush",
+    "roll_number": "IT26009",
+    "email": "prathyush.ravipati@college.com",
+    "department": "IT",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026IT009"
+  },
+  {
+    "full_name": "Gudipati Surya",
+    "roll_number": "IT26010",
+    "email": "surya.gudipati@college.com",
+    "department": "IT",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026IT010"
+  },
+  {
+    "full_name": "Vadlamudi Ganesh",
+    "roll_number": "IT26011",
+    "email": "ganesh.vadlamudi@college.com",
+    "department": "IT",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026IT011"
+  },
+  {
+    "full_name": "Maddineni Pawan",
+    "roll_number": "IT26012",
+    "email": "pawan.maddineni@college.com",
+    "department": "IT",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026IT012"
+  },
+  {
+    "full_name": "Pasupuleti Sai Pranathi",
+    "roll_number": "IT26013",
+    "email": "saipranathi.pasupuleti@college.com",
+    "department": "IT",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026IT013"
+  },
+  {
+    "full_name": "Paritala Ananya",
+    "roll_number": "IT26014",
+    "email": "ananya.paritala@college.com",
+    "department": "IT",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026IT014"
+  },
+  {
+    "full_name": "Kondapalli Sneha",
+    "roll_number": "IT26015",
+    "email": "sneha.kondapalli@college.com",
+    "department": "IT",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026IT015"
+  },
+  {
+    "full_name": "Yelamanchili Sireesha",
+    "roll_number": "IT26016",
+    "email": "sireesha.yelamanchili@college.com",
+    "department": "IT",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026IT016"
+  },
+  {
+    "full_name": "Gottipati Bhavana",
+    "roll_number": "IT26017",
+    "email": "bhavana.gottipati@college.com",
+    "department": "IT",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026IT017"
+  },
+  {
+    "full_name": "Vadlamudi Mounika",
+    "roll_number": "IT26018",
+    "email": "mounika.vadlamudi@college.com",
+    "department": "IT",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026IT018"
+  },
+  {
+    "full_name": "Kanneganti Pranitha",
+    "roll_number": "IT26019",
+    "email": "pranitha.kanneganti@college.com",
+    "department": "IT",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026IT019"
+  },
+  {
+    "full_name": "Kolli Ananya",
+    "roll_number": "IT26020",
+    "email": "ananya.kolli@college.com",
+    "department": "IT",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026IT020"
+  },
+  {
+    "full_name": "Ravipati Tejaswi",
+    "roll_number": "IT26021",
+    "email": "tejaswi.ravipati@college.com",
+    "department": "IT",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026IT021"
+  },
+  {
+    "full_name": "Vemuri Bhavana",
+    "roll_number": "IT26022",
+    "email": "bhavana.vemuri@college.com",
+    "department": "IT",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026IT022"
+  },
+  {
+    "full_name": "Gudipati Sirisha",
+    "roll_number": "IT26023",
+    "email": "sirisha.gudipati@college.com",
+    "department": "IT",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026IT023"
+  },
+  {
+    "full_name": "Pasupuleti Yamini",
+    "roll_number": "IT26024",
+    "email": "yamini.pasupuleti@college.com",
+    "department": "IT",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026IT024"
+  },
+  {
+    "full_name": "Gudipati Charan",
+    "roll_number": "MECH26001",
+    "email": "charan.gudipati@college.com",
+    "department": "MECH",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026MECH001"
+  },
+  {
+    "full_name": "Kanneganti Prathyush",
+    "roll_number": "MECH26002",
+    "email": "prathyush.kanneganti@college.com",
+    "department": "MECH",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026MECH002"
+  },
+  {
+    "full_name": "Katta Nikhil",
+    "roll_number": "MECH26003",
+    "email": "nikhil.katta@college.com",
+    "department": "MECH",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026MECH003"
+  },
+  {
+    "full_name": "Paritala Prasad",
+    "roll_number": "MECH26004",
+    "email": "prasad.paritala@college.com",
+    "department": "MECH",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026MECH004"
+  },
+  {
+    "full_name": "Yerra Satish",
+    "roll_number": "MECH26005",
+    "email": "satish.yerra@college.com",
+    "department": "MECH",
+    "semester": 1,
+    "section": "B",
+    "year": 1,
+    "admission_number": "ADM2026MECH005"
+  },
+  {
+    "full_name": "Vallabhaneni Sravan",
+    "roll_number": "MECH26006",
+    "email": "sravan.vallabhaneni@college.com",
+    "department": "MECH",
+    "semester": 1,
+    "section": "A",
+    "year": 1,
+    "admission_number": "ADM2026MECH006"
+  },
+  {
+    "full_name": "Alapati Prathyush",
+    "roll_number": "MECH26007",
+    "email": "prathyush.alapati@college.com",
+    "department": "MECH",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026MECH007"
+  },
+  {
+    "full_name": "Gummadi Nikhil",
+    "roll_number": "MECH26008",
+    "email": "nikhil.gummadi@college.com",
+    "department": "MECH",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026MECH008"
+  },
+  {
+    "full_name": "Vadlamudi Prathyush",
+    "roll_number": "MECH26009",
+    "email": "prathyush.vadlamudi@college.com",
+    "department": "MECH",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026MECH009"
+  },
+  {
+    "full_name": "Jasti Karthik",
+    "roll_number": "MECH26010",
+    "email": "karthik.jasti@college.com",
+    "department": "MECH",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026MECH010"
+  },
+  {
+    "full_name": "Paritala Mohan",
+    "roll_number": "MECH26011",
+    "email": "mohan.paritala@college.com",
+    "department": "MECH",
+    "semester": 3,
+    "section": "B",
+    "year": 2,
+    "admission_number": "ADM2026MECH011"
+  },
+  {
+    "full_name": "Gottipati Suresh",
+    "roll_number": "MECH26012",
+    "email": "suresh.gottipati@college.com",
+    "department": "MECH",
+    "semester": 3,
+    "section": "A",
+    "year": 2,
+    "admission_number": "ADM2026MECH012"
+  },
+  {
+    "full_name": "Kamineni Tejaswi",
+    "roll_number": "MECH26013",
+    "email": "tejaswi.kamineni@college.com",
+    "department": "MECH",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026MECH013"
+  },
+  {
+    "full_name": "Nallamothu Sunitha",
+    "roll_number": "MECH26014",
+    "email": "sunitha.nallamothu@college.com",
+    "department": "MECH",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026MECH014"
+  },
+  {
+    "full_name": "Bandla Tejaswi",
+    "roll_number": "MECH26015",
+    "email": "tejaswi.bandla@college.com",
+    "department": "MECH",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026MECH015"
+  },
+  {
+    "full_name": "Chava Bhavana",
+    "roll_number": "MECH26016",
+    "email": "bhavana.chava@college.com",
+    "department": "MECH",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026MECH016"
+  },
+  {
+    "full_name": "Kondapalli Sirisha",
+    "roll_number": "MECH26017",
+    "email": "sirisha.kondapalli@college.com",
+    "department": "MECH",
+    "semester": 5,
+    "section": "B",
+    "year": 3,
+    "admission_number": "ADM2026MECH017"
+  },
+  {
+    "full_name": "Challa Nandini",
+    "roll_number": "MECH26018",
+    "email": "nandini.challa718_1@college.com",
+    "department": "MECH",
+    "semester": 5,
+    "section": "A",
+    "year": 3,
+    "admission_number": "ADM2026MECH018"
+  },
+  {
+    "full_name": "Kambhampati Swathi",
+    "roll_number": "MECH26019",
+    "email": "swathi.kambhampati719_1@college.com",
+    "department": "MECH",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026MECH019"
+  },
+  {
+    "full_name": "Nallamothu Yamini",
+    "roll_number": "MECH26020",
+    "email": "yamini.nallamothu@college.com",
+    "department": "MECH",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026MECH020"
+  },
+  {
+    "full_name": "Yerra Pranitha",
+    "roll_number": "MECH26021",
+    "email": "pranitha.yerra@college.com",
+    "department": "MECH",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026MECH021"
+  },
+  {
+    "full_name": "Kamineni Madhuri",
+    "roll_number": "MECH26022",
+    "email": "madhuri.kamineni@college.com",
+    "department": "MECH",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026MECH022"
+  },
+  {
+    "full_name": "Kambhampati Keerthi",
+    "roll_number": "MECH26023",
+    "email": "keerthi.kambhampati@college.com",
+    "department": "MECH",
+    "semester": 7,
+    "section": "B",
+    "year": 4,
+    "admission_number": "ADM2026MECH023"
+  },
+  {
+    "full_name": "Koneru Madhuri",
+    "roll_number": "MECH26024",
+    "email": "madhuri.koneru@college.com",
+    "department": "MECH",
+    "semester": 7,
+    "section": "A",
+    "year": 4,
+    "admission_number": "ADM2026MECH024"
+  }
+]

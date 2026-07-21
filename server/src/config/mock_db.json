@@ -537,6 +537,62 @@
       "year": 3,
       "semester": 5,
       "faculty": "33333333-3333-3333-3333-333333333333"
+    },
+    {
+      "id": "58dfafac-c597-4187-89d8-39a9e591b1fd",
+      "created_at": "2026-07-21T13:43:00.298Z",
+      "updated_at": "2026-07-21T13:43:00.298Z",
+      "title": "Advanced Data Structures Lecture Notes",
+      "subject": "Data Structures",
+      "type": "PDF",
+      "file_url": "https://example.com/materials/adv-ds-notes.pdf",
+      "department": "CSE",
+      "year": 2,
+      "semester": 3,
+      "faculty": "FACCSE1",
+      "downloads": 45
+    },
+    {
+      "id": "6ba2fdb6-bf76-4956-a291-1757174a4afd",
+      "created_at": "2026-07-21T13:43:00.301Z",
+      "updated_at": "2026-07-21T13:43:00.301Z",
+      "title": "Introduction to Algorithms Cheat Sheet",
+      "subject": "Algorithms",
+      "type": "PDF",
+      "file_url": "https://example.com/materials/algo-cheatsheet.pdf",
+      "department": "CSE",
+      "year": 2,
+      "semester": 4,
+      "faculty": "FACCSE1",
+      "downloads": 62
+    },
+    {
+      "id": "4820084e-a560-4118-ac4b-d59eb7ab9482",
+      "created_at": "2026-07-21T13:43:00.304Z",
+      "updated_at": "2026-07-21T13:43:00.304Z",
+      "title": "Database Systems Normalization Guide",
+      "subject": "Database Systems",
+      "type": "PDF",
+      "file_url": "https://example.com/materials/db-normalization.pdf",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "faculty": "FACCSE1",
+      "downloads": 38
+    },
+    {
+      "id": "66291497-5332-4c0d-8c3f-219645068d42",
+      "created_at": "2026-07-21T13:43:00.310Z",
+      "updated_at": "2026-07-21T13:43:00.310Z",
+      "title": "Web Technologies HTML5 & CSS3 Reference",
+      "subject": "Web Technologies",
+      "type": "PDF",
+      "file_url": "https://example.com/materials/web-html-css-ref.pdf",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "faculty": "FACCSE1",
+      "downloads": 29
     }
   ],
   "timetable": [

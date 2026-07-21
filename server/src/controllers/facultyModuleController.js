@@ -385,7 +385,7 @@ export const createFacultyMaterial = async (req, res, next) => {
       return next(error);
     }
 
-    const { data: material } = await supabase
+    const { data: material, error: insertErr } = await supabase
       .from('study_materials')
       .insert([{
         title,
@@ -399,6 +399,10 @@ export const createFacultyMaterial = async (req, res, next) => {
       }])
       .select()
       .single();
+
+    if (insertErr || !material) {
+      throw new Error(insertErr?.message || 'Failed to insert study material record');
+    }
 
     const formatted = {
       ...material,
