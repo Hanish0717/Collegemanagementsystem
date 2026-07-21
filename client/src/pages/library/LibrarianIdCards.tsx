@@ -1250,15 +1250,28 @@ export function LibrarianIdCards() {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  if (selectedStudentId) {
-                    issueMutation.mutate({
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!selectedStudentId) {
+                    toast.error('No student selected. Please search and select a student first.');
+                    return;
+                  }
+                  try {
+                    await createIDCardRequest({
                       studentId: selectedStudentId,
                       requestType: 'New',
                       reason: 'Initial card issuance'
                     });
-                  } else {
-                    toast.error('No student selected. Please search and select a student first.');
+                    toast.success('Active Student ID Card generated & profile stored successfully!');
+                    setShowIssueModal(false);
+                    await queryClient.invalidateQueries({ queryKey: ['idCardStats'] });
+                    await queryClient.invalidateQueries({ queryKey: ['idCardHistory'] });
+                    await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile'] });
+                    await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile', selectedStudentId] });
+                    refetchProfile();
+                  } catch (err: any) {
+                    toast.error(err.response?.data?.message || err.message || 'Failed to issue ID Card');
                   }
                 }}
                 disabled={issueMutation.isPending}

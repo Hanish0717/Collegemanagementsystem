@@ -1,8 +1,16 @@
 import { supabase } from '../config/supabase.js';
+import { randomUUID } from 'crypto';
 
-// Helper to generate IDs
+// Helper to generate RFC4122 standard UUIDs
 const generateUUID = () => {
-  return 'idc_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+  try {
+    return randomUUID();
+  } catch (e) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
 };
 
 // Helper: Add Student Notification
