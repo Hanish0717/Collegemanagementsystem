@@ -50,6 +50,122 @@ export function ExamsPage() {
     fetchExamsAndResults();
   }, [user?.id]);
 
+  const handleDownloadHallTicket = () => {
+    if (!hallTicket) return;
+    const ticketWindow = window.open("", "_blank");
+    if (!ticketWindow) return;
+
+    const studentName = user?.fullName || "Nandamuri Kalyan";
+    const rollNo = user?.rollNumber || "21311A0501";
+    const dept = user?.department || "CSE";
+    const examName = hallTicket.exam?.name || "Semester End Examinations";
+    const seatNumber = hallTicket.seat_number || "S-587";
+    const sem = hallTicket.exam?.semester || 1;
+
+    const subjectsHtml = (examRegistrations.length > 0 ? examRegistrations : [
+      { courses: { course_code: "CS501", course_name: "Data Structures & Algorithms" } },
+      { courses: { course_code: "CS502", course_name: "Database Management Systems" } },
+      { courses: { course_code: "CS503", course_name: "Operating Systems" } },
+      { courses: { course_code: "CS504", course_name: "Computer Networks" } },
+    ]).map((reg, idx) => `
+      <tr style="border-bottom: 1px solid #e2e8f0; text-align: center;">
+        <td style="padding: 8px;">${idx + 1}</td>
+        <td style="padding: 8px; font-weight: bold; font-family: monospace;">${reg.courses?.course_code || 'CS501'}</td>
+        <td style="padding: 8px; text-align: left; font-weight: 600;">${reg.courses?.course_name || 'Subject'}</td>
+        <td style="padding: 8px;">10:00 AM - 01:00 PM</td>
+        <td style="padding: 8px; font-weight: bold; color: #1e3a8a;">HALL-${101 + idx}</td>
+        <td style="padding: 8px; min-width: 90px; border-bottom: 1px italic #cbd5e1;">&nbsp;</td>
+      </tr>
+    `).join("");
+
+    ticketWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Hall_Ticket_${rollNo}</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; color: #0f172a; max-width: 800px; margin: auto; }
+            .header { text-align: center; border-bottom: 3px double #1e293b; padding-bottom: 12px; margin-bottom: 20px; }
+            .header h1 { margin: 0; font-size: 22px; color: #1e3a8a; text-transform: uppercase; }
+            .header p { margin: 3px 0; font-size: 11px; color: #475569; font-weight: 600; }
+            .title-banner { background: #1e293b; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 14px; letter-spacing: 1px; margin-bottom: 20px; border-radius: 6px; }
+            .info-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 15px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 15px; margin-bottom: 20px; font-size: 12px; }
+            .details-col div { margin-bottom: 6px; }
+            .photo-box { border: 2px border-dashed #94a3b8; height: 110px; display: flex; align-items: center; justify-content: center; text-align: center; background: #f1f5f9; border-radius: 8px; font-size: 10px; color: #64748b; font-weight: bold; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11px; }
+            th { background: #f1f5f9; color: #1e293b; padding: 8px; font-weight: bold; border-bottom: 2px solid #cbd5e1; text-transform: uppercase; font-size: 10px; }
+            .instructions { background: #fffbeb; border: 1px solid #fef3c7; padding: 12px; border-radius: 8px; font-size: 10px; color: #92400e; margin-bottom: 35px; }
+            .instructions h4 { margin: 0 0 4px 0; font-size: 11px; }
+            .signatures { display: flex; justify-content: space-between; margin-top: 40px; font-size: 11px; font-weight: bold; text-align: center; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Autonomous College of Engineering & Technology</h1>
+            <p>Approved by AICTE & Affiliated to University | Accredited by NAAC Grade 'A+'</p>
+          </div>
+
+          <div class="title-banner">OFFICIAL EXAMINATION HALL TICKET - SEMESTER ${sem}</div>
+
+          <div class="info-grid">
+            <div class="details-col">
+              <div><strong>Exam Name:</strong> ${examName}</div>
+              <div><strong>Student Name:</strong> ${studentName}</div>
+              <div><strong>Roll Number:</strong> <span style="font-family: monospace; font-size: 13px; font-weight: bold; color: #1d4ed8;">${rollNo}</span></div>
+              <div><strong>Branch / Department:</strong> ${dept}</div>
+              <div><strong>Allocated Seat Number:</strong> <span style="font-family: monospace; font-size: 13px; font-weight: bold; color: #15803d;">${seatNumber}</span></div>
+              <div><strong>Verification Status:</strong> APPROVED & VERIFIED</div>
+            </div>
+            <div class="photo-box">
+              AFFIX<br/>PASSPORT<br/>PHOTO
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Course Code</th>
+                <th style="text-align: left;">Course / Subject Name</th>
+                <th>Time Slot</th>
+                <th>Hall No.</th>
+                <th>Invigilator Sign</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${subjectsHtml}
+            </tbody>
+          </table>
+
+          <div class="instructions">
+            <h4>IMPORTANT INSTRUCTIONS TO CANDIDATES:</h4>
+            1. Candidate must produce this Hall Ticket along with valid College ID Card at the Examination Hall.<br/>
+            2. Candidates should be present in the examination hall at least 15 minutes before scheduled start time.<br/>
+            3. Mobile phones, smart watches, programmable calculators, or any unauthorized materials are strictly prohibited.
+          </div>
+
+          <div class="signatures">
+            <div>
+              <br/><br/>
+              ____________________________<br/>
+              Candidate Signature
+            </div>
+            <div>
+              <br/><br/>
+              ____________________________<br/>
+              Controller of Examinations
+            </div>
+          </div>
+
+          <script>
+            window.onload = function() { window.print(); };
+          </script>
+        </body>
+      </html>
+    `);
+    ticketWindow.document.close();
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -78,92 +194,82 @@ export function ExamsPage() {
           { month: 'Computer Science', score: 88 },
         ];
 
+  const activeExams = exams.filter((e) => e.status === 'Published' || e.status === 'Scheduled');
+
   return (
     <div className="space-y-6">
       <PageHeader title="Examinations" desc="Schedules, hall tickets, results and performance." />
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2 p-0 overflow-hidden">
-          <div className="p-5 border-b flex items-center justify-between">
+      <div className="grid lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">Upcoming Exam Schedule</h3>
             <Badge tone="info">Active Timetable</Badge>
           </div>
-          {exams.length > 0 ? (
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
-                <tr>
-                  {['Exam Name', 'Type', 'Department', 'Semester', 'Date', 'Status'].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left font-medium">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {exams.map((e) => (
-                  <tr key={e.id} className="border-t hover:bg-muted/30">
-                    <td className="px-5 py-3 font-semibold">{e.name}</td>
-                    <td className="px-5 py-3 font-medium">{e.type}</td>
-                    <td className="px-5 py-3 font-mono text-xs">{e.department}</td>
-                    <td className="px-5 py-3 text-center">{e.semester}</td>
-                    <td className="px-5 py-3 text-xs">
-                      {new Date(e.start_date).toLocaleDateString()} &ndash;{' '}
-                      {new Date(e.end_date).toLocaleDateString()}
-                    </td>
-                    <td className="px-5 py-3">
-                      <Badge
-                        tone={
-                          e.status === 'Upcoming'
-                            ? 'info'
-                            : e.status === 'Ongoing'
-                              ? 'warn'
-                              : 'success'
-                        }
-                      >
-                        {e.status}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {activeExams.length === 0 ? (
+            <div className="text-center py-6 text-xs text-muted-foreground">No active exam schedules published.</div>
           ) : (
-            <div className="p-8 text-center text-muted-foreground">
-              No upcoming examination schedule published.
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b text-muted-foreground">
+                    <th className="py-2">Exam Name</th>
+                    <th className="py-2">Type</th>
+                    <th className="py-2">Department</th>
+                    <th className="py-2">Semester</th>
+                    <th className="py-2">Date</th>
+                    <th className="py-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeExams.map((e) => (
+                    <tr key={e.id} className="border-b hover:bg-slate-50">
+                      <td className="py-2.5 font-medium">{e.name}</td>
+                      <td className="py-2.5">{e.type}</td>
+                      <td className="py-2.5">{e.department}</td>
+                      <td className="py-2.5">{e.semester}</td>
+                      <td className="py-2.5">{e.start_date} - {e.end_date}</td>
+                      <td className="py-2.5">
+                        <Badge tone={e.status === 'Published' ? 'success' : 'info'}>{e.status}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </Card>
 
         <Card>
-          <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-            Hall Ticket
-          </div>
+          <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-3">Hall Ticket</div>
           {hallTicket ? (
-            <div className="rounded-2xl bg-gradient-primary p-5 text-white space-y-4">
-              <div className="flex items-center justify-between">
+            <div className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 p-5 text-white shadow-md space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
                 <div>
-                  <div className="text-[10px] opacity-80 uppercase tracking-wider">CAMPUSLY UNIVERSITY</div>
-                  <div className="font-bold text-base mt-0.5 truncate max-w-[170px]">{hallTicket.exam?.name || "Semester Examination"}</div>
+                  <div className="text-[10px] opacity-75 uppercase tracking-wider font-bold">Campusly University</div>
+                  <div className="font-extrabold text-base">{hallTicket.exam?.name || 'Semester Exam'}</div>
                 </div>
-                <Calendar className="size-5 opacity-80 animate-pulse" />
+                <div className="p-2 rounded-xl bg-white/10">
+                  <Calendar className="size-5" />
+                </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-3 text-xs bg-white/5 p-3 rounded-xl border border-white/10">
+
+              <div className="grid grid-cols-2 gap-3 text-xs bg-white/10 p-3 rounded-xl border border-white/5">
                 <div>
-                  <div className="opacity-70 text-[9px] uppercase font-semibold">Student</div>
-                  <div className="font-semibold truncate max-w-[120px]">{user?.fullName || "Student User"}</div>
+                  <div className="opacity-75 text-[10px] uppercase font-bold">Student</div>
+                  <div className="font-bold truncate">{user?.fullName || 'Student'}</div>
                 </div>
                 <div>
-                  <div className="opacity-70 text-[9px] uppercase font-semibold">Seat Number</div>
-                  <div className="font-bold text-amber-300 truncate max-w-[120px] font-mono">{hallTicket.seat_number}</div>
+                  <div className="opacity-75 text-[10px] uppercase font-bold">Seat Number</div>
+                  <div className="font-mono font-bold text-amber-300">{hallTicket.seat_number}</div>
                 </div>
                 <div>
-                  <div className="opacity-70 text-[9px] uppercase font-semibold">Branch</div>
-                  <div className="font-semibold truncate max-w-[120px]">{user?.department || "CSE"}</div>
+                  <div className="opacity-75 text-[10px] uppercase font-bold">Branch</div>
+                  <div className="font-bold">{user?.department || 'General'}</div>
                 </div>
                 <div>
-                  <div className="opacity-70 text-[9px] uppercase font-semibold">Status</div>
-                  <div className="font-bold text-emerald-300 truncate max-w-[120px]">APPROVED</div>
+                  <div className="opacity-75 text-[10px] uppercase font-bold">Status</div>
+                  <div className="font-bold text-emerald-300 uppercase">{hallTicket.status || 'APPROVED'}</div>
                 </div>
               </div>
 
@@ -185,7 +291,7 @@ export function ExamsPage() {
               </div>
 
               <button 
-                onClick={() => alert(`Downloading Hall Ticket PDF for ${hallTicket.exam?.name}. Seat: ${hallTicket.seat_number}`)}
+                onClick={handleDownloadHallTicket}
                 className="w-full rounded-xl bg-white text-foreground text-sm font-semibold py-2.5 flex items-center justify-center gap-2 cursor-pointer hover:bg-slate-100 transition active:scale-95 shadow"
               >
                 <Download className="size-4" /> Download Ticket
@@ -208,9 +314,9 @@ export function ExamsPage() {
             <BarChart data={displayChartData}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
               <XAxis dataKey="month" fontSize={10} stroke="#64748B" />
-              <YAxis fontSize={12} stroke="#64748B" domain={[0, 100]} />
-              <Tooltip contentStyle={{ borderRadius: 12 }} />
-              <Bar dataKey="score" fill="#9333EA" radius={[8, 8, 0, 0]} />
+              <YAxis fontSize={10} stroke="#64748B" />
+              <Tooltip />
+              <Bar dataKey="score" fill="#4F46E5" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
