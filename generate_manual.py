@@ -1,5 +1,7 @@
 import os
 import sys
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 from fpdf import FPDF
 
 class ERPManualPDF(FPDF):
@@ -429,19 +431,20 @@ def main():
     # 5. Examination
     pdf.add_module_page(
         5, "Examination",
-        ["Exam Registration", "Hall Tickets", "Seating Plan", "Internal Marks", "External Marks", "Grace Marks", "Result Processing", "SGPA/CGPA", "Grade Cards", "Revaluation", "Supplementary", "Transcript"],
+        ["Exam Schedule", "Hall Ticket Clearance", "Question Paper Encryption", "Exam Centers", "Invigilator Roster", "Seating Matrix", "Exam Attendance", "Internal & External Marks", "SGPA/CGPA Result Processing", "Revaluation", "Grace Marks Sanction", "Malpractice Board", "COE Reports"],
         [
-            "Outcome-based marks evaluation with SGPA/CGPA calculations.",
-            "Automated Hall Ticket release blocks for fee defaulters.",
-            "Configurable grade boundaries and grace marks algorithms."
+            "Dedicated Controller of Examinations (COE) Governance Suite with outcome-based SGPA/CGPA computation.",
+            "Automated Hall Ticket clearance and withhold controls for fee defaulters or low attendance (<65%).",
+            "AES-256 Question Paper encryption, invigilation duty rosters, and anti-malpractice seating matrix.",
+            "Board moderation, revaluation grade updates, grace marks (+1/+2) sanctioning, and malpractice verdicts."
         ],
-        "Exam branch sets dates. Students register and system screens backlog limits. Halls and seats are auto-arranged. Faculty upload internal marks. External marks are uploaded via Excel keys. Results process, and transcripts generate.",
+        "Exam branch creates schedules and allocates centers. Candidates screen for attendance/fee clearance to unlock hall tickets. Question papers undergo AES-256 encryption. Hall invigilators track live attendance. Internal and external marks are moderated, results process to SGPA/CGPA, and transcripts auto-generate alongside revaluation and grace mark sanctions.",
         {
-            "Super Admin / Exam Controller": "Full administrative control over result processing, grace marks, and grade cards.",
-            "HOD / Faculty": "Upload internal marks, review revaluation applications.",
-            "Student": "Register for exams, download hall tickets, view results, and apply for revaluation."
+            "Controller of Examinations (COE) / Dean": "Complete administrative authority: Approve results, sanction grace marks, execute malpractice verdicts, lock encrypted question papers.",
+            "HOD / Faculty": "Upload internal marks, confirm invigilation duties, verify moderation keys.",
+            "Student": "Register for exams, download hall tickets, view SGPA/CGPA results, apply for revaluation."
         },
-        ["Registration", "Seating Plan", "Mark Entry", "CGPA Processing"]
+        ["Schedule & Encrypt", "Hall Tickets", "Hall Attendance", "COE Result Publish"]
     )
 
     # 6. Faculty ERP
