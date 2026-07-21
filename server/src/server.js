@@ -37,6 +37,19 @@ async function runMigrations() {
     await client.connect();
     console.log("⏳ Running database migrations...");
     await client.query(`
+      -- Create subjects table
+      CREATE TABLE IF NOT EXISTS subjects (
+        code varchar(50) PRIMARY KEY,
+        name varchar(255) NOT NULL,
+        department varchar(255) NOT NULL,
+        semester varchar(50) DEFAULT 'Semester 1',
+        credits integer DEFAULT 4,
+        status varchar(50) DEFAULT 'Active',
+        is_active boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
       -- Ensure columns exist
       ALTER TABLE students ADD COLUMN IF NOT EXISTS user_id uuid;
       ALTER TABLE students ADD COLUMN IF NOT EXISTS admission_number varchar(100);
@@ -402,6 +415,31 @@ async function runMigrations() {
       ALTER TABLE results DROP CONSTRAINT IF EXISTS results_student_subject_semester_exam_key;
       ALTER TABLE results ADD CONSTRAINT results_student_subject_semester_exam_key UNIQUE (student, subject, semester, exam_id);
 
+      -- Advanced Exam Cell Columns
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS internal_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS external_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_type varchar(50) DEFAULT 'Regular';
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_applied boolean DEFAULT false;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_marks numeric(4,2) DEFAULT 0.00;
+
+      ALTER TABLE courses ADD COLUMN IF NOT EXISTS prerequisite_code varchar(50);
+
+      CREATE TABLE IF NOT EXISTS marks_correction_requests (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        result_id uuid REFERENCES results(id) ON DELETE CASCADE,
+        requested_by uuid REFERENCES users(id) ON DELETE SET NULL,
+        old_internal_marks numeric(5,2),
+        old_external_marks numeric(5,2),
+        new_internal_marks numeric(5,2),
+        new_external_marks numeric(5,2),
+        reason text NOT NULL,
+        status varchar(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Approved', 'Rejected')),
+        reviewed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+        reviewer_remarks text,
+        requested_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        reviewed_at timestamp with time zone
+      );
+
       -- Create events table
       CREATE TABLE IF NOT EXISTS events (
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -485,7 +523,51 @@ async function runMigrations() {
       CREATE INDEX IF NOT EXISTS idx_leave_requests_user ON leave_requests(user_id);
       CREATE INDEX IF NOT EXISTS idx_complaints_user ON complaints(user_id);
     `);
-    
+
+    // Seed default subjects if empty
+    const subjectsCountRes = await client.query("SELECT COUNT(*) FROM subjects");
+    if (parseInt(subjectsCountRes.rows[0].count, 10) === 0) {
+      console.log("Seeding subjects table...");
+      const defaultSubjects = [
+        // CSE
+        { code: 'CS501', name: 'Data Structures', dept: 'CSE', semester: 'Semester 5', credits: 4 },
+        { code: 'CS502', name: 'Algorithms', dept: 'CSE', semester: 'Semester 5', credits: 4 },
+        { code: 'CS503', name: 'Database Systems', dept: 'CSE', semester: 'Semester 5', credits: 4 },
+        { code: 'CS504', name: 'Web Technologies', dept: 'CSE', semester: 'Semester 5', credits: 4 },
+        { code: 'CS505', name: 'Operating Systems', dept: 'CSE', semester: 'Semester 5', credits: 4 },
+        // AIML
+        { code: 'AM501', name: 'Machine Learning', dept: 'AIML', semester: 'Semester 5', credits: 4 },
+        { code: 'AM502', name: 'Artificial Intelligence', dept: 'AIML', semester: 'Semester 5', credits: 4 },
+        { code: 'AM503', name: 'Python Programming', dept: 'AIML', semester: 'Semester 5', credits: 4 },
+        { code: 'AM504', name: 'Data Visualization', dept: 'AIML', semester: 'Semester 5', credits: 4 },
+        { code: 'AM505', name: 'Neural Networks', dept: 'AIML', semester: 'Semester 5', credits: 4 },
+        // AIDS
+        { code: 'AD501', name: 'Data Science Foundations', dept: 'AIDS', semester: 'Semester 5', credits: 4 },
+        { code: 'AD502', name: 'Big Data Analytics', dept: 'AIDS', semester: 'Semester 5', credits: 4 },
+        { code: 'AD503', name: 'Statistical Methods', dept: 'AIDS', semester: 'Semester 5', credits: 4 },
+        { code: 'AD504', name: 'Data Mining', dept: 'AIDS', semester: 'Semester 5', credits: 4 },
+        { code: 'AD505', name: 'Deep Learning', dept: 'AIDS', semester: 'Semester 5', credits: 4 },
+        // ECE
+        { code: 'EC501', name: 'Digital Electronics', dept: 'ECE', semester: 'Semester 5', credits: 4 },
+        { code: 'EC502', name: 'Microprocessors', dept: 'ECE', semester: 'Semester 5', credits: 4 },
+        { code: 'EC503', name: 'Analog Communications', dept: 'ECE', semester: 'Semester 5', credits: 4 },
+        { code: 'EC504', name: 'Signals and Systems', dept: 'ECE', semester: 'Semester 5', credits: 4 },
+        { code: 'EC505', name: 'VLSI Design', dept: 'ECE', semester: 'Semester 5', credits: 4 },
+        // EEE
+        { code: 'EE501', name: 'Electrical Circuits', dept: 'EEE', semester: 'Semester 5', credits: 4 },
+        { code: 'EE502', name: 'Power Systems', dept: 'EEE', semester: 'Semester 5', credits: 4 },
+        { code: 'EE503', name: 'Control Systems', dept: 'EEE', semester: 'Semester 5', credits: 4 },
+        { code: 'EE504', name: 'Electrical Machines', dept: 'EEE', semester: 'Semester 5', credits: 4 },
+        { code: 'EE505', name: 'Power Electronics', dept: 'EEE', semester: 'Semester 5', credits: 4 }
+      ];
+      for (const s of defaultSubjects) {
+        await client.query(
+          "INSERT INTO subjects (code, name, department, semester, credits, status) VALUES ($1, $2, $3, $4, $5, 'Active')",
+          [s.code, s.name, s.dept, s.semester, s.credits]
+        );
+      }
+    }
+
     // Seed admin notifications
     const adminNotifsCount = await client.query("SELECT COUNT(*) FROM admin_notifications");
     if (parseInt(adminNotifsCount.rows[0].count) === 0) {

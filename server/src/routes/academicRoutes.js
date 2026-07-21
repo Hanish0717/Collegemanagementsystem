@@ -70,8 +70,8 @@ router.get('/departments', protect, async (req, res, next) => {
 
 // Retrieve all active subjects for selects/dropdowns
 router.get('/subjects', protect, async (req, res, next) => {
+  const { department } = req.query;
   try {
-    const { department } = req.query;
     let query = supabase
       .from('subjects')
       .select('*')
