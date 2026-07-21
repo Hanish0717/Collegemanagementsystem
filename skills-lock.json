@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "college-application": {
+      "source": "ttfake92-lab/skills",
+      "sourceType": "github",
+      "skillPath": "skills/college-application/SKILL.md",
+      "computedHash": "5523fc03f2960e83befa314e75b2d6b116f7623473aeb0f129a242f9c0ab82d2"
+    },
+    "design-taste-frontend": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "899b84384f74f540ea5284d9b2e9234e050998b42eacc805410b518d4226c0b3"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    }
+  }
+}
