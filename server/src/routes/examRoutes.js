@@ -24,12 +24,21 @@ import {
   getPendingCorrections,
   approveMarksCorrection,
   getExtendedAnalytics,
-  registerSupplementary
+  registerSupplementary,
+  deleteOfferedCourse,
+  assignExamEvaluation,
+  getOfficerEvaluations,
+  getFacultyEvaluations,
+  submitFacultyEvaluation,
+  serveEvaluationPdf
 } from '../controllers/examController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
 
 const router = express.Router();
+
+// Serve Answer Copy PDF Document Stream Directly
+router.get('/evaluations/:id/pdf', serveEvaluationPdf);
 
 // All routes require authentication
 router.use(protect);
@@ -50,14 +59,23 @@ router.get('/courses/my-exam-registrations', authorizeRoles('student'), getMyExa
 // Student supplementary registration
 router.post('/supplementary/register', authorizeRoles('student'), registerSupplementary);
 
+// Faculty Digital Answer Copy Evaluation routes
+router.get('/evaluations/faculty', authorizeRoles('faculty', 'admin', 'super-admin', 'exam-cell'), getFacultyEvaluations);
+router.post('/evaluations/:id/submit', authorizeRoles('faculty', 'admin', 'super-admin', 'exam-cell'), submitFacultyEvaluation);
+
 // Faculty marks correction request
 router.post('/corrections/request', authorizeRoles('faculty', 'admin', 'super-admin', 'exam-cell'), requestMarksCorrection);
 
 // Admin / Exam Cell / HOD management routes
 router.use(authorizeRoles('admin', 'super-admin', 'exam-cell', 'hod'));
 
+// Answer Copy Allocation (Exam Cell Officer)
+router.post('/evaluations/assign', assignExamEvaluation);
+router.get('/evaluations/officer', getOfficerEvaluations);
+
 // Offered Course Creation & Analytics (Officers)
 router.post('/courses', createCourse);
+router.delete('/courses/:id', deleteOfferedCourse);
 router.get('/courses/analytics', getCourseAnalytics);
 router.get('/faculty', getFacultyByDepartment);
 

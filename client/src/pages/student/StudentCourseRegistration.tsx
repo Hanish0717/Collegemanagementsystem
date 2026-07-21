@@ -93,6 +93,15 @@ export function StudentCourseRegistration() {
     }
   });
 
+  // Fetch exams list to check if exam is scheduled
+  const { data: examsList = [] } = useQuery<any[]>({
+    queryKey: ["active-exams"],
+    queryFn: async () => {
+      const { data } = await api.get<{ success: boolean; data: any[] }>("/api/exams");
+      return data.data || [];
+    }
+  });
+
   // Fetch student academic results history (to calculate earned credits)
   const { data: results = [], isLoading: isResultsLoading } = useQuery<any[]>({
     queryKey: ["student-results"],
@@ -149,6 +158,12 @@ export function StudentCourseRegistration() {
   });
 
   // Year to Semester map
+  const isExamScheduled = examsList.some(e => 
+    e.department === studentProfile?.department && 
+    Number(e.semester) === Number(selectedSemester) &&
+    e.status !== "Results Published"
+  );
+
   const getSemestersForYear = (yr: string) => {
     switch (yr) {
       case "1": return [1, 2];
@@ -484,6 +499,13 @@ export function StudentCourseRegistration() {
                           <div className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1.5 cursor-default">
                             <CheckCircle className="size-3.5" /> Exam Registered
                           </div>
+                        ) : !isRegistered(course.id) ? (
+                          <button
+                            disabled
+                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
+                          >
+                            Register for Course First
+                          </button>
                         ) : hasBacklog(course.course_name) ? (
                           <button
                             onClick={() => handleRegisterSupplementary(course.id)}
@@ -505,6 +527,13 @@ export function StudentCourseRegistration() {
                             className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
                           >
                             Exam Registration Not Open
+                          </button>
+                        ) : !isExamScheduled ? (
+                          <button
+                            disabled
+                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
+                          >
+                            Registration Not Open (Exam Not Scheduled)
                           </button>
                         ) : (
                           <button
