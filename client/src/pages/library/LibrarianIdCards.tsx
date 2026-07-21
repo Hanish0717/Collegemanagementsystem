@@ -184,13 +184,17 @@ export function LibrarianIdCards() {
   const approveRejectMutation = useMutation({
     mutationFn: ({ requestId, status, rejectionReason }: { requestId: string; status: 'Approved' | 'Rejected'; rejectionReason?: string }) => 
       approveRejectIDCardRequest(requestId, { status, rejectionReason }),
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['idCardStats'] });
-      queryClient.invalidateQueries({ queryKey: ['idCardHistory'] });
-      toast.success(`Request ${variables.status.toLowerCase()} successfully!`);
+    onSuccess: async (data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ['idCardStats'] });
+      await queryClient.invalidateQueries({ queryKey: ['idCardHistory'] });
+      await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile'] });
+      if (selectedStudentId) {
+        await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile', selectedStudentId] });
+        refetchProfile();
+      }
+      toast.success(variables.status === 'Approved' ? 'Request Approved & Active ID Card generated successfully!' : 'Request rejected.');
       setShowRejectModal(false);
       setRejectionReason('');
-      if (selectedStudentId) refetchProfile();
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message || 'Failed to process request');
@@ -1006,21 +1010,23 @@ export function LibrarianIdCards() {
                     <tbody className="divide-y divide-gray-150">
                       {/* Filter history logs that correspond to pending requests */}
                       {historyData
-                        ?.filter((log: any) => log.type === 'Request Update' && log.description.includes('updated to Pending'))
+                        ?.filter((log: any) => log.status === 'Pending' || (log.type === 'Request Update' && log.description.includes('Pending')))
                         ?.map((log: any) => {
+                          const studentRollDisplay = log.rollNumber || log.studentName || log.description.split('for ')[1]?.split(' was')[0] || 'Student';
+                          const isDuplicate = log.requestType === 'Duplicate' || log.description.includes('Duplicate');
                           return (
                             <tr key={log.id} className="hover:bg-gray-50">
                               <td className="px-4 py-3 font-semibold text-gray-800">
-                                {log.description.split('for ')[1]?.split(' was')[0] || 'Student'}
+                                {studentRollDisplay}
                               </td>
                               <td className="px-4 py-3">
-                                <Badge variant="warning">{log.description.includes('Duplicate') ? 'Duplicate' : 'Regular'}</Badge>
+                                <Badge variant={isDuplicate ? 'warning' : 'primary'}>{log.requestType || (isDuplicate ? 'Duplicate' : 'Regular')}</Badge>
                               </td>
                               <td className="px-4 py-3">{new Date(log.date).toLocaleDateString()}</td>
                               <td className="px-4 py-3">{log.remarks || 'None'}</td>
                               <td className="px-4 py-3">
-                                <Badge variant={log.description.includes('Duplicate') ? 'warning' : 'success'}>
-                                  {log.description.includes('Duplicate') ? '₹150 (Pending)' : 'Waived'}
+                                <Badge variant={isDuplicate ? 'warning' : 'success'}>
+                                  {isDuplicate ? '₹150 (Pending)' : 'Waived'}
                                 </Badge>
                               </td>
                               <td className="px-4 py-3 text-center">
@@ -1031,7 +1037,7 @@ export function LibrarianIdCards() {
                                       resetChecklist();
                                       setShowVerifyModal(true);
                                     }}
-                                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 p-1.5 rounded-lg flex items-center gap-0.5 text-xs font-semibold"
+                                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 p-1.5 rounded-lg flex items-center gap-0.5 text-xs font-semibold cursor-pointer"
                                   >
                                     <Check className="h-4 w-4" /> Approve
                                   </button>
@@ -1040,7 +1046,7 @@ export function LibrarianIdCards() {
                                       setSelectedRequest(log);
                                       setShowRejectModal(true);
                                     }}
-                                    className="bg-red-50 hover:bg-red-100 text-red-700 p-1.5 rounded-lg flex items-center gap-0.5 text-xs font-semibold"
+                                    className="bg-red-50 hover:bg-red-100 text-red-700 p-1.5 rounded-lg flex items-center gap-0.5 text-xs font-semibold cursor-pointer"
                                   >
                                     <XCircle className="h-4 w-4" /> Reject
                                   </button>
@@ -1050,7 +1056,7 @@ export function LibrarianIdCards() {
                           );
                         })}
 
-                      {(!historyData || historyData.filter((log: any) => log.type === 'Request Update' && log.description.includes('updated to Pending')).length === 0) && (
+                      {(!historyData || historyData.filter((log: any) => log.status === 'Pending' || (log.type === 'Request Update' && log.description.includes('Pending'))).length === 0) && (
                         <tr>
                           <td colSpan={6} className="text-center py-6 text-gray-400">
                             No pending ID card approval requests found.
@@ -1690,7 +1696,7 @@ export function LibrarianIdCards() {
               <button
                 onClick={() => {
                   approveRejectMutation.mutate({
-                    requestId: verifyRequest.id,
+                    requestId: verifyRequest.requestId || verifyRequest.id,
                     status: 'Approved'
                   });
                   setShowVerifyModal(false);
@@ -1699,9 +1705,9 @@ export function LibrarianIdCards() {
                   !(verifiedDetails && verifiedPhoto && verifiedDept && verifiedMembership && verifiedFees && verifiedDuplicate && verifiedFines) || 
                   approveRejectMutation.isPending
                 }
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
-                {approveRejectMutation.isPending ? 'Approving...' : 'Verify & Approve'}
+                {approveRejectMutation.isPending ? 'Approving & Generating...' : 'Verify & Generate Active ID Card'}
               </button>
             </div>
           </div>
