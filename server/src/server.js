@@ -673,14 +673,24 @@ runMigrations()
     }
   })
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    const serverInstance = app.listen(PORT, () => {
+      console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
       startScheduler();
+    });
+
+    serverInstance.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        console.error(`\n⚠️  Port ${PORT} is currently in use by another process.`);
+        console.log(`👉 Clear the port process and nodemon will auto-restart.\n`);
+        process.exit(1);
+      } else {
+        console.error("❌ Server listen error:", err);
+      }
     });
   })
   .catch((err) => {
     console.error("❌ Critical server startup failure:", err);
-  }); // trigger reload 123
+  });
 
 
 

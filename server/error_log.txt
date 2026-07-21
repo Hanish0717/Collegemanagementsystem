@@ -64,3 +64,263 @@
 [2026-07-18T12:35:14.340Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T12:35:14.345Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T12:35:14.366Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-20T17:21:15.666Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:16.414Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.133Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.364Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.557Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.787Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:19.600Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":false,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-21T05:59:10.232Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hanish@gmail.com","password":"password123"}
+[2026-07-21T06:13:42.950Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:14:22.918Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:14:49.865Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:15:20.835Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-e@gmail.com","password":"password123"}
+[2026-07-21T06:16:24.835Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:16:49.015Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:17:16.447Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:17:56.852Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-im@gmail.com","password":"password123"}
+[2026-07-21T06:19:32.158Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:21:26.468Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:21:26.471Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:21:26.474Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:21:26.476Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:21:26.478Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:21:27.510Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:21:29.528Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:21:33.549Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:23:56.063Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:23:56.066Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:23:56.068Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:23:56.072Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:23:56.074Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:23:57.095Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:23:59.113Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:03.124Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:54.562Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:54.563Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:24:54.565Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:24:54.566Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:24:54.567Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:24:55.578Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:57.586Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:01.595Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:08.105Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:09.116Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:10.763Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:10.765Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:10.767Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:10.769Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:11.125Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:15.141Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:17.335Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:18.344Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:20.361Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:24.376Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:35.938Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:35.939Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:35.941Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:35.943Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:35.945Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:36.958Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:38.975Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:41.453Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:41.455Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:41.457Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:41.460Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:42.990Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:46.091Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:47.100Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:47.169Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:47.171Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:25:47.173Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:47.175Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:25:49.178Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:52.304Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:53.312Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:06.063Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:06.064Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:26:06.066Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:26:06.067Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:26:06.068Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:26:07.078Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:09.095Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:13.104Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:46.626Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:46.628Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:46.631Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:46.636Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:46.638Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:47.665Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:49.678Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:53.701Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:55.691Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:55.693Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:55.695Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:55.698Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:55.701Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:56.712Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:58.732Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:02.751Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:43.211Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:43.213Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:33:43.216Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:33:43.218Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:33:43.221Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:33:44.222Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:46.228Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:50.241Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:51.526Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:52.546Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:54.555Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:02.184Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:02.185Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:34:02.187Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:34:02.188Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:34:02.190Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:34:03.195Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:05.202Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:09.216Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T12:25:25.132Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:30.811Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:30.825Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:38.653Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:38.661Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:32:07.531Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:07.256Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:07.265Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:15.335Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:15.344Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}

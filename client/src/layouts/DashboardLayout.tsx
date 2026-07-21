@@ -27,7 +27,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { getActiveRole, type Role, ROLE_LIST, setActiveRole, type RoleId } from '@/lib/roles';
-import { getDashboardForRole, toBackendRole } from '@/services/authService';
+import { getDashboardForRole, toBackendRole, getStoredUser } from '@/services/authService';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Badge } from '@/components/dashboard/ui';
@@ -731,6 +731,55 @@ export function DashboardLayout() {
 
   const RoleIcon = role.icon;
 
+  const navItems = useMemo(() => {
+    if (role?.id === 'dean') {
+      const storedUser = getStoredUser();
+      const savedDomain = localStorage.getItem('campusly.deanDomain') || storedUser?.deanDomain;
+      let activeDomain = (savedDomain || '').toLowerCase();
+
+      // Sync domain if user is currently navigating a specific dean route
+      if (path.includes('/dashboard/dean/student')) activeDomain = 'student';
+      else if (path.includes('/dashboard/dean/examination')) activeDomain = 'examination';
+      else if (path.includes('/dashboard/dean/academic')) activeDomain = 'academic';
+      else if (path.includes('/dashboard/dean/ima')) activeDomain = 'ima';
+      else if (path.includes('/dashboard/dean/iqac')) activeDomain = 'iqac';
+
+      // Default to student domain if unspecified
+      if (!activeDomain) activeDomain = 'student';
+
+      const domainRouteMap: Record<string, string> = {
+        student: '/dashboard/dean/student',
+        examination: '/dashboard/dean/examination',
+        exam: '/dashboard/dean/examination',
+        academic: '/dashboard/dean/academic',
+        acad: '/dashboard/dean/academic',
+        ima: '/dashboard/dean/ima',
+        iqac: '/dashboard/dean/iqac',
+      };
+
+      const targetRoute = domainRouteMap[activeDomain] || '/dashboard/dean/student';
+
+      return role.nav.filter((item) => {
+        // Always include core Dean items + Faculty Management
+        if (
+          item.to === '/dashboard/dean' ||
+          item.to === '/dashboard/admin/faculty' ||
+          item.to === '/dashboard/admin/notifications' ||
+          item.to === '/dashboard/dean/reports' ||
+          item.to === '/dashboard/dean/approvals' ||
+          item.to === '/dashboard/admin/settings'
+        ) {
+          return true;
+        }
+
+        // Include ONLY the selected domain administration route
+        return item.to === targetRoute;
+      });
+    }
+
+    return role.nav;
+  }, [role, path]);
+
   const SidebarContent = ({ isMobile = false }) => (
     <>
       {/* Brand Header */}
@@ -753,8 +802,18 @@ export function DashboardLayout() {
       </div>
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {role.nav.map((item) => {
-          const active = item.exact ? path === item.to : path.startsWith(item.to);
+        {navItems.map((item) => {
+          const itemUrl = new URL(item.to, window.location.origin);
+          const itemHasQuery = itemUrl.search.length > 0;
+          let active = false;
+          if (itemHasQuery) {
+            const currentParams = new URLSearchParams(currentSearch);
+            active =
+              path === itemUrl.pathname &&
+              [...itemUrl.searchParams.entries()].every(([k, v]) => currentParams.get(k) === v);
+          } else {
+            active = item.exact ? path === item.to : path.startsWith(item.to);
+          }
           const isNotifItem = item.to.includes('notifications');
           const hasUnread = isNotifItem && unreadCount > 0;
 

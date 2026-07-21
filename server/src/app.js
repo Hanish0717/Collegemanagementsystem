@@ -42,6 +42,7 @@ import accreditationRoutes from './routes/accreditationRoutes.js';
 import communicationRoutes from './routes/communicationRoutes.js';
 import attendanceNotificationRoutes from './routes/attendanceNotificationRoutes.js';
 import attendanceApprovalRoutes from './routes/attendanceApprovalRoutes.js';
+import deanRoutes from './routes/deanRoutes.js';
 
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
@@ -172,6 +173,7 @@ app.use('/api/academic', academicRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/faculty', facultyRoutes);
+app.use('/api/dean', deanRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/transport', transportRoutes);
 app.use('/api/placement', placementRoutes);

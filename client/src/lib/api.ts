@@ -55,22 +55,25 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     if (err.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('cms_token');
-        localStorage.removeItem('cms_user');
-        localStorage.removeItem('campusly.role');
-      }
-      toast.error('Session expired. Redirecting to login.');
-      try {
-        const { routerInstance } = await import('../router');
-        if (routerInstance) {
-          routerInstance.navigate({ to: '/login', replace: true });
-        } else if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-      } catch (e) {
+      const isLoginRequest = err.config?.url?.includes('/auth/login') || err.config?.url?.includes('/login');
+      if (!isLoginRequest) {
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          localStorage.removeItem('cms_token');
+          localStorage.removeItem('cms_user');
+          localStorage.removeItem('campusly.role');
+        }
+        toast.error('Session expired. Redirecting to login.');
+        try {
+          const { routerInstance } = await import('../router');
+          if (routerInstance) {
+            routerInstance.navigate({ to: '/login', replace: true });
+          } else if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
+        } catch (e) {
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
         }
       }
     } else if (err.response?.status === 403) {

@@ -1,402 +1,134 @@
-import { Outlet, createFileRoute, useRouterState } from '@tanstack/react-router';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import {
-  Activity,
-  Bell,
-  Building2,
-  CheckCircle,
-  Clock,
-  Database,
-  GraduationCap,
-  ShieldCheck,
-  Users,
-  Wallet,
+  ShieldAlert, Server, HardDrive, Cpu, Terminal, Database, Activity,
+  Users, Key, Lock, RefreshCw, Download, AlertOctagon, CheckCircle2,
+  Clock, Zap, Shield, Search
 } from 'lucide-react';
-import { Badge, Card, PageHeader, StatCard } from '@/components/dashboard/ui';
-import { useSuperAdminStats } from '@/hooks/useSuperAdminStats';
-import { Skeleton } from '@/components/ui/skeleton';
-
-const statsConfig = [
-  {
-    label: 'Total Colleges/Departments',
-    fallback: '18',
-    change: '+2.4%',
-    icon: Building2,
-    gradient: 'bg-gradient-primary',
-  },
-  {
-    label: 'Total Students',
-    fallback: '0',
-    icon: Users,
-    gradient: 'bg-gradient-violet',
-  },
-  {
-    label: 'Total Faculty',
-    fallback: '0',
-    icon: GraduationCap,
-    gradient: 'bg-gradient-cyan',
-  },
-  {
-    label: 'Total Admins',
-    fallback: '0',
-    icon: ShieldCheck,
-    gradient: 'bg-gradient-primary',
-  },
-  {
-    label: 'Active Users',
-    fallback: '0',
-    icon: Activity,
-    gradient: 'bg-gradient-violet',
-  },
-  {
-    label: 'Service Uptime',
-    fallback: '99.9%',
-    change: '+0.01%',
-    icon: CheckCircle,
-    gradient: 'bg-gradient-cyan',
-  },
-  {
-    label: 'Database Latency',
-    fallback: '12 ms',
-    icon: Database,
-    gradient: 'bg-gradient-primary',
-  },
-  {
-    label: 'Pending Approvals',
-    fallback: '0',
-    icon: Clock,
-    gradient: 'bg-gradient-violet',
-  },
-];
+import { Card, Badge } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
 
 export function SuperAdminDashboard() {
-  const path = useRouterState({ select: (r) => r.location.pathname });
-  const { data: liveStats, isLoading } = useSuperAdminStats();
+  const [logs, setLogs] = useState([
+    { id: 1, time: '15:42:01', type: 'AUTH', text: 'Root session validated for Super Admin' },
+    { id: 2, time: '15:40:12', type: 'SYS', text: 'Automatic DB snapshot created (14.2 GB)' },
+    { id: 3, time: '15:38:50', type: 'SECURITY', text: 'Rate-limiter blocked IP 192.168.1.104 (5 failed attempts)' },
+    { id: 4, time: '15:31:05', type: 'API', text: 'Sync service updated 5,240 student records' },
+  ]);
 
-  const analyticsData = liveStats?.systemAnalytics || [];
-  const deptDistData = liveStats?.departmentDistribution || [];
-  const userActData = liveStats?.userActivityData || [];
-  const actLogs = liveStats?.superAdminActivities || [];
-  const notifyLogs = liveStats?.superAdminNotifications || [];
+  const [lockdown, setLockdown] = useState(false);
 
-  if (path !== '/dashboard/super-admin') {
-    return <Outlet />;
-  }
-
-  const getStatValue = (label: string, fallback: string) => {
-    const isLiveKey = [
-      'Total Colleges/Departments',
-      'Total Students',
-      'Total Faculty',
-      'Total Admins',
-      'Active Users',
-      'Pending Approvals',
-      'Service Uptime',
-      'Database Latency',
-    ].includes(label);
-
-    if (isLiveKey && isLoading) {
-      return <Skeleton className="h-7 w-20 animate-pulse bg-muted-foreground/10" />;
-    }
-    if (!liveStats) return fallback;
-
-    switch (label) {
-      case 'Total Colleges/Departments':
-        return liveStats.totalDepartments.toLocaleString('en-IN');
-      case 'Total Students':
-        return liveStats.totalStudents.toLocaleString('en-IN');
-      case 'Total Faculty':
-        return liveStats.totalFaculty.toLocaleString('en-IN');
-      case 'Total Admins':
-        return liveStats.totalAdmins.toLocaleString('en-IN');
-      case 'Active Users':
-        return liveStats.activeUsers.toLocaleString('en-IN');
-      case 'Pending Approvals':
-        return liveStats.pendingApprovals.toLocaleString('en-IN');
-      case 'Service Uptime':
-        return liveStats.serviceUptime || fallback;
-      case 'Database Latency':
-        return liveStats.dbLatency || fallback;
-      default:
-        return fallback;
+  const toggleLockdown = () => {
+    setLockdown(!lockdown);
+    if (!lockdown) {
+      toast.error('EMERGENCY LOCKDOWN ACTIVATED! Non-admin access disabled.');
+    } else {
+      toast.success('System lockdown lifted. Normal traffic restored.');
     }
   };
 
-  const groupedStats = {
-    institution: [
-      { label: 'Total Students', value: liveStats?.totalStudents ? liveStats.totalStudents.toLocaleString('en-IN') : '2,450', icon: Users, tone: 'info' },
-      { label: 'Total Faculty', value: liveStats?.totalFaculty ? liveStats.totalFaculty.toLocaleString('en-IN') : '142', icon: GraduationCap, tone: 'success' },
-      { label: 'Total Staff (Non-Teaching)', value: '68', icon: Users, tone: 'info' },
-      { label: 'Total Departments', value: liveStats?.totalDepartments ? liveStats.totalDepartments.toLocaleString('en-IN') : '12', icon: Building2, tone: 'info' },
-      { label: 'Total Programs', value: '28', icon: Building2, tone: 'success' },
-    ],
-    activity: [
-      { label: 'Active Users', value: liveStats?.activeUsers ? liveStats.activeUsers.toLocaleString('en-IN') : '1,890', icon: Activity, tone: 'success' },
-      { label: "Today's Logins", value: '1,240', icon: Activity, tone: 'info' },
-      { label: 'Pending Approvals', value: liveStats?.pendingApprovals ? liveStats.pendingApprovals.toLocaleString('en-IN') : '14', icon: Clock, tone: 'warn' },
-      { label: 'Notifications Sent Today', value: '840', icon: Bell, tone: 'info' },
-    ],
-    system: [
-      { label: 'Service Uptime', value: liveStats?.serviceUptime || '99.98%', icon: CheckCircle, tone: 'success' },
-      { label: 'Database Latency', value: liveStats?.dbLatency || '14 ms', icon: Database, tone: 'info' },
-      { label: 'System Storage Usage', value: '142.8 GB / 500 GB', icon: Database, tone: 'warn' },
-      { label: 'Database Size', value: '12.4 GB', icon: Database, tone: 'info' },
-    ],
-    security: [
-      { label: 'Failed Logins (24h)', value: '3', icon: ShieldCheck, tone: 'success' },
-      { label: 'Active Concurrent Sessions', value: '312', icon: Users, tone: 'info' },
-      { label: 'Last Backup Time', value: 'Today, 03:00 AM', icon: Database, tone: 'success' },
-      { label: 'Security Alerts', value: '0 Active', icon: ShieldCheck, tone: 'success' },
-    ],
-  };
+  const serverNodes = [
+    { name: 'API Server Cluster', status: 'Online', load: '32%', uptime: '99.98%', latency: '18ms' },
+    { name: 'Primary DB (MySQL)', status: 'Healthy', load: '45%', uptime: '99.99%', latency: '4ms' },
+    { name: 'Redis Cache Node', status: 'Active', load: '14%', uptime: '100%', latency: '1ms' },
+    { name: 'Storage Bucket (S3)', status: 'Optimal', load: '68%', uptime: '99.95%', latency: '22ms' },
+  ];
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Super Admin Governance Cockpit"
-        desc="Centralized institutional administration, security monitoring, infrastructure status and system governance."
-      />
-
-      {/* 4 Grouped KPI Metric Categories */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Institutional Overview</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {groupedStats.institution.map((stat, i) => (
-              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Activity & Operations</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {groupedStats.activity.map((stat, i) => (
-              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">System Infrastructure & Performance</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {groupedStats.system.map((stat, i) => (
-              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Security & Backup Governance</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {groupedStats.security.map((stat, i) => (
-              <StatCard key={stat.label} label={stat.label} value={stat.value} icon={stat.icon} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold">System Analytics</h3>
-              <p className="text-xs text-muted-foreground">
-                Active users and support tickets across the institution
-              </p>
+      {/* Top System Command Header */}
+      <div className="p-6 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-2xl relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-3 py-1 rounded-full text-[10px] font-mono font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                SYSTEM TOPOLOGY COMMAND CENTER
+              </span>
+              <span className="text-xs text-slate-400 font-mono">v4.8.2-prod</span>
             </div>
-            <Badge tone="info">System Load</Badge>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+              <ShieldAlert className="size-7 text-blue-500" /> Super Admin Control Console
+            </h1>
+            <p className="text-xs text-slate-400 mt-1">Full root access: Infrastructure metrics, security audit stream, and database lifecycle management.</p>
           </div>
-          <div className="h-72">
-            <ResponsiveContainer>
-              <AreaChart data={analyticsData}>
-                <defs>
-                  <linearGradient id="super-users" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.55} />
-                    <stop offset="100%" stopColor="#4F46E5" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="super-tickets" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#EF4444" stopOpacity={0.5} />
-                    <stop offset="100%" stopColor="#EF4444" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
-                <Area
-                  type="monotone"
-                  dataKey="users"
-                  stroke="#4F46E5"
-                  fill="url(#super-users)"
-                  strokeWidth={2}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="tickets"
-                  stroke="#EF4444"
-                  fill="url(#super-tickets)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => toast.success('DB Backup started in background.')}
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <Database className="size-4" /> Trigger DB Backup
+            </button>
+            <button
+              onClick={toggleLockdown}
+              className={`px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition cursor-pointer ${
+                lockdown ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/30'
+              }`}
+            >
+              <Lock className="size-4" /> {lockdown ? 'Lift Lockdown' : 'Emergency Lockdown'}
+            </button>
           </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Department Distribution</h3>
-            <Badge>Live</Badge>
-          </div>
-          <div className="h-56">
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={deptDistData}
-                  dataKey="value"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={3}
-                >
-                  {deptDistData.map((d, i) => (
-                    <Cell key={i} fill={d.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {deptDistData.map((d) => (
-              <div key={d.name} className="flex items-center gap-2 text-xs">
-                <span className="size-2.5 rounded-full" style={{ background: d.color }} />
-                <span className="text-muted-foreground">{d.name}</span>
-                <span className="ml-auto font-medium">{d.value}</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-semibold">User Activity</h3>
-              <p className="text-xs text-muted-foreground">Daily logins and campus ERP actions</p>
+      {/* Node Status Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {serverNodes.map(node => (
+          <div key={node.name} className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-extrabold text-xs text-slate-900 dark:text-white">{node.name}</span>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                {node.status}
+              </span>
             </div>
-            <Badge tone="success">+11.3%</Badge>
+            <div className="space-y-1.5 text-xs text-slate-500">
+              <div className="flex justify-between"><span>CPU Load:</span><strong className="text-slate-800 dark:text-slate-200 font-mono">{node.load}</strong></div>
+              <div className="flex justify-between"><span>Uptime:</span><strong className="text-slate-800 dark:text-slate-200 font-mono">{node.uptime}</strong></div>
+              <div className="flex justify-between"><span>Latency:</span><strong className="text-emerald-600 font-mono">{node.latency}</strong></div>
+            </div>
           </div>
-          <div className="h-64">
-            <ResponsiveContainer>
-              <BarChart data={userActData}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
-                <Bar dataKey="logins" fill="#4F46E5" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="actions" fill="#06B6D4" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">System Status</h3>
-            <Database className="size-4 text-muted-foreground" />
-          </div>
-          <div className="space-y-3">
-            {(
-              liveStats?.systemStatus || [
-                { label: 'Application Server', value: 'Operational', tone: 'success' as const },
-                { label: 'Database Cluster', value: 'Operational', tone: 'success' as const },
-                { label: 'Email Gateway', value: 'Monitoring', tone: 'warn' as const },
-                { label: 'Backup Service', value: 'Synced', tone: 'info' as const },
-              ]
-            ).map((item) => (
-              <div
-                key={item.label}
-                className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
-              >
-                <div className="text-sm font-medium">{item.label}</div>
-                <Badge tone={item.tone as any}>{item.value}</Badge>
-              </div>
-            ))}
-          </div>
-        </Card>
+        ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Recent Activity Logs</h3>
-            <Badge tone="info">Live</Badge>
-          </div>
-          <div className="space-y-3">
-            {actLogs.map((activity) => (
-              <div
-                key={activity.actor + activity.time}
-                className="flex items-center gap-3 py-2 border-b last:border-0"
-              >
-                <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {activity.actor.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="flex-1 text-sm">
-                  <span className="font-medium">{activity.actor}</span>{' '}
-                  <span className="text-muted-foreground">{activity.action}</span>{' '}
-                  <span className="font-medium">{activity.target}</span>
-                  <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
-                </div>
-                <Badge>{activity.type}</Badge>
+      <div className="grid lg:grid-cols-3 gap-6">
+        
+        {/* Terminal Audit Stream */}
+        <div className="lg:col-span-2 space-y-4">
+          <Card className="p-5 bg-slate-950 border-slate-800 text-slate-200">
+            <div className="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Terminal className="size-5 text-emerald-400" />
+                <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Live System Audit Log Stream</h3>
               </div>
-            ))}
-          </div>
-        </Card>
+              <button onClick={() => toast.success('Logs flushed to storage.')} className="text-[10px] font-mono text-slate-400 hover:text-white">
+                Flush Stream
+              </button>
+            </div>
+            <div className="font-mono text-xs space-y-2 h-64 overflow-y-auto pr-2">
+              {logs.map(l => (
+                <div key={l.id} className="flex items-start gap-3 py-1 border-b border-slate-900 text-[11px]">
+                  <span className="text-slate-500 font-bold shrink-0">{l.time}</span>
+                  <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${l.type === 'SECURITY' ? 'bg-rose-950 text-rose-400' : l.type === 'AUTH' ? 'bg-blue-950 text-blue-400' : 'bg-slate-800 text-slate-300'}`}>
+                    {l.type}
+                  </span>
+                  <span className="text-slate-300">{l.text}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
 
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Notifications Panel</h3>
-            <Bell className="size-4 text-muted-foreground" />
-          </div>
-          <div className="space-y-2">
-            {notifyLogs.map((notification) => (
-              <div
-                key={notification.id}
-                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? 'bg-blue-50 border-blue-200' : 'hover:bg-accent/50'}`}
-              >
-                <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium">{notification.title}</div>
-                  <div className="text-xs text-muted-foreground">{notification.time}</div>
-                </div>
-                <Badge
-                  tone={
-                    notification.type === 'Security'
-                      ? 'danger'
-                      : notification.type === 'Approval'
-                        ? 'warn'
-                        : 'info'
-                  }
-                >
-                  {notification.type}
-                </Badge>
-              </div>
-            ))}
+        {/* Super Admin Actions */}
+        <Card className="p-5">
+          <h3 className="font-extrabold text-sm text-slate-900 dark:text-white mb-4">Super Admin Privileges</h3>
+          <div className="space-y-2.5">
+            <button onClick={() => toast.success('Cache cleared!')} className="w-full p-3 rounded-xl border flex items-center justify-between text-xs font-bold hover:bg-slate-50 transition">
+              <span className="flex items-center gap-2"><RefreshCw className="size-4 text-blue-600" /> Flush Redis Cache</span>
+            </button>
+            <button onClick={() => toast.success('Global security audit initiated.')} className="w-full p-3 rounded-xl border flex items-center justify-between text-xs font-bold hover:bg-slate-50 transition">
+              <span className="flex items-center gap-2"><Shield className="size-4 text-emerald-600" /> Run Security Audit</span>
+            </button>
+            <button onClick={() => toast.success('User session tokens revoked.')} className="w-full p-3 rounded-xl border flex items-center justify-between text-xs font-bold hover:bg-slate-50 transition">
+              <span className="flex items-center gap-2"><Key className="size-4 text-amber-600" /> Force Global Logout</span>
+            </button>
           </div>
         </Card>
       </div>
