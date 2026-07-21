@@ -293,18 +293,27 @@ export const createIdCardRequest = async (req, res, next) => {
       return next(err);
     }
 
-    // Check if there is already a pending request
-    const { data: pending } = await supabase
-      .from('id_card_requests')
-      .select('*')
-      .eq('student_id', studentId)
-      .eq('status', 'Pending')
-      .maybeSingle();
+    // Check if there is already a pending request for non-New requests
+    if (requestType !== 'New') {
+      const { data: pending } = await supabase
+        .from('id_card_requests')
+        .select('*')
+        .eq('student_id', studentId)
+        .eq('status', 'Pending')
+        .maybeSingle();
 
-    if (pending) {
-      const err = new Error('A pending ID card request already exists for this student');
-      err.statusCode = 400;
-      return next(err);
+      if (pending) {
+        const err = new Error('A pending ID card request already exists for this student');
+        err.statusCode = 400;
+        return next(err);
+      }
+    } else {
+      // For 'New' requests, cancel any old pending requests
+      await supabase
+        .from('id_card_requests')
+        .update({ status: 'Approved', updated_at: new Date().toISOString() })
+        .eq('student_id', studentId)
+        .eq('status', 'Pending');
     }
 
     const requiresPayment = requestType === 'Duplicate' || requestType === 'Replacement';
@@ -329,7 +338,7 @@ export const createIdCardRequest = async (req, res, next) => {
 
     if (reqErr) throw reqErr;
 
-    // If 'New' initial issuance, auto-generate active ID Card record immediately
+    // If 'New' initial issuance, auto-generate or reactivate ID Card record immediately
     if (requestType === 'New') {
       const { data: student } = await supabase.from('students').select('*').eq('id', studentId).single();
       
@@ -341,7 +350,7 @@ export const createIdCardRequest = async (req, res, next) => {
           .eq('student_id', studentId)
           .eq('status', 'Active');
 
-        const rollClean = (student.roll_number || 'STD').replace(/\s+/g, '');
+        const rollClean = (student.roll_number || student.id.substring(0, 8)).replace(/\s+/g, '');
         const cardNo = `IDC${rollClean}`;
         
         // Card expires in 4 years
@@ -356,20 +365,45 @@ export const createIdCardRequest = async (req, res, next) => {
           cardNo: cardNo
         });
 
-        await supabase.from('id_cards').insert([{
-          id: generateUUID(),
-          student_id: studentId,
-          card_number: cardNo,
-          barcode: barcodeStr,
-          qr_code: qrData,
-          issue_date: new Date().toISOString(),
-          expiry_date: expiry.toISOString(),
-          status: 'Active',
-          card_type: 'Regular',
-          print_status: 'Pending',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }]);
+        // Check if card record already exists for student
+        const { data: existingCards = [] } = await supabase
+          .from('id_cards')
+          .select('*')
+          .eq('student_id', studentId);
+
+        if (existingCards.length > 0) {
+          // Update the existing card to Active
+          await supabase
+            .from('id_cards')
+            .update({
+              card_number: cardNo,
+              barcode: barcodeStr,
+              qr_code: qrData,
+              issue_date: new Date().toISOString(),
+              expiry_date: expiry.toISOString(),
+              status: 'Active',
+              card_type: 'Regular',
+              print_status: 'Pending',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingCards[0].id);
+        } else {
+          // Insert brand new card record
+          await supabase.from('id_cards').insert([{
+            id: generateUUID(),
+            student_id: studentId,
+            card_number: cardNo,
+            barcode: barcodeStr,
+            qr_code: qrData,
+            issue_date: new Date().toISOString(),
+            expiry_date: expiry.toISOString(),
+            status: 'Active',
+            card_type: 'Regular',
+            print_status: 'Pending',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }]);
+        }
       }
     }
 

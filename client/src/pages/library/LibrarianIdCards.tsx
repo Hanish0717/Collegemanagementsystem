@@ -1248,6 +1248,7 @@ export function LibrarianIdCards() {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={() => {
                   if (selectedStudentId) {
                     issueMutation.mutate({
@@ -1255,10 +1256,12 @@ export function LibrarianIdCards() {
                       requestType: 'New',
                       reason: 'Initial card issuance'
                     });
+                  } else {
+                    toast.error('No student selected. Please search and select a student first.');
                   }
                 }}
                 disabled={issueMutation.isPending}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold disabled:opacity-50 cursor-pointer"
               >
                 {issueMutation.isPending ? 'Generating...' : 'Confirm Issue'}
               </button>
