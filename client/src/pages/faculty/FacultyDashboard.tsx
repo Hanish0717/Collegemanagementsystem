@@ -186,13 +186,12 @@ export function FacultyDashboard() {
             Customize ⚙️
           </button>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
           {[
             { label: 'Class Roster', icon: Users, to: '/dashboard/faculty/students' },
             { label: 'Timetable', icon: CalendarIcon, to: '/dashboard/faculty/classes' },
             { label: 'Lesson Plans', icon: BookOpen, to: '/dashboard/faculty/materials' },
             { label: 'Attendance', icon: CheckSquare, to: '/dashboard/faculty/attendance' },
-            { label: 'Assignments', icon: FileCheck, to: '/dashboard/faculty/marks' },
+            { label: 'Paper Evaluation', icon: FileCheck, to: '/dashboard/faculty/evaluations' },
             { label: 'Results', icon: GraduationCap, to: '/dashboard/faculty/performance' },
             { label: 'AI Quiz Builder', icon: Sparkles, to: '/dashboard/ai' },
           ].map((item) => {

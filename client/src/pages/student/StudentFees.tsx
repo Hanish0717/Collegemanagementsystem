@@ -35,9 +35,10 @@ export function StudentFees() {
         const feesArr = dbFees || [];
 
         const mappedFees = feesArr.map((f: any) => ({
-          feeType: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + ' Fee',
-          amount: `₹${Number(f.totalAmount).toLocaleString('en-IN')}`,
-          dueDate: new Date(f.dueDate).toISOString().split('T')[0],
+          id: f.id,
+          feeType: f.feeType.charAt(0).toUpperCase() + f.feeType.slice(1) + " Fee",
+          amount: `₹${Number(f.totalAmount).toLocaleString("en-IN")}`,
+          dueDate: new Date(f.dueDate).toISOString().split("T")[0],
           status: f.paymentStatus.charAt(0).toUpperCase() + f.paymentStatus.slice(1),
         }));
         setFees(mappedFees);
@@ -92,15 +93,31 @@ export function StudentFees() {
     fetchFees();
   }, []);
 
-  const handlePayment = (e: React.FormEvent) => {
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedFeeType) return;
+    const feeItem = pendingFeesList.find(f => f.id === selectedFeeType);
+    if (!feeItem) return;
+
     setPaymentLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await api.post(`/api/fees/pay/${feeItem.id}`, {
+        amount: feeItem.rawAmount,
+        paymentMethod: "Credit Card",
+        remarks: "Online Payment via Student Dashboard"
+      });
+      if (res.data?.success) {
+        alert("Payment processed successfully!");
+        setSelectedFeeType("");
+        await fetchFees();
+      } else {
+        alert(res.data?.message || "Failed to process payment");
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Error processing payment");
+    } finally {
       setPaymentLoading(false);
-      alert(
-        'Online payment simulation successful! Once approved by the administrator, your record will update.',
-      );
-    }, 1500);
+    }
   };
 
   const pendingFeesList = fees.filter((f) => f.status !== 'Paid');
@@ -194,14 +211,10 @@ export function StudentFees() {
               <select
                 value={selectedFeeType}
                 onChange={(e) => setSelectedFeeType(e.target.value)}
-                className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                className="w-full rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer focus:ring-2 focus:ring-indigo-500/25"
               >
                 <option value="">-- Choose Fee to Pay --</option>
-                {pendingFeesList.map((f) => (
-                  <option key={f.feeType} value={f.feeType}>
-                    {f.feeType} - {f.amount}
-                  </option>
-                ))}
+                {pendingFeesList.map(f => <option key={f.id} value={f.id}>{f.feeType} - {f.amount}</option>)}
               </select>
               <div className="grid sm:grid-cols-2 gap-4">
                 <input

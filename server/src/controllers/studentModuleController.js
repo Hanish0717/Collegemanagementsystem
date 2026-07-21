@@ -839,3 +839,27 @@ export const deleteStudentNotification = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Get student's approved hall ticket
+// @route   GET /api/student-module/hall-ticket
+// @access  Private (student)
+export const getStudentHallTicket = async (req, res, next) => {
+  try {
+    const profile = await getProfile(req.user.id || req.user._id, req.user.email);
+    if (!profile) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    const { data: ticket, error } = await supabase
+      .from('hall_tickets')
+      .select('*, exam:exams(*)')
+      .eq('student_id', profile.id || profile._id)
+      .eq('status', 'Approved')
+      .maybeSingle();
+
+    if (error) throw error;
+    res.json({ success: true, data: ticket });
+  } catch (err) {
+    next(err);
+  }
+};

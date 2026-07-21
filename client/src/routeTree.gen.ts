@@ -145,6 +145,7 @@ import { Route as DashboardFacultyNotificationsRouteImport } from './routes/dash
 import { Route as DashboardFacultyMaterialsRouteImport } from './routes/dashboard/faculty/materials'
 import { Route as DashboardFacultyMarksRouteImport } from './routes/dashboard/faculty/marks'
 import { Route as DashboardFacultyLeaveRouteImport } from './routes/dashboard/faculty/leave'
+import { Route as DashboardFacultyEvaluationsRouteImport } from './routes/dashboard/faculty/evaluations'
 import { Route as DashboardFacultyCommunicationRouteImport } from './routes/dashboard/faculty/communication'
 import { Route as DashboardFacultyClassesRouteImport } from './routes/dashboard/faculty/classes'
 import { Route as DashboardFacultyAttendanceWarningsRouteImport } from './routes/dashboard/faculty/attendance-warnings'
@@ -947,6 +948,12 @@ const DashboardFacultyLeaveRoute = DashboardFacultyLeaveRouteImport.update({
   path: '/leave',
   getParentRoute: () => DashboardFacultyRoute,
 } as any)
+const DashboardFacultyEvaluationsRoute =
+  DashboardFacultyEvaluationsRouteImport.update({
+    id: '/evaluations',
+    path: '/evaluations',
+    getParentRoute: () => DashboardFacultyRoute,
+  } as any)
 const DashboardFacultyCommunicationRoute =
   DashboardFacultyCommunicationRouteImport.update({
     id: '/communication',
@@ -1481,6 +1488,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
+  '/dashboard/faculty/evaluations': typeof DashboardFacultyEvaluationsRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
   '/dashboard/faculty/marks': typeof DashboardFacultyMarksRoute
   '/dashboard/faculty/materials': typeof DashboardFacultyMaterialsRoute
@@ -1691,6 +1699,7 @@ export interface FileRoutesByTo {
   '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
+  '/dashboard/faculty/evaluations': typeof DashboardFacultyEvaluationsRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
   '/dashboard/faculty/marks': typeof DashboardFacultyMarksRoute
   '/dashboard/faculty/materials': typeof DashboardFacultyMaterialsRoute
@@ -1906,6 +1915,7 @@ export interface FileRoutesById {
   '/dashboard/faculty/attendance-warnings': typeof DashboardFacultyAttendanceWarningsRoute
   '/dashboard/faculty/classes': typeof DashboardFacultyClassesRoute
   '/dashboard/faculty/communication': typeof DashboardFacultyCommunicationRoute
+  '/dashboard/faculty/evaluations': typeof DashboardFacultyEvaluationsRoute
   '/dashboard/faculty/leave': typeof DashboardFacultyLeaveRoute
   '/dashboard/faculty/marks': typeof DashboardFacultyMarksRoute
   '/dashboard/faculty/materials': typeof DashboardFacultyMaterialsRoute
@@ -2122,6 +2132,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
+    | '/dashboard/faculty/evaluations'
     | '/dashboard/faculty/leave'
     | '/dashboard/faculty/marks'
     | '/dashboard/faculty/materials'
@@ -2332,6 +2343,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
+    | '/dashboard/faculty/evaluations'
     | '/dashboard/faculty/leave'
     | '/dashboard/faculty/marks'
     | '/dashboard/faculty/materials'
@@ -2546,6 +2558,7 @@ export interface FileRouteTypes {
     | '/dashboard/faculty/attendance-warnings'
     | '/dashboard/faculty/classes'
     | '/dashboard/faculty/communication'
+    | '/dashboard/faculty/evaluations'
     | '/dashboard/faculty/leave'
     | '/dashboard/faculty/marks'
     | '/dashboard/faculty/materials'
@@ -3638,6 +3651,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFacultyLeaveRouteImport
       parentRoute: typeof DashboardFacultyRoute
     }
+    '/dashboard/faculty/evaluations': {
+      id: '/dashboard/faculty/evaluations'
+      path: '/evaluations'
+      fullPath: '/dashboard/faculty/evaluations'
+      preLoaderRoute: typeof DashboardFacultyEvaluationsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
     '/dashboard/faculty/communication': {
       id: '/dashboard/faculty/communication'
       path: '/communication'
@@ -4346,6 +4366,7 @@ interface DashboardFacultyRouteChildren {
   DashboardFacultyAttendanceWarningsRoute: typeof DashboardFacultyAttendanceWarningsRoute
   DashboardFacultyClassesRoute: typeof DashboardFacultyClassesRoute
   DashboardFacultyCommunicationRoute: typeof DashboardFacultyCommunicationRoute
+  DashboardFacultyEvaluationsRoute: typeof DashboardFacultyEvaluationsRoute
   DashboardFacultyLeaveRoute: typeof DashboardFacultyLeaveRoute
   DashboardFacultyMarksRoute: typeof DashboardFacultyMarksRoute
   DashboardFacultyMaterialsRoute: typeof DashboardFacultyMaterialsRoute
@@ -4363,6 +4384,7 @@ const DashboardFacultyRouteChildren: DashboardFacultyRouteChildren = {
     DashboardFacultyAttendanceWarningsRoute,
   DashboardFacultyClassesRoute: DashboardFacultyClassesRoute,
   DashboardFacultyCommunicationRoute: DashboardFacultyCommunicationRoute,
+  DashboardFacultyEvaluationsRoute: DashboardFacultyEvaluationsRoute,
   DashboardFacultyLeaveRoute: DashboardFacultyLeaveRoute,
   DashboardFacultyMarksRoute: DashboardFacultyMarksRoute,
   DashboardFacultyMaterialsRoute: DashboardFacultyMaterialsRoute,

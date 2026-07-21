@@ -403,6 +403,8 @@ async function runMigrations() {
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
 
+      ALTER TABLE exams ADD COLUMN IF NOT EXISTS max_fee_due_limit integer DEFAULT 0;
+
       -- Create exam_timetables table
       CREATE TABLE IF NOT EXISTS exam_timetables (
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -426,6 +428,24 @@ async function runMigrations() {
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
         UNIQUE(student_id, exam_id)
       );
+
+      -- Create exam_evaluations table
+      CREATE TABLE IF NOT EXISTS exam_evaluations (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        exam_id uuid REFERENCES exams(id) ON DELETE CASCADE,
+        course_id uuid REFERENCES courses(id) ON DELETE SET NULL,
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        faculty_id uuid REFERENCES faculty(id) ON DELETE CASCADE,
+        evaluation_code varchar(50) NOT NULL,
+        pdf_url text NOT NULL,
+        status varchar(50) DEFAULT 'Assigned',
+        marks_breakdown jsonb DEFAULT '{}'::jsonb,
+        total_score numeric(5, 2) DEFAULT 0,
+        evaluated_at timestamp with time zone,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      ALTER TABLE exam_evaluations ADD COLUMN IF NOT EXISTS course_id uuid REFERENCES courses(id) ON DELETE SET NULL;
 
       -- Add exam_id to results table
       ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_id uuid REFERENCES exams(id) ON DELETE SET NULL;

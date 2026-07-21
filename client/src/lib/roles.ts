@@ -275,6 +275,7 @@ export const ROLES: Record<RoleId, Role> = {
     nav: [
       base,
       { to: '/dashboard/faculty/attendance', label: 'Attendance', icon: CalendarCheck },
+      { to: '/dashboard/faculty/evaluations', label: 'Paper Evaluation', icon: FileText },
       { to: '/dashboard/faculty/materials', label: 'Materials', icon: BookOpen },
       { to: '/dashboard/faculty/research', label: 'Research', icon: FlaskConical },
       { to: '/dashboard/faculty/publications', label: 'Publications', icon: FileText },
@@ -322,6 +323,8 @@ export const ROLES: Record<RoleId, Role> = {
       base,
       { to: '/dashboard/student/attendance', label: 'Attendance', icon: CalendarCheck },
       { to: '/dashboard/student/timetable', label: 'Class Timetable', icon: Clock },
+      { to: '/dashboard/student/course-registration', label: 'Course & Exam Reg', icon: BookOpen },
+      { to: '/dashboard/exams', label: 'Examinations', icon: ClipboardList },
       { to: '/dashboard/student/results', label: 'Results & GPA', icon: BookOpen },
       { to: '/dashboard/student/fees', label: 'Fees Registry', icon: Wallet },
       { to: '/dashboard/student/id-card', label: 'My ID Card', icon: Award },
