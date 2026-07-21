@@ -21,45 +21,53 @@ export function HODSidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMob
       {mobileOpen && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 lg:hidden"
         />
       )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar — uses same glass/token classes as DashboardLayout */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-r border-slate-200/80 dark:border-slate-800/80 transition-all duration-300 flex flex-col justify-between ${
-          collapsed ? 'w-20' : 'w-72'
+        className={`fixed top-0 left-0 bottom-0 z-50 glass border-r border-sidebar-border transition-all duration-300 flex flex-col justify-between ${
+          collapsed ? 'w-20' : 'w-64'
         } ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
-        {/* Header Branding */}
         <div>
-          <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200/60 dark:border-slate-800/60">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="size-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white grid place-items-center font-black shadow-md shrink-0">
-                <Building2 className="size-5" />
-              </div>
-              {!collapsed && (
-                <div className="truncate">
-                  <h2 className="text-sm font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                    HOD ERP Portal
-                  </h2>
-                  <p className="text-[10px] font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-widest truncate">
-                    {departmentInfo.shortName} Department
-                  </p>
-                </div>
-              )}
+          {/* Branding header */}
+          <div className="p-4 flex items-center gap-2.5 border-b border-sidebar-border h-16">
+            <div className="size-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 grid place-items-center text-white shrink-0">
+              <Building2 className="size-5" />
             </div>
-
+            {!collapsed && (
+              <div className="leading-tight">
+                <div className="font-bold text-base tracking-tight">College Management</div>
+                <div className="text-[10px] text-muted-foreground">HOD workspace</div>
+              </div>
+            )}
             <button
               onClick={onToggleCollapse}
-              className="hidden lg:grid size-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 text-slate-500 hover:text-blue-600 dark:text-slate-400 place-items-center transition cursor-pointer shrink-0"
+              className="hidden lg:grid size-8 rounded-xl hover:bg-sidebar-accent text-muted-foreground hover:text-foreground place-items-center transition cursor-pointer shrink-0 ml-auto"
             >
               {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
             </button>
           </div>
 
-          {/* Navigation Items List */}
-          <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)] custom-scrollbar">
+          {/* Role badge */}
+          {!collapsed && (
+            <div className="px-3 pt-3">
+              <div className="flex items-center gap-2 rounded-xl p-2.5 bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-soft">
+                <div className="size-8 rounded-lg bg-white/15 grid place-items-center backdrop-blur">
+                  <Building2 className="size-4" />
+                </div>
+                <div className="leading-tight">
+                  <div className="text-xs font-semibold">HOD</div>
+                  <div className="text-[10px] opacity-80">{departmentInfo.shortName} Department</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Nav links */}
+          <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-180px)] mt-2">
             {HOD_NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               const isActive = item.exact
@@ -71,35 +79,38 @@ export function HODSidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMob
                   key={item.to}
                   to={item.to}
                   onClick={onCloseMobile}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 ${
+                  className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-[1.01]'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-blue-50/70 dark:hover:bg-slate-800/60 hover:text-blue-600 dark:hover:text-blue-400'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-soft'
+                      : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
                   }`}
                   title={collapsed ? item.label : undefined}
                 >
-                  <Icon className={`size-4.5 shrink-0 ${isActive ? 'text-white' : ''}`} />
+                  <Icon className="size-4 shrink-0" />
                   {!collapsed && <span className="truncate">{item.label}</span>}
+                  {isActive && !collapsed && (
+                    <span className="ml-auto size-1.5 rounded-full bg-white/80" />
+                  )}
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        {/* Footer info */}
-        {!collapsed && (
-          <div className="p-4 border-t border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/40">
+        {/* Footer */}
+        <div className="p-3 border-t border-sidebar-border">
+          {!collapsed && (
             <div className="flex items-center gap-2.5">
-              <div className="size-8 rounded-xl bg-blue-100 text-blue-700 grid place-items-center font-extrabold text-xs">
+              <div className="size-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white grid place-items-center">
                 <GraduationCap className="size-4" />
               </div>
               <div className="truncate text-xs">
-                <p className="font-extrabold text-slate-800 dark:text-slate-200 truncate">{departmentInfo.headName}</p>
-                <p className="text-[10px] text-slate-400 truncate">HOD {departmentInfo.shortName}</p>
+                <p className="font-semibold text-foreground truncate">{departmentInfo.headName}</p>
+                <p className="text-[10px] text-muted-foreground truncate">HOD {departmentInfo.shortName}</p>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </aside>
     </>
   );
