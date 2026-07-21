@@ -77,7 +77,7 @@ interface MarkRow {
 
 export function AdminExams() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"overview" | "create" | "timetable" | "qbank" | "invigilation" | "halltickets" | "results" | "analytics">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "create" | "timetable" | "qbank" | "invigilation" | "halltickets" | "results" | "corrections" | "supplementary" | "analytics">("overview");
 
   // Question Bank State
   const [qbank, setQbank] = useState([
@@ -176,13 +176,49 @@ export function AdminExams() {
   });
 
   const { data: examAnalytics, isLoading: isAnalyticsLoading } = useQuery({
-    queryKey: ["exams", selectedExamId, "analytics"],
+    queryKey: ["exams", selectedExamId, "extended-analytics"],
     queryFn: async () => {
       if (!selectedExamId) return null;
-      const { data } = await api.get<{ success: boolean; data: any }>(`/api/exams/${selectedExamId}/analytics`);
+      const { data } = await api.get<{ success: boolean; data: any }>(`/api/exams/${selectedExamId}/extended-analytics`);
       return data.data;
     },
     enabled: !!selectedExamId && activeTab === "analytics"
+  });
+
+  const { data: correctionsList = [], isLoading: isCorrectionsLoading, refetch: refetchCorrections } = useQuery({
+    queryKey: ["corrections", "pending"],
+    queryFn: async () => {
+      const { data } = await api.get<{ success: boolean; data: any[] }>("/api/exams/corrections/pending");
+      return data.data || [];
+    },
+    enabled: activeTab === "corrections"
+  });
+
+  const approveCorrectionMutation = useMutation({
+    mutationFn: async ({ requestId, action, remarks }: { requestId: string; action: "Approved" | "Rejected"; remarks?: string }) => {
+      await api.post("/api/exams/corrections/approve", { request_id: requestId, action, remarks });
+    },
+    onSuccess: () => {
+      refetchCorrections();
+      queryClient.invalidateQueries({ queryKey: ["exams"] });
+      toast.success("Marks correction status updated successfully!");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to update correction status");
+    }
+  });
+
+  const requestCorrectionMutation = useMutation({
+    mutationFn: async (payload: { result_id: string; new_internal_marks: number; new_external_marks: number; reason: string }) => {
+      await api.post("/api/exams/corrections/request", payload);
+    },
+    onSuccess: () => {
+      refetchResults();
+      toast.success("Marks correction request submitted successfully!");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to submit correction request");
+    }
   });
 
   // 2. Mutations
@@ -416,25 +452,36 @@ export function AdminExams() {
 
   // Grade helper
   const calculateGrade = (marks: number) => {
-    if (marks >= 90) return "S";
-    if (marks >= 80) return "A";
-    if (marks >= 70) return "B";
-    if (marks >= 60) return "C";
-    if (marks >= 50) return "D";
-    if (marks >= 40) return "E";
+    if (marks >= 90) return "O";
+    if (marks >= 80) return "A+";
+    if (marks >= 70) return "A";
+    if (marks >= 60) return "B+";
+    if (marks >= 50) return "B";
+    if (marks >= 40) return "C";
     return "F";
   };
 
-  // Handle Marks update locally before save
-  const handleMarkChange = (index: number, val: string) => {
-    const marksVal = val === "" ? null : Number(val);
+  const handleInternalMarkChange = (index: number, val: string) => {
+    const internalVal = val === "" ? null : Number(val);
     const updated = [...marksList];
-    updated[index].marks = marksVal;
-    if (marksVal !== null) {
-      updated[index].grade = calculateGrade(marksVal);
-    } else {
-      updated[index].grade = "F";
-    }
+    updated[index].internal_marks = internalVal;
+    
+    const ext = updated[index].external_marks || 0;
+    const total = (internalVal || 0) + ext;
+    updated[index].marks = total;
+    updated[index].grade = calculateGrade(total);
+    setMarksList(updated);
+  };
+
+  const handleExternalMarkChange = (index: number, val: string) => {
+    const externalVal = val === "" ? null : Number(val);
+    const updated = [...marksList];
+    updated[index].external_marks = externalVal;
+    
+    const int = updated[index].internal_marks || 0;
+    const total = int + (externalVal || 0);
+    updated[index].marks = total;
+    updated[index].grade = calculateGrade(total);
     setMarksList(updated);
   };
 
@@ -455,6 +502,8 @@ export function AdminExams() {
           { id: "invigilation", label: "Invigilation Duty", icon: Shield },
           { id: "halltickets", label: "Hall Ticket Control", icon: UserCheck },
           { id: "results", label: "Results Publisher", icon: Award },
+          { id: "corrections", label: "Correction Requests", icon: FileText },
+          { id: "supplementary", label: "Supplementary Exams", icon: PlusCircle },
           { id: "analytics", label: "Exam Analytics", icon: PieChart }
         ].map(tab => {
           const Icon = tab.icon;
@@ -1237,9 +1286,12 @@ export function AdminExams() {
                       <tr>
                         <th className="px-4 py-3 text-left">Student</th>
                         <th className="px-4 py-3 text-left">Roll Number</th>
-                        <th className="px-4 py-3 text-center w-36">Marks (0-100)</th>
-                        <th className="px-4 py-3 text-center w-24">Credits</th>
-                        <th className="px-4 py-3 text-center w-24">Grade</th>
+                        <th className="px-4 py-3 text-center w-28">Internal (0-30)</th>
+                        <th className="px-4 py-3 text-center w-28">External (0-70)</th>
+                        <th className="px-4 py-3 text-center w-28">Total (0-100)</th>
+                        <th className="px-4 py-3 text-center w-20">Credits</th>
+                        <th className="px-4 py-3 text-center w-20">Grade</th>
+                        <th className="px-4 py-3 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -1251,12 +1303,31 @@ export function AdminExams() {
                             <input
                               type="number"
                               min="0"
-                              max="100"
-                              value={m.marks === null ? "" : m.marks}
-                              onChange={(e) => handleMarkChange(idx, e.target.value)}
+                              max="30"
+                              value={m.internal_marks === null || m.internal_marks === undefined ? "" : m.internal_marks}
+                              onChange={(e) => handleInternalMarkChange(idx, e.target.value)}
                               disabled={selectedExam?.status === "Results Published"}
-                              className="rounded border px-2 py-1 text-center w-20 bg-background focus:border-primary outline-none disabled:opacity-60 text-xs"
+                              className="rounded border px-2 py-1 text-center w-16 bg-background focus:border-primary outline-none disabled:opacity-60 text-xs"
                             />
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="number"
+                              min="0"
+                              max="70"
+                              value={m.external_marks === null || m.external_marks === undefined ? "" : m.external_marks}
+                              onChange={(e) => handleExternalMarkChange(idx, e.target.value)}
+                              disabled={selectedExam?.status === "Results Published"}
+                              className="rounded border px-2 py-1 text-center w-16 bg-background focus:border-primary outline-none disabled:opacity-60 text-xs"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-center font-bold text-slate-700">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <span>{m.marks === null || m.marks === undefined ? "0" : m.marks}</span>
+                              {m.grace_applied && (
+                                <Badge tone="warning" className="text-[9px] py-0 px-1 font-mono">Grace +{m.grace_marks}</Badge>
+                              )}
+                            </div>
                           </td>
                           <td className="px-4 py-3 text-center">
                             <input
@@ -1269,11 +1340,37 @@ export function AdminExams() {
                                 setMarksList(updated);
                               }}
                               disabled={selectedExam?.status === "Results Published"}
-                              className="rounded border px-2 py-1 text-center w-16 bg-background focus:border-primary outline-none disabled:opacity-60 text-xs"
+                              className="rounded border px-2 py-1 text-center w-12 bg-background focus:border-primary outline-none disabled:opacity-60 text-xs"
                             />
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <span className="font-bold text-sm text-indigo-600">{m.grade || "F"}</span>
+                            <span className={`font-bold text-sm ${m.grade === "F" ? "text-rose-600" : "text-indigo-600"}`}>{m.grade || "F"}</span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {selectedExam?.status === "Results Published" && m.result_id ? (
+                              <button
+                                onClick={() => {
+                                  const reason = prompt("Enter reason for requesting correction:");
+                                  if (!reason) return;
+                                  const proposedInternal = prompt("Enter proposed Internal marks (0-30):", String(m.internal_marks || 0));
+                                  if (proposedInternal === null) return;
+                                  const proposedExternal = prompt("Enter proposed External marks (0-70):", String(m.external_marks || m.marks || 0));
+                                  if (proposedExternal === null) return;
+
+                                  requestCorrectionMutation.mutate({
+                                    result_id: m.result_id,
+                                    new_internal_marks: parseFloat(proposedInternal),
+                                    new_external_marks: parseFloat(proposedExternal),
+                                    reason
+                                  });
+                                }}
+                                className="px-2 py-1 rounded bg-slate-900 text-white font-bold text-[10px] hover:bg-slate-800 transition cursor-pointer"
+                              >
+                                Request Edit
+                              </button>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 font-semibold">Editable</span>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -1283,6 +1380,133 @@ export function AdminExams() {
               )}
             </Card>
           )}
+        </div>
+      )}      {activeTab === "corrections" && (
+        <div className="space-y-6">
+          <Card>
+            <h3 className="font-semibold text-gradient text-xs mb-2">Marks Correction Request Portal</h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Review and approve marks correction requests submitted by faculty members. Approved changes will directly overwrite the student grade card.
+            </p>
+            {isCorrectionsLoading ? (
+              <div className="flex flex-col items-center justify-center py-12 gap-2">
+                <Loader2 className="size-8 text-primary animate-spin" />
+                <span className="text-xs text-muted-foreground">Fetching pending requests...</span>
+              </div>
+            ) : correctionsList.length === 0 ? (
+              <div className="text-center py-12 text-xs text-muted-foreground border border-dashed rounded-xl bg-muted/20">
+                No pending marks correction requests.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-muted/40 text-muted-foreground uppercase text-[10px] tracking-wider border-b">
+                    <tr>
+                      <th className="px-4 py-3 text-left">Student</th>
+                      <th className="px-4 py-3 text-left">Subject</th>
+                      <th className="px-4 py-3 text-center">Current (Int/Ext)</th>
+                      <th className="px-4 py-3 text-center">Proposed (Int/Ext)</th>
+                      <th className="px-4 py-3 text-left">Reason</th>
+                      <th className="px-4 py-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {correctionsList.map((req: any) => (
+                      <tr key={req.id} className="hover:bg-muted/30">
+                        <td className="px-4 py-3">
+                          <div className="font-semibold text-foreground">{req.student_profile?.full_name || "Student"}</div>
+                          <div className="text-[10px] text-muted-foreground font-mono mt-0.5">{req.student_profile?.roll_number}</div>
+                        </td>
+                        <td className="px-4 py-3 font-medium">{req.result?.subject}</td>
+                        <td className="px-4 py-3 text-center text-slate-500">
+                          {req.old_internal_marks} / {req.old_external_marks}
+                        </td>
+                        <td className="px-4 py-3 text-center text-indigo-600 font-bold font-mono">
+                          {req.new_internal_marks} / {req.new_external_marks}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 italic max-w-xs truncate" title={req.reason}>
+                          {req.reason}
+                        </td>
+                        <td className="px-4 py-3 text-right space-x-2">
+                          <button
+                            onClick={() => approveCorrectionMutation.mutate({ requestId: req.id, action: "Approved" })}
+                            disabled={approveCorrectionMutation.isPending}
+                            className="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] cursor-pointer transition disabled:opacity-50"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => {
+                              const remarks = prompt("Enter rejection remarks:");
+                              if (remarks === null) return;
+                              approveCorrectionMutation.mutate({ requestId: req.id, action: "Rejected", remarks });
+                            }}
+                            disabled={approveCorrectionMutation.isPending}
+                            className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-700 text-white font-bold text-[10px] cursor-pointer transition disabled:opacity-50"
+                          >
+                            Reject
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {activeTab === "supplementary" && (
+        <div className="space-y-6">
+          <Card>
+            <h3 className="font-semibold text-gradient text-xs mb-2">Supplementary Exams Management</h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Monitor active backlogs and manage student supplementary registrations.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead className="bg-muted/40 text-muted-foreground uppercase text-[10px] tracking-wider border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Subject Code</th>
+                    <th className="px-4 py-3 text-left">Subject Title</th>
+                    <th className="px-4 py-3 text-center">Failing Roster Count</th>
+                    <th className="px-4 py-3 text-center">Supplementary Date</th>
+                    <th className="px-4 py-3 text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y bg-background/50">
+                  <tr className="hover:bg-muted/30">
+                    <td className="px-4 py-3 font-mono font-bold text-indigo-700">CS-504</td>
+                    <td className="px-4 py-3 font-semibold text-foreground">Compiler Design</td>
+                    <td className="px-4 py-3 text-center font-bold text-rose-600">3 Students</td>
+                    <td className="px-4 py-3 text-center font-mono">2026-08-15</td>
+                    <td className="px-4 py-3 text-right">
+                      <Badge tone="warning">Registration Open</Badge>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-muted/30">
+                    <td className="px-4 py-3 font-mono font-bold text-indigo-700">ML-502</td>
+                    <td className="px-4 py-3 font-semibold text-foreground">Machine Learning</td>
+                    <td className="px-4 py-3 text-center font-bold text-rose-600">1 Student</td>
+                    <td className="px-4 py-3 text-center font-mono">2026-08-16</td>
+                    <td className="px-4 py-3 text-right">
+                      <Badge tone="warning">Registration Open</Badge>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-muted/30">
+                    <td className="px-4 py-3 font-mono font-bold text-indigo-700">VL-701</td>
+                    <td className="px-4 py-3 font-semibold text-foreground">VLSI Architecture</td>
+                    <td className="px-4 py-3 text-center font-bold text-rose-600">0 Students</td>
+                    <td className="px-4 py-3 text-center font-mono">--</td>
+                    <td className="px-4 py-3 text-right">
+                      <Badge tone="info">No Backlogs</Badge>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </div>
       )}
 
@@ -1325,8 +1549,8 @@ export function AdminExams() {
                       <div className="space-y-4">
                         <div className="p-4 rounded-xl bg-gradient-soft border flex justify-between items-center">
                           <div>
-                            <div className="text-[10px] text-muted-foreground font-semibold uppercase">Pass Percentage</div>
-                            <div className="text-2xl font-bold text-emerald-600 mt-1">{examAnalytics.passPercentage}%</div>
+                            <div className="text-[10px] text-muted-foreground font-semibold uppercase">Pass Rate</div>
+                            <div className="text-2xl font-bold text-emerald-600 mt-1">{examAnalytics.passRate}%</div>
                           </div>
                           <CheckCircle className="size-8 text-emerald-500/30" />
                         </div>
@@ -1351,46 +1575,68 @@ export function AdminExams() {
 
                     {/* Top Performers */}
                     <Card>
-                      <h3 className="font-semibold mb-4 text-xs text-muted-foreground uppercase">Top Performing Students</h3>
+                      <h3 className="font-semibold mb-4 text-xs text-muted-foreground uppercase">Top Performing Students (Rank List)</h3>
                       <div className="space-y-3">
-                        {examAnalytics.topStudents.map((stud: any, idx: number) => (
+                        {examAnalytics.rankList?.map((stud: any, idx: number) => (
                           <div key={idx} className="flex justify-between items-center p-3 rounded-xl border bg-gradient-soft">
                             <div>
-                              <div className="font-bold text-xs">{stud.full_name}</div>
-                              <div className="text-[9px] text-muted-foreground mt-0.5">{stud.roll_number}</div>
+                              <div className="font-bold text-xs">{idx + 1}. {stud.full_name}</div>
+                              <div className="text-[9px] text-muted-foreground mt-0.5">{stud.roll_number} • {stud.department}</div>
                             </div>
-                            <Badge tone="success">Avg: {stud.averageMarks}%</Badge>
+                            <Badge tone="success">Total: {stud.totalMarks}</Badge>
                           </div>
                         ))}
                       </div>
                     </Card>
                   </div>
 
-                  {/* Chart view */}
-                  <div className="lg:col-span-2">
-                    <Card className="h-full flex flex-col justify-between">
+                  {/* Chart and At-Risk view */}
+                  <div className="lg:col-span-2 space-y-6">
+                    <Card className="flex flex-col justify-between">
                       <div>
-                        <h3 className="font-semibold mb-4 text-xs text-muted-foreground uppercase">Result Outcomes</h3>
+                        <h3 className="font-semibold mb-4 text-xs text-muted-foreground uppercase">Department Pass Rates</h3>
                         <div className="h-64 mt-4">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={[
-                              { name: "Pass Rate", value: examAnalytics.passPercentage, fill: "#10B981" },
-                              { name: "Fail Rate", value: examAnalytics.failPercentage, fill: "#EF4444" }
-                            ]}>
+                            <BarChart data={examAnalytics.branchData?.map((b: any) => ({ name: b.branch, value: b.passRate }))}>
                               <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                              <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
+                              <XAxis dataKey="name" stroke="#64748B" fontSize={10} />
                               <YAxis stroke="#64748B" fontSize={11} unit="%" />
-                              <Tooltip contentStyle={{ borderRadius: 12 }} formatter={(value) => [`${value}%`, "Percentage"]} />
-                              <Bar dataKey="value" radius={[8, 8, 0, 0]} />
+                              <Tooltip contentStyle={{ borderRadius: 12 }} formatter={(value) => [`${value}%`, "Pass Rate"]} />
+                              <Bar dataKey="value" fill="#6366F1" radius={[8, 8, 0, 0]} />
                             </BarChart>
                           </ResponsiveContainer>
                         </div>
                       </div>
 
                       <div className="p-3 border rounded-xl bg-indigo-50 border-indigo-100 text-indigo-700 text-xs mt-4">
-                        💡 **Note:** Pass eligibility requires student subject score $\ge 40$. Stats auto-refresh upon publication of grades.
+                        💡 **Note:** Pass eligibility requires student subject score &ge; 40. Stats auto-refresh upon publication of grades.
                       </div>
                     </Card>
+
+                    {/* At-Risk Students Warning */}
+                    {examAnalytics.atRiskStudents && examAnalytics.atRiskStudents.length > 0 && (
+                      <Card className="border-rose-100 bg-rose-50/20">
+                        <h4 className="font-bold text-xs text-rose-700 uppercase mb-3 flex items-center gap-1.5">
+                          <AlertTriangle className="size-4 text-rose-500 animate-pulse" />
+                          At-Risk Candidates Panel ({examAnalytics.atRiskStudents.length})
+                        </h4>
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {examAnalytics.atRiskStudents.map((stud: any) => (
+                            <div key={stud.id} className="p-3 border border-rose-100 rounded-xl bg-background flex justify-between items-start text-xs shadow-sm">
+                              <div>
+                                <div className="font-bold text-slate-800">{stud.full_name} ({stud.roll_number})</div>
+                                <div className="text-[10px] text-slate-500 mt-1 flex flex-wrap gap-1">
+                                  {stud.factors.map((f: string, i: number) => (
+                                    <span key={i} className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 font-medium">{f}</span>
+                                  ))}
+                                </div>
+                              </div>
+                              <Badge tone="danger">Risk Index: {stud.riskScore}</Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    )}
                   </div>
                 </>
               )}

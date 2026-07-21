@@ -200,7 +200,7 @@ export function StudentResults() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Subject", "Credits", "Grade", "Marks", "Semester"].map((column) => (
+                  {["Subject", "Credits", "Internal Marks", "External Marks", "Total Marks", "Grade", "Semester"].map((column) => (
                     <th
                       key={column}
                       className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -214,15 +214,24 @@ export function StudentResults() {
                 {resultsList.map((result, index) => (
                   <tr key={index} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4 font-medium">{result.subject}</td>
-                    <td className="py-3 px-4">{result.credits}</td>
+                    <td className="py-3 px-4 font-semibold">{result.credits}</td>
+                    <td className="py-3 px-4 text-slate-500 font-mono">{result.internal_marks !== null && result.internal_marks !== undefined ? `${result.internal_marks} / 30` : "--"}</td>
+                    <td className="py-3 px-4 text-slate-500 font-mono">{result.external_marks !== null && result.external_marks !== undefined ? `${result.external_marks} / 70` : "--"}</td>
+                    <td className="py-3 px-4 font-bold text-slate-700">
+                      <div className="flex items-center gap-1.5">
+                        <span>{result.marks}%</span>
+                        {result.grace_applied && (
+                          <Badge tone="warning" className="text-[9px] py-0 px-1 font-mono">Grace +{result.grace_marks}</Badge>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-3 px-4">
-                      <Badge tone={result.grade.startsWith("A") ? "success" : "info"}>
+                      <Badge tone={result.grade === "O" || result.grade.startsWith("A") ? "success" : result.grade === "F" ? "danger" : "info"}>
                         {result.grade}
                       </Badge>
                     </td>
-                    <td className="py-3 px-4 font-medium">{result.marks}%</td>
                     <td className="py-3 px-4">
-                      <Badge tone="info">{result.semester}</Badge>
+                      <Badge tone="info">Semester {result.semester}</Badge>
                     </td>
                   </tr>
                 ))}

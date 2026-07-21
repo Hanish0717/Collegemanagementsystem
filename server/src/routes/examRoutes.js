@@ -19,7 +19,12 @@ import {
   getCourseAnalytics,
   getFacultyByDepartment,
   registerExam,
-  getMyExamRegistrations
+  getMyExamRegistrations,
+  requestMarksCorrection,
+  getPendingCorrections,
+  approveMarksCorrection,
+  getExtendedAnalytics,
+  registerSupplementary
 } from '../controllers/examController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -42,13 +47,23 @@ router.get('/courses/my-registrations', authorizeRoles('student'), getMyRegistra
 router.post('/courses/register-exam', authorizeRoles('student'), registerExam);
 router.get('/courses/my-exam-registrations', authorizeRoles('student'), getMyExamRegistrations);
 
-// Admin / Exam Cell management routes
-router.use(authorizeRoles('admin', 'super-admin', 'exam-cell'));
+// Student supplementary registration
+router.post('/supplementary/register', authorizeRoles('student'), registerSupplementary);
+
+// Faculty marks correction request
+router.post('/corrections/request', authorizeRoles('faculty', 'admin', 'super-admin', 'exam-cell'), requestMarksCorrection);
+
+// Admin / Exam Cell / HOD management routes
+router.use(authorizeRoles('admin', 'super-admin', 'exam-cell', 'hod'));
 
 // Offered Course Creation & Analytics (Officers)
 router.post('/courses', createCourse);
 router.get('/courses/analytics', getCourseAnalytics);
 router.get('/faculty', getFacultyByDepartment);
+
+// Corrections review and approval
+router.get('/corrections/pending', getPendingCorrections);
+router.post('/corrections/approve', approveMarksCorrection);
 
 router.post('/', createExam);
 router.route('/:id')
@@ -71,5 +86,6 @@ router.route('/:id/results')
 
 // Analytics
 router.get('/:id/analytics', getExamAnalytics);
+router.get('/:id/extended-analytics', getExtendedAnalytics);
 
 export default router;

@@ -658,11 +658,16 @@ export async function getExamResults(req, res, next) {
       const resRecord = resultMap[key];
 
       return {
+        result_id: resRecord ? resRecord.id : null,
         student_id: s.id,
         user_id: studentUserId,
         full_name: s.full_name,
         roll_number: s.roll_number,
         marks: resRecord ? resRecord.marks : null,
+        internal_marks: resRecord ? resRecord.internal_marks : null,
+        external_marks: resRecord ? resRecord.external_marks : null,
+        grace_applied: resRecord ? resRecord.grace_applied : false,
+        grace_marks: resRecord ? resRecord.grace_marks : 0,
         grade: resRecord ? resRecord.grade : '',
         credits: resRecord ? resRecord.credits : 3
       };
@@ -680,7 +685,7 @@ export async function getExamResults(req, res, next) {
 export async function saveExamResults(req, res, next) {
   try {
     const { id: exam_id } = req.params;
-    const { subject, marksData } = req.body; // marksData: array of { student_user_id, marks, grade, credits }
+    const { subject, marksData } = req.body; // marksData: array of { student_user_id, marks, internal_marks, external_marks, grade, credits }
 
     if (!subject || !marksData) {
       return res.status(400).json({ success: false, message: 'Subject and marksData are required' });
@@ -690,6 +695,37 @@ export async function saveExamResults(req, res, next) {
     if (!exam) return res.status(404).json({ success: false, message: 'Exam not found' });
 
     for (const m of marksData) {
+      let internal = m.internal_marks !== undefined && m.internal_marks !== null ? parseFloat(m.internal_marks) : null;
+      let external = m.external_marks !== undefined && m.external_marks !== null ? parseFloat(m.external_marks) : null;
+      let total;
+
+      if (internal !== null || external !== null) {
+        total = (internal || 0) + (external || 0);
+      } else {
+        total = parseInt(m.marks || 0);
+        internal = Math.round(total * 0.3);
+        external = total - internal;
+      }
+
+      // Borderline Grace Marks Logic:
+      // If total score is 38 or 39, and internal score is >= 18 out of 30, add up to 2 grace marks to push them to 40 (passing)
+      let graceApplied = false;
+      let graceMarksVal = 0;
+      if (total >= 38 && total < 40 && internal >= 18) {
+        graceMarksVal = 40 - total;
+        total = 40;
+        graceApplied = true;
+      }
+
+      // Grade Calculation
+      let grade = 'F';
+      if (total >= 90) grade = 'O';
+      else if (total >= 80) grade = 'A+';
+      else if (total >= 70) grade = 'A';
+      else if (total >= 60) grade = 'B+';
+      else if (total >= 50) grade = 'B';
+      else if (total >= 40) grade = 'C';
+
       // Find if result already exists for student, subject, semester, and exam
       const { data: existing } = await supabase
         .from('results')
@@ -704,8 +740,12 @@ export async function saveExamResults(req, res, next) {
         await supabase
           .from('results')
           .update({
-            marks: parseInt(m.marks),
-            grade: m.grade || 'F',
+            marks: total,
+            internal_marks: internal,
+            external_marks: external,
+            grade,
+            grace_applied: graceApplied,
+            grace_marks: graceMarksVal,
             credits: parseInt(m.credits || 3),
             exam_id
           })
@@ -717,8 +757,12 @@ export async function saveExamResults(req, res, next) {
             student: m.student_user_id,
             subject,
             semester: exam.semester,
-            marks: parseInt(m.marks),
-            grade: m.grade || 'F',
+            marks: total,
+            internal_marks: internal,
+            external_marks: external,
+            grade,
+            grace_applied: graceApplied,
+            grace_marks: graceMarksVal,
             credits: parseInt(m.credits || 3),
             exam_id
           });
@@ -995,6 +1039,400 @@ export async function getMyRegistrations(req, res, next) {
     }
 
     res.json({ success: true, data: registrations });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// -------------------------------------------------------------
+// Advanced Exam Cell Upgrades Endpoints
+// -------------------------------------------------------------
+
+/**
+ * 23. Request Marks Correction (Faculty / Admin)
+ */
+export async function requestMarksCorrection(req, res, next) {
+  try {
+    const { result_id, new_internal_marks, new_external_marks, reason } = req.body;
+    if (!result_id || new_internal_marks === undefined || new_external_marks === undefined || !reason) {
+      return res.status(400).json({ success: false, message: 'result_id, new_internal_marks, new_external_marks, and reason are required' });
+    }
+
+    const { data: result, error: resultErr } = await supabase
+      .from('results')
+      .select('*')
+      .eq('id', result_id)
+      .single();
+
+    if (resultErr || !result) {
+      return res.status(404).json({ success: false, message: 'Result record not found' });
+    }
+
+    const { data, error } = await supabase
+      .from('marks_correction_requests')
+      .insert({
+        result_id,
+        requested_by: req.user.id,
+        old_internal_marks: result.internal_marks || 0.00,
+        old_external_marks: result.external_marks || result.marks || 0.00,
+        new_internal_marks: parseFloat(new_internal_marks),
+        new_external_marks: parseFloat(new_external_marks),
+        reason,
+        status: 'Pending'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 24. Get Pending Correction Requests (Admin / HOD / CoE)
+ */
+export async function getPendingCorrections(req, res, next) {
+  try {
+    const { data, error } = await supabase
+      .from('marks_correction_requests')
+      .select('*, result:results(*), requester:users(*)')
+      .eq('status', 'Pending')
+      .order('requested_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Join students profile to resolve roll number & name of the student in results
+    const studentUserIds = data.map(d => d.result?.student).filter(Boolean);
+    let studentMap = {};
+    if (studentUserIds.length > 0) {
+      const { data: students } = await supabase
+        .from('students')
+        .select('user_id, full_name, roll_number')
+        .in('user_id', studentUserIds);
+
+      if (students) {
+        students.forEach(s => {
+          studentMap[s.user_id] = s;
+        });
+      }
+    }
+
+    const enriched = data.map(d => ({
+      ...d,
+      student_profile: d.result?.student ? studentMap[d.result.student] : null
+    }));
+
+    res.json({ success: true, data: enriched });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 25. Approve/Reject Marks Correction (Admin / HOD / CoE)
+ */
+export async function approveMarksCorrection(req, res, next) {
+  try {
+    const { request_id, action, remarks } = req.body;
+    if (!request_id || !action || !['Approved', 'Rejected'].includes(action)) {
+      return res.status(400).json({ success: false, message: 'request_id and action (Approved/Rejected) are required' });
+    }
+
+    const { data: request, error: reqErr } = await supabase
+      .from('marks_correction_requests')
+      .select('*, result:results(*)')
+      .eq('id', request_id)
+      .single();
+
+    if (reqErr || !request) {
+      return res.status(404).json({ success: false, message: 'Correction request not found' });
+    }
+
+    if (action === 'Approved') {
+      const internal = parseFloat(request.new_internal_marks);
+      const external = parseFloat(request.new_external_marks);
+      let total = internal + external;
+
+      // Borderline Grace Marks Logic:
+      let graceApplied = false;
+      let graceMarksVal = 0;
+      if (total >= 38 && total < 40 && internal >= 18) {
+        graceMarksVal = 40 - total;
+        total = 40;
+        graceApplied = true;
+      }
+
+      // Grade Calculation
+      let grade = 'F';
+      if (total >= 90) grade = 'O';
+      else if (total >= 80) grade = 'A+';
+      else if (total >= 70) grade = 'A';
+      else if (total >= 60) grade = 'B+';
+      else if (total >= 50) grade = 'B';
+      else if (total >= 40) grade = 'C';
+
+      // Update Result record
+      const { error: updateErr } = await supabase
+        .from('results')
+        .update({
+          marks: total,
+          internal_marks: internal,
+          external_marks: external,
+          grade,
+          grace_applied: graceApplied,
+          grace_marks: graceMarksVal
+        })
+        .eq('id', request.result_id);
+
+      if (updateErr) throw updateErr;
+    }
+
+    // Update Request status
+    const { data: updatedRequest, error: updateRequestErr } = await supabase
+      .from('marks_correction_requests')
+      .update({
+        status: action,
+        reviewed_by: req.user.id,
+        reviewer_remarks: remarks || null,
+        reviewed_at: new Date().toISOString()
+      })
+      .eq('id', request_id)
+      .select()
+      .single();
+
+    if (updateRequestErr) throw updateRequestErr;
+
+    res.json({ success: true, data: updatedRequest });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 26. Extended Exam Analytics (Rank list, At-Risk, Branch Pass comparison)
+ */
+export async function getExtendedAnalytics(req, res, next) {
+  try {
+    const { id: exam_id } = req.params;
+
+    const { data: exam, error: examErr } = await supabase
+      .from('exams')
+      .select('*')
+      .eq('id', exam_id)
+      .single();
+
+    if (examErr || !exam) {
+      return res.status(404).json({ success: false, message: 'Exam not found' });
+    }
+
+    // Get all results
+    const { data: results, error: resultsErr } = await supabase
+      .from('results')
+      .select('*')
+      .eq('exam_id', exam_id);
+
+    if (resultsErr) throw resultsErr;
+
+    // Get all students for attendance matching
+    const { data: students, error: studentErr } = await supabase
+      .from('students')
+      .select('id, user_id, full_name, roll_number, department, attendance_percentage')
+      .eq('department', exam.department)
+      .eq('year', exam.year)
+      .eq('semester', exam.semester);
+
+    if (studentErr) throw studentErr;
+
+    const studentMap = {};
+    students.forEach(s => {
+      studentMap[s.user_id || s.id] = s;
+    });
+
+    // 1. Department pass rate calculations
+    const branchStats = {};
+    let totalPassed = 0;
+    let totalFailed = 0;
+    let sumMarks = 0;
+
+    results.forEach(r => {
+      const studentProfile = studentMap[r.student];
+      const dept = studentProfile?.department || exam.department;
+
+      if (!branchStats[dept]) {
+        branchStats[dept] = { total: 0, passed: 0 };
+      }
+      branchStats[dept].total++;
+      sumMarks += Number(r.marks || 0);
+
+      if (Number(r.marks || 0) >= 40) {
+        branchStats[dept].passed++;
+        totalPassed++;
+      } else {
+        totalFailed++;
+      }
+    });
+
+    const branchData = Object.keys(branchStats).map(b => ({
+      branch: b,
+      passRate: Math.round((branchStats[b].passed / branchStats[b].total) * 100),
+      total: branchStats[b].total
+    }));
+
+    // 2. Rank List (Top 10)
+    const studentAggregates = {};
+    results.forEach(r => {
+      const uid = r.student;
+      if (!studentAggregates[uid]) {
+        studentAggregates[uid] = { sum: 0, count: 0 };
+      }
+      studentAggregates[uid].sum += Number(r.marks || 0);
+      studentAggregates[uid].count++;
+    });
+
+    const rankList = Object.keys(studentAggregates).map(uid => {
+      const agg = studentAggregates[uid];
+      const profile = studentMap[uid] || { full_name: 'Student', roll_number: uid, department: exam.department };
+      return {
+        full_name: profile.full_name,
+        roll_number: profile.roll_number,
+        department: profile.department,
+        averageMarks: Math.round(agg.sum / agg.count),
+        totalMarks: agg.sum
+      };
+    }).sort((a, b) => b.totalMarks - a.totalMarks).slice(0, 10);
+
+    // 3. At-Risk Students
+    // Defined as: attendance < 75% OR has an 'F' grade in results, OR average marks < 45 in current exam
+    const atRiskStudents = students.map(s => {
+      const studentResults = results.filter(r => r.student === s.user_id || r.student === s.id);
+      const attendance = Number(s.attendance_percentage || 100);
+      
+      let failedSubjectsCount = 0;
+      let sum = 0;
+      studentResults.forEach(r => {
+        sum += Number(r.marks || 0);
+        if (r.grade === 'F') {
+          failedSubjectsCount++;
+        }
+      });
+
+      const avgMarks = studentResults.length > 0 ? (sum / studentResults.length) : 80;
+      const isAtRisk = attendance < 75.0 || failedSubjectsCount > 0 || avgMarks < 45;
+
+      let riskScore = 0.1;
+      let factors = [];
+      if (attendance < 75.0) {
+        riskScore += 0.4;
+        factors.push(`Low Attendance (${attendance}%)`);
+      }
+      if (failedSubjectsCount > 0) {
+        riskScore += 0.3;
+        factors.push(`${failedSubjectsCount} Failed Subject(s)`);
+      }
+      if (avgMarks < 45) {
+        riskScore += 0.2;
+        factors.push(`Low Average Score (${Math.round(avgMarks)})`);
+      }
+
+      return {
+        id: s.id,
+        full_name: s.full_name,
+        roll_number: s.roll_number,
+        department: s.department,
+        attendance_percentage: attendance,
+        riskScore: parseFloat(Math.min(riskScore, 1.0).toFixed(2)),
+        factors,
+        isAtRisk
+      };
+    }).filter(s => s.isAtRisk).sort((a, b) => b.riskScore - a.riskScore);
+
+    res.json({
+      success: true,
+      data: {
+        passRate: results.length > 0 ? Math.round((totalPassed / results.length) * 100) : 100,
+        averageMarks: results.length > 0 ? Math.round(sumMarks / results.length) : 0,
+        totalSubmissions: results.length,
+        branchData,
+        rankList,
+        atRiskStudents
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * 27. Register Supplementary Exam (Student)
+ */
+export async function registerSupplementary(req, res, next) {
+  try {
+    const { courseId } = req.body;
+    if (!courseId) {
+      return res.status(400).json({ success: false, message: 'courseId is required' });
+    }
+
+    // 1. Resolve student profile
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id, user_id')
+      .eq('user_id', req.user.id)
+      .single();
+
+    if (studentError || !student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    // 2. Fetch course information
+    const { data: course, error: courseError } = await supabase
+      .from('courses')
+      .select('*')
+      .eq('id', courseId)
+      .single();
+
+    if (courseError || !course) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+
+    // 3. Verify that student actually has a backlog (grade = 'F') in this subject
+    const { data: backlog, error: backlogError } = await supabase
+      .from('results')
+      .select('*')
+      .eq('student', student.user_id)
+      .eq('subject', course.course_name)
+      .eq('grade', 'F')
+      .maybeSingle();
+
+    if (!backlog) {
+      return res.status(400).json({
+        success: false,
+        message: 'Registration Denied: You do not have an active backlog (Grade F) in this subject.'
+      });
+    }
+
+    // 4. Create the exam registration record marked as Supplementary
+    const { data, error } = await supabase
+      .from('exam_registrations')
+      .insert({
+        student_id: student.id,
+        course_id: course.id,
+        semester: course.semester,
+        year: course.year,
+        status: 'Registered'
+      })
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === '23505') {
+        return res.status(400).json({ success: false, message: 'You have already registered for this supplementary exam.' });
+      }
+      throw error;
+    }
+
+    res.status(201).json({ success: true, data });
   } catch (err) {
     next(err);
   }

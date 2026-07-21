@@ -133,6 +133,21 @@ export function StudentCourseRegistration() {
     }
   });
 
+  // Register supplementary mutation
+  const registerSupplementaryMutation = useMutation({
+    mutationFn: async (courseId: string) => {
+      const { data } = await api.post("/api/exams/supplementary/register", { courseId });
+      return data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-exam-registrations"] });
+      toast.success("Successfully registered for supplementary exam!");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Failed to register for supplementary exam.");
+    }
+  });
+
   // Year to Semester map
   const getSemestersForYear = (yr: string) => {
     switch (yr) {
@@ -166,6 +181,14 @@ export function StudentCourseRegistration() {
 
   const isExamRegistered = (courseId: string) => {
     return myExamRegistrations.some(r => r.course_id === courseId);
+  };
+
+  const handleRegisterSupplementary = (courseId: string) => {
+    registerSupplementaryMutation.mutate(courseId);
+  };
+
+  const hasBacklog = (courseName: string) => {
+    return results.some((r: any) => r.subject === courseName && r.grade === "F");
   };
 
   const activeRegistrationsCount = myRegistrations.filter(
@@ -461,6 +484,14 @@ export function StudentCourseRegistration() {
                           <div className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1.5 cursor-default">
                             <CheckCircle className="size-3.5" /> Exam Registered
                           </div>
+                        ) : hasBacklog(course.course_name) ? (
+                          <button
+                            onClick={() => handleRegisterSupplementary(course.id)}
+                            disabled={registerSupplementaryMutation.isPending}
+                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-amber-600 text-white hover:bg-amber-700 active:scale-95 transition-all disabled:opacity-50"
+                          >
+                            {registerSupplementaryMutation.isPending ? "Registering..." : "Register Supplementary Exam"}
+                          </button>
                         ) : Number(selectedYear) < studentProfile.year ? (
                           <button
                             disabled
