@@ -876,5 +876,5 @@ export function authenticateFaculty(identifier?: string, passwordInput?: string)
     );
   }
 
-  return found || ALL_FACULTY_MEMBERS[1];
+  return found || null;
 }
