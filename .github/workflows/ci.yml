@@ -19,11 +19,12 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: 'client/package-lock.json'
 
       - name: Install dependencies (client)
         working-directory: client
         run: |
-          npm ci
+          npm ci || npm install
 
       - name: Run client tests
         working-directory: client
