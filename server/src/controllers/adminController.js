@@ -190,8 +190,10 @@ export const createFaculty = async (req, res, next) => {
       password
     } = req.body;
 
-    if (!fullName || !email || !employeeId || !department || !designation || !password) {
-      const error = new Error('Please fill in all required fields (including Password)');
+    const facultyPassword = password || 'password123';
+
+    if (!fullName || !email || !employeeId || !department || !designation) {
+      const error = new Error('Please fill in all required fields (Full Name, Email, Employee ID, Department, Designation)');
       error.statusCode = 400;
       throw error;
     }
@@ -252,7 +254,7 @@ export const createFaculty = async (req, res, next) => {
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(facultyPassword, salt);
 
     let user;
     if (existingUser) {
@@ -263,7 +265,7 @@ export const createFaculty = async (req, res, next) => {
           name: fullName,
           full_name: fullName,
           password: hashedPassword,
-          temp_password: password,
+          temp_password: facultyPassword,
           is_active: true
         })
         .eq('id', existingUser.id)
@@ -282,8 +284,8 @@ export const createFaculty = async (req, res, next) => {
           email: cleanEmail,
           role: 'faculty',
           password: hashedPassword,
-          temp_password: password,
-          is_verified: false,
+          temp_password: facultyPassword,
+          is_verified: true,
           is_active: true
         }])
         .select()

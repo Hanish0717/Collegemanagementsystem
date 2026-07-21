@@ -205,6 +205,32 @@
       "mobile": "7778889999",
       "is_verified": true,
       "is_active": true
+    },
+    {
+      "id": "a22ef574-2fc4-43ae-af43-02d04177e3e6",
+      "created_at": "2026-07-21T06:06:42.139Z",
+      "updated_at": "2026-07-21T06:06:42.139Z",
+      "name": "BODDEDA VISHNU VARDHAN",
+      "full_name": "BODDEDA VISHNU VARDHAN",
+      "email": "vvardhan1235@gmail.com",
+      "role": "faculty",
+      "password": "$2a$10$nCXS9L/HRBEB9mte5ntXfeJbDNwyTOwCPjlCGZ/2zsN7veVbKls06",
+      "temp_password": "password123",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "50e760c4-c332-41ab-94dc-146b3991e84f",
+      "created_at": "2026-07-21T06:08:07.006Z",
+      "updated_at": "2026-07-21T06:08:07.006Z",
+      "name": "ramesh",
+      "full_name": "ramesh",
+      "email": "23341a4219@gmrit.edu.in",
+      "role": "faculty",
+      "password": "$2a$10$ka4JhbdQ4gtGik3r6d6kD.bp2BrKSJ6QxYaj4Oep/ngTp3jXZMfZO",
+      "temp_password": "password123",
+      "is_verified": true,
+      "is_active": true
     }
   ],
   "students": [
@@ -255,6 +281,36 @@
       "status": "Active",
       "attendance_percentage": 95,
       "is_active": true
+    },
+    {
+      "id": "d9db5d7f-99c4-418f-bfc1-e3badb016567",
+      "created_at": "2026-07-21T06:06:42.157Z",
+      "updated_at": "2026-07-21T06:06:42.157Z",
+      "user_id": "a22ef574-2fc4-43ae-af43-02d04177e3e6",
+      "full_name": "BODDEDA VISHNU VARDHAN",
+      "email": "vvardhan1235@gmail.com",
+      "employee_id": "646",
+      "department": "Computer Science",
+      "designation": "Assistant Professor",
+      "experience": 0,
+      "phone_number": "6300460031",
+      "is_active": true,
+      "status": "Active"
+    },
+    {
+      "id": "76ad18e5-e5f8-4b09-9a6f-6a7aa4ce97f6",
+      "created_at": "2026-07-21T06:08:07.040Z",
+      "updated_at": "2026-07-21T06:08:07.040Z",
+      "user_id": "50e760c4-c332-41ab-94dc-146b3991e84f",
+      "full_name": "ramesh",
+      "email": "23341a4219@gmrit.edu.in",
+      "employee_id": "545",
+      "department": "Computer Science",
+      "designation": "jr",
+      "experience": 0,
+      "phone_number": "",
+      "is_active": true,
+      "status": "Active"
     }
   ],
   "books": [
@@ -265,13 +321,14 @@
       "isbn": "9780262033848",
       "category": "Computer Science",
       "quantity": 5,
-      "available_quantity": 4,
+      "available_quantity": 1,
       "shelf_location": "CS-03",
       "publisher": "MIT Press",
       "edition": "3rd",
       "language": "English",
       "description": "The bible of algorithms.",
-      "is_active": true
+      "is_active": true,
+      "updated_at": "2026-07-21T06:17:41.472Z"
     },
     {
       "id": "b2222222-2222-2222-2222-222222222222",
@@ -280,12 +337,29 @@
       "isbn": "9780073523323",
       "category": "Computer Science",
       "quantity": 3,
-      "available_quantity": 3,
+      "available_quantity": 1,
       "shelf_location": "CS-05",
       "publisher": "McGraw-Hill",
       "edition": "6th",
       "language": "English",
       "description": "Core database text.",
+      "is_active": true,
+      "updated_at": "2026-07-21T06:17:41.472Z"
+    },
+    {
+      "id": "24f4884a-001c-4e47-896a-545b40b91ca7",
+      "created_at": "2026-07-21T06:10:29.309Z",
+      "updated_at": "2026-07-21T06:17:41.472Z",
+      "title": "DWSD",
+      "author": "DFSDV",
+      "category": "Computer Science",
+      "isbn": "DSSD",
+      "publisher": "ASQWW",
+      "quantity": 10,
+      "available_quantity": 1,
+      "shelf_location": "",
+      "description": "ASCAS",
+      "cover_image": "",
       "is_active": true
     }
   ],
@@ -565,6 +639,28 @@
       "expires_at": "2026-07-18T10:09:53.125Z",
       "attempts": 0,
       "blocked_until": null
+    },
+    {
+      "id": "3e828042-ad19-40c3-a294-058956985ba6",
+      "created_at": "2026-07-21T06:06:42.191Z",
+      "updated_at": "2026-07-21T06:06:42.191Z",
+      "email": "vvardhan1235@gmail.com",
+      "otp": "d2cb98852b492f7a4aba3fc16c0b3c6d7c1e2ee798e5699ffa13f4b699c12951",
+      "type": "email_verification",
+      "expires_at": "2026-07-21T06:11:42.190Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "b46e8699-5fba-4417-88a8-2ade0413bf24",
+      "created_at": "2026-07-21T06:08:07.093Z",
+      "updated_at": "2026-07-21T06:08:07.093Z",
+      "email": "23341a4219@gmrit.edu.in",
+      "otp": "e1e6bfc5aa6c2a325f12caa6b7ecbd639f115350debad34443c8a0f9ba721c20",
+      "type": "email_verification",
+      "expires_at": "2026-07-21T06:13:07.092Z",
+      "attempts": 0,
+      "blocked_until": null
     }
   ],
   "faculty_attendance": [
@@ -746,13 +842,84 @@
       "priority": "High",
       "time": "Just now",
       "unread": true
+    },
+    {
+      "id": "SN-LIB-1784614252500",
+      "created_at": "2026-07-21T06:10:52.530Z",
+      "updated_at": "2026-07-21T06:10:52.530Z",
+      "title": "Book issued: 'Introduction to Algorithms' by Cormen, Leiserson, Rivest, Stein. Due: 4 Aug.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784614295176",
+      "created_at": "2026-07-21T06:11:35.196Z",
+      "updated_at": "2026-07-21T06:11:35.196Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹0.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784614630879",
+      "created_at": "2026-07-21T06:17:10.899Z",
+      "updated_at": "2026-07-21T06:17:10.899Z",
+      "title": "Book issued: 'Database System Concepts' by Silberschatz, Korth, Sudarshan. Due: 4 Aug.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784614661472",
+      "created_at": "2026-07-21T06:17:41.501Z",
+      "updated_at": "2026-07-21T06:17:41.501Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹10.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
   "departments": [],
   "transport_routes": [],
   "transport_buses": [],
   "ebooks": [],
-  "issued_books": [],
+  "issued_books": [
+    {
+      "id": "a28be528-6d25-4717-aaa7-1940926a2b56",
+      "created_at": "2026-07-21T06:10:52.472Z",
+      "updated_at": "2026-07-21T06:11:35.144Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b1111111-1111-1111-1111-111111111111",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-21",
+      "due_date": "2026-08-04",
+      "status": "Returned",
+      "return_date": "2026-07-21",
+      "fine_amount": 0
+    },
+    {
+      "id": "782c9024-20f1-49ca-9e46-8eb2815f034b",
+      "created_at": "2026-07-21T06:17:10.857Z",
+      "updated_at": "2026-07-21T06:17:41.440Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b2222222-2222-2222-2222-222222222222",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-21",
+      "due_date": "2026-08-04",
+      "status": "Returned",
+      "return_date": "2026-07-21",
+      "fine_amount": 10
+    }
+  ],
   "subjects": [],
   "placements": [],
   "hostel_fees": [],

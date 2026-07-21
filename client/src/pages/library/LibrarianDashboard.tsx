@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from '@tanstack/react-router';
+import { Link, Outlet, useRouterState } from '@tanstack/react-router';
 import {
   AreaChart,
   Area,
@@ -39,6 +39,7 @@ const statGradients = [
 ];
 
 export function LibrarianDashboard() {
+  const path = useRouterState({ select: (r) => r.location.pathname });
   const [selectedIssueDetail, setSelectedIssueDetail] = useState<any>(null);
 
   const { data: report, isLoading: isReportLoading } = useQuery({
@@ -50,6 +51,10 @@ export function LibrarianDashboard() {
     queryKey: ['issuedBooks'],
     queryFn: () => fetchIssuedBooks(),
   });
+
+  if (path !== '/dashboard/librarian' && path !== '/dashboard/librarian/') {
+    return <Outlet />;
+  }
 
   if (isReportLoading || isIssuedLoading) {
     return (
@@ -289,6 +294,8 @@ export function LibrarianDashboard() {
               change={s.change}
               icon={statIcons[i]}
               gradient={statGradients[i]}
+              hideGraph={true}
+              hideChange={true}
             />
           </motion.div>
         ))}

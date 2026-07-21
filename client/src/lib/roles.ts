@@ -166,6 +166,17 @@ const alumniWorkspaceNav: NavItem[] = [
   { to: '/dashboard/admin/alumni/help', label: 'Help', icon: HelpCircle },
 ];
 
+const aiWorkspaceNav: NavItem[] = [
+  { to: '/dashboard/ai', label: 'AI Dashboard', icon: LayoutDashboard },
+  { to: '/dashboard/ai/performance', label: 'Performance Forecast', icon: Award },
+  { to: '/dashboard/ai/risk', label: 'Risk Analysis', icon: ShieldAlert },
+  { to: '/dashboard/ai/attendance', label: 'Attendance AI', icon: CalendarCheck },
+  { to: '/dashboard/ai/insights', label: 'Smart Insights', icon: Sparkles },
+  { to: '/dashboard/ai/chatbot', label: 'AI Assistant', icon: MessageSquare },
+  { to: '/dashboard/ai/reports', label: 'AI Reports', icon: FileText },
+  { to: '/dashboard/ai/settings', label: 'AI Settings', icon: Settings },
+];
+
 export const ROLES: Record<RoleId, Role> = {
   super_admin: {
     id: 'super_admin',
@@ -195,6 +206,12 @@ export const ROLES: Record<RoleId, Role> = {
       { to: '/dashboard/admin/grievance', label: 'Grievances Cell', icon: ShieldAlert },
       { to: '/dashboard/super-admin/configuration', label: 'System Configuration', icon: Settings },
       { to: '/dashboard/super-admin/automation', label: 'AI Automation Control', icon: Sparkles },
+      {
+        to: '/dashboard/ai',
+        label: 'AI Analytics',
+        icon: Sparkles,
+        children: [...aiWorkspaceNav],
+      },
       { to: '/dashboard/super-admin/reports', label: 'Global Reports', icon: Activity },
       { to: '/dashboard/super-admin/security', label: 'Security & Logs', icon: Shield },
       { to: '/dashboard/super-admin/backups', label: 'Backup Management', icon: Database },
@@ -235,6 +252,12 @@ export const ROLES: Record<RoleId, Role> = {
       { to: '/dashboard/admin/grievance', label: 'Grievances Cell', icon: ShieldAlert },
       { to: '/dashboard/admin/events', label: 'Campus Events', icon: Sparkles },
       { to: '/dashboard/admin/research', label: 'Research (R&D)', icon: Sparkles },
+      {
+        to: '/dashboard/ai',
+        label: 'AI Analytics',
+        icon: Sparkles,
+        children: [...aiWorkspaceNav],
+      },
       { to: '/dashboard/admin/clubs', label: 'Student Clubs', icon: Users },
       { to: '/dashboard/admin/health', label: 'Health & Wellness', icon: Heart },
       { to: '/dashboard/admin/notifications', label: 'Notifications', icon: Bell },
@@ -257,6 +280,13 @@ export const ROLES: Record<RoleId, Role> = {
       { to: '/dashboard/faculty/publications', label: 'Publications', icon: FileText },
       { to: '/dashboard/admin/lms', label: 'LMS Portal', icon: FileText },
       { to: '/dashboard/faculty/students', label: 'My Students', icon: Users },
+      { to: '/dashboard/faculty/performance', label: 'Student Performance', icon: Activity },
+      {
+        to: '/dashboard/ai',
+        label: 'AI Analytics',
+        icon: Sparkles,
+        children: [...aiWorkspaceNav],
+      },
       { to: '/dashboard/faculty/communication', label: 'Message Hub', icon: MessageSquare },
       { to: '/dashboard/faculty/notifications', label: 'Notifications', icon: Bell },
       { to: '/dashboard/faculty/settings', label: 'Settings', icon: Settings },

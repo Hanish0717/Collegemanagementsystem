@@ -1277,31 +1277,31 @@ export function AdminFees() {
                   <div className="text-[10px] text-red-600 font-semibold mt-1">Fine rules applied</div>
                 </Card>
               </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
-                  setPage(1);
-                }}
-                className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm outline-none cursor-pointer"
-              >
-                {['All Status', 'Paid', 'Pending', 'Overdue'].map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-              <button className="px-4 py-2.5 rounded-xl border flex items-center gap-2 text-sm font-medium hover:bg-accent transition">
-                <Filter className="size-4" /> Filters
-              </button>
-              <button
-                onClick={handleExportCSV}
-                className="px-4 py-2.5 rounded-xl border flex items-center gap-2 text-sm font-medium hover:bg-accent transition"
-              >
-                <Download className="size-4" /> Export
-              </button>
-            </div>
-          </Card>
+              <div className="flex gap-2">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setPage(1);
+                  }}
+                  className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm outline-none cursor-pointer"
+                >
+                  {['All Status', 'Paid', 'Pending', 'Overdue'].map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <button className="px-4 py-2.5 rounded-xl border flex items-center gap-2 text-sm font-medium hover:bg-accent transition">
+                  <Filter className="size-4" /> Filters
+                </button>
+                <button
+                  onClick={handleExportCSV}
+                  className="px-4 py-2.5 rounded-xl border flex items-center gap-2 text-sm font-medium hover:bg-accent transition"
+                >
+                  <Download className="size-4" /> Export
+                </button>
+              </div>
 
           <div className="grid lg:grid-cols-3 gap-4">
             {/* Revenue Analytics Chart */}
@@ -1330,6 +1330,8 @@ export function AdminFees() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+            </Card>
+          </div>
 
               {/* Graphical Charts Section */}
               <div className="grid lg:grid-cols-3 gap-6">

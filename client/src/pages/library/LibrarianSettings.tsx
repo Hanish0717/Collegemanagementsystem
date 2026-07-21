@@ -82,15 +82,6 @@ export function LibrarianSettings() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-2">
-        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-          Librarian Settings
-        </span>
-        <h2 className="text-sm font-medium text-muted-foreground">
-          Manage central database catalogs
-        </h2>
-      </div>
-
       <PageHeader
         title="Profile"
         desc="Manage your identity and public presence."
