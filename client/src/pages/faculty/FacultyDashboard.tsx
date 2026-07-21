@@ -186,6 +186,7 @@ export function FacultyDashboard() {
             Customize ⚙️
           </button>
         </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
           {[
             { label: 'Class Roster', icon: Users, to: '/dashboard/faculty/students' },
             { label: 'Timetable', icon: CalendarIcon, to: '/dashboard/faculty/classes' },
