@@ -3,18 +3,14 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
+
 export default defineConfig({
   plugins: [react(), tsconfigPaths({ projects: ['./tsconfig.json'] })],
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     include: ['src/**/*.test.{ts,tsx}'],
     exclude: ['node_modules/**'],
-    server: {
-      deps: {
-        inline: [/jsdom/, /html-encoding-sniffer/, /@exodus\/bytes/],
-      },
-    },
   },
   resolve: {
     alias: {
