@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { X, AlertTriangle, CheckCircle2, Info, Trash2, Edit3, Upload, UserCheck, HelpCircle } from 'lucide-react';
 import { Button } from './Button';
 
-export type ModalVariant = 'confirmation' | 'delete' | 'edit' | 'preview' | 'upload' | 'assign' | 'approval' | 'success' | 'warning';
+export type ModalVariant = 'confirmation' | 'delete' | 'edit' | 'preview' | 'upload' | 'assign' | 'approval' | 'success' | 'warning' | 'info';
 
 interface ModalProps {
   isOpen: boolean;
