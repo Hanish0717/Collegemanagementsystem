@@ -1269,13 +1269,14 @@ export function LibrarianIdCards() {
                       requestType: 'New',
                       reason: 'Initial card issuance'
                     });
-                    toast.success('Active Student ID Card generated & profile stored successfully!');
+                    toast.success('ID Card request submitted & sent to Pending Approval!');
                     setShowIssueModal(false);
                     await queryClient.invalidateQueries({ queryKey: ['idCardStats'] });
                     await queryClient.invalidateQueries({ queryKey: ['idCardHistory'] });
                     await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile'] });
                     await queryClient.invalidateQueries({ queryKey: ['idCardStudentProfile', selectedStudentId] });
                     refetchProfile();
+                    setActiveTab('requests');
                   } catch (err: any) {
                     toast.error(err.response?.data?.message || err.message || 'Failed to issue ID Card');
                   }
