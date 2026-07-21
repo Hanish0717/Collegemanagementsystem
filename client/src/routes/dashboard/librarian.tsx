@@ -1,5 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { LibrarianDashboard } from '@/pages/library/LibrarianDashboard';
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { getStoredUser } from '@/services/authService';
 
 export const Route = createFileRoute('/dashboard/librarian')({
@@ -10,5 +9,6 @@ export const Route = createFileRoute('/dashboard/librarian')({
       throw redirect({ to: '/dashboard' });
     }
   },
-  component: LibrarianDashboard,
+  component: Outlet,
 });
+

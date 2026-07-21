@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { AiDashboard } from '@/pages/ai/AiDashboard';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/dashboard/ai')({
-  component: AiDashboard,
+  component: Outlet,
 });
+
