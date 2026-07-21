@@ -242,15 +242,15 @@ export async function deleteStudent(studentId: string): Promise<void> {
 
 export async function verifyStudent(
   rollNumber: string,
-  department?: string,
   fullName?: string,
+  department?: string,
 ): Promise<StudentRecord> {
   const { data } = await api.post<{ success: boolean; data: any; message: string }>(
     '/api/students/verify',
     {
       rollNumber,
-      department,
       fullName,
+      department,
     },
   );
   return mapStudent(data.data);

@@ -40,18 +40,3 @@
 [2026-07-18T11:39:47.247Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T11:50:30.824Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T12:05:52.366Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-20T16:31:31.384Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:31:32.418Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:31:32.810Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:31:33.820Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:31:34.426Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:31:38.445Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:34:49.610Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:34:50.619Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:34:52.636Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:34:56.654Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:57:32.838Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:57:33.864Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-20T16:57:35.880Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
-[2026-07-21T04:52:27.264Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod.cse@college.com","password":"password123"}
-[2026-07-21T04:52:35.588Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod.cse@college.com","password":"password123"}

@@ -5,7 +5,7 @@
       "name": "Super Admin",
       "full_name": "Super Admin",
       "email": "superadmin@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "super-admin",
       "is_verified": true,
       "is_active": true
@@ -15,7 +15,7 @@
       "name": "Admin",
       "full_name": "Admin",
       "email": "admin@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "admin",
       "is_verified": true,
       "is_active": true
@@ -25,7 +25,7 @@
       "name": "Faculty",
       "full_name": "Dr. John Smith",
       "email": "faculty@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "faculty",
       "is_verified": true,
       "is_active": true
@@ -35,7 +35,7 @@
       "name": "Student",
       "full_name": "Student Demo",
       "email": "student@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "student",
       "is_verified": true,
       "is_active": true
@@ -45,7 +45,7 @@
       "name": "Parent",
       "full_name": "Parent Demo",
       "email": "parent@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "parent",
       "child_email": "student@college.com",
       "is_verified": true,
@@ -56,7 +56,7 @@
       "name": "Librarian",
       "full_name": "Librarian Demo",
       "email": "librarian@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "librarian",
       "is_verified": true,
       "is_active": true
@@ -66,7 +66,7 @@
       "name": "Placement Officer",
       "full_name": "Placement Officer Demo",
       "email": "placement@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "placement-officer",
       "is_verified": true,
       "is_active": true
@@ -76,7 +76,7 @@
       "name": "Hostel Warden",
       "full_name": "Hostel Warden Demo",
       "email": "warden@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "hostel-warden",
       "is_verified": true,
       "is_active": true
@@ -86,7 +86,7 @@
       "name": "Transport Manager",
       "full_name": "Transport Manager Demo",
       "email": "transport@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "transport-manager",
       "is_verified": true,
       "is_active": true
@@ -96,7 +96,7 @@
       "name": "Exam Cell Officer",
       "full_name": "Exam Cell Office",
       "email": "examcell@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "exam-cell",
       "is_verified": true,
       "is_active": true
@@ -106,7 +106,7 @@
       "name": "Dean Academics",
       "full_name": "Dean Academics Office",
       "email": "dean@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "dean",
       "is_verified": true,
       "is_active": true
@@ -116,7 +116,7 @@
       "name": "Accounts Manager",
       "full_name": "Accounts Office",
       "email": "accounts@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "accounts",
       "is_verified": true,
       "is_active": true
@@ -126,85 +126,8 @@
       "name": "Principal",
       "full_name": "Principal Office",
       "email": "principal@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "principal",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "hocse111-1111-1111-1111-111111111111",
-      "name": "HOD CSE",
-      "full_name": "Dr. Anjali Mehra",
-      "email": "hod.cse@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
-      "role": "hod",
-      "department": "CSE",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "hoaiml11-1111-1111-1111-111111111111",
-      "name": "HOD AIML",
-      "full_name": "Dr. HOD AIML",
-      "email": "hod.aiml@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
-      "role": "hod",
-      "department": "AIML",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "hoece111-1111-1111-1111-111111111111",
-      "name": "HOD ECE",
-      "full_name": "Dr. Ramesh Kumar",
-      "email": "hod.ece@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
-      "role": "hod",
-      "department": "ECE",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "hoeee111-1111-1111-1111-111111111111",
-      "name": "HOD EEE",
-      "full_name": "Dr. Suresh Varma",
-      "email": "hod.eee@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
-      "role": "hod",
-      "department": "EEE",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "homech11-1111-1111-1111-111111111111",
-      "name": "HOD MECH",
-      "full_name": "Dr. Vikram Rathore",
-      "email": "hod.mech@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
-      "role": "hod",
-      "department": "MECH",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "hocivl11-1111-1111-1111-111111111111",
-      "name": "HOD CIVIL",
-      "full_name": "Dr. Rajesh Gupta",
-      "email": "hod.civil@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
-      "role": "hod",
-      "department": "CIVIL",
-      "is_verified": true,
-      "is_active": true
-    },
-    {
-      "id": "hoit1111-1111-1111-1111-111111111111",
-      "name": "HOD IT",
-      "full_name": "Dr. Neha Sharma",
-      "email": "hod.it@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
-      "role": "hod",
-      "department": "IT",
       "is_verified": true,
       "is_active": true
     },
@@ -213,19 +136,17 @@
       "name": "HOD CSE",
       "full_name": "HOD CSE Dept",
       "email": "hod@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "hod",
-      "department": "CSE",
       "is_verified": true,
       "is_active": true
     },
-
     {
       "id": "co111111-1111-1111-1111-111111111111",
       "name": "Alumni Coordinator",
       "full_name": "Alumni Coordinator",
       "email": "alumni.coordinator@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "alumni-coordinator",
       "is_verified": true,
       "is_active": true
@@ -235,8 +156,79 @@
       "name": "Alumni",
       "full_name": "Alumni Member",
       "email": "alumni@college.com",
-      "password": "$2a$10$eauFbALedCMWStHUe8wAR.PtkYJalDsU3uNHowL9p2f3XwpPvoMKO",
+      "password": "$2a$10$VVhCngj1SwJyoV6K9r5FU.MO95GVpHXcdB/EgcrPe.vUszHyCsOKi",
       "role": "alumni",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "e24f92a3-7461-4dd6-859d-88256f4c1fde",
+      "created_at": "2026-07-18T04:14:04.997Z",
+      "updated_at": "2026-07-18T04:14:04.997Z",
+      "name": "Alice Smith",
+      "full_name": "Alice Smith",
+      "email": "alice_1784348039876@test.com",
+      "password": "$2a$10$acRtUKTrtec9xc5Xt8hPzeMpZfNx9ZJWjWYpJC6ED8X1xTJj5u8G.",
+      "temp_password": "Password123!",
+      "role": "student",
+      "phone_number": "1112223333",
+      "mobile": "1112223333",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "53e118f1-a258-48a7-bccb-6411735ae513",
+      "created_at": "2026-07-18T04:14:09.233Z",
+      "updated_at": "2026-07-18T04:14:09.233Z",
+      "name": "David Jones",
+      "full_name": "David Jones",
+      "email": "david_1784348039876@test.com",
+      "password": "$2a$10$DELhjZESS46ZpnxpPyol7.fDjyxh.guRkpt13zWAqJ/1y72xmSf7O",
+      "temp_password": "Password123!",
+      "role": "student",
+      "phone_number": "4445556666",
+      "mobile": "4445556666",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "a2ebe407-00f8-4aa5-a643-32abacb276a2",
+      "created_at": "2026-07-18T04:14:14.312Z",
+      "updated_at": "2026-07-18T04:14:14.312Z",
+      "name": "Charlie Green",
+      "full_name": "Charlie Green",
+      "email": "charlie_1784348039876@test.com",
+      "password": "$2a$10$L6Jv4Vckn/dPHYf00qgo5.I2S.fQzchLWvjR2XWlP/zml3TVRvd1.",
+      "temp_password": "Password123!",
+      "role": "student",
+      "phone_number": "7778889999",
+      "mobile": "7778889999",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "a22ef574-2fc4-43ae-af43-02d04177e3e6",
+      "created_at": "2026-07-21T06:06:42.139Z",
+      "updated_at": "2026-07-21T06:06:42.139Z",
+      "name": "BODDEDA VISHNU VARDHAN",
+      "full_name": "BODDEDA VISHNU VARDHAN",
+      "email": "vvardhan1235@gmail.com",
+      "role": "faculty",
+      "password": "$2a$10$nCXS9L/HRBEB9mte5ntXfeJbDNwyTOwCPjlCGZ/2zsN7veVbKls06",
+      "temp_password": "password123",
+      "is_verified": true,
+      "is_active": true
+    },
+    {
+      "id": "50e760c4-c332-41ab-94dc-146b3991e84f",
+      "created_at": "2026-07-21T06:08:07.006Z",
+      "updated_at": "2026-07-21T06:08:07.006Z",
+      "name": "ramesh",
+      "full_name": "ramesh",
+      "email": "23341a4219@gmrit.edu.in",
+      "role": "faculty",
+      "password": "$2a$10$ka4JhbdQ4gtGik3r6d6kD.bp2BrKSJ6QxYaj4Oep/ngTp3jXZMfZO",
+      "temp_password": "password123",
       "is_verified": true,
       "is_active": true
     }
@@ -275,44 +267,52 @@
     }
   ],
   "faculty": [
-    { "id": "f1111111-1111-1111-1111-111111111111", "user_id": "33333333-3333-3333-3333-333333333333", "full_name": "Dr. John Smith",       "email": "faculty@college.com",          "employee_id": "FAC2020001", "department": "CSE",   "designation": "Associate Professor", "experience": 12, "gender": "Male",   "phone_number": "9876543212", "status": "Active",    "attendance_percentage": 95.0, "is_active": true },
-    { "id": "fcse0002-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Anjali Mehra",       "email": "anjali.mehra@college.com",     "employee_id": "FAC2018002", "department": "CSE",   "designation": "Professor & Head",    "experience": 18, "gender": "Female", "phone_number": "9876500002", "status": "Active",    "attendance_percentage": 97.0, "is_active": true },
-    { "id": "fcse0003-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Kiran Bose",       "email": "kiran.bose@college.com",       "employee_id": "FAC2021003", "department": "CSE",   "designation": "Assistant Professor", "experience":  5, "gender": "Male",   "phone_number": "9876500003", "status": "Active",    "attendance_percentage": 91.0, "is_active": true },
-    { "id": "fcse0004-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Pooja Iyer",       "email": "pooja.iyer@college.com",       "employee_id": "FAC2022004", "department": "CSE",   "designation": "Assistant Professor", "experience":  3, "gender": "Female", "phone_number": "9876500004", "status": "Active",    "attendance_percentage": 88.0, "is_active": true },
-    { "id": "fcse0005-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Sunil Chadha",       "email": "sunil.chadha@college.com",     "employee_id": "FAC2015005", "department": "CSE",   "designation": "Professor",           "experience": 21, "gender": "Male",   "phone_number": "9876500005", "status": "On Leave", "attendance_percentage": 82.0, "is_active": true },
-
-    { "id": "faiml001-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Ramesh Kumar",       "email": "ramesh.kumar@college.com",     "employee_id": "FAC2019101", "department": "AIML",  "designation": "Professor & Head",    "experience": 14, "gender": "Male",   "phone_number": "9876501001", "status": "Active",    "attendance_percentage": 98.0, "is_active": true },
-    { "id": "faiml002-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Sneha Verma",      "email": "sneha.verma@college.com",      "employee_id": "FAC2020102", "department": "AIML",  "designation": "Associate Professor", "experience":  9, "gender": "Female", "phone_number": "9876501002", "status": "Active",    "attendance_percentage": 95.0, "is_active": true },
-    { "id": "faiml003-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Vikram Rathore",   "email": "vikram.rathore@college.com",   "employee_id": "FAC2021103", "department": "AIML",  "designation": "Assistant Professor", "experience":  6, "gender": "Male",   "phone_number": "9876501003", "status": "Active",    "attendance_percentage": 92.0, "is_active": true },
-    { "id": "faiml004-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Ananya Roy",         "email": "ananya.roy@college.com",       "employee_id": "FAC2022104", "department": "AIML",  "designation": "Assistant Professor", "experience":  5, "gender": "Female", "phone_number": "9876501004", "status": "Active",    "attendance_percentage": 96.0, "is_active": true },
-
-    { "id": "fece0001-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Ramesh Kumar",       "email": "ramesh.ece@college.com",       "employee_id": "FAC2016201", "department": "ECE",   "designation": "Professor & Head",    "experience": 16, "gender": "Male",   "phone_number": "9876502001", "status": "Active",    "attendance_percentage": 96.0, "is_active": true },
-    { "id": "fece0002-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Kavitha Nair",       "email": "kavitha.nair@college.com",     "employee_id": "FAC2018202", "department": "ECE",   "designation": "Associate Professor", "experience": 10, "gender": "Female", "phone_number": "9876502002", "status": "Active",    "attendance_percentage": 93.0, "is_active": true },
-    { "id": "fece0003-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Arvind Pillai",    "email": "arvind.pillai@college.com",    "employee_id": "FAC2020203", "department": "ECE",   "designation": "Assistant Professor", "experience":  7, "gender": "Male",   "phone_number": "9876502003", "status": "Active",    "attendance_percentage": 90.0, "is_active": true },
-    { "id": "fece0004-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Meena Srinivasan", "email": "meena.srinivasan@college.com", "employee_id": "FAC2022204", "department": "ECE",   "designation": "Assistant Professor", "experience":  4, "gender": "Female", "phone_number": "9876502004", "status": "Active",    "attendance_percentage": 88.0, "is_active": true },
-    { "id": "fece0005-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Gopal Krishnan",     "email": "gopal.krishnan@college.com",   "employee_id": "FAC2014205", "department": "ECE",   "designation": "Professor",           "experience": 22, "gender": "Male",   "phone_number": "9876502005", "status": "Active",    "attendance_percentage": 94.0, "is_active": true },
-
-    { "id": "feee0001-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Suresh Varma",       "email": "suresh.varma@college.com",     "employee_id": "FAC2015301", "department": "EEE",   "designation": "Professor & Head",    "experience": 17, "gender": "Male",   "phone_number": "9876503001", "status": "Active",    "attendance_percentage": 97.0, "is_active": true },
-    { "id": "feee0002-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Lakshmi Prasad",     "email": "lakshmi.prasad@college.com",   "employee_id": "FAC2017302", "department": "EEE",   "designation": "Associate Professor", "experience": 11, "gender": "Female", "phone_number": "9876503002", "status": "Active",    "attendance_percentage": 92.0, "is_active": true },
-    { "id": "feee0003-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Raju Naidu",       "email": "raju.naidu@college.com",       "employee_id": "FAC2021303", "department": "EEE",   "designation": "Assistant Professor", "experience":  6, "gender": "Male",   "phone_number": "9876503003", "status": "Active",    "attendance_percentage": 89.0, "is_active": true },
-    { "id": "feee0004-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Deepa Moorthy",    "email": "deepa.moorthy@college.com",    "employee_id": "FAC2023304", "department": "EEE",   "designation": "Assistant Professor", "experience":  2, "gender": "Female", "phone_number": "9876503004", "status": "Active",    "attendance_percentage": 85.0, "is_active": true },
-
-    { "id": "fmech001-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Vikram Rathore",     "email": "vikram.mech@college.com",      "employee_id": "FAC2016401", "department": "MECH",  "designation": "Professor & Head",    "experience": 15, "gender": "Male",   "phone_number": "9876504001", "status": "Active",    "attendance_percentage": 95.0, "is_active": true },
-    { "id": "fmech002-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Priya Shankar",      "email": "priya.shankar@college.com",    "employee_id": "FAC2018402", "department": "MECH",  "designation": "Associate Professor", "experience": 10, "gender": "Female", "phone_number": "9876504002", "status": "Active",    "attendance_percentage": 91.0, "is_active": true },
-    { "id": "fmech003-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Arun Tiwari",      "email": "arun.tiwari@college.com",      "employee_id": "FAC2020403", "department": "MECH",  "designation": "Assistant Professor", "experience":  8, "gender": "Male",   "phone_number": "9876504003", "status": "Active",    "attendance_percentage": 90.0, "is_active": true },
-    { "id": "fmech004-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Sonal Desai",      "email": "sonal.desai@college.com",      "employee_id": "FAC2022404", "department": "MECH",  "designation": "Assistant Professor", "experience":  4, "gender": "Female", "phone_number": "9876504004", "status": "On Leave", "attendance_percentage": 78.0, "is_active": true },
-
-    { "id": "fcivl001-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Rajesh Gupta",       "email": "rajesh.gupta@college.com",     "employee_id": "FAC2014501", "department": "CIVIL", "designation": "Professor & Head",    "experience": 20, "gender": "Male",   "phone_number": "9876505001", "status": "Active",    "attendance_percentage": 98.0, "is_active": true },
-    { "id": "fcivl002-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Sudha Menon",        "email": "sudha.menon@college.com",      "employee_id": "FAC2016502", "department": "CIVIL", "designation": "Associate Professor", "experience": 12, "gender": "Female", "phone_number": "9876505002", "status": "Active",    "attendance_percentage": 94.0, "is_active": true },
-    { "id": "fcivl003-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Dilip Patel",      "email": "dilip.patel@college.com",      "employee_id": "FAC2019503", "department": "CIVIL", "designation": "Assistant Professor", "experience":  9, "gender": "Male",   "phone_number": "9876505003", "status": "Active",    "attendance_percentage": 88.0, "is_active": true },
-    { "id": "fcivl004-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Ritu Sharma",      "email": "ritu.sharma@college.com",      "employee_id": "FAC2023504", "department": "CIVIL", "designation": "Assistant Professor", "experience":  2, "gender": "Female", "phone_number": "9876505004", "status": "Active",    "attendance_percentage": 87.0, "is_active": true },
-
-    { "id": "fit00001-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Neha Sharma",        "email": "neha.sharma@college.com",      "employee_id": "FAC2017601", "department": "IT",    "designation": "Professor & Head",    "experience": 13, "gender": "Female", "phone_number": "9876506001", "status": "Active",    "attendance_percentage": 96.0, "is_active": true },
-    { "id": "fit00002-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Dr. Mahesh Reddy",       "email": "mahesh.reddy@college.com",     "employee_id": "FAC2019602", "department": "IT",    "designation": "Associate Professor", "experience":  8, "gender": "Male",   "phone_number": "9876506002", "status": "Active",    "attendance_percentage": 93.0, "is_active": true },
-    { "id": "fit00003-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Asha Kulkarni",    "email": "asha.kulkarni@college.com",    "employee_id": "FAC2021603", "department": "IT",    "designation": "Assistant Professor", "experience":  6, "gender": "Female", "phone_number": "9876506003", "status": "Active",    "attendance_percentage": 90.0, "is_active": true },
-    { "id": "fit00004-1111-1111-1111-111111111111", "user_id": null,                                   "full_name": "Prof. Sanjay Bhatt",     "email": "sanjay.bhatt@college.com",     "employee_id": "FAC2022604", "department": "IT",    "designation": "Assistant Professor", "experience":  4, "gender": "Male",   "phone_number": "9876506004", "status": "Active",    "attendance_percentage": 91.0, "is_active": true }
+    {
+      "id": "f1111111-1111-1111-1111-111111111111",
+      "user_id": "33333333-3333-3333-3333-333333333333",
+      "full_name": "Dr. John Smith",
+      "email": "faculty@college.com",
+      "employee_id": "FAC2020001",
+      "department": "CSE",
+      "designation": "Associate Professor",
+      "experience": 12,
+      "gender": "Male",
+      "phone_number": "9876543212",
+      "status": "Active",
+      "attendance_percentage": 95,
+      "is_active": true
+    },
+    {
+      "id": "d9db5d7f-99c4-418f-bfc1-e3badb016567",
+      "created_at": "2026-07-21T06:06:42.157Z",
+      "updated_at": "2026-07-21T06:06:42.157Z",
+      "user_id": "a22ef574-2fc4-43ae-af43-02d04177e3e6",
+      "full_name": "BODDEDA VISHNU VARDHAN",
+      "email": "vvardhan1235@gmail.com",
+      "employee_id": "646",
+      "department": "Computer Science",
+      "designation": "Assistant Professor",
+      "experience": 0,
+      "phone_number": "6300460031",
+      "is_active": true,
+      "status": "Active"
+    },
+    {
+      "id": "76ad18e5-e5f8-4b09-9a6f-6a7aa4ce97f6",
+      "created_at": "2026-07-21T06:08:07.040Z",
+      "updated_at": "2026-07-21T06:08:07.040Z",
+      "user_id": "50e760c4-c332-41ab-94dc-146b3991e84f",
+      "full_name": "ramesh",
+      "email": "23341a4219@gmrit.edu.in",
+      "employee_id": "545",
+      "department": "Computer Science",
+      "designation": "jr",
+      "experience": 0,
+      "phone_number": "",
+      "is_active": true,
+      "status": "Active"
+    }
   ],
-
   "books": [
     {
       "id": "b1111111-1111-1111-1111-111111111111",
@@ -321,13 +321,14 @@
       "isbn": "9780262033848",
       "category": "Computer Science",
       "quantity": 5,
-      "available_quantity": 4,
+      "available_quantity": 1,
       "shelf_location": "CS-03",
       "publisher": "MIT Press",
       "edition": "3rd",
       "language": "English",
       "description": "The bible of algorithms.",
-      "is_active": true
+      "is_active": true,
+      "updated_at": "2026-07-21T06:17:41.472Z"
     },
     {
       "id": "b2222222-2222-2222-2222-222222222222",
@@ -336,12 +337,29 @@
       "isbn": "9780073523323",
       "category": "Computer Science",
       "quantity": 3,
-      "available_quantity": 3,
+      "available_quantity": 1,
       "shelf_location": "CS-05",
       "publisher": "McGraw-Hill",
       "edition": "6th",
       "language": "English",
       "description": "Core database text.",
+      "is_active": true,
+      "updated_at": "2026-07-21T06:17:41.472Z"
+    },
+    {
+      "id": "24f4884a-001c-4e47-896a-545b40b91ca7",
+      "created_at": "2026-07-21T06:10:29.309Z",
+      "updated_at": "2026-07-21T06:17:41.472Z",
+      "title": "DWSD",
+      "author": "DFSDV",
+      "category": "Computer Science",
+      "isbn": "DSSD",
+      "publisher": "ASQWW",
+      "quantity": 10,
+      "available_quantity": 1,
+      "shelf_location": "",
+      "description": "ASCAS",
+      "cover_image": "",
       "is_active": true
     }
   ],
@@ -370,6 +388,32 @@
       "paid_amount": 0,
       "academic_year": "2025-2026",
       "semester": 5
+    },
+    {
+      "id": "66751bda-4c5d-4102-ac71-3b10c412c73e",
+      "created_at": "2026-07-18T04:16:21.697Z",
+      "updated_at": "2026-07-18T04:16:21.697Z",
+      "student": "fedac8b0-6e76-42c0-b1ea-bf4c29e2bd81",
+      "amount": 80000,
+      "type": "College Fee",
+      "due_date": "2026-12-31",
+      "status": "Unpaid",
+      "paid_amount": 0,
+      "academic_year": "2026-2027",
+      "semester": 6
+    },
+    {
+      "id": "b93fb64a-c5d9-4ee3-a56d-fd550daf1901",
+      "created_at": "2026-07-18T10:04:53.096Z",
+      "updated_at": "2026-07-18T10:04:53.096Z",
+      "student": "e92f3723-cf21-443e-96ce-a675b2608ead",
+      "amount": 80000,
+      "type": "College Fee",
+      "due_date": "2026-12-31",
+      "status": "Unpaid",
+      "paid_amount": 0,
+      "academic_year": "2026-2027",
+      "semester": 6
     }
   ],
   "attendance": [
@@ -404,7 +448,7 @@
       "title": "Red-Black Trees Implementation",
       "description": "Implement RB-Trees insertion and deletion in C++.",
       "subject": "Data Structures",
-      "due_date": "2026-07-26T04:35:13.505Z",
+      "due_date": "2026-07-23T08:42:36.508Z",
       "department": "CSE",
       "year": 3,
       "semester": 5,
@@ -507,7 +551,118 @@
       "section": "A"
     }
   ],
-  "otps": [],
+  "otps": [
+    {
+      "id": "7985f44e-d135-4a9f-a73a-aa2730c2e94d",
+      "created_at": "2026-07-18T04:14:00.166Z",
+      "updated_at": "2026-07-18T04:14:00.166Z",
+      "email": "admin_1784348039876@test.com",
+      "otp": "48606bb8eebac9daa89be7120fdbb55770fa6b550d1efe42405e95f02a39ec8f",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T04:19:00.165Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "bf4c9a35-f516-4925-b415-cc7e7d02f168",
+      "created_at": "2026-07-18T04:14:05.100Z",
+      "updated_at": "2026-07-18T04:14:05.100Z",
+      "email": "alice_1784348039876@test.com",
+      "otp": "fb95adc584db7bd10d90823ddd01e672c4cc7a3e13b8dde9705ab4f03285a652",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T04:19:05.099Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "e38f8f23-b853-472f-b877-8a3b869c1bd5",
+      "created_at": "2026-07-18T04:14:09.341Z",
+      "updated_at": "2026-07-18T04:14:09.341Z",
+      "email": "david_1784348039876@test.com",
+      "otp": "6a702845e315ce0a57c166b38bdb7c7019e1bac822f1aeb1eefb32db6abe0e67",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T04:19:09.340Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "23c968a0-d0ce-4432-95bf-5787572c26eb",
+      "created_at": "2026-07-18T04:14:14.407Z",
+      "updated_at": "2026-07-18T04:14:14.408Z",
+      "email": "charlie_1784348039876@test.com",
+      "otp": "b49d470d1fd70bea279141f8f6e9182b5bb485d9f4e299e3d68a078fee244713",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T04:19:14.407Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "426c1f23-37a1-4e27-b8fc-01a0fd838c10",
+      "created_at": "2026-07-18T04:16:02.037Z",
+      "updated_at": "2026-07-18T04:16:02.037Z",
+      "email": "student_1784348161437@test.com",
+      "otp": "6929e834ce76a5bd255e127a3726bc60a9401b9c6f3f551699efecd5c8161e94",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T04:21:02.037Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "dce97b66-2ce6-45aa-95a6-363fab114770",
+      "created_at": "2026-07-18T04:16:07.477Z",
+      "updated_at": "2026-07-18T04:16:07.477Z",
+      "email": "other_student_1784348161437@test.com",
+      "otp": "13d67761829a55133b3ed603f38792ada00ca3bd2a94982f25ebce54c5d2fc44",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T04:21:07.477Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "6ca2f333-65cf-4269-b44c-bc75eab483ce",
+      "created_at": "2026-07-18T04:16:21.743Z",
+      "updated_at": "2026-07-18T04:16:21.743Z",
+      "email": "stud_user_1784348181149@test.com",
+      "otp": "be14f891274a67eec58c8d49c9bd3be73ed63bbde8c64878b39ccf6620b31933",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T04:21:21.742Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "7585162c-7052-4dcb-9e4b-463bdf1b3f29",
+      "created_at": "2026-07-18T10:04:53.126Z",
+      "updated_at": "2026-07-18T10:04:53.126Z",
+      "email": "stud_user_1784369092829@test.com",
+      "otp": "5942ca0e100442b087e510082fb63be37d13a43fcc4c726b2b4ed8a69f141401",
+      "type": "email_verification",
+      "expires_at": "2026-07-18T10:09:53.125Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "3e828042-ad19-40c3-a294-058956985ba6",
+      "created_at": "2026-07-21T06:06:42.191Z",
+      "updated_at": "2026-07-21T06:06:42.191Z",
+      "email": "vvardhan1235@gmail.com",
+      "otp": "d2cb98852b492f7a4aba3fc16c0b3c6d7c1e2ee798e5699ffa13f4b699c12951",
+      "type": "email_verification",
+      "expires_at": "2026-07-21T06:11:42.190Z",
+      "attempts": 0,
+      "blocked_until": null
+    },
+    {
+      "id": "b46e8699-5fba-4417-88a8-2ade0413bf24",
+      "created_at": "2026-07-21T06:08:07.093Z",
+      "updated_at": "2026-07-21T06:08:07.093Z",
+      "email": "23341a4219@gmrit.edu.in",
+      "otp": "e1e6bfc5aa6c2a325f12caa6b7ecbd639f115350debad34443c8a0f9ba721c20",
+      "type": "email_verification",
+      "expires_at": "2026-07-21T06:13:07.092Z",
+      "attempts": 0,
+      "blocked_until": null
+    }
+  ],
   "faculty_attendance": [
     {
       "id": "fa111111-1111-1111-1111-111111111111",
@@ -531,12 +686,72 @@
       "remarks": "Sick leave"
     }
   ],
-  "departments": [],
-  "transport_routes": [],
-  "alumni_profiles": [],
+  "alumni_profiles": [
+    {
+      "id": "alm-001",
+      "created_at": "2026-07-18T09:27:00.083Z",
+      "updated_at": "2026-07-18T09:27:00.083Z",
+      "full_name": "Ashok",
+      "email": "ashok@gmail.com",
+      "phone": "8765432113",
+      "graduation_year": 2021,
+      "department": "Mechanical Engineering",
+      "roll_number": "23341A4229",
+      "current_company": "spacex",
+      "designation": "",
+      "location": "",
+      "linkedin": "",
+      "portfolio": "",
+      "skills": [],
+      "biography": "",
+      "status": "Approved",
+      "profile_completion": 70
+    },
+    {
+      "id": "alm-002",
+      "created_at": "2026-07-18T10:40:10.987Z",
+      "updated_at": "2026-07-18T10:40:10.987Z",
+      "full_name": "Jane Doe",
+      "email": "jane@example.com",
+      "phone": "9876543219",
+      "graduation_year": 20242023,
+      "department": "Electronics & Comm",
+      "roll_number": "CS210971",
+      "current_company": "Google",
+      "designation": "Software Engineer",
+      "location": "",
+      "linkedin": "",
+      "portfolio": "",
+      "skills": [],
+      "biography": "",
+      "status": "Approved",
+      "profile_completion": 70
+    }
+  ],
   "alumni_events": [],
   "alumni_jobs": [],
-  "alumni_donations": [],
+  "alumni_donations": [
+    {
+      "created_at": "2026-07-18T09:00:01.136Z",
+      "updated_at": "2026-07-18T09:00:01.140Z",
+      "alumniId": "alm-001",
+      "amount": 24000000,
+      "cause": "Laboratory",
+      "transactionId": "TXN34567890",
+      "payment_status": "Completed",
+      "date": "2026-07-18"
+    },
+    {
+      "created_at": "2026-07-18T09:15:07.423Z",
+      "updated_at": "2026-07-18T09:15:07.428Z",
+      "alumniId": "alm-001",
+      "amount": 100000,
+      "cause": "Emergency Fund",
+      "transactionId": "TNX34567892",
+      "payment_status": "Completed",
+      "date": "2026-07-18"
+    }
+  ],
   "alumni_event_registrations": [],
   "alumni_mentorship_requests": [],
   "alumni_success_stories": [],
@@ -550,60 +765,231 @@
   "alumni_employment": [],
   "alumni_education": [],
   "alumni_job_applications": [],
-  "attendance_notifications": [],
-  "below_75_students": [],
-  "attendance_notification_requests": [],
-  "college_settings": [
+  "hostel_allocations": [],
+  "transport_allocations": [],
+  "student_notifications": [
     {
-      "key": "attendance_approval_enabled",
-      "value": "false",
-      "description": "Enable/disable HOD approval flow for attendance warnings",
-      "created_at": "2026-07-21T04:36:37.267Z",
-      "updated_at": "2026-07-21T04:36:37.267Z"
+      "id": "N-1784347933151-5580",
+      "created_at": "2026-07-18T04:12:13.153Z",
+      "updated_at": "2026-07-18T04:12:13.153Z",
+      "student_id": "07aac7e2-d41e-4de5-97b7-282bb6c1e9be",
+      "title": "Hostel Fee Payment Recorded",
+      "type": "Fee",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "N-1784347956622-3333",
+      "created_at": "2026-07-18T04:12:36.623Z",
+      "updated_at": "2026-07-18T04:12:36.623Z",
+      "student_id": "ceaaf169-0914-4cee-bcae-3cb96add8e1d",
+      "title": "Hostel Fee Payment Recorded",
+      "type": "Fee",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "N-1784347980777-1905",
+      "created_at": "2026-07-18T04:13:00.780Z",
+      "updated_at": "2026-07-18T04:13:00.780Z",
+      "student_id": "c42ed672-2dc9-440c-a751-2faf4e83daf3",
+      "title": "Hostel Fee Payment Recorded",
+      "type": "Fee",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-FEE-DUE-87740ddf-f4ff-4771-b051-e85df97f2706",
+      "created_at": "2026-07-18T04:16:12.988Z",
+      "updated_at": "2026-07-18T04:16:12.988Z",
+      "title": "Fee Payment Reminder: tuition is due on 31 Dec. Balance: ₹1,000",
+      "type": "Finance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-FEE-DUE-3e81be74-a77c-47a7-bca0-fdb678f8b589",
+      "created_at": "2026-07-18T04:16:13.041Z",
+      "updated_at": "2026-07-18T04:16:13.041Z",
+      "title": "Fee Payment Reminder: library is due on 13 Jul. Balance: ₹200",
+      "type": "Finance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-ATT-WARN-1784348186009",
+      "created_at": "2026-07-18T04:16:26.011Z",
+      "updated_at": "2026-07-18T04:16:26.011Z",
+      "student_id": "fedac8b0-6e76-42c0-b1ea-bf4c29e2bd81",
+      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
+      "type": "Attendance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-ATT-WARN-1784369097596",
+      "created_at": "2026-07-18T10:04:57.597Z",
+      "updated_at": "2026-07-18T10:04:57.597Z",
+      "student_id": "e92f3723-cf21-443e-96ce-a675b2608ead",
+      "title": "Attendance Warning: Your attendance has fallen below 75%. Current: 50%.",
+      "type": "Attendance",
+      "priority": "High",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SN-LIB-1784614252500",
+      "created_at": "2026-07-21T06:10:52.530Z",
+      "updated_at": "2026-07-21T06:10:52.530Z",
+      "title": "Book issued: 'Introduction to Algorithms' by Cormen, Leiserson, Rivest, Stein. Due: 4 Aug.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784614295176",
+      "created_at": "2026-07-21T06:11:35.196Z",
+      "updated_at": "2026-07-21T06:11:35.196Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹0.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784614630879",
+      "created_at": "2026-07-21T06:17:10.899Z",
+      "updated_at": "2026-07-21T06:17:10.899Z",
+      "title": "Book issued: 'Database System Concepts' by Silberschatz, Korth, Sudarshan. Due: 4 Aug.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784614661472",
+      "created_at": "2026-07-21T06:17:41.501Z",
+      "updated_at": "2026-07-21T06:17:41.501Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹10.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
-  "attendance_notification_templates": [
+  "departments": [],
+  "transport_routes": [],
+  "transport_buses": [],
+  "ebooks": [],
+  "issued_books": [
     {
-      "id": "appreciation",
-      "name": "Appreciation",
-      "subject": "Congratulations on Excellent Attendance",
-      "body": "Dear {student_name},\n\nWe are pleased to inform you that you have maintained an excellent attendance of {attendance_percentage}% this month.\n\nKeep up the great work!\n\nBest regards,\nCollege Administration",
-      "created_at": "2026-07-21T04:36:37.267Z",
-      "updated_at": "2026-07-21T04:36:37.267Z"
+      "id": "a28be528-6d25-4717-aaa7-1940926a2b56",
+      "created_at": "2026-07-21T06:10:52.472Z",
+      "updated_at": "2026-07-21T06:11:35.144Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b1111111-1111-1111-1111-111111111111",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-21",
+      "due_date": "2026-08-04",
+      "status": "Returned",
+      "return_date": "2026-07-21",
+      "fine_amount": 0
     },
     {
-      "id": "friendly-reminder",
-      "name": "Friendly Reminder",
-      "subject": "Friendly Reminder: Attendance Update",
-      "body": "Dear {student_name},\n\nThis is a friendly reminder that your overall attendance is currently at {attendance_percentage}%.\n\nPlease attend your classes regularly to keep your attendance above the required 75% threshold.\n\nBest regards,\nClass Teacher",
-      "created_at": "2026-07-21T04:36:37.267Z",
-      "updated_at": "2026-07-21T04:36:37.267Z"
-    },
-    {
-      "id": "warning",
-      "name": "Warning",
-      "subject": "Attendance Warning Alert",
-      "body": "Dear {student_name},\n\nYour attendance is currently at {attendance_percentage}%, which is below the required 75% threshold.\n\nPlease take immediate steps to attend your classes regularly to avoid academic penalty.\n\nBest regards,\nClass Teacher",
-      "created_at": "2026-07-21T04:36:37.267Z",
-      "updated_at": "2026-07-21T04:36:37.267Z"
-    },
-    {
-      "id": "critical-warning",
-      "name": "Critical Warning",
-      "subject": "Critical Attendance Warning",
-      "body": "Dear Parent / Student,\n\nThis is to notify you that the attendance of {student_name} ({roll_number}) is critical at {attendance_percentage}%.\n\nPlease meet your department HOD immediately to resolve this.\n\nBest regards,\nDepartment Head",
-      "created_at": "2026-07-21T04:36:37.267Z",
-      "updated_at": "2026-07-21T04:36:37.267Z"
-    },
-    {
-      "id": "detention-alert",
-      "name": "Detention Alert",
-      "subject": "Detention Risk Alert",
-      "body": "Dear Parent / Student,\n\nYour overall attendance has fallen to {attendance_percentage}%, putting you at immediate risk of detention.\n\nKindly note that you will not be allowed to write the semester exams if this is not resolved.\n\nBest regards,\nPrincipal",
-      "created_at": "2026-07-21T04:36:37.267Z",
-      "updated_at": "2026-07-21T04:36:37.267Z"
+      "id": "782c9024-20f1-49ca-9e46-8eb2815f034b",
+      "created_at": "2026-07-21T06:17:10.857Z",
+      "updated_at": "2026-07-21T06:17:41.440Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "b2222222-2222-2222-2222-222222222222",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-21",
+      "due_date": "2026-08-04",
+      "status": "Returned",
+      "return_date": "2026-07-21",
+      "fine_amount": 10
     }
   ],
-  "attendance_notification_history": [],
-  "attendance_notification_logs": []
+  "subjects": [],
+  "placements": [],
+  "hostel_fees": [],
+  "hostel_fee_payments": [],
+  "hostel_fee_receipts": [],
+  "system_notifications": [
+    {
+      "id": "HN-933087",
+      "created_at": "2026-07-18T04:12:13.088Z",
+      "updated_at": "2026-07-18T04:12:13.088Z",
+      "title": "Fee payment received for E2E Student 1784347932917.",
+      "type": "Alert",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "HN-956558",
+      "created_at": "2026-07-18T04:12:36.559Z",
+      "updated_at": "2026-07-18T04:12:36.559Z",
+      "title": "Fee payment received for E2E Student 1784347956371.",
+      "type": "Alert",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "HN-980716",
+      "created_at": "2026-07-18T04:13:00.717Z",
+      "updated_at": "2026-07-18T04:13:00.717Z",
+      "title": "Fee payment received for E2E Student 1784347980535.",
+      "type": "Alert",
+      "time": "Just now",
+      "unread": true
+    }
+  ],
+  "notification_logs": [
+    {
+      "id": "7aae24fb-1cdb-470c-9594-58a3be94d2ef",
+      "created_at": "2026-07-18T04:12:13.180Z",
+      "updated_at": "2026-07-18T04:12:13.180Z",
+      "user_id": null,
+      "recipient_email": "e2e1784347932917@example.com",
+      "type": "Fee",
+      "title": "Hostel Fee Payment Recorded",
+      "message": "Dear E2E Student 1784347932917, we have recorded a payment of ₹1 towards your hostel fee. Updated status: Partially Paid.",
+      "channel": "in-app",
+      "status": "sent"
+    },
+    {
+      "id": "aa69606e-9443-4452-87b5-bd7dde27c27f",
+      "created_at": "2026-07-18T04:12:36.647Z",
+      "updated_at": "2026-07-18T04:12:36.647Z",
+      "user_id": null,
+      "recipient_email": "e2e1784347956371@example.com",
+      "type": "Fee",
+      "title": "Hostel Fee Payment Recorded",
+      "message": "Dear E2E Student 1784347956371, we have recorded a payment of ₹1 towards your hostel fee. Updated status: Partially Paid.",
+      "channel": "in-app",
+      "status": "sent"
+    },
+    {
+      "id": "c60daace-f6be-4ff7-baac-b763402688cc",
+      "created_at": "2026-07-18T04:13:00.807Z",
+      "updated_at": "2026-07-18T04:13:00.807Z",
+      "user_id": null,
+      "recipient_email": "e2e1784347980535@example.com",
+      "type": "Fee",
+      "title": "Hostel Fee Payment Recorded",
+      "message": "Dear E2E Student 1784347980535, we have recorded a payment of ₹1 towards your hostel fee. Updated status: Partially Paid.",
+      "channel": "in-app",
+      "status": "sent"
+    }
+  ]
 }

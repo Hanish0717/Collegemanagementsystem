@@ -14,34 +14,11 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LmsLoginRouteImport } from './routes/lms-login'
-import { Route as HodRouteImport } from './routes/hod'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as HodIndexRouteImport } from './routes/hod/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AlumniIndexRouteImport } from './routes/alumni/index'
-import { Route as HodTimetableRouteImport } from './routes/hod/timetable'
-import { Route as HodStudentsRouteImport } from './routes/hod/students'
-import { Route as HodSettingsRouteImport } from './routes/hod/settings'
-import { Route as HodResourcesRouteImport } from './routes/hod/resources'
-import { Route as HodResearchRouteImport } from './routes/hod/research'
-import { Route as HodReportsRouteImport } from './routes/hod/reports'
-import { Route as HodNotificationsRouteImport } from './routes/hod/notifications'
-import { Route as HodMentoringRouteImport } from './routes/hod/mentoring'
-import { Route as HodFacultyRouteImport } from './routes/hod/faculty'
-import { Route as HodExaminationsRouteImport } from './routes/hod/examinations'
-import { Route as HodEventsRouteImport } from './routes/hod/events'
-import { Route as HodDocumentsRouteImport } from './routes/hod/documents'
-import { Route as HodDashboardRouteImport } from './routes/hod/dashboard'
-import { Route as HodCommunicationRouteImport } from './routes/hod/communication'
-import { Route as HodAuditLogsRouteImport } from './routes/hod/audit-logs'
-import { Route as HodAuditRouteImport } from './routes/hod/audit'
-import { Route as HodAttendanceRouteImport } from './routes/hod/attendance'
-import { Route as HodApprovalsRouteImport } from './routes/hod/approvals'
-import { Route as HodAcademicsRouteImport } from './routes/hod/academics'
-import { Route as Hod404RouteImport } from './routes/hod/404'
-import { Route as Hod403RouteImport } from './routes/hod/403'
 import { Route as DashboardTransportRouteImport } from './routes/dashboard/transport'
 import { Route as DashboardSuperAdminRouteImport } from './routes/dashboard/super-admin'
 import { Route as DashboardStudentsRouteImport } from './routes/dashboard/students'
@@ -75,10 +52,6 @@ import { Route as AlumniDashboardRouteImport } from './routes/alumni/dashboard'
 import { Route as AlumniCommunicationRouteImport } from './routes/alumni/communication'
 import { Route as AlumniAnalyticsRouteImport } from './routes/alumni/analytics'
 import { Route as DashboardLibrarianIndexRouteImport } from './routes/dashboard/librarian/index'
-import { Route as HodStudentsProfileRouteImport } from './routes/hod/students/profile'
-import { Route as HodStudentsEditRouteImport } from './routes/hod/students/edit'
-import { Route as HodStudentsAddRouteImport } from './routes/hod/students/add'
-import { Route as HodFacultyProfileRouteImport } from './routes/hod/faculty/profile'
 import { Route as DashboardSuperAdminUsersRouteImport } from './routes/dashboard/super-admin/users'
 import { Route as DashboardSuperAdminSettingsRouteImport } from './routes/dashboard/super-admin/settings'
 import { Route as DashboardSuperAdminSecurityRouteImport } from './routes/dashboard/super-admin/security'
@@ -98,7 +71,6 @@ import { Route as DashboardStudentMaterialsRouteImport } from './routes/dashboar
 import { Route as DashboardStudentLeaveRouteImport } from './routes/dashboard/student/leave'
 import { Route as DashboardStudentFeesRouteImport } from './routes/dashboard/student/fees'
 import { Route as DashboardStudentEventsRouteImport } from './routes/dashboard/student/events'
-import { Route as DashboardStudentCourseRegistrationRouteImport } from './routes/dashboard/student/course-registration'
 import { Route as DashboardStudentComplaintsRouteImport } from './routes/dashboard/student/complaints'
 import { Route as DashboardStudentAttendanceRouteImport } from './routes/dashboard/student/attendance'
 import { Route as DashboardStudentAssignmentsRouteImport } from './routes/dashboard/student/assignments'
@@ -190,14 +162,11 @@ import { Route as DashboardHostelMessMenusRouteImport } from './routes/dashboard
 import { Route as DashboardHostelMessFeesRouteImport } from './routes/dashboard/hostel/mess/fees'
 import { Route as DashboardAdminFacultyAttendanceRouteImport } from './routes/dashboard/admin/faculty/attendance'
 import { Route as DashboardAdminExamsTimetableRouteImport } from './routes/dashboard/admin/exams/timetable'
-import { Route as DashboardAdminExamsSupplementaryRouteImport } from './routes/dashboard/admin/exams/supplementary'
 import { Route as DashboardAdminExamsScheduleRouteImport } from './routes/dashboard/admin/exams/schedule'
 import { Route as DashboardAdminExamsResultsRouteImport } from './routes/dashboard/admin/exams/results'
 import { Route as DashboardAdminExamsQuestionsRouteImport } from './routes/dashboard/admin/exams/questions'
 import { Route as DashboardAdminExamsInvigilationRouteImport } from './routes/dashboard/admin/exams/invigilation'
 import { Route as DashboardAdminExamsHallTicketsRouteImport } from './routes/dashboard/admin/exams/hall-tickets'
-import { Route as DashboardAdminExamsCourseRegistrationRouteImport } from './routes/dashboard/admin/exams/course-registration'
-import { Route as DashboardAdminExamsCorrectionsRouteImport } from './routes/dashboard/admin/exams/corrections'
 import { Route as DashboardAdminExamsAnalyticsRouteImport } from './routes/dashboard/admin/exams/analytics'
 import { Route as DashboardAdminAlumniVerificationRouteImport } from './routes/dashboard/admin/alumni/verification'
 import { Route as DashboardAdminAlumniStoriesRouteImport } from './routes/dashboard/admin/alumni/stories'
@@ -245,11 +214,6 @@ const LmsLoginRoute = LmsLoginRouteImport.update({
   path: '/lms-login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HodRoute = HodRouteImport.update({
-  id: '/hod',
-  path: '/hod',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
@@ -265,11 +229,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HodIndexRoute = HodIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => HodRoute,
-} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -279,111 +238,6 @@ const AlumniIndexRoute = AlumniIndexRouteImport.update({
   id: '/alumni/',
   path: '/alumni/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const HodTimetableRoute = HodTimetableRouteImport.update({
-  id: '/timetable',
-  path: '/timetable',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodStudentsRoute = HodStudentsRouteImport.update({
-  id: '/students',
-  path: '/students',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodSettingsRoute = HodSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodResourcesRoute = HodResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodResearchRoute = HodResearchRouteImport.update({
-  id: '/research',
-  path: '/research',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodReportsRoute = HodReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodNotificationsRoute = HodNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodMentoringRoute = HodMentoringRouteImport.update({
-  id: '/mentoring',
-  path: '/mentoring',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodFacultyRoute = HodFacultyRouteImport.update({
-  id: '/faculty',
-  path: '/faculty',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodExaminationsRoute = HodExaminationsRouteImport.update({
-  id: '/examinations',
-  path: '/examinations',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodEventsRoute = HodEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodDocumentsRoute = HodDocumentsRouteImport.update({
-  id: '/documents',
-  path: '/documents',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodDashboardRoute = HodDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodCommunicationRoute = HodCommunicationRouteImport.update({
-  id: '/communication',
-  path: '/communication',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodAuditLogsRoute = HodAuditLogsRouteImport.update({
-  id: '/audit-logs',
-  path: '/audit-logs',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodAuditRoute = HodAuditRouteImport.update({
-  id: '/audit',
-  path: '/audit',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodAttendanceRoute = HodAttendanceRouteImport.update({
-  id: '/attendance',
-  path: '/attendance',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodApprovalsRoute = HodApprovalsRouteImport.update({
-  id: '/approvals',
-  path: '/approvals',
-  getParentRoute: () => HodRoute,
-} as any)
-const HodAcademicsRoute = HodAcademicsRouteImport.update({
-  id: '/academics',
-  path: '/academics',
-  getParentRoute: () => HodRoute,
-} as any)
-const Hod404Route = Hod404RouteImport.update({
-  id: '/404',
-  path: '/404',
-  getParentRoute: () => HodRoute,
-} as any)
-const Hod403Route = Hod403RouteImport.update({
-  id: '/403',
-  path: '/403',
-  getParentRoute: () => HodRoute,
 } as any)
 const DashboardTransportRoute = DashboardTransportRouteImport.update({
   id: '/transport',
@@ -550,26 +404,6 @@ const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardLibrarianRoute,
 } as any)
-const HodStudentsProfileRoute = HodStudentsProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => HodStudentsRoute,
-} as any)
-const HodStudentsEditRoute = HodStudentsEditRouteImport.update({
-  id: '/edit',
-  path: '/edit',
-  getParentRoute: () => HodStudentsRoute,
-} as any)
-const HodStudentsAddRoute = HodStudentsAddRouteImport.update({
-  id: '/add',
-  path: '/add',
-  getParentRoute: () => HodStudentsRoute,
-} as any)
-const HodFacultyProfileRoute = HodFacultyProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => HodFacultyRoute,
-} as any)
 const DashboardSuperAdminUsersRoute =
   DashboardSuperAdminUsersRouteImport.update({
     id: '/users',
@@ -680,12 +514,6 @@ const DashboardStudentEventsRoute = DashboardStudentEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => DashboardStudentRoute,
 } as any)
-const DashboardStudentCourseRegistrationRoute =
-  DashboardStudentCourseRegistrationRouteImport.update({
-    id: '/course-registration',
-    path: '/course-registration',
-    getParentRoute: () => DashboardStudentRoute,
-  } as any)
 const DashboardStudentComplaintsRoute =
   DashboardStudentComplaintsRouteImport.update({
     id: '/complaints',
@@ -1188,12 +1016,6 @@ const DashboardAdminExamsTimetableRoute =
     path: '/exams/timetable',
     getParentRoute: () => DashboardAdminRoute,
   } as any)
-const DashboardAdminExamsSupplementaryRoute =
-  DashboardAdminExamsSupplementaryRouteImport.update({
-    id: '/exams/supplementary',
-    path: '/exams/supplementary',
-    getParentRoute: () => DashboardAdminRoute,
-  } as any)
 const DashboardAdminExamsScheduleRoute =
   DashboardAdminExamsScheduleRouteImport.update({
     id: '/exams/schedule',
@@ -1222,18 +1044,6 @@ const DashboardAdminExamsHallTicketsRoute =
   DashboardAdminExamsHallTicketsRouteImport.update({
     id: '/exams/hall-tickets',
     path: '/exams/hall-tickets',
-    getParentRoute: () => DashboardAdminRoute,
-  } as any)
-const DashboardAdminExamsCourseRegistrationRoute =
-  DashboardAdminExamsCourseRegistrationRouteImport.update({
-    id: '/exams/course-registration',
-    path: '/exams/course-registration',
-    getParentRoute: () => DashboardAdminRoute,
-  } as any)
-const DashboardAdminExamsCorrectionsRoute =
-  DashboardAdminExamsCorrectionsRouteImport.update({
-    id: '/exams/corrections',
-    path: '/exams/corrections',
     getParentRoute: () => DashboardAdminRoute,
   } as any)
 const DashboardAdminExamsAnalyticsRoute =
@@ -1367,7 +1177,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
-  '/hod': typeof HodRouteWithChildren
   '/lms-login': typeof LmsLoginRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -1405,30 +1214,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
-  '/hod/403': typeof Hod403Route
-  '/hod/404': typeof Hod404Route
-  '/hod/academics': typeof HodAcademicsRoute
-  '/hod/approvals': typeof HodApprovalsRoute
-  '/hod/attendance': typeof HodAttendanceRoute
-  '/hod/audit': typeof HodAuditRoute
-  '/hod/audit-logs': typeof HodAuditLogsRoute
-  '/hod/communication': typeof HodCommunicationRoute
-  '/hod/dashboard': typeof HodDashboardRoute
-  '/hod/documents': typeof HodDocumentsRoute
-  '/hod/events': typeof HodEventsRoute
-  '/hod/examinations': typeof HodExaminationsRoute
-  '/hod/faculty': typeof HodFacultyRouteWithChildren
-  '/hod/mentoring': typeof HodMentoringRoute
-  '/hod/notifications': typeof HodNotificationsRoute
-  '/hod/reports': typeof HodReportsRoute
-  '/hod/research': typeof HodResearchRoute
-  '/hod/resources': typeof HodResourcesRoute
-  '/hod/settings': typeof HodSettingsRoute
-  '/hod/students': typeof HodStudentsRouteWithChildren
-  '/hod/timetable': typeof HodTimetableRoute
   '/alumni/': typeof AlumniIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/hod/': typeof HodIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
   '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
@@ -1512,7 +1299,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
   '/dashboard/student/complaints': typeof DashboardStudentComplaintsRoute
-  '/dashboard/student/course-registration': typeof DashboardStudentCourseRegistrationRoute
   '/dashboard/student/events': typeof DashboardStudentEventsRoute
   '/dashboard/student/fees': typeof DashboardStudentFeesRoute
   '/dashboard/student/leave': typeof DashboardStudentLeaveRoute
@@ -1532,10 +1318,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/super-admin/security': typeof DashboardSuperAdminSecurityRoute
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
-  '/hod/faculty/profile': typeof HodFacultyProfileRoute
-  '/hod/students/add': typeof HodStudentsAddRoute
-  '/hod/students/edit': typeof HodStudentsEditRoute
-  '/hod/students/profile': typeof HodStudentsProfileRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
   '/dashboard/admin/alumni/ai-features': typeof DashboardAdminAlumniAiFeaturesRoute
   '/dashboard/admin/alumni/announcements': typeof DashboardAdminAlumniAnnouncementsRoute
@@ -1558,14 +1340,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/alumni/stories': typeof DashboardAdminAlumniStoriesRoute
   '/dashboard/admin/alumni/verification': typeof DashboardAdminAlumniVerificationRoute
   '/dashboard/admin/exams/analytics': typeof DashboardAdminExamsAnalyticsRoute
-  '/dashboard/admin/exams/corrections': typeof DashboardAdminExamsCorrectionsRoute
-  '/dashboard/admin/exams/course-registration': typeof DashboardAdminExamsCourseRegistrationRoute
   '/dashboard/admin/exams/hall-tickets': typeof DashboardAdminExamsHallTicketsRoute
   '/dashboard/admin/exams/invigilation': typeof DashboardAdminExamsInvigilationRoute
   '/dashboard/admin/exams/questions': typeof DashboardAdminExamsQuestionsRoute
   '/dashboard/admin/exams/results': typeof DashboardAdminExamsResultsRoute
   '/dashboard/admin/exams/schedule': typeof DashboardAdminExamsScheduleRoute
-  '/dashboard/admin/exams/supplementary': typeof DashboardAdminExamsSupplementaryRoute
   '/dashboard/admin/exams/timetable': typeof DashboardAdminExamsTimetableRoute
   '/dashboard/admin/faculty/attendance': typeof DashboardAdminFacultyAttendanceRoute
   '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
@@ -1614,30 +1393,8 @@ export interface FileRoutesByTo {
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
-  '/hod/403': typeof Hod403Route
-  '/hod/404': typeof Hod404Route
-  '/hod/academics': typeof HodAcademicsRoute
-  '/hod/approvals': typeof HodApprovalsRoute
-  '/hod/attendance': typeof HodAttendanceRoute
-  '/hod/audit': typeof HodAuditRoute
-  '/hod/audit-logs': typeof HodAuditLogsRoute
-  '/hod/communication': typeof HodCommunicationRoute
-  '/hod/dashboard': typeof HodDashboardRoute
-  '/hod/documents': typeof HodDocumentsRoute
-  '/hod/events': typeof HodEventsRoute
-  '/hod/examinations': typeof HodExaminationsRoute
-  '/hod/faculty': typeof HodFacultyRouteWithChildren
-  '/hod/mentoring': typeof HodMentoringRoute
-  '/hod/notifications': typeof HodNotificationsRoute
-  '/hod/reports': typeof HodReportsRoute
-  '/hod/research': typeof HodResearchRoute
-  '/hod/resources': typeof HodResourcesRoute
-  '/hod/settings': typeof HodSettingsRoute
-  '/hod/students': typeof HodStudentsRouteWithChildren
-  '/hod/timetable': typeof HodTimetableRoute
   '/alumni': typeof AlumniIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/hod': typeof HodIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
   '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
@@ -1720,7 +1477,6 @@ export interface FileRoutesByTo {
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
   '/dashboard/student/complaints': typeof DashboardStudentComplaintsRoute
-  '/dashboard/student/course-registration': typeof DashboardStudentCourseRegistrationRoute
   '/dashboard/student/events': typeof DashboardStudentEventsRoute
   '/dashboard/student/fees': typeof DashboardStudentFeesRoute
   '/dashboard/student/leave': typeof DashboardStudentLeaveRoute
@@ -1740,10 +1496,6 @@ export interface FileRoutesByTo {
   '/dashboard/super-admin/security': typeof DashboardSuperAdminSecurityRoute
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
-  '/hod/faculty/profile': typeof HodFacultyProfileRoute
-  '/hod/students/add': typeof HodStudentsAddRoute
-  '/hod/students/edit': typeof HodStudentsEditRoute
-  '/hod/students/profile': typeof HodStudentsProfileRoute
   '/dashboard/librarian': typeof DashboardLibrarianIndexRoute
   '/dashboard/admin/alumni/ai-features': typeof DashboardAdminAlumniAiFeaturesRoute
   '/dashboard/admin/alumni/announcements': typeof DashboardAdminAlumniAnnouncementsRoute
@@ -1766,14 +1518,11 @@ export interface FileRoutesByTo {
   '/dashboard/admin/alumni/stories': typeof DashboardAdminAlumniStoriesRoute
   '/dashboard/admin/alumni/verification': typeof DashboardAdminAlumniVerificationRoute
   '/dashboard/admin/exams/analytics': typeof DashboardAdminExamsAnalyticsRoute
-  '/dashboard/admin/exams/corrections': typeof DashboardAdminExamsCorrectionsRoute
-  '/dashboard/admin/exams/course-registration': typeof DashboardAdminExamsCourseRegistrationRoute
   '/dashboard/admin/exams/hall-tickets': typeof DashboardAdminExamsHallTicketsRoute
   '/dashboard/admin/exams/invigilation': typeof DashboardAdminExamsInvigilationRoute
   '/dashboard/admin/exams/questions': typeof DashboardAdminExamsQuestionsRoute
   '/dashboard/admin/exams/results': typeof DashboardAdminExamsResultsRoute
   '/dashboard/admin/exams/schedule': typeof DashboardAdminExamsScheduleRoute
-  '/dashboard/admin/exams/supplementary': typeof DashboardAdminExamsSupplementaryRoute
   '/dashboard/admin/exams/timetable': typeof DashboardAdminExamsTimetableRoute
   '/dashboard/admin/faculty/attendance': typeof DashboardAdminFacultyAttendanceRoute
   '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
@@ -1788,7 +1537,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
-  '/hod': typeof HodRouteWithChildren
   '/lms-login': typeof LmsLoginRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -1826,30 +1574,8 @@ export interface FileRoutesById {
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
-  '/hod/403': typeof Hod403Route
-  '/hod/404': typeof Hod404Route
-  '/hod/academics': typeof HodAcademicsRoute
-  '/hod/approvals': typeof HodApprovalsRoute
-  '/hod/attendance': typeof HodAttendanceRoute
-  '/hod/audit': typeof HodAuditRoute
-  '/hod/audit-logs': typeof HodAuditLogsRoute
-  '/hod/communication': typeof HodCommunicationRoute
-  '/hod/dashboard': typeof HodDashboardRoute
-  '/hod/documents': typeof HodDocumentsRoute
-  '/hod/events': typeof HodEventsRoute
-  '/hod/examinations': typeof HodExaminationsRoute
-  '/hod/faculty': typeof HodFacultyRouteWithChildren
-  '/hod/mentoring': typeof HodMentoringRoute
-  '/hod/notifications': typeof HodNotificationsRoute
-  '/hod/reports': typeof HodReportsRoute
-  '/hod/research': typeof HodResearchRoute
-  '/hod/resources': typeof HodResourcesRoute
-  '/hod/settings': typeof HodSettingsRoute
-  '/hod/students': typeof HodStudentsRouteWithChildren
-  '/hod/timetable': typeof HodTimetableRoute
   '/alumni/': typeof AlumniIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/hod/': typeof HodIndexRoute
   '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
   '/alumni/profile/$id': typeof AlumniProfileIdRoute
   '/dashboard/admin/academics': typeof DashboardAdminAcademicsRoute
@@ -1933,7 +1659,6 @@ export interface FileRoutesById {
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
   '/dashboard/student/complaints': typeof DashboardStudentComplaintsRoute
-  '/dashboard/student/course-registration': typeof DashboardStudentCourseRegistrationRoute
   '/dashboard/student/events': typeof DashboardStudentEventsRoute
   '/dashboard/student/fees': typeof DashboardStudentFeesRoute
   '/dashboard/student/leave': typeof DashboardStudentLeaveRoute
@@ -1953,10 +1678,6 @@ export interface FileRoutesById {
   '/dashboard/super-admin/security': typeof DashboardSuperAdminSecurityRoute
   '/dashboard/super-admin/settings': typeof DashboardSuperAdminSettingsRoute
   '/dashboard/super-admin/users': typeof DashboardSuperAdminUsersRoute
-  '/hod/faculty/profile': typeof HodFacultyProfileRoute
-  '/hod/students/add': typeof HodStudentsAddRoute
-  '/hod/students/edit': typeof HodStudentsEditRoute
-  '/hod/students/profile': typeof HodStudentsProfileRoute
   '/dashboard/librarian/': typeof DashboardLibrarianIndexRoute
   '/dashboard/admin/alumni/ai-features': typeof DashboardAdminAlumniAiFeaturesRoute
   '/dashboard/admin/alumni/announcements': typeof DashboardAdminAlumniAnnouncementsRoute
@@ -1979,14 +1700,11 @@ export interface FileRoutesById {
   '/dashboard/admin/alumni/stories': typeof DashboardAdminAlumniStoriesRoute
   '/dashboard/admin/alumni/verification': typeof DashboardAdminAlumniVerificationRoute
   '/dashboard/admin/exams/analytics': typeof DashboardAdminExamsAnalyticsRoute
-  '/dashboard/admin/exams/corrections': typeof DashboardAdminExamsCorrectionsRoute
-  '/dashboard/admin/exams/course-registration': typeof DashboardAdminExamsCourseRegistrationRoute
   '/dashboard/admin/exams/hall-tickets': typeof DashboardAdminExamsHallTicketsRoute
   '/dashboard/admin/exams/invigilation': typeof DashboardAdminExamsInvigilationRoute
   '/dashboard/admin/exams/questions': typeof DashboardAdminExamsQuestionsRoute
   '/dashboard/admin/exams/results': typeof DashboardAdminExamsResultsRoute
   '/dashboard/admin/exams/schedule': typeof DashboardAdminExamsScheduleRoute
-  '/dashboard/admin/exams/supplementary': typeof DashboardAdminExamsSupplementaryRoute
   '/dashboard/admin/exams/timetable': typeof DashboardAdminExamsTimetableRoute
   '/dashboard/admin/faculty/attendance': typeof DashboardAdminFacultyAttendanceRoute
   '/dashboard/hostel/mess/fees': typeof DashboardHostelMessFeesRoute
@@ -2002,7 +1720,6 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/forgot-password'
-    | '/hod'
     | '/lms-login'
     | '/login'
     | '/register'
@@ -2040,30 +1757,8 @@ export interface FileRouteTypes {
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
-    | '/hod/403'
-    | '/hod/404'
-    | '/hod/academics'
-    | '/hod/approvals'
-    | '/hod/attendance'
-    | '/hod/audit'
-    | '/hod/audit-logs'
-    | '/hod/communication'
-    | '/hod/dashboard'
-    | '/hod/documents'
-    | '/hod/events'
-    | '/hod/examinations'
-    | '/hod/faculty'
-    | '/hod/mentoring'
-    | '/hod/notifications'
-    | '/hod/reports'
-    | '/hod/research'
-    | '/hod/resources'
-    | '/hod/settings'
-    | '/hod/students'
-    | '/hod/timetable'
     | '/alumni/'
     | '/dashboard/'
-    | '/hod/'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
     | '/dashboard/admin/academics'
@@ -2147,7 +1842,6 @@ export interface FileRouteTypes {
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
     | '/dashboard/student/complaints'
-    | '/dashboard/student/course-registration'
     | '/dashboard/student/events'
     | '/dashboard/student/fees'
     | '/dashboard/student/leave'
@@ -2167,10 +1861,6 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/security'
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
-    | '/hod/faculty/profile'
-    | '/hod/students/add'
-    | '/hod/students/edit'
-    | '/hod/students/profile'
     | '/dashboard/librarian/'
     | '/dashboard/admin/alumni/ai-features'
     | '/dashboard/admin/alumni/announcements'
@@ -2193,14 +1883,11 @@ export interface FileRouteTypes {
     | '/dashboard/admin/alumni/stories'
     | '/dashboard/admin/alumni/verification'
     | '/dashboard/admin/exams/analytics'
-    | '/dashboard/admin/exams/corrections'
-    | '/dashboard/admin/exams/course-registration'
     | '/dashboard/admin/exams/hall-tickets'
     | '/dashboard/admin/exams/invigilation'
     | '/dashboard/admin/exams/questions'
     | '/dashboard/admin/exams/results'
     | '/dashboard/admin/exams/schedule'
-    | '/dashboard/admin/exams/supplementary'
     | '/dashboard/admin/exams/timetable'
     | '/dashboard/admin/faculty/attendance'
     | '/dashboard/hostel/mess/fees'
@@ -2249,30 +1936,8 @@ export interface FileRouteTypes {
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
-    | '/hod/403'
-    | '/hod/404'
-    | '/hod/academics'
-    | '/hod/approvals'
-    | '/hod/attendance'
-    | '/hod/audit'
-    | '/hod/audit-logs'
-    | '/hod/communication'
-    | '/hod/dashboard'
-    | '/hod/documents'
-    | '/hod/events'
-    | '/hod/examinations'
-    | '/hod/faculty'
-    | '/hod/mentoring'
-    | '/hod/notifications'
-    | '/hod/reports'
-    | '/hod/research'
-    | '/hod/resources'
-    | '/hod/settings'
-    | '/hod/students'
-    | '/hod/timetable'
     | '/alumni'
     | '/dashboard'
-    | '/hod'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
     | '/dashboard/admin/academics'
@@ -2355,7 +2020,6 @@ export interface FileRouteTypes {
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
     | '/dashboard/student/complaints'
-    | '/dashboard/student/course-registration'
     | '/dashboard/student/events'
     | '/dashboard/student/fees'
     | '/dashboard/student/leave'
@@ -2375,10 +2039,6 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/security'
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
-    | '/hod/faculty/profile'
-    | '/hod/students/add'
-    | '/hod/students/edit'
-    | '/hod/students/profile'
     | '/dashboard/librarian'
     | '/dashboard/admin/alumni/ai-features'
     | '/dashboard/admin/alumni/announcements'
@@ -2401,14 +2061,11 @@ export interface FileRouteTypes {
     | '/dashboard/admin/alumni/stories'
     | '/dashboard/admin/alumni/verification'
     | '/dashboard/admin/exams/analytics'
-    | '/dashboard/admin/exams/corrections'
-    | '/dashboard/admin/exams/course-registration'
     | '/dashboard/admin/exams/hall-tickets'
     | '/dashboard/admin/exams/invigilation'
     | '/dashboard/admin/exams/questions'
     | '/dashboard/admin/exams/results'
     | '/dashboard/admin/exams/schedule'
-    | '/dashboard/admin/exams/supplementary'
     | '/dashboard/admin/exams/timetable'
     | '/dashboard/admin/faculty/attendance'
     | '/dashboard/hostel/mess/fees'
@@ -2422,7 +2079,6 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/forgot-password'
-    | '/hod'
     | '/lms-login'
     | '/login'
     | '/register'
@@ -2460,30 +2116,8 @@ export interface FileRouteTypes {
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
-    | '/hod/403'
-    | '/hod/404'
-    | '/hod/academics'
-    | '/hod/approvals'
-    | '/hod/attendance'
-    | '/hod/audit'
-    | '/hod/audit-logs'
-    | '/hod/communication'
-    | '/hod/dashboard'
-    | '/hod/documents'
-    | '/hod/events'
-    | '/hod/examinations'
-    | '/hod/faculty'
-    | '/hod/mentoring'
-    | '/hod/notifications'
-    | '/hod/reports'
-    | '/hod/research'
-    | '/hod/resources'
-    | '/hod/settings'
-    | '/hod/students'
-    | '/hod/timetable'
     | '/alumni/'
     | '/dashboard/'
-    | '/hod/'
     | '/alumni/events/$eventId'
     | '/alumni/profile/$id'
     | '/dashboard/admin/academics'
@@ -2567,7 +2201,6 @@ export interface FileRouteTypes {
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
     | '/dashboard/student/complaints'
-    | '/dashboard/student/course-registration'
     | '/dashboard/student/events'
     | '/dashboard/student/fees'
     | '/dashboard/student/leave'
@@ -2587,10 +2220,6 @@ export interface FileRouteTypes {
     | '/dashboard/super-admin/security'
     | '/dashboard/super-admin/settings'
     | '/dashboard/super-admin/users'
-    | '/hod/faculty/profile'
-    | '/hod/students/add'
-    | '/hod/students/edit'
-    | '/hod/students/profile'
     | '/dashboard/librarian/'
     | '/dashboard/admin/alumni/ai-features'
     | '/dashboard/admin/alumni/announcements'
@@ -2613,14 +2242,11 @@ export interface FileRouteTypes {
     | '/dashboard/admin/alumni/stories'
     | '/dashboard/admin/alumni/verification'
     | '/dashboard/admin/exams/analytics'
-    | '/dashboard/admin/exams/corrections'
-    | '/dashboard/admin/exams/course-registration'
     | '/dashboard/admin/exams/hall-tickets'
     | '/dashboard/admin/exams/invigilation'
     | '/dashboard/admin/exams/questions'
     | '/dashboard/admin/exams/results'
     | '/dashboard/admin/exams/schedule'
-    | '/dashboard/admin/exams/supplementary'
     | '/dashboard/admin/exams/timetable'
     | '/dashboard/admin/faculty/attendance'
     | '/dashboard/hostel/mess/fees'
@@ -2635,7 +2261,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
-  HodRoute: typeof HodRouteWithChildren
   LmsLoginRoute: typeof LmsLoginRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
@@ -2696,13 +2321,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LmsLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hod': {
-      id: '/hod'
-      path: '/hod'
-      fullPath: '/hod'
-      preLoaderRoute: typeof HodRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/forgot-password': {
       id: '/forgot-password'
       path: '/forgot-password'
@@ -2724,13 +2342,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hod/': {
-      id: '/hod/'
-      path: '/'
-      fullPath: '/hod/'
-      preLoaderRoute: typeof HodIndexRouteImport
-      parentRoute: typeof HodRoute
-    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -2744,153 +2355,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/alumni/'
       preLoaderRoute: typeof AlumniIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/hod/timetable': {
-      id: '/hod/timetable'
-      path: '/timetable'
-      fullPath: '/hod/timetable'
-      preLoaderRoute: typeof HodTimetableRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/students': {
-      id: '/hod/students'
-      path: '/students'
-      fullPath: '/hod/students'
-      preLoaderRoute: typeof HodStudentsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/settings': {
-      id: '/hod/settings'
-      path: '/settings'
-      fullPath: '/hod/settings'
-      preLoaderRoute: typeof HodSettingsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/resources': {
-      id: '/hod/resources'
-      path: '/resources'
-      fullPath: '/hod/resources'
-      preLoaderRoute: typeof HodResourcesRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/research': {
-      id: '/hod/research'
-      path: '/research'
-      fullPath: '/hod/research'
-      preLoaderRoute: typeof HodResearchRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/reports': {
-      id: '/hod/reports'
-      path: '/reports'
-      fullPath: '/hod/reports'
-      preLoaderRoute: typeof HodReportsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/notifications': {
-      id: '/hod/notifications'
-      path: '/notifications'
-      fullPath: '/hod/notifications'
-      preLoaderRoute: typeof HodNotificationsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/mentoring': {
-      id: '/hod/mentoring'
-      path: '/mentoring'
-      fullPath: '/hod/mentoring'
-      preLoaderRoute: typeof HodMentoringRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/faculty': {
-      id: '/hod/faculty'
-      path: '/faculty'
-      fullPath: '/hod/faculty'
-      preLoaderRoute: typeof HodFacultyRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/examinations': {
-      id: '/hod/examinations'
-      path: '/examinations'
-      fullPath: '/hod/examinations'
-      preLoaderRoute: typeof HodExaminationsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/events': {
-      id: '/hod/events'
-      path: '/events'
-      fullPath: '/hod/events'
-      preLoaderRoute: typeof HodEventsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/documents': {
-      id: '/hod/documents'
-      path: '/documents'
-      fullPath: '/hod/documents'
-      preLoaderRoute: typeof HodDocumentsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/dashboard': {
-      id: '/hod/dashboard'
-      path: '/dashboard'
-      fullPath: '/hod/dashboard'
-      preLoaderRoute: typeof HodDashboardRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/communication': {
-      id: '/hod/communication'
-      path: '/communication'
-      fullPath: '/hod/communication'
-      preLoaderRoute: typeof HodCommunicationRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/audit-logs': {
-      id: '/hod/audit-logs'
-      path: '/audit-logs'
-      fullPath: '/hod/audit-logs'
-      preLoaderRoute: typeof HodAuditLogsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/audit': {
-      id: '/hod/audit'
-      path: '/audit'
-      fullPath: '/hod/audit'
-      preLoaderRoute: typeof HodAuditRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/attendance': {
-      id: '/hod/attendance'
-      path: '/attendance'
-      fullPath: '/hod/attendance'
-      preLoaderRoute: typeof HodAttendanceRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/approvals': {
-      id: '/hod/approvals'
-      path: '/approvals'
-      fullPath: '/hod/approvals'
-      preLoaderRoute: typeof HodApprovalsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/academics': {
-      id: '/hod/academics'
-      path: '/academics'
-      fullPath: '/hod/academics'
-      preLoaderRoute: typeof HodAcademicsRouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/404': {
-      id: '/hod/404'
-      path: '/404'
-      fullPath: '/hod/404'
-      preLoaderRoute: typeof Hod404RouteImport
-      parentRoute: typeof HodRoute
-    }
-    '/hod/403': {
-      id: '/hod/403'
-      path: '/403'
-      fullPath: '/hod/403'
-      preLoaderRoute: typeof Hod403RouteImport
-      parentRoute: typeof HodRoute
     }
     '/dashboard/transport': {
       id: '/dashboard/transport'
@@ -3123,34 +2587,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLibrarianIndexRouteImport
       parentRoute: typeof DashboardLibrarianRoute
     }
-    '/hod/students/profile': {
-      id: '/hod/students/profile'
-      path: '/profile'
-      fullPath: '/hod/students/profile'
-      preLoaderRoute: typeof HodStudentsProfileRouteImport
-      parentRoute: typeof HodStudentsRoute
-    }
-    '/hod/students/edit': {
-      id: '/hod/students/edit'
-      path: '/edit'
-      fullPath: '/hod/students/edit'
-      preLoaderRoute: typeof HodStudentsEditRouteImport
-      parentRoute: typeof HodStudentsRoute
-    }
-    '/hod/students/add': {
-      id: '/hod/students/add'
-      path: '/add'
-      fullPath: '/hod/students/add'
-      preLoaderRoute: typeof HodStudentsAddRouteImport
-      parentRoute: typeof HodStudentsRoute
-    }
-    '/hod/faculty/profile': {
-      id: '/hod/faculty/profile'
-      path: '/profile'
-      fullPath: '/hod/faculty/profile'
-      preLoaderRoute: typeof HodFacultyProfileRouteImport
-      parentRoute: typeof HodFacultyRoute
-    }
     '/dashboard/super-admin/users': {
       id: '/dashboard/super-admin/users'
       path: '/users'
@@ -3282,13 +2718,6 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/dashboard/student/events'
       preLoaderRoute: typeof DashboardStudentEventsRouteImport
-      parentRoute: typeof DashboardStudentRoute
-    }
-    '/dashboard/student/course-registration': {
-      id: '/dashboard/student/course-registration'
-      path: '/course-registration'
-      fullPath: '/dashboard/student/course-registration'
-      preLoaderRoute: typeof DashboardStudentCourseRegistrationRouteImport
       parentRoute: typeof DashboardStudentRoute
     }
     '/dashboard/student/complaints': {
@@ -3928,13 +3357,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminExamsTimetableRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
-    '/dashboard/admin/exams/supplementary': {
-      id: '/dashboard/admin/exams/supplementary'
-      path: '/exams/supplementary'
-      fullPath: '/dashboard/admin/exams/supplementary'
-      preLoaderRoute: typeof DashboardAdminExamsSupplementaryRouteImport
-      parentRoute: typeof DashboardAdminRoute
-    }
     '/dashboard/admin/exams/schedule': {
       id: '/dashboard/admin/exams/schedule'
       path: '/exams/schedule'
@@ -3968,20 +3390,6 @@ declare module '@tanstack/react-router' {
       path: '/exams/hall-tickets'
       fullPath: '/dashboard/admin/exams/hall-tickets'
       preLoaderRoute: typeof DashboardAdminExamsHallTicketsRouteImport
-      parentRoute: typeof DashboardAdminRoute
-    }
-    '/dashboard/admin/exams/course-registration': {
-      id: '/dashboard/admin/exams/course-registration'
-      path: '/exams/course-registration'
-      fullPath: '/dashboard/admin/exams/course-registration'
-      preLoaderRoute: typeof DashboardAdminExamsCourseRegistrationRouteImport
-      parentRoute: typeof DashboardAdminRoute
-    }
-    '/dashboard/admin/exams/corrections': {
-      id: '/dashboard/admin/exams/corrections'
-      path: '/exams/corrections'
-      fullPath: '/dashboard/admin/exams/corrections'
-      preLoaderRoute: typeof DashboardAdminExamsCorrectionsRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
     '/dashboard/admin/exams/analytics': {
@@ -4214,14 +3622,11 @@ interface DashboardAdminRouteChildren {
   DashboardAdminStudentsRoute: typeof DashboardAdminStudentsRoute
   DashboardAdminTimetableRoute: typeof DashboardAdminTimetableRoute
   DashboardAdminExamsAnalyticsRoute: typeof DashboardAdminExamsAnalyticsRoute
-  DashboardAdminExamsCorrectionsRoute: typeof DashboardAdminExamsCorrectionsRoute
-  DashboardAdminExamsCourseRegistrationRoute: typeof DashboardAdminExamsCourseRegistrationRoute
   DashboardAdminExamsHallTicketsRoute: typeof DashboardAdminExamsHallTicketsRoute
   DashboardAdminExamsInvigilationRoute: typeof DashboardAdminExamsInvigilationRoute
   DashboardAdminExamsQuestionsRoute: typeof DashboardAdminExamsQuestionsRoute
   DashboardAdminExamsResultsRoute: typeof DashboardAdminExamsResultsRoute
   DashboardAdminExamsScheduleRoute: typeof DashboardAdminExamsScheduleRoute
-  DashboardAdminExamsSupplementaryRoute: typeof DashboardAdminExamsSupplementaryRoute
   DashboardAdminExamsTimetableRoute: typeof DashboardAdminExamsTimetableRoute
   DashboardAdminFacultyAttendanceRoute: typeof DashboardAdminFacultyAttendanceRoute
   DashboardAdminExamsIndexRoute: typeof DashboardAdminExamsIndexRoute
@@ -4257,15 +3662,11 @@ const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminStudentsRoute: DashboardAdminStudentsRoute,
   DashboardAdminTimetableRoute: DashboardAdminTimetableRoute,
   DashboardAdminExamsAnalyticsRoute: DashboardAdminExamsAnalyticsRoute,
-  DashboardAdminExamsCorrectionsRoute: DashboardAdminExamsCorrectionsRoute,
-  DashboardAdminExamsCourseRegistrationRoute:
-    DashboardAdminExamsCourseRegistrationRoute,
   DashboardAdminExamsHallTicketsRoute: DashboardAdminExamsHallTicketsRoute,
   DashboardAdminExamsInvigilationRoute: DashboardAdminExamsInvigilationRoute,
   DashboardAdminExamsQuestionsRoute: DashboardAdminExamsQuestionsRoute,
   DashboardAdminExamsResultsRoute: DashboardAdminExamsResultsRoute,
   DashboardAdminExamsScheduleRoute: DashboardAdminExamsScheduleRoute,
-  DashboardAdminExamsSupplementaryRoute: DashboardAdminExamsSupplementaryRoute,
   DashboardAdminExamsTimetableRoute: DashboardAdminExamsTimetableRoute,
   DashboardAdminFacultyAttendanceRoute: DashboardAdminFacultyAttendanceRoute,
   DashboardAdminExamsIndexRoute: DashboardAdminExamsIndexRoute,
@@ -4461,7 +3862,6 @@ interface DashboardStudentRouteChildren {
   DashboardStudentAssignmentsRoute: typeof DashboardStudentAssignmentsRoute
   DashboardStudentAttendanceRoute: typeof DashboardStudentAttendanceRoute
   DashboardStudentComplaintsRoute: typeof DashboardStudentComplaintsRoute
-  DashboardStudentCourseRegistrationRoute: typeof DashboardStudentCourseRegistrationRoute
   DashboardStudentEventsRoute: typeof DashboardStudentEventsRoute
   DashboardStudentFeesRoute: typeof DashboardStudentFeesRoute
   DashboardStudentLeaveRoute: typeof DashboardStudentLeaveRoute
@@ -4475,8 +3875,6 @@ const DashboardStudentRouteChildren: DashboardStudentRouteChildren = {
   DashboardStudentAssignmentsRoute: DashboardStudentAssignmentsRoute,
   DashboardStudentAttendanceRoute: DashboardStudentAttendanceRoute,
   DashboardStudentComplaintsRoute: DashboardStudentComplaintsRoute,
-  DashboardStudentCourseRegistrationRoute:
-    DashboardStudentCourseRegistrationRoute,
   DashboardStudentEventsRoute: DashboardStudentEventsRoute,
   DashboardStudentFeesRoute: DashboardStudentFeesRoute,
   DashboardStudentLeaveRoute: DashboardStudentLeaveRoute,
@@ -4579,86 +3977,6 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
-interface HodFacultyRouteChildren {
-  HodFacultyProfileRoute: typeof HodFacultyProfileRoute
-}
-
-const HodFacultyRouteChildren: HodFacultyRouteChildren = {
-  HodFacultyProfileRoute: HodFacultyProfileRoute,
-}
-
-const HodFacultyRouteWithChildren = HodFacultyRoute._addFileChildren(
-  HodFacultyRouteChildren,
-)
-
-interface HodStudentsRouteChildren {
-  HodStudentsAddRoute: typeof HodStudentsAddRoute
-  HodStudentsEditRoute: typeof HodStudentsEditRoute
-  HodStudentsProfileRoute: typeof HodStudentsProfileRoute
-}
-
-const HodStudentsRouteChildren: HodStudentsRouteChildren = {
-  HodStudentsAddRoute: HodStudentsAddRoute,
-  HodStudentsEditRoute: HodStudentsEditRoute,
-  HodStudentsProfileRoute: HodStudentsProfileRoute,
-}
-
-const HodStudentsRouteWithChildren = HodStudentsRoute._addFileChildren(
-  HodStudentsRouteChildren,
-)
-
-interface HodRouteChildren {
-  Hod403Route: typeof Hod403Route
-  Hod404Route: typeof Hod404Route
-  HodAcademicsRoute: typeof HodAcademicsRoute
-  HodApprovalsRoute: typeof HodApprovalsRoute
-  HodAttendanceRoute: typeof HodAttendanceRoute
-  HodAuditRoute: typeof HodAuditRoute
-  HodAuditLogsRoute: typeof HodAuditLogsRoute
-  HodCommunicationRoute: typeof HodCommunicationRoute
-  HodDashboardRoute: typeof HodDashboardRoute
-  HodDocumentsRoute: typeof HodDocumentsRoute
-  HodEventsRoute: typeof HodEventsRoute
-  HodExaminationsRoute: typeof HodExaminationsRoute
-  HodFacultyRoute: typeof HodFacultyRouteWithChildren
-  HodMentoringRoute: typeof HodMentoringRoute
-  HodNotificationsRoute: typeof HodNotificationsRoute
-  HodReportsRoute: typeof HodReportsRoute
-  HodResearchRoute: typeof HodResearchRoute
-  HodResourcesRoute: typeof HodResourcesRoute
-  HodSettingsRoute: typeof HodSettingsRoute
-  HodStudentsRoute: typeof HodStudentsRouteWithChildren
-  HodTimetableRoute: typeof HodTimetableRoute
-  HodIndexRoute: typeof HodIndexRoute
-}
-
-const HodRouteChildren: HodRouteChildren = {
-  Hod403Route: Hod403Route,
-  Hod404Route: Hod404Route,
-  HodAcademicsRoute: HodAcademicsRoute,
-  HodApprovalsRoute: HodApprovalsRoute,
-  HodAttendanceRoute: HodAttendanceRoute,
-  HodAuditRoute: HodAuditRoute,
-  HodAuditLogsRoute: HodAuditLogsRoute,
-  HodCommunicationRoute: HodCommunicationRoute,
-  HodDashboardRoute: HodDashboardRoute,
-  HodDocumentsRoute: HodDocumentsRoute,
-  HodEventsRoute: HodEventsRoute,
-  HodExaminationsRoute: HodExaminationsRoute,
-  HodFacultyRoute: HodFacultyRouteWithChildren,
-  HodMentoringRoute: HodMentoringRoute,
-  HodNotificationsRoute: HodNotificationsRoute,
-  HodReportsRoute: HodReportsRoute,
-  HodResearchRoute: HodResearchRoute,
-  HodResourcesRoute: HodResourcesRoute,
-  HodSettingsRoute: HodSettingsRoute,
-  HodStudentsRoute: HodStudentsRouteWithChildren,
-  HodTimetableRoute: HodTimetableRoute,
-  HodIndexRoute: HodIndexRoute,
-}
-
-const HodRouteWithChildren = HodRoute._addFileChildren(HodRouteChildren)
-
 interface AlumniEventsRouteChildren {
   AlumniEventsEventIdRoute: typeof AlumniEventsEventIdRoute
 }
@@ -4675,7 +3993,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
-  HodRoute: HodRouteWithChildren,
   LmsLoginRoute: LmsLoginRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,

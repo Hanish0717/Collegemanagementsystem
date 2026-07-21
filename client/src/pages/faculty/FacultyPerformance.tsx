@@ -14,6 +14,7 @@ import {
 import { Download, Filter, TrendingUp, AlertTriangle } from 'lucide-react';
 import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
 import api from '@/lib/api';
+import { toast } from 'sonner';
 
 export function FacultyPerformance() {
   const [performance, setPerformance] = useState<any[]>([]);
@@ -54,13 +55,31 @@ export function FacultyPerformance() {
     return true; // "All Students"
   });
 
+  const handleDownloadReport = () => {
+    toast.success('Compiling Student Performance Report...');
+    const csvContent = "Student Name,Overall Score,Attendance %,Assignments %,Quizzes %\n" +
+      performance.map(s => `"${s.student}",${s.overall},${s.attendance},${s.assignments},${s.quizzes}`).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "student_performance_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Performance Report downloaded successfully!');
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Student Performance Tracking"
         desc="Monitor student performance, track attendance vs marks, and identify at-risk students."
         actions={
-          <button className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2">
+          <button
+            onClick={handleDownloadReport}
+            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer"
+          >
             <Download className="size-4" /> Download Report
           </button>
         }

@@ -7,7 +7,8 @@ export function StatCard({
   change,
   icon: Icon,
   theme = 'blue',
-  gradient,
+  hideGraph = false,
+  hideChange = false,
 }: {
   label: string;
   value: ReactNode;
@@ -15,7 +16,8 @@ export function StatCard({
   change?: string;
   icon: any;
   theme?: 'blue' | 'green' | 'purple' | 'amber';
-  gradient?: string;
+  hideGraph?: boolean;
+  hideChange?: boolean;
 }) {
   // Single Royal Blue design system for all stat cards
   const style = {
@@ -44,26 +46,28 @@ export function StatCard({
       {subtitle && (
         <div className="mt-3 text-xs text-slate-500 dark:text-slate-400 z-10 font-medium">{subtitle}</div>
       )}
-      {change && (
+      {change && !hideChange && (
         <div className="mt-1 text-xs text-blue-700 dark:text-blue-400 font-bold z-10">{change}</div>
       )}
 
       {/* Decorative Sparkline Graph SVG */}
-      <div className="absolute bottom-0 left-0 right-0 h-10 pointer-events-none opacity-80">
-        <svg className="w-full h-full overflow-visible" viewBox="0 0 100 25" preserveAspectRatio="none">
-          <path
-            d="M 0 20 Q 20 5, 40 18 T 80 8 T 100 15 L 100 25 L 0 25 Z"
-            fill={style.fill}
-          />
-          <path
-            d="M 0 20 Q 20 5, 40 18 T 80 8 T 100 15"
-            fill="none"
-            stroke={style.stroke}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
+      {!hideGraph && (
+        <div className="absolute bottom-0 left-0 right-0 h-10 pointer-events-none opacity-80">
+          <svg className="w-full h-full overflow-visible" viewBox="0 0 100 25" preserveAspectRatio="none">
+            <path
+              d="M 0 20 Q 20 5, 40 18 T 80 8 T 100 15 L 100 25 L 0 25 Z"
+              fill={style.fill}
+            />
+            <path
+              d="M 0 20 Q 20 5, 40 18 T 80 8 T 100 15"
+              fill="none"
+              stroke={style.stroke}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      )}
     </div>
   );
 }

@@ -31,9 +31,10 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const databaseUrl = process.env.DATABASE_URL;
 
-// Determine if we should run in Database Mock Mode (only if no live PostgreSQL or Supabase credentials are configured)
-let isMockMode = (!databaseUrl || databaseUrl.includes('your_supabase_postgresql')) &&
-                   (!supabaseUrl || supabaseUrl.includes('your-project') || supabaseUrl.includes('placeholder')) ||
+// Determine if we should run in Database Mock Mode
+// Trigger mock mode if: DATABASE_URL is missing, OR it's a placeholder, OR FORCE_MOCK_MODE is set
+let isMockMode = !databaseUrl ||
+                   databaseUrl.includes('your_supabase_postgresql') ||
                    process.env.FORCE_MOCK_MODE === 'true';
 
 debugLog("databaseUrl: " + databaseUrl + ", isMockMode: " + isMockMode);
@@ -44,53 +45,47 @@ if (!isMockMode && databaseUrl) {
     const host = hostParts?.[0];
     const port = hostParts?.[1] ? parseInt(hostParts[1], 10) : 5432;
     debugLog("Starting database TCP check for host: " + host + ", port: " + port);
-    const isLocal = host === 'localhost' || host === '127.0.0.1' || host === 'host.docker.internal';
-    if (host && !isLocal) {
-      // 1. Resolve DNS
-      await Promise.race([
-        dns.lookup(host),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500))
-      ]);
 
-      // 2. Check if TCP port is reachable
-      const portReachable = await new Promise((resolve) => {
-        const socket = new net.Socket();
-        let isResolved = false;
+    // Check TCP connectivity for ALL hosts (including localhost/127.0.0.1)
+    const portReachable = await new Promise((resolve) => {
+      const socket = new net.Socket();
+      let isResolved = false;
 
-        const cleanup = () => {
-          socket.removeAllListeners('connect');
-          socket.removeAllListeners('timeout');
-          socket.on('error', () => {});
-          socket.destroy();
-        };
+      const cleanup = () => {
+        socket.removeAllListeners('connect');
+        socket.removeAllListeners('timeout');
+        socket.removeAllListeners('error');
+        socket.on('error', () => {});
+        socket.destroy();
+      };
 
-        const done = (status) => {
-          if (isResolved) return;
-          isResolved = true;
-          cleanup();
-          resolve(status);
-        };
+      const done = (status) => {
+        if (isResolved) return;
+        isResolved = true;
+        cleanup();
+        resolve(status);
+      };
 
-        socket.setTimeout(1500);
-        socket.once('connect', () => done(true));
-        socket.once('timeout', () => done(false));
-        socket.once('error', () => done(false));
-        
-        try {
-          socket.connect(port, host);
-        } catch (e) {
-          done(false);
-        }
-      });
+      socket.setTimeout(2000);
+      socket.once('connect', () => done(true));
+      socket.once('timeout', () => done(false));
+      socket.once('error', () => done(false));
 
-      if (!portReachable) {
-        throw new Error(`TCP port ${port} is unreachable`);
+      try {
+        socket.connect(port, host);
+      } catch (e) {
+        done(false);
       }
-      debugLog("TCP check succeeded!");
+    });
+
+    if (!portReachable) {
+      throw new Error(`TCP port ${port} on ${host} is unreachable (ECONNREFUSED or timeout)`);
     }
+    debugLog("TCP check succeeded for host: " + host + ":" + port);
   } catch (err) {
     debugLog("TCP check error: " + err.message + ", stack: " + err.stack);
-    console.log("⚠️ Database host or port is unreachable (e.g. company wifi restriction). Automatically enabling DATABASE MOCK MODE.");
+    console.log("⚠️  Database host/port is unreachable. Automatically enabling DATABASE MOCK MODE.");
+    console.log(`   Reason: ${err.message}`);
     isMockMode = true;
     process.env.FORCE_MOCK_MODE = 'true';
   }
@@ -685,18 +680,21 @@ if (isMockMode) {
       signUp: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signInWithPassword: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signOut: async () => ({ error: null })
+    },
+    query: async (text, params) => {
+      return { rows: [] };
     }
   };
 } else {
   console.log("✅ LIVE POSTGRESQL / SUPABASE CONNECTION DETECTED. Query builder is online.");
 
   const isLocalDatabase =
-    databaseUrl.includes('localhost') ||
-    databaseUrl.includes('127.0.0.1') ||
-    databaseUrl.includes('db') ||
-    databaseUrl.includes('postgres') ||
-    databaseUrl.includes('host.docker.internal') ||
-    process.env.DATABASE_SSL === 'false';
+    (databaseUrl?.includes('localhost') ||
+    databaseUrl?.includes('127.0.0.1') ||
+    databaseUrl?.includes('db') ||
+    databaseUrl?.includes('postgres') ||
+    databaseUrl?.includes('host.docker.internal') ||
+    process.env.DATABASE_SSL === 'false') ?? true;
 
   const pool = new Pool({
     connectionString: databaseUrl,
@@ -1110,6 +1108,9 @@ if (isMockMode) {
       signUp: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signInWithPassword: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signOut: async () => ({ error: null })
+    },
+    query: async (text, params) => {
+      return pool.query(text, params);
     }
   };
 }

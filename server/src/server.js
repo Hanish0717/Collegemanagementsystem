@@ -5,6 +5,15 @@ import { seedIfNeeded } from './seed_lightweight.js';
 import { startScheduler } from './scheduler.js';
 dotenv.config();
 
+// Prevent process crashes from unhandled database rejections/exceptions
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('⚠️ Unhandled Promise Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('⚠️ Uncaught Exception thrown:', err);
+});
+
 const PORT = process.env.PORT || 5000;
 const { Client } = pkg;
 
@@ -56,6 +65,15 @@ async function runMigrations() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS temp_password varchar(255);
       ALTER TABLE faculty ADD COLUMN IF NOT EXISTS user_id uuid;
       ALTER TABLE faculty ADD COLUMN IF NOT EXISTS attendance_percentage numeric(5, 2) DEFAULT 100.00;
+
+      -- Ensure books table has all optional columns
+      ALTER TABLE books ADD COLUMN IF NOT EXISTS cover_image text DEFAULT '';
+      ALTER TABLE books ADD COLUMN IF NOT EXISTS description text DEFAULT '';
+      ALTER TABLE books ADD COLUMN IF NOT EXISTS shelf_location varchar(100) DEFAULT '';
+      ALTER TABLE books ADD COLUMN IF NOT EXISTS edition varchar(100) DEFAULT '';
+      ALTER TABLE books ADD COLUMN IF NOT EXISTS language varchar(100) DEFAULT 'English';
+      ALTER TABLE books ADD COLUMN IF NOT EXISTS is_active boolean DEFAULT true;
+      ALTER TABLE books ADD COLUMN IF NOT EXISTS available_quantity integer DEFAULT 0;
 
       -- Create faculty_attendance table
       CREATE TABLE IF NOT EXISTS faculty_attendance (
@@ -522,6 +540,89 @@ async function runMigrations() {
       CREATE INDEX IF NOT EXISTS idx_issued_books_user_id ON issued_books(user_id);
       CREATE INDEX IF NOT EXISTS idx_leave_requests_user ON leave_requests(user_id);
       CREATE INDEX IF NOT EXISTS idx_complaints_user ON complaints(user_id);
+
+      -- Create ebooks table
+      CREATE TABLE IF NOT EXISTS ebooks (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        title varchar(255) NOT NULL,
+        author varchar(255) NOT NULL,
+        category varchar(255) NOT NULL,
+        format varchar(50) DEFAULT 'PDF',
+        size varchar(50) NOT NULL,
+        downloads integer DEFAULT 0,
+        file_url text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create transport_buses table
+      CREATE TABLE IF NOT EXISTS transport_buses (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        bus_number varchar(50) UNIQUE NOT NULL,
+        make varchar(100),
+        model varchar(100),
+        capacity integer NOT NULL,
+        type varchar(50) DEFAULT 'Diesel',
+        status varchar(50) DEFAULT 'Active',
+        gps_device_number varchar(100),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create transport_drivers table
+      CREATE TABLE IF NOT EXISTS transport_drivers (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        full_name varchar(255) NOT NULL,
+        phone varchar(50),
+        license_number varchar(100) UNIQUE NOT NULL,
+        experience_years integer DEFAULT 0,
+        status varchar(50) DEFAULT 'Active',
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create transport_routes table
+      CREATE TABLE IF NOT EXISTS transport_routes (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name varchar(255) NOT NULL,
+        route_number varchar(50) UNIQUE NOT NULL,
+        start_point varchar(255) NOT NULL,
+        end_point varchar(255) NOT NULL,
+        status varchar(50) DEFAULT 'active',
+        bus uuid REFERENCES transport_buses(id) ON DELETE SET NULL,
+        driver uuid REFERENCES transport_drivers(id) ON DELETE SET NULL,
+        stops jsonb DEFAULT '[]'::jsonb,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create transport_allocations table
+      CREATE TABLE IF NOT EXISTS transport_allocations (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        route_id uuid REFERENCES transport_routes(id) ON DELETE CASCADE,
+        stop_name varchar(255),
+        pass_number varchar(100) UNIQUE,
+        academic_year varchar(50) NOT NULL,
+        monthly_fare decimal(10,2) DEFAULT 0.00,
+        status varchar(50) DEFAULT 'Active',
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create transport_fees table
+      CREATE TABLE IF NOT EXISTS transport_fees (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        academic_year varchar(50) NOT NULL,
+        month varchar(50) NOT NULL,
+        year varchar(10) NOT NULL,
+        total_amount decimal(10,2) NOT NULL,
+        status varchar(50) DEFAULT 'Unpaid',
+        due_date varchar(50),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
     `);
 
     // Seed default subjects if empty
@@ -755,14 +856,51 @@ runMigrations()
     }
   })
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-      startScheduler();
-    });
+    let hasStarted = false;
+    let retryTimer = null;
+
+    function startServer(port, retries = 10, delay = 1000) {
+      if (hasStarted) return;
+
+      const server = app.listen(port, () => {
+        hasStarted = true;
+        if (retryTimer) clearTimeout(retryTimer);
+        console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${port}`);
+        startScheduler();
+      });
+
+      server.on('error', (err) => {
+        if (hasStarted) {
+          try { server.close(); } catch (e) {}
+          return;
+        }
+
+        if (err.code === 'EADDRINUSE') {
+          try {
+            server.close();
+          } catch (e) {}
+
+          if (retries > 0) {
+            console.warn(`⚠️ Port ${port} is busy. Retrying in ${delay}ms... (${retries} retries left)`);
+            if (retryTimer) clearTimeout(retryTimer);
+            retryTimer = setTimeout(() => {
+              startServer(port, retries - 1, delay);
+            }, delay);
+          } else {
+            console.error(`❌ Port ${port} is occupied. Max retries reached. Exiting...`);
+            process.exit(1);
+          }
+        } else {
+          console.error("❌ Server error:", err);
+        }
+      });
+    }
+
+    startServer(PORT);
   })
   .catch((err) => {
     console.error("❌ Critical server startup failure:", err);
-  }); // trigger reload 123
+  }); // trigger reload 456
 
 
 
