@@ -357,8 +357,19 @@ export const login = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const defaultHash = await bcrypt.hash('password123', salt);
 
+        const uuidMap = {
+          'CSE': 'c5e11111-1111-1111-1111-111111111111',
+          'AIML': 'a1011111-1111-1111-1111-111111111111',
+          'ECE': 'ece11111-1111-1111-1111-111111111111',
+          'EEE': 'eee11111-1111-1111-1111-111111111111',
+          'MECH': '4ec11111-1111-1111-1111-111111111111',
+          'CIVIL': 'c1b11111-1111-1111-1111-111111111111',
+          'IT': '17111111-1111-1111-1111-111111111111'
+        };
+        const resolvedId = cleanEmail === 'hod@college.com' ? 'd0000000-0000-0000-0000-000000000000' : (uuidMap[deptCode] || 'd0000000-0000-0000-0000-000000000000');
+
         user = {
-          id: `ho-${deptCode.toLowerCase()}-1111-1111-1111-111111111111`,
+          id: resolvedId,
           name: `HOD ${deptCode}`,
           full_name: `HOD ${deptCode} Department`,
           email: cleanEmail,
