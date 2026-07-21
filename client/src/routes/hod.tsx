@@ -1,7 +1,8 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { isAuthenticated } from '@/services/authService';
 import { getActiveRole } from '@/lib/roles';
-import { HODLayout } from '@/modules/hod/components/layout/HODLayout';
+import { DashboardLayout } from '@/layouts/DashboardLayout';
+import { HODDepartmentProvider } from '@/modules/hod/hooks/useHODDepartment';
 
 export const Route = createFileRoute('/hod')({
   beforeLoad: ({ location }) => {
@@ -27,8 +28,8 @@ export const Route = createFileRoute('/hod')({
 
 function HODRouteLayout() {
   return (
-    <HODLayout>
-      <Outlet />
-    </HODLayout>
+    <HODDepartmentProvider>
+      <DashboardLayout />
+    </HODDepartmentProvider>
   );
 }
