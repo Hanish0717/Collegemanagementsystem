@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Calendar, CheckCircle2, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Calendar, CheckCircle2, Loader2, Search, UserCheck, Trash2 } from 'lucide-react';
 import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
 import {
   fetchBooks,
@@ -11,7 +11,6 @@ import {
 } from '@/services/libraryService';
 import api from '@/lib/api';
 import { toast } from 'sonner';
-import { Trash2 } from 'lucide-react';
 
 interface StudentListItem {
   _id: string;
@@ -30,6 +29,8 @@ export function LibrarianIssueBooks() {
 
   // Form State
   const [selectedStudent, setSelectedStudent] = useState('');
+  const [studentSearch, setStudentSearch] = useState('');
+  const [showStudentDropdown, setShowStudentDropdown] = useState(false);
   const [selectedBook, setSelectedBook] = useState('');
   const [issueDate, setIssueDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [dueDate, setDueDate] = useState(() => {
@@ -38,6 +39,7 @@ export function LibrarianIssueBooks() {
     return fourteenDaysLater.toISOString().split('T')[0];
   });
   const [submitting, setSubmitting] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const sections = Array.from(
     new Set(students.map((student) => student.section).filter(Boolean)),
@@ -46,6 +48,50 @@ export function LibrarianIssueBooks() {
 
   const selectedStudentData = students.find((student) => student._id === selectedStudent);
   const selectedBookData = books.find((book) => book._id === selectedBook);
+
+  const filteredStudents = studentSearch.trim()
+    ? students.filter(
+        (s) =>
+          s.fullName.toLowerCase().includes(studentSearch.toLowerCase()) ||
+          s.rollNumber.toLowerCase().includes(studentSearch.toLowerCase()),
+      )
+    : students;
+
+  const handleStudentInputChange = (val: string) => {
+    setStudentSearch(val);
+    setShowStudentDropdown(true);
+
+    const trimmed = val.trim().toLowerCase();
+    if (!trimmed) {
+      setSelectedStudent('');
+      return;
+    }
+
+    const exactMatch = students.find(
+      (s) => s.rollNumber.toLowerCase() === trimmed || s.fullName.toLowerCase() === trimmed,
+    );
+    if (exactMatch) {
+      setSelectedStudent(exactMatch._id);
+    } else if (selectedStudentData && `${selectedStudentData.fullName} (${selectedStudentData.rollNumber})` !== val) {
+      setSelectedStudent('');
+    }
+  };
+
+  const handleSelectStudent = (student: StudentListItem) => {
+    setSelectedStudent(student._id);
+    setStudentSearch(`${student.fullName} (${student.rollNumber})`);
+    setShowStudentDropdown(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowStudentDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -90,6 +136,7 @@ export function LibrarianIssueBooks() {
       });
       toast.success('Book successfully issued and recorded in database!');
       setSelectedStudent('');
+      setStudentSearch('');
       setSelectedBook('');
       loadData();
     } catch (err: any) {
@@ -102,6 +149,8 @@ export function LibrarianIssueBooks() {
 
   const handleClear = () => {
     setSelectedStudent('');
+    setStudentSearch('');
+    setShowStudentDropdown(false);
     setSelectedBook('');
     setIssueDate(new Date().toISOString().split('T')[0]);
     const fourteenDaysLater = new Date();
@@ -142,31 +191,95 @@ export function LibrarianIssueBooks() {
             <h3 className="font-semibold mb-4 text-gradient">New Book Issue</h3>
             <form onSubmit={handleIssueBook} className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                <div>
+                <div className="relative" ref={dropdownRef}>
                   <label className="text-xs font-semibold text-muted-foreground">
                     Select Student *
                   </label>
-                  <select
-                    value={selectedStudent}
-                    onChange={(e) => setSelectedStudent(e.target.value)}
-                    required
-                    className="w-full mt-2 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                  >
-                    <option value="">Choose student...</option>
-                    {students.map((s) => (
-                      <option key={s._id} value={s._id}>
-                        {s.fullName} ({s.rollNumber}){s.section ? ` - Section ${s.section}` : ''}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative mt-2">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Enter ID or Name"
+                      value={studentSearch}
+                      onChange={(e) => handleStudentInputChange(e.target.value)}
+                      onFocus={() => setShowStudentDropdown(true)}
+                      required={!selectedStudent}
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                    />
+                    {studentSearch && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setStudentSearch('');
+                          setSelectedStudent('');
+                        }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground p-1"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Suggestions dropdown list */}
+                  {showStudentDropdown && filteredStudents.length > 0 && !selectedStudentData && (
+                    <div className="absolute z-20 left-0 right-0 mt-1 max-h-52 overflow-y-auto rounded-xl border bg-background shadow-xl py-1 divide-y divide-border/40">
+                      {filteredStudents.map((s) => (
+                        <button
+                          key={s._id}
+                          type="button"
+                          onClick={() => handleSelectStudent(s)}
+                          className="w-full text-left px-4 py-2.5 hover:bg-gradient-soft text-sm flex items-center justify-between cursor-pointer transition"
+                        >
+                          <div>
+                            <span className="font-medium">{s.fullName}</span>
+                            <span className="text-xs text-muted-foreground ml-2">({s.rollNumber})</span>
+                          </div>
+                          <span className="text-xs text-muted-foreground font-mono bg-accent/40 px-2 py-0.5 rounded-md">
+                            {s.department}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Active Student Details Card */}
                   {selectedStudentData && (
-                    <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
-                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
-                        Section: {selectedStudentData.section || 'N/A'}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-full border bg-gradient-soft text-muted-foreground">
-                        Dept: {selectedStudentData.department}
-                      </span>
+                    <div className="mt-3 p-3.5 rounded-xl border bg-emerald-500/10 border-emerald-500/30 text-xs space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                          <UserCheck className="size-4 text-emerald-500" />
+                          Student Details Active
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedStudent('');
+                            setStudentSearch('');
+                            setShowStudentDropdown(true);
+                          }}
+                          className="text-xs text-emerald-700 dark:text-emerald-300 hover:underline cursor-pointer font-medium"
+                        >
+                          Change Student
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-500/20 text-foreground">
+                        <div>
+                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">Name</span>
+                          <span className="font-medium text-sm">{selectedStudentData.fullName}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">ID / Roll No</span>
+                          <span className="font-medium text-sm">{selectedStudentData.rollNumber}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">Department</span>
+                          <span className="font-medium">{selectedStudentData.department}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground block text-[10px] uppercase tracking-wider">Section</span>
+                          <span className="font-medium">{selectedStudentData.section || 'N/A'}</span>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
