@@ -1,11 +1,17 @@
 import { supabase } from '../config/supabase.js';
 import { dispatchNotification } from '../services/notificationService.js';
 
+const isUUID = (id) =>
+  typeof id === 'string' &&
+  /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(id);
+
 // @desc    Get faculty dashboard stats
 // @route   GET /api/faculty-module/dashboard
 // @access  Private (faculty)
 export const getFacultyDashboard = async (req, res, next) => {
   try {
+    const userId = req.user.id || req.user._id;
+
     // 1. Get students count
     const { count: studentsCount } = await supabase
       .from('students')
@@ -13,10 +19,11 @@ export const getFacultyDashboard = async (req, res, next) => {
       .eq('is_active', true);
 
     // 2. Get study materials count
-    const { count: materialsCount } = await supabase
-      .from('study_materials')
-      .select('*', { count: 'exact', head: true })
-      .eq('faculty', req.user.id || req.user._id);
+    let materialsQuery = supabase.from('study_materials').select('*', { count: 'exact', head: true });
+    if (isUUID(userId)) {
+      materialsQuery = materialsQuery.eq('faculty', userId);
+    }
+    const { count: materialsCount } = await materialsQuery;
 
     // 3. Get pending leave requests
     const { data: leaveRequests } = await supabase
@@ -34,12 +41,11 @@ export const getFacultyDashboard = async (req, res, next) => {
 
     // Fetch dynamic activities
     const activities = [];
-    const { data: recentMaterials } = await supabase
-      .from('study_materials')
-      .select('*')
-      .eq('faculty', req.user.id || req.user._id)
-      .order('created_at', { ascending: false })
-      .limit(2);
+    let recentMatQuery = supabase.from('study_materials').select('*').order('created_at', { ascending: false }).limit(2);
+    if (isUUID(userId)) {
+      recentMatQuery = recentMatQuery.eq('faculty', userId);
+    }
+    const { data: recentMaterials } = await recentMatQuery;
 
     if (recentMaterials) {
       recentMaterials.forEach(m => {
@@ -352,10 +358,13 @@ export const gradeSubmission = async (req, res, next) => {
 // @access  Private (faculty)
 export const getFacultyMaterials = async (req, res, next) => {
   try {
-    const { data: list } = await supabase
-      .from('study_materials')
-      .select('*')
-      .eq('faculty', req.user.id || req.user._id);
+    const userId = req.user.id || req.user._id;
+    let query = supabase.from('study_materials').select('*');
+    if (isUUID(userId)) {
+      query = query.eq('faculty', userId);
+    }
+
+    const { data: list } = await query;
 
     if (!list) {
       return res.status(200).json({ success: true, data: [] });
@@ -385,6 +394,8 @@ export const createFacultyMaterial = async (req, res, next) => {
       return next(error);
     }
 
+    const userId = req.user.id || req.user._id;
+
     const { data: material, error: insertErr } = await supabase
       .from('study_materials')
       .insert([{
@@ -395,7 +406,7 @@ export const createFacultyMaterial = async (req, res, next) => {
         department,
         year: Number(year),
         semester: Number(semester),
-        faculty: req.user.id || req.user._id
+        faculty: isUUID(userId) ? userId : null
       }])
       .select()
       .single();
