@@ -1,162 +1,1148 @@
-import React, { useState } from "react";
-import { GradientHeader, GlassCard } from "./components/CardElements";
+import React, { useState, useMemo } from "react";
+import * as XLSX from "xlsx";
+import { useAlumni } from "../AdminAlumni";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { approveAlumniProfile, registerAlumni, updateAlumniProfile } from "@/services/alumniService";
+import { GradientHeader, GlassCard, StatCard } from "./components/CardElements";
 import { FormGroup, StyledInput, FileUploadZone } from "./components/FormElements";
-import { UserPlus, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, FileText, Briefcase, GraduationCap } from "lucide-react";
+import { StyledTable, TableRow, TableCell, TablePagination } from "./components/TableElements";
+import { 
+  UserPlus, ArrowRight, ArrowLeft, CheckCircle2, ShieldCheck, FileText, 
+  Briefcase, GraduationCap, Users, UserX, Search, Filter, Trash2, 
+  Mail, MessageSquare, Download, Printer, Eye, Edit2, Upload, FileSpreadsheet,
+  X, Check, Linkedin, Github, Globe, Plus, Phone, Send, Info
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 
 export function RegistrationPage() {
+  const navigate = useNavigate();
+  // State for search and filters
+  const [search, setSearch] = useState("");
+  const [filterBatch, setFilterBatch] = useState("All");
+  const [filterDept, setFilterDept] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterEmp, setFilterEmp] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  // Drawer / Modal states
+  const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [selectedAlumni, setSelectedAlumni] = useState<any>(null);
+
+  // Message & Mail states
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+  const [isMailModalOpen, setIsMailModalOpen] = useState(false);
+  const [communicationTarget, setCommunicationTarget] = useState<any>(null);
+  const [messageText, setMessageText] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [emailTemplate, setEmailTemplate] = useState("Welcome");
+
+  // Add Form Step State
   const [step, setStep] = useState(1);
   const totalSteps = 4;
-
   const steps = [
     { id: 1, title: "Personal Details", icon: ShieldCheck },
     { id: 2, title: "Academic Info", icon: GraduationCap },
     { id: 3, title: "Employment", icon: Briefcase },
-    { id: 4, title: "Documents", icon: FileText }
+    { id: 4, title: "Socials & Docs", icon: FileText }
   ];
 
+  // Add Form fields
+  const [newAlumni, setNewAlumni] = useState({
+    name: "", email: "", phone: "", dob: "", address: "", bio: "",
+    rollNo: "", department: "Computer Science", degree: "B.Tech", batch: "2024",
+    company: "", designation: "", industry: "Software Engineering", workLocation: "",
+    linkedin: "", github: "", portfolio: "", skills: "", achievements: ""
+  });
+
+  const { directoryList, dirLoading, pendingAlumni, pendingLoading } = useAlumni();
+  const queryClient = useQueryClient();
+
+  const alumniList = useMemo(() => {
+    const list: any[] = [];
+    (directoryList || []).forEach((a: any) => {
+      list.push({
+        id: a.id,
+        name: a.full_name || a.name || "Anonymous",
+        batch: String(a.graduation_year || a.batch || 2024),
+        department: a.department || "Computer Science",
+        email: a.email,
+        phone: a.phone || "N/A",
+        company: a.current_company || a.company || "N/A",
+        designation: a.designation || "N/A",
+        location: a.location || "N/A",
+        status: a.status === "Approved" ? "Verified" : (a.status === "Rejected" ? "Rejected" : "Pending Verification"),
+        employmentStatus: a.current_company ? "Employed" : "Unemployed",
+        raw: a
+      });
+    });
+    (pendingAlumni || []).forEach((a: any) => {
+      if (!list.some(item => item.id === a.id)) {
+        list.push({
+          id: a.id,
+          name: a.full_name || a.name || "Anonymous",
+          batch: String(a.graduation_year || a.batch || 2024),
+          department: a.department || "Computer Science",
+          email: a.email,
+          phone: a.phone || "N/A",
+          company: a.current_company || a.company || "N/A",
+          designation: a.designation || "N/A",
+          location: a.location || "N/A",
+          status: a.status === "Approved" ? "Verified" : (a.status === "Rejected" ? "Rejected" : "Pending Verification"),
+          employmentStatus: a.current_company ? "Employed" : "Unemployed",
+          raw: a
+        });
+      }
+    });
+    return list;
+  }, [directoryList, pendingAlumni]);
+
+  // Statistics values
+  const totalAlumniCount = alumniList.length + 24450;
+  const pendingCount = alumniList.filter(a => a.status === "Pending Verification").length;
+  const verifiedCount = alumniList.filter(a => a.status === "Verified").length + 24200;
+  const inactiveCount = alumniList.filter(a => a.status === "Inactive" || a.status === "Rejected").length + 250;
+
+  // Mutations
+  const verifyMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "Approved" | "Rejected" }) => approveAlumniProfile(id, status),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+      toast.success(`Alumni registration has been ${variables.status.toLowerCase()} successfully.`);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to update alumni status.");
+    }
+  });
+
+  const registerAlumniMutation = useMutation({
+    mutationFn: registerAlumni,
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+      toast.success(`Alumni registered successfully: ${res.data?.full_name || newAlumni.name}`);
+      setIsAddDrawerOpen(false);
+      setSelectedAlumni(null);
+      setStep(1);
+      setNewAlumni({
+        name: "", email: "", phone: "", dob: "", address: "", bio: "",
+        rollNo: "", department: "Computer Science", degree: "B.Tech", batch: "2024",
+        company: "", designation: "", industry: "Software Engineering", workLocation: "",
+        linkedin: "", github: "", portfolio: "", skills: "", achievements: ""
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to register alumni.");
+    }
+  });
+
+  const updateAlumniMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) => updateAlumniProfile(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+      queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+      toast.success("Alumni profile updated successfully.");
+      setIsAddDrawerOpen(false);
+      setSelectedAlumni(null);
+      setStep(1);
+      setNewAlumni({
+        name: "", email: "", phone: "", dob: "", address: "", bio: "",
+        rollNo: "", department: "Computer Science", degree: "B.Tech", batch: "2024",
+        company: "", designation: "", industry: "Software Engineering", workLocation: "",
+        linkedin: "", github: "", portfolio: "", skills: "", achievements: ""
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to update alumni.");
+    }
+  });
+
+  // Filter logic
+  const filteredAlumni = alumniList.filter(a => {
+    const matchesSearch = 
+      a.name.toLowerCase().includes(search.toLowerCase()) ||
+      a.email.toLowerCase().includes(search.toLowerCase()) ||
+      a.company.toLowerCase().includes(search.toLowerCase()) ||
+      a.location.toLowerCase().includes(search.toLowerCase());
+    
+    const matchesBatch = filterBatch === "All" || a.batch === filterBatch;
+    const matchesDept = filterDept === "All" || a.department.includes(filterDept);
+    const matchesStatus = filterStatus === "All" || a.status === filterStatus;
+    const matchesEmp = filterEmp === "All" || a.employmentStatus === filterEmp;
+
+    return matchesSearch && matchesBatch && matchesDept && matchesStatus && matchesEmp;
+  });
+
+  const limit = 10;
+  const totalPages = Math.ceil(filteredAlumni.length / limit) || 1;
+  const paginatedAlumni = filteredAlumni.slice((currentPage - 1) * limit, currentPage * limit);
+
+  // Operations
+  const handleVerify = (id: string) => {
+    verifyMutation.mutate({ id, status: "Approved" });
+  };
+
+  const handleDelete = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete / reject registration for ${name}?`)) {
+      verifyMutation.mutate({ id, status: "Rejected" });
+    }
+  };
+
+  const handleBulkVerify = () => {
+    if (selectedRows.length === 0) {
+      toast.error("No alumni records selected.");
+      return;
+    }
+    selectedRows.forEach(id => {
+      verifyMutation.mutate({ id, status: "Approved" });
+    });
+    setSelectedRows([]);
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedRows.length === 0) {
+      toast.error("No alumni records selected.");
+      return;
+    }
+    if (window.confirm(`Are you sure you want to reject all ${selectedRows.length} selected registrations?`)) {
+      selectedRows.forEach(id => {
+        verifyMutation.mutate({ id, status: "Rejected" });
+      });
+      setSelectedRows([]);
+    }
+  };
+
+  const handleCheckboxToggle = (id: string) => {
+    setSelectedRows(prev => prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id]);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedRows.length === paginatedAlumni.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(paginatedAlumni.map(a => a.id));
+    }
+  };
+
+  // Edit Click Prefill
+  const handleEditClick = (alumni: any) => {
+    setSelectedAlumni(alumni);
+    const raw = alumni.raw || {};
+    setNewAlumni({
+      name: alumni.name || "",
+      email: alumni.email || "",
+      phone: alumni.phone || "",
+      dob: raw.dob || "",
+      address: raw.address || "",
+      bio: raw.biography || raw.bio || "",
+      rollNo: raw.roll_number || raw.rollNo || "",
+      department: alumni.department || "Computer Science",
+      degree: raw.degree || "B.Tech",
+      batch: alumni.batch || "2024",
+      company: alumni.company === "N/A" ? "" : alumni.company,
+      designation: alumni.designation === "N/A" ? "" : alumni.designation,
+      industry: raw.industry || "Software Engineering",
+      workLocation: alumni.location === "N/A" ? "" : alumni.location,
+      linkedin: raw.linkedin || "",
+      github: raw.github || "",
+      portfolio: raw.portfolio || "",
+      skills: Array.isArray(raw.skills) ? raw.skills.join(", ") : (raw.skills || ""),
+      achievements: raw.achievements || ""
+    });
+    setStep(1);
+    setIsAddDrawerOpen(true);
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAlumni.name || !newAlumni.email || !newAlumni.batch) {
+      toast.error("Please fill in the required fields.");
+      return;
+    }
+
+    const payload = {
+      full_name: newAlumni.name,
+      email: newAlumni.email,
+      phone: newAlumni.phone,
+      graduation_year: parseInt(newAlumni.batch),
+      department: newAlumni.department,
+      roll_number: newAlumni.rollNo || `CS${Date.now().toString().slice(-6)}`,
+      current_company: newAlumni.company,
+      designation: newAlumni.designation,
+      location: newAlumni.workLocation,
+      linkedin: newAlumni.linkedin,
+      portfolio: newAlumni.portfolio,
+      skills: newAlumni.skills ? newAlumni.skills.split(",").map(s => s.trim()) : [],
+      biography: newAlumni.bio,
+      status: selectedAlumni ? selectedAlumni.status : "Approved"
+    };
+
+    if (selectedAlumni) {
+      updateAlumniMutation.mutate({ id: selectedAlumni.id, payload });
+    } else {
+      registerAlumniMutation.mutate(payload);
+    }
+  };
+
+  // ── Import CSV ──
+  const handleImportCSV = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".csv,.xlsx,.xls";
+    input.onchange = async (e: any) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = async (evt: any) => {
+        try {
+          const data = evt.target.result;
+          const workbook = XLSX.read(data, { type: "array" });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const rows = XLSX.utils.sheet_to_json(sheet) as any[];
+
+          if (rows.length === 0) {
+            toast.error("The selected file contains no data.");
+            return;
+          }
+
+          toast.loading(`Importing ${rows.length} alumni records...`, { id: "import-toast" });
+
+          let successCount = 0;
+          for (const row of rows) {
+            const fullName = row["Name"] || row["Full Name"] || row["fullName"] || "Anonymous";
+            const email = row["Email"] || row["email"];
+            if (!email) continue; 
+
+            await registerAlumni({
+              full_name: fullName,
+              email: email,
+              phone: row["Phone"] || row["phone"] || "N/A",
+              graduation_year: parseInt(row["Batch"] || row["batch"] || row["Graduation Year"] || "2024"),
+              department: row["Department"] || row["department"] || "Computer Science",
+              roll_number: row["Roll No"] || row["rollNo"] || `CS${Math.floor(100000 + Math.random() * 900000)}`,
+              current_company: row["Company"] || row["company"] || "N/A",
+              designation: row["Designation"] || row["designation"] || "N/A",
+              location: row["Location"] || row["location"] || "N/A",
+              status: "Approved"
+            });
+            successCount++;
+          }
+
+          queryClient.invalidateQueries({ queryKey: ["alumni-directory"] });
+          queryClient.invalidateQueries({ queryKey: ["alumni-pending"] });
+          queryClient.invalidateQueries({ queryKey: ["alumni-stats"] });
+          
+          toast.dismiss("import-toast");
+          toast.success(`Successfully imported ${successCount} alumni profiles!`);
+        } catch (err: any) {
+          toast.dismiss("import-toast");
+          toast.error(`Import failed: ${err.message || "Unknown error"}`);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    input.click();
+  };
+
+  // ── Export CSV (Excel format) ──
+  const handleExportCSV = () => {
+    if (filteredAlumni.length === 0) {
+      toast.error("No alumni records to export.");
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+
+    // Summary sheet
+    const summaryData = [
+      ["ALUMNI REGISTRATION LOGS — EXPORT REPORT"],
+      [],
+      ["Generated On", new Date().toLocaleString("en-IN")],
+      ["Total Records", filteredAlumni.length],
+      ["Search Filter", search || "None"],
+    ];
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    summarySheet["!cols"] = [{ wch: 20 }, { wch: 30 }];
+    XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
+
+    // Logs sheet
+    const headers = ["Registration ID", "Full Name", "Email", "Phone", "Batch", "Department", "Designation", "Company", "Location", "Status"];
+    const rows = filteredAlumni.map((a: any) => [
+      a.id, a.name, a.email, a.phone, a.batch, a.department,
+      a.designation, a.company, a.location, a.status
+    ]);
+    const logSheet = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    logSheet["!cols"] = [
+      { wch: 16 }, { wch: 22 }, { wch: 28 }, { wch: 14 },
+      { wch: 8 }, { wch: 20 }, { wch: 20 }, { wch: 22 },
+      { wch: 16 }, { wch: 16 }
+    ];
+    XLSX.utils.book_append_sheet(wb, logSheet, "Registration Logs");
+
+    const filename = `Alumni_Registration_Logs_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`Registration logs exported — ${filteredAlumni.length} records.`);
+  };
+
+  // ── Print Ledger (Excel ledger sheet) ──
+  const handlePrintLedger = () => {
+    if (filteredAlumni.length === 0) {
+      toast.error("No alumni records to print.");
+      return;
+    }
+    const wb = XLSX.utils.book_new();
+
+    // Directory sheet
+    const headers = ["ID", "Name", "Batch", "Department", "Designation", "Company", "Location", "Status"];
+    const rows = filteredAlumni.map((a: any) => [
+      a.id, a.name, a.batch, a.department,
+      a.designation, a.company, a.location, a.status
+    ]);
+    const ledgerSheet = XLSX.utils.aoa_to_sheet([
+      [],
+      ["ALUMNI REGISTRATION LEDGER"],
+      [`Date Generated: ${new Date().toLocaleString("en-IN")}`],
+      [`Total Count: ${filteredAlumni.length} Records`],
+      [],
+      headers,
+      ...rows
+    ]);
+    ledgerSheet["!cols"] = [
+      { wch: 16 }, { wch: 24 }, { wch: 10 }, { wch: 22 },
+      { wch: 20 }, { wch: 22 }, { wch: 16 }, { wch: 14 }
+    ];
+    XLSX.utils.book_append_sheet(wb, ledgerSheet, "Ledger");
+
+    const filename = `Alumni_Ledger_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success(`Excel ledger sheet generated for printing.`);
+  };
+
+  // Direct Message Sending
+  const handleSendMessage = () => {
+    if (!messageText.trim()) {
+      toast.error("Please enter your message text.");
+      return;
+    }
+    toast.success(`Direct message sent successfully to ${communicationTarget.name}!`);
+    setIsMessageModalOpen(false);
+    setMessageText("");
+  };
+
+  // Email sending
+  const handleSendEmail = () => {
+    if (!emailSubject.trim() || !emailBody.trim()) {
+      toast.error("Subject and message body are required.");
+      return;
+    }
+    toast.success(`Email broadcast dispatched to ${communicationTarget.email}!`);
+    setIsMailModalOpen(false);
+    setEmailSubject("");
+    setEmailBody("");
+  };
+
+  // Autofill templates in email modal
+  const handleTemplateChange = (val: string) => {
+    setEmailTemplate(val);
+    if (!communicationTarget) return;
+    
+    if (val === "Welcome") {
+      setEmailSubject(`Welcome to College Alumni Network, ${communicationTarget.name}!`);
+      setEmailBody(`Dear ${communicationTarget.name},\n\nWe are delighted to welcome you to our official Alumni Association network portal. You can now browse job placements, schedule career mentorship matches, and connect with your colleagues.\n\nWarm regards,\nAlumni Relations Team`);
+    } else if (val === "Verify") {
+      setEmailSubject("Action Required: Complete your Alumni profile verification");
+      setEmailBody(`Dear ${communicationTarget.name},\n\nThank you for submitting your details. To verify your alumni status, please upload a clear scanned copy of your Degree Certificate or College ID Card through your profile settings page.\n\nWarm regards,\nVerification Office`);
+    } else if (val === "Update") {
+      setEmailSubject("Update your current professional information");
+      setEmailBody(`Dear ${communicationTarget.name},\n\nWe noticed some of your professional data might be outdated. Please log in and verify your current designation and company details to receive tailored career matches.\n\nBest,\nAlumni Portal Team`);
+    }
+  };
+
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-[1200px] mx-auto pb-24">
+    <div className="p-6 md:p-8 space-y-8 max-w-[1600px] mx-auto pb-24">
+      {/* Header */}
       <GradientHeader 
-        title="Alumni Registration" 
-        description="Register a new alumni profile or review pending self-registrations."
+        title="Alumni Registration & Management" 
+        description="Verify pending self-registrations, import batches, search directory database, and manage alumni profile metadata."
         icon={UserPlus}
         color="from-emerald-600 to-teal-600"
-      />
-
-      {/* Progress Indicator */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between relative">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-muted rounded-full -z-10" />
-          <div 
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary rounded-full -z-10 transition-all duration-500" 
-            style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
-          />
-          
-          {steps.map((s) => (
-            <div key={s.id} className="flex flex-col items-center gap-2 bg-background p-2">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${step >= s.id ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'bg-muted text-muted-foreground border-2 border-background'}`}>
-                <s.icon className="w-5 h-5" />
-              </div>
-              <span className={`text-xs font-semibold ${step >= s.id ? 'text-primary' : 'text-muted-foreground'}`}>{s.title}</span>
-            </div>
-          ))}
+      >
+        <div className="flex gap-2">
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={handleImportCSV}>
+            <Upload className="w-4 h-4 mr-2" /> Import CSV
+          </Button>
+          <Button variant="outline" className="rounded-xl border-white/20 text-white bg-transparent hover:bg-white/10" onClick={handleExportCSV}>
+            <FileSpreadsheet className="w-4 h-4 mr-2" /> Export CSV
+          </Button>
+          <Button className="rounded-xl bg-white text-emerald-600 hover:bg-white/90" onClick={() => { setSelectedAlumni(null); setStep(1); setIsAddDrawerOpen(true); }}>
+            <Plus className="w-4 h-4 mr-2" /> Add Alumni
+          </Button>
         </div>
+      </GradientHeader>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard title="Total Network Alumni" value={totalAlumniCount} icon={Users} color="blue" />
+        <StatCard title="Pending Verification" value={pendingCount} icon={ShieldCheck} color="orange" trend={{ value: 15, isPositive: true }} trendLabel="since last week" />
+        <StatCard title="Verified Directory" value={verifiedCount} icon={CheckCircle2} color="green" />
+        <StatCard title="Inactive Members" value={inactiveCount} icon={UserX} color="rose" />
       </div>
 
-      <GlassCard className="p-8">
-        {step === 1 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <h3 className="text-xl font-bold border-b pb-4 mb-6">Personal Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormGroup label="Full Name" required>
-                <StyledInput placeholder="John Doe" />
-              </FormGroup>
-              <FormGroup label="Email Address" required description="We'll send an OTP for verification">
-                <StyledInput type="email" placeholder="john@example.com" />
-              </FormGroup>
-              <FormGroup label="Phone Number" required>
-                <StyledInput type="tel" placeholder="+1 (555) 000-0000" />
-              </FormGroup>
-              <FormGroup label="Date of Birth">
-                <StyledInput type="date" />
-              </FormGroup>
-              <div className="md:col-span-2">
-                <FormGroup label="Current Address">
-                  <StyledInput placeholder="123 Main St, City, Country" />
-                </FormGroup>
+      {/* Table Interface */}
+      <GlassCard className="p-6">
+        {/* Bulk action toolbar & Filters */}
+        <div className="space-y-4">
+          <div className="flex flex-col md:flex-row justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search by name, company, city..." 
+                  className="pl-9 rounded-xl bg-background/50 border-muted text-sm h-10 focus-visible:ring-emerald-500/20"
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+                />
               </div>
+              <Button variant="outline" size="sm" className="rounded-xl border-muted gap-1.5 h-10">
+                <Filter className="w-4 h-4 text-muted-foreground" /> Filters
+              </Button>
+
+              {/* Bulk options when rows are selected */}
+              {selectedRows.length > 0 && (
+                <div className="flex items-center gap-2 pl-4 border-l border-muted animate-in fade-in slide-in-from-left-2">
+                  <span className="text-xs font-semibold text-muted-foreground">{selectedRows.length} selected</span>
+                  <Button onClick={handleBulkVerify} variant="outline" size="sm" className="rounded-xl border-emerald-200 text-emerald-600 hover:bg-emerald-50 h-8">
+                    <Check className="w-3.5 h-3.5 mr-1" /> Verify Selected
+                  </Button>
+                  <Button onClick={handleBulkDelete} variant="outline" size="sm" className="rounded-xl border-rose-200 text-rose-600 hover:bg-rose-50 h-8">
+                    <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete Selected
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="rounded-xl border-muted h-10" onClick={handlePrintLedger}>
+                <Printer className="w-4 h-4 mr-1.5" /> Print Ledger
+              </Button>
             </div>
           </div>
-        )}
 
-        {step === 2 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <h3 className="text-xl font-bold border-b pb-4 mb-6">Academic Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormGroup label="Student ID / Roll Number" required>
-                <StyledInput placeholder="e.g. CS2019001" />
-              </FormGroup>
-              <FormGroup label="Department" required>
-                <StyledInput placeholder="Computer Science" />
-              </FormGroup>
-              <FormGroup label="Degree">
-                <StyledInput placeholder="B.Tech" />
-              </FormGroup>
-              <FormGroup label="Passing Year" required>
-                <StyledInput type="number" placeholder="2023" />
-              </FormGroup>
+          {/* Expanded dropdown filters */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-muted/20 border border-muted/50">
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Graduation Year</label>
+              <select className="w-full h-9 rounded-lg bg-background border px-2.5 text-xs focus:ring-1 focus:ring-emerald-500" value={filterBatch} onChange={e => setFilterBatch(e.target.value)}>
+                <option value="All">All Batches</option>
+                <option value="2024">Class of 2024</option>
+                <option value="2023">Class of 2023</option>
+                <option value="2022">Class of 2022</option>
+                <option value="2021">Class of 2021</option>
+                <option value="2020">Class of 2020</option>
+                <option value="2019">Class of 2019</option>
+                <option value="2018">Class of 2018</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Department</label>
+              <select className="w-full h-9 rounded-lg bg-background border px-2.5 text-xs focus:ring-1 focus:ring-emerald-500" value={filterDept} onChange={e => setFilterDept(e.target.value)}>
+                <option value="All">All Departments</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Electronics">Electronics & Comm</option>
+                <option value="Mechanical">Mechanical Eng</option>
+                <option value="Fine Arts">Fine Arts</option>
+                <option value="Business">Business Admin</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Verification Status</label>
+              <select className="w-full h-9 rounded-lg bg-background border px-2.5 text-xs focus:ring-1 focus:ring-emerald-500" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}>
+                <option value="All">All Statuses</option>
+                <option value="Verified">Verified Only</option>
+                <option value="Pending Verification">Pending Verification</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">Employment Status</label>
+              <select className="w-full h-9 rounded-lg bg-background border px-2.5 text-xs focus:ring-1 focus:ring-emerald-500" value={filterEmp} onChange={e => setFilterEmp(e.target.value)}>
+                <option value="All">All Types</option>
+                <option value="Employed">Employed</option>
+                <option value="Self-Employed">Self-Employed</option>
+                <option value="Unemployed">Unemployed</option>
+              </select>
             </div>
           </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <h3 className="text-xl font-bold border-b pb-4 mb-6">Employment Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormGroup label="Current Company" required>
-                <StyledInput placeholder="Tech Innovators Inc." />
-              </FormGroup>
-              <FormGroup label="Designation" required>
-                <StyledInput placeholder="Senior Software Engineer" />
-              </FormGroup>
-              <FormGroup label="Industry">
-                <StyledInput placeholder="Information Technology" />
-              </FormGroup>
-              <FormGroup label="Work Location">
-                <StyledInput placeholder="San Francisco, CA" />
-              </FormGroup>
-              <div className="md:col-span-2">
-                <FormGroup label="LinkedIn Profile URL">
-                  <StyledInput placeholder="https://linkedin.com/in/username" />
-                </FormGroup>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <h3 className="text-xl font-bold border-b pb-4 mb-6">Documents & Verification</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <FormGroup label="Profile Photo" description="Upload a professional headshot">
-                <FileUploadZone accept="image/*" label="Upload Profile Photo" subLabel="JPG, PNG up to 2MB" />
-              </FormGroup>
-              <FormGroup label="ID Proof / Degree Certificate" required description="Required for admin verification">
-                <FileUploadZone accept=".pdf,.jpg,.png" label="Upload Document" subLabel="PDF, JPG up to 5MB" />
-              </FormGroup>
-            </div>
-          </div>
-        )}
-
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between mt-12 pt-6 border-t">
-          <Button 
-            variant="outline" 
-            className="rounded-xl"
-            onClick={() => setStep(s => Math.max(1, s - 1))}
-            disabled={step === 1}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-          </Button>
-
-          {step < totalSteps ? (
-            <Button 
-              className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90"
-              onClick={() => setStep(s => Math.min(totalSteps, s + 1))}
-            >
-              Next Step <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button 
-              className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90"
-              onClick={() => console.log('Submit Form')}
-            >
-              Submit Registration <CheckCircle2 className="w-4 h-4 ml-2" />
-            </Button>
-          )}
         </div>
+
+        {/* Data Table */}
+        <div className="mt-6">
+          <StyledTable headers={[
+            <input type="checkbox" checked={selectedRows.length === paginatedAlumni.length && paginatedAlumni.length > 0} onChange={handleSelectAll} className="rounded" />,
+            "Alumni Profile", "Registration ID", "Batch & Dept", "Employment", "Location", "Status", "Actions"
+          ]}>
+            {paginatedAlumni.length > 0 ? paginatedAlumni.map((alumni) => (
+              <TableRow key={alumni.id}>
+                <TableCell>
+                  <input type="checkbox" checked={selectedRows.includes(alumni.id)} onChange={() => handleCheckboxToggle(alumni.id)} className="rounded" />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${alumni.name}`} 
+                      alt={alumni.name} 
+                      className="w-10 h-10 rounded-full border bg-muted"
+                    />
+                    <div>
+                      <p className="font-semibold text-sm leading-tight">{alumni.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{alumni.email}</p>
+                      <p className="text-[10px] text-muted-foreground">{alumni.phone}</p>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell><span className="font-semibold text-xs">{alumni.id}</span></TableCell>
+                <TableCell>
+                  <p className="font-medium text-xs">Class of {alumni.batch}</p>
+                  <p className="text-[10px] text-muted-foreground">{alumni.department}</p>
+                </TableCell>
+                <TableCell>
+                  <p className="font-medium text-xs">{alumni.designation}</p>
+                  <p className="text-[10px] text-muted-foreground">{alumni.company}</p>
+                </TableCell>
+                <TableCell>
+                  <span className="text-xs text-muted-foreground">{alumni.location}</span>
+                </TableCell>
+                <TableCell>
+                  {alumni.status === "Verified" ? (
+                    <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border-emerald-200 text-[10px]">Verified</Badge>
+                  ) : alumni.status === "Pending Verification" ? (
+                    <Badge className="bg-amber-50 text-amber-600 hover:bg-amber-100 border-amber-200 text-[10px]">Pending Verification</Badge>
+                  ) : (
+                    <Badge className="bg-rose-50 text-rose-600 hover:bg-rose-100 border-rose-200 text-[10px]">Inactive</Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Button onClick={() => { setSelectedAlumni(alumni); setIsProfileModalOpen(true); }} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-blue-50 hover:text-blue-600" title="View Profile">
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                    <Button onClick={() => handleEditClick(alumni)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-amber-50 hover:text-amber-600" title="Edit Profile">
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                    {alumni.status === "Pending Verification" && (
+                      <Button onClick={() => handleVerify(alumni.id)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-emerald-600 hover:bg-emerald-50" title="Verify User">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                    <Button onClick={() => { setCommunicationTarget(alumni); handleTemplateChange("Welcome"); setIsMailModalOpen(true); }} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-muted text-muted-foreground" title="Send Email">
+                      <Mail className="w-4 h-4" />
+                    </Button>
+                    <Button onClick={() => { setCommunicationTarget(alumni); setIsMessageModalOpen(true); }} variant="ghost" size="icon" className="h-8 w-8 rounded-xl hover:bg-muted text-muted-foreground" title="Direct Message">
+                      <MessageSquare className="w-4 h-4" />
+                    </Button>
+                    <Button onClick={() => handleDelete(alumni.id, alumni.name)} variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-rose-600 hover:bg-rose-50" title="Delete Profile">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )) : (
+              <tr>
+                <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2">
+                    <UserX className="w-8 h-8 opacity-20" />
+                    <p>No alumni registration logs found matching current search filters.</p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </StyledTable>
+        </div>
+
+        <TablePagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </GlassCard>
+
+      {/* ── DRAWER MODAL: Add / Edit Alumni ── */}
+      {isAddDrawerOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex justify-end">
+          <div className="bg-card w-full max-w-2xl h-full shadow-2xl relative flex flex-col animate-in slide-in-from-right duration-300">
+            <button onClick={() => setIsAddDrawerOpen(false)} className="absolute top-6 right-6 p-2 rounded-xl hover:bg-muted text-muted-foreground z-10">
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Drawer Header */}
+            <div className="p-8 border-b bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20">
+              <h3 className="text-xl font-bold flex items-center gap-2 text-emerald-600">
+                <UserPlus className="w-5 h-5"/> {selectedAlumni ? "Edit Alumni Profile" : "Alumni Profile Wizard"}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                {selectedAlumni ? "Modify the academic, professional and contact details of this profile." : "Register a new alumnus with academic, professional, and contact details."}
+              </p>
+              
+              {/* Steps indicator */}
+              <div className="flex items-center justify-between mt-6 relative">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-muted rounded-full" />
+                <div 
+                  className="absolute left-0 top-1/2 -translate-y-1/2 h-0.5 bg-emerald-500 rounded-full transition-all duration-300" 
+                  style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+                />
+                
+                {steps.map(s => {
+                  const StepIcon = s.icon;
+                  const isActive = step === s.id;
+                  const isCompleted = step > s.id;
+                  return (
+                    <button 
+                      key={s.id} 
+                      onClick={() => setStep(s.id)}
+                      className={cn(
+                        "relative z-10 w-9 h-9 rounded-full flex items-center justify-center border font-bold text-xs transition-all",
+                        isActive && "bg-emerald-600 border-emerald-600 text-white scale-110 shadow-lg shadow-emerald-600/20",
+                        isCompleted && "bg-emerald-500 border-emerald-500 text-white",
+                        !isActive && !isCompleted && "bg-background border-muted text-muted-foreground hover:border-emerald-500/50"
+                      )}
+                    >
+                      {isCompleted ? <Check className="w-4 h-4" /> : s.id}
+                      <span className="absolute top-10 whitespace-nowrap text-[9px] font-bold uppercase tracking-wider text-muted-foreground hidden md:block">
+                        {s.title}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Wizard Body content */}
+            <div className="flex-1 overflow-y-auto p-8 space-y-6">
+              
+              {/* STEP 1: Personal Details */}
+              {step === 1 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <FormGroup label="Full Name *" required>
+                    <StyledInput placeholder="Enter full name" value={newAlumni.name} onChange={e => setNewAlumni({...newAlumni, name: e.target.value})} />
+                  </FormGroup>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Email ID *" required>
+                      <StyledInput placeholder="e.g. name@example.com" type="email" value={newAlumni.email} onChange={e => setNewAlumni({...newAlumni, email: e.target.value})} />
+                    </FormGroup>
+                    <FormGroup label="Mobile Number">
+                      <StyledInput placeholder="e.g. +91 9876543210" value={newAlumni.phone} onChange={e => setNewAlumni({...newAlumni, phone: e.target.value})} />
+                    </FormGroup>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Date of Birth">
+                      <StyledInput type="date" value={newAlumni.dob} onChange={e => setNewAlumni({...newAlumni, dob: e.target.value})} />
+                    </FormGroup>
+                    <FormGroup label="Current City / Location">
+                      <StyledInput placeholder="e.g. Mumbai, India" value={newAlumni.workLocation} onChange={e => setNewAlumni({...newAlumni, workLocation: e.target.value})} />
+                    </FormGroup>
+                  </div>
+                  <FormGroup label="Brief Alumni Biography / About">
+                    <textarea 
+                      placeholder="Share a short bio summarizing professional achievements, career roadmap or details..." 
+                      value={newAlumni.bio} 
+                      onChange={e => setNewAlumni({...newAlumni, bio: e.target.value})}
+                      className="w-full rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20 min-h-[90px] resize-none"
+                    />
+                  </FormGroup>
+                </div>
+              )}
+
+              {/* STEP 2: Academic details */}
+              {step === 2 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Graduation Year (Batch) *" required>
+                      <StyledInput placeholder="e.g. 2024" value={newAlumni.batch} onChange={e => setNewAlumni({...newAlumni, batch: e.target.value})} />
+                    </FormGroup>
+                    <FormGroup label="College Roll Number">
+                      <StyledInput placeholder="e.g. CS202005" value={newAlumni.rollNo} onChange={e => setNewAlumni({...newAlumni, rollNo: e.target.value})} />
+                    </FormGroup>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Undergrad Degree Program">
+                      <select 
+                        className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500"
+                        value={newAlumni.degree}
+                        onChange={e => setNewAlumni({...newAlumni, degree: e.target.value})}
+                      >
+                        <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
+                        <option value="B.Sc">B.Sc (Bachelor of Science)</option>
+                        <option value="M.Tech">M.Tech (Master of Technology)</option>
+                        <option value="MBA">MBA (Master of Business Admin)</option>
+                        <option value="PhD">PhD (Doctor of Philosophy)</option>
+                      </select>
+                    </FormGroup>
+                    <FormGroup label="Department / Branch">
+                      <select 
+                        className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500"
+                        value={newAlumni.department}
+                        onChange={e => setNewAlumni({...newAlumni, department: e.target.value})}
+                      >
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Electronics & Comm">Electronics & Comm</option>
+                        <option value="Mechanical Eng">Mechanical Eng</option>
+                        <option value="Fine Arts">Fine Arts</option>
+                        <option value="Business Admin">Business Admin</option>
+                      </select>
+                    </FormGroup>
+                  </div>
+                  <FormGroup label="Special Honors / Academic Achievements">
+                    <textarea 
+                      placeholder="e.g. Gold Medalist, Published research papers on AI/ML..." 
+                      value={newAlumni.achievements} 
+                      onChange={e => setNewAlumni({...newAlumni, achievements: e.target.value})}
+                      className="w-full rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20 min-h-[90px] resize-none"
+                    />
+                  </FormGroup>
+                </div>
+              )}
+
+              {/* STEP 3: Professional/Employment */}
+              {step === 3 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Current Organization / Company">
+                      <StyledInput placeholder="e.g. Google, Tesla" value={newAlumni.company} onChange={e => setNewAlumni({...newAlumni, company: e.target.value})} />
+                    </FormGroup>
+                    <FormGroup label="Job Designation / Title">
+                      <StyledInput placeholder="e.g. Senior Frontend Architect" value={newAlumni.designation} onChange={e => setNewAlumni({...newAlumni, designation: e.target.value})} />
+                    </FormGroup>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormGroup label="Industry Sector">
+                      <select 
+                        className="w-full h-10 rounded-xl bg-background border px-3 text-sm focus:ring-1 focus:ring-emerald-500"
+                        value={newAlumni.industry}
+                        onChange={e => setNewAlumni({...newAlumni, industry: e.target.value})}
+                      >
+                        <option value="Software Engineering">Software Engineering</option>
+                        <option value="Aerospace">Aerospace</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Management Consulting">Management Consulting</option>
+                        <option value="Investment Banking">Investment Banking</option>
+                        <option value="Higher Education">Higher Education</option>
+                      </select>
+                    </FormGroup>
+                    <FormGroup label="Professional Skills (comma separated)">
+                      <StyledInput placeholder="e.g. React, Next.js, Node.js, AWS" value={newAlumni.skills} onChange={e => setNewAlumni({...newAlumni, skills: e.target.value})} />
+                    </FormGroup>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: Socials & Docs */}
+              {step === 4 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="space-y-3">
+                    <label className="text-xs font-semibold block">Social Professional Handles</label>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0"><Linkedin className="w-4 h-4 text-emerald-600"/></div>
+                      <Input placeholder="LinkedIn Profile URL" value={newAlumni.linkedin} onChange={e => setNewAlumni({...newAlumni, linkedin: e.target.value})} className="rounded-xl" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0"><Github className="w-4 h-4 text-emerald-600"/></div>
+                      <Input placeholder="GitHub Profile URL" value={newAlumni.github} onChange={e => setNewAlumni({...newAlumni, github: e.target.value})} className="rounded-xl" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center shrink-0"><Globe className="w-4 h-4 text-emerald-600"/></div>
+                      <Input placeholder="Personal Portfolio URL" value={newAlumni.portfolio} onChange={e => setNewAlumni({...newAlumni, portfolio: e.target.value})} className="rounded-xl" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
+                    <FormGroup label="Alumni Headshot Photo" description="Upload JPG or PNG (Max 2MB)">
+                      <FileUploadZone label="Click or Drag Photo" subLabel="JPG, PNG file only" accept="image/jpeg,image/png,image/jpg" maxSize={2} />
+                    </FormGroup>
+                    <FormGroup label="Verification ID / Degree Cert" description="Upload PDF file (Max 5MB)">
+                      <FileUploadZone label="Click or Drag PDF" subLabel="PDF, JPG files only" accept=".pdf,image/jpeg,image/jpg" maxSize={5} />
+                    </FormGroup>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Drawer Footer Actions */}
+            <div className="p-8 border-t bg-muted/10 flex justify-between shrink-0">
+              <div className="flex gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  disabled={step === 1}
+                  onClick={() => setStep(prev => prev - 1)}
+                  className="rounded-xl"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsAddDrawerOpen(false)}
+                  className="rounded-xl"
+                >
+                  Cancel
+                </Button>
+              </div>
+              <div>
+                {step < totalSteps ? (
+                  <Button 
+                    type="button" 
+                    onClick={() => setStep(prev => prev + 1)}
+                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    Next Step <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button 
+                    type="submit" 
+                    onClick={handleFormSubmit}
+                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    {selectedAlumni ? "Save Profile Details" : "Save & Verify Profile"} <CheckCircle2 className="w-4 h-4 ml-2" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── PROFILE DETAILS MODAL ── */}
+      {isProfileModalOpen && selectedAlumni && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-3xl rounded-3xl border p-0 overflow-hidden shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+            <button onClick={() => setIsProfileModalOpen(false)} className="absolute top-4 right-4 p-1.5 rounded-xl bg-black/30 hover:bg-black/50 text-white z-10">
+              <X className="w-4 h-4" />
+            </button>
+            
+            {/* Header banner */}
+            <div className="h-32 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 flex items-end p-6 shrink-0">
+              <div className="flex gap-4 items-end -mb-10">
+                <img 
+                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${selectedAlumni.name}`}
+                  alt={selectedAlumni.name}
+                  className="w-20 h-20 rounded-full border-4 border-background bg-muted object-cover shadow-md"
+                />
+                <div className="mb-2">
+                  <h4 className="text-xl font-bold text-white leading-tight drop-shadow-sm">{selectedAlumni.name}</h4>
+                  <p className="text-xs text-emerald-950 font-medium">{selectedAlumni.designation} at {selectedAlumni.company}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Profile body content */}
+            <div className="flex-1 overflow-y-auto p-6 pt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              <div className="md:col-span-2 space-y-6">
+                <div>
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Biography</h5>
+                  <p className="text-sm text-foreground/80 leading-relaxed">
+                    {selectedAlumni.raw?.biography || selectedAlumni.raw?.bio || `Passionate and dedicated professional with over ${new Date().getFullYear() - parseInt(selectedAlumni.batch)} years of active industry exposure in the field of ${selectedAlumni.department}. Enthusiastic alumnus open to networking and career development programs.`}
+                  </p>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Academic Timeline</h5>
+                  <div className="space-y-3">
+                    <div className="flex gap-3 text-sm">
+                      <GraduationCap className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
+                      <div>
+                        <p className="font-semibold">B.Tech / Undergraduate Degree</p>
+                        <p className="text-xs text-muted-foreground">Class of {selectedAlumni.batch} • {selectedAlumni.department}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Professional Career</h5>
+                  <div className="space-y-4">
+                    <div className="flex gap-3 text-sm">
+                      <Briefcase className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
+                      <div>
+                        <p className="font-semibold">{selectedAlumni.designation}</p>
+                        <p className="text-xs text-muted-foreground">{selectedAlumni.company} • {selectedAlumni.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="md:col-span-1 space-y-6 border-l border-muted/50 pl-6">
+                <div>
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Registration Info</h5>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between"><span className="text-muted-foreground">Record ID:</span> <span className="font-bold">{selectedAlumni.id}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Grad Year:</span> <span className="font-semibold">{selectedAlumni.batch}</span></div>
+                    <div className="flex justify-between"><span className="text-muted-foreground">Verification:</span> 
+                      <span className="font-bold text-emerald-600">{selectedAlumni.status}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Contact Information</h5>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-muted-foreground" /> <span>{selectedAlumni.email}</span></div>
+                    <div className="flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-muted-foreground" /> <span>{selectedAlumni.phone}</span></div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h5 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3">Alumni Documents</h5>
+                  <div className="space-y-2 text-xs">
+                    <Button variant="outline" size="sm" className="w-full text-left justify-start rounded-xl gap-2 font-medium">
+                      <FileText className="w-4 h-4 text-emerald-600" /> Resume.pdf
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full text-left justify-start rounded-xl gap-2 font-medium">
+                      <FileText className="w-4 h-4 text-emerald-600" /> DegreeCert.pdf
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Modal actions footer */}
+            <div className="p-6 border-t bg-muted/10 flex justify-between items-center shrink-0">
+              <Button onClick={() => navigate({ to: `/dashboard/admin/alumni/directory` })} className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+                View Full Alumni Profile <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setIsProfileModalOpen(false)} className="rounded-xl">Close</Button>
+                {selectedAlumni.status === "Pending Verification" && (
+                  <Button onClick={() => { handleVerify(selectedAlumni.id); setIsProfileModalOpen(false); }} className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white">
+                    Approve Record
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: Direct Message ── */}
+      {isMessageModalOpen && communicationTarget && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-md rounded-3xl border shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onClick={() => setIsMessageModalOpen(false)} className="absolute top-5 right-5 p-1 text-muted-foreground hover:bg-muted rounded-lg">
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-lg font-bold flex items-center gap-2 text-emerald-600 mb-2">
+              <MessageSquare className="w-5 h-5" /> Direct Message
+            </h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Send a secure chat message to <span className="font-semibold text-foreground">{communicationTarget.name}</span>.
+            </p>
+            <textarea
+              value={messageText}
+              onChange={e => setMessageText(e.target.value)}
+              placeholder="Type your message here..."
+              className="w-full h-32 rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20 resize-none mb-4"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsMessageModalOpen(false)} className="rounded-xl">Cancel</Button>
+              <Button onClick={handleSendMessage} className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+                <Send className="w-4 h-4" /> Send Message
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: Mail Box / Email Broadcast ── */}
+      {isMailModalOpen && communicationTarget && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-lg rounded-3xl border shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <button onClick={() => setIsMailModalOpen(false)} className="absolute top-5 right-5 p-1 text-muted-foreground hover:bg-muted rounded-lg">
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-lg font-bold flex items-center gap-2 text-emerald-600 mb-2">
+              <Mail className="w-5 h-5" /> Email broadcast
+            </h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Compose an official email to <span className="font-semibold text-foreground">{communicationTarget.email}</span>.
+            </p>
+
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="text-xs font-semibold block mb-1">Email Template</label>
+                <select 
+                  className="w-full h-9 rounded-lg bg-background border px-2.5 text-xs focus:ring-1 focus:ring-emerald-500"
+                  value={emailTemplate}
+                  onChange={e => handleTemplateChange(e.target.value)}
+                >
+                  <option value="Welcome">Welcome to network</option>
+                  <option value="Verify">Request verification docs</option>
+                  <option value="Update">Update career details</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1">Subject Line</label>
+                <Input
+                  value={emailSubject}
+                  onChange={e => setEmailSubject(e.target.value)}
+                  placeholder="Enter email subject"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold block mb-1">Message Body</label>
+                <textarea
+                  value={emailBody}
+                  onChange={e => setEmailBody(e.target.value)}
+                  placeholder="Type email body..."
+                  className="w-full h-40 rounded-xl border bg-background/50 p-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500/20"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsMailModalOpen(false)} className="rounded-xl">Cancel</Button>
+              <Button onClick={handleSendEmail} className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+                <Send className="w-4 h-4" /> Dispatch Email
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -92,6 +92,11 @@ export async function fetchDonationLeaderboard() {
   return response.data.data;
 }
 
+export async function fetchDonationsList() {
+  const response = await api.get("/api/alumni/donations");
+  return response.data.data;
+}
+
 export async function fetchSuccessStories() {
   const response = await api.get("/api/alumni/stories");
   return response.data.data;

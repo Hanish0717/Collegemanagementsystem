@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useAlumni } from "../AdminAlumni";
 import { GradientHeader, GlassCard } from "./components/CardElements";
 import { Award, Star, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function StoriesPage() {
-  const stories = [
-    { id: 1, title: "From Campus to Y Combinator", name: "David Chen", batch: "2018", excerpt: "How our alumni network helped secure initial funding...", image: "https://images.unsplash.com/photo-1552581234-26160f608093?w=800&q=80" },
-    { id: 2, title: "Pioneering Green Tech", name: "Sarah Connor", batch: "2015", excerpt: "Building sustainable solutions for the future of urban transport...", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" }
-  ];
+  const { successStories } = useAlumni();
+
+  const stories = useMemo(() => {
+    return (successStories && successStories.length > 0)
+      ? successStories.map((s: any) => ({
+          id: s.id,
+          title: s.title,
+          name: s.alumniName || "Anonymous Alumni",
+          batch: s.graduationYear || "2020",
+          excerpt: s.content || s.excerpt || "An inspiring career trajectory post graduation.",
+          image: s.image_url || "https://images.unsplash.com/photo-1552581234-26160f608093?w=800&q=80"
+        }))
+      : [
+          { id: 1, title: "From Campus to Y Combinator", name: "David Chen", batch: "2018", excerpt: "How our alumni network helped secure initial funding...", image: "https://images.unsplash.com/photo-1552581234-26160f608093?w=800&q=80" },
+          { id: 2, title: "Pioneering Green Tech", name: "Sarah Connor", batch: "2015", excerpt: "Building sustainable solutions for the future of urban transport...", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" }
+        ];
+  }, [successStories]);
 
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1200px] mx-auto pb-24">
@@ -21,7 +35,7 @@ export function StoriesPage() {
       </GradientHeader>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {stories.map(story => (
+        {stories.map((story: any) => (
           <GlassCard key={story.id} className="overflow-hidden flex flex-col group cursor-pointer hover:shadow-lg transition-all duration-300">
             <div className="h-64 overflow-hidden relative">
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />

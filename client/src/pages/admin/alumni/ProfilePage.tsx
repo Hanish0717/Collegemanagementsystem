@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { cn } from "@/lib/utils";
 import { GlassCard } from "./components/CardElements";
 import { useAlumni } from "../AdminAlumni";
 import { Button } from "@/components/ui/button";
-import { MapPin, Mail, Phone, Briefcase, GraduationCap, Edit, ShieldCheck, Download, UserPlus, FileText, Share2, Award, BookOpen } from "lucide-react";
+import { MapPin, Mail, Phone, Briefcase, GraduationCap, Edit, ShieldCheck, Download, UserPlus, FileText, Share2, Award, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 export function ProfilePage() {
   const { directoryList } = useAlumni();
@@ -11,7 +13,7 @@ export function ProfilePage() {
   const profile = directoryList?.[0] || {
     name: "Alex Johnson",
     email: "alex.j@example.com",
-    phone: "+1 555-010-0199",
+    phone: "+91 8765432113",
     location: "San Francisco, CA",
     company: "Google",
     designation: "Senior Software Engineer",
@@ -25,13 +27,147 @@ export function ProfilePage() {
   };
 
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Cover gradients rotation state
+  const gradients = [
+    "from-blue-600 via-indigo-600 to-purple-600",
+    "from-emerald-500 via-teal-500 to-cyan-500",
+    "from-rose-500 via-pink-600 to-red-600",
+    "from-amber-500 via-orange-600 to-yellow-500",
+    "from-purple-600 via-violet-700 to-fuchsia-600"
+  ];
+  const [coverIndex, setCoverIndex] = useState(0);
+
+  // Connection state
+  const [connectStatus, setConnectStatus] = useState("Connect");
+  const [connectionsCount, setConnectionsCount] = useState(profile.connections);
+
+  const handleEditCover = () => {
+    setCoverIndex(prev => (prev + 1) % gradients.length);
+    toast.success("Profile cover background gradient updated!");
+  };
+
+  const handleConnect = () => {
+    if (connectStatus === "Connect") {
+      setConnectStatus("Requested");
+      setConnectionsCount((prev: number) => prev + 1);
+      toast.success(`Connection request dispatched to ${profile.name}.`);
+    } else {
+      setConnectStatus("Connect");
+      setConnectionsCount((prev: number) => prev - 1);
+      toast.info(`Connection request retracted.`);
+    }
+  };
+
+  const handleShare = () => {
+    const profileUrl = window.location.href;
+    navigator.clipboard.writeText(profileUrl);
+    toast.success("Profile link copied to clipboard!");
+  };
+
+  // ── Download Resume (Word .doc format) ──
+  const handleDownloadResume = () => {
+    const htmlContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><title>Resume</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 40px; }
+        h1 { color: #1e3a8a; border-bottom: 2px solid #1e3a8a; padding-bottom: 5px; }
+        h2 { color: #0f766e; margin-top: 20px; }
+        .meta { color: #4b5563; font-style: italic; }
+        .skills { font-weight: bold; color: #4338ca; }
+      </style>
+      </head>
+      <body>
+        <h1>${profile.name} — Professional Resume</h1>
+        <p class="meta">Email: ${profile.email} | Phone: ${profile.phone} | Location: ${profile.location}</p>
+        
+        <h2>Executive Summary</h2>
+        <p>${profile.bio}</p>
+        
+        <h2>Skills & Expertise</h2>
+        <p class="skills">${profile.skills.join(", ")}</p>
+        
+        <h2>Employment Timeline</h2>
+        <p><strong>Senior Software Engineer</strong><br/>Google • San Francisco, CA (2021 - Present)</p>
+        <p>Leading the frontend architecture for Google Cloud console. Mentoring junior developers.</p>
+        
+        <p><strong>Software Engineer</strong><br/>Amazon • Seattle, WA (2019 - 2021)</p>
+        <p>Developed full-stack features for AWS Lambda console using React and Node.js.</p>
+        
+        <h2>Education</h2>
+        <p><strong>B.Tech in Computer Science (Class of 2019)</strong><br/>Campus University • GPA: 3.8/4.0</p>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: "application/msword;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${profile.name.replace(/\s+/g, "_")}_Resume.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Resume Word document downloaded.");
+  };
+
+  // ── Download Degree Certificate (Word .doc format) ──
+  const handleDownloadCertificate = () => {
+    const htmlContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+      <head><title>Degree Certificate</title>
+      <style>
+        body { font-family: Georgia, serif; text-align: center; border: 10px double #1e3a8a; padding: 40px; margin: 40px; }
+        h1 { color: #1e3a8a; font-size: 28pt; margin-bottom: 5px; }
+        h2 { color: #4338ca; font-size: 22pt; margin: 20px 0; }
+        h3 { color: #0f766e; font-size: 16pt; }
+        p { font-size: 12pt; line-height: 1.8; }
+      </style>
+      </head>
+      <body>
+        <h1>CAMPUS UNIVERSITY</h1>
+        <p>This is to certify that the university senate has conferred upon</p>
+        <h2>${profile.name}</h2>
+        <p>the degree of</p>
+        <h3>Bachelor of Technology in ${profile.department}</h3>
+        <p>with all honors, rights, and privileges appertaining thereto.</p>
+        <p>Graduated Class of <strong>${profile.batch}</strong></p>
+        <br/><br/>
+        <table style="width:100%; margin-top:50px;">
+          <tr>
+            <td><strong>Registrar</strong></td>
+            <td><strong>Vice Chancellor</strong></td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: "application/msword;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${profile.name.replace(/\s+/g, "_")}_Degree_Certificate.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Degree Certificate Word document downloaded.");
+  };
 
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-[1200px] mx-auto pb-24">
       {/* Profile Header Card */}
       <GlassCard className="overflow-hidden">
-        <div className="h-48 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative">
-          <Button variant="secondary" size="sm" className="absolute top-4 right-4 rounded-xl bg-white/20 text-white hover:bg-white/30 border-0 backdrop-blur-md">
+        <div className={`h-48 bg-gradient-to-r ${gradients[coverIndex]} relative transition-all duration-500`}>
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            onClick={handleEditCover}
+            className="absolute top-4 right-4 rounded-xl bg-white/20 text-white hover:bg-white/30 border-0 backdrop-blur-md"
+          >
             <Edit className="w-4 h-4 mr-2" /> Edit Cover
           </Button>
         </div>
@@ -58,13 +194,24 @@ export function ProfilePage() {
               <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {profile.location}</span>
                 <span className="flex items-center gap-1.5"><GraduationCap className="w-4 h-4" /> Class of {profile.batch} ({profile.department})</span>
-                <span className="flex items-center gap-1.5"><UserPlus className="w-4 h-4" /> {profile.connections} Connections</span>
+                <span className="flex items-center gap-1.5"><UserPlus className="w-4 h-4" /> {connectionsCount} Connections</span>
               </div>
             </div>
             
             <div className="flex items-center gap-2 mt-4 md:mt-0">
-              <Button className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600"><UserPlus className="w-4 h-4 mr-2"/> Connect</Button>
-              <Button variant="outline" className="rounded-xl"><Share2 className="w-4 h-4"/></Button>
+              <Button 
+                onClick={handleConnect}
+                className={cn(
+                  "rounded-xl gap-2", 
+                  connectStatus === "Connect" 
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600" 
+                    : "bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                )}
+              >
+                {connectStatus === "Connect" ? <UserPlus className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+                {connectStatus}
+              </Button>
+              <Button variant="outline" onClick={handleShare} className="rounded-xl"><Share2 className="w-4 h-4"/></Button>
             </div>
           </div>
           
@@ -103,7 +250,7 @@ export function ProfilePage() {
           <GlassCard className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold flex items-center gap-2"><Briefcase className="w-5 h-5 text-primary"/> Employment History</h3>
-              <Button variant="ghost" size="sm" className="rounded-xl text-primary"><Edit className="w-4 h-4 mr-2"/> Edit</Button>
+              <Button variant="ghost" size="sm" className="rounded-xl text-primary" onClick={() => toast.info("Add/edit timeline options details coming soon.")}><Edit className="w-4 h-4 mr-2"/> Edit</Button>
             </div>
             
             <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-muted before:to-transparent">
@@ -188,14 +335,22 @@ export function ProfilePage() {
           <GlassCard className="p-6">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Documents</h3>
             <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start rounded-xl group hover:border-primary/50 hover:bg-primary/5">
+              <Button 
+                variant="outline" 
+                onClick={handleDownloadResume}
+                className="w-full justify-start rounded-xl group hover:border-primary/50 hover:bg-primary/5 bg-transparent"
+              >
                 <FileText className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary" />
-                <span className="flex-1 text-left">Resume.pdf</span>
+                <span className="flex-1 text-left text-sm">Resume.doc</span>
                 <Download className="w-4 h-4 opacity-50 group-hover:opacity-100" />
               </Button>
-              <Button variant="outline" className="w-full justify-start rounded-xl group hover:border-primary/50 hover:bg-primary/5">
+              <Button 
+                variant="outline" 
+                onClick={handleDownloadCertificate}
+                className="w-full justify-start rounded-xl group hover:border-primary/50 hover:bg-primary/5 bg-transparent"
+              >
                 <Award className="w-4 h-4 mr-3 text-muted-foreground group-hover:text-primary" />
-                <span className="flex-1 text-left">Degree_Certificate.pdf</span>
+                <span className="flex-1 text-left text-sm">Degree_Certificate.doc</span>
                 <Download className="w-4 h-4 opacity-50 group-hover:opacity-100" />
               </Button>
             </div>

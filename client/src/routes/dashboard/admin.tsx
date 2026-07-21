@@ -20,8 +20,9 @@ export const Route = createFileRoute("/dashboard/admin")({
       if (user && allowedGrievance.includes(user.role)) return;
     }
 
-    if (user && (user.role === "alumni" || user.role === "alumni-coordinator")) {
-      throw redirect({ to: "/dashboard/admin/alumni" });
+    const isAdminAlumni = location.pathname.includes("/dashboard/admin/alumni") || location.pathname.includes("/alumni");
+    if (user && (user.role === "alumni" || user.role === "alumni-coordinator") && !isAdminAlumni) {
+      throw redirect({ to: "/alumni/dashboard" });
     }
     const allowedRoles = [
       "admin",

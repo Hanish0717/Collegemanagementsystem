@@ -221,10 +221,10 @@ export async function deleteStudent(studentId: string): Promise<void> {
   await api.delete(`/api/students/${studentId}`);
 }
 
-export async function verifyStudent(rollNumber: string, department: string): Promise<StudentRecord> {
+export async function verifyStudent(rollNumber: string, fullName?: string): Promise<StudentRecord> {
   const { data } = await api.post<{ success: boolean; data: any; message: string }>("/api/students/verify", {
     rollNumber,
-    department,
+    fullName,
   });
   return mapStudent(data.data);
 }

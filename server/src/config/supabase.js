@@ -120,7 +120,9 @@ if (isMockMode) {
       { id: 'de111111-1111-1111-1111-111111111111', name: 'Dean Academics', full_name: 'Dean Academics Office', email: 'dean@college.com', password: hashedDefaultPassword, role: 'dean', is_verified: true, is_active: true },
       { id: 'ac111111-1111-1111-1111-111111111111', name: 'Accounts Manager', full_name: 'Accounts Office', email: 'accounts@college.com', password: hashedDefaultPassword, role: 'accounts', is_verified: true, is_active: true },
       { id: 'pr111111-1111-1111-1111-111111111111', name: 'Principal', full_name: 'Principal Office', email: 'principal@college.com', password: hashedDefaultPassword, role: 'principal', is_verified: true, is_active: true },
-      { id: 'ho111111-1111-1111-1111-111111111111', name: 'HOD CSE', full_name: 'HOD CSE Dept', email: 'hod@college.com', password: hashedDefaultPassword, role: 'hod', is_verified: true, is_active: true }
+      { id: 'ho111111-1111-1111-1111-111111111111', name: 'HOD CSE', full_name: 'HOD CSE Dept', email: 'hod@college.com', password: hashedDefaultPassword, role: 'hod', is_verified: true, is_active: true },
+      { id: 'co111111-1111-1111-1111-111111111111', name: 'Alumni Coordinator', full_name: 'Alumni Coordinator', email: 'alumni.coordinator@college.com', password: hashedDefaultPassword, role: 'alumni-coordinator', is_verified: true, is_active: true },
+      { id: 'al111111-1111-1111-1111-111111111111', name: 'Alumni', full_name: 'Alumni Member', email: 'alumni@college.com', password: hashedDefaultPassword, role: 'alumni', is_verified: true, is_active: true }
     ],
     students: [
       {

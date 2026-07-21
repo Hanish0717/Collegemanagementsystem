@@ -18,6 +18,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as AlumniIndexRouteImport } from './routes/alumni/index'
 import { Route as DashboardTransportRouteImport } from './routes/dashboard/transport'
 import { Route as DashboardSuperAdminRouteImport } from './routes/dashboard/super-admin'
 import { Route as DashboardStudentsRouteImport } from './routes/dashboard/students'
@@ -35,6 +36,20 @@ import { Route as DashboardEventsRouteImport } from './routes/dashboard/events'
 import { Route as DashboardAttendanceRouteImport } from './routes/dashboard/attendance'
 import { Route as DashboardAiRouteImport } from './routes/dashboard/ai'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
+import { Route as AlumniSuccessStoriesRouteImport } from './routes/alumni/success-stories'
+import { Route as AlumniSettingsRouteImport } from './routes/alumni/settings'
+import { Route as AlumniReportsRouteImport } from './routes/alumni/reports'
+import { Route as AlumniRegistrationRouteImport } from './routes/alumni/registration'
+import { Route as AlumniNotificationsRouteImport } from './routes/alumni/notifications'
+import { Route as AlumniNetworkRouteImport } from './routes/alumni/network'
+import { Route as AlumniMentorshipRouteImport } from './routes/alumni/mentorship'
+import { Route as AlumniJobsRouteImport } from './routes/alumni/jobs'
+import { Route as AlumniEventsRouteImport } from './routes/alumni/events'
+import { Route as AlumniDonationsRouteImport } from './routes/alumni/donations'
+import { Route as AlumniDirectoryRouteImport } from './routes/alumni/directory'
+import { Route as AlumniDashboardRouteImport } from './routes/alumni/dashboard'
+import { Route as AlumniCommunicationRouteImport } from './routes/alumni/communication'
+import { Route as AlumniAnalyticsRouteImport } from './routes/alumni/analytics'
 import { Route as DashboardLibrarianIndexRouteImport } from './routes/dashboard/librarian/index'
 import { Route as DashboardSuperAdminUsersRouteImport } from './routes/dashboard/super-admin/users'
 import { Route as DashboardSuperAdminSettingsRouteImport } from './routes/dashboard/super-admin/settings'
@@ -133,6 +148,8 @@ import { Route as DashboardAdminAssignmentsRouteImport } from './routes/dashboar
 import { Route as DashboardAdminAlumniRouteImport } from './routes/dashboard/admin/alumni'
 import { Route as DashboardAdminAdmissionsRouteImport } from './routes/dashboard/admin/admissions'
 import { Route as DashboardAdminAccreditationRouteImport } from './routes/dashboard/admin/accreditation'
+import { Route as AlumniProfileIdRouteImport } from './routes/alumni/profile/$id'
+import { Route as AlumniEventsEventIdRouteImport } from './routes/alumni/events/$eventId'
 import { Route as DashboardAdminFacultyIndexRouteImport } from './routes/dashboard/admin/faculty/index'
 import { Route as DashboardAdminExamsIndexRouteImport } from './routes/dashboard/admin/exams/index'
 import { Route as DashboardAdminAlumniIndexRouteImport } from './routes/dashboard/admin/alumni/index'
@@ -215,6 +232,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const AlumniIndexRoute = AlumniIndexRouteImport.update({
+  id: '/alumni/',
+  path: '/alumni/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardTransportRoute = DashboardTransportRouteImport.update({
   id: '/transport',
@@ -300,6 +322,76 @@ const DashboardAdminRoute = DashboardAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => DashboardRoute,
+} as any)
+const AlumniSuccessStoriesRoute = AlumniSuccessStoriesRouteImport.update({
+  id: '/alumni/success-stories',
+  path: '/alumni/success-stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniSettingsRoute = AlumniSettingsRouteImport.update({
+  id: '/alumni/settings',
+  path: '/alumni/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniReportsRoute = AlumniReportsRouteImport.update({
+  id: '/alumni/reports',
+  path: '/alumni/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniRegistrationRoute = AlumniRegistrationRouteImport.update({
+  id: '/alumni/registration',
+  path: '/alumni/registration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniNotificationsRoute = AlumniNotificationsRouteImport.update({
+  id: '/alumni/notifications',
+  path: '/alumni/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniNetworkRoute = AlumniNetworkRouteImport.update({
+  id: '/alumni/network',
+  path: '/alumni/network',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniMentorshipRoute = AlumniMentorshipRouteImport.update({
+  id: '/alumni/mentorship',
+  path: '/alumni/mentorship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniJobsRoute = AlumniJobsRouteImport.update({
+  id: '/alumni/jobs',
+  path: '/alumni/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniEventsRoute = AlumniEventsRouteImport.update({
+  id: '/alumni/events',
+  path: '/alumni/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniDonationsRoute = AlumniDonationsRouteImport.update({
+  id: '/alumni/donations',
+  path: '/alumni/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniDirectoryRoute = AlumniDirectoryRouteImport.update({
+  id: '/alumni/directory',
+  path: '/alumni/directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniDashboardRoute = AlumniDashboardRouteImport.update({
+  id: '/alumni/dashboard',
+  path: '/alumni/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniCommunicationRoute = AlumniCommunicationRouteImport.update({
+  id: '/alumni/communication',
+  path: '/alumni/communication',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniAnalyticsRoute = AlumniAnalyticsRouteImport.update({
+  id: '/alumni/analytics',
+  path: '/alumni/analytics',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
   id: '/librarian/',
@@ -844,6 +936,16 @@ const DashboardAdminAccreditationRoute =
     path: '/accreditation',
     getParentRoute: () => DashboardAdminRoute,
   } as any)
+const AlumniProfileIdRoute = AlumniProfileIdRouteImport.update({
+  id: '/alumni/profile/$id',
+  path: '/alumni/profile/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniEventsEventIdRoute = AlumniEventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => AlumniEventsRoute,
+} as any)
 const DashboardAdminFacultyIndexRoute =
   DashboardAdminFacultyIndexRouteImport.update({
     id: '/faculty/',
@@ -1075,6 +1177,20 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-otp': typeof VerifyOtpRoute
+  '/alumni/analytics': typeof AlumniAnalyticsRoute
+  '/alumni/communication': typeof AlumniCommunicationRoute
+  '/alumni/dashboard': typeof AlumniDashboardRoute
+  '/alumni/directory': typeof AlumniDirectoryRoute
+  '/alumni/donations': typeof AlumniDonationsRoute
+  '/alumni/events': typeof AlumniEventsRouteWithChildren
+  '/alumni/jobs': typeof AlumniJobsRoute
+  '/alumni/mentorship': typeof AlumniMentorshipRoute
+  '/alumni/network': typeof AlumniNetworkRoute
+  '/alumni/notifications': typeof AlumniNotificationsRoute
+  '/alumni/registration': typeof AlumniRegistrationRoute
+  '/alumni/reports': typeof AlumniReportsRoute
+  '/alumni/settings': typeof AlumniSettingsRoute
+  '/alumni/success-stories': typeof AlumniSuccessStoriesRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
   '/dashboard/attendance': typeof DashboardAttendanceRoute
@@ -1092,7 +1208,10 @@ export interface FileRoutesByFullPath {
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
+  '/alumni/': typeof AlumniIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
+  '/alumni/profile/$id': typeof AlumniProfileIdRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
@@ -1237,6 +1356,20 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-otp': typeof VerifyOtpRoute
+  '/alumni/analytics': typeof AlumniAnalyticsRoute
+  '/alumni/communication': typeof AlumniCommunicationRoute
+  '/alumni/dashboard': typeof AlumniDashboardRoute
+  '/alumni/directory': typeof AlumniDirectoryRoute
+  '/alumni/donations': typeof AlumniDonationsRoute
+  '/alumni/events': typeof AlumniEventsRouteWithChildren
+  '/alumni/jobs': typeof AlumniJobsRoute
+  '/alumni/mentorship': typeof AlumniMentorshipRoute
+  '/alumni/network': typeof AlumniNetworkRoute
+  '/alumni/notifications': typeof AlumniNotificationsRoute
+  '/alumni/registration': typeof AlumniRegistrationRoute
+  '/alumni/reports': typeof AlumniReportsRoute
+  '/alumni/settings': typeof AlumniSettingsRoute
+  '/alumni/success-stories': typeof AlumniSuccessStoriesRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
   '/dashboard/attendance': typeof DashboardAttendanceRoute
@@ -1254,7 +1387,10 @@ export interface FileRoutesByTo {
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
+  '/alumni': typeof AlumniIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
+  '/alumni/profile/$id': typeof AlumniProfileIdRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/assignments': typeof DashboardAdminAssignmentsRoute
@@ -1400,6 +1536,20 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/verify-otp': typeof VerifyOtpRoute
+  '/alumni/analytics': typeof AlumniAnalyticsRoute
+  '/alumni/communication': typeof AlumniCommunicationRoute
+  '/alumni/dashboard': typeof AlumniDashboardRoute
+  '/alumni/directory': typeof AlumniDirectoryRoute
+  '/alumni/donations': typeof AlumniDonationsRoute
+  '/alumni/events': typeof AlumniEventsRouteWithChildren
+  '/alumni/jobs': typeof AlumniJobsRoute
+  '/alumni/mentorship': typeof AlumniMentorshipRoute
+  '/alumni/network': typeof AlumniNetworkRoute
+  '/alumni/notifications': typeof AlumniNotificationsRoute
+  '/alumni/registration': typeof AlumniRegistrationRoute
+  '/alumni/reports': typeof AlumniReportsRoute
+  '/alumni/settings': typeof AlumniSettingsRoute
+  '/alumni/success-stories': typeof AlumniSuccessStoriesRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
   '/dashboard/attendance': typeof DashboardAttendanceRoute
@@ -1417,7 +1567,10 @@ export interface FileRoutesById {
   '/dashboard/students': typeof DashboardStudentsRouteWithChildren
   '/dashboard/super-admin': typeof DashboardSuperAdminRouteWithChildren
   '/dashboard/transport': typeof DashboardTransportRoute
+  '/alumni/': typeof AlumniIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/alumni/events/$eventId': typeof AlumniEventsEventIdRoute
+  '/alumni/profile/$id': typeof AlumniProfileIdRoute
   '/dashboard/admin/accreditation': typeof DashboardAdminAccreditationRoute
   '/dashboard/admin/admissions': typeof DashboardAdminAdmissionsRoute
   '/dashboard/admin/alumni': typeof DashboardAdminAlumniRouteWithChildren
@@ -1565,6 +1718,20 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-otp'
+    | '/alumni/analytics'
+    | '/alumni/communication'
+    | '/alumni/dashboard'
+    | '/alumni/directory'
+    | '/alumni/donations'
+    | '/alumni/events'
+    | '/alumni/jobs'
+    | '/alumni/mentorship'
+    | '/alumni/network'
+    | '/alumni/notifications'
+    | '/alumni/registration'
+    | '/alumni/reports'
+    | '/alumni/settings'
+    | '/alumni/success-stories'
     | '/dashboard/admin'
     | '/dashboard/ai'
     | '/dashboard/attendance'
@@ -1582,7 +1749,10 @@ export interface FileRouteTypes {
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
+    | '/alumni/'
     | '/dashboard/'
+    | '/alumni/events/$eventId'
+    | '/alumni/profile/$id'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/alumni'
@@ -1727,6 +1897,20 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-otp'
+    | '/alumni/analytics'
+    | '/alumni/communication'
+    | '/alumni/dashboard'
+    | '/alumni/directory'
+    | '/alumni/donations'
+    | '/alumni/events'
+    | '/alumni/jobs'
+    | '/alumni/mentorship'
+    | '/alumni/network'
+    | '/alumni/notifications'
+    | '/alumni/registration'
+    | '/alumni/reports'
+    | '/alumni/settings'
+    | '/alumni/success-stories'
     | '/dashboard/admin'
     | '/dashboard/ai'
     | '/dashboard/attendance'
@@ -1744,7 +1928,10 @@ export interface FileRouteTypes {
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
+    | '/alumni'
     | '/dashboard'
+    | '/alumni/events/$eventId'
+    | '/alumni/profile/$id'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/assignments'
@@ -1889,6 +2076,20 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify-otp'
+    | '/alumni/analytics'
+    | '/alumni/communication'
+    | '/alumni/dashboard'
+    | '/alumni/directory'
+    | '/alumni/donations'
+    | '/alumni/events'
+    | '/alumni/jobs'
+    | '/alumni/mentorship'
+    | '/alumni/network'
+    | '/alumni/notifications'
+    | '/alumni/registration'
+    | '/alumni/reports'
+    | '/alumni/settings'
+    | '/alumni/success-stories'
     | '/dashboard/admin'
     | '/dashboard/ai'
     | '/dashboard/attendance'
@@ -1906,7 +2107,10 @@ export interface FileRouteTypes {
     | '/dashboard/students'
     | '/dashboard/super-admin'
     | '/dashboard/transport'
+    | '/alumni/'
     | '/dashboard/'
+    | '/alumni/events/$eventId'
+    | '/alumni/profile/$id'
     | '/dashboard/admin/accreditation'
     | '/dashboard/admin/admissions'
     | '/dashboard/admin/alumni'
@@ -2053,6 +2257,22 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   VerifyOtpRoute: typeof VerifyOtpRoute
+  AlumniAnalyticsRoute: typeof AlumniAnalyticsRoute
+  AlumniCommunicationRoute: typeof AlumniCommunicationRoute
+  AlumniDashboardRoute: typeof AlumniDashboardRoute
+  AlumniDirectoryRoute: typeof AlumniDirectoryRoute
+  AlumniDonationsRoute: typeof AlumniDonationsRoute
+  AlumniEventsRoute: typeof AlumniEventsRouteWithChildren
+  AlumniJobsRoute: typeof AlumniJobsRoute
+  AlumniMentorshipRoute: typeof AlumniMentorshipRoute
+  AlumniNetworkRoute: typeof AlumniNetworkRoute
+  AlumniNotificationsRoute: typeof AlumniNotificationsRoute
+  AlumniRegistrationRoute: typeof AlumniRegistrationRoute
+  AlumniReportsRoute: typeof AlumniReportsRoute
+  AlumniSettingsRoute: typeof AlumniSettingsRoute
+  AlumniSuccessStoriesRoute: typeof AlumniSuccessStoriesRoute
+  AlumniIndexRoute: typeof AlumniIndexRoute
+  AlumniProfileIdRoute: typeof AlumniProfileIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2119,6 +2339,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/alumni/': {
+      id: '/alumni/'
+      path: '/alumni'
+      fullPath: '/alumni/'
+      preLoaderRoute: typeof AlumniIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/transport': {
       id: '/dashboard/transport'
@@ -2238,6 +2465,104 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/admin'
       preLoaderRoute: typeof DashboardAdminRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/alumni/success-stories': {
+      id: '/alumni/success-stories'
+      path: '/alumni/success-stories'
+      fullPath: '/alumni/success-stories'
+      preLoaderRoute: typeof AlumniSuccessStoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/settings': {
+      id: '/alumni/settings'
+      path: '/alumni/settings'
+      fullPath: '/alumni/settings'
+      preLoaderRoute: typeof AlumniSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/reports': {
+      id: '/alumni/reports'
+      path: '/alumni/reports'
+      fullPath: '/alumni/reports'
+      preLoaderRoute: typeof AlumniReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/registration': {
+      id: '/alumni/registration'
+      path: '/alumni/registration'
+      fullPath: '/alumni/registration'
+      preLoaderRoute: typeof AlumniRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/notifications': {
+      id: '/alumni/notifications'
+      path: '/alumni/notifications'
+      fullPath: '/alumni/notifications'
+      preLoaderRoute: typeof AlumniNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/network': {
+      id: '/alumni/network'
+      path: '/alumni/network'
+      fullPath: '/alumni/network'
+      preLoaderRoute: typeof AlumniNetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/mentorship': {
+      id: '/alumni/mentorship'
+      path: '/alumni/mentorship'
+      fullPath: '/alumni/mentorship'
+      preLoaderRoute: typeof AlumniMentorshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/jobs': {
+      id: '/alumni/jobs'
+      path: '/alumni/jobs'
+      fullPath: '/alumni/jobs'
+      preLoaderRoute: typeof AlumniJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/events': {
+      id: '/alumni/events'
+      path: '/alumni/events'
+      fullPath: '/alumni/events'
+      preLoaderRoute: typeof AlumniEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/donations': {
+      id: '/alumni/donations'
+      path: '/alumni/donations'
+      fullPath: '/alumni/donations'
+      preLoaderRoute: typeof AlumniDonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/directory': {
+      id: '/alumni/directory'
+      path: '/alumni/directory'
+      fullPath: '/alumni/directory'
+      preLoaderRoute: typeof AlumniDirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/dashboard': {
+      id: '/alumni/dashboard'
+      path: '/alumni/dashboard'
+      fullPath: '/alumni/dashboard'
+      preLoaderRoute: typeof AlumniDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/communication': {
+      id: '/alumni/communication'
+      path: '/alumni/communication'
+      fullPath: '/alumni/communication'
+      preLoaderRoute: typeof AlumniCommunicationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/analytics': {
+      id: '/alumni/analytics'
+      path: '/alumni/analytics'
+      fullPath: '/alumni/analytics'
+      preLoaderRoute: typeof AlumniAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dashboard/librarian/': {
       id: '/dashboard/librarian/'
@@ -2925,6 +3250,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminAccreditationRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/alumni/profile/$id': {
+      id: '/alumni/profile/$id'
+      path: '/alumni/profile/$id'
+      fullPath: '/alumni/profile/$id'
+      preLoaderRoute: typeof AlumniProfileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/events/$eventId': {
+      id: '/alumni/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/alumni/events/$eventId'
+      preLoaderRoute: typeof AlumniEventsEventIdRouteImport
+      parentRoute: typeof AlumniEventsRoute
+    }
     '/dashboard/admin/faculty/': {
       id: '/dashboard/admin/faculty/'
       path: '/faculty'
@@ -3610,6 +3949,18 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface AlumniEventsRouteChildren {
+  AlumniEventsEventIdRoute: typeof AlumniEventsEventIdRoute
+}
+
+const AlumniEventsRouteChildren: AlumniEventsRouteChildren = {
+  AlumniEventsEventIdRoute: AlumniEventsEventIdRoute,
+}
+
+const AlumniEventsRouteWithChildren = AlumniEventsRoute._addFileChildren(
+  AlumniEventsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
@@ -3619,6 +3970,22 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   VerifyOtpRoute: VerifyOtpRoute,
+  AlumniAnalyticsRoute: AlumniAnalyticsRoute,
+  AlumniCommunicationRoute: AlumniCommunicationRoute,
+  AlumniDashboardRoute: AlumniDashboardRoute,
+  AlumniDirectoryRoute: AlumniDirectoryRoute,
+  AlumniDonationsRoute: AlumniDonationsRoute,
+  AlumniEventsRoute: AlumniEventsRouteWithChildren,
+  AlumniJobsRoute: AlumniJobsRoute,
+  AlumniMentorshipRoute: AlumniMentorshipRoute,
+  AlumniNetworkRoute: AlumniNetworkRoute,
+  AlumniNotificationsRoute: AlumniNotificationsRoute,
+  AlumniRegistrationRoute: AlumniRegistrationRoute,
+  AlumniReportsRoute: AlumniReportsRoute,
+  AlumniSettingsRoute: AlumniSettingsRoute,
+  AlumniSuccessStoriesRoute: AlumniSuccessStoriesRoute,
+  AlumniIndexRoute: AlumniIndexRoute,
+  AlumniProfileIdRoute: AlumniProfileIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

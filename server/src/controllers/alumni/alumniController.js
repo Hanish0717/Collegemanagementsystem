@@ -1,7 +1,4 @@
-import { supabase } from '../../config/supabase.js';
-
-// Helper: check if we are in mock mode
-const isMockMode = process.env.DATABASE_MOCK_MODE === 'true';
+import { supabase, isMockMode } from '../../config/supabase.js';
 
 // ── 1. DASHBOARD STATS ───────────────────────────────────
 export async function getAlumniDashboardStats(req, res) {
@@ -270,6 +267,7 @@ export async function getAlumniProfile(req, res) {
       }
     });
   } catch (err) {
+    console.error("Error in getAlumniProfile:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 }
@@ -501,6 +499,38 @@ export async function matchMentorship(req, res) {
 }
 
 // ── 8. DONATIONS ─────────────────────────────────────────
+export async function listDonations(req, res) {
+  try {
+    let donations = [];
+    if (isMockMode) {
+      const mockDb = await import('../../config/supabase.js').then(m => m.getMockDb ? m.getMockDb() : { alumni_donations: [], alumni_profiles: [] });
+      const raw = mockDb.alumni_donations || [];
+      donations = raw.map(d => {
+        const prof = mockDb.alumni_profiles.find(a => a.id === d.alumni_id) || {};
+        return {
+          ...d,
+          donorName: prof.full_name || 'Anonymous Donor',
+          batch: prof.graduation_year || 'N/A'
+        };
+      });
+    } else {
+      const { data, error } = await supabase
+        .from('alumni_donations')
+        .select('*, alumni_profiles(full_name, graduation_year)')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      donations = (data || []).map(d => ({
+        ...d,
+        donorName: d.alumni_profiles?.full_name || 'Anonymous Donor',
+        batch: d.alumni_profiles?.graduation_year || 'N/A'
+      }));
+    }
+    res.json({ success: true, data: donations });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
 export async function createDonation(req, res) {
   try {
     const payload = req.body;

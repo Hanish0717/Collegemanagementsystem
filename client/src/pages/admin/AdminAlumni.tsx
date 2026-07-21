@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Component, ReactNode } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   Users, Award, Calendar, DollarSign, Plus, Trash2, CheckCircle, MessageSquare, 
@@ -26,6 +26,7 @@ import {
   matchMentorship,
   recordDonation,
   fetchDonationLeaderboard,
+  fetchDonationsList,
   fetchSuccessStories,
   createSuccessStory,
   sendAnnouncement,
@@ -48,10 +49,41 @@ import {
 import { Outlet, useRouterState, useNavigate as useRouterNavigate } from "@tanstack/react-router";
 import { createContext, useContext } from "react";
 
-export const AlumniContext = createContext<any>(null);
+export const AlumniContext = createContext<any>({});
 
 export function useAlumni() {
-  return useContext(AlumniContext);
+  const ctx = useContext(AlumniContext);
+  return ctx || {};
+}
+
+// Error boundary to catch render errors and display them
+class AlumniErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean; error: string }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: "" };
+  }
+  static getDerivedStateFromError(err: any) {
+    return { hasError: true, error: err?.message || String(err) };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, fontFamily: 'monospace' }}>
+          <h2 style={{ color: 'red' }}>Alumni Module Error</h2>
+          <pre style={{ background: '#fee', padding: 16, borderRadius: 8, overflowX: 'auto' }}>
+            {this.state.error}
+          </pre>
+          <button onClick={() => window.location.reload()} style={{ marginTop: 16, padding: '8px 16px' }}>
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 export function AdminAlumni() { console.log("AdminAlumni Rendered");
@@ -92,6 +124,11 @@ export function AdminAlumni() { console.log("AdminAlumni Rendered");
   const { data: donationLeaderboard = [], isLoading: leaderboardLoading } = useQuery({
     queryKey: ["alumni-leaderboard"],
     queryFn: fetchDonationLeaderboard
+  });
+
+  const { data: donationsList = [], isLoading: donationsLoading } = useQuery({
+    queryKey: ["alumni-donations"],
+    queryFn: fetchDonationsList
   });
 
   const { data: successStories = [], isLoading: storiesLoading } = useQuery({
@@ -136,6 +173,8 @@ export function AdminAlumni() { console.log("AdminAlumni Rendered");
     mentorLoading,
     donationLeaderboard,
     leaderboardLoading,
+    donationsList,
+    donationsLoading,
     successStories,
     storiesLoading,
     announcementLogs,
@@ -153,7 +192,9 @@ export function AdminAlumni() { console.log("AdminAlumni Rendered");
 
   return (
     <AlumniContext.Provider value={contextValue}>
-      <Outlet />
+      <AlumniErrorBoundary>
+        <Outlet />
+      </AlumniErrorBoundary>
     </AlumniContext.Provider>
   );
 }
