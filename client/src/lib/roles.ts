@@ -6,7 +6,7 @@ import {
   FolderLock, Clock, Search, Plus, Star, DollarSign, Send, HelpCircle,
   ShieldCheck, CheckCircle, Image, FlaskConical, HeartHandshake, Server, Lock,
   TrendingUp, BarChart2, Phone, Clipboard, Key, Package,
-  Map, Fuel, Wrench, CreditCard, BookMarked, AlertTriangle,
+  Map, Fuel, Wrench, CreditCard, BookMarked, AlertTriangle, FileCheck,
 } from 'lucide-react';
 
 export type RoleId =
@@ -367,11 +367,14 @@ export const ROLES: Record<RoleId, Role> = {
     nav: [
       { to: '/dashboard', label: 'Exam Cell Dashboard', icon: LayoutDashboard, exact: true },
       { to: '/dashboard/admin/exams/schedule', label: 'Schedule Exam', icon: ClipboardList },
+      { to: '/dashboard/admin/exams/course-registration', label: 'Course & Exam Enroll', icon: BookOpen },
       { to: '/dashboard/admin/exams/timetable', label: 'Timetable Builder', icon: CalendarCheck },
       { to: '/dashboard/admin/exams/questions', label: 'Question Bank', icon: Database },
       { to: '/dashboard/admin/exams/invigilation', label: 'Invigilation Duty', icon: ClipboardList },
       { to: '/dashboard/admin/exams/hall-tickets', label: 'Hall Ticket Control', icon: Users },
       { to: '/dashboard/admin/exams/results', label: 'Results Publisher', icon: Award },
+      { to: '/dashboard/admin/exams/corrections', label: 'Correction Requests', icon: FileCheck },
+      { to: '/dashboard/admin/exams/supplementary', label: 'Supplementary Exams', icon: Sparkles },
       { to: '/dashboard/admin/exams/analytics', label: 'Exam Analytics', icon: Activity },
       notif, settings,
     ],
