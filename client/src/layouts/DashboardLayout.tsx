@@ -1086,66 +1086,10 @@ export function DashboardLayout() {
               )}
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {/* Role Switcher */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowRoleInfo(!showRoleInfo)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-95 shadow-soft transition`}
-                >
-                  <RoleIcon className="size-3.5" />
-                  <span>{role.name}</span>
-                  <ChevronDown className="size-3 opacity-80" />
-                </button>
-                {showRoleInfo && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowRoleInfo(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-64 bg-background border rounded-2xl shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150 text-left max-h-96 overflow-y-auto">
-                      <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">
-                        Switch ERP Workspace
-                      </div>
-                      <div className="space-y-0.5 mt-1">
-                        {ROLE_LIST.filter((r) => r.id !== 'alumni').map((r) => {
-                          const IconComp = r.icon;
-                          const active = r.id === role.id;
-                          return (
-                            <button
-                              key={r.id}
-                              onClick={() => {
-                                setShowRoleInfo(false);
-                                loginAsDemoRole(r.id)
-                                  .then(() => {
-                                    setActiveRole(r.id);
-                                    setRole(r);
-                                    toast.success(`Switched to ${r.name} workspace!`);
-                                    navigate({ to: '/dashboard' });
-                                  })
-                                  .catch((error) => {
-                                    toast.error(
-                                      error?.message || `Unable to switch to ${r.name} workspace.`,
-                                    );
-                                  });
-                              }}
-                              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-left cursor-pointer transition
-                                ${
-                                  active
-                                    ? `bg-gradient-to-r ${r.gradient} text-white font-semibold shadow-soft`
-                                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-                                }`}
-                            >
-                              <IconComp className="size-3.5" />
-                              <div className="leading-tight">
-                                <div>{r.name}</div>
-                                {!active && (
-                                  <div className="text-[9px] opacity-70 font-normal">{r.short}</div>
-                                )}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
-                )}
+              {/* Static Active Role Indicator (Role Switcher Removed) */}
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} shadow-soft`}>
+                <RoleIcon className="size-3.5" />
+                <span>{role.name}</span>
               </div>
 
               {/* Plus/New Dropdown */}
