@@ -324,3 +324,4 @@ Body: {"categories":{"academic":true,"administration":false,"finance":true,"plac
 [2026-07-21T12:34:07.265Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-21T12:34:15.335Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-21T12:34:15.344Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T13:28:12.320Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
