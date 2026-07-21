@@ -172,7 +172,7 @@ function LoginForm() {
         email: 'hod@college.com',
         password: 'password123',
         role: 'hod',
-        roleName: 'HOD CSE',
+        roleName: 'Head of Department (HOD)',
       },
       '8080': {
         email: 'dean@college.com',

@@ -89,7 +89,7 @@ const roleDashboardMap: Record<string, string> = {
   "transport-manager": "/dashboard/transport",
   principal: "/dashboard",
   dean: "/dashboard",
-  hod: "/dashboard",
+  hod: "/hod/dashboard",
   "exam-cell": "/dashboard",
   accounts: "/dashboard",
   "alumni-coordinator": "/admin/alumni/dashboard",

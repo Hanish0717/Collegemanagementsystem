@@ -1,175 +1,57 @@
-[2026-07-18T04:25:37.158Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hari.gottipati@college.com","password":"password123"}
-[2026-07-18T04:25:47.072Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hari.gottipati@college.com","password":"password123"}
-[2026-07-18T04:29:12.687Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hari.gottipati@college.com","password":"password123"}
-[2026-07-18T04:29:14.032Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hari.gottipati@college.com","password":"password123"}
-[2026-07-18T04:30:01.676Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"vivek.adusumilli@college.com","password":"password123"}
-[2026-07-18T06:22:07.048Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T06:22:07.430Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T06:42:09.659Z] GET /api/exams/courses/my-registrations - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T06:42:09.672Z] GET /api/student-module/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T06:42:09.677Z] GET /api/exams/courses?department=CSE&year=3&semester=5 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T06:42:09.683Z] GET /api/student-module/results - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:07:02.063Z] GET /api/exams/courses/analytics - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:10:59.371Z] POST /api/exams/courses - Status: 500 - Error: duplicate key value violates unique constraint "courses_course_code_key"
-Stack: error: duplicate key value violates unique constraint "courses_course_code_key"
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:917:23)
-    at async PostgresQueryBuilder.single (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:965:31)
-    at async createCourse (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:851:29)
-Body: {"course_code":"CS301","course_name":"Java programming","credits":3,"course_type":"Normal Subject","department":"CSE","year":1,"semester":1}
-
-[2026-07-18T07:11:08.290Z] POST /api/exams/courses - Status: 500 - Error: duplicate key value violates unique constraint "courses_course_code_key"
-Stack: error: duplicate key value violates unique constraint "courses_course_code_key"
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:917:23)
-    at async PostgresQueryBuilder.single (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:965:31)
-    at async createCourse (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:851:29)
-Body: {"course_code":"CS301","course_name":"Java programming","credits":3,"course_type":"Normal Subject","department":"CSE","year":1,"semester":1}
-
-[2026-07-18T07:22:28.157Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:23:02.987Z] GET /api/student-module/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:23:03.008Z] GET /api/exams/courses?department=CSE&year=1&semester=1 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:23:03.042Z] GET /api/exams/courses/my-registrations - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:23:03.048Z] GET /api/student-module/results - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:27:54.718Z] GET /api/exams/faculty?department=CSE - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:27:54.784Z] GET /api/exams/courses/analytics - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:28:58.417Z] GET /api/student-module/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:28:58.473Z] GET /api/exams/courses?department=CSE&year=1&semester=1 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:28:58.477Z] GET /api/student-module/results - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:28:58.482Z] GET /api/exams/courses/my-registrations - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:35:48.468Z] GET /api/exams/faculty?department=CSE - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:35:48.484Z] GET /api/exams/courses/analytics - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:36:28.777Z] GET /api/student-module/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:36:28.783Z] GET /api/student-module/results - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:36:28.790Z] GET /api/exams/courses/my-registrations - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T07:36:28.797Z] GET /api/exams/courses?department=CSE&year=1&semester=1 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T08:43:50.623Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-18T08:43:51.636Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-18T08:43:53.645Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-18T08:59:48.048Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T09:11:48.558Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T09:36:07.925Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T09:37:27.546Z] GET /api/exams/faculty?department=CSE - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T09:37:27.549Z] GET /api/exams/courses/analytics - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-18T10:57:48.793Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-18T10:57:49.820Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-18T10:57:51.847Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-18T10:57:55.871Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-20T14:35:29.711Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:35:30.773Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:35:32.840Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:35:36.912Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:37:59.941Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:38:01.000Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:38:09.933Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-20T14:38:10.972Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-20T14:39:07.016Z] HEAD /api/exams - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
-[2026-07-20T14:39:07.022Z] GET /api/exams - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
-[2026-07-20T14:52:53.689Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:52:54.751Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:53:50.610Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:53:51.643Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:53:53.673Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:53:57.704Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:55:43.611Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
-[2026-07-20T14:55:44.671Z] GET /api/exams/corrections/pending - Status: 500 - Error: column t.user_id does not exist
-Stack: error: column t.user_id does not exist
-    at C:\College Management System GA\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:854:23)
-    at async getPendingCorrections (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:1098:29)
-Body: {}
-
+[2026-07-18T04:38:30.321Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T04:38:30.329Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T04:38:30.338Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T04:38:30.342Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T04:45:20.853Z] GET /api/fees/report - Status: 403 - Client Error: Forbidden: Your role 'accounts' is not authorized to access this resource - Body: {}
+[2026-07-18T04:45:20.863Z] GET /api/fees?page=1&limit=10 - Status: 403 - Client Error: Forbidden: Your role 'accounts' is not authorized to access this resource - Body: {}
+[2026-07-18T05:06:34.104Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T05:17:18.265Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T05:17:43.106Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T05:50:27.616Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T05:51:42.589Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T05:52:32.742Z] GET /favicon.ico - Status: 404 - Client Error: Not Found - /favicon.ico - Body: {}
+[2026-07-18T05:57:41.572Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T05:58:03.795Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T05:58:30.049Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password123"}
+[2026-07-18T07:27:20.520Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T08:46:34.648Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T08:47:52.740Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T08:47:52.744Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T08:54:01.455Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T08:55:51.805Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:03:17.134Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:08:05.424Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:19:37.832Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:27:15.943Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:27:15.950Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:32:36.677Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.cooredinator@college.com","password":"password123"}
+[2026-07-18T09:32:55.672Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:50:41.359Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T09:54:18.833Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coordinator@college.com","password":"password1232"}
+[2026-07-18T09:54:33.948Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T10:11:15.899Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T10:19:13.498Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T10:19:40.862Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T10:20:35.029Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T10:51:24.909Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T11:20:56.461Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T11:31:46.282Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T11:34:10.945Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T11:39:47.247Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T11:50:30.824Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:05:52.366Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-20T16:31:31.384Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:32.418Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:32.810Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:33.820Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:34.426Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:38.445Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:49.610Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:50.619Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:52.636Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:56.654Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:57:32.838Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:57:33.864Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:57:35.880Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-21T04:52:27.264Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod.cse@college.com","password":"password123"}
+[2026-07-21T04:52:35.588Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod.cse@college.com","password":"password123"}

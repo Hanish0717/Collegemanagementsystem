@@ -42,6 +42,7 @@ import accreditationRoutes from './routes/accreditationRoutes.js';
 import communicationRoutes from './routes/communicationRoutes.js';
 import attendanceNotificationRoutes from './routes/attendanceNotificationRoutes.js';
 import attendanceApprovalRoutes from './routes/attendanceApprovalRoutes.js';
+import hodRoutes from './routes/hodRoutes.js';
 
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
@@ -203,6 +204,7 @@ app.use('/api/alumni', alumniRoutes);
 app.use('/api/accreditation', accreditationRoutes);
 app.use('/api/communication', communicationRoutes);
 app.use('/api/attendance-notifications', attendanceNotificationRoutes);
+app.use('/api/hod', hodRoutes);
 
 // 404 handler
 app.use(notFound);
