@@ -440,6 +440,20 @@ async function runMigrations() {
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_applied boolean DEFAULT false;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_marks numeric(4,2) DEFAULT 0.00;
 
+      CREATE TABLE IF NOT EXISTS courses (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        course_code varchar(50) UNIQUE NOT NULL,
+        course_name varchar(255) NOT NULL,
+        credits integer DEFAULT 3,
+        course_type varchar(50) DEFAULT 'Theory',
+        department varchar(100) NOT NULL,
+        year integer DEFAULT 1,
+        semester integer DEFAULT 1,
+        prerequisite_code varchar(50),
+        mentor_id uuid REFERENCES faculty(id) ON DELETE SET NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
       ALTER TABLE courses ADD COLUMN IF NOT EXISTS prerequisite_code varchar(50);
 
       CREATE TABLE IF NOT EXISTS marks_correction_requests (
@@ -623,6 +637,97 @@ async function runMigrations() {
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
         updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
+
+      -- Create id_cards table
+      CREATE TABLE IF NOT EXISTS id_cards (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        card_number varchar(100) UNIQUE NOT NULL,
+        barcode varchar(255),
+        qr_code text,
+        issue_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        expiry_date timestamp with time zone NOT NULL,
+        status varchar(50) DEFAULT 'Active' CHECK (status IN ('Active', 'Blocked', 'Expired', 'Lost')),
+        card_type varchar(50) DEFAULT 'Regular' CHECK (card_type IN ('Regular', 'Duplicate')),
+        print_status varchar(50) DEFAULT 'Pending' CHECK (print_status IN ('Pending', 'Printed')),
+        delivery_status varchar(50) DEFAULT 'Pending',
+        delivered_at timestamp with time zone,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create id_card_requests table
+      CREATE TABLE IF NOT EXISTS id_card_requests (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        request_type varchar(50) DEFAULT 'New' CHECK (request_type IN ('New', 'Duplicate', 'Replacement')),
+        reason text,
+        status varchar(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Approved', 'Rejected', 'Printed')),
+        payment_status varchar(50) DEFAULT 'Pending' CHECK (payment_status IN ('Pending', 'Paid', 'Waived')),
+        rejection_reason text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create duplicate_id_cards table
+      CREATE TABLE IF NOT EXISTS duplicate_id_cards (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        request_id uuid REFERENCES id_card_requests(id) ON DELETE CASCADE,
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        previous_card_number varchar(100),
+        reason text,
+        charge_amount numeric(10, 2) DEFAULT 0.00,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create id_card_payments table
+      CREATE TABLE IF NOT EXISTS id_card_payments (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        request_id uuid REFERENCES id_card_requests(id) ON DELETE CASCADE,
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        amount numeric(10, 2) NOT NULL,
+        payment_method varchar(100) DEFAULT 'Cash',
+        transaction_id varchar(100) UNIQUE,
+        payment_status varchar(50) DEFAULT 'Pending' CHECK (payment_status IN ('Pending', 'Paid', 'Failed')),
+        payment_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create id_card_receipts table
+      CREATE TABLE IF NOT EXISTS id_card_receipts (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        payment_id uuid REFERENCES id_card_payments(id) ON DELETE CASCADE,
+        receipt_number varchar(100) UNIQUE NOT NULL,
+        generated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create missing_id_cards table
+      CREATE TABLE IF NOT EXISTS missing_id_cards (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        card_number varchar(100) NOT NULL,
+        reported_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        status varchar(50) DEFAULT 'Lost' CHECK (status IN ('Lost', 'Found', 'Deactivated')),
+        remarks text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create id_card_print_history table
+      CREATE TABLE IF NOT EXISTS id_card_print_history (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        card_id uuid REFERENCES id_cards(id) ON DELETE CASCADE,
+        printed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+        print_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        remarks text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+    `);
+
+    // Add delivery columns to id_cards for handover feature (handling existing installations)
+    await client.query(`
+      ALTER TABLE id_cards ADD COLUMN IF NOT EXISTS delivery_status varchar(50) DEFAULT 'Pending';
+      ALTER TABLE id_cards ADD COLUMN IF NOT EXISTS delivered_at timestamp with time zone;
     `);
 
     // Seed default subjects if empty
@@ -859,10 +964,10 @@ runMigrations()
     let hasStarted = false;
     let retryTimer = null;
 
-    function startServer(port, retries = 10, delay = 1000) {
+    function startServer(port, retries = 5, delay = 500) {
       if (hasStarted) return;
 
-      const server = app.listen(port, () => {
+      const server = app.listen(port, '0.0.0.0', () => {
         hasStarted = true;
         if (retryTimer) clearTimeout(retryTimer);
         console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${port}`);
@@ -887,8 +992,9 @@ runMigrations()
               startServer(port, retries - 1, delay);
             }, delay);
           } else {
-            console.error(`❌ Port ${port} is occupied. Max retries reached. Exiting...`);
-            process.exit(1);
+            const nextPort = port + 1;
+            console.warn(`⚠️ Port ${port} is occupied by another process. Automatically switching to fallback port ${nextPort}...`);
+            startServer(nextPort, 3, delay);
           }
         } else {
           console.error("❌ Server error:", err);

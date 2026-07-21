@@ -24,6 +24,20 @@ import {
 } from '../controllers/libraryController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
+import {
+  getIdCardStats,
+  searchStudents,
+  getStudentProfile,
+  createIdCardRequest,
+  approveRejectRequest,
+  collectPayment,
+  reprintCard,
+  updateCardStatus,
+  reportMissingCard,
+  getHistory,
+  getPaymentHistory,
+  handoverCard
+} from '../controllers/idCardController.js';
 
 const router = express.Router();
 
@@ -63,5 +77,19 @@ router.put('/notifications/:id/read', markNotificationRead);
 router.put('/notifications/:id/archive', archiveNotification);
 router.get('/settings', getLibrarySettings);
 router.put('/settings', updateLibrarySettings);
+
+// ID Card Management - librarian/admin/super-admin
+router.get('/id-cards/stats', authorizeRoles('librarian', 'admin', 'super-admin'), getIdCardStats);
+router.get('/id-cards/students/search', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
+router.get('/id-cards/students/:studentId', authorizeRoles('librarian', 'admin', 'super-admin'), getStudentProfile);
+router.post('/id-cards/requests', authorizeRoles('librarian', 'admin', 'super-admin'), createIdCardRequest);
+router.put('/id-cards/requests/:requestId/status', authorizeRoles('librarian', 'admin'), approveRejectRequest);
+router.post('/id-cards/payments', authorizeRoles('librarian', 'admin'), collectPayment);
+router.post('/id-cards/reprint', authorizeRoles('librarian', 'admin'), reprintCard);
+router.put('/id-cards/cards/:cardId/status', authorizeRoles('librarian', 'admin'), updateCardStatus);
+router.put('/id-cards/cards/:cardId/handover', authorizeRoles('librarian', 'admin'), handoverCard);
+router.post('/id-cards/missing', authorizeRoles('librarian', 'admin'), reportMissingCard);
+router.get('/id-cards/history', authorizeRoles('librarian', 'admin', 'super-admin'), getHistory);
+router.get('/id-cards/payments/history', authorizeRoles('librarian', 'admin', 'super-admin'), getPaymentHistory);
 
 export default router;

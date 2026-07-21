@@ -40,3 +40,141 @@
 [2026-07-18T11:39:47.247Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T11:50:30.824Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T12:05:52.366Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T06:37:46.096Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-21T06:37:46.245Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-21T06:46:54.880Z] GET /api/library/report - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-21T06:46:54.926Z] GET /api/library/issued - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-21T06:47:21.959Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"librarian@123","password":"password123"}
+[2026-07-21T06:47:30.530Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"librarian@123","password":"password123"}
+[2026-07-21T06:49:43.527Z] GET /favicon.ico - Status: 404 - Client Error: Not Found - /favicon.ico - Body: {}
+[2026-07-21T06:51:14.157Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-21T06:51:15.168Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-21T09:49:30.621Z] GET /api/library/books?limit=1000 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T09:49:30.660Z] GET /api/library/issued - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T09:49:30.708Z] GET /api/library/report - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T09:49:30.740Z] GET /api/students?limit=1000 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T10:02:47.410Z] GET /api/library/id-cards/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T10:02:48.262Z] GET /api/library/id-cards/payments/history - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T10:02:48.648Z] GET /api/library/id-cards/history - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T10:06:21.648Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_m2am9sw2f_mruhns8f"
+Stack: error: invalid input syntax for type uuid: "idc_m2am9sw2f_mruhns8f"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:06:23.143Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_syibdwoh2_mruhntd0"
+Stack: error: invalid input syntax for type uuid: "idc_syibdwoh2_mruhntd0"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:06:23.506Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_xc6d2uwp8_mruhnto4"
+Stack: error: invalid input syntax for type uuid: "idc_xc6d2uwp8_mruhnto4"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:06:23.827Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_3urohlq7h_mruhntwz"
+Stack: error: invalid input syntax for type uuid: "idc_3urohlq7h_mruhntwz"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:06:24.161Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_04o30mm84_mruhnu6k"
+Stack: error: invalid input syntax for type uuid: "idc_04o30mm84_mruhnu6k"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:49.185Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_9h28cc0n4_mruia8j5"
+Stack: error: invalid input syntax for type uuid: "idc_9h28cc0n4_mruia8j5"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:50.233Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_hygyituoi_mruia9bt"
+Stack: error: invalid input syntax for type uuid: "idc_hygyituoi_mruia9bt"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:50.882Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_1ruxze6sq_mruia9tc"
+Stack: error: invalid input syntax for type uuid: "idc_1ruxze6sq_mruia9tc"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:51.068Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_urnp88050_mruia9zb"
+Stack: error: invalid input syntax for type uuid: "idc_urnp88050_mruia9zb"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:51.217Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_3jmqbojd9_mruiaa3v"
+Stack: error: invalid input syntax for type uuid: "idc_3jmqbojd9_mruiaa3v"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:51.431Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_fs57tay46_mruiaa9i"
+Stack: error: invalid input syntax for type uuid: "idc_fs57tay46_mruiaa9i"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:51.678Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_nx54ib84r_mruiaagg"
+Stack: error: invalid input syntax for type uuid: "idc_nx54ib84r_mruiaagg"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T10:23:51.999Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_60ti4awrf_mruiaapa"
+Stack: error: invalid input syntax for type uuid: "idc_60ti4awrf_mruiaapa"
+    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
+    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
+    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
+Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+
+[2026-07-21T12:08:08.050Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:09:09.644Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}
+[2026-07-21T12:09:10.820Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}
+[2026-07-21T12:09:11.539Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}
+[2026-07-21T12:09:12.208Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}

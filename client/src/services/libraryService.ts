@@ -257,3 +257,141 @@ export async function updateLibrarySettings(settings: LibrarySetting[]): Promise
   );
   return data.data;
 }
+
+// ==========================================
+// STUDENT ID CARD MANAGEMENT API SERVICES
+// ==========================================
+
+export interface IDCardStats {
+  stats: {
+    totalStudents: number;
+    totalIssued: number;
+    pendingCards: number;
+    lostCards: number;
+    duplicateIssued: number;
+    expiredCards: number;
+    todayRequests: number;
+    todayPrinted: number;
+    totalAmountCollected: number;
+    pendingPayments: number;
+  };
+  charts: {
+    monthlyIssued: Array<{ month: string; count: number }>;
+    pendingVsIssued: Array<{ name: string; value: number }>;
+    departmentWise: Array<{ department: string; count: number }>;
+    paymentCollection: Array<{ date: string; amount: number }>;
+  };
+}
+
+export async function fetchIDCardStats(): Promise<IDCardStats> {
+  const { data } = await api.get<{ success: boolean; data: IDCardStats }>(
+    '/api/library/id-cards/stats',
+  );
+  return data.data;
+}
+
+export async function searchIDCardStudents(q: string): Promise<any[]> {
+  const { data } = await api.get<{ success: boolean; data: any[] }>(
+    '/api/library/id-cards/students/search',
+    { params: { q } }
+  );
+  return data.data;
+}
+
+export async function fetchIDCardStudentProfile(studentId: string): Promise<any> {
+  const { data } = await api.get<{ success: boolean; data: any }>(
+    `/api/library/id-cards/students/${studentId}`
+  );
+  return data.data;
+}
+
+export async function createIDCardRequest(payload: {
+  studentId: string;
+  requestType: string;
+  reason?: string;
+}): Promise<any> {
+  const { data } = await api.post<{ success: boolean; data: any }>(
+    '/api/library/id-cards/requests',
+    payload
+  );
+  return data.data;
+}
+
+export async function approveRejectIDCardRequest(requestId: string, payload: {
+  status: 'Approved' | 'Rejected';
+  rejectionReason?: string;
+}): Promise<any> {
+  const { data } = await api.put<{ success: boolean; data: any }>(
+    `/api/library/id-cards/requests/${requestId}/status`,
+    payload
+  );
+  return data.data;
+}
+
+export async function collectIDCardPayment(payload: {
+  requestId: string;
+  amount: number;
+  paymentMethod: string;
+  transactionId?: string;
+}): Promise<any> {
+  const { data } = await api.post<{ success: boolean; data: any }>(
+    '/api/library/id-cards/payments',
+    payload
+  );
+  return data.data;
+}
+
+export async function reprintIDCard(payload: {
+  cardId: string;
+  remarks?: string;
+}): Promise<any> {
+  const { data } = await api.post<{ success: boolean; data: any }>(
+    '/api/library/id-cards/reprint',
+    payload
+  );
+  return data.data;
+}
+
+export async function updateIDCardStatus(cardId: string, payload: {
+  status: 'Active' | 'Blocked' | 'Lost';
+  remarks?: string;
+}): Promise<any> {
+  const { data } = await api.put<{ success: boolean; data: any }>(
+    `/api/library/id-cards/cards/${cardId}/status`,
+    payload
+  );
+  return data.data;
+}
+
+export async function reportMissingIDCard(payload: {
+  studentId: string;
+  cardId: string;
+  remarks?: string;
+}): Promise<any> {
+  const { data } = await api.post<{ success: boolean; data: any }>(
+    '/api/library/id-cards/missing',
+    payload
+  );
+  return data.data;
+}
+
+export async function fetchIDCardHistory(): Promise<any[]> {
+  const { data } = await api.get<{ success: boolean; data: any[] }>(
+    '/api/library/id-cards/history'
+  );
+  return data.data;
+}
+
+export async function fetchIDCardPaymentHistory(): Promise<any[]> {
+  const { data } = await api.get<{ success: boolean; data: any[] }>(
+    '/api/library/id-cards/payments/history'
+  );
+  return data.data;
+}
+
+export async function handoverIDCard(cardId: string): Promise<any> {
+  const { data } = await api.put<{ success: boolean; data: any }>(
+    `/api/library/id-cards/cards/${cardId}/handover`
+  );
+  return data.data;
+}

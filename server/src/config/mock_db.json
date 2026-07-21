@@ -328,7 +328,7 @@
       "language": "English",
       "description": "The bible of algorithms.",
       "is_active": true,
-      "updated_at": "2026-07-21T06:17:41.472Z"
+      "updated_at": "2026-07-21T09:26:18.951Z"
     },
     {
       "id": "b2222222-2222-2222-2222-222222222222",
@@ -344,12 +344,12 @@
       "language": "English",
       "description": "Core database text.",
       "is_active": true,
-      "updated_at": "2026-07-21T06:17:41.472Z"
+      "updated_at": "2026-07-21T09:26:18.951Z"
     },
     {
       "id": "24f4884a-001c-4e47-896a-545b40b91ca7",
       "created_at": "2026-07-21T06:10:29.309Z",
-      "updated_at": "2026-07-21T06:17:41.472Z",
+      "updated_at": "2026-07-21T09:26:18.951Z",
       "title": "DWSD",
       "author": "DFSDV",
       "category": "Computer Science",
@@ -359,6 +359,22 @@
       "available_quantity": 1,
       "shelf_location": "",
       "description": "ASCAS",
+      "cover_image": "",
+      "is_active": true
+    },
+    {
+      "id": "0297d613-6fea-4e65-9abf-042131f518d8",
+      "created_at": "2026-07-21T09:23:38.366Z",
+      "updated_at": "2026-07-21T09:26:18.951Z",
+      "title": "ncmn",
+      "author": "dhcd45",
+      "category": "Computer Science",
+      "isbn": "2515",
+      "publisher": "",
+      "quantity": 10,
+      "available_quantity": 1,
+      "shelf_location": "",
+      "description": "sdcsdc",
       "cover_image": "",
       "is_active": true
     }
@@ -886,6 +902,39 @@
       "time": "Just now",
       "unread": true,
       "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784625882780",
+      "created_at": "2026-07-21T09:24:42.845Z",
+      "updated_at": "2026-07-21T09:24:42.845Z",
+      "title": "Book issued: 'ncmn' by dhcd45. Due: 4 Aug.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784625978953",
+      "created_at": "2026-07-21T09:26:18.996Z",
+      "updated_at": "2026-07-21T09:26:18.996Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹10.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784635745113-950",
+      "created_at": "2026-07-21T12:09:05.135Z",
+      "updated_at": "2026-07-21T12:09:05.135Z",
+      "title": "Your ID Card request (New) has been submitted. Status: Pending.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
   "departments": [],
@@ -912,6 +961,19 @@
       "updated_at": "2026-07-21T06:17:41.440Z",
       "student": "s1111111-1111-1111-1111-111111111111",
       "book": "b2222222-2222-2222-2222-222222222222",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-21",
+      "due_date": "2026-08-04",
+      "status": "Returned",
+      "return_date": "2026-07-21",
+      "fine_amount": 10
+    },
+    {
+      "id": "699e24d9-2ac6-4c48-ab5b-a6930a145f16",
+      "created_at": "2026-07-21T09:24:42.726Z",
+      "updated_at": "2026-07-21T09:26:18.910Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "0297d613-6fea-4e65-9abf-042131f518d8",
       "user_id": "44444444-4444-4444-4444-444444444444",
       "issue_date": "2026-07-21",
       "due_date": "2026-08-04",
@@ -990,6 +1052,19 @@
       "message": "Dear E2E Student 1784347980535, we have recorded a payment of ₹1 towards your hostel fee. Updated status: Partially Paid.",
       "channel": "in-app",
       "status": "sent"
+    }
+  ],
+  "id_card_requests": [
+    {
+      "id": "idc_in11emgls_mrum1ly0",
+      "created_at": "2026-07-21T12:09:05.112Z",
+      "updated_at": "2026-07-21T12:09:05.112Z",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "request_type": "New",
+      "reason": "Initial card issuance",
+      "status": "Pending",
+      "payment_status": "Waived",
+      "rejection_reason": ""
     }
   ]
 }

@@ -286,7 +286,14 @@ if (isMockMode) {
       'college_settings',
       'attendance_notification_templates',
       'attendance_notification_history',
-      'attendance_notification_logs'
+      'attendance_notification_logs',
+      'id_cards',
+      'id_card_requests',
+      'duplicate_id_cards',
+      'id_card_payments',
+      'id_card_receipts',
+      'missing_id_cards',
+      'id_card_print_history'
     ];
     let changed = false;
     requiredTables.forEach(table => {
