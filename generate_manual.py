@@ -7,26 +7,22 @@ from fpdf import FPDF
 class ERPManualPDF(FPDF):
     def __init__(self):
         super().__init__(orientation="P", unit="mm", format="A4")
-        self.set_margins(16, 12, 15) # Left margin 16mm to clear the 12mm sidebar
+        self.set_margins(16, 12, 15) # Left margin 16mm to clear 12mm sidebar
         self.set_auto_page_break(auto=True, margin=12)
 
     def draw_sidebar(self):
-        # Draw white background for sidebar
         self.set_fill_color(255, 255, 255)
         self.rect(0, 0, 12, 297, "F")
         
-        # Draw thin divider line
         self.set_draw_color(191, 219, 254) # Blue-200
         self.set_line_width(0.4)
         self.line(12, 0, 12, 297)
         
-        # Write rotated text: "@harsha_perfect_solutions"
         self.set_text_color(29, 78, 216) # Royal Blue-700
         self.set_font("times", "B", 7.5)
         with self.rotation(270, 7.5, 140):
             self.text(7.5, 140, "@harsha_perfect_solutions")
             
-        # Draw 6-dot grid handle icon below text
         self.set_fill_color(191, 219, 254)
         dot_y = 190
         dot_x_1 = 4.5
@@ -39,13 +35,13 @@ class ERPManualPDF(FPDF):
         if self.page_no() > 1:
             self.draw_sidebar()
             self.set_font("times", "B", 8)
-            self.set_text_color(30, 41, 59) # Slate-800
+            self.set_text_color(30, 41, 59)
             self.set_x(16)
             self.cell(0, 4.5, "COLLEGE ERP - SYSTEM INTEGRITY & OPERATIONAL BLUEPRINT", align="L", ln=False)
             self.set_font("times", "I", 8)
-            self.set_text_color(100, 116, 139) # Slate-500
+            self.set_text_color(100, 116, 139)
             self.cell(0, 4.5, f"Section {self.page_no() - 1}", align="R", ln=True)
-            # Add royal blue line separator
+            
             self.set_draw_color(29, 78, 216) # Royal Electric Blue
             self.set_line_width(0.8)
             self.line(16, 18, 195, 18)
@@ -58,47 +54,39 @@ class ERPManualPDF(FPDF):
             self.set_text_color(148, 163, 184)
             self.cell(0, 8, f"Page {self.page_no()}", align="C")
             
-            # Left Footer
             self.set_x(16)
             self.cell(0, 8, "Enterprise Operations Blueprint | Technical Implementation Edition", align="L")
             
-            # Right Footer
             self.set_x(16)
             self.cell(0, 8, "Release v2.6.0 (LTS)", align="R")
 
     def draw_paper_airplane(self, x, y):
-        self.set_fill_color(186, 230, 253) # sky-200
-        self.set_draw_color(125, 211, 252) # sky-300
+        self.set_fill_color(186, 230, 253)
+        self.set_draw_color(125, 211, 252)
         self.polygon([(x, y), (x + 30, y - 10), (x + 10, y + 20), (x, y)], style="F")
-        self.set_fill_color(56, 189, 248) # sky-400
+        self.set_fill_color(56, 189, 248)
         self.polygon([(x + 10, y + 20), (x + 15, y + 7), (x + 30, y - 10), (x + 10, y + 20)], style="F")
 
     def cover_page(self):
         self.add_page()
         
-        # Left column cover page block background
         self.set_fill_color(255, 255, 255)
         self.rect(0, 0, 80, 297, "F")
         
-        # Right column cover page block background
-        self.set_fill_color(15, 23, 42) # Deep Slate-900 / Navy
+        self.set_fill_color(15, 23, 42)
         self.rect(80, 0, 130, 297, "F")
         
-        # Left Side Content: Logo image replacement
         if os.path.exists("hps_logo.png"):
             self.image("hps_logo.png", x=6, y=25, w=68)
         
-        # Paper airplane illustration
         self.draw_paper_airplane(25, 138)
         
-        # Bottom left column text
         self.set_y(235)
         self.set_x(10)
         self.set_font("times", "B", 10.5)
         self.set_text_color(15, 23, 42)
         self.multi_cell(60, 5, "The Future of Education Starts Here\nAI * Automation * Analytics * Governance", align="C")
         
-        # Right Side Content (x=80)
         if os.path.exists("college_erp_cover.png"):
             self.image("college_erp_cover.png", x=88, y=28, w=114, h=70)
             
@@ -111,7 +99,7 @@ class ERPManualPDF(FPDF):
         self.ln(6)
         self.set_x(90)
         self.set_font("times", "I", 10)
-        self.set_text_color(96, 165, 250) # Light Royal Blue subtitle
+        self.set_text_color(96, 165, 250)
         self.multi_cell(110, 5, 'Comprehensive System Manual & Technical Blueprint.\n\n"Workflows, Operational Processes, Data Schemas, and Role-Based Governance for 19 Enterprise Modules."\n\nExperience the ultimate synergy of AI, real-time analytics, and enterprise database automation.', new_x="LMARGIN", new_y="NEXT")
         
         self.set_fill_color(29, 78, 216)
@@ -133,14 +121,14 @@ class ERPManualPDF(FPDF):
             x = 16 + i * (box_w + spacing)
             y = self.get_y()
             
-            self.set_fill_color(239, 246, 255) # Light Royal Blue background
-            self.set_draw_color(191, 219, 254) # Soft Blue outline
+            self.set_fill_color(239, 246, 255)
+            self.set_draw_color(191, 219, 254)
             self.set_line_width(0.4)
             self.rect(x, y, box_w, 12, "F" if i % 2 == 0 else "D")
             if i % 2 == 0:
                 self.rect(x, y, box_w, 12, "D")
                 
-            self.set_fill_color(29, 78, 216) # Royal Blue accent
+            self.set_fill_color(29, 78, 216)
             self.rect(x, y, 2.5, 12, "F")
             
             self.set_fill_color(29, 78, 216)
@@ -221,46 +209,55 @@ class ERPManualPDF(FPDF):
 
         self.set_y(self.get_y() + 10.5)
 
-        # 1. Key Sub-Modules
+        # 1. Key Sub-Modules (Dynamic Height Card)
         self.set_font("times", "B", 9.5)
         self.set_text_color(29, 78, 216)
         self.set_x(16)
         self.cell(0, 4.5, "1. Key Sub-Modules & Core Capabilities", ln=True)
         
-        self.set_fill_color(239, 246, 255)
-        self.rect(16, self.get_y(), 179, 8.5, "F")
-        self.set_draw_color(191, 219, 254)
-        self.rect(16, self.get_y(), 179, 8.5, "D")
-        self.set_fill_color(29, 78, 216)
-        self.rect(16, self.get_y(), 2.5, 8.5, "F")
-        
-        self.ln(2)
-        self.set_x(21)
-        self.set_font("times", "B", 8)
-        self.set_text_color(30, 64, 175)
         sub_text = " | ".join(submodules)
-        self.multi_cell(172, 3.6, sub_text, ln=True)
-        self.ln(3)
+        self.set_font("times", "B", 7.5)
+        # Calculate dynamic lines using dry_run=True, output="LINES"
+        lines_sub = self.multi_cell(171, 3.4, sub_text, dry_run=True, output="LINES")
+        card_h_sub = max(8.5, len(lines_sub) * 3.4 + 3.5)
+        
+        card_y = self.get_y()
+        self.set_fill_color(239, 246, 255)
+        self.rect(16, card_y, 179, card_h_sub, "F")
+        self.set_draw_color(191, 219, 254)
+        self.rect(16, card_y, 179, card_h_sub, "D")
+        self.set_fill_color(29, 78, 216)
+        self.rect(16, card_y, 2.5, card_h_sub, "F")
+        
+        self.set_y(card_y + 1.8)
+        self.set_x(21)
+        self.set_text_color(30, 64, 175)
+        self.multi_cell(171, 3.4, sub_text, ln=True)
+        self.set_y(card_y + card_h_sub + 2.5)
 
-        # 2. Workflow & Data Flow Diagram
+        # 2. Workflow & Data Flow Diagram (Dynamic Height Card - Zero Overflow)
         self.set_font("times", "B", 9.5)
         self.set_text_color(29, 78, 216)
         self.set_x(16)
         self.cell(0, 4.5, "2. Workflow & Architectural Data Flow", ln=True)
 
-        self.set_fill_color(248, 250, 252)
-        self.rect(16, self.get_y(), 179, 8.5, "F")
-        self.set_draw_color(203, 213, 225)
-        self.rect(16, self.get_y(), 179, 8.5, "D")
-        self.set_fill_color(14, 165, 233) # Sky Accent
-        self.rect(16, self.get_y(), 2.5, 8.5, "F")
+        self.set_font("times", "B", 7.5)
+        lines_df = self.multi_cell(171, 3.5, dataflow, dry_run=True, output="LINES")
+        card_h_df = max(8.5, len(lines_df) * 3.5 + 3.5)
 
-        self.ln(2)
+        card_y_df = self.get_y()
+        self.set_fill_color(248, 250, 252)
+        self.rect(16, card_y_df, 179, card_h_df, "F")
+        self.set_draw_color(203, 213, 225)
+        self.rect(16, card_y_df, 179, card_h_df, "D")
+        self.set_fill_color(14, 165, 233)
+        self.rect(16, card_y_df, 2.5, card_h_df, "F")
+
+        self.set_y(card_y_df + 1.8)
         self.set_x(21)
-        self.set_font("courier", "B", 7.5)
         self.set_text_color(15, 23, 42)
-        self.cell(0, 4, dataflow, ln=True)
-        self.ln(3)
+        self.multi_cell(171, 3.5, dataflow, ln=True)
+        self.set_y(card_y_df + card_h_df + 2.5)
         
         # 3. Operational Features
         self.set_font("times", "B", 9.5)
@@ -268,14 +265,14 @@ class ERPManualPDF(FPDF):
         self.set_x(16)
         self.cell(0, 4.5, "3. Operational Features & Business Rules", ln=True)
         
-        self.set_font("times", "", 8)
+        self.set_font("times", "", 7.8)
         self.set_text_color(51, 65, 85)
         for feat in features:
             self.set_x(19)
             self.set_text_color(29, 78, 216)
-            self.cell(4, 3.8, "[+]", ln=False)
+            self.cell(4, 3.6, "[+]", ln=False)
             self.set_text_color(51, 65, 85)
-            self.multi_cell(170, 3.8, feat, ln=True)
+            self.multi_cell(170, 3.6, feat, ln=True)
         self.ln(2.5)
         
         # 4. Detailed Working Process
@@ -289,57 +286,58 @@ class ERPManualPDF(FPDF):
         start_y = self.get_y() + 1
         
         self.set_x(21)
-        self.set_font("times", "", 8)
+        self.set_font("times", "", 7.8)
         self.set_text_color(51, 65, 85)
-        self.multi_cell(174, 3.8, process, ln=True)
+        self.multi_cell(173, 3.6, process, ln=True)
         
         self.line(18, start_y, 18, self.get_y() - 1)
         self.ln(2.5)
 
-        # 5. Technical Implementation & Architecture Stack
+        # 5. Technical Implementation & Architecture Stack (Dynamic Height Card)
         self.set_font("times", "B", 9.5)
         self.set_text_color(29, 78, 216)
         self.set_x(16)
         self.cell(0, 4.5, "5. Implementation Stack & Progress Blueprint", ln=True)
 
-        self.set_fill_color(241, 245, 249) # Slate-100 card
-        self.rect(16, self.get_y(), 179, 13, "F")
+        card_y_impl = self.get_y()
+        self.set_fill_color(241, 245, 249)
+        self.rect(16, card_y_impl, 179, 13, "F")
         self.set_draw_color(203, 213, 225)
-        self.rect(16, self.get_y(), 179, 13, "D")
-        self.set_fill_color(16, 185, 129) # Emerald Status accent
-        self.rect(16, self.get_y(), 2.5, 13, "F")
+        self.rect(16, card_y_impl, 179, 13, "D")
+        self.set_fill_color(16, 185, 129)
+        self.rect(16, card_y_impl, 2.5, 13, "F")
 
-        self.ln(1.5)
+        self.set_y(card_y_impl + 1.5)
         self.set_x(21)
-        self.set_font("times", "B", 7.5)
+        self.set_font("times", "B", 7.2)
         self.set_text_color(15, 23, 42)
-        self.cell(26, 3.5, "UI Components:", ln=False)
-        self.set_font("times", "", 7.5)
+        self.cell(24, 3.4, "UI Stack:", ln=False)
+        self.set_font("times", "", 7.2)
         self.set_text_color(30, 64, 175)
-        self.cell(62, 3.5, impl_progress["ui"], ln=False)
+        self.cell(64, 3.4, impl_progress["ui"], ln=False)
 
-        self.set_font("times", "B", 7.5)
+        self.set_font("times", "B", 7.2)
         self.set_text_color(15, 23, 42)
-        self.cell(26, 3.5, "Backend Stack:", ln=False)
-        self.set_font("times", "", 7.5)
+        self.cell(24, 3.4, "Backend:", ln=False)
+        self.set_font("times", "", 7.2)
         self.set_text_color(30, 64, 175)
-        self.cell(0, 3.5, impl_progress["backend"], ln=True)
+        self.cell(0, 3.4, impl_progress["backend"], ln=True)
 
         self.set_x(21)
-        self.set_font("times", "B", 7.5)
+        self.set_font("times", "B", 7.2)
         self.set_text_color(15, 23, 42)
-        self.cell(26, 3.5, "Database Tables:", ln=False)
-        self.set_font("times", "", 7.5)
+        self.cell(24, 3.4, "Database:", ln=False)
+        self.set_font("times", "", 7.2)
         self.set_text_color(30, 64, 175)
-        self.cell(62, 3.5, impl_progress["db"], ln=False)
+        self.cell(64, 3.4, impl_progress["db"], ln=False)
 
-        self.set_font("times", "B", 7.5)
+        self.set_font("times", "B", 7.2)
         self.set_text_color(15, 23, 42)
-        self.cell(26, 3.5, "System Status:", ln=False)
-        self.set_font("times", "B", 7.5)
-        self.set_text_color(16, 185, 129) # Emerald Green text
-        self.cell(0, 3.5, impl_progress["status"], ln=True)
-        self.ln(3)
+        self.cell(24, 3.4, "Status:", ln=False)
+        self.set_font("times", "B", 7.2)
+        self.set_text_color(16, 185, 129)
+        self.cell(0, 3.4, impl_progress["status"], ln=True)
+        self.set_y(card_y_impl + 15.5)
 
         # 6. Flowchart (At bottom)
         self.draw_flowchart(flowchart_steps, self.get_y())
@@ -393,7 +391,7 @@ def main():
         pdf.set_draw_color(226, 232, 240)
         pdf.line(16, pdf.get_y(), 195, pdf.get_y())
         
-    # ALL 19 MODULES WITH COMPLETE WORKFLOWS, PROCESSES, IMPL PROGRESS & TECHNICAL DETAILS
+    # ALL 19 MODULES WITH ZERO-OVERFLOW DYNAMIC WRAPPING
     # 1. Admission Management
     pdf.add_module_page(
         1, "Admission Management",
@@ -459,7 +457,7 @@ def main():
         ],
         "Deans create semesters and define course codes under regulations. Faculty submit weekly lecture availability. The system compiles visual timetables. Students log in during course registration windows to select open electives.",
         {
-            "ui": "DeanAcademicAdmin.tsx, AcademicGovernanceView.tsx",
+            "ui": "DeanAcademicAdmin.tsx, GovernanceView.tsx",
             "backend": "academicService.ts",
             "db": "curriculums, courses, semesters, timetables",
             "status": "Production-Ready (100% Operational)"
@@ -486,7 +484,7 @@ def main():
         "Biometric devices capture entry logs. Faculty review and verify class sheets. The shortage calculator evaluates weekly compliance scores, generates warning letters, and triggers SMS alerts to parents.",
         {
             "ui": "AttendanceModule.tsx, AttendanceNotifications.tsx",
-            "backend": "attendanceService.ts, attendanceNotificationController.js",
+            "backend": "attendanceService.ts, notificationController.js",
             "db": "attendance_logs, attendance_shortages, notification_logs",
             "status": "Production-Ready (100% Operational)"
         },
@@ -628,7 +626,7 @@ def main():
         ["Room Request", "Outing Pass", "Check-in Log", "Complaints"]
     )
 
-    # 10. Transport Management
+    # 10. Transport Management (Clean Multi-Line Dataflow)
     pdf.add_module_page(
         10, "Transport Management",
         [("Tracking", "Live GPS Coordinates"), ("Routes", "Stop & Capacity Map"), ("Pass Control", "QR / RFID Pass")],
@@ -890,7 +888,7 @@ def main():
     # Save PDF
     output_filename = "college_erp_user_manual.pdf"
     pdf.output(output_filename)
-    print(f"SUCCESS: Architectural User Manual PDF generated successfully as '{output_filename}'!")
+    print(f"SUCCESS: Zero-Overflow User Manual PDF generated successfully as '{output_filename}'!")
 
 if __name__ == "__main__":
     main()
