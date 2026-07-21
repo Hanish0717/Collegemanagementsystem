@@ -311,3 +311,7 @@ Stack: Error: invalid input syntax for type uuid: "FACCSE1"
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
 Body: {"title":"os","subject":"Algorithms","type":"PDF","fileUrl":"https://www.cl.cam.ac.uk/teaching/1011/OpSystems/os-slides-l1.pdf","department":"CSE","year":3,"semester":5}
 
+[2026-07-21T14:15:24.558Z] GET /api/library/id-cards/students/7bb18489-ce5c-4a37-9e55-1bbebb09e402 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-21T14:15:24.604Z] GET /api/library/id-cards/students/7bb18489-ce5c-4a37-9e55-1bbebb09e402 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-21T14:16:19.203Z] GET /api/library/id-cards/students/b0e52ce3-0ef8-4448-8eed-6b2bba0e69b1 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-21T14:16:19.210Z] GET /api/library/id-cards/students/b0e52ce3-0ef8-4448-8eed-6b2bba0e69b1 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}

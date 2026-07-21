@@ -456,9 +456,28 @@ async function runMigrations() {
       -- Advanced Exam Cell Columns
       ALTER TABLE results ADD COLUMN IF NOT EXISTS internal_marks numeric(5,2) DEFAULT 0.00;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS external_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS total_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS grade_point numeric(4,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS is_published boolean DEFAULT false;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS course_id uuid REFERENCES courses(id) ON DELETE SET NULL;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_type varchar(50) DEFAULT 'Regular';
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_applied boolean DEFAULT false;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_marks numeric(4,2) DEFAULT 0.00;
+
+      -- Create internal_marks table for Faculty Mid-1, Mid-2, Assignment Entry
+      CREATE TABLE IF NOT EXISTS internal_marks (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
+        course_id uuid REFERENCES courses(id) ON DELETE SET NULL,
+        faculty_id uuid REFERENCES faculty(id) ON DELETE SET NULL,
+        mid1_marks numeric(5, 2) DEFAULT 0,
+        mid2_marks numeric(5, 2) DEFAULT 0,
+        assignment_marks numeric(5, 2) DEFAULT 0,
+        total_internal numeric(5, 2) DEFAULT 0,
+        semester varchar(50) NOT NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        UNIQUE(student_id, course_id, semester)
+      );
 
       CREATE TABLE IF NOT EXISTS courses (
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
