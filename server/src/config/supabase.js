@@ -817,7 +817,8 @@ if (isMockMode) {
         
         if (this.joinUsers) {
           const joinType = this.joinUsersInner ? 'INNER JOIN' : 'LEFT JOIN';
-          sql += ` ${joinType} "users" u ON t.user_id = u.id`;
+          const joinCol = this.tableName === 'marks_correction_requests' ? 'requested_by' : 'user_id';
+          sql += ` ${joinType} "users" u ON t.${joinCol} = u.id`;
         }
 
         this.conditions = this.conditions.map(c => {
@@ -836,7 +837,8 @@ if (isMockMode) {
 
         let totalCount = null;
         if (this.limitVal !== null || this.offsetVal !== null) {
-          const countSql = `SELECT COUNT(*) FROM "${this.tableName}" t ${this.joinUsers ? `${this.joinUsersInner ? 'INNER JOIN' : 'LEFT JOIN'} "users" u ON t.user_id = u.id` : ''} ${whereClause}`;
+          const joinCol = this.tableName === 'marks_correction_requests' ? 'requested_by' : 'user_id';
+          const countSql = `SELECT COUNT(*) FROM "${this.tableName}" t ${this.joinUsers ? `${this.joinUsersInner ? 'INNER JOIN' : 'LEFT JOIN'} "users" u ON t.${joinCol} = u.id` : ''} ${whereClause}`;
           try {
             const countRes = await pool.query(countSql, params);
             totalCount = parseInt(countRes.rows[0].count, 10);
