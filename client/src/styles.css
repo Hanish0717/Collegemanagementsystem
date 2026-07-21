@@ -51,7 +51,7 @@
 :root {
   --radius: 1rem;
 
-  --background: #f8fafc;
+  --background: #ffffff;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -66,7 +66,7 @@
   --cyan: #1d4ed8;
   --blue-600: #1d4ed8;
 
-  --secondary: #f1f5f9;
+  --secondary: #f8fafc;
   --secondary-foreground: #1e293b;
   --muted: #f8fafc;
   --muted-foreground: #64748b;
@@ -90,7 +90,7 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #eff6ff;
   --sidebar-accent-foreground: #1d4ed8;
-  --sidebar-border: #f1f5f9;
+  --sidebar-border: #e2e8f0;
   --sidebar-ring: #1d4ed8;
 
   --gradient-primary: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
@@ -98,9 +98,9 @@
   --gradient-violet: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
   --gradient-hero: linear-gradient(
     135deg,
-    rgba(239, 246, 255, 0.95) 0%,
-    rgba(248, 250, 252, 0.98) 50%,
-    rgba(239, 246, 255, 0.95) 100%
+    #ffffff 0%,
+    #eff6ff 50%,
+    #ffffff 100%
   );
   --gradient-ai-card: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
 

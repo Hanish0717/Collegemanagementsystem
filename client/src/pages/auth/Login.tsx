@@ -13,6 +13,8 @@ import {
   ChevronDown,
   Sparkles,
   MessageSquare,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 import { useGoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
@@ -29,6 +31,19 @@ import {
   authenticateFaculty,
   FacultyProfile,
 } from '@/services/facultyProfileService';
+
+export type DeanDomain = 'Student' | 'Examination' | 'Academic' | 'IMA' | 'IQAC';
+
+export const DEAN_DOMAIN_CREDENTIALS: Record<
+  DeanDomain,
+  { email: string; password: string; name: string; pin: string }
+> = {
+  Student: { email: 'dean-s@gmail.com', password: 'password123', name: 'Student Dean', pin: '8081' },
+  Examination: { email: 'dean-e@gmail.com', password: 'password123', name: 'Examination Dean', pin: '8082' },
+  Academic: { email: 'dean-a@gmail.com', password: 'password123', name: 'Academic Dean', pin: '8083' },
+  IMA: { email: 'dean-im@gmail.com', password: 'password123', name: 'IMA Dean', pin: '8084' },
+  IQAC: { email: 'dean-iq@gmail.com', password: 'password123', name: 'IQAC Dean', pin: '8085' },
+};
 
 export function Login() {
   const [mounted, setMounted] = useState(false);
@@ -58,17 +73,17 @@ function LoginForm() {
   const navigate = useNavigate();
   const { login, refreshUser } = useAuth();
 
-  // Clear any stale session on login page load
+  // Ensure any invalid session without token is cleaned up gracefully
   useEffect(() => {
-    localStorage.removeItem('cms_token');
-    localStorage.removeItem('cms_user');
-    localStorage.removeItem('campusly.role');
-    localStorage.removeItem('cms_student_profile');
-    localStorage.removeItem('cms_parent_child_data');
-    localStorage.removeItem('cms_faculty_profile');
+    const token = localStorage.getItem('cms_token');
+    if (!token) {
+      localStorage.removeItem('cms_user');
+      localStorage.removeItem('campusly.role');
+    }
   }, []);
 
   const [roleId, setRoleId] = useState<RoleId | null>('student');
+  const [deanDomain, setDeanDomain] = useState<DeanDomain>('Student');
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pin, setPin] = useState(['', '', '', '']);
   const [pinError, setPinError] = useState<string | null>(null);
@@ -102,7 +117,7 @@ function LoginForm() {
   const verifyPin = (enteredPin: string) => {
     const credentialsMap: Record<
       string,
-      { email: string; password?: string; admissionNumber?: string; role: RoleId; roleName: string }
+      { email: string; password?: string; admissionNumber?: string; role: RoleId; roleName: string; deanDomain?: DeanDomain }
     > = {
       '1111': {
         email: 'superadmin@college.com',
@@ -183,10 +198,46 @@ function LoginForm() {
         roleName: 'Head of Department (HOD)',
       },
       '8080': {
-        email: 'dean@college.com',
+        email: 'dean-s@gmail.com',
         password: 'password123',
         role: 'dean',
-        roleName: 'Dean Academics',
+        roleName: 'Student Dean',
+        deanDomain: 'Student',
+      },
+      '8081': {
+        email: 'dean-s@gmail.com',
+        password: 'password123',
+        role: 'dean',
+        roleName: 'Student Dean',
+        deanDomain: 'Student',
+      },
+      '8082': {
+        email: 'dean-e@gmail.com',
+        password: 'password123',
+        role: 'dean',
+        roleName: 'Examination Dean',
+        deanDomain: 'Examination',
+      },
+      '8083': {
+        email: 'dean-a@gmail.com',
+        password: 'password123',
+        role: 'dean',
+        roleName: 'Academic Dean',
+        deanDomain: 'Academic',
+      },
+      '8084': {
+        email: 'dean-im@gmail.com',
+        password: 'password123',
+        role: 'dean',
+        roleName: 'IMA Dean',
+        deanDomain: 'IMA',
+      },
+      '8085': {
+        email: 'dean-iq@gmail.com',
+        password: 'password123',
+        role: 'dean',
+        roleName: 'IQAC Dean',
+        deanDomain: 'IQAC',
       },
       '7070': {
         email: 'examcell@college.com',
@@ -200,6 +251,12 @@ function LoginForm() {
         role: 'accounts',
         roleName: 'Accounts Manager',
       },
+      '5050': {
+        email: 'receptionist@college.com',
+        password: 'password123',
+        role: 'receptionist',
+        roleName: 'Receptionist',
+      },
     };
 
     const match = credentialsMap[enteredPin];
@@ -207,6 +264,9 @@ function LoginForm() {
       setPinSuccess(true);
       setTimeout(() => {
         setRoleId(match.role);
+        if (match.deanDomain) {
+          setDeanDomain(match.deanDomain);
+        }
         setEmail(match.email);
         if (match.password) setPassword(match.password);
         if (match.admissionNumber) setAdmissionNumber(match.admissionNumber);
@@ -219,7 +279,7 @@ function LoginForm() {
       }, 800);
     } else {
       setPinError(
-        'Invalid PIN! Try 1111 (Super Admin), 1212 (LMS Coordinator), 1313 (LMS Portal), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).',
+        'Invalid PIN! Try 1111 (Super Admin), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 8081 (Dean Student), 8082 (Dean Exam), 8083 (Dean Academic), 8084 (Dean IMA), 8085 (Dean IQAC).',
       );
       setPin(['', '', '', '']);
       setTimeout(() => {
@@ -244,6 +304,7 @@ function LoginForm() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [admissionNumber, setAdmissionNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -287,6 +348,15 @@ function LoginForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    if (roleId === 'dean') {
+      const expectedEmail = DEAN_DOMAIN_CREDENTIALS[deanDomain]?.email;
+      if (expectedEmail && email.trim().toLowerCase() !== expectedEmail) {
+        setError(`Login failed: ${deanDomain} Dean Domain requires email ${expectedEmail}`);
+        setLoading(false);
+        return;
+      }
+    }
 
     try {
       const cleanEmail = email.trim().toLowerCase();
@@ -374,19 +444,23 @@ function LoginForm() {
       const user = result;
       const targetRole = roleId || toFrontendRole(user.role);
 
-      if (targetRole === 'lms') {
+      if (roleId === 'dean') {
+        setActiveRole('dean');
+        localStorage.setItem('campusly.role', 'dean');
+        localStorage.setItem('campusly.deanDomain', deanDomain);
+        if (user) {
+          user.deanDomain = deanDomain;
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+        navigate({ to: `/dashboard/dean?module=${deanDomain}` });
+      } else if (roleId === 'lms' || targetRole === 'lms') {
         setActiveRole('lms');
         localStorage.setItem('campusly.role', 'lms');
         navigate({ to: '/dashboard/admin/lms' });
       } else {
         setActiveRole(toFrontendRole(user.role || targetRole));
-        const targetDash = getDashboardForRole(user.role || targetRole);
+        const targetDash = getDashboardForRole(user.role || targetRole, email);
         navigate({ to: targetDash as any });
-        setTimeout(() => {
-          if (window.location.pathname.includes('/login')) {
-            window.location.href = targetDash;
-          }
-        }, 150);
       }
     } catch (err: any) {
       const msg =
@@ -511,9 +585,19 @@ function LoginForm() {
                 onChange={(e) => {
                   const id = e.target.value as RoleId;
                   setRoleId(id);
-                  setEmail(id === 'lms' ? 'learning@college.com' : id === 'faculty' ? 'faculty.cse.1@college.com' : '');
-                  setPassword('');
+
                   setError(null);
+                  if (id === 'dean') {
+                    setDeanDomain('Student');
+                    setEmail(DEAN_DOMAIN_CREDENTIALS.Student.email);
+                    setPassword(DEAN_DOMAIN_CREDENTIALS.Student.password);
+                  } else if (id === 'lms') {
+                    setEmail('learning@college.com');
+                    setPassword('password123');
+                  } else {
+                    setEmail('');
+                    setPassword('');
+                  }
                 }}
                 className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/60 pl-4 pr-10 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-600 cursor-pointer transition"
               >
@@ -525,6 +609,47 @@ function LoginForm() {
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
             </div>
+
+            {/* Select Dean Domain Dropdown (Only shown when role is Dean) */}
+            {roleId === 'dean' && (
+              <div className="mt-3">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 block mb-1.5">
+                  SELECT DEAN DOMAIN
+                </label>
+                <div className="relative">
+                  <select
+                    value={deanDomain}
+                    onChange={(e) => {
+                      const dom = e.target.value as DeanDomain;
+                      setDeanDomain(dom);
+                      const creds = DEAN_DOMAIN_CREDENTIALS[dom];
+                      if (creds) {
+                        setEmail(creds.email);
+                        setPassword(creds.password);
+                      }
+                      setError(null);
+                    }}
+                    className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/60 pl-4 pr-10 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-600 cursor-pointer transition"
+                  >
+                    <option value="Student">Student</option>
+                    <option value="Examination">Examination</option>
+                    <option value="Academic">Academic</option>
+                    <option value="IMA">IMA</option>
+                    <option value="IQAC">IQAC</option>
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                </div>
+              </div>
+            )}
+
+            {active && (
+              <div
+                className="mt-2.5 flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-semibold shadow-md shadow-blue-500/20"
+              >
+                <active.icon className="size-4 shrink-0" />
+                <span>{active.description}</span>
+              </div>
+            )}
           </div>
 
           {error && (
@@ -570,44 +695,48 @@ function LoginForm() {
               </div>
             </div>
 
-                {roleId !== 'parent' ? (
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
-                    <div className="mt-1 relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-                      <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        required
-                        autoComplete="off"
-                        autoCorrect="off"
-                        autoCapitalize="off"
-                        spellCheck={false}
-                        data-form-type="other"
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                      Student Admission ID (Admission No or Roll No) *
-                    </label>
-                    <div className="mt-1 relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-                      <input
-                        type="text"
-                        value={admissionNumber}
-                        onChange={(e) => setAdmissionNumber(e.target.value)}
-                        placeholder="e.g. ADM2026102"
-                        required
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
-                      />
-                    </div>
+            {roleId !== 'parent' ? (
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
+                <div className="mt-1 relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    autoComplete="new-password"
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-1 rounded-lg transition"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
                 </div>
-              )}
+              </div>
+            ) : (
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Student Admission ID (Admission No or Roll No) *
+                </label>
+                <div className="mt-1 relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={admissionNumber}
+                    onChange={(e) => setAdmissionNumber(e.target.value)}
+                    placeholder="e.g. ADM2026102"
+                    required
+                    className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
+                  />
+                </div>
+              </div>
+            )}
 
             {roleId !== 'parent' && (
               <div className="flex items-center justify-between text-xs font-medium">
@@ -771,11 +900,15 @@ function LoginForm() {
                       <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-700 dark:text-slate-300">
                         {[
                           { role: 'Super Admin', pin: '1111' },
-                          { role: 'LMS Coord', pin: '1212' },
                           { role: 'Admin', pin: '2222' },
                           { role: 'Faculty', pin: '3333' },
                           { role: 'Student', pin: '4444' },
                           { role: 'Parent', pin: '5555' },
+                          { role: 'Dean (Student)', pin: '8081' },
+                          { role: 'Dean (Exam)', pin: '8082' },
+                          { role: 'Dean (Academic)', pin: '8083' },
+                          { role: 'Dean (IMA)', pin: '8084' },
+                          { role: 'Dean (IQAC)', pin: '8085' },
                           { role: 'Placement', pin: '6666' },
                           { role: 'Librarian', pin: '7777' },
                         ].map((item) => (

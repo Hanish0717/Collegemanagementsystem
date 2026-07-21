@@ -1045,7 +1045,7 @@ runMigrations()
   })
   .catch((err) => {
     console.error("❌ Critical server startup failure:", err);
-  }); // trigger reload 456
+  });
 
 
 

@@ -1,5 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { HostelDashboard } from '@/pages/hostel/HostelDashboard';
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { getStoredUser } from '@/services/authService';
 
 export const Route = createFileRoute('/dashboard/hostel')({
@@ -10,5 +9,6 @@ export const Route = createFileRoute('/dashboard/hostel')({
       throw redirect({ to: '/dashboard' });
     }
   },
-  component: HostelDashboard,
+  component: Outlet,
 });
+

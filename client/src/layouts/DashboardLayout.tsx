@@ -29,13 +29,13 @@ import {
   Send,
   Calendar,
   Users,
-} from "lucide-react";
-import { getActiveRole, type Role, ROLE_LIST, ROLES, setActiveRole, type RoleId } from "@/lib/roles";
-import { getDashboardForRole, toBackendRole } from "@/services/authService";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { Badge } from "@/components/dashboard/ui";
-import { StudentFormModal } from "@/pages/dashboard/students/StudentDialogs";
+} from 'lucide-react';
+import { getActiveRole, type Role, ROLE_LIST, ROLES, setActiveRole, type RoleId } from '@/lib/roles';
+import { getDashboardForRole, toBackendRole, getStoredUser } from '@/services/authService';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { Badge } from '@/components/dashboard/ui';
+import { StudentFormModal } from '@/pages/dashboard/students/StudentDialogs';
 import {
   createResident,
   registerVisitor,
@@ -746,6 +746,55 @@ export function DashboardLayout() {
 
   const RoleIcon = role.icon;
 
+  const navItems = useMemo(() => {
+    if (role?.id === 'dean') {
+      const storedUser = getStoredUser();
+      const savedDomain = localStorage.getItem('campusly.deanDomain') || storedUser?.deanDomain;
+      let activeDomain = (savedDomain || '').toLowerCase();
+
+      // Sync domain if user is currently navigating a specific dean route
+      if (path.includes('/dashboard/dean/student')) activeDomain = 'student';
+      else if (path.includes('/dashboard/dean/examination')) activeDomain = 'examination';
+      else if (path.includes('/dashboard/dean/academic')) activeDomain = 'academic';
+      else if (path.includes('/dashboard/dean/ima')) activeDomain = 'ima';
+      else if (path.includes('/dashboard/dean/iqac')) activeDomain = 'iqac';
+
+      // Default to student domain if unspecified
+      if (!activeDomain) activeDomain = 'student';
+
+      const domainRouteMap: Record<string, string> = {
+        student: '/dashboard/dean/student',
+        examination: '/dashboard/dean/examination',
+        exam: '/dashboard/dean/examination',
+        academic: '/dashboard/dean/academic',
+        acad: '/dashboard/dean/academic',
+        ima: '/dashboard/dean/ima',
+        iqac: '/dashboard/dean/iqac',
+      };
+
+      const targetRoute = domainRouteMap[activeDomain] || '/dashboard/dean/student';
+
+      return role.nav.filter((item) => {
+        // Always include core Dean items + Faculty Management
+        if (
+          item.to === '/dashboard/dean' ||
+          item.to === '/dashboard/admin/faculty' ||
+          item.to === '/dashboard/admin/notifications' ||
+          item.to === '/dashboard/dean/reports' ||
+          item.to === '/dashboard/dean/approvals' ||
+          item.to === '/dashboard/admin/settings'
+        ) {
+          return true;
+        }
+
+        // Include ONLY the selected domain administration route
+        return item.to === targetRoute;
+      });
+    }
+
+    return role.nav;
+  }, [role, path]);
+
   const SidebarContent = ({ isMobile = false }) => (
     <>
       <div className="p-4 flex items-center gap-2.5 border-b border-sidebar-border h-16">
@@ -779,9 +828,19 @@ export function DashboardLayout() {
       )}
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {role.nav.map((item) => {
-          const active = item.exact ? path === item.to : path.startsWith(item.to);
-          const isNotifItem = item.to.includes("notifications");
+        {navItems.map((item) => {
+          const itemUrl = new URL(item.to, window.location.origin);
+          const itemHasQuery = itemUrl.search.length > 0;
+          let active = false;
+          if (itemHasQuery) {
+            const currentParams = new URLSearchParams(currentSearch);
+            active =
+              path === itemUrl.pathname &&
+              [...itemUrl.searchParams.entries()].every(([k, v]) => currentParams.get(k) === v);
+          } else {
+            active = item.exact ? path === item.to : path.startsWith(item.to);
+          }
+          const isNotifItem = item.to.includes('notifications');
           const hasUnread = isNotifItem && unreadCount > 0;
 
           // If item has children, render collapsible group
@@ -1031,65 +1090,10 @@ export function DashboardLayout() {
               )}
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {/* Role Switcher */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowRoleInfo(!showRoleInfo)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-95 shadow-soft transition`}
-                >
-                  <RoleIcon className="size-3.5" />
-                  <span>{role.name}</span>
-                  <ChevronDown className="size-3 opacity-80" />
-                </button>
-                {showRoleInfo && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShowRoleInfo(false)} />
-                    <div className="absolute right-0 top-full mt-2 w-64 bg-background border rounded-2xl shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2 duration-150 text-left max-h-96 overflow-y-auto">
-                      <div className="px-2.5 py-1.5 text-[10px] font-bold text-muted-foreground uppercase">
-                        Switch ERP Workspace
-                      </div>
-                      <div className="space-y-0.5 mt-1">
-                        {ROLE_LIST.filter(r => r.id !== 'alumni').map((r) => {
-                          const IconComp = r.icon;
-                          const active = r.id === role.id;
-                          return (
-                            <button
-                              key={r.id}
-                              onClick={() => {
-                                setShowRoleInfo(false);
-                                loginAsDemoRole(r.id)
-                                  .then(() => {
-                                    setActiveRole(r.id);
-                                    setRole(r);
-                                    toast.success(`Switched to ${r.name} workspace!`);
-                                    if (r.id === "alumni" || r.id === "alumni_coordinator") {
-                                      navigate({ to: "/alumni/dashboard" });
-                                      return;
-                                    }
-                                    navigate({ to: "/dashboard" });
-                                  })
-                                  .catch((error) => {
-                                    toast.error(error?.message || `Unable to switch to ${r.name} workspace.`);
-                                  });
-                              }}
-                              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs text-left cursor-pointer transition
-                                ${active
-                                  ? `bg-gradient-to-r ${r.gradient} text-white font-semibold shadow-soft`
-                                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                                }`}
-                            >
-                              <IconComp className="size-3.5" />
-                              <div className="leading-tight">
-                                <div>{r.name}</div>
-                                {!active && <div className="text-[9px] opacity-70 font-normal">{r.short}</div>}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </>
-                )}
+              {/* Static Active Role Indicator (Role Switcher Removed) */}
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} shadow-soft`}>
+                <RoleIcon className="size-3.5" />
+                <span>{role.name}</span>
               </div>
 
               {/* Plus/New Dropdown */}

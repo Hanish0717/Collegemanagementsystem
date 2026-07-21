@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2026-07-18T04:38:30.321Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T04:38:30.329Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T04:38:30.338Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
@@ -315,3 +316,332 @@ Body: {"title":"os","subject":"Algorithms","type":"PDF","fileUrl":"https://www.c
 [2026-07-21T14:15:24.604Z] GET /api/library/id-cards/students/7bb18489-ce5c-4a37-9e55-1bbebb09e402 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
 [2026-07-21T14:16:19.203Z] GET /api/library/id-cards/students/b0e52ce3-0ef8-4448-8eed-6b2bba0e69b1 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
 [2026-07-21T14:16:19.210Z] GET /api/library/id-cards/students/b0e52ce3-0ef8-4448-8eed-6b2bba0e69b1 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+=======
+[2026-07-17T09:09:24.029Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-17T10:30:42.876Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-17T10:47:27.589Z] GET /api/hostel/allocations - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-17T11:04:12.354Z] POST /api/auth/register - Status: 400 - Client Error: Direct sign up is disabled for this role. Account credentials must be provided by the administrator. - Body: {"fullName":"Duplicate User","email":"user_1784286247215@test.com","password":"Password123!","role":"student"}
+[2026-07-17T11:04:12.361Z] POST /api/auth/register - Status: 400 - Client Error: Full name is required - Body: {"email":"missing_name_1784286247215@test.com","password":"Password123!"}
+[2026-07-17T11:04:12.364Z] POST /api/auth/register - Status: 400 - Client Error: Direct sign up is disabled for this role. Account credentials must be provided by the administrator. - Body: {"fullName":"Test Invalid Email","email":"not-an-email","password":"Password123!","role":"student"}
+[2026-07-17T11:04:12.368Z] POST /api/auth/register - Status: 400 - Client Error: Please fill in all required fields - Body: {"fullName":"Test Invalid Role","email":"invalidrole_1784286247215@test.com","password":"Password123!","role":"not-a-valid-role-name"}
+[2026-07-17T11:04:17.364Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"user_1784286247215@test.com","password":"WrongPasswordXYZ"}
+[2026-07-17T11:04:17.369Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"nonexistentuser@test.com","password":"Password123!"}
+[2026-07-17T11:04:17.372Z] POST /api/auth/login - Status: 400 - Client Error: Email is required, Password is required - Body: {"email":"","password":""}
+[2026-07-17T11:04:17.379Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-17T11:04:17.381Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-17T11:04:17.388Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user account is inactive - Body: {}
+[2026-07-17T11:04:17.396Z] GET /api/auth/admin-test - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-17T11:04:43.534Z] GET /api/students - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-17T11:04:43.539Z] GET /api/students - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-17T11:04:55.257Z] POST /api/students - Status: 400 - Client Error: Student with this roll number already exists - Body: {"fullName":"Charlie Green","rollNumber":"CSE1784286279227C","email":"charlie_new_1784286279227@test.com","phoneNumber":"7778889999","gender":"Other","dateOfBirth":"2006-01-05","department":"CSE","year":1,"semester":2,"section":"A","parentName":"Mary Green","parentPhone":"7776665555","parentEmail":"mary_green_1784286279227@test.com","password":"Password123!","cgpa":7.8,"attendancePercentage":92}
+[2026-07-17T11:04:55.264Z] POST /api/students - Status: 400 - Client Error: User account with this email already exists in system - Body: {"fullName":"Charlie Green","rollNumber":"CSE1784286279227NEW","email":"charlie_1784286279227@test.com","phoneNumber":"7778889999","gender":"Other","dateOfBirth":"2006-01-05","department":"CSE","year":1,"semester":2,"section":"A","parentName":"Mary Green","parentPhone":"7776665555","parentEmail":"mary_green_1784286279227@test.com","password":"Password123!","cgpa":7.8,"attendancePercentage":92}
+[2026-07-17T11:04:55.269Z] POST /api/students - Status: 400 - Client Error: Email is required, Department is required - Body: {"fullName":"Missing Fields Person","rollNumber":"MISS1784286279227"}
+[2026-07-17T11:04:55.299Z] GET /api/students/invalidmongooseid123 - Status: 400 - Client Error: Invalid ID format - Body: {}
+[2026-07-17T11:04:55.303Z] GET /api/students/99999999-9999-9999-9999-999999999999 - Status: 404 - Client Error: Student not found - Body: {}
+[2026-07-17T11:04:55.319Z] PUT /api/students/102cfca0-4844-4c3a-8dca-e286c20bd055 - Status: 400 - Client Error: Student with this roll number already exists - Body: {"rollNumber":"ECE1784286279227B"}
+[2026-07-17T11:04:55.331Z] GET /api/students/102cfca0-4844-4c3a-8dca-e286c20bd055 - Status: 404 - Client Error: Student not found - Body: {}
+[2026-07-18T04:10:59.097Z] POST /api/hostel/fees/1bbb15be-09c3-4ea6-ab7a-2c6693dafbd3/pay - Status: 401 - Client Error: Not authorized, no token provided - Body: {"amount":1,"paymentMethod":"E2E-Test","transactionId":"E2E-TXN-1784347858558"}
+[2026-07-18T04:13:39.000Z] POST /api/auth/register - Status: 400 - Client Error: Direct sign up is disabled for this role. Account credentials must be provided by the administrator. - Body: {"fullName":"Duplicate User","email":"user_1784348010717@test.com","password":"Password123!","role":"student"}
+[2026-07-18T04:13:39.007Z] POST /api/auth/register - Status: 400 - Client Error: Full name is required - Body: {"email":"missing_name_1784348010717@test.com","password":"Password123!"}
+[2026-07-18T04:13:39.016Z] POST /api/auth/register - Status: 400 - Client Error: Direct sign up is disabled for this role. Account credentials must be provided by the administrator. - Body: {"fullName":"Test Invalid Email","email":"not-an-email","password":"Password123!","role":"student"}
+[2026-07-18T04:13:39.023Z] POST /api/auth/register - Status: 400 - Client Error: Please fill in all required fields - Body: {"fullName":"Test Invalid Role","email":"invalidrole_1784348010717@test.com","password":"Password123!","role":"not-a-valid-role-name"}
+[2026-07-18T04:13:47.227Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"user_1784348010717@test.com","password":"WrongPasswordXYZ"}
+[2026-07-18T04:13:47.234Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"nonexistentuser@test.com","password":"Password123!"}
+[2026-07-18T04:13:47.239Z] POST /api/auth/login - Status: 400 - Client Error: Email is required, Password is required - Body: {"email":"","password":""}
+[2026-07-18T04:13:47.251Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-18T04:13:47.255Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-18T04:13:47.283Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user account is inactive - Body: {}
+[2026-07-18T04:13:47.316Z] GET /api/auth/admin-test - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-18T04:14:04.825Z] GET /api/students - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-18T04:14:04.831Z] GET /api/students - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-18T04:14:18.667Z] POST /api/students - Status: 400 - Client Error: Student with this roll number already exists - Body: {"fullName":"Charlie Green","rollNumber":"CSE1784348039876C","email":"charlie_new_1784348039876@test.com","phoneNumber":"7778889999","gender":"Other","dateOfBirth":"2006-01-05","department":"CSE","year":1,"semester":2,"section":"A","parentName":"Mary Green","parentPhone":"7776665555","parentEmail":"mary_green_1784348039876@test.com","password":"Password123!","cgpa":7.8,"attendancePercentage":92}
+[2026-07-18T04:14:18.676Z] POST /api/students - Status: 400 - Client Error: User account with this email already exists in system - Body: {"fullName":"Charlie Green","rollNumber":"CSE1784348039876NEW","email":"charlie_1784348039876@test.com","phoneNumber":"7778889999","gender":"Other","dateOfBirth":"2006-01-05","department":"CSE","year":1,"semester":2,"section":"A","parentName":"Mary Green","parentPhone":"7776665555","parentEmail":"mary_green_1784348039876@test.com","password":"Password123!","cgpa":7.8,"attendancePercentage":92}
+[2026-07-18T04:14:18.685Z] POST /api/students - Status: 400 - Client Error: Email is required, Department is required - Body: {"fullName":"Missing Fields Person","rollNumber":"MISS1784348039876"}
+[2026-07-18T04:14:18.735Z] GET /api/students/invalidmongooseid123 - Status: 400 - Client Error: Invalid ID format - Body: {}
+[2026-07-18T04:14:18.740Z] GET /api/students/99999999-9999-9999-9999-999999999999 - Status: 404 - Client Error: Student not found - Body: {}
+[2026-07-18T04:14:18.784Z] PUT /api/students/f091cdaf-4b6b-4867-bd1d-216afbefbbbb - Status: 400 - Client Error: Student with this roll number already exists - Body: {"rollNumber":"ECE1784348039876B"}
+[2026-07-18T04:14:18.822Z] GET /api/students/f091cdaf-4b6b-4867-bd1d-216afbefbbbb - Status: 404 - Client Error: Student not found - Body: {}
+[2026-07-18T04:14:27.464Z] POST /api/students - Status: 401 - Client Error: Not authorized, invalid token - Body: {"fullName":"Test Student","rollNumber":"ROLL1784348067343","email":"student_1784348067343@test.com","phoneNumber":"9999999999","gender":"Male","department":"CSE","year":3,"semester":6,"section":"A","parentName":"Parent Name","parentPhone":"8888888888","parentEmail":"parent_1784348067343@test.com","password":"Password123!"}
+[2026-07-18T04:14:56.377Z] POST /api/students - Status: 401 - Client Error: Not authorized, invalid token - Body: {"fullName":"Test Student","rollNumber":"ROLL1784348096260","email":"student_1784348096260@test.com","phoneNumber":"9999999999","gender":"Male","department":"CSE","year":3,"semester":6,"section":"A","parentName":"Parent Name","parentPhone":"8888888888","parentEmail":"parent_1784348096260@test.com","password":"Password123!"}
+[2026-07-18T04:16:12.857Z] POST /api/fees - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"student":"6047e339-60f0-4614-bad5-68246680fc7c","academicYear":"2025-2026","semester":6,"feeType":"tuition","totalAmount":1000,"dueDate":"2026-06-01"}
+[2026-07-18T04:16:12.908Z] GET /api/fees/student/9c836874-5074-478f-8ca2-83f3a54a4fd0 - Status: 403 - Client Error: You are not authorized to view this fee record - Body: {}
+[2026-07-18T04:16:13.123Z] POST /api/fees/pay/87740ddf-f4ff-4771-b051-e85df97f2706 - Status: 400 - Client Error: Payment amount exceeds remaining due amount - Body: {"amount":700,"paymentMethod":"upi"}
+[2026-07-18T04:16:25.808Z] POST /api/attendance/mark - Status: 401 - Client Error: Not authorized, no token provided - Body: {"student":"fedac8b0-6e76-42c0-b1ea-bf4c29e2bd81","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
+[2026-07-18T04:16:25.817Z] POST /api/attendance/mark - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"student":"fedac8b0-6e76-42c0-b1ea-bf4c29e2bd81","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
+[2026-07-18T04:16:25.948Z] POST /api/attendance/mark - Status: 400 - Client Error: Attendance already marked for this student, subject, and date - Body: {"student":"fedac8b0-6e76-42c0-b1ea-bf4c29e2bd81","subject":"Math","date":"2026-05-01","status":"absent","department":"CSE","semester":6,"section":"A"}
+[2026-07-18T08:57:35.149Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, token has expired - Body: {}
+[2026-07-18T09:45:06.833Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-18T10:04:57.503Z] POST /api/attendance/mark - Status: 401 - Client Error: Not authorized, no token provided - Body: {"student":"e92f3723-cf21-443e-96ce-a675b2608ead","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
+[2026-07-18T10:04:57.509Z] POST /api/attendance/mark - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {"student":"e92f3723-cf21-443e-96ce-a675b2608ead","subject":"Math","date":"2026-05-01","status":"present","department":"CSE","semester":6,"section":"A"}
+[2026-07-18T10:04:57.554Z] POST /api/attendance/mark - Status: 400 - Client Error: Attendance already marked for this student, subject, and date - Body: {"student":"e92f3723-cf21-443e-96ce-a675b2608ead","subject":"Math","date":"2026-05-01","status":"absent","department":"CSE","semester":6,"section":"A"}
+[2026-07-18T12:31:30.443Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:31:30.459Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:31:30.473Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:31:30.476Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:35:14.276Z] GET /api/faculty-module/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:35:14.334Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:35:14.340Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:35:14.345Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-18T12:35:14.366Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-20T17:21:15.666Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:16.414Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.133Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.364Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.557Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:17.787Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":false,"administration":true,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-20T17:21:19.600Z] POST /api/super-admin/notifications/categories - Status: 500 - Error: supabase.from(...).upsert is not a function
+Stack: TypeError: supabase.from(...).upsert is not a function
+    at saveNotificationCategories (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/superAdminController.js:1215:8)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/rbacMiddleware.js:33:16
+    at Layer.handle [as handle_request] (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:328:13)
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:346:12)
+    at next (F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\server\node_modules\express\lib\router\index.js:280:10)
+    at protect (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/middleware/authMiddleware.js:60:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {"categories":{"academic":true,"administration":false,"finance":true,"placement":true,"hostel_transport":true,"security":true,"system":true}}
+
+[2026-07-21T05:59:10.232Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hanish@gmail.com","password":"password123"}
+[2026-07-21T06:13:42.950Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:14:22.918Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:14:49.865Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:15:20.835Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-e@gmail.com","password":"password123"}
+[2026-07-21T06:16:24.835Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:16:49.015Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:17:16.447Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:17:56.852Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-im@gmail.com","password":"password123"}
+[2026-07-21T06:19:32.158Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"dean-s@gmail.com","password":"password123"}
+[2026-07-21T06:21:26.468Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:21:26.471Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:21:26.474Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:21:26.476Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:21:26.478Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:21:27.510Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:21:29.528Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:21:33.549Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:23:56.063Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:23:56.066Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:23:56.068Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:23:56.072Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:23:56.074Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:23:57.095Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:23:59.113Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:03.124Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:54.562Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:54.563Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:24:54.565Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:24:54.566Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:24:54.567Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:24:55.578Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:24:57.586Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:01.595Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:08.105Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:09.116Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:10.763Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:10.765Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:10.767Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:10.769Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:11.125Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:15.141Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:17.335Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:18.344Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:20.361Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:24.376Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:35.938Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:35.939Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:35.941Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:35.943Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:35.945Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:36.958Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:38.975Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:41.453Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:41.455Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:41.457Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:41.460Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:25:42.990Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:46.091Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:47.100Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:47.169Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:47.171Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:25:47.173Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:25:47.175Z] GET /dean/examination - Status: 404 - Client Error: Not Found - /dean/examination - Body: {}
+[2026-07-21T06:25:49.178Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:52.304Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:25:53.312Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:06.063Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:06.064Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:26:06.066Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:26:06.067Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:26:06.068Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:26:07.078Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:09.095Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:26:13.104Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:46.626Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:46.628Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:46.631Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:46.636Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:46.638Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:47.665Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:49.678Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:53.701Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:55.691Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:55.693Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:55.695Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:55.698Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:32:55.701Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:32:56.712Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:58.732Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:02.751Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:43.211Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:43.213Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:33:43.216Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:33:43.218Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:33:43.221Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:33:44.222Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:46.228Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:50.241Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:51.526Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:52.546Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:33:54.555Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:02.184Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:02.185Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:34:02.187Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:34:02.188Z] GET /dean/dashboard - Status: 404 - Client Error: Not Found - /dean/dashboard - Body: {}
+[2026-07-21T06:34:02.190Z] GET /dean/student - Status: 404 - Client Error: Not Found - /dean/student - Body: {}
+[2026-07-21T06:34:03.195Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:05.202Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T06:34:09.216Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'dean' is not authorized to access this resource - Body: {}
+[2026-07-21T12:25:25.132Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:30.811Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:30.825Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:38.653Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:25:38.661Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:32:07.531Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:07.256Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:07.265Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:15.335Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T12:34:15.344Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T13:28:12.320Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+>>>>>>> affdbd8

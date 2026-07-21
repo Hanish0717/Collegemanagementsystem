@@ -11,6 +11,7 @@ import {
 } from '@/services/adminService';
 import { toast } from 'sonner';
 import api from '@/lib/api';
+import { PERMISSION_PROFILES } from '@/lib/permissionProfiles';
 
 export function AdminFaculty() {
   const queryClient = useQueryClient();
@@ -24,6 +25,20 @@ export function AdminFaculty() {
   const [employeeId, setEmployeeId] = useState('');
   const [selectedDept, setSelectedDept] = useState('');
   const [designation, setDesignation] = useState('Assistant Professor');
+  const [facultyType, setFacultyType] = useState<'Faculty' | 'HOD' | 'Dean' | 'Principal' | 'Vice Principal'>('Faculty');
+  const [deanResponsibilities, setDeanResponsibilities] = useState<string[]>([]);
+  const [assignedPrograms, setAssignedPrograms] = useState<string[]>(['B.Tech CSE']);
+  const [assignedSemesters, setAssignedSemesters] = useState<string[]>(['Sem 1', 'Sem 2']);
+  const [employeeStatus, setEmployeeStatus] = useState<'Active' | 'On Leave' | 'Suspended' | 'Resigned' | 'Retired' | 'Relieved'>('Active');
+  const [isActing, setIsActing] = useState(false);
+  const [secondaryDepartments, setSecondaryDepartments] = useState<string[]>([]);
+  const [advisorSections, setAdvisorSections] = useState<string[]>([]);
+  const [delegatedToName, setDelegatedToName] = useState('');
+  const [delegationStartDate, setDelegationStartDate] = useState('');
+  const [delegationEndDate, setDelegationEndDate] = useState('');
+  const [reportsToUserId, setReportsToUserId] = useState('');
+  const [permissionProfile, setPermissionProfile] = useState('Faculty Template');
+  const [viewingLifecycleStaff, setViewingLifecycleStaff] = useState<any | null>(null);
   const [experience, setExperience] = useState('');
   const [gender, setGender] = useState('Male');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -97,11 +112,14 @@ export function AdminFaculty() {
     },
   });
 
+  const [designationTabFilter, setDesignationTabFilter] = useState('All');
+  const [employeeCategory, setEmployeeCategory] = useState<'Teaching' | 'Non-Teaching'>('Teaching');
+
   // Filters & Search
   const filteredFaculty = useMemo(() => {
     return facultyList.filter((fac) => {
       const matchesSearch = [fac.fullName, fac.employeeId, fac.email, fac.designation].some((val) =>
-        val.toLowerCase().includes(search.toLowerCase()),
+        (val || '').toLowerCase().includes(search.toLowerCase()),
       );
 
       const matchesDept = deptFilter === 'All' || fac.department?._id === deptFilter;
@@ -111,28 +129,64 @@ export function AdminFaculty() {
         (statusFilter === 'Active' && fac.status?.toLowerCase() === 'active') ||
         (statusFilter === 'On Leave' && fac.status?.toLowerCase() === 'on-leave');
 
-      return matchesSearch && matchesDept && matchesStatus;
+      const matchesDesignationTab =
+        designationTabFilter === 'All' ||
+        (designationTabFilter === 'Principal' && fac.designation === 'Principal') ||
+        (designationTabFilter === 'Vice Principal' && fac.designation === 'Vice Principal') ||
+        (designationTabFilter === 'Dean' && fac.designation === 'Dean') ||
+        (designationTabFilter === 'HOD' && fac.designation === 'HOD') ||
+        (designationTabFilter === 'Faculty' && ['Professor', 'Associate Professor', 'Assistant Professor', 'Guest Faculty', 'Faculty'].includes(fac.designation)) ||
+        (designationTabFilter === 'Non-Teaching' && ['Lab Assistant', 'Librarian', 'Hostel Warden', 'Transport Manager', 'Office Staff', 'Accounts', 'Exam Cell'].includes(fac.designation)) ||
+        (designationTabFilter === 'Admins' && ['Admin', 'Department Admin', 'System Administrator'].includes(fac.designation)) ||
+        (designationTabFilter === 'Super Admins' && ['Super Admin'].includes(fac.designation));
+
+      return matchesSearch && matchesDept && matchesStatus && matchesDesignationTab;
     });
-  }, [facultyList, search, deptFilter, statusFilter]);
+  }, [facultyList, search, deptFilter, statusFilter, designationTabFilter]);
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (
       !fullName.trim() ||
       !email.trim() ||
-      !employeeId.trim() ||
       !selectedDept ||
       !password.trim()
     ) {
       toast.error('Please fill in all required fields (including Password)');
       return;
     }
+
+    if (designation === 'Dean' && deanResponsibilities.length === 0) {
+      toast.error('Validation Error: Please select at least one Dean Responsibility for Dean designation');
+      return;
+    }
+
     createFacultyMutation.mutate({
       fullName,
       email,
-      employeeId,
+      employeeId: employeeId.trim() || undefined,
       department: selectedDept,
       designation,
+      employeeCategory,
+      facultyType: designation === 'Dean' ? 'Dean' : designation === 'HOD' ? 'HOD' : 'Faculty',
+      deanResponsibilities: designation === 'Dean' ? deanResponsibilities : [],
+      assignedPrograms: designation === 'HOD' ? assignedPrograms : [],
+      assignedSemesters: designation === 'HOD' ? assignedSemesters : [],
+      employeeStatus,
+      isActing,
+      secondaryDepartments,
+      advisorSections,
+      delegatedTo: delegatedToName ? {
+        name: delegatedToName,
+        startDate: delegationStartDate || null,
+        endDate: delegationEndDate || null
+      } : null,
+      reportsTo: reportsToUserId ? {
+        userId: reportsToUserId,
+        name: facultyList.find((f: any) => f._id === reportsToUserId || f.id === reportsToUserId)?.fullName || 'Manager',
+        designation: facultyList.find((f: any) => f._id === reportsToUserId || f.id === reportsToUserId)?.designation || 'Supervisor',
+      } : null,
+      permissionProfile,
       experience: experience ? Number(experience) : 0,
       gender,
       phoneNumber: phoneNumber || undefined,
@@ -197,9 +251,35 @@ export function AdminFaculty() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Faculty Management"
-        desc="Manage faculty records, subject allocation, department mapping and status tracking."
+        title="User & Staff Management"
+        desc="Manage all institutional personnel, executive leadership, HODs, Deans, faculty, and support staff."
       />
+
+      <div className="flex flex-wrap gap-1.5 p-1.5 bg-accent/20 border rounded-xl overflow-x-auto">
+        {[
+          { id: 'All', label: 'All Users' },
+          { id: 'Principal', label: 'Principal' },
+          { id: 'Vice Principal', label: 'Vice Principal' },
+          { id: 'Dean', label: 'Deans' },
+          { id: 'HOD', label: 'HODs' },
+          { id: 'Faculty', label: 'Faculty' },
+          { id: 'Non-Teaching', label: 'Non-Teaching' },
+          { id: 'Admins', label: 'Admins' },
+          { id: 'Super Admins', label: 'Super Admins' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setDesignationTabFilter(tab.id)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              designationTabFilter === tab.id
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       <Card>
         <div className="flex flex-col lg:flex-row gap-3">
@@ -321,41 +401,75 @@ export function AdminFaculty() {
                       <td className="py-3 px-4">
                         <Badge tone="info">{fac.department?.name || 'Unassigned'}</Badge>
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground">{fac.designation}</td>
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-foreground flex items-center gap-1.5">
+                          <span>{fac.designation}</span>
+                          {fac.isActing && (
+                            <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[10px] font-bold">
+                              (In-Charge)
+                            </span>
+                          )}
+                        </div>
+                        {Array.isArray(fac.deanResponsibilities) && fac.deanResponsibilities.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {fac.deanResponsibilities.map((r: string) => (
+                              <span
+                                key={r}
+                                className="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-semibold"
+                              >
+                                {r}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </td>
                       <td className="py-3 px-4 font-medium">{fac.experience}</td>
                       <td className="py-3 px-4">
-                        <select
-                          value={fac.status}
-                          onChange={(e) =>
-                            updateFacultyMutation.mutate({
-                              id: fac._id,
-                              payload: { status: e.target.value },
-                            })
+                        <Badge
+                          tone={
+                            fac.employeeStatus === 'Active'
+                              ? 'success'
+                              : fac.employeeStatus === 'On Leave'
+                              ? 'warning'
+                              : 'danger'
                           }
-                          className="rounded-lg border bg-background/50 px-2 py-1 text-xs outline-none focus:border-primary transition"
                         >
-                          <option value="active">Active</option>
-                          <option value="on-leave">On Leave</option>
-                          <option value="suspended">Suspended</option>
-                        </select>
+                          {fac.employeeStatus || 'Active'}
+                        </Badge>
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <button
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  `Are you sure you want to soft-delete faculty ${fac.fullName}?`,
-                                )
-                              ) {
-                                deleteFacultyMutation.mutate(fac._id);
-                              }
-                            }}
-                            className="p-1 rounded text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition cursor-pointer"
-                            title="Delete Faculty"
+                            onClick={() => setViewingLifecycleStaff(fac)}
+                            className="px-2 py-1 rounded border text-xs hover:bg-accent transition font-medium cursor-pointer"
+                            title="View Employee Lifecycle & Promotion History"
                           >
-                            <Trash2 className="size-4" />
+                            Lifecycle Log
                           </button>
+                          {['Principal', 'Vice Principal', 'System Administrator'].includes(fac.designation) ? (
+                            <span
+                              className="px-2 py-1 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[10px] font-bold"
+                              title="System-Critical User: Permanent deletion forbidden. Use Archive or Replace instead."
+                            >
+                              Archive Only
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                if (
+                                  confirm(
+                                    `Are you sure you want to soft-delete and archive staff member ${fac.fullName}?`,
+                                  )
+                                ) {
+                                  deleteFacultyMutation.mutate(fac._id);
+                                }
+                              }}
+                              className="p-1 rounded text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition cursor-pointer"
+                              title="Soft-Delete & Archive"
+                            >
+                              <Trash2 className="size-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -521,21 +635,273 @@ export function AdminFaculty() {
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground">
-                    Designation *
+                    Employee Category *
+                  </label>
+                  <select
+                    value={employeeCategory}
+                    onChange={(e) => {
+                      const cat = e.target.value as 'Teaching' | 'Non-Teaching';
+                      setEmployeeCategory(cat);
+                      setDesignation(cat === 'Teaching' ? 'Assistant Professor' : 'Lab Assistant');
+                    }}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="Teaching">Teaching Staff</option>
+                    <option value="Non-Teaching">Non-Teaching Support Staff</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Employee Designation *
                   </label>
                   <select
                     value={designation}
-                    onChange={(e) => setDesignation(e.target.value)}
-                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setDesignation(val);
+                      if (val === 'Dean') setFacultyType('Dean');
+                      else if (val === 'HOD') setFacultyType('HOD');
+                      else setFacultyType('Faculty');
+                    }}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer font-semibold text-foreground"
                   >
-                    <option value="Professor">Professor</option>
-                    <option value="Associate Professor">Associate Professor</option>
-                    <option value="Assistant Professor">Assistant Professor</option>
-                    <option value="Lecturer">Lecturer</option>
-                    <option value="Lab Instructor">Lab Instructor</option>
-                    <option value="HOD">HOD</option>
+                    {employeeCategory === 'Teaching' ? (
+                      <>
+                        <option value="Principal">Principal</option>
+                        <option value="Vice Principal">Vice Principal</option>
+                        <option value="Dean">Dean</option>
+                        <option value="HOD">HOD</option>
+                        <option value="Professor">Professor</option>
+                        <option value="Associate Professor">Associate Professor</option>
+                        <option value="Assistant Professor">Assistant Professor</option>
+                        <option value="Guest Faculty">Guest Faculty</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Lab Assistant">Lab Assistant</option>
+                        <option value="Librarian">Librarian</option>
+                        <option value="Hostel Warden">Hostel Warden</option>
+                        <option value="Transport Manager">Transport Manager</option>
+                        <option value="Office Staff">Office Staff</option>
+                        <option value="Accounts">Accounts Staff</option>
+                        <option value="Exam Cell">Exam Cell Officer</option>
+                        <option value="System Administrator">System Administrator</option>
+                      </>
+                    )}
                   </select>
                 </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Employee Status *
+                  </label>
+                  <select
+                    value={employeeStatus}
+                    onChange={(e) => setEmployeeStatus(e.target.value as any)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="On Leave">On Leave</option>
+                    <option value="Suspended">Suspended</option>
+                    <option value="Resigned">Resigned</option>
+                    <option value="Retired">Retired</option>
+                    <option value="Relieved">Relieved</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Reports To (Reporting Manager)
+                  </label>
+                  <select
+                    value={reportsToUserId}
+                    onChange={(e) => setReportsToUserId(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="">Select Reporting Manager</option>
+                    {facultyList.map((fac: any) => (
+                      <option key={fac._id || fac.id} value={fac._id || fac.id}>
+                        {fac.fullName} ({fac.designation})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Permission Profile Template
+                  </label>
+                  <select
+                    value={permissionProfile}
+                    onChange={(e) => setPermissionProfile(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 rounded-lg border bg-background text-sm focus:border-primary outline-none cursor-pointer"
+                  >
+                    {PERMISSION_PROFILES.map((profile) => (
+                      <option key={profile.id} value={profile.name}>
+                        {profile.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2 pt-5">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-foreground cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isActing}
+                      onChange={(e) => setIsActing(e.target.checked)}
+                      className="rounded border-primary text-primary focus:ring-primary size-4"
+                    />
+                    <span>Acting / In-Charge Position</span>
+                  </label>
+                </div>
+
+                <div className="sm:col-span-2 grid sm:grid-cols-2 gap-3 p-3 border rounded-xl bg-accent/20">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Secondary Departments (Cross-Teaching)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. IT, AIML (comma separated)"
+                      value={secondaryDepartments.join(', ')}
+                      onChange={(e) =>
+                        setSecondaryDepartments(
+                          e.target.value.split(',').map((s) => s.trim()),
+                        )
+                      }
+                      className="w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground">
+                      Faculty Advisor Sections
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 2nd Year CSE-A, 2nd Year CSE-B"
+                      value={advisorSections.join(', ')}
+                      onChange={(e) =>
+                        setAdvisorSections(
+                          e.target.value.split(',').map((s) => s.trim()),
+                        )
+                      }
+                      className="w-full mt-1 px-3 py-1.5 rounded-lg border bg-background text-xs"
+                    />
+                  </div>
+                </div>
+
+                {employeeStatus === 'On Leave' && (
+                  <div className="sm:col-span-2 p-3 border rounded-xl bg-amber-500/10 space-y-2">
+                    <label className="text-xs font-bold text-amber-700 dark:text-amber-400">
+                      Leave Delegation & Workflow Rerouting
+                    </label>
+                    <div className="grid sm:grid-cols-3 gap-2">
+                      <input
+                        type="text"
+                        placeholder="Delegated To (Name)"
+                        value={delegatedToName}
+                        onChange={(e) => setDelegatedToName(e.target.value)}
+                        className="px-3 py-1.5 rounded-lg border bg-background text-xs"
+                      />
+                      <input
+                        type="date"
+                        value={delegationStartDate}
+                        onChange={(e) => setDelegationStartDate(e.target.value)}
+                        className="px-3 py-1.5 rounded-lg border bg-background text-xs"
+                      />
+                      <input
+                        type="date"
+                        value={delegationEndDate}
+                        onChange={(e) => setDelegationEndDate(e.target.value)}
+                        className="px-3 py-1.5 rounded-lg border bg-background text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {designation === 'Dean' && (
+                  <div className="sm:col-span-2 p-3 border rounded-xl bg-blue-500/5 space-y-2">
+                    <label className="text-xs font-bold text-primary flex items-center gap-1.5">
+                      <span>Dean Domain Responsibilities *</span>
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {[
+                        'Academics',
+                        'Examination',
+                        'Student Affairs',
+                        'Research',
+                        'IQAC',
+                        'IMA',
+                        'Training & Placements',
+                      ].map((resp) => (
+                        <label
+                          key={resp}
+                          className="flex items-center gap-2 text-xs font-medium cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={deanResponsibilities.includes(resp)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setDeanResponsibilities([...deanResponsibilities, resp]);
+                              } else {
+                                setDeanResponsibilities(
+                                  deanResponsibilities.filter((r) => r !== resp),
+                                );
+                              }
+                            }}
+                            className="rounded border-primary text-primary focus:ring-primary"
+                          />
+                          <span>{resp}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {designation === 'HOD' && (
+                  <div className="sm:col-span-2 p-3 border rounded-xl bg-indigo-500/5 space-y-2">
+                    <label className="text-xs font-bold text-indigo flex items-center gap-1.5">
+                      <span>HOD Scoping (Assigned Programs & Semesters)</span>
+                    </label>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <span className="text-[11px] text-muted-foreground block mb-1">
+                          Assigned Programs
+                        </span>
+                        <input
+                          type="text"
+                          value={assignedPrograms.join(', ')}
+                          onChange={(e) =>
+                            setAssignedPrograms(
+                              e.target.value.split(',').map((p) => p.trim()),
+                            )
+                          }
+                          placeholder="e.g. B.Tech CSE, M.Tech CSE"
+                          className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-[11px] text-muted-foreground block mb-1">
+                          Assigned Semesters
+                        </span>
+                        <input
+                          type="text"
+                          value={assignedSemesters.join(', ')}
+                          onChange={(e) =>
+                            setAssignedSemesters(
+                              e.target.value.split(',').map((s) => s.trim()),
+                            )
+                          }
+                          placeholder="e.g. Sem 1, Sem 3, Sem 5"
+                          className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground">
                     Experience (Years)
@@ -600,6 +966,60 @@ export function AdminFaculty() {
           )}
         </Card>
       </div>
+
+      {viewingLifecycleStaff && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-background border rounded-xl max-w-lg w-full p-5 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div>
+                <h3 className="font-bold text-lg text-foreground">
+                  Employee Lifecycle & Promotion History
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {viewingLifecycleStaff.fullName} ({viewingLifecycleStaff.employeeId})
+                </p>
+              </div>
+              <button
+                onClick={() => setViewingLifecycleStaff(null)}
+                className="text-xs font-semibold text-muted-foreground hover:text-foreground px-2 py-1 rounded border"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+              <div className="p-3 rounded-lg bg-accent/20 text-xs space-y-1">
+                <div className="font-semibold text-foreground">Current Designation: {viewingLifecycleStaff.designation}</div>
+                <div>Status: <Badge tone="info">{viewingLifecycleStaff.employeeStatus || 'Active'}</Badge></div>
+                <div>Permission Profile: <span className="font-medium text-primary">{viewingLifecycleStaff.permissionProfile || 'Faculty Template'}</span></div>
+                {viewingLifecycleStaff.reportsTo && (
+                  <div>Reports To: <span className="font-semibold text-foreground">{viewingLifecycleStaff.reportsTo.name} ({viewingLifecycleStaff.reportsTo.designation})</span></div>
+                )}
+              </div>
+
+              <div className="text-xs font-bold text-muted-foreground pt-2">Lifecycle History Trail</div>
+              {Array.isArray(viewingLifecycleStaff.lifecycleHistory) && viewingLifecycleStaff.lifecycleHistory.length > 0 ? (
+                <div className="space-y-2">
+                  {viewingLifecycleStaff.lifecycleHistory.map((item: any, idx: number) => (
+                    <div key={idx} className="p-3 border rounded-lg bg-background space-y-1 text-xs">
+                      <div className="flex items-center justify-between font-semibold">
+                        <span>{item.newStatus || 'Active'} - {item.newDesignation || viewingLifecycleStaff.designation}</span>
+                        <span className="text-[10px] text-muted-foreground">{new Date(item.date).toLocaleDateString()}</span>
+                      </div>
+                      <div className="text-muted-foreground">Reason: {item.reason || 'Status update'}</div>
+                      <div className="text-[10px] text-muted-foreground">Recorded By: {item.changedBy || 'System Admin'}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground text-center py-4">
+                  No historical lifecycle changes recorded yet.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

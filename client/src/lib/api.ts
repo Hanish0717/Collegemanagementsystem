@@ -55,26 +55,26 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     if (err.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        const currentToken = localStorage.getItem('cms_token');
-        // Do NOT wipe faculty synthetic tokens — they are validated server-side
-        // and a 401 here means the server didn't recognise the empId.
-        // For real JWT sessions just redirect.
-        const isFacultyToken = currentToken && currentToken.startsWith('faculty_token_');
-        if (!isFacultyToken) {
-          localStorage.removeItem('cms_token');
-          localStorage.removeItem('cms_user');
-          localStorage.removeItem('campusly.role');
-          toast.error('Session expired. Redirecting to login.');
-          try {
-            const { routerInstance } = await import('../router');
-            if (routerInstance) {
-              routerInstance.navigate({ to: '/login', replace: true });
-            } else {
+      const isLoginRequest = err.config?.url?.includes('/auth/login') || err.config?.url?.includes('/login');
+      if (!isLoginRequest) {
+        if (typeof window !== 'undefined') {
+          const currentToken = localStorage.getItem('cms_token');
+          const isFacultyToken = currentToken && currentToken.startsWith('faculty_token_');
+          if (!isFacultyToken) {
+            localStorage.removeItem('cms_token');
+            localStorage.removeItem('cms_user');
+            localStorage.removeItem('campusly.role');
+            toast.error('Session expired. Redirecting to login.');
+            try {
+              const { routerInstance } = await import('../router');
+              if (routerInstance) {
+                routerInstance.navigate({ to: '/login', replace: true });
+              } else {
+                window.location.href = '/login';
+              }
+            } catch (e) {
               window.location.href = '/login';
             }
-          } catch (e) {
-            window.location.href = '/login';
           }
         }
       }

@@ -3,23 +3,24 @@ import type { RoleId } from '../lib/roles';
 import type { AuthUser, LoginPayload, LoginResponse } from '@/types/auth';
 
 const demoCredentialsByRole: Record<RoleId, { email: string; password: string }> = {
-  super_admin: { email: "superadmin@college.com", password: "password123" },
-  admin: { email: "admin@college.com", password: "password123" },
-  faculty: { email: "faculty@college.com", password: "password123" },
-  student: { email: "student@college.com", password: "password123" },
-  parent: { email: "parent@college.com", password: "password123" },
-  librarian: { email: "librarian@college.com", password: "password123" },
-  placement: { email: "placement@college.com", password: "password123" },
-  warden: { email: "warden@college.com", password: "password123" },
-  transport: { email: "transport@college.com", password: "password123" },
-  principal: { email: "principal@college.com", password: "password123" },
-  dean: { email: "dean@college.com", password: "password123" },
-  hod: { email: "hod@college.com", password: "password123" },
-  exam_cell: { email: "examcell@college.com", password: "password123" },
-  accounts: { email: "accounts@college.com", password: "password123" },
-  lms: { email: "lms@college.com", password: "password123" },
-  alumni_coordinator: { email: "alumni.coordinator@college.com", password: "password123" },
-  alumni: { email: "alumni@college.com", password: "password123" },
+  super_admin: { email: 'superadmin@college.com', password: 'password123' },
+  admin: { email: 'admin@college.com', password: 'password123' },
+  faculty: { email: 'faculty@college.com', password: 'password123' },
+  student: { email: 'student@college.com', password: 'password123' },
+  parent: { email: 'parent@college.com', password: 'password123' },
+  librarian: { email: 'librarian@college.com', password: 'password123' },
+  placement: { email: 'placement@college.com', password: 'password123' },
+  warden: { email: 'warden@college.com', password: 'password123' },
+  transport: { email: 'transport@college.com', password: 'password123' },
+  principal: { email: 'principal@college.com', password: 'password123' },
+  vice_principal: { email: 'viceprincipal@college.com', password: 'password123' },
+  dean: { email: 'dean@college.com', password: 'password123' },
+  hod: { email: 'hod@college.com', password: 'password123' },
+  exam_cell: { email: 'examcell@college.com', password: 'password123' },
+  accounts: { email: 'accounts@college.com', password: 'password123' },
+  lms: { email: 'lms@college.com', password: 'password123' },
+  alumni_coordinator: { email: 'alumnicoordinator@college.com', password: 'password123' },
+  alumni: { email: 'alumni@college.com', password: 'password123' },
 };
 
 // ── Role Mapping (backend ↔ frontend) ───────────────────
@@ -37,6 +38,7 @@ const backendRoleToFrontendRole: Record<string, RoleId> = {
   'hostel-warden': 'warden',
   'transport-manager': 'transport',
   principal: 'principal',
+  vice_principal: 'vice_principal',
   dean: 'dean',
   hod: 'hod',
   'exam-cell': 'exam_cell',
@@ -57,12 +59,14 @@ const frontendRoleToBackendRole: Record<RoleId, string> = {
   warden: 'hostel-warden',
   transport: 'transport-manager',
   principal: 'principal',
+  vice_principal: 'vice_principal',
   dean: 'dean',
   hod: 'hod',
   exam_cell: 'exam-cell',
   accounts: 'accounts',
   alumni_coordinator: 'alumni-coordinator',
   alumni: 'alumni',
+  receptionist: 'receptionist',
 };
 
 /** Convert backend role string to frontend RoleId */
@@ -77,27 +81,41 @@ export function toBackendRole(frontendRole: RoleId): string {
 
 // ── Role → Dashboard Route Mapping ──────────────────────
 const roleDashboardMap: Record<string, string> = {
-  "super-admin": "/dashboard/super-admin",
-  admin: "/dashboard/admin",
-  faculty: "/faculty/dashboard",
-  lms: "/dashboard/admin/lms",
-  student: "/dashboard/student",
-  parent: "/dashboard/parent",
-  librarian: "/dashboard/librarian",
-  "placement-officer": "/dashboard/placement",
-  "hostel-warden": "/dashboard/hostel",
-  "transport-manager": "/dashboard/transport",
-  principal: "/dashboard",
-  dean: "/dashboard",
-  hod: "/hod",
-  "exam-cell": "/dashboard",
-  accounts: "/dashboard",
-  "alumni-coordinator": "/alumni/dashboard",
-  alumni: "/alumni/dashboard",
+  'super-admin': '/dashboard/super-admin',
+  admin: '/dashboard',
+  faculty: '/dashboard/faculty',
+  lms: '/dashboard/admin/lms',
+  student: '/dashboard/student',
+  parent: '/dashboard/parent',
+  librarian: '/dashboard/librarian',
+  'placement-officer': '/dashboard/placement',
+  'hostel-warden': '/dashboard/hostel',
+  'transport-manager': '/dashboard/transport',
+  principal: '/dashboard/principal',
+  vice_principal: '/dashboard/vice-principal',
+  dean: '/dashboard/dean',
+  hod: '/dashboard',
+  'exam-cell': '/dashboard',
+  accounts: '/dashboard/accountant',
+  receptionist: '/dashboard/receptionist',
+  'alumni-coordinator': '/dashboard/admin/alumni',
+  alumni: '/dashboard/admin/alumni',
 };
 
 /** Get the correct dashboard path for a backend role */
-export function getDashboardForRole(backendRole: string): string {
+export function getDashboardForRole(backendRole: string, emailOrDomain?: string): string {
+  if (backendRole === 'dean') {
+    let domain = 'Student';
+    if (emailOrDomain) {
+      const lower = emailOrDomain.toLowerCase();
+      if (lower.includes('dean-e') || lower === 'examination') domain = 'Examination';
+      else if (lower.includes('dean-a') || lower === 'academic') domain = 'Academic';
+      else if (lower.includes('dean-im') || lower === 'ima') domain = 'IMA';
+      else if (lower.includes('dean-iq') || lower === 'iqac') domain = 'IQAC';
+      else if (lower.includes('dean-s') || lower === 'student') domain = 'Student';
+    }
+    return `/dashboard/dean?module=${domain}`;
+  }
   return roleDashboardMap[backendRole] ?? '/dashboard';
 }
 

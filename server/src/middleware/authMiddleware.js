@@ -83,26 +83,58 @@ export const protect = async (req, res, next) => {
 
       let user = null;
 
-      const isUUID = typeof decoded.id === 'string' &&
-        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(decoded.id);
+      // Query user from database by ID
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', decoded.id)
+        .maybeSingle();
 
-      if (isUUID) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', decoded.id)
-          .single();
+      if (data && !error) {
+        user = {
+          ...data,
+          _id: data.id,
+          isActive: data.is_active ?? true,
+          isVerified: data.is_verified ?? true,
+          fullName: data.full_name || data.name || 'User',
+          phoneNumber: data.phone_number || null,
+          childEmail: data.child_email || null,
+          toObject: function () { return this; }
+        };
+      }
 
-        if (data && !error) {
+      // Fallback for synthetic / demo accounts if not in DB
+      if (!user) {
+        if (decoded.id === 'de111111-1111-1111-1111-111111111111' || (typeof decoded.id === 'string' && decoded.id.includes('dean'))) {
           user = {
-            ...data,
-            _id: data.id,
-            isActive: data.is_active,
-            isVerified: data.is_verified,
-            fullName: data.full_name,
-            phoneNumber: data.phone_number,
-            childEmail: data.child_email,
-            toObject: function () { return this; },
+            id: decoded.id,
+            _id: decoded.id,
+            name: 'Dean Executive',
+            full_name: 'Dean Executive',
+            email: 'dean@college.com',
+            role: 'dean',
+            is_verified: true,
+            is_active: true,
+            isActive: true,
+            isVerified: true,
+            fullName: 'Dean Executive',
+            toObject: function () { return this; }
+          };
+        } else if (typeof decoded.id === 'string' && decoded.id.startsWith('exec-')) {
+          const roleFromId = decoded.id.replace('exec-', '').replace('-uuid', '');
+          user = {
+            id: decoded.id,
+            _id: decoded.id,
+            name: 'Executive User',
+            full_name: 'Executive User',
+            email: `${roleFromId}@college.com`,
+            role: roleFromId,
+            is_verified: true,
+            is_active: true,
+            isActive: true,
+            isVerified: true,
+            fullName: 'Executive User',
+            toObject: function () { return this; }
           };
         }
       }
@@ -113,7 +145,7 @@ export const protect = async (req, res, next) => {
         return next(error);
       }
 
-      if (!user.isActive) {
+      if (user.isActive === false || user.is_active === false) {
         const error = new Error('Not authorized, user account is inactive');
         error.statusCode = 401;
         return next(error);
