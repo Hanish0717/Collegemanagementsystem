@@ -144,15 +144,14 @@ export function LibrarianIdCards() {
 
   // Debounced search for student profile
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setSearchResults([]);
-      return;
-    }
     const delay = setTimeout(async () => {
       setIsSearching(true);
       try {
         const data = await searchIDCardStudents(searchQuery);
         setSearchResults(data);
+        if (data.length > 0 && !selectedStudentId) {
+          setSelectedStudentId(data[0].id);
+        }
       } catch (error) {
         toast.error('Error searching students');
       } finally {
