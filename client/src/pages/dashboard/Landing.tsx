@@ -173,7 +173,7 @@ export function Landing() {
             </p>
             <div className="mt-9 flex items-center justify-center gap-3">
               <Link
-                to="/dashboard"
+                to="/login"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-primary text-primary-foreground font-medium glow-primary animate-pulse-glow"
               >
                 Explore Campus ERP <ArrowRight className="size-4" />

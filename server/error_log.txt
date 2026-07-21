@@ -40,141 +40,225 @@
 [2026-07-18T11:39:47.247Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T11:50:30.824Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
 [2026-07-18T12:05:52.366Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T06:37:46.096Z] GET /api/student-module/dashboard - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
-[2026-07-21T06:37:46.245Z] GET /api/student-module/results - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
-[2026-07-21T06:46:54.880Z] GET /api/library/report - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
-[2026-07-21T06:46:54.926Z] GET /api/library/issued - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
-[2026-07-21T06:47:21.959Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"librarian@123","password":"password123"}
-[2026-07-21T06:47:30.530Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"librarian@123","password":"password123"}
-[2026-07-21T06:49:43.527Z] GET /favicon.ico - Status: 404 - Client Error: Not Found - /favicon.ico - Body: {}
-[2026-07-21T06:51:14.157Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-21T06:51:15.168Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
-[2026-07-21T09:49:30.621Z] GET /api/library/books?limit=1000 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T09:49:30.660Z] GET /api/library/issued - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T09:49:30.708Z] GET /api/library/report - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T09:49:30.740Z] GET /api/students?limit=1000 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T10:02:47.410Z] GET /api/library/id-cards/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T10:02:48.262Z] GET /api/library/id-cards/payments/history - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T10:02:48.648Z] GET /api/library/id-cards/history - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T10:06:21.648Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_m2am9sw2f_mruhns8f"
-Stack: error: invalid input syntax for type uuid: "idc_m2am9sw2f_mruhns8f"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+[2026-07-20T16:31:31.384Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:32.418Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:32.810Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:33.820Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:34.426Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:31:38.445Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:49.610Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:50.619Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:52.636Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:34:56.654Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:57:32.838Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:57:33.864Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-20T16:57:35.880Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'hod' is not authorized to access this resource - Body: {}
+[2026-07-21T04:52:27.264Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod.cse@college.com","password":"password123"}
+[2026-07-21T04:52:35.588Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod.cse@college.com","password":"password123"}
+[2026-07-21T05:57:23.215Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-21T06:17:50.487Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T06:19:43.019Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T06:19:43.027Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T06:32:26.024Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:32:27.774Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:32:29.732Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:32:30.792Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:34:07.546Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:36:34.212Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:36:35.557Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:16.256Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:16.260Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:16.266Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:16.270Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:21.939Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:21.944Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:21.950Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:21.957Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:25.787Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:42:25.792Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:06.622Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:06.628Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:45.197Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:45.203Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:45.213Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:45.221Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:49.636Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:49.661Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:49.686Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:47:49.706Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:48:25.207Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:48:25.211Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:48:25.216Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:48:25.220Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:50:13.264Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:50:13.268Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:50:13.275Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:50:13.280Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:29.864Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:31.899Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:33.519Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:33.684Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:33.843Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:33.983Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:34.143Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:56:34.365Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T06:58:51.240Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:23.010Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:26.809Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:27.754Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:34.227Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:34.890Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:35.044Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:35.234Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:04:35.461Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:07:48.690Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:07:49.994Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:07:50.829Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:07:50.993Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:07:51.163Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:07:51.298Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:07:51.422Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:48.545Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:48.555Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:48.567Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:48.575Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:56.833Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:56.839Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:56.846Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:11:56.852Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:12:01.933Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:12:01.943Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:12:08.122Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:12:08.126Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:12:08.135Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:12:08.141Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:25:11.468Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:25:27.820Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:25:55.960Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:25:55.982Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:25:55.988Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:25:55.994Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:26:04.266Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:26:04.276Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:26:04.284Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:26:04.293Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T07:29:43.648Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:57:35.890Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:01.655Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:01.665Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:01.674Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:01.686Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:08.794Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:08.809Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:08.821Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:08.834Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:17.928Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T08:59:17.935Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:07:14.569Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:07:23.290Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:07:23.316Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:07:23.335Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:07:23.362Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:08:45.177Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:09:26.061Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:24:30.817Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:24:37.440Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:24:37.447Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:24:37.455Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:24:37.465Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:29:51.918Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:29:51.928Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:29:51.936Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:29:51.949Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:30:00.663Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:30:00.673Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:30:00.681Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:30:00.691Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:46.477Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:46.505Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:46.516Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:46.525Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:56.258Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:56.265Z] GET /api/attendance/class?department=CSE&semester=5&section=A&subject=Data+Structures&date=2026-07-21&period=1&time=09:00+AM - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:56.283Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:33:56.292Z] GET /api/academic/subjects?department=CSE - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-21T09:48:36.264Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T09:48:36.284Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T09:56:57.919Z] GET /api/students?search=CS100001 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T09:57:01.342Z] GET /api/students?search=CS100001 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T09:57:22.074Z] POST /api/faculty-module/materials - Status: 500 - Error: Cannot read properties of null (reading 'id')
+Stack: TypeError: Cannot read properties of null (reading 'id')
+    at createFacultyMaterial (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/facultyModuleController.js:405:21)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+Body: {"title":"robert","subject":"Data Structures","type":"PDF","fileUrl":"https://example.com/materials/doc-1784627842003.pdf","department":"CSE","year":3,"semester":5}
 
-[2026-07-21T10:06:23.143Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_syibdwoh2_mruhntd0"
-Stack: error: invalid input syntax for type uuid: "idc_syibdwoh2_mruhntd0"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+[2026-07-21T09:57:33.424Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T09:57:33.429Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:14:00.912Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:01.963Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:04.001Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:08.039Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:14.948Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:14:14.955Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:14:17.830Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:18.861Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:20.895Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:25.249Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:26.280Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:27.926Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:14:27.931Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:14:28.727Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:14:31.040Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:14:31.048Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:15:23.916Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:15:24.957Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:15:27.005Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:15:31.049Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:15:42.249Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:15:43.296Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T10:15:49.295Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T10:15:49.303Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:17:34.085Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:17:35.114Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:17:37.153Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:17:41.219Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:17:53.594Z] GET /api/faculty/notifications - Status: 500 - Error: invalid input syntax for type uuid: "FACCSE1"
+Stack: error: invalid input syntax for type uuid: "FACCSE1"
+    at C:\Users\lokesh\OneDrive\Desktop\cms1\server\node_modules\pg-pool\index.js:45:11
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+    at async PostgresQueryBuilder.execute (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/config/supabase.js:977:23)
+    at async file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/routes/facultyRoutes.js:118:44
+Body: {}
 
-[2026-07-21T10:06:23.506Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_xc6d2uwp8_mruhnto4"
-Stack: error: invalid input syntax for type uuid: "idc_xc6d2uwp8_mruhnto4"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
+[2026-07-21T12:17:54.489Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:17:55.521Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:17:57.573Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:18:01.610Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:34:51.846Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:34:52.884Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:35:50.026Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-21T12:42:10.137Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:42:12.577Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:42:17.734Z] GET /api/faculty/notifications - Status: 500 - Error: invalid input syntax for type uuid: "FACCSE1"
+Stack: error: invalid input syntax for type uuid: "FACCSE1"
+    at C:\Users\lokesh\OneDrive\Desktop\cms1\server\node_modules\pg-pool\index.js:45:11
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
+    at async PostgresQueryBuilder.execute (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/config/supabase.js:977:23)
+    at async file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/routes/facultyRoutes.js:118:44
+Body: {}
 
-[2026-07-21T10:06:23.827Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_3urohlq7h_mruhntwz"
-Stack: error: invalid input syntax for type uuid: "idc_3urohlq7h_mruhntwz"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:06:24.161Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_04o30mm84_mruhnu6k"
-Stack: error: invalid input syntax for type uuid: "idc_04o30mm84_mruhnu6k"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:49.185Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_9h28cc0n4_mruia8j5"
-Stack: error: invalid input syntax for type uuid: "idc_9h28cc0n4_mruia8j5"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:50.233Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_hygyituoi_mruia9bt"
-Stack: error: invalid input syntax for type uuid: "idc_hygyituoi_mruia9bt"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:50.882Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_1ruxze6sq_mruia9tc"
-Stack: error: invalid input syntax for type uuid: "idc_1ruxze6sq_mruia9tc"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:51.068Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_urnp88050_mruia9zb"
-Stack: error: invalid input syntax for type uuid: "idc_urnp88050_mruia9zb"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:51.217Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_3jmqbojd9_mruiaa3v"
-Stack: error: invalid input syntax for type uuid: "idc_3jmqbojd9_mruiaa3v"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:51.431Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_fs57tay46_mruiaa9i"
-Stack: error: invalid input syntax for type uuid: "idc_fs57tay46_mruiaa9i"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:51.678Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_nx54ib84r_mruiaagg"
-Stack: error: invalid input syntax for type uuid: "idc_nx54ib84r_mruiaagg"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T10:23:51.999Z] POST /api/library/id-cards/requests - Status: 500 - Error: invalid input syntax for type uuid: "idc_60ti4awrf_mruiaapa"
-Stack: error: invalid input syntax for type uuid: "idc_60ti4awrf_mruiaapa"
-    at D:\ALL FILES\MINI PROJECT\collage_data\Collegemanagementsystem\server\node_modules\pg-pool\index.js:45:11
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at async PostgresQueryBuilder.execute (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1046:23)
-    at async PostgresQueryBuilder.single (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:1094:31)
-    at async createIdCardRequest (file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/controllers/idCardController.js:313:46)
-Body: {"studentId":"a902e21f-63cd-4a67-936f-211488b74000","requestType":"New","reason":"Initial card issuance"}
-
-[2026-07-21T12:08:08.050Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-21T12:09:09.644Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}
-[2026-07-21T12:09:10.820Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}
-[2026-07-21T12:09:11.539Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}
-[2026-07-21T12:09:12.208Z] POST /api/library/id-cards/requests - Status: 400 - Client Error: A pending ID card request already exists for this student - Body: {"studentId":"s1111111-1111-1111-1111-111111111111","requestType":"New","reason":"Initial card issuance"}
+[2026-07-21T12:42:18.607Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:42:18.614Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:42:46.870Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:42:46.877Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:43:06.435Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:43:06.461Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:44:06.355Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:44:12.630Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:44:13.795Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:44:13.801Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:44:21.616Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:44:21.620Z] GET /api/students?department=CSE&limit=500 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:49:20.134Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:49:30.667Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-21T12:49:30.673Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}

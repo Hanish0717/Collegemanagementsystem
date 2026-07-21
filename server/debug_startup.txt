@@ -61,136 +61,163 @@
 [2026-07-18T12:13:42.368Z] Supabase.js module loading starting
 [2026-07-18T12:13:42.375Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
 [2026-07-18T12:13:42.538Z] Supabase.js module loading completed successfully!
-[2026-07-21T06:35:52.494Z] Supabase.js module loading starting
-[2026-07-21T06:35:52.500Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T06:35:52.500Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T06:35:53.470Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T06:35:53.477Z] Supabase.js module loading completed successfully!
-[2026-07-21T06:36:52.936Z] Supabase.js module loading starting
-[2026-07-21T06:36:52.940Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T06:36:52.941Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T06:36:53.550Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T06:36:53.554Z] Supabase.js module loading completed successfully!
-[2026-07-21T06:43:34.561Z] Supabase.js module loading starting
-[2026-07-21T06:43:34.564Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T06:43:34.567Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T06:43:35.347Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T06:43:35.348Z] Supabase.js module loading completed successfully!
-[2026-07-21T06:43:58.529Z] Supabase.js module loading starting
-[2026-07-21T06:43:58.532Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T06:43:58.533Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T06:43:59.416Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T06:43:59.420Z] Supabase.js module loading completed successfully!
-[2026-07-21T06:44:27.427Z] Supabase.js module loading starting
-[2026-07-21T06:44:27.432Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T06:44:27.434Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T06:44:28.097Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T06:44:28.102Z] Supabase.js module loading completed successfully!
-[2026-07-21T07:01:37.918Z] Supabase.js module loading starting
-[2026-07-21T07:01:37.962Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T07:01:37.963Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T07:02:07.649Z] TCP check error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout), stack: Error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout)
-    at file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:82:13
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-[2026-07-21T07:02:07.815Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:14:22.806Z] Supabase.js module loading starting
-[2026-07-21T09:14:22.814Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:14:22.815Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:15:13.509Z] TCP check error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout), stack: Error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout)
-    at file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:82:13
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-[2026-07-21T09:15:13.663Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:39:29.156Z] Supabase.js module loading starting
-[2026-07-21T09:39:29.234Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:39:29.235Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:39:30.648Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:39:30.652Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:39:38.806Z] Supabase.js module loading starting
-[2026-07-21T09:39:38.811Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:39:38.812Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:39:40.498Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:39:40.503Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:39:52.414Z] Supabase.js module loading starting
-[2026-07-21T09:39:52.418Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:39:52.419Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:39:53.509Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:39:53.518Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:39:57.021Z] Supabase.js module loading starting
-[2026-07-21T09:39:57.025Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:39:57.026Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:39:58.041Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:39:58.045Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:40:05.065Z] Supabase.js module loading starting
-[2026-07-21T09:40:05.074Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:40:05.075Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:40:06.426Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:40:06.431Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:40:10.213Z] Supabase.js module loading starting
-[2026-07-21T09:40:10.217Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:40:10.217Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:40:11.013Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:40:11.023Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:42:07.214Z] Supabase.js module loading starting
-[2026-07-21T09:42:07.220Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:42:07.221Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:42:08.700Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:42:08.706Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:44:13.894Z] Supabase.js module loading starting
-[2026-07-21T09:44:13.899Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:44:13.900Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:44:15.880Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:44:15.886Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:44:21.837Z] Supabase.js module loading starting
-[2026-07-21T09:44:21.842Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:44:21.844Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:44:22.989Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:44:22.993Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:44:29.504Z] Supabase.js module loading starting
-[2026-07-21T09:44:29.508Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:44:29.509Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:44:30.472Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:44:30.500Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:45:00.851Z] Supabase.js module loading starting
-[2026-07-21T09:45:00.855Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:45:00.856Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:45:02.224Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:45:02.234Z] Supabase.js module loading completed successfully!
-[2026-07-21T09:45:06.555Z] Supabase.js module loading starting
-[2026-07-21T09:45:06.564Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T09:45:06.565Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T09:45:07.918Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T09:45:07.923Z] Supabase.js module loading completed successfully!
-[2026-07-21T10:09:21.687Z] Supabase.js module loading starting
-[2026-07-21T10:09:21.692Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T10:09:21.693Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T10:09:24.000Z] TCP check error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout), stack: Error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout)
-    at file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:82:13
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-[2026-07-21T10:09:24.353Z] Supabase.js module loading completed successfully!
-[2026-07-21T10:09:29.447Z] Supabase.js module loading starting
-[2026-07-21T10:09:29.452Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T10:09:29.470Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T10:09:31.081Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T10:09:31.089Z] Supabase.js module loading completed successfully!
-[2026-07-21T10:09:39.317Z] Supabase.js module loading starting
-[2026-07-21T10:09:39.324Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T10:09:39.341Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T10:09:41.176Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T10:09:41.185Z] Supabase.js module loading completed successfully!
-[2026-07-21T10:09:47.001Z] Supabase.js module loading starting
-[2026-07-21T10:09:47.006Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T10:09:47.007Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T10:09:48.865Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T10:09:48.872Z] Supabase.js module loading completed successfully!
-[2026-07-21T10:14:53.485Z] Supabase.js module loading starting
-[2026-07-21T10:14:53.490Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T10:14:53.491Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T10:14:54.883Z] TCP check succeeded for host: 127.0.0.1:5433
-[2026-07-21T10:14:54.891Z] Supabase.js module loading completed successfully!
-[2026-07-21T12:06:57.737Z] Supabase.js module loading starting
-[2026-07-21T12:06:57.743Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
-[2026-07-21T12:06:57.743Z] Starting database TCP check for host: 127.0.0.1, port: 5433
-[2026-07-21T12:07:22.971Z] TCP check error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout), stack: Error: TCP port 5433 on 127.0.0.1 is unreachable (ECONNREFUSED or timeout)
-    at file:///D:/ALL%20FILES/MINI%20PROJECT/collage_data/Collegemanagementsystem/server/src/config/supabase.js:82:13
-    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
-[2026-07-21T12:07:23.207Z] Supabase.js module loading completed successfully!
+[2026-07-20T16:26:06.300Z] Supabase.js module loading starting
+[2026-07-20T16:26:06.308Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T16:26:06.473Z] Supabase.js module loading completed successfully!
+[2026-07-20T16:28:37.251Z] Supabase.js module loading starting
+[2026-07-20T16:28:37.253Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T16:28:37.326Z] Supabase.js module loading completed successfully!
+[2026-07-20T17:48:00.549Z] Supabase.js module loading starting
+[2026-07-20T17:48:00.556Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T17:48:00.721Z] Supabase.js module loading completed successfully!
+[2026-07-20T17:48:08.770Z] Supabase.js module loading starting
+[2026-07-20T17:48:08.777Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T17:48:08.938Z] Supabase.js module loading completed successfully!
+[2026-07-20T17:48:17.134Z] Supabase.js module loading starting
+[2026-07-20T17:48:17.144Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T17:48:17.320Z] Supabase.js module loading completed successfully!
+[2026-07-20T17:48:59.224Z] Supabase.js module loading starting
+[2026-07-20T17:48:59.230Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T17:48:59.394Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:11:57.511Z] Supabase.js module loading starting
+[2026-07-20T18:11:57.517Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:11:57.695Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:12:11.104Z] Supabase.js module loading starting
+[2026-07-20T18:12:11.112Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:12:11.294Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:14:58.523Z] Supabase.js module loading starting
+[2026-07-20T18:14:58.529Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:14:58.706Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:15:04.492Z] Supabase.js module loading starting
+[2026-07-20T18:15:04.498Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:15:04.685Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:18:47.267Z] Supabase.js module loading starting
+[2026-07-20T18:18:47.274Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:18:47.442Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:18:53.196Z] Supabase.js module loading starting
+[2026-07-20T18:18:53.204Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:18:53.396Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:22:16.412Z] Supabase.js module loading starting
+[2026-07-20T18:22:16.419Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:22:16.601Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:22:22.061Z] Supabase.js module loading starting
+[2026-07-20T18:22:22.069Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:22:22.288Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:26:41.622Z] Supabase.js module loading starting
+[2026-07-20T18:26:41.629Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:26:41.832Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:26:48.192Z] Supabase.js module loading starting
+[2026-07-20T18:26:48.200Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:26:48.368Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:33:14.744Z] Supabase.js module loading starting
+[2026-07-20T18:33:14.752Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:33:14.939Z] Supabase.js module loading completed successfully!
+[2026-07-20T18:33:35.264Z] Supabase.js module loading starting
+[2026-07-20T18:33:35.271Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-20T18:33:35.459Z] Supabase.js module loading completed successfully!
+[2026-07-21T04:35:13.310Z] Supabase.js module loading starting
+[2026-07-21T04:35:13.318Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-21T04:35:13.507Z] Supabase.js module loading completed successfully!
+[2026-07-21T04:54:56.400Z] Supabase.js module loading starting
+[2026-07-21T04:54:56.407Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-21T04:54:56.594Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:05:14.859Z] Supabase.js module loading starting
+[2026-07-21T05:05:14.865Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-21T05:05:15.033Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:08:50.231Z] Supabase.js module loading starting
+[2026-07-21T05:08:50.237Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-21T05:08:50.433Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:09:37.415Z] Supabase.js module loading starting
+[2026-07-21T05:09:37.425Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-21T05:09:37.622Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:12:05.130Z] Supabase.js module loading starting
+[2026-07-21T05:12:05.133Z] databaseUrl: undefined, isMockMode: true
+[2026-07-21T05:12:05.305Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:28:53.478Z] Supabase.js module loading starting
+[2026-07-21T05:28:53.484Z] databaseUrl: your_supabase_postgresql_connection_string_here, isMockMode: true
+[2026-07-21T05:28:53.664Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:48:05.289Z] Supabase.js module loading starting
+[2026-07-21T05:48:05.308Z] databaseUrl: undefined, isMockMode: true
+[2026-07-21T05:48:05.381Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:52:03.264Z] Supabase.js module loading starting
+[2026-07-21T05:52:03.270Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T05:52:03.272Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T05:52:03.276Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:54:19.224Z] Supabase.js module loading starting
+[2026-07-21T05:54:19.228Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T05:54:19.229Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T05:54:19.231Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:55:35.602Z] Supabase.js module loading starting
+[2026-07-21T05:55:35.605Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T05:55:35.606Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T05:55:35.607Z] Supabase.js module loading completed successfully!
+[2026-07-21T05:56:43.121Z] Supabase.js module loading starting
+[2026-07-21T05:56:43.125Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T05:56:43.126Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T05:56:43.128Z] Supabase.js module loading completed successfully!
+[2026-07-21T06:07:25.852Z] Supabase.js module loading starting
+[2026-07-21T06:07:25.855Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T06:07:25.856Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T06:07:25.859Z] Supabase.js module loading completed successfully!
+[2026-07-21T07:10:33.222Z] Supabase.js module loading starting
+[2026-07-21T07:10:33.225Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T07:10:33.231Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T07:10:33.234Z] Supabase.js module loading completed successfully!
+[2026-07-21T07:24:15.664Z] Supabase.js module loading starting
+[2026-07-21T07:24:15.668Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T07:24:15.669Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T07:24:15.671Z] Supabase.js module loading completed successfully!
+[2026-07-21T09:07:59.845Z] Supabase.js module loading starting
+[2026-07-21T09:07:59.850Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T09:07:59.851Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T09:07:59.853Z] Supabase.js module loading completed successfully!
+[2026-07-21T09:32:31.650Z] Supabase.js module loading starting
+[2026-07-21T09:32:31.654Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T09:32:31.655Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T09:32:31.658Z] Supabase.js module loading completed successfully!
+[2026-07-21T09:42:15.646Z] Supabase.js module loading starting
+[2026-07-21T09:42:15.649Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T09:42:15.650Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T09:42:15.654Z] Supabase.js module loading completed successfully!
+[2026-07-21T09:42:56.391Z] Supabase.js module loading starting
+[2026-07-21T09:42:56.394Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T09:42:56.395Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T09:42:56.398Z] Supabase.js module loading completed successfully!
+[2026-07-21T09:46:24.696Z] Supabase.js module loading starting
+[2026-07-21T09:46:24.700Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T09:46:24.701Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T09:46:24.704Z] Supabase.js module loading completed successfully!
+[2026-07-21T10:00:05.890Z] Supabase.js module loading starting
+[2026-07-21T10:00:05.895Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T10:00:05.896Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T10:00:05.898Z] Supabase.js module loading completed successfully!
+[2026-07-21T10:00:41.488Z] Supabase.js module loading starting
+[2026-07-21T10:00:41.491Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T10:00:41.492Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T10:00:41.496Z] Supabase.js module loading completed successfully!
+[2026-07-21T10:01:31.928Z] Supabase.js module loading starting
+[2026-07-21T10:01:31.931Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T10:01:31.932Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T10:01:31.934Z] Supabase.js module loading completed successfully!
+[2026-07-21T10:11:50.558Z] Supabase.js module loading starting
+[2026-07-21T10:11:50.563Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T10:11:50.565Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T10:11:50.569Z] Supabase.js module loading completed successfully!
+[2026-07-21T12:52:32.498Z] Supabase.js module loading starting
+[2026-07-21T12:52:32.502Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T12:52:32.503Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T12:52:32.506Z] Supabase.js module loading completed successfully!
+[2026-07-21T12:54:16.382Z] Supabase.js module loading starting
+[2026-07-21T12:54:16.387Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T12:54:16.388Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T12:54:16.391Z] Supabase.js module loading completed successfully!
+[2026-07-21T13:00:16.987Z] Supabase.js module loading starting
+[2026-07-21T13:00:16.990Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T13:00:16.991Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T13:00:17.474Z] TCP check succeeded for host: 127.0.0.1:5433
+[2026-07-21T13:00:17.477Z] Supabase.js module loading completed successfully!
+[2026-07-21T13:03:19.660Z] Supabase.js module loading starting
+[2026-07-21T13:03:19.663Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-21T13:03:19.664Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-21T13:03:20.182Z] TCP check succeeded for host: 127.0.0.1:5433
+[2026-07-21T13:03:20.185Z] Supabase.js module loading completed successfully!

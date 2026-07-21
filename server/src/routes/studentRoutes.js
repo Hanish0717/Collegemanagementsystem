@@ -19,7 +19,7 @@ router.use(protect);
 
 router
   .route('/')
-  .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager', 'placement-officer', 'hostel-warden'), getStudents)
+  .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager', 'placement-officer', 'hostel-warden', 'faculty'), getStudents)
   .post(authorizeRoles('admin', 'super-admin', 'transport-manager'), validateRequest(validateStudentInput), createStudent);
 
 router
@@ -28,7 +28,7 @@ router
 
 router
   .route('/:id')
-  .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager', 'placement-officer', 'hostel-warden'), getStudentById)
+  .get(authorizeRoles('admin', 'super-admin', 'librarian', 'transport-manager', 'placement-officer', 'hostel-warden', 'faculty'), getStudentById)
   .put(authorizeRoles('admin', 'super-admin', 'transport-manager'), updateStudent)
   .delete(authorizeRoles('admin', 'super-admin', 'transport-manager'), deleteStudent);
 

@@ -79,7 +79,7 @@ export function toBackendRole(frontendRole: RoleId): string {
 const roleDashboardMap: Record<string, string> = {
   "super-admin": "/dashboard/super-admin",
   admin: "/dashboard/admin",
-  faculty: "/dashboard/faculty",
+  faculty: "/faculty/dashboard",
   lms: "/dashboard/admin/lms",
   student: "/dashboard/student",
   parent: "/dashboard/parent",
