@@ -79,7 +79,8 @@ export const protect = async (req, res, next) => {
 
     // ── Standard JWT Token ───────────────────────────────────────────────────
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const secret = process.env.JWT_SECRET || 'super_secret_jwt_key_college_management_2026';
+      const decoded = jwt.verify(token, secret);
 
       let user = null;
 

@@ -290,19 +290,18 @@ function LoginForm() {
 
     try {
       const cleanEmail = email.trim().toLowerCase();
-      let targetFaculty = authenticateFaculty(cleanEmail, password);
+      const isExplicitFacultyRole = roleId === 'faculty';
+      const isFacultyEmailOrId = cleanEmail.includes('faculty') || cleanEmail.startsWith('fac');
+      const isOtherSpecificRole = roleId && roleId !== 'faculty';
 
-      const isFacultyCheck =
-        roleId === 'faculty' ||
-        !!targetFaculty ||
-        cleanEmail.includes('faculty') ||
-        cleanEmail.startsWith('fac');
+      let targetFaculty: FacultyProfile | null = null;
+      if (isExplicitFacultyRole || (isFacultyEmailOrId && !isOtherSpecificRole)) {
+        targetFaculty = authenticateFaculty(cleanEmail, password);
+      }
 
-      if (isFacultyCheck) {
-        if (!targetFaculty) {
-          targetFaculty = ALL_FACULTY_MEMBERS[1]; // Default Kambhampati Harish (FACCSE1)
-        }
+      const isFacultyCheck = isExplicitFacultyRole || (!!targetFaculty && !isOtherSpecificRole);
 
+      if (isFacultyCheck && targetFaculty) {
         setStoredFacultyProfile(targetFaculty);
 
         const facultyUserObj = {

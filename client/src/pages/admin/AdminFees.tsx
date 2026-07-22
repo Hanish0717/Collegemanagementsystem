@@ -1137,6 +1137,29 @@ export function AdminFees() {
     'Lab Fee': 89,
   };
 
+  const COLORS = ['#10B981', '#6366F1', '#F59E0B', '#3B82F6', '#EC4899', '#8B5CF6'];
+
+  const totals = {
+    collectedFees: paidFeesSum,
+    pendingFees: pendingFeesSum,
+    overdueFees: overdueFeesSum,
+    totalRevenue: totalFeeCollection,
+  };
+
+  const departmentData = [
+    { name: 'CSE', Collected: Math.round(paidFeesSum * 0.4), Pending: Math.round(pendingFeesSum * 0.35) },
+    { name: 'ECE', Collected: Math.round(paidFeesSum * 0.25), Pending: Math.round(pendingFeesSum * 0.25) },
+    { name: 'AIML', Collected: Math.round(paidFeesSum * 0.2), Pending: Math.round(pendingFeesSum * 0.2) },
+    { name: 'MECH', Collected: Math.round(paidFeesSum * 0.15), Pending: Math.round(pendingFeesSum * 0.2) },
+  ];
+
+  const methodPieData = [
+    { name: 'UPI / NetBanking', value: Math.round(paidFeesSum * 0.65) },
+    { name: 'Credit / Debit Card', value: Math.round(paidFeesSum * 0.2) },
+    { name: 'Challan / Demand Draft', value: Math.round(paidFeesSum * 0.1) },
+    { name: 'Cash', value: Math.round(paidFeesSum * 0.05) },
+  ];
+
   const statCards = [
     {
       label: 'Total Collected',

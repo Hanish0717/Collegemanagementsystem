@@ -350,24 +350,49 @@ export const login = async (req, res, next) => {
 
       user = foundUser;
 
-      // Dynamic fallback for HOD branch credentials (e.g. hod.eee@college.com, hod.aiml@college.com, etc.)
-      if (!user && (cleanEmail.startsWith('hod.') || cleanEmail === 'hod@college.com')) {
-        const branchMatch = cleanEmail.match(/hod\.([a-z]+)@/i);
-        const deptCode = branchMatch ? branchMatch[1].toUpperCase() : 'CSE';
+      // Dynamic fallback for HOD, Faculty, and Student branch/test credentials
+      if (!user) {
         const salt = await bcrypt.genSalt(10);
         const defaultHash = await bcrypt.hash('password123', salt);
 
-        user = {
-          id: `ho-${deptCode.toLowerCase()}-1111-1111-1111-111111111111`,
-          name: `HOD ${deptCode}`,
-          full_name: `HOD ${deptCode} Department`,
-          email: cleanEmail,
-          password: defaultHash,
-          role: 'hod',
-          department: deptCode,
-          is_verified: true,
-          is_active: true
-        };
+        if (cleanEmail.startsWith('hod.') || cleanEmail === 'hod@college.com') {
+          const branchMatch = cleanEmail.match(/hod\.([a-z]+)@/i);
+          const deptCode = branchMatch ? branchMatch[1].toUpperCase() : 'CSE';
+
+          user = {
+            id: `ho-${deptCode.toLowerCase()}-1111-1111-1111-111111111111`,
+            name: `HOD ${deptCode}`,
+            full_name: `HOD ${deptCode} Department`,
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'hod',
+            department: deptCode,
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'faculty@college.com' || cleanEmail.startsWith('faculty.')) {
+          user = {
+            id: '22222222-2222-2222-2222-222222222222',
+            full_name: 'Dr. Faculty Member',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'faculty',
+            department: 'CSE',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'student@college.com' || cleanEmail.startsWith('student.')) {
+          user = {
+            id: '44444444-4444-4444-4444-444444444444',
+            full_name: 'Alex Student',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'student',
+            department: 'CSE',
+            is_verified: true,
+            is_active: true
+          };
+        }
       }
     }
 

@@ -74,13 +74,13 @@ export function DashboardLayout() {
     const active = getActiveRole();
     if (typeof window !== "undefined") {
       const p = window.location.pathname;
-      if (p.includes("/dashboard/faculty") || p.includes("/faculty")) return ROLES.faculty;
+      if (!p.startsWith("/dashboard/admin") && !p.startsWith("/dashboard/super-admin") && (p.startsWith("/dashboard/faculty") || p.startsWith("/faculty"))) return ROLES.faculty;
     }
     return active;
   });
 
   useEffect(() => {
-    if (path.includes("/dashboard/faculty") || path.includes("/faculty")) {
+    if (!path.startsWith("/dashboard/admin") && !path.startsWith("/dashboard/super-admin") && (path.startsWith("/dashboard/faculty") || path.startsWith("/faculty"))) {
       if (role.id !== "faculty") setRole(ROLES.faculty);
     } else {
       const active = getActiveRole();
@@ -780,7 +780,9 @@ export function DashboardLayout() {
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
         {role.nav.map((item) => {
-          const active = item.exact ? path === item.to : path.startsWith(item.to);
+          const active = item.exact
+            ? path === item.to
+            : path === item.to || path.startsWith(item.to + '/');
           const isNotifItem = item.to.includes("notifications");
           const hasUnread = isNotifItem && unreadCount > 0;
 
@@ -960,7 +962,7 @@ export function DashboardLayout() {
 
         {/* Main Workspace */}
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-30 h-16 glass border-b flex items-center gap-4 px-6 justify-between">
+          <header className="sticky top-0 z-40 h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-4 px-6 justify-between shadow-xs">
             {/* Hamburger Button */}
             <button
               onClick={() => {
@@ -985,7 +987,7 @@ export function DashboardLayout() {
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="w-full rounded-xl border bg-background/60 pl-10 pr-10 py-2 text-sm focus:outline-none focus:border-primary transition"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/90 text-slate-900 dark:text-white pl-10 pr-10 py-2 text-sm focus:outline-none focus:border-primary transition shadow-2xs"
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />

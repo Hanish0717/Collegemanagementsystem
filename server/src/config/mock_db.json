@@ -993,7 +993,28 @@
       "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
-  "departments": [],
+  "departments": [
+    {
+      "id": "27396466-25fb-408b-a887-beff3579c331",
+      "created_at": "2026-07-22T06:27:53.220Z",
+      "updated_at": "2026-07-22T06:27:53.220Z",
+      "code": "DEPT-TEST-1784701673217",
+      "name": "Testing Department",
+      "faculty_count": 0,
+      "student_count": 0,
+      "is_active": false
+    },
+    {
+      "id": "e15432d8-2edc-4b13-9e3f-bf22ab366bbd",
+      "created_at": "2026-07-22T06:29:02.773Z",
+      "updated_at": "2026-07-22T06:29:02.773Z",
+      "code": "DEPT-TEST-1784701742770",
+      "name": "Testing Department",
+      "faculty_count": 0,
+      "student_count": 0,
+      "is_active": false
+    }
+  ],
   "transport_routes": [],
   "transport_buses": [],
   "ebooks": [],
@@ -1068,6 +1089,24 @@
       "updated_at": "2026-07-18T04:13:00.717Z",
       "title": "Fee payment received for E2E Student 1784347980535.",
       "type": "Alert",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SAN-8192",
+      "created_at": "2026-07-22T06:27:53.222Z",
+      "updated_at": "2026-07-22T06:27:53.222Z",
+      "title": "New department 'Testing Department' created",
+      "type": "Approval",
+      "time": "Just now",
+      "unread": true
+    },
+    {
+      "id": "SAN-9213",
+      "created_at": "2026-07-22T06:29:02.774Z",
+      "updated_at": "2026-07-22T06:29:02.775Z",
+      "title": "New department 'Testing Department' created",
+      "type": "Approval",
       "time": "Just now",
       "unread": true
     }

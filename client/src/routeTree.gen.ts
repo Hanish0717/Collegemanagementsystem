@@ -187,6 +187,7 @@ import { Route as DashboardAdminHealthRouteImport } from './routes/dashboard/adm
 import { Route as DashboardAdminGrievanceRouteImport } from './routes/dashboard/admin/grievance'
 import { Route as DashboardAdminFinanceRouteImport } from './routes/dashboard/admin/finance'
 import { Route as DashboardAdminFeesRouteImport } from './routes/dashboard/admin/fees'
+import { Route as DashboardAdminFacultyRouteImport } from './routes/dashboard/admin/faculty'
 import { Route as DashboardAdminEventsRouteImport } from './routes/dashboard/admin/events'
 import { Route as DashboardAdminCommunicationRouteImport } from './routes/dashboard/admin/communication'
 import { Route as DashboardAdminClubsRouteImport } from './routes/dashboard/admin/clubs'
@@ -1180,6 +1181,11 @@ const DashboardAdminFeesRoute = DashboardAdminFeesRouteImport.update({
   path: '/fees',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+const DashboardAdminFacultyRoute = DashboardAdminFacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
 const DashboardAdminEventsRoute = DashboardAdminEventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -1259,9 +1265,9 @@ const AlumniEventsEventIdRoute = AlumniEventsEventIdRouteImport.update({
 } as any)
 const DashboardAdminFacultyIndexRoute =
   DashboardAdminFacultyIndexRouteImport.update({
-    id: '/faculty/',
-    path: '/faculty/',
-    getParentRoute: () => DashboardAdminRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAdminFacultyRoute,
   } as any)
 const DashboardAdminExamsIndexRoute =
   DashboardAdminExamsIndexRouteImport.update({
@@ -1294,9 +1300,9 @@ const DashboardHostelMessFeesRoute = DashboardHostelMessFeesRouteImport.update({
 } as any)
 const DashboardAdminFacultyAttendanceRoute =
   DashboardAdminFacultyAttendanceRouteImport.update({
-    id: '/faculty/attendance',
-    path: '/faculty/attendance',
-    getParentRoute: () => DashboardAdminRoute,
+    id: '/attendance',
+    path: '/attendance',
+    getParentRoute: () => DashboardAdminFacultyRoute,
   } as any)
 const DashboardAdminExamsTimetableRoute =
   DashboardAdminExamsTimetableRouteImport.update({
@@ -1573,6 +1579,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
   '/dashboard/admin/events': typeof DashboardAdminEventsRoute
+  '/dashboard/admin/faculty': typeof DashboardAdminFacultyRouteWithChildren
   '/dashboard/admin/fees': typeof DashboardAdminFeesRoute
   '/dashboard/admin/finance': typeof DashboardAdminFinanceRoute
   '/dashboard/admin/grievance': typeof DashboardAdminGrievanceRoute
@@ -2031,6 +2038,7 @@ export interface FileRoutesById {
   '/dashboard/admin/clubs': typeof DashboardAdminClubsRoute
   '/dashboard/admin/communication': typeof DashboardAdminCommunicationRoute
   '/dashboard/admin/events': typeof DashboardAdminEventsRoute
+  '/dashboard/admin/faculty': typeof DashboardAdminFacultyRouteWithChildren
   '/dashboard/admin/fees': typeof DashboardAdminFeesRoute
   '/dashboard/admin/finance': typeof DashboardAdminFinanceRoute
   '/dashboard/admin/grievance': typeof DashboardAdminGrievanceRoute
@@ -2264,6 +2272,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
     | '/dashboard/admin/events'
+    | '/dashboard/admin/faculty'
     | '/dashboard/admin/fees'
     | '/dashboard/admin/finance'
     | '/dashboard/admin/grievance'
@@ -2721,6 +2730,7 @@ export interface FileRouteTypes {
     | '/dashboard/admin/clubs'
     | '/dashboard/admin/communication'
     | '/dashboard/admin/events'
+    | '/dashboard/admin/faculty'
     | '/dashboard/admin/fees'
     | '/dashboard/admin/finance'
     | '/dashboard/admin/grievance'
@@ -4136,6 +4146,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminFeesRouteImport
       parentRoute: typeof DashboardAdminRoute
     }
+    '/dashboard/admin/faculty': {
+      id: '/dashboard/admin/faculty'
+      path: '/faculty'
+      fullPath: '/dashboard/admin/faculty'
+      preLoaderRoute: typeof DashboardAdminFacultyRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
     '/dashboard/admin/events': {
       id: '/dashboard/admin/events'
       path: '/events'
@@ -4236,10 +4253,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/admin/faculty/': {
       id: '/dashboard/admin/faculty/'
-      path: '/faculty'
+      path: '/'
       fullPath: '/dashboard/admin/faculty/'
       preLoaderRoute: typeof DashboardAdminFacultyIndexRouteImport
-      parentRoute: typeof DashboardAdminRoute
+      parentRoute: typeof DashboardAdminFacultyRoute
     }
     '/dashboard/admin/exams/': {
       id: '/dashboard/admin/exams/'
@@ -4278,10 +4295,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/admin/faculty/attendance': {
       id: '/dashboard/admin/faculty/attendance'
-      path: '/faculty/attendance'
+      path: '/attendance'
       fullPath: '/dashboard/admin/faculty/attendance'
       preLoaderRoute: typeof DashboardAdminFacultyAttendanceRouteImport
-      parentRoute: typeof DashboardAdminRoute
+      parentRoute: typeof DashboardAdminFacultyRoute
     }
     '/dashboard/admin/exams/timetable': {
       id: '/dashboard/admin/exams/timetable'
@@ -4549,6 +4566,21 @@ const DashboardAdminAlumniRouteChildren: DashboardAdminAlumniRouteChildren = {
 const DashboardAdminAlumniRouteWithChildren =
   DashboardAdminAlumniRoute._addFileChildren(DashboardAdminAlumniRouteChildren)
 
+interface DashboardAdminFacultyRouteChildren {
+  DashboardAdminFacultyAttendanceRoute: typeof DashboardAdminFacultyAttendanceRoute
+  DashboardAdminFacultyIndexRoute: typeof DashboardAdminFacultyIndexRoute
+}
+
+const DashboardAdminFacultyRouteChildren: DashboardAdminFacultyRouteChildren = {
+  DashboardAdminFacultyAttendanceRoute: DashboardAdminFacultyAttendanceRoute,
+  DashboardAdminFacultyIndexRoute: DashboardAdminFacultyIndexRoute,
+}
+
+const DashboardAdminFacultyRouteWithChildren =
+  DashboardAdminFacultyRoute._addFileChildren(
+    DashboardAdminFacultyRouteChildren,
+  )
+
 interface DashboardAdminRouteChildren {
   DashboardAdminAcademicsRoute: typeof DashboardAdminAcademicsRoute
   DashboardAdminAccreditationRoute: typeof DashboardAdminAccreditationRoute
@@ -4562,6 +4594,7 @@ interface DashboardAdminRouteChildren {
   DashboardAdminClubsRoute: typeof DashboardAdminClubsRoute
   DashboardAdminCommunicationRoute: typeof DashboardAdminCommunicationRoute
   DashboardAdminEventsRoute: typeof DashboardAdminEventsRoute
+  DashboardAdminFacultyRoute: typeof DashboardAdminFacultyRouteWithChildren
   DashboardAdminFeesRoute: typeof DashboardAdminFeesRoute
   DashboardAdminFinanceRoute: typeof DashboardAdminFinanceRoute
   DashboardAdminGrievanceRoute: typeof DashboardAdminGrievanceRoute
@@ -4586,9 +4619,7 @@ interface DashboardAdminRouteChildren {
   DashboardAdminExamsScheduleRoute: typeof DashboardAdminExamsScheduleRoute
   DashboardAdminExamsSupplementaryRoute: typeof DashboardAdminExamsSupplementaryRoute
   DashboardAdminExamsTimetableRoute: typeof DashboardAdminExamsTimetableRoute
-  DashboardAdminFacultyAttendanceRoute: typeof DashboardAdminFacultyAttendanceRoute
   DashboardAdminExamsIndexRoute: typeof DashboardAdminExamsIndexRoute
-  DashboardAdminFacultyIndexRoute: typeof DashboardAdminFacultyIndexRoute
 }
 
 const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
@@ -4606,6 +4637,7 @@ const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminClubsRoute: DashboardAdminClubsRoute,
   DashboardAdminCommunicationRoute: DashboardAdminCommunicationRoute,
   DashboardAdminEventsRoute: DashboardAdminEventsRoute,
+  DashboardAdminFacultyRoute: DashboardAdminFacultyRouteWithChildren,
   DashboardAdminFeesRoute: DashboardAdminFeesRoute,
   DashboardAdminFinanceRoute: DashboardAdminFinanceRoute,
   DashboardAdminGrievanceRoute: DashboardAdminGrievanceRoute,
@@ -4631,9 +4663,7 @@ const DashboardAdminRouteChildren: DashboardAdminRouteChildren = {
   DashboardAdminExamsScheduleRoute: DashboardAdminExamsScheduleRoute,
   DashboardAdminExamsSupplementaryRoute: DashboardAdminExamsSupplementaryRoute,
   DashboardAdminExamsTimetableRoute: DashboardAdminExamsTimetableRoute,
-  DashboardAdminFacultyAttendanceRoute: DashboardAdminFacultyAttendanceRoute,
   DashboardAdminExamsIndexRoute: DashboardAdminExamsIndexRoute,
-  DashboardAdminFacultyIndexRoute: DashboardAdminFacultyIndexRoute,
 }
 
 const DashboardAdminRouteWithChildren = DashboardAdminRoute._addFileChildren(

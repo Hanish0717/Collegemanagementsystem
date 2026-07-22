@@ -293,7 +293,11 @@ if (isMockMode) {
       'id_card_payments',
       'id_card_receipts',
       'missing_id_cards',
-      'id_card_print_history'
+      'id_card_print_history',
+      'departments',
+      'security_logs',
+      'system_notifications',
+      'backups'
     ];
     let changed = false;
     requiredTables.forEach(table => {
@@ -302,6 +306,50 @@ if (isMockMode) {
         changed = true;
       }
     });
+
+    if (!currentDb['departments'] || currentDb['departments'].length === 0) {
+      currentDb['departments'] = [
+        { id: 'dept-cse', code: 'CSE', name: 'Computer Science & Engineering', student_count: 420, is_active: true },
+        { id: 'dept-aiml', code: 'AIML', name: 'Artificial Intelligence & Machine Learning', student_count: 310, is_active: true },
+        { id: 'dept-ece', code: 'ECE', name: 'Electronics & Communication Engineering', student_count: 280, is_active: true },
+        { id: 'dept-eee', code: 'EEE', name: 'Electrical & Electronics Engineering', student_count: 210, is_active: true },
+        { id: 'dept-mech', code: 'MECH', name: 'Mechanical Engineering', student_count: 350, is_active: true },
+        { id: 'dept-civil', code: 'CIVIL', name: 'Civil Engineering', student_count: 190, is_active: true },
+        { id: 'dept-it', code: 'IT', name: 'Information Technology', student_count: 260, is_active: true }
+      ];
+      changed = true;
+    }
+
+    if (!currentDb['security_logs'] || currentDb['security_logs'].length === 0) {
+      currentDb['security_logs'] = [
+        { id: 'LOG-8921', user_name: 'superadmin@college.com', event: 'Super Admin Login', ip: '192.168.1.100', time: '10 mins ago', status: 'Success', created_at: new Date().toISOString() },
+        { id: 'LOG-8920', user_name: 'admin@college.com', event: 'Admin Settings Modified', ip: '192.168.1.102', time: '45 mins ago', status: 'Success', created_at: new Date(Date.now() - 45*60000).toISOString() },
+        { id: 'LOG-8919', user_name: 'unknown@test.com', event: 'Failed Auth Attempt', ip: '203.0.113.45', time: '2 hours ago', status: 'Failed', created_at: new Date(Date.now() - 120*60000).toISOString() },
+        { id: 'LOG-8918', user_name: 'faculty@college.com', event: 'Grade Book Export', ip: '192.168.1.115', time: '3 hours ago', status: 'Success', created_at: new Date(Date.now() - 180*60000).toISOString() },
+        { id: 'LOG-8917', user_name: 'System Security', event: 'Automated Vulnerability Scan', ip: '127.0.0.1', time: '5 hours ago', status: 'Success', created_at: new Date(Date.now() - 300*60000).toISOString() }
+      ];
+      changed = true;
+    }
+
+    if (!currentDb['system_notifications'] || currentDb['system_notifications'].length === 0) {
+      currentDb['system_notifications'] = [
+        { id: 'SAN-1001', title: 'System Automated Backup Succeeded', type: 'System', time: '15m ago', unread: true, created_at: new Date().toISOString() },
+        { id: 'SAN-1002', title: 'New Admin account registered: CSE Dept Owner', type: 'Administration', time: '1h ago', unread: true, created_at: new Date(Date.now() - 60*60000).toISOString() },
+        { id: 'SAN-1003', title: 'Semester Fee Collection Milestone: 85% Collected', type: 'Finance', time: '3h ago', unread: true, created_at: new Date(Date.now() - 180*60000).toISOString() },
+        { id: 'SAN-1004', title: 'Campus Recruitment Drive: 45 Students Placed', type: 'Placement', time: '5h ago', unread: true, created_at: new Date(Date.now() - 300*60000).toISOString() },
+        { id: 'SAN-1005', title: 'Security Alert: 3 Failed Login Attempts Blocked', type: 'Security', time: '1d ago', unread: true, created_at: new Date(Date.now() - 1440*60000).toISOString() }
+      ];
+      changed = true;
+    }
+
+    if (!currentDb['backups'] || currentDb['backups'].length === 0) {
+      currentDb['backups'] = [
+        { id: 'BK-2026-07-22', type: 'Full Database Backup', size: '4.2 GB', date: '2026-07-22 02:00 AM', status: 'Completed', cloud: 'Synced', created_at: new Date().toISOString() },
+        { id: 'BK-2026-07-21', type: 'Full Database Backup', size: '4.1 GB', date: '2026-07-21 02:00 AM', status: 'Completed', cloud: 'Synced', created_at: new Date(Date.now() - 86400000).toISOString() },
+        { id: 'BK-2026-07-20', type: 'Full Database Backup', size: '4.0 GB', date: '2026-07-20 02:00 AM', status: 'Completed', cloud: 'Synced', created_at: new Date(Date.now() - 172800000).toISOString() }
+      ];
+      changed = true;
+    }
 
     if (currentDb['college_settings'].length === 0) {
       currentDb['college_settings'] = [

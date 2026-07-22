@@ -7,6 +7,7 @@ export function StatCard({
   change,
   icon: Icon,
   theme = 'blue',
+  gradient,
   hideGraph = false,
   hideChange = false,
 }: {
@@ -15,7 +16,8 @@ export function StatCard({
   subtitle?: string;
   change?: string;
   icon: any;
-  theme?: 'blue' | 'green' | 'purple' | 'amber';
+  theme?: 'blue' | 'green' | 'purple' | 'amber' | string;
+  gradient?: string;
   hideGraph?: boolean;
   hideChange?: boolean;
 }) {
@@ -97,12 +99,15 @@ export function PageHeader({
 export function Badge({
   children,
   tone = 'default',
+  variant,
   className = '',
 }: {
   children: ReactNode;
-  tone?: 'default' | 'success' | 'warn' | 'danger' | 'info' | 'purple' | 'amber';
+  tone?: 'default' | 'success' | 'warn' | 'danger' | 'info' | 'purple' | 'amber' | 'violet' | string;
+  variant?: string;
   className?: string;
 }) {
+  const activeTone = variant || tone;
   const tones: Record<string, string> = {
     default: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
     success: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
@@ -111,10 +116,11 @@ export function Badge({
     info: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
     purple: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
     amber: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
+    violet: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
   };
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${tones[tone]} ${className}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${tones[activeTone] || tones.default} ${className}`}
     >
       {children}
     </span>
