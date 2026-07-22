@@ -22,6 +22,20 @@ import {
   getLibrarySettings,
   updateLibrarySettings,
 } from '../controllers/libraryController.js';
+import {
+  getIdCardStats,
+  searchStudents,
+  getStudentProfile,
+  createIdCardRequest,
+  approveRejectRequest,
+  collectPayment,
+  reprintCard,
+  updateCardStatus,
+  reportMissingCard,
+  getHistory,
+  getPaymentHistory,
+  handoverCard,
+} from '../controllers/idCardController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
 
@@ -63,5 +77,19 @@ router.put('/notifications/:id/read', markNotificationRead);
 router.put('/notifications/:id/archive', archiveNotification);
 router.get('/settings', getLibrarySettings);
 router.put('/settings', updateLibrarySettings);
+
+// ID Card routes
+router.get('/id-cards/stats', authorizeRoles('librarian', 'admin', 'super-admin'), getIdCardStats);
+router.get('/id-cards/search', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
+router.get('/id-cards/profile/:studentId', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), getStudentProfile);
+router.post('/id-cards/request', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), createIdCardRequest);
+router.post('/id-cards/request/approve-reject', authorizeRoles('librarian', 'admin', 'super-admin'), approveRejectRequest);
+router.post('/id-cards/payment/collect', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), collectPayment);
+router.post('/id-cards/reprint', authorizeRoles('librarian', 'admin', 'super-admin'), reprintCard);
+router.post('/id-cards/status', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), updateCardStatus);
+router.post('/id-cards/missing', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), reportMissingCard);
+router.get('/id-cards/history', authorizeRoles('librarian', 'admin', 'super-admin'), getHistory);
+router.get('/id-cards/payments', authorizeRoles('librarian', 'admin', 'super-admin'), getPaymentHistory);
+router.post('/id-cards/handover/:cardId', authorizeRoles('librarian', 'admin', 'super-admin'), handoverCard);
 
 export default router;

@@ -409,6 +409,4 @@ export async function handoverIDCard(cardId: string): Promise<any> {
     return { success: true, status: 'Handed Over' };
   }
 }
-}
-
 
