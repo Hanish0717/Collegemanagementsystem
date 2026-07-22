@@ -363,7 +363,7 @@ export function DashboardLayout() {
 
   useEffect(() => {
     setRole(getActiveRole());
-  }, []);
+  }, [path]);
 
   // Theme effect
   useEffect(() => {
