@@ -175,6 +175,9 @@ export const createFaculty = async (req, res, next) => {
       experience,
       gender,
       phoneNumber,
+      password
+    } = req.body;
+
     const effectivePassword = password || 'Staff@12345';
 
     if (!fullName || !email || !employeeId || !department || !designation) {
