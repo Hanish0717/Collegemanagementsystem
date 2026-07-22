@@ -1,36 +1,36 @@
-import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Calendar, Plus, Play, Video } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import api from "@/lib/api";
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { Calendar, Plus, Play, Video } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 export function FacultyClasses() {
   const [classes, setClasses] = useState<any[]>([]);
-  const [title, setTitle] = useState("");
-  const [subject, setSubject] = useState("Data Structures");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [platform, setPlatform] = useState("Google Meet");
-  const [meetingLink, setMeetingLink] = useState("");
+  const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState('Data Structures');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [platform, setPlatform] = useState('Google Meet');
+  const [meetingLink, setMeetingLink] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await api.get("/api/faculty-module/classes");
+        const res = await api.get('/api/faculty-module/classes');
         if (res.data?.success && res.data?.data) {
           const dbClasses = res.data.data.map((c: any, index: number) => ({
             id: c._id || String(index),
             title: `${c.subject} Class (Sec ${c.section || 'A'})`,
             subject: c.subject,
-            date: c.day || "Monday",
+            date: c.day || 'Monday',
             time: c.start_time || c.time,
-            status: "Scheduled"
+            status: 'Scheduled',
           }));
           setClasses(dbClasses);
         }
       } catch (err) {
-        console.error("Error loading faculty classes:", err);
+        console.error('Error loading faculty classes:', err);
       }
     };
     fetchClasses();
@@ -39,28 +39,30 @@ export function FacultyClasses() {
   const handleSchedule = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !date || !time) {
-      alert("Please fill in all fields");
+      alert('Please fill in all fields');
       return;
     }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      alert(`Class "${title}" scheduled successfully! Meeting link: ${meetingLink || 'https://meet.google.com/abc-defg-hij'}`);
-      setClasses(prev => [
+      alert(
+        `Class "${title}" scheduled successfully! Meeting link: ${meetingLink || 'https://meet.google.com/abc-defg-hij'}`,
+      );
+      setClasses((prev) => [
         {
           id: String(prev.length + 1),
           title,
           subject,
           date,
           time,
-          status: "Scheduled"
+          status: 'Scheduled',
         },
-        ...prev
+        ...prev,
       ]);
-      setTitle("");
-      setDate("");
-      setTime("");
-      setMeetingLink("");
+      setTitle('');
+      setDate('');
+      setTime('');
+      setMeetingLink('');
     }, 1000);
   };
 
@@ -73,10 +75,14 @@ export function FacultyClasses() {
 
       <div className="grid md:grid-cols-4 gap-4">
         {[
-          { label: "Scheduled Classes", value: classes.length.toString(), tone: "info" as const },
-          { label: "Upcoming", value: classes.filter(c => c.status === "Scheduled").length.toString(), tone: "success" as const },
-          { label: "Completed", value: "12", tone: "info" as const },
-          { label: "Avg Attendance", value: "87%", tone: "success" as const },
+          { label: 'Scheduled Classes', value: classes.length.toString(), tone: 'info' as const },
+          {
+            label: 'Upcoming',
+            value: classes.filter((c) => c.status === 'Scheduled').length.toString(),
+            tone: 'success' as const,
+          },
+          { label: 'Completed', value: '12', tone: 'info' as const },
+          { label: 'Avg Attendance', value: '87%', tone: 'success' as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -91,7 +97,7 @@ export function FacultyClasses() {
       <Card>
         <h3 className="font-semibold mb-4">Scheduled Classes</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {classes.map(cls => (
+          {classes.map((cls) => (
             <Card key={cls.id} className="hover:-translate-y-1 transition">
               <div className="flex items-start justify-between mb-4">
                 <div className="size-11 rounded-xl bg-gradient-cyan text-white grid place-items-center">
@@ -110,8 +116,10 @@ export function FacultyClasses() {
                   <span className="text-muted-foreground">{cls.time}</span>
                 </div>
               </div>
-              <button 
-                onClick={() => alert(`Starting class: ${cls.title}. Redirecting to stream platform...`)}
+              <button
+                onClick={() =>
+                  alert(`Starting class: ${cls.title}. Redirecting to stream platform...`)
+                }
                 className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-1"
               >
                 <Play className="size-3" /> Start Class
@@ -124,52 +132,69 @@ export function FacultyClasses() {
       <div className="grid lg:grid-cols-2 gap-4">
         <Card>
           <h3 className="font-semibold mb-4">Schedule New Class</h3>
-          <form onSubmit={handleSchedule} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
-            <input 
-              placeholder="Class title" 
+          <form
+            onSubmit={handleSchedule}
+            className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
+          >
+            <input
+              placeholder="Class title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
               required
             />
-            <select 
+            <select
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
-              {["Data Structures", "Algorithms", "Database Systems", "Web Technologies"].map(s => <option key={s} value={s}>{s}</option>)}
+              {['Data Structures', 'Algorithms', 'Database Systems', 'Web Technologies'].map(
+                (s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ),
+              )}
             </select>
             <div className="grid sm:grid-cols-2 gap-4">
-              <input 
-                type="date" 
+              <input
+                type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="rounded-lg border bg-background px-3 py-2 text-sm" 
+                className="rounded-lg border bg-background px-3 py-2 text-sm"
                 required
               />
-              <input 
-                type="time" 
+              <input
+                type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="rounded-lg border bg-background px-3 py-2 text-sm" 
+                className="rounded-lg border bg-background px-3 py-2 text-sm"
                 required
               />
             </div>
-            <select 
+            <select
               value={platform}
               onChange={(e) => setPlatform(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
-              {["Google Meet", "Zoom", "Microsoft Teams", "Other"].map(p => <option key={p} value={p}>{p}</option>)}
+              {['Google Meet', 'Zoom', 'Microsoft Teams', 'Other'].map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
             </select>
-            <input 
-              placeholder="Meeting link (Optional)" 
+            <input
+              placeholder="Meeting link (Optional)"
               value={meetingLink}
               onChange={(e) => setMeetingLink(e.target.value)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm" 
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             />
-            <button type="submit" disabled={loading} className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium">
-              {loading ? "Scheduling..." : "Schedule Class"}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium"
+            >
+              {loading ? 'Scheduling...' : 'Schedule Class'}
             </button>
           </form>
         </Card>
@@ -179,28 +204,28 @@ export function FacultyClasses() {
           <div className="space-y-2">
             {[
               {
-                title: "Data Structures Live Session",
-                date: "2026-05-20",
-                attendance: "42/45",
-                status: "Completed",
+                title: 'Data Structures Live Session',
+                date: '2026-05-20',
+                attendance: '42/45',
+                status: 'Completed',
               },
               {
-                title: "Algorithm Discussion",
-                date: "2026-05-18",
-                attendance: "38/45",
-                status: "Completed",
+                title: 'Algorithm Discussion',
+                date: '2026-05-18',
+                attendance: '38/45',
+                status: 'Completed',
               },
               {
-                title: "Database Q&A",
-                date: "2026-05-15",
-                attendance: "40/45",
-                status: "Completed",
+                title: 'Database Q&A',
+                date: '2026-05-15',
+                attendance: '40/45',
+                status: 'Completed',
               },
               {
-                title: "Web Development Tutorial",
-                date: "2026-05-12",
-                attendance: "35/45",
-                status: "Completed",
+                title: 'Web Development Tutorial',
+                date: '2026-05-12',
+                attendance: '35/45',
+                status: 'Completed',
               },
             ].map((cls) => (
               <div
