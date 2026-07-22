@@ -449,7 +449,7 @@ export const ROLES: Record<RoleId, Role> = {
   },
   hod: {
     id: "hod",
-    name: "HOD CSE",
+    name: "HOD Workspace",
     short: "Department Head",
     description: "Department workloads, staff logs, and student performance monitoring.",
     icon: Building2,

@@ -77,6 +77,14 @@ export function DashboardLayout() {
   const currentSearch = useRouterState({ select: (r) => r.location.searchStr });
   const displayName = user?.fullName ?? "Anjali Sharma";
 
+  const displayRoleName = useMemo(() => {
+    if (role.id === "hod") {
+      const dept = user?.department || (user as any)?.dept;
+      return dept ? `HOD ${String(dept).toUpperCase()}` : "HOD Workspace";
+    }
+    return role.name;
+  }, [role, user]);
+
   // Popover States
   const [showRoleInfo, setShowRoleInfo] = useState(false);
   const [showNewActions, setShowNewActions] = useState(false);
@@ -754,7 +762,7 @@ export function DashboardLayout() {
             {(!collapsed || isMobile) && (
               <div className="leading-tight">
                 <div className="font-bold text-base tracking-tight">College Management</div>
-                <div className="text-[10px] text-muted-foreground">{role.name} workspace</div>
+                <div className="text-[10px] text-muted-foreground">{displayRoleName} workspace</div>
               </div>
             )}
           </div>
@@ -768,7 +776,7 @@ export function DashboardLayout() {
                   <RoleIcon className="size-4" />
                 </div>
                 <div className="leading-tight">
-                  <div className="text-xs font-semibold">{role.name}</div>
+                  <div className="text-xs font-semibold">{displayRoleName}</div>
                   <div className="text-[10px] opacity-80">{role.short}</div>
                 </div>
               </div>
@@ -1076,7 +1084,7 @@ export function DashboardLayout() {
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-95 shadow-soft transition`}
                 >
                   <RoleIcon className="size-3.5" />
-                  <span>{role.name}</span>
+                  <span>{displayRoleName}</span>
                   <ChevronDown className="size-3 opacity-80" />
                 </button>
                 {showRoleInfo && (
