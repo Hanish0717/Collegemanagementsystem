@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies (client)
         working-directory: client
         run: |
-          npm install --include=optional
+          npm ci
 
       - name: Run client tests
         working-directory: client
