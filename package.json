@@ -1,0 +1,17 @@
+{
+  "name": "collegemanagementsystem",
+  "version": "1.0.0",
+  "private": true,
+  "description": "College Management System Enterprise ERP",
+  "scripts": {
+    "build": "npm run build --prefix client",
+    "build:client": "npm run build --prefix client",
+    "dev": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "start": "npm run start --prefix server"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}
