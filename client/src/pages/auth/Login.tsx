@@ -240,14 +240,40 @@ function LoginForm() {
     }
   }, [pin]);
 
-  const active = roleId ? ROLE_LIST.find((r) => r.id === roleId) : null;
+  const DEFAULT_ROLE_EMAILS: Record<RoleId, string> = {
+    super_admin: 'superadmin@college.com',
+    admin: 'admin@college.com',
+    faculty: 'srinivas.faculty@gmail.com',
+    lms: 'lms.coordinator@college.com',
+    student: 'hanish@gmail.com',
+    parent: 'hanish.parent@gmail.com',
+    librarian: 'librarian@college.com',
+    placement: 'placement@college.com',
+    warden: 'warden@college.com',
+    transport: 'transport@college.com',
+    principal: 'principal@college.com',
+    dean: 'dean@college.com',
+    hod: 'hod@college.com',
+    exam_cell: 'examcell@college.com',
+    accounts: 'accounts@college.com',
+    alumni_coordinator: 'alumni.coord@college.com',
+    alumni: 'alumni@college.com',
+  };
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('hanish@gmail.com');
+  const [password, setPassword] = useState('password123');
   const [admissionNumber, setAdmissionNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleRoleSelect = (newRoleId: RoleId) => {
+    setRoleId(newRoleId);
+    const roleEmail = DEFAULT_ROLE_EMAILS[newRoleId] || `${newRoleId}@college.com`;
+    setEmail(roleEmail);
+    setPassword('password123');
+    setError(null);
+  };
 
   // Faculty Workflow State
   const [selectedDeptCode, setSelectedDeptCode] = useState<string>('AIML');
@@ -509,10 +535,7 @@ function LoginForm() {
                 value={roleId ?? 'student'}
                 onChange={(e) => {
                   const id = e.target.value as RoleId;
-                  setRoleId(id);
-                  setEmail(id === 'lms' ? 'learning@college.com' : id === 'faculty' ? 'faculty.cse.1@college.com' : '');
-                  setPassword('');
-                  setError(null);
+                  handleRoleSelect(id);
                 }}
                 className="w-full appearance-none rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/60 pl-4 pr-10 py-2.5 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-600 cursor-pointer transition"
               >
