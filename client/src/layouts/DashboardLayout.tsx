@@ -363,7 +363,7 @@ export function DashboardLayout() {
 
   useEffect(() => {
     setRole(getActiveRole());
-  }, []);
+  }, [path]);
 
   // Theme effect
   useEffect(() => {
@@ -920,7 +920,10 @@ export function DashboardLayout() {
               <Link
                 key={item.to + item.label}
                 to={item.to}
-                onClick={() => { if (isMobile) setMobileOpen(false); }}
+                onClick={(e) => {
+                  if (isMobile) setMobileOpen(false);
+                  navigate({ to: item.to as any });
+                }}
                 className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                   ${active
                     ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
