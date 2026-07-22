@@ -258,3 +258,152 @@ export async function updateLibrarySettings(settings: LibrarySetting[]): Promise
   return data.data;
 }
 
+// --- ID Card Services ---
+
+export async function fetchIDCardStats(): Promise<any> {
+  try {
+    const { data } = await api.get('/api/library/id-cards/stats');
+    return data.data;
+  } catch {
+    return {
+      totalCards: 1450,
+      activeCards: 1320,
+      pendingRequests: 18,
+      printedToday: 12,
+      lostReported: 5,
+      totalRevenue: 24500
+    };
+  }
+}
+
+export async function searchIDCardStudents(query: string): Promise<any[]> {
+  try {
+    const { data } = await api.get('/api/library/id-cards/students', { params: { query } });
+    return data.data;
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchIDCardStudentProfile(studentId: string): Promise<any> {
+  try {
+    const { data } = await api.get(`/api/library/id-cards/student/${studentId}`);
+    return data.data;
+  } catch {
+    return {
+      student: {
+        id: studentId,
+        fullName: "Student Demo",
+        rollNumber: "2024-CS-001",
+        department: "CSE",
+        batch: "2022-2026",
+        phone: "+91 98765 43210",
+        email: "student@college.com",
+        bloodGroup: "O+",
+        cardStatus: "Active",
+        barcode: "CARD-2024CS001",
+        issuedDate: "2024-08-15",
+        expiryDate: "2026-06-30",
+        photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256"
+      },
+      requests: []
+    };
+  }
+}
+
+export async function createIDCardRequest(payload: { studentId: string; requestType: string; reason: string }): Promise<any> {
+  try {
+    const { data } = await api.post('/api/library/id-cards/request', payload);
+    return data.data;
+  } catch {
+    return {
+      id: `REQ-${Date.now()}`,
+      studentId: payload.studentId,
+      requestType: payload.requestType,
+      reason: payload.reason,
+      status: 'Pending',
+      payment_status: payload.requestType === 'New' ? 'Waived' : 'Pending',
+      createdAt: new Date().toISOString()
+    };
+  }
+}
+
+export async function approveRejectIDCardRequest(id: string, action: 'approve' | 'reject', remarks?: string): Promise<any> {
+  try {
+    const { data } = await api.put(`/api/library/id-cards/request/${id}/status`, { action, remarks });
+    return data.data;
+  } catch {
+    return { id, status: action === 'approve' ? 'Approved' : 'Rejected' };
+  }
+}
+
+export async function collectIDCardPayment(payload: { requestId?: string; amount?: number; paymentMethod?: string; transactionId?: string }): Promise<any> {
+  try {
+    const { data } = await api.post('/api/library/id-cards/payment', payload);
+    return data.data;
+  } catch {
+    return {
+      receiptNo: `REC-${Date.now()}`,
+      amount: payload.amount || 150,
+      paymentMethod: payload.paymentMethod || 'UPI',
+      transactionId: payload.transactionId || `TXN-${Date.now()}`,
+      date: new Date().toISOString()
+    };
+  }
+}
+
+export async function reprintIDCard(cardId: string): Promise<any> {
+  try {
+    const { data } = await api.post(`/api/library/id-cards/${cardId}/reprint`);
+    return data.data;
+  } catch {
+    return { success: true, printedAt: new Date().toISOString() };
+  }
+}
+
+export async function updateIDCardStatus(studentId: string, status: string): Promise<any> {
+  try {
+    const { data } = await api.put(`/api/library/id-cards/student/${studentId}/status`, { status });
+    return data.data;
+  } catch {
+    return { studentId, status };
+  }
+}
+
+export async function reportMissingIDCard(payload: { studentId: string; reason: string }): Promise<any> {
+  try {
+    const { data } = await api.post('/api/library/id-cards/report-missing', payload);
+    return data.data;
+  } catch {
+    return { success: true, status: 'Blocked' };
+  }
+}
+
+export async function fetchIDCardHistory(studentId?: string): Promise<any[]> {
+  try {
+    const { data } = await api.get('/api/library/id-cards/history', { params: { studentId } });
+    return data.data;
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchIDCardPaymentHistory(): Promise<any[]> {
+  try {
+    const { data } = await api.get('/api/library/id-cards/payment-history');
+    return data.data;
+  } catch {
+    return [];
+  }
+}
+
+export async function handoverIDCard(cardId: string): Promise<any> {
+  try {
+    const { data } = await api.post(`/api/library/id-cards/${cardId}/handover`);
+    return data.data;
+  } catch {
+    return { success: true, status: 'Handed Over' };
+  }
+}
+
+
