@@ -1,5 +1,7 @@
 # College Management System
 
+![CI Status](https://github.com/Hanish0717/Collegemanagementsystem/actions/workflows/ci.yml/badge.svg)
+
 A modern, service-based College Management System featuring live PostgreSQL/Supabase integrations, OTP verification, and an AI-powered assistant.
 
 E2E tests
