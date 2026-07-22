@@ -50,20 +50,32 @@ export function LibrarianReturn() {
 
   const selectedBook = issuedBooks.find((b) => b._id === selectedIssue);
 
-  const calculateFine = () => {
-    if (!selectedBook) return 0;
-    if (selectedBook.status !== "overdue") return 0;
+  const getFineBreakdown = () => {
+    if (!selectedBook) return { daysOverdue: 0, overdueFine: 0, conditionFine: 0, totalAutoFine: 0 };
 
     const dueDate = new Date(selectedBook.dueDate);
     const today = new Date();
-    const daysOverdue = Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysOverdue <= 0) return 0;
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
-    let fine = daysOverdue * 10; // Rate is ₹10/day
-    if (returnCondition === "damaged") fine += 500;
-    if (returnCondition === "lost") fine = 2000;
+    const diffTime = today.getTime() - dueDate.getTime();
+    const daysOverdue = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+    const overdueFine = daysOverdue * 10;
 
-    return Math.min(fine, 2500);
+    let conditionFine = 0;
+    if (returnCondition === "damaged") conditionFine = 500;
+    if (returnCondition === "lost") conditionFine = 2000;
+
+    return {
+      daysOverdue,
+      overdueFine,
+      conditionFine,
+      totalAutoFine: overdueFine + conditionFine,
+    };
+  };
+
+  const calculateFine = () => {
+    return getFineBreakdown().totalAutoFine;
   };
 
   const getEffectiveFine = () => {
@@ -80,10 +92,11 @@ export function LibrarianReturn() {
     try {
       const effectiveFine = getEffectiveFine();
       await returnBook(selectedIssue, effectiveFine);
-      toast.success("Book returned successfully and database updated!");
+      toast.success(`Book returned successfully! ${effectiveFine > 0 ? `Fine applied: ₹${effectiveFine}` : ""}`);
       setShowConfirm(false);
       setSelectedIssue("");
       setSearchLoanQuery("");
+      setReturnCondition("good");
       setUseCustomFine(false);
       setCustomFineInput("");
       loadIssued();
@@ -197,6 +210,9 @@ export function LibrarianReturn() {
                               onClick={() => {
                                 setSelectedIssue(issue._id);
                                 setSearchLoanQuery("");
+                                setReturnCondition("good");
+                                setUseCustomFine(false);
+                                setCustomFineInput("");
                               }}
                               className="w-full text-left p-3.5 hover:bg-gradient-soft transition flex items-center justify-between group cursor-pointer"
                             >
@@ -240,7 +256,12 @@ export function LibrarianReturn() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setSelectedIssue("")}
+                      onClick={() => {
+                        setSelectedIssue("");
+                        setReturnCondition("good");
+                        setUseCustomFine(false);
+                        setCustomFineInput("");
+                      }}
                       className="px-2.5 py-1 rounded-lg border bg-background text-xs font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer flex items-center gap-1"
                     >
                       <X className="size-3" /> Change Loan
@@ -250,26 +271,71 @@ export function LibrarianReturn() {
                   {/* Return Condition & Fine Details */}
                   <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t">
                     <div>
-                      <label className="text-xs font-semibold text-muted-foreground">Book Condition on Return</label>
+                      <label className="text-xs font-semibold text-muted-foreground">Book Condition on Return *</label>
                       <select
                         value={returnCondition}
                         onChange={(e) => setReturnCondition(e.target.value)}
-                        className="w-full mt-1.5 px-3.5 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                        className="w-full mt-1.5 px-3.5 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none transition font-medium"
                       >
-                        <option value="good">Good Condition (Normal Return)</option>
+                        <option value="good">Good Condition (Normal Return - ₹0 Fee)</option>
                         <option value="damaged">Damaged Book (+₹500 Fine)</option>
                         <option value="lost">Lost Book (+₹2000 Replacement Fee)</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="text-xs font-semibold text-muted-foreground">Fine Calculation</label>
-                      <div className="mt-1.5 p-2.5 rounded-xl bg-background border flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Estimated Fine:</span>
-                        <span className={`text-base font-bold ${getEffectiveFine() > 0 ? "text-rose-600" : "text-emerald-600"}`}>
-                          ₹{getEffectiveFine()}
-                        </span>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-semibold text-muted-foreground">Fine Calculation</label>
+                        <label className="text-xs text-primary flex items-center gap-1.5 cursor-pointer font-medium select-none">
+                          <input
+                            type="checkbox"
+                            checked={useCustomFine}
+                            onChange={(e) => {
+                              setUseCustomFine(e.target.checked);
+                              if (e.target.checked && !customFineInput) {
+                                setCustomFineInput(calculateFine().toString());
+                              }
+                            }}
+                            className="rounded border-muted text-primary focus:ring-primary size-3.5"
+                          />
+                          Custom Fine Amount
+                        </label>
                       </div>
+
+                      {useCustomFine ? (
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">₹</span>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="Enter fine amount..."
+                            value={customFineInput}
+                            onChange={(e) => setCustomFineInput(e.target.value)}
+                            className="w-full pl-8 pr-4 py-2 rounded-xl border bg-background text-sm font-bold text-rose-600 focus:border-primary outline-none transition"
+                          />
+                        </div>
+                      ) : (
+                        <div className="p-2.5 rounded-xl bg-background border flex items-center justify-between min-h-[42px]">
+                          <div className="text-xs text-muted-foreground leading-tight">
+                            {getFineBreakdown().daysOverdue > 0 && (
+                              <span className="block text-[11px] text-amber-600 font-semibold">
+                                Overdue ({getFineBreakdown().daysOverdue} days @ ₹10/day): ₹{getFineBreakdown().overdueFine}
+                              </span>
+                            )}
+                            {getFineBreakdown().conditionFine > 0 && (
+                              <span className="block text-[11px] text-rose-600 font-semibold">
+                                Condition Fee: +₹{getFineBreakdown().conditionFine}
+                              </span>
+                            )}
+                            {getFineBreakdown().totalAutoFine === 0 && (
+                              <span className="text-emerald-600 font-medium">No Fines Applicable</span>
+                            )}
+                          </div>
+                          <span className={`text-base font-bold ${getEffectiveFine() > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                            ₹{getEffectiveFine()}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -286,7 +352,12 @@ export function LibrarianReturn() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setSelectedIssue("")}
+                      onClick={() => {
+                        setSelectedIssue("");
+                        setReturnCondition("good");
+                        setUseCustomFine(false);
+                        setCustomFineInput("");
+                      }}
                       className="px-4 py-3 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition cursor-pointer"
                     >
                       Cancel
