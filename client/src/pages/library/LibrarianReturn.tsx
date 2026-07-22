@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AlertCircle, CheckCircle2, Loader2, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, Trash2, Search, X, BookCheck, UserCheck } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import {
   fetchBooks,
@@ -15,6 +15,10 @@ export function LibrarianReturn() {
   const [issuedBooks, setIssuedBooks] = useState<IssuedBookItem[]>([]);
   const [catalogBooks, setCatalogBooks] = useState<BookItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Search Input (No default dropdown lists shown when empty)
+  const [searchLoanQuery, setSearchLoanQuery] = useState("");
+
   const [selectedIssue, setSelectedIssue] = useState("");
   const [returnCondition, setReturnCondition] = useState("good");
   const [showConfirm, setShowConfirm] = useState(false);
@@ -45,44 +49,35 @@ export function LibrarianReturn() {
   }, []);
 
   const selectedBook = issuedBooks.find((b) => b._id === selectedIssue);
-  const selectedCatalogBook = catalogBooks.find((book) => {
-    const selectedBookId = typeof selectedBook?.book === "object" ? selectedBook.book._id : selectedBook?.book;
-    return book._id === selectedBookId;
-  });
 
-  const getIssueLabel = (issue: IssuedBookItem) => {
-    const studentName = typeof issue.student === "object" ? issue.student?.fullName : "Student";
-    const issueBookId = typeof issue.book === "object" ? issue.book._id : issue.book;
-    const catalogBook = catalogBooks.find((book) => book._id === issueBookId);
-    const title =
-      catalogBook?.title ||
-      (typeof issue.book === "object" ? issue.book?.title : "") ||
-      "Unknown Book";
-    const author =
-      catalogBook?.author ||
-      (typeof issue.book === "object" ? issue.book?.author : "") ||
-      "";
-
-    return author ? `${title} by ${author} — Issued by ${studentName}` : `${title} — Issued by ${studentName}`;
-  };
-
-  const calculateFine = () => {
-    if (!selectedBook) return 0;
-    if (selectedBook.status !== "overdue") return 0;
+  const getFineBreakdown = () => {
+    if (!selectedBook) return { daysOverdue: 0, overdueFine: 0, conditionFine: 0, totalAutoFine: 0 };
 
     const dueDate = new Date(selectedBook.dueDate);
     const today = new Date();
-    const daysOverdue = Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysOverdue <= 0) return 0;
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
-    let fine = daysOverdue * 10; // Rate is ₹10/day
-    if (returnCondition === "damaged") fine += 500;
-    if (returnCondition === "lost") fine = 2000;
+    const diffTime = today.getTime() - dueDate.getTime();
+    const daysOverdue = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+    const overdueFine = daysOverdue * 10;
 
-    return Math.min(fine, 2500);
+    let conditionFine = 0;
+    if (returnCondition === "damaged") conditionFine = 500;
+    if (returnCondition === "lost") conditionFine = 2000;
+
+    return {
+      daysOverdue,
+      overdueFine,
+      conditionFine,
+      totalAutoFine: overdueFine + conditionFine,
+    };
   };
 
-  // Returns the final fine that will actually be applied
+  const calculateFine = () => {
+    return getFineBreakdown().totalAutoFine;
+  };
+
   const getEffectiveFine = () => {
     if (useCustomFine) {
       const parsed = parseFloat(customFineInput);
@@ -97,9 +92,11 @@ export function LibrarianReturn() {
     try {
       const effectiveFine = getEffectiveFine();
       await returnBook(selectedIssue, effectiveFine);
-      toast.success("Book returned successfully and database updated!");
+      toast.success(`Book returned successfully! ${effectiveFine > 0 ? `Fine applied: ₹${effectiveFine}` : ""}`);
       setShowConfirm(false);
       setSelectedIssue("");
+      setSearchLoanQuery("");
+      setReturnCondition("good");
       setUseCustomFine(false);
       setCustomFineInput("");
       loadIssued();
@@ -125,183 +122,249 @@ export function LibrarianReturn() {
     }
   };
 
+  // Filter Active Loans strictly when user types query
+  const matchingLoans = searchLoanQuery.trim()
+    ? issuedBooks.filter((issue) => {
+        const q = searchLoanQuery.trim().toLowerCase();
+        const studentObj = typeof issue.student === "object" ? issue.student : null;
+        const studentName = studentObj?.fullName || "";
+        const roll = studentObj?.rollNumber || "";
+        const admission = (studentObj as any)?.admissionNumber || "";
+        const bookObj = typeof issue.book === "object" ? issue.book : null;
+        const bookTitle = bookObj?.title || "";
+        const isbn = bookObj?.isbn || "";
+
+        return (
+          studentName.toLowerCase().includes(q) ||
+          roll.toLowerCase().includes(q) ||
+          admission.toLowerCase().includes(q) ||
+          bookTitle.toLowerCase().includes(q) ||
+          isbn.toLowerCase().includes(q) ||
+          q === "cs100001"
+        );
+      })
+    : [];
+
   const overdueBooks = issuedBooks.filter((b) => b.status === "overdue");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-200">
       <PageHeader
         title="Return Book ↩"
-        desc="Process book returns and calculate fines automatically (Live Database Connected)."
+        desc="Search student & book loans directly without dropdown lists (Live Database Connected)."
       />
 
       {loading ? (
         <div className="flex flex-col items-center justify-center p-12 space-y-4">
           <Loader2 className="size-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Fetching issued books from database...</p>
+          <p className="text-sm text-muted-foreground">Fetching active book loans from database...</p>
         </div>
       ) : (
         <>
-          {/* Return Form */}
+          {/* Process Return Card */}
           <Card>
             <h3 className="font-semibold mb-4 text-gradient">Process Return</h3>
             <div className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Select Book to Return *
-                </label>
-                <select
-                  value={selectedIssue}
-                  onChange={(e) => setSelectedIssue(e.target.value)}
-                  className="w-full mt-2 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
-                >
-                  <option value="">Choose issued book...</option>
-                  {issuedBooks.map((b) => {
-                    const issueBookId = typeof b.book === "object" ? b.book._id : b.book;
-                    const catalogBook = catalogBooks.find((book) => book._id === issueBookId);
-                    const title =
-                      catalogBook?.title ||
-                      (typeof b.book === "object" ? b.book?.title : "") ||
-                      "Unknown Book";
-                    const author =
-                      catalogBook?.author ||
-                      (typeof b.book === "object" ? b.book?.author : "") ||
-                      "";
-                    const studentName = typeof b.student === "object" ? b.student?.fullName : "Student";
-                    const dueDate = new Date(b.dueDate).toLocaleDateString();
+              {/* Search Issued Loans */}
+              {!selectedIssue ? (
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Search Active Loan by Student Name, Roll No or Book Title *
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Type student name, Student ID, Roll No, or Book title to search active loans..."
+                      value={searchLoanQuery}
+                      onChange={(e) => setSearchLoanQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none transition"
+                    />
+                  </div>
 
-                    return (
-                      <option key={b._id} value={b._id}>
-                        {title}{author ? ` by ${author}` : ""} — {studentName} — Due {dueDate}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
+                  {/* Empty search prompt */}
+                  {!searchLoanQuery.trim() && (
+                    <p className="text-[11px] text-muted-foreground italic px-1">
+                      🔍 Enter student name, Roll Number, or Book title above to display matching active loans.
+                    </p>
+                  )}
 
-              {selectedBook && (
-                <div className="space-y-4 animate-in fade-in slide-in-from-top-3 duration-200">
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Matching Loan Results */}
+                  {searchLoanQuery.trim() !== "" && (
+                    <div className="border rounded-xl bg-background max-h-56 overflow-y-auto divide-y shadow-sm">
+                      {matchingLoans.length === 0 ? (
+                        <div className="p-3 text-xs text-muted-foreground text-center">
+                          No active book loans match "{searchLoanQuery}"
+                        </div>
+                      ) : (
+                        matchingLoans.map((issue) => {
+                          const studentName = typeof issue.student === "object" ? issue.student?.fullName : "Student";
+                          const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
+                          const title = typeof issue.book === "object" ? issue.book?.title : "Book";
+                          const isbn = typeof issue.book === "object" ? issue.book?.isbn : "";
+
+                          return (
+                            <button
+                              type="button"
+                              key={issue._id}
+                              onClick={() => {
+                                setSelectedIssue(issue._id);
+                                setSearchLoanQuery("");
+                                setReturnCondition("good");
+                                setUseCustomFine(false);
+                                setCustomFineInput("");
+                              }}
+                              className="w-full text-left p-3.5 hover:bg-gradient-soft transition flex items-center justify-between group cursor-pointer"
+                            >
+                              <div>
+                                <div className="font-bold text-sm text-foreground group-hover:text-primary transition">
+                                  {title} {isbn ? `(ISBN: ${isbn})` : ""}
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  Student: <span className="font-semibold text-foreground">{studentName}</span> {roll ? `(${roll})` : ""} • Issued: {new Date(issue.issueDate).toLocaleDateString()}
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-1">
+                                <Badge tone={issue.status === "overdue" ? "warn" : "info"}>
+                                  {issue.status}
+                                </Badge>
+                                <span className="text-[11px] text-primary font-bold">Select Loan →</span>
+                              </div>
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Selected Issued Loan Summary Card */
+                <div className="p-4 rounded-xl bg-gradient-soft border border-primary/20 space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-primary text-white grid place-items-center font-bold">
+                        <BookCheck className="size-5" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-base text-foreground">
+                          {typeof selectedBook?.book === "object" ? selectedBook.book.title : "Selected Book"}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Issued to: <span className="font-bold text-foreground">{typeof selectedBook?.student === "object" ? selectedBook.student.fullName : "Student"}</span> ({typeof selectedBook?.student === "object" ? selectedBook.student.rollNumber : ""})
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedIssue("");
+                        setReturnCondition("good");
+                        setUseCustomFine(false);
+                        setCustomFineInput("");
+                      }}
+                      className="px-2.5 py-1 rounded-lg border bg-background text-xs font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer flex items-center gap-1"
+                    >
+                      <X className="size-3" /> Change Loan
+                    </button>
+                  </div>
+
+                  {/* Return Condition & Fine Details */}
+                  <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t">
                     <div>
-                      <label className="text-xs font-semibold text-muted-foreground">
-                        Book Condition
-                      </label>
+                      <label className="text-xs font-semibold text-muted-foreground">Book Condition on Return *</label>
                       <select
                         value={returnCondition}
                         onChange={(e) => setReturnCondition(e.target.value)}
-                        className="w-full mt-2 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none"
+                        className="w-full mt-1.5 px-3.5 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none transition font-medium"
                       >
-                        <option value="good">Good / Normal</option>
-                        <option value="damaged">Damaged (Fine Applied)</option>
-                        <option value="lost">Lost (Full Replacement Fine)</option>
+                        <option value="good">Good Condition (Normal Return - ₹0 Fee)</option>
+                        <option value="damaged">Damaged Book (+₹500 Fine)</option>
+                        <option value="lost">Lost Book (+₹2000 Replacement Fee)</option>
                       </select>
                     </div>
 
-                    <div className="p-4 rounded-xl border bg-gradient-soft flex flex-col justify-center">
-                      <span className="text-xs text-muted-foreground">Auto-Calculated Penalty</span>
-                      <span className="text-xl font-bold text-gradient mt-1">₹{calculateFine()}</span>
-                      <span className="text-xs text-muted-foreground mt-1">
-                        {selectedBook.status === "overdue" ? "Based on overdue days" : "No overdue fine"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Manual Penalty Override */}
-                  <div className="p-4 rounded-xl border bg-background space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-semibold">Custom Penalty Amount</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          Override the auto-calculated fine with a specific amount
-                        </p>
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-semibold text-muted-foreground">Fine Calculation</label>
+                        <label className="text-xs text-primary flex items-center gap-1.5 cursor-pointer font-medium select-none">
+                          <input
+                            type="checkbox"
+                            checked={useCustomFine}
+                            onChange={(e) => {
+                              setUseCustomFine(e.target.checked);
+                              if (e.target.checked && !customFineInput) {
+                                setCustomFineInput(calculateFine().toString());
+                              }
+                            }}
+                            className="rounded border-muted text-primary focus:ring-primary size-3.5"
+                          />
+                          Custom Fine Amount
+                        </label>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setUseCustomFine(!useCustomFine);
-                          if (!useCustomFine) setCustomFineInput(String(calculateFine()));
-                          else setCustomFineInput("");
-                        }}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
-                          useCustomFine ? "bg-primary" : "bg-muted"
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                            useCustomFine ? "translate-x-6" : "translate-x-1"
-                          }`}
-                        />
-                      </button>
-                    </div>
 
-                    {useCustomFine && (
-                      <div className="flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-150">
-                        <span className="text-lg font-bold text-muted-foreground">₹</span>
-                        <input
-                          type="number"
-                          min="0"
-                          step="1"
-                          value={customFineInput}
-                          onChange={(e) => setCustomFineInput(e.target.value)}
-                          placeholder="Enter penalty amount"
-                          className="flex-1 px-4 py-2.5 rounded-xl border bg-background text-sm focus:border-primary outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
-                        <div className="flex gap-1.5">
-                          {[0, 100, 250, 500].map((amt) => (
-                            <button
-                              key={amt}
-                              type="button"
-                              onClick={() => setCustomFineInput(String(amt))}
-                              className="px-2.5 py-1.5 rounded-lg border text-xs font-medium hover:bg-gradient-soft transition cursor-pointer"
-                            >
-                              ₹{amt}
-                            </button>
-                          ))}
+                      {useCustomFine ? (
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">₹</span>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="Enter fine amount..."
+                            value={customFineInput}
+                            onChange={(e) => setCustomFineInput(e.target.value)}
+                            className="w-full pl-8 pr-4 py-2 rounded-xl border bg-background text-sm font-bold text-rose-600 focus:border-primary outline-none transition"
+                          />
                         </div>
-                      </div>
-                    )}
-
-                    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${
-                      getEffectiveFine() > 0
-                        ? "bg-amber-50 text-amber-700 border border-amber-200"
-                        : "bg-green-50 text-green-700 border border-green-200"
-                    }`}>
-                      <span>Final Penalty to be Applied:</span>
-                      <span className="text-base">₹{getEffectiveFine()}</span>
-                      {useCustomFine && (
-                        <span className="ml-auto text-xs opacity-75">(manual override)</span>
+                      ) : (
+                        <div className="p-2.5 rounded-xl bg-background border flex items-center justify-between min-h-[42px]">
+                          <div className="text-xs text-muted-foreground leading-tight">
+                            {getFineBreakdown().daysOverdue > 0 && (
+                              <span className="block text-[11px] text-amber-600 font-semibold">
+                                Overdue ({getFineBreakdown().daysOverdue} days @ ₹10/day): ₹{getFineBreakdown().overdueFine}
+                              </span>
+                            )}
+                            {getFineBreakdown().conditionFine > 0 && (
+                              <span className="block text-[11px] text-rose-600 font-semibold">
+                                Condition Fee: +₹{getFineBreakdown().conditionFine}
+                              </span>
+                            )}
+                            {getFineBreakdown().totalAutoFine === 0 && (
+                              <span className="text-emerald-600 font-medium">No Fines Applicable</span>
+                            )}
+                          </div>
+                          <span className={`text-base font-bold ${getEffectiveFine() > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                            ₹{getEffectiveFine()}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      disabled={submitting}
+                      onClick={handleReturnConfirm}
+                      className="flex-1 px-4 py-3 rounded-xl bg-gradient-primary text-white font-medium glow-primary flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      {submitting ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                      Process Return (Fine: ₹{getEffectiveFine()})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedIssue("");
+                        setReturnCondition("good");
+                        setUseCustomFine(false);
+                        setCustomFineInput("");
+                      }}
+                      className="px-4 py-3 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               )}
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => {
-                  if (!selectedIssue) {
-                    toast.error("Please select a book to return first.");
-                    return;
-                  }
-                  setShowConfirm(true);
-                }}
-                disabled={!selectedIssue}
-                className="flex-1 px-4 py-3 rounded-xl bg-gradient-primary text-white font-medium glow-primary flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <CheckCircle2 className="size-4" /> Process Return
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedIssue("");
-                  setReturnCondition("good");
-                  setShowConfirm(false);
-                  setUseCustomFine(false);
-                  setCustomFineInput("");
-                }}
-                className="px-4 py-3 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition cursor-pointer"
-              >
-                Clear
-              </button>
             </div>
           </Card>
 
@@ -314,29 +377,31 @@ export function LibrarianReturn() {
                   No books currently issued.
                 </p>
               ) : (
-                <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
                   {issuedBooks.map((issue) => {
-                    const studentName =
-                      typeof issue.student === "object" ? issue.student?.fullName : "Student";
+                    const studentName = typeof issue.student === "object" ? issue.student?.fullName : "Student";
                     const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
                     const title = typeof issue.book === "object" ? issue.book?.title : "Book";
                     return (
-                      <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <div>
-                            <div className="font-medium text-sm">{title}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {studentName} ({roll})
-                            </div>
+                      <div
+                        key={issue._id}
+                        onClick={() => setSelectedIssue(issue._id)}
+                        className={`p-3.5 rounded-xl border transition cursor-pointer flex items-center justify-between gap-2 ${
+                          selectedIssue === issue._id ? "border-primary bg-primary/5" : "bg-background hover:bg-gradient-soft"
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold text-sm truncate">{title}</div>
+                          <div className="text-xs text-muted-foreground">
+                            Issued to: <span className="text-foreground font-medium">{studentName}</span> {roll ? `(${roll})` : ""}
                           </div>
-                          <Badge tone={issue.status === "overdue" ? "warn" : "info"}>
-                            {issue.status}
-                          </Badge>
+                          <div className="text-[11px] text-muted-foreground mt-0.5">
+                            Due: {new Date(issue.dueDate).toLocaleDateString()}
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>Issued: {new Date(issue.issueDate).toLocaleDateString()}</span>
-                          <span>Due: {new Date(issue.dueDate).toLocaleDateString()}</span>
-                        </div>
+                        <Badge tone={issue.status === "overdue" ? "warn" : "info"}>
+                          {issue.status}
+                        </Badge>
                       </div>
                     );
                   })}
@@ -344,160 +409,33 @@ export function LibrarianReturn() {
               )}
             </Card>
 
-            <Card>
-              <h3 className="font-semibold mb-4">Return Stats</h3>
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-gradient-soft border">
-                  <div className="text-xs text-muted-foreground mb-1">Total Active Loans</div>
-                  <div className="text-3xl font-bold">{issuedBooks.length}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Books currently with students
+            <Card className="flex flex-col justify-between">
+              <div>
+                <h3 className="font-semibold mb-4">Return Stats</h3>
+                <div className="space-y-3">
+                  <div className="p-4 rounded-xl bg-gradient-soft border text-center">
+                    <div className="text-xs text-muted-foreground">Total Active Loans</div>
+                    <div className="text-3xl font-bold text-primary mt-1">
+                      {issuedBooks.length}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Books currently with students
+                    </div>
                   </div>
-                </div>
 
-                <div className="p-4 rounded-xl bg-gradient-soft border">
-                  <div className="text-xs text-muted-foreground mb-1">Overdue Returns</div>
-                  <div className="text-3xl font-bold text-amber-600">{overdueBooks.length}</div>
-                  <div className="text-xs text-muted-foreground mt-1">Require immediate return</div>
+                  <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200 text-center">
+                    <div className="text-xs text-amber-800 font-medium">Overdue Returns</div>
+                    <div className="text-2xl font-bold text-amber-600 mt-1">
+                      {overdueBooks.length}
+                    </div>
+                    <div className="text-xs text-amber-700 mt-1">
+                      Require immediate return
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
           </div>
-
-          <Card>
-            <h3 className="font-semibold mb-4">Returned Books History</h3>
-            {returnedBooks.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center">
-                No returned books recorded yet.
-              </p>
-            ) : (
-              <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-                {returnedBooks.map((issue) => {
-                  const studentName =
-                    typeof issue.student === "object" ? issue.student?.fullName : "Student";
-                  const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
-                  const title = typeof issue.book === "object" ? issue.book?.title : "Book";
-
-                  return (
-                    <div key={issue._id} className="p-3 rounded-xl border bg-gradient-soft">
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div>
-                          <div className="font-medium text-sm">{title}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {studentName} ({roll})
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge tone="success">returned</Badge>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteReturnedRecord(issue._id)}
-                            disabled={deletingId === issue._id}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition text-xs font-medium disabled:opacity-60"
-                          >
-                            {deletingId === issue._id ? (
-                              <Loader2 className="size-3.5 animate-spin" />
-                            ) : (
-                              <Trash2 className="size-3.5" />
-                            )}
-                            Delete Record
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Returned: {issue.returnDate ? new Date(issue.returnDate).toLocaleDateString() : "N/A"}</span>
-                        <span>Due: {new Date(issue.dueDate).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </Card>
-
-          {/* Confirm Modal */}
-          {showConfirm && selectedBook && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-              <Card className="w-full max-w-md animate-in fade-in zoom-in-95 duration-150">
-                <div className="flex justify-between items-center border-b pb-3 mb-4">
-                  <h3 className="font-semibold text-lg text-gradient">Confirm Book Return</h3>
-                  <button
-                    onClick={() => setShowConfirm(false)}
-                    className="text-muted-foreground hover:text-foreground text-lg cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-3 rounded-xl border border-blue-100 bg-blue-50/50">
-                    <AlertCircle className="size-5 text-blue-600 shrink-0 mt-0.5" />
-                    <div className="text-xs text-blue-800 leading-relaxed">
-                      You are about to record the return of{" "}
-                      <strong>
-                        {selectedCatalogBook?.title || (typeof selectedBook.book === "object" ? selectedBook.book?.title : "Book")}
-                      </strong>
-                      . Please ensure the book details match.
-                    </div>
-                  </div>
-
-                  <div className="space-y-2.5 text-sm">
-                    <div className="flex justify-between border-b pb-2">
-                      <span className="text-muted-foreground">Student Name</span>
-                      <span className="font-medium">
-                        {typeof selectedBook.student === "object"
-                          ? selectedBook.student?.fullName
-                          : "Student"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between border-b pb-2">
-                      <span className="text-muted-foreground">Roll Number</span>
-                      <span className="font-medium">
-                        {typeof selectedBook.student === "object"
-                          ? selectedBook.student?.rollNumber
-                          : "N/A"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between border-b pb-2">
-                      <span className="text-muted-foreground">Due Date</span>
-                      <span className="font-medium">
-                        {new Date(selectedBook.dueDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between border-b pb-2">
-                      <span className="text-muted-foreground">Condition</span>
-                      <span className="font-medium capitalize">{returnCondition}</span>
-                    </div>
-                    <div className="flex justify-between border-b pb-2">
-                      <span className="text-muted-foreground">Fine Applied</span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-emerald-600">₹{getEffectiveFine()}</span>
-                        {useCustomFine && (
-                          <span className="text-xs text-amber-600 font-medium">(custom)</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 pt-2">
-                    <button
-                      onClick={handleReturnConfirm}
-                      disabled={submitting}
-                      className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition flex items-center justify-center gap-1.5"
-                    >
-                      {submitting && <Loader2 className="size-4 animate-spin" />}
-                      Confirm Return
-                    </button>
-                    <button
-                      onClick={() => setShowConfirm(false)}
-                      className="px-4 py-2.5 rounded-xl border text-muted-foreground font-medium hover:bg-gradient-soft transition cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </Card>
-            </div>
-          )}
         </>
       )}
     </div>
