@@ -15,7 +15,6 @@ import { SideDrawer } from '../components/shared/SideDrawer';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
 import { Button } from '../components/shared/Button';
 import { NotificationToast } from '../components/shared/NotificationToast';
-import { Modal } from '../components/shared/Modal';
 import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Users,
