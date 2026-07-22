@@ -356,31 +356,60 @@
   ],
   "results": [
     {
-      "id": "r1111111-1111-1111-1111-111111111111",
+      "id": "r-001",
       "student": "44444444-4444-4444-4444-444444444444",
-      "subject": "Data Structures",
-      "credits": 4,
-      "marks": 88,
-      "grade": "A",
-      "semester": 5
-    },
-    {
-      "id": "r2222222-2222-2222-2222-222222222222",
-      "student": "44444444-4444-4444-4444-444444444444",
-      "subject": "Database Systems",
-      "credits": 3,
-      "marks": 78,
-      "grade": "B+",
-      "semester": 5
-    },
-    {
-      "id": "r3333333-3333-3333-3333-333333333333",
-      "student": "44444444-4444-4444-4444-444444444444",
-      "subject": "Algorithms",
-      "credits": 4,
-      "marks": 92,
+      "subject": "Compiler Design",
+      "semester": 5,
+      "exam_id": "exam-001",
+      "marks": 85,
+      "internal_marks": 25,
+      "external_marks": 60,
       "grade": "A+",
-      "semester": 5
+      "credits": 4,
+      "grace_applied": false,
+      "grace_marks": 0
+    },
+    {
+      "id": "r-002",
+      "student": "44444444-4444-4444-4444-444444444444",
+      "subject": "Computer Networks",
+      "semester": 5,
+      "exam_id": "exam-001",
+      "marks": 72,
+      "internal_marks": 22,
+      "external_marks": 50,
+      "grade": "A",
+      "credits": 4,
+      "grace_applied": false,
+      "grace_marks": 0
+    },
+    {
+      "id": "r-003",
+      "student": "44444444-4444-4444-4444-444444444444",
+      "subject": "Software Engineering",
+      "semester": 5,
+      "exam_id": "exam-001",
+      "marks": 40,
+      "internal_marks": 18,
+      "external_marks": 20,
+      "grade": "C",
+      "credits": 3,
+      "grace_applied": true,
+      "grace_marks": 2
+    },
+    {
+      "id": "r-004",
+      "student": "44444444-4444-4444-4444-444444444444",
+      "subject": "Artificial Intelligence",
+      "semester": 5,
+      "exam_id": "exam-001",
+      "marks": 35,
+      "internal_marks": 15,
+      "external_marks": 20,
+      "grade": "F",
+      "credits": 3,
+      "grace_applied": false,
+      "grace_marks": 0
     }
   ],
   "study_materials": [
@@ -722,6 +751,235 @@
       "printed_by": "66666666-6666-6666-6666-666666666666",
       "print_date": "2026-07-22T07:36:42.013Z",
       "remarks": "Card handed over and physically delivered to student."
+    }
+  ],
+  "courses": [
+    {
+      "id": "course-001",
+      "course_code": "CS-301",
+      "course_name": "Compiler Design",
+      "credits": 4,
+      "course_type": "Core",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "mentor_id": "f1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "course-002",
+      "course_code": "CS-302",
+      "course_name": "Computer Networks",
+      "credits": 4,
+      "course_type": "Core",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "mentor_id": "f1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "course-003",
+      "course_code": "CS-303",
+      "course_name": "Software Engineering",
+      "credits": 3,
+      "course_type": "Core",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "mentor_id": "f1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "course-004",
+      "course_code": "CS-304",
+      "course_name": "Artificial Intelligence",
+      "credits": 3,
+      "course_type": "Elective",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "mentor_id": "f1111111-1111-1111-1111-111111111111"
+    }
+  ],
+  "student_course_registrations": [
+    {
+      "id": "scr-001",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-001",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    },
+    {
+      "id": "scr-002",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-002",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    },
+    {
+      "id": "scr-003",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-003",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    },
+    {
+      "id": "scr-004",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-004",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    }
+  ],
+  "exams": [
+    {
+      "id": "exam-001",
+      "name": "Semester End Examinations - Nov 2026",
+      "type": "Regular",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "start_date": "2026-11-10",
+      "end_date": "2026-11-20",
+      "status": "Results Published"
+    },
+    {
+      "id": "exam-002",
+      "name": "Mid-Term Examinations - Oct 2026",
+      "type": "Mid-term",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "start_date": "2026-10-05",
+      "end_date": "2026-10-10",
+      "status": "Completed"
+    },
+    {
+      "id": "exam-003",
+      "name": "Supplementary Examinations - Dec 2026",
+      "type": "Supplementary",
+      "department": "CSE",
+      "year": 3,
+      "semester": 5,
+      "start_date": "2026-12-15",
+      "end_date": "2026-12-22",
+      "status": "Upcoming"
+    }
+  ],
+  "exam_timetables": [
+    {
+      "id": "et-001",
+      "exam_id": "exam-001",
+      "subject": "Compiler Design",
+      "date": "2026-11-10",
+      "time": "09:30 AM",
+      "hall": "LH-201",
+      "duration": "3 Hours"
+    },
+    {
+      "id": "et-002",
+      "exam_id": "exam-001",
+      "subject": "Computer Networks",
+      "date": "2026-11-12",
+      "time": "09:30 AM",
+      "hall": "LH-202",
+      "duration": "3 Hours"
+    },
+    {
+      "id": "et-003",
+      "exam_id": "exam-001",
+      "subject": "Software Engineering",
+      "date": "2026-11-15",
+      "time": "09:30 AM",
+      "hall": "LH-201",
+      "duration": "3 Hours"
+    },
+    {
+      "id": "et-004",
+      "exam_id": "exam-001",
+      "subject": "Artificial Intelligence",
+      "date": "2026-11-18",
+      "time": "09:30 AM",
+      "hall": "LH-203",
+      "duration": "3 Hours"
+    },
+    {
+      "id": "et-005",
+      "exam_id": "exam-002",
+      "subject": "Compiler Design",
+      "date": "2026-10-05",
+      "time": "10:00 AM",
+      "hall": "LH-101",
+      "duration": "2 Hours"
+    },
+    {
+      "id": "et-006",
+      "exam_id": "exam-002",
+      "subject": "Computer Networks",
+      "date": "2026-10-06",
+      "time": "10:00 AM",
+      "hall": "LH-102",
+      "duration": "2 Hours"
+    }
+  ],
+  "exam_registrations": [
+    {
+      "id": "er-001",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-001",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    },
+    {
+      "id": "er-002",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-002",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    },
+    {
+      "id": "er-003",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-003",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    },
+    {
+      "id": "er-004",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "course_id": "course-004",
+      "semester": 5,
+      "year": 3,
+      "status": "Registered"
+    }
+  ],
+  "marks_correction_requests": [
+    {
+      "id": "mcr-001",
+      "exam_id": "exam-001",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "subject": "Computer Networks",
+      "current_marks": 72,
+      "requested_marks": 75,
+      "reason": "Recounting error in Question 4",
+      "status": "Pending",
+      "requested_by": "f1111111-1111-1111-1111-111111111111",
+      "created_at": "2026-07-22T08:00:55.626Z"
+    }
+  ],
+  "hall_tickets": [
+    {
+      "id": "htk-001",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "exam_id": "exam-001",
+      "seat_number": "S-501",
+      "status": "Approved",
+      "approved_by": "e1111111-1111-1111-1111-111111111111"
     }
   ]
 }
