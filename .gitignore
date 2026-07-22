@@ -37,3 +37,8 @@ dist-ssr
 .env.*.local
 .env.production
 
+# Debug files
+server/debug_startup.txt
+server/error_log.txt
+
+

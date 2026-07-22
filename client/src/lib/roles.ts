@@ -36,7 +36,8 @@ import {
   FlaskConical,
   User,
   Fingerprint,
-  Video
+  Video,
+  CreditCard
 } from "lucide-react";
 
 export type RoleId =
@@ -294,7 +295,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/student/course-registration", label: "Course Registrations", icon: GraduationCap },
       { to: "/dashboard/student/hall-ticket", label: "Exam Hall tickets", icon: Award },
       { to: "/dashboard/student/leave", label: "Hostel", icon: Building2 },
-      { to: "/dashboard/student/materials", label: "Library Management", icon: Library },
+      { to: "/dashboard/student/id-card", label: "My ID Card", icon: CreditCard },
       { to: "/dashboard/student/events", label: "Discussion Forum", icon: Users },
       { to: "/dashboard/student/fees", label: "Payments", icon: Wallet },
       { to: "/dashboard/student/results", label: "Exam Results", icon: Activity },
@@ -333,6 +334,7 @@ export const ROLES: Record<RoleId, Role> = {
       { to: "/dashboard/librarian/books", label: "Book Management", icon: BookOpen },
       { to: "/dashboard/librarian/issue", label: "Issue Books", icon: ClipboardList },
       { to: "/dashboard/librarian/return", label: "Return Books", icon: Activity },
+      { to: "/dashboard/librarian/id-cards", label: "ID Card Generation", icon: CreditCard },
       { to: "/dashboard/librarian/members", label: "Members", icon: Users },
       { to: "/dashboard/librarian/digital", label: "Digital Library", icon: FileText },
       { to: "/dashboard/librarian/fines", label: "Fines", icon: Wallet },
