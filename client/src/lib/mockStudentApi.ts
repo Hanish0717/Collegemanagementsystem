@@ -539,7 +539,7 @@ export function processMockStudentRequest(url: string, method: string, data?: an
     const lms = getMockData("cms_student_lms", INITIAL_LMS_COURSES);
     let found = false;
     lms.forEach(c => {
-      c.assignments.forEach(a => {
+      ((c as any).assignments || []).forEach((a: any) => {
         if (a.id === id || a.id === `asg_${id}`) {
           a.status = "Submitted";
           found = true;
@@ -554,7 +554,7 @@ export function processMockStudentRequest(url: string, method: string, data?: an
     const lms = getMockData("cms_student_lms", INITIAL_LMS_COURSES);
     const allAssignments: any[] = [];
     lms.forEach(c => {
-      c.assignments.forEach(a => {
+      ((c as any).assignments || []).forEach((a: any) => {
         allAssignments.push({
           ...a,
           subject: c.name,

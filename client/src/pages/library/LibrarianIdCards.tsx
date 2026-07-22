@@ -134,12 +134,12 @@ export function LibrarianIdCards() {
 
   const { data: historyData, isLoading: historyLoading } = useQuery({
     queryKey: ['idCardHistory'],
-    queryFn: fetchIDCardHistory
+    queryFn: () => fetchIDCardHistory()
   });
 
   const { data: paymentHistory, isLoading: paymentsLoading } = useQuery({
     queryKey: ['idCardPaymentHistory'],
-    queryFn: fetchIDCardPaymentHistory
+    queryFn: () => fetchIDCardPaymentHistory()
   });
 
   // Debounced search for student profile - only search when user types
@@ -493,7 +493,7 @@ export function LibrarianIdCards() {
                         dataKey="value"
                         label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       >
-                        {charts.pendingVsIssued.map((entry, index) => (
+                        {(charts as any).pendingVsIssued.map((entry: any, index: number) => (
                           <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                         ))}
                       </Pie>
@@ -1017,7 +1017,7 @@ export function LibrarianIdCards() {
                     </thead>
                     <tbody className="divide-y divide-gray-150">
                       {/* Filter history logs that correspond to pending requests */}
-                      {historyData
+                      {(historyData as any[])
                         ?.filter((log: any) => log.status === 'Pending' || (log.type === 'Request Update' && log.description.includes('Pending')))
                         ?.map((log: any) => {
                           const studentRollDisplay = log.rollNumber || log.studentName || log.description.split('for ')[1]?.split(' was')[0] || 'Student';
@@ -1064,7 +1064,7 @@ export function LibrarianIdCards() {
                           );
                         })}
 
-                      {(!historyData || historyData.filter((log: any) => log.status === 'Pending' || (log.type === 'Request Update' && log.description.includes('Pending'))).length === 0) && (
+                      {(!historyData || (historyData as any[]).filter((log: any) => log.status === 'Pending' || (log.type === 'Request Update' && log.description.includes('Pending'))).length === 0) && (
                         <tr>
                           <td colSpan={6} className="text-center py-6 text-gray-400">
                             No pending ID card approval requests found.
@@ -1214,7 +1214,7 @@ export function LibrarianIdCards() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-150">
-                      {historyData?.map((log: any) => (
+                      {(historyData as any[])?.map((log: any) => (
                         <tr key={log.id} className="hover:bg-gray-50">
                           <td className="px-4 py-3 text-xs">{new Date(log.date).toLocaleString()}</td>
                           <td className="px-4 py-3">
@@ -1230,7 +1230,7 @@ export function LibrarianIdCards() {
                         </tr>
                       ))}
 
-                      {(!historyData || historyData.length === 0) && (
+                      {(!historyData || (historyData as any[]).length === 0) && (
                         <tr>
                           <td colSpan={5} className="text-center py-6 text-gray-400">
                             No administrative audit events recorded yet.

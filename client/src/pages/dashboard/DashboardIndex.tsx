@@ -162,6 +162,12 @@ export function DashboardIndex() {
     };
   }, []);
 
+  if (activeRole.id === "super_admin") {
+    return <Navigate to="/dashboard/super-admin" />;
+  }
+  if (activeRole.id === "admin") {
+    return <Navigate to="/dashboard/admin" />;
+  }
   if (activeRole.id === "parent") {
     return <ParentDashboard />;
   }

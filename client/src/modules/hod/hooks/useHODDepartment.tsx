@@ -93,7 +93,7 @@ export function HODDepartmentProvider({ children }: { children: ReactNode }) {
   // Resolve department dynamically from logged in HOD user profile or explicit selection
   const departmentCode: DepartmentCode = useMemo(() => {
     if (selectedDeptCode) return selectedDeptCode;
-    const userDept = user?.department || (user as any)?.dept || 'AIML';
+    const userDept = (user as any)?.department || (user as any)?.dept || 'AIML';
     const normalized = String(userDept).toUpperCase().trim();
     return DEPARTMENT_METADATA_MAP[normalized] ? normalized : 'AIML';
   }, [user, selectedDeptCode]);
