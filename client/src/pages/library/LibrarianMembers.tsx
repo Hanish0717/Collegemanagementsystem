@@ -6,6 +6,22 @@ import { fetchStudents, updateStudent, fetchFaculty, createFaculty, updateFacult
 import { fetchIssuedBooks } from "@/services/libraryService";
 import { toast } from "sonner";
 
+const getMemberInitials = (name?: string) => {
+  if (!name || typeof name !== "string") return "U";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "U";
+  return parts.slice(0, 2).map((p) => p[0]?.toUpperCase() || "").join("");
+};
+
+const getMemberDeptString = (dept: any) => {
+  if (!dept) return "Academic Staff";
+  if (typeof dept === "string") return dept;
+  if (typeof dept === "object") {
+    return dept.name || dept.code || "Academic Staff";
+  }
+  return "Academic Staff";
+};
+
 export function LibrarianMembers() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,6 +68,7 @@ export function LibrarianMembers() {
       department: string;
       designation: string;
       phoneNumber?: string;
+      password?: string;
     }) => createFaculty(payload),
     onSuccess: () => {
       toast.success("Staff member registered successfully in central registry & library members!");
@@ -106,12 +123,13 @@ export function LibrarianMembers() {
       return;
     }
     createStaffMutation.mutate({
-      fullName: formName,
-      email: formEmail,
-      employeeId: formEmployeeId,
+      fullName: formName.trim(),
+      email: formEmail.trim(),
+      employeeId: formEmployeeId.trim(),
       department: formDept,
-      designation: formDesignation,
-      phoneNumber: formPhone,
+      designation: formDesignation.trim(),
+      phoneNumber: formPhone.trim(),
+      password: "Staff@12345",
     });
   };
 
@@ -169,23 +187,23 @@ export function LibrarianMembers() {
   };
 
   // 1. Map Auto-Fetched Central Students
-  const studentMembers = (studentsData?.students || []).map((student) => {
-    const studentIssues = (issuedBooks || []).filter((issue) => {
+  const studentMembers = (studentsData?.students || []).map((student: any) => {
+    const studentIssues = (issuedBooks || []).filter((issue: any) => {
       const studentId = typeof issue.student === "object" ? issue.student?._id : issue.student;
       return studentId === student._id;
     });
 
-    const booksIssued = studentIssues.filter((i) => i.status === "issued" || i.status === "overdue").length;
-    const fineAmount = studentIssues.reduce((sum, i) => sum + (i.fineAmount || 0), 0);
+    const booksIssued = studentIssues.filter((i: any) => i.status === "issued" || i.status === "overdue").length;
+    const fineAmount = studentIssues.reduce((sum: number, i: any) => sum + (i.fineAmount || 0), 0);
 
     return {
-      id: student.rollNumber || student.admissionNumber || student._id,
-      memberId: student.rollNumber || student.admissionNumber || student._id,
-      rawId: student._id,
-      name: student.fullName,
-      email: student.email,
+      id: student.rollNumber || student.admissionNumber || student._id || `std-${Math.random()}`,
+      memberId: student.rollNumber || student.admissionNumber || student._id || "STD",
+      rawId: student._id || student.id,
+      name: student.fullName || student.name || "Student",
+      email: student.email || "N/A",
       phone: student.phoneNumber || "N/A",
-      department: student.department || "Computer Science",
+      department: getMemberDeptString(student.department),
       designation: "Student",
       memberType: "Student",
       joinDate: student.createdAt || new Date().toISOString(),
@@ -196,28 +214,28 @@ export function LibrarianMembers() {
   });
 
   // 2. Map Staff Members (Faculty & Librarians)
-  const staffMembers = (facultyData || []).map((staff) => {
-    const staffDept = typeof staff.department === "object" && staff.department !== null ? staff.department.name || staff.department.code : (staff.department || "Academic Staff");
+  const staffMembers = (facultyData || []).map((staff: any) => {
+    const staffDept = getMemberDeptString(staff.department);
 
-    const staffIssues = (issuedBooks || []).filter((issue) => {
+    const staffIssues = (issuedBooks || []).filter((issue: any) => {
       const studentId = typeof issue.student === "object" ? issue.student?._id : issue.student;
       return studentId === staff._id;
     });
 
-    const booksIssued = staffIssues.filter((i) => i.status === "issued" || i.status === "overdue").length;
-    const fineAmount = staffIssues.reduce((sum, i) => sum + (i.fineAmount || 0), 0);
+    const booksIssued = staffIssues.filter((i: any) => i.status === "issued" || i.status === "overdue").length;
+    const fineAmount = staffIssues.reduce((sum: number, i: any) => sum + (i.fineAmount || 0), 0);
 
     return {
-      id: staff.employeeId || staff._id,
-      memberId: staff.employeeId || staff._id,
-      rawId: staff._id,
-      name: staff.fullName,
-      email: staff.email,
+      id: staff.employeeId || staff._id || `emp-${Math.random()}`,
+      memberId: staff.employeeId || staff._id || "EMP",
+      rawId: staff._id || staff.id,
+      name: staff.fullName || staff.name || "Staff Member",
+      email: staff.email || "N/A",
       phone: staff.phoneNumber || "N/A",
       department: staffDept,
       designation: staff.designation || "Staff Member",
       memberType: "Staff",
-      joinDate: (staff as any).createdAt || new Date().toISOString(),
+      joinDate: staff.createdAt || new Date().toISOString(),
       status: staff.isActive ? "Active" : "Inactive",
       booksIssued,
       fineAmount,
@@ -367,12 +385,7 @@ export function LibrarianMembers() {
                         : "bg-gradient-to-br from-blue-600 to-cyan-600"
                     }`}
                   >
-                    {member.name
-                      ? member.name
-                          .split(" ")
-                          .map((n: string) => n[0])
-                          .join("")
-                      : "U"}
+                    {getMemberInitials(member.name)}
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <Badge tone={member.memberType === "Staff" ? "info" : "neutral"}>
@@ -705,12 +718,7 @@ export function LibrarianMembers() {
                       : "bg-gradient-to-br from-blue-600 to-cyan-600"
                   }`}
                 >
-                  {selectedMember.name
-                    ? selectedMember.name
-                        .split(" ")
-                        .map((n: string) => n[0])
-                        .join("")
-                    : "U"}
+                  {getMemberInitials(selectedMember.name)}
                 </div>
                 <div>
                   <h4 className="font-bold text-base text-foreground">{selectedMember.name}</h4>
