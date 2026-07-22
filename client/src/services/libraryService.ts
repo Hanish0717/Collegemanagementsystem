@@ -370,32 +370,37 @@ const DEMO_STUDENT_MATCHES = [
 ];
 
 export async function searchIDCardStudents(query: string): Promise<any[]> {
+  const qStr = (query || '').trim().toLowerCase();
+  if (!qStr) {
+    return [];
+  }
+
   try {
-    const { data } = await api.get('/api/library/id-cards/students', { params: { query, q: query } });
+    const { data } = await api.get('/api/library/id-cards/students', { params: { query: qStr, q: qStr } });
     if (data && data.data && data.data.length > 0) {
       return data.data;
     }
-    const qStr = (query || '').trim().toLowerCase();
     const filtered = DEMO_STUDENT_MATCHES.filter(s =>
-      !qStr ||
       s.fullName.toLowerCase().includes(qStr) ||
       s.rollNumber.toLowerCase().includes(qStr) ||
       s.admissionNumber.toLowerCase().includes(qStr) ||
       s.email.toLowerCase().includes(qStr) ||
-      qStr === 'cs100001'
+      s.department.toLowerCase().includes(qStr) ||
+      s.id.toLowerCase().includes(qStr) ||
+      (qStr === 'cs100001' && s.admissionNumber === 'CS100001')
     );
-    return filtered.length > 0 ? filtered : DEMO_STUDENT_MATCHES;
+    return filtered;
   } catch {
-    const qStr = (query || '').trim().toLowerCase();
     const filtered = DEMO_STUDENT_MATCHES.filter(s =>
-      !qStr ||
       s.fullName.toLowerCase().includes(qStr) ||
       s.rollNumber.toLowerCase().includes(qStr) ||
       s.admissionNumber.toLowerCase().includes(qStr) ||
       s.email.toLowerCase().includes(qStr) ||
-      qStr === 'cs100001'
+      s.department.toLowerCase().includes(qStr) ||
+      s.id.toLowerCase().includes(qStr) ||
+      (qStr === 'cs100001' && s.admissionNumber === 'CS100001')
     );
-    return filtered.length > 0 ? filtered : DEMO_STUDENT_MATCHES;
+    return filtered;
   }
 }
 

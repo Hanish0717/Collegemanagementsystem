@@ -540,6 +540,39 @@
       "time": "Just now",
       "unread": true,
       "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784705780806-580",
+      "created_at": "2026-07-22T07:36:20.825Z",
+      "updated_at": "2026-07-22T07:36:20.825Z",
+      "title": "Your ID Card request (New) has been submitted and is pending approval.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784705793885-904",
+      "created_at": "2026-07-22T07:36:33.920Z",
+      "updated_at": "2026-07-22T07:36:33.920Z",
+      "title": "Your ID Card request has been approved.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784705802017-268",
+      "created_at": "2026-07-22T07:36:42.053Z",
+      "updated_at": "2026-07-22T07:36:42.053Z",
+      "title": "Your physical ID Card (IDCCS100001) has been handed over and marked as Delivered.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
   "departments": [],
@@ -603,6 +636,48 @@
       "conversation_id": "offline-default-id",
       "role": "assistant",
       "content": "Offline Mode Enabled: Please set GEMINI_API_KEY in your .env file to activate the real model.\n      \nHere is the context I gathered for you:\nUser is a public guest. No personalized context available.\n\nQuery Received: \"hi\""
+    }
+  ],
+  "id_card_requests": [
+    {
+      "id": "4fc3202a-c34d-4263-afb2-39aaf2b139d1",
+      "created_at": "2026-07-22T07:36:20.799Z",
+      "updated_at": "2026-07-22T07:36:41.984Z",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "request_type": "New",
+      "reason": "Initial card issuance",
+      "status": "Printed",
+      "payment_status": "Waived",
+      "rejection_reason": ""
+    }
+  ],
+  "id_cards": [
+    {
+      "id": "37e3d6e1-ad94-476b-9fd8-0defafc7a780",
+      "created_at": "2026-07-22T07:36:33.963Z",
+      "updated_at": "2026-07-22T07:36:41.958Z",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "card_number": "IDCCS100001",
+      "barcode": "BAR-CS100001",
+      "qr_code": "{\"name\":\"Student Demo\",\"roll\":\"CS100001\",\"dept\":\"CSE\",\"cardNo\":\"IDCCS100001\"}",
+      "issue_date": "2026-07-22T07:36:33.963Z",
+      "expiry_date": "2030-07-22T07:36:33.945Z",
+      "status": "Active",
+      "card_type": "Regular",
+      "print_status": "Pending",
+      "delivery_status": "Delivered",
+      "delivered_at": "2026-07-22T07:36:41.954Z"
+    }
+  ],
+  "id_card_print_history": [
+    {
+      "id": "f36195f2-1aa4-4a5c-a054-f82fdde8539b",
+      "created_at": "2026-07-22T07:36:42.013Z",
+      "updated_at": "2026-07-22T07:36:42.014Z",
+      "card_id": "37e3d6e1-ad94-476b-9fd8-0defafc7a780",
+      "printed_by": "66666666-6666-6666-6666-666666666666",
+      "print_date": "2026-07-22T07:36:42.013Z",
+      "remarks": "Card handed over and physically delivered to student."
     }
   ]
 }

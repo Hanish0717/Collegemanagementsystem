@@ -210,8 +210,11 @@ export const searchStudents = async (req, res, next) => {
 
     const allStudents = students.length > 0 ? students : DEMO_FALLBACK;
 
-    // If query provided, filter; otherwise return all real active students
-    const filtered = searchStr === '' ? allStudents : allStudents.filter(s => {
+    if (searchStr === '') {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
+    const filtered = allStudents.filter(s => {
       return (
         s.full_name?.toLowerCase().includes(searchStr) ||
         s.roll_number?.toLowerCase().includes(searchStr) ||
