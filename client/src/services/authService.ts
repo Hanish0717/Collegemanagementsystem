@@ -27,6 +27,8 @@ const demoCredentialsByRole: Record<RoleId, { email: string; password: string }>
 // Frontend uses "super_admin", "placement", "warden", "transport"
 const backendRoleToFrontendRole: Record<string, RoleId> = {
   "super-admin": "super_admin",
+  super_admin: "super_admin",
+  superadmin: "super_admin",
   admin: "admin",
   faculty: "faculty",
   lms: "lms",
@@ -34,14 +36,23 @@ const backendRoleToFrontendRole: Record<string, RoleId> = {
   parent: "parent",
   librarian: "librarian",
   "placement-officer": "placement",
+  placement_officer: "placement",
+  placement: "placement",
   "hostel-warden": "warden",
+  hostel_warden: "warden",
+  warden: "warden",
   "transport-manager": "transport",
+  transport_manager: "transport",
+  transport: "transport",
   principal: "principal",
   dean: "dean",
   hod: "hod",
   "exam-cell": "exam_cell",
+  exam_cell: "exam_cell",
+  examcell: "exam_cell",
   accounts: "accounts",
   "alumni-coordinator": "alumni_coordinator",
+  alumni_coordinator: "alumni_coordinator",
   alumni: "alumni",
 };
 
@@ -67,7 +78,18 @@ const frontendRoleToBackendRole: Record<RoleId, string> = {
 
 /** Convert backend role string to frontend RoleId */
 export function toFrontendRole(backendRole: string): RoleId {
-  return backendRoleToFrontendRole[backendRole] ?? "student";
+  if (!backendRole) return "student";
+  const clean = backendRole.toLowerCase().trim();
+  const hyphenated = clean.replace(/_/g, "-");
+  const underscored = clean.replace(/-/g, "_");
+
+  return (
+    backendRoleToFrontendRole[backendRole] ??
+    backendRoleToFrontendRole[clean] ??
+    backendRoleToFrontendRole[hyphenated] ??
+    backendRoleToFrontendRole[underscored] ??
+    "student"
+  );
 }
 
 /** Convert frontend RoleId to backend role string */
@@ -78,6 +100,8 @@ export function toBackendRole(frontendRole: RoleId): string {
 // ── Role → Dashboard Route Mapping ──────────────────────
 const roleDashboardMap: Record<string, string> = {
   "super-admin": "/dashboard/super-admin",
+  super_admin: "/dashboard/super-admin",
+  superadmin: "/dashboard/super-admin",
   admin: "/dashboard/admin",
   faculty: "/dashboard/faculty",
   lms: "/dashboard/admin/lms",
@@ -85,20 +109,40 @@ const roleDashboardMap: Record<string, string> = {
   parent: "/dashboard/parent",
   librarian: "/dashboard/librarian",
   "placement-officer": "/dashboard/placement",
+  placement_officer: "/dashboard/placement",
+  placement: "/dashboard/placement",
   "hostel-warden": "/dashboard/hostel",
+  hostel_warden: "/dashboard/hostel",
+  warden: "/dashboard/hostel",
   "transport-manager": "/dashboard/transport",
-  principal: "/dashboard",
-  dean: "/dashboard",
-  hod: "/dashboard",
-  "exam-cell": "/dashboard",
-  accounts: "/dashboard",
-  "alumni-coordinator": "/alumni/dashboard",
-  alumni: "/alumni/dashboard",
+  transport_manager: "/dashboard/transport",
+  transport: "/dashboard/transport",
+  principal: "/dashboard/admin",
+  dean: "/dashboard/admin",
+  hod: "/hod/dashboard",
+  "exam-cell": "/dashboard/admin/exams",
+  exam_cell: "/dashboard/admin/exams",
+  examcell: "/dashboard/admin/exams",
+  accounts: "/dashboard/admin/fees",
+  "alumni-coordinator": "/dashboard/admin/alumni",
+  alumni_coordinator: "/dashboard/admin/alumni",
+  alumni: "/dashboard/admin/alumni",
 };
 
 /** Get the correct dashboard path for a backend role */
 export function getDashboardForRole(backendRole: string): string {
-  return roleDashboardMap[backendRole] ?? "/dashboard";
+  if (!backendRole) return "/dashboard";
+  const clean = backendRole.toLowerCase().trim();
+  const hyphenated = clean.replace(/_/g, "-");
+  const underscored = clean.replace(/-/g, "_");
+
+  return (
+    roleDashboardMap[backendRole] ??
+    roleDashboardMap[clean] ??
+    roleDashboardMap[hyphenated] ??
+    roleDashboardMap[underscored] ??
+    "/dashboard"
+  );
 }
 
 // ── Storage Keys ────────────────────────────────────────

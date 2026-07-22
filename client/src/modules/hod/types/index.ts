@@ -8,6 +8,8 @@ export interface DepartmentInfo {
   shortName: string;
   headName: string;
   headEmail: string;
+  email?: string;
+  phone?: string;
   building: string;
   totalStudents: number;
   totalFaculty: number;
