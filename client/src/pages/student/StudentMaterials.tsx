@@ -1,227 +1,226 @@
-import { useState, useEffect } from "react";
-import { Sparkles, Search, ExternalLink } from "lucide-react";
-import api from "@/lib/api";
-
-interface EResource {
-  name: string;
-  url: string;
-}
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { Download, FileText, Search, Video } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 export function StudentMaterials() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [borrowedBooks, setBorrowedBooks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [materials, setMaterials] = useState<any[]>([]);
+  const [search, setSearch] = useState('');
+  const [subjectFilter, setSubjectFilter] = useState('All Subjects');
+  const [typeFilter, setTypeFilter] = useState('All Types');
 
   useEffect(() => {
-    const fetchBorrowedBooks = async () => {
+    const fetchMaterials = async () => {
       try {
-        const res = await api.get("/api/library/issued");
+        const res = await api.get('/api/student-module/materials');
         if (res.data?.success && res.data?.data) {
-          setBorrowedBooks(res.data.data);
+          const dbMaterials = res.data.data.map((m: any) => ({
+            id: m._id || m.id,
+            title: m.title,
+            subject: m.subject,
+            type: m.type,
+            uploaded: new Date(m.created_at || m.createdAt || Date.now())
+              .toISOString()
+              .split('T')[0],
+            downloads: m.downloads || 0,
+            fileUrl: m.fileUrl,
+          }));
+          setMaterials(dbMaterials);
         }
       } catch (err) {
-        console.error("Error fetching library data:", err);
-      } finally {
-        setLoading(false);
+        console.error('Error loading study materials:', err);
       }
     };
-    fetchBorrowedBooks();
+    fetchMaterials();
   }, []);
 
-  const activeBooks = borrowedBooks.filter(b => b.status === "issued" || b.status === "overdue");
-  const returnedBooks = borrowedBooks.filter(b => b.status === "returned");
-  const overdueBooks = borrowedBooks.filter(b => b.status === "overdue");
-  const totalFine = borrowedBooks.reduce((sum, b) => sum + Number(b.fineAmount || 0), 0);
+  const handleDownload = async (materialId: string, fileUrl: string) => {
+    if (!fileUrl) {
+      alert('No download file link available');
+      return;
+    }
 
-  const eResources: EResource[] = [
-    { name: "ABC for Chemistry", url: "https://www.google.com/search?q=ABC+for+Chemistry" },
-    { name: "Academic Tutorials", url: "https://www.google.com/search?q=Academic+Tutorials" },
-    { name: "Amrita Vishwa Vidyapeetham", url: "https://www.amrita.edu/" },
-    { name: "Bright Storm Videos", url: "https://www.brightstorm.com/" },
-    { name: "Britannica", url: "https://www.britannica.com/" },
-    { name: "Cambridge Dictionary", url: "https://dictionary.cambridge.org/" },
-    { name: "Civil Service Exams", url: "https://www.google.com/search?q=Civil+Service+Exams" },
-    { name: "Computer Dictionary (Webopedi...", url: "https://www.webopedia.com/" }
-  ];
+    try {
+      window.open(fileUrl, '_blank');
+
+      const res = await api.post(`/api/student-module/materials/${materialId}/download`);
+      if (res.data?.success) {
+        const materialsRes = await api.get('/api/student-module/materials');
+        if (materialsRes.data?.success && materialsRes.data?.data) {
+          const dbMaterials = materialsRes.data.data.map((m: any) => ({
+            id: m._id || m.id,
+            title: m.title,
+            subject: m.subject,
+            type: m.type,
+            uploaded: new Date(m.created_at || m.createdAt || Date.now())
+              .toISOString()
+              .split('T')[0],
+            downloads: m.downloads || 0,
+            fileUrl: m.fileUrl,
+          }));
+          setMaterials(dbMaterials);
+        }
+      }
+    } catch (err) {
+      console.error('Error logging material download:', err);
+    }
+  };
+
+  const filteredMaterials = materials.filter((m) => {
+    const matchesSearch =
+      m.title.toLowerCase().includes(search.toLowerCase()) ||
+      m.subject.toLowerCase().includes(search.toLowerCase());
+    const matchesSubject = subjectFilter === 'All Subjects' || m.subject === subjectFilter;
+    const matchesType = typeFilter === 'All Types' || m.type === typeFilter;
+    return matchesSearch && matchesSubject && matchesType;
+  });
+
+  const subjects = ['All Subjects', ...Array.from(new Set(materials.map((m) => m.subject)))];
+  const types = ['All Types', 'PDF', 'Video', 'Document'];
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Top Header & Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
-        <button onClick={() => window.dispatchEvent(new CustomEvent("open-chatbot"))} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-          <Sparkles className="size-3.5 text-indigo-500" />
-          <span>Ask AI</span>
-        </button>
+    <div className="space-y-6">
+      <PageHeader
+        title="Study Materials"
+        desc="Access study materials, lecture notes, video tutorials, and resources for your subjects."
+      />
+
+      <div className="grid md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Materials', value: materials.length.toString(), tone: 'info' as const },
+          {
+            label: 'PDF Documents',
+            value: materials.filter((m) => m.type === 'PDF').length.toString(),
+            tone: 'info' as const,
+          },
+          {
+            label: 'Videos',
+            value: materials.filter((m) => m.type === 'Video').length.toString(),
+            tone: 'info' as const,
+          },
+          {
+            label: 'Total Downloads',
+            value: materials.reduce((sum, m) => sum + m.downloads, 0).toLocaleString(),
+            tone: 'success' as const,
+          },
+        ].map((stat) => (
+          <Card key={stat.label}>
+            <div className="text-xs text-muted-foreground">{stat.label}</div>
+            <div className="text-2xl font-bold mt-2">{stat.value}</div>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
+          </Card>
+        ))}
       </div>
 
-      {/* Greeting and Search Row */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-base font-extrabold text-slate-900 dark:text-white">
-            Library Dashboard
-          </h1>
-          <p className="text-xs text-slate-400 font-semibold mt-0.5">
-            {activeBooks.length > 0 ? `You have ${activeBooks.length} active checkouts` : "No active library checkouts"}
-          </p>
+      <Card>
+        <div className="flex flex-col lg:flex-row gap-3">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <input
+              placeholder="Search materials..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
+            />
+          </div>
+          <select
+            value={subjectFilter}
+            onChange={(e) => setSubjectFilter(e.target.value)}
+            className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm"
+          >
+            {subjects.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm"
+          >
+            {types.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
         </div>
+      </Card>
 
-        <div className="relative w-full md:w-64">
-          <input
-            type="text"
-            placeholder="Search the catalogue"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#f4f5f7] dark:bg-slate-850 border border-slate-200 dark:border-slate-750 rounded-xl pl-3 pr-10 py-2 text-xs text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm"
-          />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-        </div>
-      </div>
-
-      {/* Library Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Issued */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-1">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">ISSUED</span>
-          <p className="text-2xl font-black text-slate-900 dark:text-white">
-            {loading ? "..." : activeBooks.length}
-          </p>
-        </div>
-
-        {/* Holds */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-1">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">HOLDS</span>
-          <p className="text-2xl font-black text-slate-900 dark:text-white">0</p>
-        </div>
-
-        {/* Fines */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-1">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">FINES</span>
-          <p className="text-2xl font-black text-slate-900 dark:text-white">₹{loading ? "..." : totalFine}</p>
-          <span className="text-[10px] text-slate-400 font-bold block pt-0.5">
-            {totalFine > 0 ? "Pending Payment" : "Cleared"}
-          </span>
-        </div>
-      </div>
-
-      {/* Interactive Library Activity Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
-        {/* Currently Issued */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">Currently issued</h3>
-          {loading ? (
-            <p className="text-slate-400">Loading...</p>
-          ) : activeBooks.length === 0 ? (
-            <p className="text-slate-450 dark:text-slate-500 font-semibold">Nothing issued. Browse the catalogue.</p>
-          ) : (
-            <div className="space-y-2">
-              {activeBooks.map(item => {
-                const bookTitle = typeof item.book === "object" && item.book ? item.book.title : "Library Book";
-                return (
-                  <div key={item._id || item.id} className="flex justify-between items-center p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                    <div>
-                      <div className="font-semibold text-slate-800 dark:text-slate-200">{bookTitle}</div>
-                      <div className="text-[10px] text-slate-400">Taken: {item.issueDate} | Due: {item.dueDate}</div>
-                    </div>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-black ${item.status === 'overdue' ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-600'}`}>
-                      {item.status.toUpperCase()}
-                    </span>
+      <Card>
+        <h3 className="font-semibold mb-4">Material Cards</h3>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {filteredMaterials.length > 0 ? (
+            filteredMaterials.map((material) => (
+              <Card key={material.id} className="hover:-translate-y-1 transition">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="size-11 rounded-xl bg-gradient-violet text-white grid place-items-center">
+                    {material.type === 'Video' ? (
+                      <Video className="size-5" />
+                    ) : (
+                      <FileText className="size-5" />
+                    )}
                   </div>
-                );
-              })}
+                  <Badge tone="info">{material.type}</Badge>
+                </div>
+                <h3 className="font-semibold text-sm">{material.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1">{material.subject}</p>
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Uploaded</span>
+                    <span className="font-medium">{material.uploaded}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Downloads</span>
+                    <span className="font-medium">{material.downloads}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleDownload(material.id, material.fileUrl)}
+                  className="mt-4 w-full px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition flex items-center justify-center gap-1"
+                >
+                  <Download className="size-3" /> Download
+                </button>
+              </Card>
+            ))
+          ) : (
+            <div className="col-span-full p-8 border border-dashed rounded-xl text-center text-muted-foreground text-sm">
+              No study materials found matching your criteria.
             </div>
           )}
         </div>
+      </Card>
 
-        {/* Previously Issued */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">Previously issued</h3>
-          {loading ? (
-            <p className="text-slate-400">Loading...</p>
-          ) : returnedBooks.length === 0 ? (
-            <p className="text-slate-450 dark:text-slate-500 font-semibold">No returned books yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {returnedBooks.map(item => {
-                const bookTitle = typeof item.book === "object" && item.book ? item.book.title : "Library Book";
-                return (
-                  <div key={item._id || item.id} className="flex justify-between items-center p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                    <div>
-                      <div className="font-semibold text-slate-800 dark:text-slate-200">{bookTitle}</div>
-                      <div className="text-[10px] text-slate-400">Returned: {item.returnDate}</div>
-                    </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-50 text-emerald-600">
-                      RETURNED
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Holds and Reservations */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">Holds and reservations</h3>
-          <p className="text-slate-450 dark:text-slate-500 font-semibold">No active holds.</p>
-        </div>
-
-        {/* Dues */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">Dues</h3>
-          {loading ? (
-            <p className="text-slate-400">Loading...</p>
-          ) : overdueBooks.length === 0 && totalFine === 0 ? (
-            <p className="text-slate-450 dark:text-slate-500 font-semibold">No outstanding dues.</p>
-          ) : (
-            <div className="space-y-2">
-              {overdueBooks.map(item => {
-                const bookTitle = typeof item.book === "object" && item.book ? item.book.title : "Library Book";
-                return (
-                  <div key={item._id || item.id} className="flex justify-between items-center p-2.5 rounded-xl border border-rose-150 dark:border-rose-950/20 bg-rose-50/20">
-                    <div>
-                      <div className="font-semibold text-rose-700 dark:text-rose-400">{bookTitle} (Overdue)</div>
-                      <div className="text-[10px] text-rose-500">Fine accrued: ₹{item.fineAmount || 0}</div>
-                    </div>
-                  </div>
-                );
-              })}
-              {returnedBooks.filter(b => b.fineAmount > 0).map(item => {
-                const bookTitle = typeof item.book === "object" && item.book ? item.book.title : "Library Book";
-                return (
-                  <div key={item._id || item.id} className="flex justify-between items-center p-2.5 rounded-xl border border-rose-150 dark:border-rose-950/20 bg-rose-50/20">
-                    <div>
-                      <div className="font-semibold text-slate-700 dark:text-slate-300">{bookTitle} (Returned late)</div>
-                      <div className="text-[10px] text-rose-500 font-bold">Unpaid fine: ₹{item.fineAmount}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* E-resources Section */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-        <h2 className="text-sm font-extrabold text-slate-900 dark:text-white">
-          E-resources
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs font-bold text-slate-700 dark:text-slate-350">
-          {eResources.map((res, index) => (
-            <a
-              key={index}
-              href={res.url}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-between p-3.5 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-650 bg-white dark:bg-slate-900 rounded-xl transition shadow-sm"
+      <Card>
+        <h3 className="font-semibold mb-4">Recent Downloads</h3>
+        <div className="space-y-2">
+          {materials.slice(0, 4).map((material) => (
+            <div
+              key={material.id}
+              className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
             >
-              <span className="truncate mr-2">{res.name}</span>
-              <ExternalLink className="size-3.5 text-slate-400 shrink-0" />
-            </a>
+              <div className="size-10 rounded-lg bg-gradient-cyan text-white grid place-items-center">
+                {material.type === 'Video' ? (
+                  <Video className="size-4" />
+                ) : (
+                  <FileText className="size-4" />
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium">{material.title}</div>
+                <div className="text-xs text-muted-foreground">
+                  {material.subject} • {material.uploaded}
+                </div>
+              </div>
+              <Badge tone="info">{material.downloads} downloads</Badge>
+            </div>
           ))}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

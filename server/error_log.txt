@@ -1099,3 +1099,85 @@ Stack: Error: secretOrPrivateKey must have a value
     at login (file:///C:/Users/AMRUTHA/Downloads/Collegemanagementsystem-main/Collegemanagementsystem-main/server/src/controllers/authController.js:383:19)
 Body: {"email":"student@college.com","password":"password123"}
 
+[2026-07-22T06:01:26.778Z] GET /api/super-admin/dashboard/stats - Status: 403 - Client Error: Forbidden: Your role 'librarian' is not authorized to access this resource - Body: {}
+[2026-07-22T06:03:24.264Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:03:25.275Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:11:11.347Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:11:12.363Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:11:14.379Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:11:18.394Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:11:58.318Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:11:59.333Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:12:10.746Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:59:58.528Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T06:59:59.549Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T07:00:02.028Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T07:00:03.040Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'exam-cell' is not authorized to access this resource - Body: {}
+[2026-07-22T07:00:56.229Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:00:56.239Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:01:22.360Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T07:01:22.389Z] GET /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T07:01:28.782Z] GET /api/faculty-module/internal-marks?course_id=34fb6adc-0589-4316-b588-44830005ed9e&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=34fb6adc-0589-4316-b588-44830005ed9e&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T07:01:34.528Z] GET /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T07:01:43.171Z] GET /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=3&semester=5 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=3&semester=5 - Body: {}
+[2026-07-22T07:01:47.844Z] GET /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T07:03:00.451Z] GET /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=8942f37e-d81a-4244-b0c8-2e7c3fb3edff&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T07:03:31.096Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"library@college.com","password":"password123"}
+[2026-07-22T07:06:46.049Z] GET /api/student-module/lms - Status: 404 - Client Error: Not Found - /api/student-module/lms - Body: {}
+[2026-07-22T07:06:46.058Z] GET /api/student-module/lms - Status: 404 - Client Error: Not Found - /api/student-module/lms - Body: {}
+[2026-07-22T07:07:49.177Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:07:49.185Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:08:21.561Z] GET /api/student-module/notices - Status: 404 - Client Error: Not Found - /api/student-module/notices - Body: {}
+[2026-07-22T07:08:21.569Z] GET /api/student-module/notices - Status: 404 - Client Error: Not Found - /api/student-module/notices - Body: {}
+[2026-07-22T07:08:27.716Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:08:27.725Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:08:27.734Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:08:27.741Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:08:33.376Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:08:33.385Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:08:37.525Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:08:37.535Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:08:37.546Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:08:37.558Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:09:03.461Z] GET /api/student-module/notices - Status: 404 - Client Error: Not Found - /api/student-module/notices - Body: {}
+[2026-07-22T07:09:03.470Z] GET /api/student-module/notices - Status: 404 - Client Error: Not Found - /api/student-module/notices - Body: {}
+[2026-07-22T07:09:05.949Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:09:05.957Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:35:00.173Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:35:00.181Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:35:00.343Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:35:00.353Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:36:17.483Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:36:17.490Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:36:17.511Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:36:17.519Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:36:49.829Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:36:49.842Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:36:49.852Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:36:49.861Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:37:14.363Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:37:14.369Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:37:14.388Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:37:14.396Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:42:10.780Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:42:10.785Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:42:21.110Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:42:21.122Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:43:34.207Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:43:34.214Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T07:44:24.419Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:44:24.427Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T07:44:24.438Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:44:24.447Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T07:46:24.583Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:46:24.590Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:47:11.582Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:47:11.590Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:47:34.707Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T07:47:41.071Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=3&semester=5 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=3&semester=5 - Body: {}
+[2026-07-22T07:47:41.107Z] GET /api/faculty-module/internal-marks?course_id=cb9c6406-862c-4b4b-9b6c-b399d7f48235&department=CSE&year=3&semester=5 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=cb9c6406-862c-4b4b-9b6c-b399d7f48235&department=CSE&year=3&semester=5 - Body: {}
+[2026-07-22T07:47:45.514Z] GET /api/faculty-module/internal-marks?course_id=cb9c6406-862c-4b4b-9b6c-b399d7f48235&department=CSE&year=2&semester=3 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=cb9c6406-862c-4b4b-9b6c-b399d7f48235&department=CSE&year=2&semester=3 - Body: {}
+[2026-07-22T07:47:49.162Z] GET /api/faculty-module/internal-marks?course_id=7249e770-585a-4e5c-a65d-ae5291390385&department=CSE&year=2&semester=3 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=7249e770-585a-4e5c-a65d-ae5291390385&department=CSE&year=2&semester=3 - Body: {}
+[2026-07-22T07:48:53.263Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:48:53.271Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T07:49:00.195Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}

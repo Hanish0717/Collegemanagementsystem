@@ -20,6 +20,7 @@
     "seed:cms": "node src/seeders/seedCMS.js",
     "seed:ai": "node src/seeders/seedAI.js",
     "seed:audit": "node src/seeders/seedAudit.js",
+    "seed:exams": "node src/seeders/seedExams.js",
     "inspect": "node ../inspect_db_local.js"
   },
   "keywords": [

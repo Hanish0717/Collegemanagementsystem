@@ -1,243 +1,218 @@
-import { useState } from "react";
-import { Sparkles, MessageSquare, Search, Plus, X, Paperclip } from "lucide-react";
-
-interface PostItem {
-  id: string;
-  course: string;
-  title: string;
-  content: string;
-  date: string;
-}
+import { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { Calendar, Users } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import api from '@/lib/api';
 
 export function StudentEvents() {
-  const [posts, setPosts] = useState<PostItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("All Subjects");
-  const [selectedSort, setSelectedSort] = useState("Most Recent");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [eventsList, setEventsList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // New Post Form State
-  const [course, setCourse] = useState("");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-
-  const handleCreatePost = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!course || !title || !content) return;
-
-    const newPost: PostItem = {
-      id: `post_${Date.now()}`,
-      course,
-      title,
-      content,
-      date: new Date().toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }),
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await api.get('/api/events');
+        if (res.data?.success && res.data?.data) {
+          const mapped = res.data.data.map((e: any) => ({
+            id: e.id,
+            title: e.title,
+            type: e.type,
+            date: new Date(e.date).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            }),
+            status: e.status === 'Approved' ? 'Not Registered' : 'Closed',
+          }));
+          setEventsList(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching events:', err);
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchEvents();
+  }, []);
 
-    setPosts([newPost, ...posts]);
-    setCourse("");
-    setTitle("");
-    setContent("");
-    setIsModalOpen(false);
+  const handleRegister = (eventId: string, title: string) => {
+    alert(`Registered successfully for ${title}!`);
+    setEventsList((prev) =>
+      prev.map((e) => {
+        if (e.id === eventId) {
+          return { ...e, status: 'Registered' };
+        }
+        return e;
+      }),
+    );
   };
 
-  const filteredPosts = posts.filter(
-    (p) =>
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const registeredEvents = eventsList.filter((e) => e.status === 'Registered');
+
+  // Group categories dynamically
+  const categoriesMap: Record<string, number> = {};
+  eventsList.forEach((e) => {
+    const t = e.type || 'Other';
+    categoriesMap[t] = (categoriesMap[t] || 0) + 1;
+  });
+
+  const categories = Object.keys(categoriesMap).map((type) => ({
+    category: type,
+    count: categoriesMap[type],
+    icon: type.toLowerCase().includes('tech')
+      ? '💻'
+      : type.toLowerCase().includes('cult')
+        ? '🎭'
+        : type.toLowerCase().includes('sport')
+          ? '⚽'
+          : '📚',
+  }));
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Event Registration" desc="Loading upcoming events..." />
+        <div className="p-8 text-center text-muted-foreground">Loading events...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4 pb-12">
-      {/* Top Header & Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
+    <div className="space-y-6">
+      <PageHeader
+        title="Event Registration"
+        desc="View upcoming events, register for competitions, and track event participation."
+      />
 
-        <button onClick={() => window.dispatchEvent(new CustomEvent("open-chatbot"))} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition">
-          <Sparkles className="size-3.5 text-indigo-500" />
-          <span>Ask AI</span>
-        </button>
+      <div className="grid md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Events', value: eventsList.length.toString(), tone: 'info' as const },
+          {
+            label: 'Registered',
+            value: registeredEvents.length.toString(),
+            tone: 'success' as const,
+          },
+          {
+            label: 'Upcoming',
+            value: eventsList.filter((e) => e.status !== 'Closed').length.toString(),
+            tone: 'info' as const,
+          },
+          {
+            label: 'Closed Events',
+            value: eventsList.filter((e) => e.status === 'Closed').length.toString(),
+            tone: 'warn' as const,
+          },
+        ].map((stat) => (
+          <Card key={stat.label}>
+            <div className="text-xs text-muted-foreground">{stat.label}</div>
+            <div className="text-2xl font-bold mt-2">{stat.value}</div>
+            <Badge tone={stat.tone} className="mt-3">
+              Current
+            </Badge>
+          </Card>
+        ))}
       </div>
 
-      {/* Posts Tab Pill */}
-      <div className="flex items-center">
-        <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#e0f2fe] text-[#0284c7] font-bold text-xs shadow-sm">
-          <MessageSquare className="size-3.5 stroke-[2.5]" />
-          <span>Posts</span>
-        </div>
-      </div>
-
-      {/* Action / Search Row */}
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <input
-            type="text"
-            placeholder="Search Posts..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#f4f5f7] dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 rounded-xl pl-3 pr-10 py-2.5 text-xs text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
-          />
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-        </div>
-
-        <select
-          value={selectedSubject}
-          onChange={(e) => setSelectedSubject(e.target.value)}
-          className="bg-[#f4f5f7] dark:bg-slate-800 border border-slate-200 dark:border-slate-750 text-slate-700 dark:text-slate-300 rounded-xl px-3 py-2.5 text-xs font-semibold focus:outline-none"
-        >
-          <option value="All Subjects">All Subjects</option>
-          <option value="Web Technologies">Web Technologies</option>
-          <option value="OOAD">OOAD</option>
-          <option value="Business Analysis">Business Analysis</option>
-        </select>
-
-        <select
-          value={selectedSort}
-          onChange={(e) => setSelectedSort(e.target.value)}
-          className="bg-[#f4f5f7] dark:bg-slate-800 border border-slate-200 dark:border-slate-750 text-slate-700 dark:text-slate-300 rounded-xl px-3 py-2.5 text-xs font-semibold focus:outline-none"
-        >
-          <option value="Most Recent">Most Recent</option>
-          <option value="Top Voted">Top Voted</option>
-        </select>
-
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold shadow-sm hover:opacity-90 transition shrink-0"
-        >
-          <Plus className="size-3.5 stroke-[3]" />
-          <span>Create Post</span>
-        </button>
-      </div>
-
-      {/* Main Forum Posts Body */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm min-h-[300px]">
-        {filteredPosts.length === 0 ? (
-          <div className="h-48 flex items-center justify-center text-slate-500 font-semibold text-xs">
-            No posts found. Be the first to start the discussion!
+      <Card>
+        <h3 className="font-semibold mb-4">Available Events</h3>
+        {eventsList.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {eventsList.map((event) => (
+              <Card key={event.id} className="hover:-translate-y-1 transition">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="size-11 rounded-xl bg-gradient-cyan text-white grid place-items-center">
+                    <Calendar className="size-5" />
+                  </div>
+                  <Badge
+                    tone={
+                      event.status === 'Registered'
+                        ? 'success'
+                        : event.status === 'Closed'
+                          ? 'danger'
+                          : 'info'
+                    }
+                  >
+                    {event.status}
+                  </Badge>
+                </div>
+                <h3 className="font-semibold text-sm">{event.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1">{event.type}</p>
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <Calendar className="size-3" />
+                    <span className="text-muted-foreground">{event.date}</span>
+                  </div>
+                </div>
+                {event.status === 'Not Registered' && (
+                  <button
+                    onClick={() => handleRegister(event.id, event.title)}
+                    className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-xs font-medium hover:opacity-90 transition"
+                  >
+                    Register Now
+                  </button>
+                )}
+              </Card>
+            ))}
           </div>
         ) : (
-          <div className="space-y-4 divide-y divide-slate-100 dark:divide-slate-800">
-            {filteredPosts.map((post, idx) => (
-              <div key={post.id} className={`pt-4 ${idx === 0 ? "pt-0" : ""}`}>
-                <div className="flex items-center gap-2">
-                  <span className="bg-[#e0f2fe] text-[#0284c7] font-bold px-2.5 py-0.5 rounded text-[10px]">
-                    {post.course}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-semibold font-mono">{post.date}</span>
+          <div className="p-8 border border-dashed rounded-xl text-center text-muted-foreground text-sm">
+            No events found in the database.
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <h3 className="font-semibold mb-4">Registered Events</h3>
+        <div className="space-y-2">
+          {registeredEvents.length > 0 ? (
+            registeredEvents.map((event) => (
+              <div
+                key={event.id}
+                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
+              >
+                <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center">
+                  <Calendar className="size-4" />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white mt-1.5">{post.title}</h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 whitespace-pre-wrap">
-                  {post.content}
-                </p>
+                <div className="flex-1">
+                  <div className="text-sm font-medium">{event.title}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {event.type} • {event.date}
+                  </div>
+                </div>
+                <Badge tone="success">Registered</Badge>
+              </div>
+            ))
+          ) : (
+            <div className="p-4 border border-dashed rounded-xl text-center text-muted-foreground text-xs">
+              You haven't registered for any events yet.
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <Card>
+        <div className="flex items-center gap-2 mb-4">
+          <Users className="size-5 text-indigo" />
+          <h3 className="font-semibold">Event Categories</h3>
+        </div>
+        {categories.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {categories.map((item) => (
+              <div key={item.category} className="p-4 rounded-xl bg-gradient-soft border">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">{item.icon}</span>
+                  <span className="text-sm font-medium">{item.category}</span>
+                </div>
+                <div className="text-xs text-muted-foreground">{item.count} events available</div>
               </div>
             ))}
           </div>
-        )}
-      </div>
-
-      {/* Create New Post Modal Dialog */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl max-w-lg w-full p-6 space-y-4 animate-in fade-in zoom-in-95">
-            <div className="flex items-center justify-between border-b pb-3">
-              <h2 className="text-sm font-black text-slate-900 dark:text-white">Create New Post</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-650">
-                <X className="size-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreatePost} className="space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-350">
-              <div className="space-y-1">
-                <label className="block text-[11px] font-bold">
-                  <span className="text-red-500 mr-0.5">*</span>Course
-                </label>
-                <select
-                  value={course}
-                  onChange={(e) => setCourse(e.target.value)}
-                  className="w-full bg-[#f4f5f7] dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-medium"
-                  required
-                >
-                  <option value="">Select a course</option>
-                  <option value="Web Technologies">Web Technologies</option>
-                  <option value="OOAD and Design Patterns">OOAD and Design Patterns</option>
-                  <option value="Business Analysis">Business Analysis</option>
-                  <option value="Statistical Analytics">Statistical Analytics</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <label className="block text-[11px] font-bold">
-                    Title<span className="text-red-500 ml-0.5">*</span>
-                  </label>
-                  <span className="text-[10px] text-slate-400 font-mono font-medium">{title.length}/200</span>
-                </div>
-                <input
-                  type="text"
-                  maxLength={200}
-                  placeholder="Enter post title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-[#f4f5f7] dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-medium"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-[11px] font-bold">
-                  Content<span className="text-red-500 ml-0.5">*</span>
-                </label>
-                <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
-                  {/* Rich Text Editor Style Formatting Bar */}
-                  <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-slate-500">
-                    <button type="button" className="font-extrabold hover:text-slate-800 dark:hover:text-white">B</button>
-                    <button type="button" className="italic hover:text-slate-800 dark:hover:text-white">I</button>
-                    <button type="button" className="hover:text-slate-800 dark:hover:text-white font-mono">1.</button>
-                    <button type="button" className="hover:text-slate-800 dark:hover:text-white font-mono">•</button>
-                    <button type="button" className="hover:text-slate-800 dark:hover:text-white font-mono">🔗</button>
-                  </div>
-                  <textarea
-                    placeholder="Enter content..."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="w-full p-3 text-xs bg-white dark:bg-slate-900 focus:outline-none text-slate-900 dark:text-white font-medium"
-                    rows={5}
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Attachment link */}
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-white transition font-bold"
-              >
-                <Paperclip className="size-3.5" />
-                <span>Add Attachments</span>
-              </button>
-
-              {/* Footer */}
-              <div className="flex justify-start items-center gap-4 pt-2">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-xl text-xs font-bold"
-                >
-                  Create Post
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-slate-500 hover:text-slate-700 font-bold"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+        ) : (
+          <div className="p-4 border border-dashed rounded-xl text-center text-muted-foreground text-xs">
+            No categories available.
           </div>
-        </div>
-      )}
+        )}
+      </Card>
     </div>
   );
 }
