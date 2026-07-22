@@ -2,6 +2,7 @@ import React, { useState, useEffect, ReactNode } from 'react';
 import { HODDepartmentProvider } from '../../hooks/useHODDepartment';
 import { HODSidebar } from './HODSidebar';
 import { HODHeader } from './HODHeader';
+import { HODErrorBoundary } from '../shared/HODErrorBoundary';
 
 interface HODLayoutProps {
   children?: ReactNode;
@@ -11,7 +12,6 @@ export function HODLayoutInner({ children }: HODLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Sync with the global theme — same as DashboardLayout
   const [dark, setDark] = useState(() => {
     if (typeof window !== 'undefined') {
       return (
@@ -32,15 +32,12 @@ export function HODLayoutInner({ children }: HODLayoutProps) {
 
   return (
     <div className={`${dark ? 'dark' : ''} min-h-screen bg-gradient-soft text-foreground flex font-sans antialiased`}>
-      {/* Sidebar */}
       <HODSidebar
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed(!collapsed)}
         mobileOpen={mobileOpen}
         onCloseMobile={() => setMobileOpen(false)}
       />
-
-      {/* Main Content Area */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${collapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
         <HODHeader
           onOpenMobileSidebar={() => setMobileOpen(true)}
@@ -58,7 +55,9 @@ export function HODLayoutInner({ children }: HODLayoutProps) {
           }}
         />
         <main className="flex-1 p-6">
-          {children}
+          <HODErrorBoundary>
+            {children}
+          </HODErrorBoundary>
         </main>
       </div>
     </div>

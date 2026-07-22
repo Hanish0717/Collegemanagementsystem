@@ -51,6 +51,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+let isRedirectingToLogin = false;
+
 // Handle backend response or fallback to local mock server when offline / backend unavailable
 api.interceptors.response.use(
   (res) => res,
@@ -79,12 +81,12 @@ api.interceptors.response.use(
     }
 
     if (err.response?.status === 401) {
-      if (typeof window !== "undefined") {
+      const isLoginRequest = err.config?.url?.includes('/auth/login') || err.config?.url?.includes('/login');
+      if (!isLoginRequest && typeof window !== "undefined") {
         const activeRole = localStorage.getItem("campusly.role");
         const reqUrl = originalRequest.url || "";
         const isStudentReq = reqUrl.includes("student") || reqUrl.includes("attendance") || reqUrl.includes("fees") || reqUrl.includes("exams") || activeRole === "student";
 
-        // If student request or student role, fallback to mock responses without clearing session
         if (isStudentReq) {
           try {
             const { processMockStudentRequest } = await import("./mockStudentApi");
@@ -98,21 +100,36 @@ api.interceptors.response.use(
             console.error("Mock handler error on 401:", mockErr);
           }
         }
-        localStorage.removeItem("cms_token");
-        localStorage.removeItem("cms_user");
-        localStorage.removeItem("campusly.role");
-      }
-      toast.error("Session expired. Redirecting to login.");
-      try {
-        const { routerInstance } = await import("../router");
-        if (routerInstance) {
-          routerInstance.navigate({ to: "/login", replace: true });
-        } else if (typeof window !== "undefined") {
-          window.location.href = "/login";
-        }
-      } catch (e) {
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
+
+        const currentToken = localStorage.getItem("cms_token");
+        const isFacultyToken = currentToken && currentToken.startsWith("faculty_token_");
+
+        if (!isFacultyToken) {
+          localStorage.removeItem("cms_token");
+          localStorage.removeItem("cms_user");
+          localStorage.removeItem("campusly.role");
+
+          const isAlreadyOnLogin = window.location.pathname === "/login";
+          if (!isAlreadyOnLogin && !isRedirectingToLogin) {
+            isRedirectingToLogin = true;
+            toast.error("Session expired. Redirecting to login.");
+            setTimeout(() => {
+              isRedirectingToLogin = false;
+            }, 3000);
+          }
+
+          try {
+            const { routerInstance } = await import("../router");
+            if (routerInstance && !isAlreadyOnLogin) {
+              routerInstance.navigate({ to: "/login", replace: true });
+            } else if (!isAlreadyOnLogin) {
+              window.location.href = "/login";
+            }
+          } catch (e) {
+            if (!isAlreadyOnLogin) {
+              window.location.href = "/login";
+            }
+          }
         }
       }
     } else if (err.response?.status === 403) {

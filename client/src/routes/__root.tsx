@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 import { FloatingChatWidget } from "@/components/dashboard/FloatingChatWidget";
@@ -102,6 +103,7 @@ function RootComponent() {
       <AuthProvider>
         <Outlet />
         <FloatingChatWidget />
+        <Toaster position="top-right" richColors closeButton />
       </AuthProvider>
     </QueryClientProvider>
   );

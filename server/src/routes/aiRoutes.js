@@ -20,7 +20,7 @@ const optionalProtect = async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'super_secret_jwt_key_12345_college_management');
       
       const { data: user } = await supabase
         .from('users')
