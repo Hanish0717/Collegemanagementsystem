@@ -160,6 +160,19 @@
       "role": "alumni",
       "is_verified": true,
       "is_active": true
+    },
+    {
+      "id": "218a68ef-b92e-4f11-b5a7-6ea64235c934",
+      "created_at": "2026-07-22T07:55:01.930Z",
+      "updated_at": "2026-07-22T07:55:01.930Z",
+      "name": "BODDEDA VISHNU VARDHAN",
+      "full_name": "BODDEDA VISHNU VARDHAN",
+      "email": "vvardhan1235@gmail.com",
+      "role": "faculty",
+      "password": "$2a$10$wquq8pXhySNSIdVZvuA0Me42S2o6A1jGR.bwdLf3KXNnuA4mtY4P6",
+      "temp_password": "Staff@12345",
+      "is_verified": true,
+      "is_active": true
     }
   ],
   "students": [
@@ -210,6 +223,21 @@
       "status": "Active",
       "attendance_percentage": 95,
       "is_active": true
+    },
+    {
+      "id": "d7e8d50a-3256-4d69-bf43-6f20caa11d11",
+      "created_at": "2026-07-22T07:55:01.961Z",
+      "updated_at": "2026-07-22T07:55:01.961Z",
+      "user_id": "218a68ef-b92e-4f11-b5a7-6ea64235c934",
+      "full_name": "BODDEDA VISHNU VARDHAN",
+      "email": "vvardhan1235@gmail.com",
+      "employee_id": "21351",
+      "department": "CSE",
+      "designation": "Assistant Professor",
+      "experience": 0,
+      "phone_number": "+16300460031",
+      "is_active": true,
+      "status": "Active"
     }
   ],
   "books": [
@@ -227,7 +255,7 @@
       "language": "English",
       "description": "The bible of algorithms.",
       "is_active": true,
-      "updated_at": "2026-07-22T07:32:00.373Z"
+      "updated_at": "2026-07-22T07:59:22.972Z"
     },
     {
       "id": "b2222222-2222-2222-2222-222222222222",
@@ -243,19 +271,19 @@
       "language": "English",
       "description": "Core database text.",
       "is_active": true,
-      "updated_at": "2026-07-22T07:32:00.373Z"
+      "updated_at": "2026-07-22T07:59:22.972Z"
     },
     {
       "id": "26be8301-49ea-451a-b495-2523b359d6cb",
       "created_at": "2026-07-22T07:32:19.944Z",
-      "updated_at": "2026-07-22T07:32:19.944Z",
+      "updated_at": "2026-07-22T07:59:22.972Z",
       "title": "kjasbdihadcSD",
       "author": "DAS",
       "category": "Computer Science",
       "isbn": "FGTSDFSDD",
       "publisher": "",
       "quantity": 10,
-      "available_quantity": 10,
+      "available_quantity": 1,
       "shelf_location": "",
       "description": "",
       "cover_image": "",
@@ -424,7 +452,19 @@
       "section": "A"
     }
   ],
-  "otps": [],
+  "otps": [
+    {
+      "id": "ffbaddce-a4c8-4e06-975a-62d50342f498",
+      "created_at": "2026-07-22T07:55:02.019Z",
+      "updated_at": "2026-07-22T07:55:02.019Z",
+      "email": "vvardhan1235@gmail.com",
+      "otp": "bdf9c5437e469628e5e7019635713fb17a7504f8da8dda4dc7030f97a62b51a7",
+      "type": "email_verification",
+      "expires_at": "2026-07-22T08:00:02.018Z",
+      "attempts": 0,
+      "blocked_until": null
+    }
+  ],
   "faculty_attendance": [
     {
       "id": "fa111111-1111-1111-1111-111111111111",
@@ -606,6 +646,39 @@
       "time": "Just now",
       "unread": true,
       "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784706942561-397",
+      "created_at": "2026-07-22T07:55:42.595Z",
+      "updated_at": "2026-07-22T07:55:42.595Z",
+      "title": "Your ID Card request has been rejected. Reason: ",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-1784707150180",
+      "created_at": "2026-07-22T07:59:10.228Z",
+      "updated_at": "2026-07-22T07:59:10.228Z",
+      "title": "Book issued: 'kjasbdihadcSD' by DAS. Due: 5 Aug.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-LIB-RET-1784707162973",
+      "created_at": "2026-07-22T07:59:23.008Z",
+      "updated_at": "2026-07-22T07:59:23.008Z",
+      "title": "Book returned: 'Unknown'. Fine paid: ₹0.",
+      "type": "Library",
+      "priority": "Low",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
   "departments": [],
@@ -651,6 +724,19 @@
       "fine_amount": 0,
       "created_at": "2026-07-10T11:00:00.000Z",
       "updated_at": "2026-07-22T07:32:00.340Z"
+    },
+    {
+      "id": "62327d23-a96f-4b41-ac27-bdb276c4cf6e",
+      "created_at": "2026-07-22T07:59:10.150Z",
+      "updated_at": "2026-07-22T07:59:22.922Z",
+      "student": "s1111111-1111-1111-1111-111111111111",
+      "book": "26be8301-49ea-451a-b495-2523b359d6cb",
+      "user_id": "44444444-4444-4444-4444-444444444444",
+      "issue_date": "2026-07-22",
+      "due_date": "2026-08-05",
+      "status": "Returned",
+      "return_date": "2026-07-22",
+      "fine_amount": 0
     }
   ],
   "chat_messages": [
@@ -686,13 +772,13 @@
     {
       "id": "4b7d3d27-f8ec-4fe7-a09d-e5fba49dfade",
       "created_at": "2026-07-22T07:40:10.863Z",
-      "updated_at": "2026-07-22T07:40:10.863Z",
+      "updated_at": "2026-07-22T07:55:42.560Z",
       "student_id": "s1111111-1111-1111-1111-111111111111",
       "request_type": "Duplicate",
       "reason": "Lost Card",
-      "status": "Pending",
+      "status": "Rejected",
       "payment_status": "Pending",
-      "rejection_reason": ""
+      "rejection_reason": "No reason provided"
     }
   ],
   "id_cards": [
