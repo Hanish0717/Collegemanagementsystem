@@ -177,7 +177,10 @@ export function HODMentoringPage() {
         subtitle={`Select faculty mentor for ${departmentInfo.shortName} students`}
         variant="assign"
         confirmLabel="Assign Mentor"
-        onConfirm={() => NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to cohort')}
+        onConfirm={() => {
+          setAssignModal(false);
+          NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to cohort');
+        }}
       >
         <div className="space-y-3">
           <div>

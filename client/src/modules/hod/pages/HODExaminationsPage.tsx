@@ -23,6 +23,7 @@ import {
   BookOpen,
   Eye,
   Search,
+  Star,
 } from 'lucide-react';
 
 export function HODExaminationsPage() {
@@ -94,7 +95,7 @@ export function HODExaminationsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatisticsCard label="Department Pass %" value={`${summary.deptPassPercentage || 94.2}%`} subtitle="Overall pass rate" icon={CheckCircle2} accentColor="emerald" />
           <StatisticsCard label="Average Dept Marks" value={`${summary.averageMarks || 84.5}%`} subtitle="Internal + External" icon={Award} accentColor="blue" />
-          <StatisticsCard label="Top Performers (CGPA > 9.0)" value={summary.topPerformersCount || 18} subtitle="Dean's List" icon={StarIcon} accentColor="purple" />
+          <StatisticsCard label="Top Performers (CGPA > 9.0)" value={summary.topPerformersCount || 18} subtitle="Dean's List" icon={Star} accentColor="purple" />
           <StatisticsCard label="Active Backlogs" value={summary.backlogsCount || 5} subtitle="Remedial support needed" icon={BookOpen} accentColor="rose" />
         </div>
       }

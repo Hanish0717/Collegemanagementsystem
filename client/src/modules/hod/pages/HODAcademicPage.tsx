@@ -285,7 +285,10 @@ export function HODAcademicPage() {
         subtitle={`Allocate subject course to ${departmentInfo.shortName} faculty`}
         variant="assign"
         confirmLabel="Assign Subject"
-        onConfirm={() => NotificationToast.success('Subject Assigned', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar')}
+        onConfirm={() => {
+          setAssignSubjectModal(false);
+          NotificationToast.success('Subject Assigned', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar');
+        }}
       >
         <div className="space-y-3">
           <div>

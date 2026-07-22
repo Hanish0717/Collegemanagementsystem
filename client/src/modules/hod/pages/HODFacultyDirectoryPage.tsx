@@ -251,7 +251,10 @@ export function HODFacultyDirectoryPage() {
         subtitle={`Workload allocation for ${departmentInfo.shortName} faculty`}
         variant="assign"
         confirmLabel="Allocate Workload"
-        onConfirm={() => NotificationToast.success('Subject Allocated', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar')}
+        onConfirm={() => {
+          setAssignSubjectsModal(false);
+          NotificationToast.success('Subject Allocated', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar');
+        }}
       >
         <div className="space-y-3">
           <div>
@@ -281,7 +284,10 @@ export function HODFacultyDirectoryPage() {
         subtitle={`Class advisory responsibilities for ${departmentInfo.shortName} cohorts`}
         variant="assign"
         confirmLabel="Assign Advisor"
-        onConfirm={() => NotificationToast.success('Class Advisor Assigned', 'Prof. Sneha Verma assigned as Class Advisor for Sem 5 Section B')}
+        onConfirm={() => {
+          setAssignAdvisorModal(false);
+          NotificationToast.success('Class Advisor Assigned', 'Prof. Sneha Verma assigned as Class Advisor for Sem 5 Section B');
+        }}
       >
         <div className="space-y-3">
           <div>
