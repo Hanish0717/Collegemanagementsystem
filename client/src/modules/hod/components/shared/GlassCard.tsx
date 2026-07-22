@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 
 interface GlassCardProps {
   children: ReactNode;
@@ -9,13 +10,14 @@ interface GlassCardProps {
 
 export function GlassCard({ children, className = '', hoverEffect = true, onClick }: GlassCardProps) {
   return (
-    <div
+    <motion.div
+      whileHover={hoverEffect ? { y: -3, transition: { duration: 0.2 } } : undefined}
       onClick={onClick}
-      className={`bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-6 shadow-sm ${
-        hoverEffect ? 'transition-all duration-300 hover:shadow-lg hover:border-blue-500/40 hover:-translate-y-0.5' : ''
+      className={`bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 shadow-sm dark:shadow-slate-950/20 ${
+        hoverEffect ? 'hover:shadow-xl hover:border-blue-500/40' : ''
       } ${onClick ? 'cursor-pointer' : ''} ${className}`}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }

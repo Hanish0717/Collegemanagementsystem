@@ -1,6 +1,8 @@
 import React, { ReactNode } from 'react';
+import { motion } from 'framer-motion';
 import { Breadcrumb, BreadcrumbItem } from './Breadcrumb';
 import { useHODDepartment } from '../../hooks/useHODDepartment';
+import { Sparkles } from 'lucide-react';
 
 interface DepartmentHeaderProps {
   title: string;
@@ -13,24 +15,34 @@ export function DepartmentHeader({ title, subtitle, breadcrumbItems = [], action
   const { departmentInfo } = useHODDepartment();
 
   const items: BreadcrumbItem[] = [
-    { label: 'Dashboard', to: '/hod/dashboard' },
+    { label: 'HOD Workspace', to: '/hod/dashboard' },
     ...breadcrumbItems,
   ];
 
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800/80">
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800/80"
+    >
       <div>
         <Breadcrumb items={items} />
-        <div className="flex items-center gap-3 mt-1">
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">{title}</h1>
-          <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-            {departmentInfo.shortName} Dept
+        <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            {title}
+          </h1>
+          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs flex items-center gap-1">
+            <Sparkles className="size-3 text-amber-300" /> {departmentInfo.shortName} Department
           </span>
         </div>
-        {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">{subtitle}</p>}
+        {subtitle && (
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">
+            {subtitle}
+          </p>
+        )}
       </div>
 
-      {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
-    </div>
+      {actions && <div className="flex items-center gap-2.5 shrink-0 flex-wrap">{actions}</div>}
+    </motion.div>
   );
 }
