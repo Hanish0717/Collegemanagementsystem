@@ -308,8 +308,24 @@ function LoginForm() {
                 onChange={(e) => {
                   const id = e.target.value as RoleId;
                   setRoleId(id);
-                  setEmail(id === "lms" ? "learning@college.com" : "");
-                  setPassword("");
+                  const emailMap: Record<string, string> = {
+                    hod: "hod.aiml@college.com",
+                    super_admin: "superadmin@college.com",
+                    admin: "admin@college.com",
+                    faculty: "faculty@college.com",
+                    student: "student@college.com",
+                    lms: "lms.coordinator@college.com",
+                    librarian: "librarian@college.com",
+                    placement: "placement@college.com",
+                    warden: "warden@college.com",
+                    transport: "transport@college.com",
+                    principal: "principal@college.com",
+                    dean: "dean@college.com",
+                    exam_cell: "examcell@college.com",
+                    accounts: "accounts@college.com",
+                  };
+                  setEmail(emailMap[id] || "");
+                  setPassword("password123");
                   setError(null);
                 }}
                 className="w-full appearance-none rounded-xl border bg-background/60 pl-4 pr-10 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring cursor-pointer"
