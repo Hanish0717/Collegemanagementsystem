@@ -266,12 +266,44 @@ export async function fetchIDCardStats(): Promise<any> {
     return data.data;
   } catch {
     return {
-      totalCards: 1450,
-      activeCards: 1320,
-      pendingRequests: 18,
-      printedToday: 12,
-      lostReported: 5,
-      totalRevenue: 24500
+      stats: {
+        totalStudents: 1450,
+        totalIssued: 1320,
+        pendingCards: 18,
+        lostCards: 5,
+        duplicateIssued: 12,
+        expiredCards: 3,
+        todayRequests: 4,
+        todayPrinted: 12,
+        totalAmountCollected: 24500,
+        pendingPayments: 450
+      },
+      charts: {
+        monthlyIssued: [
+          { month: 'Feb 26', count: 120 },
+          { month: 'Mar 26', count: 180 },
+          { month: 'Apr 26', count: 210 },
+          { month: 'May 26', count: 160 },
+          { month: 'Jun 26', count: 290 },
+          { month: 'Jul 26', count: 360 }
+        ],
+        pendingVsIssued: [
+          { name: 'Issued', value: 1320 },
+          { name: 'Pending Requests', value: 18 }
+        ],
+        departmentWise: [
+          { department: 'CSE', count: 420 },
+          { department: 'ECE', count: 350 },
+          { department: 'EEE', count: 280 },
+          { department: 'MECH', count: 270 }
+        ],
+        paymentCollection: [
+          { date: 'Jul 15', amount: 1500 },
+          { date: 'Jul 18', amount: 3000 },
+          { date: 'Jul 20', amount: 2400 },
+          { date: 'Jul 22', amount: 1800 }
+        ]
+      }
     };
   }
 }
