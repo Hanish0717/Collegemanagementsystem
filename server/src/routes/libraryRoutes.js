@@ -80,6 +80,7 @@ router.put('/settings', updateLibrarySettings);
 
 // ID Card routes
 router.get('/id-cards/stats', authorizeRoles('librarian', 'admin', 'super-admin'), getIdCardStats);
+router.get('/id-cards/students', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
 router.get('/id-cards/students/search', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
 router.get('/id-cards/search', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
 router.get('/id-cards/students/:studentId', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), getStudentProfile);
