@@ -381,10 +381,10 @@ export const login = async (req, res, next) => {
             is_verified: true,
             is_active: true
           };
-        } else if (cleanEmail === 'student@college.com' || cleanEmail.startsWith('student.')) {
+        } else if (cleanEmail === 'student@college.com' || cleanEmail === 'hanish@gmail.com' || cleanEmail.includes('student') || cleanEmail.startsWith('student.')) {
           user = {
             id: '44444444-4444-4444-4444-444444444444',
-            full_name: 'Alex Student',
+            full_name: 'Gudipati Chandra',
             email: cleanEmail,
             password: defaultHash,
             role: 'student',
