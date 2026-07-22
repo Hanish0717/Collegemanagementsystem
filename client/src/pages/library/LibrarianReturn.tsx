@@ -132,7 +132,7 @@ export function LibrarianReturn() {
         const admission = (studentObj as any)?.admissionNumber || "";
         const bookObj = typeof issue.book === "object" ? issue.book : null;
         const bookTitle = bookObj?.title || "";
-        const isbn = bookObj?.isbn || "";
+        const isbn = (bookObj as any)?.isbn || "";
 
         return (
           studentName.toLowerCase().includes(q) ||
@@ -201,7 +201,7 @@ export function LibrarianReturn() {
                           const studentName = typeof issue.student === "object" ? issue.student?.fullName : "Student";
                           const roll = typeof issue.student === "object" ? issue.student?.rollNumber : "";
                           const title = typeof issue.book === "object" ? issue.book?.title : "Book";
-                          const isbn = typeof issue.book === "object" ? issue.book?.isbn : "";
+                          const isbn = typeof issue.book === "object" ? (issue.book as any)?.isbn : "";
 
                           return (
                             <button

@@ -1,5 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { LibraryDashboard } from "@/pages/library/LibraryDashboard";
+import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 import { isAuthenticated } from "@/services/authService";
 
 export const Route = createFileRoute("/dashboard/library")({
@@ -8,5 +7,5 @@ export const Route = createFileRoute("/dashboard/library")({
       throw redirect({ to: "/login" });
     }
   },
-  component: LibraryDashboard,
+  component: Outlet,
 });

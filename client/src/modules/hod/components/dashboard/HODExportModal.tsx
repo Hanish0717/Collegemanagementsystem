@@ -23,7 +23,7 @@ export function HODExportModal({ isOpen, onClose }: HODExportModalProps) {
       Metric: card.title,
       Value: card.value,
       Change: card.change,
-      Status: card.badgeText || card.trend,
+      Status: (card as any).badgeText || (card as any).trend || '',
       Department: departmentInfo.name,
       Generated_At: new Date().toLocaleString()
     }));

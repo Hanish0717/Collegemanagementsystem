@@ -12,6 +12,7 @@ import { ActionsMenu } from '../components/shared/ActionsMenu';
 import { Button } from '../components/shared/Button';
 import { Modal } from '../components/shared/Modal';
 import { NotificationToast } from '../components/shared/NotificationToast';
+import { exportToCSV } from '../utils/exportUtils';
 
 import {
   Heart,

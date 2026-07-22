@@ -49,6 +49,7 @@ export function Modal({
     approval: { icon: CheckCircle2, bg: 'bg-emerald-100 dark:bg-emerald-950/50', text: 'text-emerald-600' },
     success: { icon: CheckCircle2, bg: 'bg-emerald-100 dark:bg-emerald-950/50', text: 'text-emerald-600' },
     warning: { icon: AlertTriangle, bg: 'bg-amber-100 dark:bg-amber-950/50', text: 'text-amber-600' },
+    info: { icon: Info, bg: 'bg-blue-100 dark:bg-blue-950/50', text: 'text-blue-600' },
   };
 
   const currentVariant = variantIcons[variant];

@@ -397,15 +397,15 @@ function LoginForm() {
       }
 
       const user = result;
-      const targetRole = roleId || toFrontendRole(user.role);
+      const userFrontendRole = toFrontendRole(user.role || roleId || 'student');
 
-      if (targetRole === 'lms') {
-        setActiveRole('lms');
-        localStorage.setItem('campusly.role', 'lms');
+      setActiveRole(userFrontendRole);
+      localStorage.setItem('campusly.role', userFrontendRole);
+
+      if (userFrontendRole === 'lms') {
         navigate({ to: '/dashboard/admin/lms' });
       } else {
-        setActiveRole(toFrontendRole(user.role || targetRole));
-        const targetDash = getDashboardForRole(user.role || targetRole);
+        const targetDash = getDashboardForRole(user.role || userFrontendRole);
         navigate({ to: targetDash as any });
         setTimeout(() => {
           if (window.location.pathname.includes('/login')) {
