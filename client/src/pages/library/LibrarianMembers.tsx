@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Users, UserCheck, ShieldCheck, Mail, Phone, Building, Briefcase, UserPlus } from "lucide-react";
+import { Search, Plus, Users, UserCheck, ShieldCheck, Mail, Phone, Building, Briefcase, UserPlus, Filter } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchStudents, updateStudent, fetchFaculty, createFaculty, updateFaculty } from "@/services/adminService";
@@ -26,7 +26,7 @@ export function LibrarianMembers() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  const [filterType, setFilterType] = useState("All"); // All | Student | Staff
+  const [filterType, setFilterType] = useState("All"); // All | Staff | Student
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -260,13 +260,22 @@ export function LibrarianMembers() {
     return matchesStatus && matchesType && matchesSearch;
   });
 
-  // Summary Metrics
+  // Category specific lists for counts
   const totalCount = allMembers.length;
   const studentCount = studentMembers.length;
   const staffCount = staffMembers.length;
-  const activeCount = allMembers.filter((m) => m.status === "Active").length;
-  const totalIssued = allMembers.reduce((sum, m) => sum + m.booksIssued, 0);
-  const outstandingFines = allMembers.reduce((sum, m) => sum + m.fineAmount, 0);
+
+  // Selected Category Display Data
+  const displayedCategoryMembers =
+    filterType === "Staff"
+      ? staffMembers
+      : filterType === "Student"
+      ? studentMembers
+      : allMembers;
+
+  const activeCount = displayedCategoryMembers.filter((m) => m.status === "Active").length;
+  const totalIssued = displayedCategoryMembers.reduce((sum, m) => sum + m.booksIssued, 0);
+  const outstandingFines = displayedCategoryMembers.reduce((sum, m) => sum + m.fineAmount, 0);
 
   if (isStudentsLoading || isFacultyLoading || isIssuedLoading) {
     return (
@@ -299,32 +308,59 @@ export function LibrarianMembers() {
         }
       />
 
-      {/* Search and Filter Bar */}
+      {/* Search and Category Filter Card */}
       <Card>
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
+          {/* Main Controls Header: Search & Category Dropdown */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+            {/* Search Input */}
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <input
-                placeholder="Search by student/staff name, Roll No, Employee ID, Email or Department..."
+                placeholder={
+                  filterType === "Staff"
+                    ? "Search staff members by name, employee ID, email, department..."
+                    : filterType === "Student"
+                    ? "Search students by name, roll number, email, department..."
+                    : "Search by student/staff name, Roll No, Employee ID, Email or Department..."
+                }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm outline-none focus:border-primary transition"
               />
             </div>
+
+            {/* Member Category Dropdown Select Box */}
+            <div className="flex items-center gap-2 bg-gradient-soft p-1 rounded-xl border shrink-0">
+              <Filter className="size-4 text-primary ml-2.5 shrink-0" />
+              <label htmlFor="memberTypeSelect" className="text-xs font-bold text-foreground whitespace-nowrap hidden sm:inline">
+                Member Category:
+              </label>
+              <select
+                id="memberTypeSelect"
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="bg-background text-foreground font-semibold text-xs py-2 px-3 rounded-lg border outline-none cursor-pointer focus:border-primary transition shadow-xs"
+              >
+                <option value="All">All Members ({totalCount})</option>
+                <option value="Staff">Staff Members Only ({staffCount})</option>
+                <option value="Student">Student Members Only ({studentCount})</option>
+              </select>
+            </div>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          {/* Secondary Controls: Status Pills & Category Quick Tabs */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-border/40">
             {/* Status Filter */}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground mr-1">Status:</span>
               {["All", "Active", "Inactive"].map((status) => (
                 <button
                   key={status}
                   onClick={() => setFilterStatus(status)}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                     filterStatus === status
-                      ? "bg-gradient-primary text-white"
+                      ? "bg-gradient-primary text-white shadow-xs"
                       : "bg-background border text-muted-foreground hover:border-primary"
                   }`}
                 >
@@ -333,19 +369,19 @@ export function LibrarianMembers() {
               ))}
             </div>
 
-            {/* Member Type Filter */}
+            {/* Category Tab Buttons (In sync with Dropdown) */}
             <div className="flex gap-2">
               {[
                 { id: "All", label: `All Members (${totalCount})` },
-                { id: "Student", label: `Students (${studentCount})` },
                 { id: "Staff", label: `Staff (${staffCount})` },
+                { id: "Student", label: `Students (${studentCount})` },
               ].map((type) => (
                 <button
                   key={type.id}
                   onClick={() => setFilterType(type.id)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition cursor-pointer ${
                     filterType === type.id
-                      ? "bg-sidebar-accent text-sidebar-primary border border-sidebar-border font-bold"
+                      ? "bg-sidebar-accent text-sidebar-primary border border-sidebar-border font-bold shadow-xs"
                       : "bg-background border text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -357,13 +393,33 @@ export function LibrarianMembers() {
         </div>
       </Card>
 
+      {/* Info Banner when Student Category is Selected */}
+      {filterType === "Student" && (
+        <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-center justify-between gap-2">
+          <span>
+            ℹ️ <strong>Student Category Active:</strong> All student records are automatically retrieved live from Central Student Management. No manual student registration required.
+          </span>
+          <Badge tone="info">Auto-Synced</Badge>
+        </div>
+      )}
+
+      {/* Info Banner when Staff Category is Selected */}
+      {filterType === "Staff" && (
+        <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 text-xs flex items-center justify-between gap-2">
+          <span>
+            💼 <strong>Staff Category Active:</strong> Showing staff and faculty library members. Click <strong>+ Add Staff Member</strong> to register a new staff member.
+          </span>
+          <Badge tone="info">Staff Directory</Badge>
+        </div>
+      )}
+
       {/* Empty State */}
       {filteredMembers.length === 0 && (
         <Card className="flex flex-col items-center justify-center py-12 text-center">
           <Users className="size-16 text-muted-foreground/40 mb-4 stroke-1 animate-pulse" />
-          <h3 className="text-lg font-semibold">No Library Members Found</h3>
+          <h3 className="text-lg font-semibold">No {filterType === "All" ? "Library" : filterType} Members Found</h3>
           <p className="text-sm text-muted-foreground mt-1 max-w-xs">
-            No active student or staff member records match your search query.
+            No active {filterType.toLowerCase()} member records match your search criteria.
           </p>
         </Card>
       )}
@@ -475,20 +531,22 @@ export function LibrarianMembers() {
         </div>
       )}
 
-      {/* Summary KPI Cards */}
+      {/* Summary KPI Cards (Dynamically calculated based on selected dropdown category) */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <div className="text-center">
-            <div className="text-xs text-muted-foreground">Total Members</div>
-            <div className="text-2xl font-bold text-foreground mt-1">{totalCount}</div>
+            <div className="text-xs text-muted-foreground">
+              Total {filterType === "All" ? "Members" : filterType === "Staff" ? "Staff Members" : "Student Members"}
+            </div>
+            <div className="text-2xl font-bold text-foreground mt-1">{displayedCategoryMembers.length}</div>
             <div className="text-[11px] text-muted-foreground mt-1">
-              {studentCount} Students • {staffCount} Staff
+              {filterType === "All" ? `${studentCount} Students • ${staffCount} Staff` : `${filterType} Category Active`}
             </div>
           </div>
         </Card>
         <Card>
           <div className="text-center">
-            <div className="text-xs text-muted-foreground">Active Members</div>
+            <div className="text-xs text-muted-foreground">Active {filterType === "All" ? "Members" : filterType}</div>
             <div className="text-2xl font-bold text-emerald-600 mt-1">{activeCount}</div>
             <div className="text-[11px] text-muted-foreground mt-1">
               Clear library status
