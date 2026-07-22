@@ -19,6 +19,7 @@ export interface HODDepartmentContextType {
   departmentInfo: DepartmentInfo;
   academicYear: string;
   currentSemester: string;
+  setDepartmentCode: (code: DepartmentCode) => void;
   setAcademicYear: (year: string) => void;
   setSemester: (sem: string) => void;
   filterByDepartment: <T extends { department?: string; department_code?: string }>(data: T[]) => T[];

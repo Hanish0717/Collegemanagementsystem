@@ -31,7 +31,7 @@ interface HODHeaderProps {
 
 export function HODHeader({ onOpenMobileSidebar, dark = false, onToggleDark }: HODHeaderProps) {
   const { user, logout } = useAuth();
-  const { departmentInfo, academicYear, setAcademicYear } = useHODDepartment();
+  const { departmentCode, departmentInfo, academicYear, setDepartmentCode, setAcademicYear } = useHODDepartment();
   const navigate = useNavigate();
 
   const [globalSearch, setGlobalSearch] = useState('');
@@ -63,18 +63,30 @@ export function HODHeader({ onOpenMobileSidebar, dark = false, onToggleDark }: H
           <Menu className="size-5" />
         </button>
 
-        {/* Department Badge + Academic Year Dropdown */}
+        {/* Branch / Department Selector + Academic Year Dropdown */}
         <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/60 text-xs font-bold text-blue-700 dark:text-blue-300 shadow-2xs">
           <Building2 className="size-4 text-blue-600 dark:text-blue-400" />
-          <span className="tracking-wide">{departmentInfo.shortName} Department</span>
+          <select
+            value={departmentCode}
+            onChange={(e) => setDepartmentCode(e.target.value)}
+            className="bg-transparent focus:outline-none cursor-pointer font-black text-blue-900 dark:text-blue-100"
+          >
+            <option value="CSE" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">CSE — Computer Science</option>
+            <option value="AIML" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">AIML — AI & Machine Learning</option>
+            <option value="ECE" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">ECE — Electronics & Comm</option>
+            <option value="EEE" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">EEE — Electrical & Electronics</option>
+            <option value="MECH" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">MECH — Mechanical Engg</option>
+            <option value="CIVIL" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">CIVIL — Civil Engg</option>
+            <option value="IT" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">IT — Information Tech</option>
+          </select>
           <span className="text-blue-300 dark:text-blue-700">|</span>
           <select
             value={academicYear}
             onChange={(e) => setAcademicYear(e.target.value)}
             className="bg-transparent focus:outline-none cursor-pointer font-extrabold text-blue-800 dark:text-blue-200"
           >
-            <option value="2025-2026">AY 2025-2026</option>
-            <option value="2024-2025">AY 2024-2025</option>
+            <option value="2025-2026" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">AY 2025-2026</option>
+            <option value="2024-2025" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">AY 2024-2025</option>
           </select>
         </div>
 
