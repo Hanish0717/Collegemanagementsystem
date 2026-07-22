@@ -1,11 +1,14 @@
 # Logs
 logs
 *.log
+debug_startup.txt
+error_log.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.tanstack
 
 node_modules
 dist
