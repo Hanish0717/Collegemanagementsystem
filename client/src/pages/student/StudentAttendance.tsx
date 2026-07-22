@@ -1,30 +1,30 @@
-import { useState, useEffect } from "react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { AlertTriangle, CheckCircle } from "lucide-react";
-import api from "@/lib/api";
-import { resolveStudentProfile } from "@/services/studentProfileService";
+import { useState, useEffect } from 'react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
+import api from '@/lib/api';
+import { resolveStudentProfile } from '@/services/studentProfileService';
 
 export function StudentAttendance() {
   const [records, setRecords] = useState<any[]>([]);
   const [subjectWise, setSubjectWise] = useState<any[]>([]);
   const [overallPercentage, setOverallPercentage] = useState(100);
   const [stats, setStats] = useState([
-    { label: "Overall Attendance", value: "0%", tone: "success" as const },
-    { label: "Present Days", value: "0", tone: "info" as const },
-    { label: "Absent Days", value: "0", tone: "danger" as const },
-    { label: "Total Conducted", value: "0", tone: "success" as const },
+    { label: 'Overall Attendance', value: '0%', tone: 'success' as const },
+    { label: 'Present Days', value: '0', tone: 'info' as const },
+    { label: 'Absent Days', value: '0', tone: 'danger' as const },
+    { label: 'Total Conducted', value: '0', tone: 'success' as const },
   ]);
   const [loading, setLoading] = useState(true);
 
   // Current Month calculations
   const [monthlyChartData, setMonthlyChartData] = useState<any[]>([
-    { name: "Present", count: 0, fill: "#10B981" },
-    { name: "Absent", count: 0, fill: "#EF4444" },
-    { name: "Late", count: 0, fill: "#F59E0B" }
+    { name: 'Present', count: 0, fill: '#10B981' },
+    { name: 'Absent', count: 0, fill: '#EF4444' },
+    { name: 'Late', count: 0, fill: '#F59E0B' },
   ]);
 
-  const thisMonthName = new Date().toLocaleString("en-US", { month: "long" });
+  const thisMonthName = new Date().toLocaleString('en-US', { month: 'long' });
 
   useEffect(() => {
     const fetchAttendance = async () => {
@@ -51,8 +51,8 @@ export function StudentAttendance() {
             date: new Date(r.date).toISOString().split('T')[0],
             subject: r.subject,
             period: r.period || null,
-            time: r.time || "09:00 AM",
-            status: r.status ? (r.status.charAt(0).toUpperCase() + r.status.slice(1)) : "Present"
+            time: r.time || '09:00 AM',
+            status: r.status ? r.status.charAt(0).toUpperCase() + r.status.slice(1) : 'Present',
           }));
 
           // Sort records descending by date, secondary descending by period
@@ -73,34 +73,42 @@ export function StudentAttendance() {
             return recDate.getMonth() === currentMonth && recDate.getFullYear() === currentYear;
           });
 
-          const currentPresent = currentMonthRecords.filter((r: any) => r.status === "Present").length;
-          const currentAbsent = currentMonthRecords.filter((r: any) => r.status === "Absent").length;
-          const currentLate = currentMonthRecords.filter((r: any) => r.status === "Late").length;
+          const currentPresent = currentMonthRecords.filter(
+            (r: any) => r.status === 'Present',
+          ).length;
+          const currentAbsent = currentMonthRecords.filter(
+            (r: any) => r.status === 'Absent',
+          ).length;
+          const currentLate = currentMonthRecords.filter((r: any) => r.status === 'Late').length;
 
           setMonthlyChartData([
-            { name: "Present", count: currentPresent, fill: "#10B981" },
-            { name: "Absent", count: currentAbsent, fill: "#EF4444" },
-            { name: "Late", count: currentLate, fill: "#F59E0B" }
+            { name: 'Present', count: currentPresent, fill: '#10B981' },
+            { name: 'Absent', count: currentAbsent, fill: '#EF4444' },
+            { name: 'Late', count: currentLate, fill: '#F59E0B' },
           ]);
 
           if (dbStats) {
             const pctVal = dbStats.percentage !== undefined ? dbStats.percentage : 100;
             setOverallPercentage(pctVal);
             const overall = `${pctVal}%`;
-            const present = dbStats.present !== undefined ? String(dbStats.present) : "0";
-            const absent = dbStats.absent !== undefined ? String(dbStats.absent) : "0";
-            const total = dbStats.total !== undefined ? String(dbStats.total) : "0";
+            const present = dbStats.present !== undefined ? String(dbStats.present) : '0';
+            const absent = dbStats.absent !== undefined ? String(dbStats.absent) : '0';
+            const total = dbStats.total !== undefined ? String(dbStats.total) : '0';
 
             setStats([
-              { label: "Overall Attendance", value: overall, tone: (pctVal >= 75 ? "success" : "danger") as any },
-              { label: "Present Days", value: present, tone: "info" as const },
-              { label: "Absent Days", value: absent, tone: "danger" as const },
-              { label: "Total Conducted", value: total, tone: "success" as const },
+              {
+                label: 'Overall Attendance',
+                value: overall,
+                tone: (pctVal >= 75 ? 'success' : 'danger') as any,
+              },
+              { label: 'Present Days', value: present, tone: 'info' as const },
+              { label: 'Absent Days', value: absent, tone: 'danger' as const },
+              { label: 'Total Conducted', value: total, tone: 'success' as const },
             ]);
           }
         }
       } catch (err) {
-        console.error("Error loading attendance records:", err);
+        console.error('Error loading attendance records:', err);
       } finally {
         setLoading(false);
       }
@@ -126,7 +134,11 @@ export function StudentAttendance() {
           <div>
             <h4 className="font-bold text-sm text-red-800">Attendance Shortage Alert</h4>
             <p className="text-xs text-red-700/80 mt-1">
-              Your overall attendance is currently <strong className="font-extrabold">{overallPercentage}%</strong>, which falls below the institutional minimum threshold of <strong className="font-extrabold">75%</strong>. You are currently <strong className="underline">NOT eligible</strong> to sit for examinations unless condoned or excused by academic office.
+              Your overall attendance is currently{' '}
+              <strong className="font-extrabold">{overallPercentage}%</strong>, which falls below
+              the institutional minimum threshold of <strong className="font-extrabold">75%</strong>
+              . You are currently <strong className="underline">NOT eligible</strong> to sit for
+              examinations unless condoned or excused by academic office.
             </p>
           </div>
         </div>
@@ -138,30 +150,31 @@ export function StudentAttendance() {
           <div>
             <h4 className="font-bold text-sm text-emerald-800">Attendance Status: Eligible</h4>
             <p className="text-xs text-emerald-700/80 mt-1">
-              Congratulations! Your overall attendance is <strong className="font-bold">{overallPercentage}%</strong>. You meet the minimum requirements and are fully eligible for institutional evaluations, placements, and terminal examinations.
+              Congratulations! Your overall attendance is{' '}
+              <strong className="font-bold">{overallPercentage}%</strong>. You meet the minimum
+              requirements and are fully eligible for institutional evaluations, placements, and
+              terminal examinations.
             </p>
           </div>
         </div>
       )}
 
       <div className="grid md:grid-cols-4 gap-4">
-        {loading ? (
-          [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-24 animate-pulse bg-muted/40">
-              <div />
-            </Card>
-          ))
-        ) : (
-          stats.map(stat => (
-            <Card key={stat.label}>
-              <div className="text-xs text-muted-foreground">{stat.label}</div>
-              <div className="text-2xl font-bold mt-2">{stat.value}</div>
-              <Badge tone={stat.tone} className="mt-3">
-                Current
-              </Badge>
-            </Card>
-          ))
-        )}
+        {loading
+          ? [1, 2, 3, 4].map((n) => (
+              <Card key={n} className="h-24 animate-pulse bg-muted/40">
+                <div />
+              </Card>
+            ))
+          : stats.map((stat) => (
+              <Card key={stat.label}>
+                <div className="text-xs text-muted-foreground">{stat.label}</div>
+                <div className="text-2xl font-bold mt-2">{stat.value}</div>
+                <Badge tone={stat.tone} className="mt-3">
+                  Current
+                </Badge>
+              </Card>
+            ))}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
@@ -172,9 +185,16 @@ export function StudentAttendance() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Subject Name", "Conducted", "Attended", "Absent", "Percentage", "Status"].map((h) => (
-                    <th key={h} className="text-left py-3 px-4 font-semibold text-muted-foreground">{h}</th>
-                  ))}
+                  {['Subject Name', 'Conducted', 'Attended', 'Absent', 'Percentage', 'Status'].map(
+                    (h) => (
+                      <th
+                        key={h}
+                        className="text-left py-3 px-4 font-semibold text-muted-foreground"
+                      >
+                        {h}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -183,15 +203,18 @@ export function StudentAttendance() {
                     const isLow = sw.percentage < 75;
                     const attended = sw.present + sw.late;
                     return (
-                      <tr key={sw.subject} className={`hover:bg-accent/50 transition ${isLow ? "bg-red-50/20" : ""}`}>
+                      <tr
+                        key={sw.subject}
+                        className={`hover:bg-accent/50 transition ${isLow ? 'bg-red-50/20' : ''}`}
+                      >
                         <td className="py-3 px-4 font-medium">{sw.subject}</td>
                         <td className="py-3 px-4 text-muted-foreground">{sw.total}</td>
                         <td className="py-3 px-4 text-emerald-600 font-medium">{attended}</td>
                         <td className="py-3 px-4 text-red-500 font-medium">{sw.absent}</td>
                         <td className="py-3 px-4 font-bold">{sw.percentage}%</td>
                         <td className="py-3 px-4">
-                          <Badge tone={isLow ? "danger" : "success"}>
-                            {isLow ? "Shortage" : "Good"}
+                          <Badge tone={isLow ? 'danger' : 'success'}>
+                            {isLow ? 'Shortage' : 'Good'}
                           </Badge>
                         </td>
                       </tr>
@@ -216,19 +239,19 @@ export function StudentAttendance() {
             {loading ? (
               <div className="h-full w-full bg-muted/20 animate-pulse rounded-xl" />
             ) : (
-            <ResponsiveContainer>
-              <BarChart data={monthlyChartData}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
-                <YAxis stroke="#64748B" fontSize={12} allowDecimals={false} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                <Bar dataKey="count" radius={[8, 8, 0, 0]}>
-                  {monthlyChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+              <ResponsiveContainer>
+                <BarChart data={monthlyChartData}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
+                  <YAxis stroke="#64748B" fontSize={12} allowDecimals={false} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                  <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                    {monthlyChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             )}
           </div>
         </Card>
@@ -245,7 +268,7 @@ export function StudentAttendance() {
             <table className="w-full text-sm">
               <thead className="border-b">
                 <tr>
-                  {["Date", "Subject", "Period", "Time", "Status"].map((column) => (
+                  {['Date', 'Subject', 'Period', 'Time', 'Status'].map((column) => (
                     <th
                       key={column}
                       className="text-left py-3 px-4 font-semibold text-muted-foreground"
@@ -264,19 +287,21 @@ export function StudentAttendance() {
                         <Badge tone="info">{record.subject}</Badge>
                       </td>
                       <td className="py-3 px-4 font-medium text-xs">
-                        {record.period ? `Period ${record.period}` : "N/A"}
+                        {record.period ? `Period ${record.period}` : 'N/A'}
                       </td>
-                      <td className="py-3 px-4 text-muted-foreground">{record.time || "N/A"}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{record.time || 'N/A'}</td>
                       <td className="py-3 px-4">
-                        <Badge tone={
-                          record.status === "Present" 
-                            ? "success" 
-                            : record.status === "Late" 
-                              ? "warn" 
-                              : record.status === "Excused" 
-                                ? "info"
-                                : "danger"
-                        }>
+                        <Badge
+                          tone={
+                            record.status === 'Present'
+                              ? 'success'
+                              : record.status === 'Late'
+                                ? 'warn'
+                                : record.status === 'Excused'
+                                  ? 'info'
+                                  : 'danger'
+                          }
+                        >
                           {record.status}
                         </Badge>
                       </td>
