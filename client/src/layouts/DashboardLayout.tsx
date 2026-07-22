@@ -29,12 +29,8 @@ import {
   Send,
   Calendar,
   Users,
-  Fingerprint,
-  Building2,
-  ArrowLeft,
-  CalendarCheck
 } from "lucide-react";
-import { getActiveRole, type Role, ROLE_LIST, setActiveRole, type RoleId } from "@/lib/roles";
+import { getActiveRole, type Role, ROLE_LIST, ROLES, setActiveRole, type RoleId } from "@/lib/roles";
 import { getDashboardForRole, toBackendRole } from "@/services/authService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -72,18 +68,27 @@ export function DashboardLayout() {
     return false;
   });
 
-  const [role, setRole] = useState<Role>(() => getActiveRole());
   const path = useRouterState({ select: (r) => r.location.pathname });
+
+  const [role, setRole] = useState<Role>(() => {
+    const active = getActiveRole();
+    if (typeof window !== "undefined") {
+      const p = window.location.pathname;
+      if (!p.startsWith("/dashboard/admin") && !p.startsWith("/dashboard/super-admin") && (p.startsWith("/dashboard/faculty") || p.startsWith("/faculty"))) return ROLES.faculty;
+    }
+    return active;
+  });
+
+  useEffect(() => {
+    if (!path.startsWith("/dashboard/admin") && !path.startsWith("/dashboard/super-admin") && (path.startsWith("/dashboard/faculty") || path.startsWith("/faculty"))) {
+      if (role.id !== "faculty") setRole(ROLES.faculty);
+    } else {
+      const active = getActiveRole();
+      if (active.id !== role.id) setRole(active);
+    }
+  }, [path]);
   const currentSearch = useRouterState({ select: (r) => r.location.searchStr });
   const displayName = user?.fullName ?? "Anjali Sharma";
-
-  const displayRoleName = useMemo(() => {
-    if (role.id === "hod") {
-      const dept = user?.department || (user as any)?.dept;
-      return dept ? `HOD ${String(dept).toUpperCase()}` : "HOD Workspace";
-    }
-    return role.name;
-  }, [role, user]);
 
   // Popover States
   const [showRoleInfo, setShowRoleInfo] = useState(false);
@@ -371,7 +376,7 @@ export function DashboardLayout() {
 
   useEffect(() => {
     setRole(getActiveRole());
-  }, [path]);
+  }, []);
 
   // Theme effect
   useEffect(() => {
@@ -743,237 +748,189 @@ export function DashboardLayout() {
 
   const SidebarContent = ({ isMobile = false }) => (
     <>
-      {role.id === "student" ? (
-        <div className="p-3 border-b border-sidebar-border flex justify-center">
-          <div className="flex items-center justify-center p-2 rounded-xl hover:bg-sidebar-accent/50 transition cursor-pointer">
-            <div className="size-9 rounded-full bg-slate-200 dark:bg-slate-700 font-bold text-xs flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0 border border-slate-300 dark:border-slate-600">
-              {displayName.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+      <div className="p-4 flex items-center gap-2.5 border-b border-sidebar-border h-16">
+        <div
+          className={`size-9 rounded-xl bg-gradient-to-br ${role.gradient} grid place-items-center text-white shrink-0`}
+        >
+          <GraduationCap className="size-5" />
+        </div>
+        {(!collapsed || isMobile) && (
+          <div className="leading-tight">
+            <div className="font-bold text-base tracking-tight">College Management</div>
+            <div className="text-[10px] text-muted-foreground">{role.name} workspace</div>
+          </div>
+        )}
+      </div>
+
+      {(!collapsed || isMobile) && (
+        <div className="px-3 pt-3">
+          <div
+            className={`flex items-center gap-2 rounded-xl p-2.5 bg-gradient-to-br ${role.gradient} text-white shadow-soft`}
+          >
+            <div className="size-8 rounded-lg bg-white/15 grid place-items-center backdrop-blur">
+              <RoleIcon className="size-4" />
+            </div>
+            <div className="leading-tight">
+              <div className="text-xs font-semibold">{role.name}</div>
+              <div className="text-[10px] opacity-80">{role.short}</div>
             </div>
           </div>
         </div>
-      ) : (
-        <>
-          <div className="p-4 flex items-center gap-2.5 border-b border-sidebar-border h-16">
-            <div
-              className={`size-9 rounded-xl bg-gradient-to-br ${role.gradient} grid place-items-center text-white shrink-0`}
-            >
-              <GraduationCap className="size-5" />
-            </div>
-            {(!collapsed || isMobile) && (
-              <div className="leading-tight">
-                <div className="font-bold text-base tracking-tight">College Management</div>
-                <div className="text-[10px] text-muted-foreground">{displayRoleName} workspace</div>
-              </div>
-            )}
-          </div>
-
-          {(!collapsed || isMobile) && (
-            <div className="px-3 pt-3">
-              <div
-                className={`flex items-center gap-2 rounded-xl p-2.5 bg-gradient-to-br ${role.gradient} text-white shadow-soft`}
-              >
-                <div className="size-8 rounded-lg bg-white/15 grid place-items-center backdrop-blur">
-                  <RoleIcon className="size-4" />
-                </div>
-                <div className="leading-tight">
-                  <div className="text-xs font-semibold">{displayRoleName}</div>
-                  <div className="text-[10px] opacity-80">{role.short}</div>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
       )}
 
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {role.id === "student" && path.startsWith("/dashboard/student/leave") ? (
-          <>
-            {/* Back to main Student Dashboard link */}
-            <Link
-              to="/dashboard/student/notices"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-slate-800 dark:text-white hover:bg-sidebar-accent/50 transition-all select-none cursor-pointer"
-            >
-              <ArrowLeft className="size-4 shrink-0" />
-              <span>Hostel</span>
-            </Link>
+        {role.nav.map((item) => {
+          const active = item.exact
+            ? path === item.to
+            : path === item.to || path.startsWith(item.to + '/');
+          const isNotifItem = item.to.includes("notifications");
+          const hasUnread = isNotifItem && unreadCount > 0;
 
-            {/* Sub-menu items */}
-            {[
-              { to: "/dashboard/student/leave?tab=gate-pass", label: "Gate Pass", icon: Building2, activeCheck: !currentSearch || currentSearch.includes("tab=gate-pass") || !currentSearch.includes("tab=") },
-              { to: "/dashboard/student/leave?tab=punch-logs", label: "Hostel Punch Logs", icon: Fingerprint, activeCheck: currentSearch.includes("tab=punch-logs") },
-              { to: "/dashboard/student/leave?tab=attendance", label: "Hostel Attendance", icon: CalendarCheck, activeCheck: currentSearch.includes("tab=attendance") }
-            ].map((subItem) => (
-              <Link
-                key={subItem.to}
-                to={subItem.to.split("?")[0]}
-                search={Object.fromEntries(new URL(subItem.to, window.location.origin).searchParams)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all select-none cursor-pointer
-                  ${subItem.activeCheck
-                    ? "bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white font-extrabold"
-                    : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
-                  }`}
-              >
-                <subItem.icon className="size-4 shrink-0" />
-                <span>{subItem.label}</span>
-              </Link>
-            ))}
-          </>
-        ) : (
-          role.nav.map((item) => {
-            const active = item.exact ? path === item.to : path.startsWith(item.to);
-            const isNotifItem = item.to.includes("notifications");
-            const hasUnread = isNotifItem && unreadCount > 0;
-
-            // If item has children, render collapsible group
-            if (item.children && (!collapsed || isMobile)) {
-              // Use label as unique key (to can be identical across groups)
-              const submenuKey = item.label;
-              const anyChildActive = item.children.some(child => {
-                const childUrl = new URL(child.to, window.location.origin);
-                if (childUrl.search.length > 0) {
-                  const cp = new URLSearchParams(currentSearch);
-                  return path === childUrl.pathname &&
-                    [...childUrl.searchParams.entries()].every(([k, v]) => cp.get(k) === v);
-                }
-                return path === child.to;
-              });
-              const isOpen = openSubmenus[submenuKey] !== undefined
-                ? openSubmenus[submenuKey]
-                : anyChildActive;
-              return (
-                <div key={item.to}>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      key={item.to + item.label}
-                      to={item.to}
-                      onClick={() => { if (isMobile) setMobileOpen(false); }}
-                      className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
-                        ${active
-                          ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
-                          : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
-                        }`}
-                    >
-                      <span className="relative shrink-0">
-                        <item.icon className="size-4" />
-                        {hasUnread && (
-                          <span className="absolute -top-1 -right-1 flex size-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
-                          </span>
-                        )}
-                      </span>
-                      {(!collapsed || isMobile) && <span>{item.label}</span>}
-                      {active && (!collapsed || isMobile) && (
-                        <span className="ml-auto size-1.5 rounded-full bg-white/80" />
+          // If item has children, render collapsible group
+          if (item.children && (!collapsed || isMobile)) {
+            // Use label as unique key (to can be identical across groups)
+            const submenuKey = item.label;
+            const anyChildActive = item.children.some(child => {
+              const childUrl = new URL(child.to, window.location.origin);
+              if (childUrl.search.length > 0) {
+                const cp = new URLSearchParams(currentSearch);
+                return path === childUrl.pathname &&
+                  [...childUrl.searchParams.entries()].every(([k, v]) => cp.get(k) === v);
+              }
+              return path === child.to;
+            });
+            const isOpen = openSubmenus[submenuKey] !== undefined
+              ? openSubmenus[submenuKey]
+              : anyChildActive;
+            return (
+              <div key={item.to}>
+                <div className="flex items-center gap-2">
+                  <Link
+                    key={item.to + item.label}
+                    to={item.to}
+                    onClick={() => { if (isMobile) setMobileOpen(false); }}
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
+                      ${active
+                        ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
+                        : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+                      }`}
+                  >
+                    <span className="relative shrink-0">
+                      <item.icon className="size-4" />
+                      {hasUnread && (
+                        <span className="absolute -top-1 -right-1 flex size-2.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
+                        </span>
                       )}
-                      {hasUnread && collapsed && !isMobile && (
-                        <span className="absolute top-1 right-1 size-2 rounded-full bg-emerald-500" />
-                      )}
-                    </Link>
-
-                    {(!collapsed || isMobile) && (
-                      <button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenSubmenus(prev => ({ ...prev, [submenuKey]: !prev[submenuKey] })); }}
-                        aria-label={`Toggle ${item.label}`}
-                        className="p-2 rounded-full hover:bg-accent transition"
-                      >
-                        <ChevronDown className={`size-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                      </button>
+                    </span>
+                    {(!collapsed || isMobile) && <span>{item.label}</span>}
+                    {active && (!collapsed || isMobile) && (
+                      <span className="ml-auto size-1.5 rounded-full bg-white/80" />
                     )}
-                  </div>
+                    {hasUnread && collapsed && !isMobile && (
+                      <span className="absolute top-1 right-1 size-2 rounded-full bg-emerald-500" />
+                    )}
+                  </Link>
 
-                  {isOpen && (
-                    <div className="ml-4 mt-1 space-y-1">
-                      {item.children.map((sub) => {
-                        const subUrl = new URL(sub.to, window.location.origin);
-                        const subHasQuery = subUrl.search.length > 0;
-                        let subActive = false;
-                        if (subHasQuery) {
-                          // Match pathname + search param
-                          const currentParams = new URLSearchParams(currentSearch);
-                          const subParams = subUrl.searchParams;
-                          subActive = path === subUrl.pathname &&
-                            [...subParams.entries()].every(([k, v]) => currentParams.get(k) === v);
-                        } else {
-                          // Exact match for clean path routes
-                          subActive = path === sub.to;
-                        }
-                        const handleSubClick = (e: React.MouseEvent) => {
-                          if (isMobile) setMobileOpen(false);
-                        };
-                        return (
-                          <Link
-                            key={sub.to}
-                            to={subHasQuery ? sub.to.split("?")[0] : sub.to}
-                            search={subHasQuery ? Object.fromEntries(new URL(sub.to, window.location.origin).searchParams) : undefined}
-                            onClick={handleSubClick}
-                            className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition cursor-pointer ${
-                              subActive ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold' : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
-                            }`}
-                          >
-                            <span className="size-3.5">{sub.icon ? <sub.icon className="size-3" /> : null}</span>
-                            <span className="truncate">{sub.label}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-
+                  {(!collapsed || isMobile) && (
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenSubmenus(prev => ({ ...prev, [submenuKey]: !prev[submenuKey] })); }}
+                      aria-label={`Toggle ${item.label}`}
+                      className="p-2 rounded-full hover:bg-accent transition"
+                    >
+                      <ChevronDown className={`size-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
                   )}
                 </div>
-              );
-            }
 
-            // Render main link (no children)
-            return (
-              <Link
-                key={item.to + item.label}
-                to={item.to}
-                onClick={() => {
-                  if (isMobile) setMobileOpen(false);
-                }}
-                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
-                  ${active
-                    ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
-                    : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
-                  }`}
-              >
-                <span className="relative shrink-0">
-                  <item.icon className="size-4" />
-                  {hasUnread && (
-                    <span className="absolute -top-1 -right-1 flex size-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
-                    </span>
-                  )}
-                </span>
-                {(!collapsed || isMobile) && <span>{item.label}</span>}
-                {active && (!collapsed || isMobile) && (
-                  <span className="ml-auto size-1.5 rounded-full bg-white/80" />
+                {isOpen && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {item.children.map((sub) => {
+                      const subUrl = new URL(sub.to, window.location.origin);
+                      const subHasQuery = subUrl.search.length > 0;
+                      let subActive = false;
+                      if (subHasQuery) {
+                        // Match pathname + search param
+                        const currentParams = new URLSearchParams(currentSearch);
+                        const subParams = subUrl.searchParams;
+                        subActive = path === subUrl.pathname &&
+                          [...subParams.entries()].every(([k, v]) => currentParams.get(k) === v);
+                      } else {
+                        // Exact match for clean path routes
+                        subActive = path === sub.to;
+                      }
+                      const handleSubClick = (e: React.MouseEvent) => {
+                        if (isMobile) setMobileOpen(false);
+                      };
+                      return (
+                        <Link
+                          key={sub.to}
+                          to={subHasQuery ? sub.to.split("?")[0] : sub.to}
+                          search={subHasQuery ? Object.fromEntries(new URL(sub.to, window.location.origin).searchParams) : undefined}
+                          onClick={handleSubClick}
+                          className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition cursor-pointer ${
+                            subActive ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold' : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
+                          }`}
+                        >
+                          <span className="size-3.5">{sub.icon ? <sub.icon className="size-3" /> : null}</span>
+                          <span className="truncate">{sub.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
                 )}
-                {hasUnread && collapsed && !isMobile && (
-                  <span className="absolute top-1 right-1 size-2 rounded-full bg-emerald-500" />
-                )}
-              </Link>
+              </div>
             );
-          })
-        )}
+          }
+
+          // Render main link (no children)
+          return (
+            <Link
+              key={item.to + item.label}
+              to={item.to as any}
+              onClick={(e) => {
+                e.preventDefault();
+                if (isMobile) setMobileOpen(false);
+                navigate({ to: item.to as any });
+              }}
+              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer
+                ${active
+                  ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
+                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+                }`}
+            >
+              <span className="relative shrink-0">
+                <item.icon className="size-4" />
+                {hasUnread && (
+                  <span className="absolute -top-1 -right-1 flex size-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
+                  </span>
+                )}
+              </span>
+              {(!collapsed || isMobile) && <span>{item.label}</span>}
+              {active && (!collapsed || isMobile) && (
+                <span className="ml-auto size-1.5 rounded-full bg-white/80" />
+              )}
+              {hasUnread && collapsed && !isMobile && (
+                <span className="absolute top-1 right-1 size-2 rounded-full bg-emerald-500" />
+              )}
+            </Link>
+          );
+        })}
       </nav>
-      <div className="p-3 border-t border-sidebar-border flex items-center justify-between">
-        {(!collapsed || isMobile) && (
-          <div className="flex items-center gap-0.5 font-black text-xl tracking-tight text-slate-800 dark:text-white px-2">
-            <span>CMS</span>
-            <span className="inline-block size-2 rounded-full bg-gradient-to-tr from-cyan-400 via-indigo-500 to-rose-500 ml-0.5 -mt-2 animate-pulse" />
-          </div>
-        )}
+      <div className="p-3 border-t border-sidebar-border">
         <button
           onClick={() => {
             if (isMobile) setMobileOpen(false);
             setShowLogoutConfirm(true);
           }}
-          className="flex items-center gap-2 p-2 rounded-xl text-xs font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-rose-600 transition cursor-pointer"
-          title="Logout"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground hover:text-rose-600 transition cursor-pointer"
         >
           <LogOut className="size-4" />
+          {(!collapsed || isMobile) && <span>Logout</span>}
         </button>
       </div>
     </>
@@ -1005,7 +962,7 @@ export function DashboardLayout() {
 
         {/* Main Workspace */}
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-30 h-16 glass border-b flex items-center gap-4 px-6 justify-between">
+          <header className="sticky top-0 z-40 h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-4 px-6 justify-between shadow-xs">
             {/* Hamburger Button */}
             <button
               onClick={() => {
@@ -1030,7 +987,7 @@ export function DashboardLayout() {
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
-                className="w-full rounded-xl border bg-background/60 pl-10 pr-10 py-2 text-sm focus:outline-none focus:border-primary transition"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/90 text-slate-900 dark:text-white pl-10 pr-10 py-2 text-sm focus:outline-none focus:border-primary transition shadow-2xs"
               />
               {isSearching && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 size-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -1083,7 +1040,7 @@ export function DashboardLayout() {
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-95 shadow-soft transition`}
                 >
                   <RoleIcon className="size-3.5" />
-                  <span>{displayRoleName}</span>
+                  <span>{role.name}</span>
                   <ChevronDown className="size-3 opacity-80" />
                 </button>
                 {showRoleInfo && (
@@ -1433,6 +1390,10 @@ export function DashboardLayout() {
               </div>
             </div>
           </header>
+
+          <div className="px-6 pt-4">
+            <Breadcrumb path={path} />
+          </div>
 
           <main className="flex-1 p-6">
             <Outlet />
