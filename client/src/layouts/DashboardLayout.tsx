@@ -928,9 +928,8 @@ export function DashboardLayout() {
               <Link
                 key={item.to + item.label}
                 to={item.to}
-                onClick={(e) => {
+                onClick={() => {
                   if (isMobile) setMobileOpen(false);
-                  navigate({ to: item.to as any });
                 }}
                 className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                   ${active
