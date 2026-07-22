@@ -11,9 +11,7 @@ import { GlassCard } from '../components/shared/GlassCard';
 import { LinearProgress } from '../components/shared/ProgressComponents';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
 import { Button } from '../components/shared/Button';
-import { Modal } from '../components/shared/Modal';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV } from '../utils/exportUtils';
 import {
   BookOpen,
   Calendar,
@@ -104,7 +102,15 @@ export function HODAcademicPage() {
       breadcrumbItems={[{ label: 'Academic Management' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Academic Report', 'Downloading PDF summary...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Academic_Subjects_${departmentInfo.shortName}.csv`, academics?.subjects || []);
+              NotificationToast.success('Exporting Academic Report', 'Downloading summary CSV...');
+            }}
+          >
             Export
           </Button>
           <Button variant="primary" size="sm" iconLeft={Plus} onClick={() => setAssignSubjectModal(true)}>
@@ -285,7 +291,10 @@ export function HODAcademicPage() {
         subtitle={`Allocate subject course to ${departmentInfo.shortName} faculty`}
         variant="assign"
         confirmLabel="Assign Subject"
-        onConfirm={() => NotificationToast.success('Subject Assigned', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar')}
+        onConfirm={() => {
+          setAssignSubjectModal(false);
+          NotificationToast.success('Subject Assigned', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar');
+        }}
       >
         <div className="space-y-3">
           <div>

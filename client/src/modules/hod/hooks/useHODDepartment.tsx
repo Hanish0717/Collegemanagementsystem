@@ -88,13 +88,15 @@ export function HODDepartmentProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const [academicYear, setAcademicYear] = useState('2025-2026');
   const [currentSemester, setSemester] = useState('Sem 5');
+  const [selectedDeptCode, setSelectedDeptCode] = useState<DepartmentCode | null>(null);
 
-  // Resolve department dynamically from logged in HOD user profile
+  // Resolve department dynamically from logged in HOD user profile or explicit selection
   const departmentCode: DepartmentCode = useMemo(() => {
+    if (selectedDeptCode) return selectedDeptCode;
     const userDept = user?.department || (user as any)?.dept || 'AIML';
     const normalized = String(userDept).toUpperCase().trim();
     return DEPARTMENT_METADATA_MAP[normalized] ? normalized : 'AIML';
-  }, [user]);
+  }, [user, selectedDeptCode]);
 
   const departmentInfo: DepartmentInfo = useMemo(() => {
     return (
@@ -111,6 +113,13 @@ export function HODDepartmentProvider({ children }: { children: ReactNode }) {
       }
     );
   }, [departmentCode, user]);
+
+  const setDepartmentCode = (code: DepartmentCode) => {
+    const normalized = String(code).toUpperCase().trim();
+    if (DEPARTMENT_METADATA_MAP[normalized]) {
+      setSelectedDeptCode(normalized);
+    }
+  };
 
   // Enforce department isolation on any dataset
   const filterByDepartment = <T extends { department?: string; department_code?: string }>(
@@ -136,6 +145,7 @@ export function HODDepartmentProvider({ children }: { children: ReactNode }) {
     departmentInfo,
     academicYear,
     currentSemester,
+    setDepartmentCode,
     setAcademicYear,
     setSemester,
     filterByDepartment,

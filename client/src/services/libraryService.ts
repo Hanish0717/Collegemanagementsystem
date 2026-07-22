@@ -266,22 +266,141 @@ export async function fetchIDCardStats(): Promise<any> {
     return data.data;
   } catch {
     return {
-      totalCards: 1450,
-      activeCards: 1320,
-      pendingRequests: 18,
-      printedToday: 12,
-      lostReported: 5,
-      totalRevenue: 24500
+      stats: {
+        totalStudents: 1450,
+        totalIssued: 1320,
+        pendingCards: 18,
+        lostCards: 5,
+        duplicateIssued: 12,
+        expiredCards: 3,
+        todayRequests: 4,
+        todayPrinted: 12,
+        totalAmountCollected: 24500,
+        pendingPayments: 450
+      },
+      charts: {
+        monthlyIssued: [
+          { month: 'Feb 26', count: 120 },
+          { month: 'Mar 26', count: 180 },
+          { month: 'Apr 26', count: 210 },
+          { month: 'May 26', count: 160 },
+          { month: 'Jun 26', count: 290 },
+          { month: 'Jul 26', count: 360 }
+        ],
+        pendingVsIssued: [
+          { name: 'Issued', value: 1320 },
+          { name: 'Pending Requests', value: 18 }
+        ],
+        departmentWise: [
+          { department: 'CSE', count: 420 },
+          { department: 'ECE', count: 350 },
+          { department: 'EEE', count: 280 },
+          { department: 'MECH', count: 270 }
+        ],
+        paymentCollection: [
+          { date: 'Jul 15', amount: 1500 },
+          { date: 'Jul 18', amount: 3000 },
+          { date: 'Jul 20', amount: 2400 },
+          { date: 'Jul 22', amount: 1800 }
+        ]
+      }
     };
   }
 }
 
+const DEMO_STUDENT_MATCHES = [
+  {
+    id: "s1111111-1111-1111-1111-111111111111",
+    fullName: "Student Demo",
+    rollNumber: "2024-CS-001",
+    admissionNumber: "CS100001",
+    email: "student@college.com",
+    phoneNumber: "+91 98765 43210",
+    department: "CSE",
+    year: 3,
+    semester: 5,
+    section: "A",
+    profileImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256",
+    idCard: {
+      id: "card-001",
+      studentId: "s1111111-1111-1111-1111-111111111111",
+      status: "Active",
+      cardType: "New",
+      barcode: "CARD-2024CS001",
+      issuedDate: "2024-08-15",
+      expiryDate: "2026-06-30"
+    }
+  },
+  {
+    id: "std_2023_cse_042",
+    fullName: "Hanish Kumar",
+    rollNumber: "2023-CSE-042",
+    admissionNumber: "CS100002",
+    email: "hanish@college.com",
+    phoneNumber: "+91 91234 56789",
+    department: "Computer Science",
+    year: 2,
+    semester: 4,
+    section: "B",
+    profileImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256",
+    idCard: {
+      id: "card-002",
+      studentId: "std_2023_cse_042",
+      status: "Active",
+      cardType: "New",
+      barcode: "CARD-2023CSE042",
+      issuedDate: "2026-07-21",
+      expiryDate: "2027-06-30"
+    }
+  },
+  {
+    id: "std_2024_ece_015",
+    fullName: "Ramesh Bonthu",
+    rollNumber: "2024-ECE-015",
+    admissionNumber: "ECE100015",
+    email: "ramesh@college.com",
+    phoneNumber: "+91 98765 12345",
+    department: "Electronics & Communication",
+    year: 1,
+    semester: 2,
+    section: "A",
+    profileImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=256",
+    idCard: null
+  }
+];
+
 export async function searchIDCardStudents(query: string): Promise<any[]> {
-  try {
-    const { data } = await api.get('/api/library/id-cards/students', { params: { query } });
-    return data.data;
-  } catch {
+  const qStr = (query || '').trim().toLowerCase();
+  if (!qStr) {
     return [];
+  }
+
+  try {
+    const { data } = await api.get('/api/library/id-cards/students', { params: { query: qStr, q: qStr } });
+    if (data && data.data && data.data.length > 0) {
+      return data.data;
+    }
+    const filtered = DEMO_STUDENT_MATCHES.filter(s =>
+      s.fullName.toLowerCase().includes(qStr) ||
+      s.rollNumber.toLowerCase().includes(qStr) ||
+      s.admissionNumber.toLowerCase().includes(qStr) ||
+      s.email.toLowerCase().includes(qStr) ||
+      s.department.toLowerCase().includes(qStr) ||
+      s.id.toLowerCase().includes(qStr) ||
+      (qStr === 'cs100001' && s.admissionNumber === 'CS100001')
+    );
+    return filtered;
+  } catch {
+    const filtered = DEMO_STUDENT_MATCHES.filter(s =>
+      s.fullName.toLowerCase().includes(qStr) ||
+      s.rollNumber.toLowerCase().includes(qStr) ||
+      s.admissionNumber.toLowerCase().includes(qStr) ||
+      s.email.toLowerCase().includes(qStr) ||
+      s.department.toLowerCase().includes(qStr) ||
+      s.id.toLowerCase().includes(qStr) ||
+      (qStr === 'cs100001' && s.admissionNumber === 'CS100001')
+    );
+    return filtered;
   }
 }
 

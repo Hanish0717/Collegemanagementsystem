@@ -7,6 +7,7 @@ import { GlassCard } from '../components/shared/GlassCard';
 import { Button } from '../components/shared/Button';
 import { NotificationToast } from '../components/shared/NotificationToast';
 import { LinearProgress } from '../components/shared/ProgressComponents';
+import { exportToCSV, exportToExcel } from '../utils/exportUtils';
 import {
   Users, Briefcase, CalendarCheck, Award, FlaskConical, TrendingUp,
   Building2, Calendar, Heart, BookOpen, Download, Printer, FileSpreadsheet, Mail, BarChart2,
@@ -34,8 +35,11 @@ export function HODReportsPage() {
     setGenerating(type);
     setTimeout(() => {
       setGenerating(null);
+      exportToCSV(`HOD_Report_${type.replace(/\s+/g, '_')}_${departmentInfo.shortName}.csv`, [
+        { Report_Type: type, Department: departmentInfo.name, Status: 'Official Generated Report', Generated_At: new Date().toLocaleString() }
+      ]);
       NotificationToast.success('Report Generated', `${type} is ready for download.`);
-    }, 1500);
+    }, 1200);
   };
 
   const tabs = [
@@ -52,7 +56,18 @@ export function HODReportsPage() {
       actions={
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" iconLeft={Printer} onClick={() => window.print()}>Print</Button>
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exported', 'Downloading department summary Excel...')}>Export Excel</Button>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              const rows = Object.entries(summary).map(([k, v]) => ({ Metric: k, Value: String(v), Department: departmentInfo.name }));
+              exportToExcel(`HOD_Department_Summary_${departmentInfo.shortName}.csv`, rows);
+              NotificationToast.success('Exported', 'Downloading department summary Excel...');
+            }}
+          >
+            Export Excel
+          </Button>
           <Button variant="primary" size="sm" iconLeft={Mail} onClick={() => NotificationToast.info('Email Scheduled', 'Monthly report will be emailed at 8 AM.')}>Email Report</Button>
         </div>
       }

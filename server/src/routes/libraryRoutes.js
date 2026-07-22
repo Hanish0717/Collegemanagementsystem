@@ -80,16 +80,33 @@ router.put('/settings', updateLibrarySettings);
 
 // ID Card routes
 router.get('/id-cards/stats', authorizeRoles('librarian', 'admin', 'super-admin'), getIdCardStats);
+router.get('/id-cards/students', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
+router.get('/id-cards/students/search', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
 router.get('/id-cards/search', authorizeRoles('librarian', 'admin', 'super-admin'), searchStudents);
+router.get('/id-cards/students/:studentId', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), getStudentProfile);
 router.get('/id-cards/profile/:studentId', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), getStudentProfile);
+router.get('/id-cards/student/:studentId', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), getStudentProfile);
+router.post('/id-cards/requests', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), createIdCardRequest);
 router.post('/id-cards/request', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), createIdCardRequest);
+router.put('/id-cards/requests/:requestId/status', authorizeRoles('librarian', 'admin', 'super-admin'), approveRejectRequest);
 router.post('/id-cards/request/approve-reject', authorizeRoles('librarian', 'admin', 'super-admin'), approveRejectRequest);
+router.put('/id-cards/request/:requestId/status', authorizeRoles('librarian', 'admin', 'super-admin'), approveRejectRequest);
+router.post('/id-cards/payments', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), collectPayment);
+router.post('/id-cards/payment', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), collectPayment);
 router.post('/id-cards/payment/collect', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), collectPayment);
 router.post('/id-cards/reprint', authorizeRoles('librarian', 'admin', 'super-admin'), reprintCard);
+router.post('/id-cards/:cardId/reprint', authorizeRoles('librarian', 'admin', 'super-admin'), reprintCard);
+router.put('/id-cards/cards/:cardId/status', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), updateCardStatus);
 router.post('/id-cards/status', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), updateCardStatus);
+router.put('/id-cards/student/:studentId/status', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), updateCardStatus);
 router.post('/id-cards/missing', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), reportMissingCard);
+router.post('/id-cards/report-missing', authorizeRoles('librarian', 'admin', 'super-admin', 'student'), reportMissingCard);
 router.get('/id-cards/history', authorizeRoles('librarian', 'admin', 'super-admin'), getHistory);
+router.get('/id-cards/payments/history', authorizeRoles('librarian', 'admin', 'super-admin'), getPaymentHistory);
+router.get('/id-cards/payment-history', authorizeRoles('librarian', 'admin', 'super-admin'), getPaymentHistory);
 router.get('/id-cards/payments', authorizeRoles('librarian', 'admin', 'super-admin'), getPaymentHistory);
+router.put('/id-cards/cards/:cardId/handover', authorizeRoles('librarian', 'admin', 'super-admin'), handoverCard);
 router.post('/id-cards/handover/:cardId', authorizeRoles('librarian', 'admin', 'super-admin'), handoverCard);
+router.post('/id-cards/:cardId/handover', authorizeRoles('librarian', 'admin', 'super-admin'), handoverCard);
 
 export default router;

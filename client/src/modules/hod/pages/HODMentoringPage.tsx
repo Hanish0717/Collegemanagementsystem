@@ -90,7 +90,15 @@ export function HODMentoringPage() {
       breadcrumbItems={[{ label: 'Mentoring Management' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Data', 'Downloading mentoring report...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Mentoring_Roster_${departmentInfo.shortName}.csv`, list);
+              NotificationToast.success('Exporting Data', 'Downloading mentoring report...');
+            }}
+          >
             Export
           </Button>
           <Button variant="primary" size="sm" iconLeft={UserCheck} onClick={() => setAssignModal(true)}>
@@ -177,7 +185,10 @@ export function HODMentoringPage() {
         subtitle={`Select faculty mentor for ${departmentInfo.shortName} students`}
         variant="assign"
         confirmLabel="Assign Mentor"
-        onConfirm={() => NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to cohort')}
+        onConfirm={() => {
+          setAssignModal(false);
+          NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to cohort');
+        }}
       >
         <div className="space-y-3">
           <div>

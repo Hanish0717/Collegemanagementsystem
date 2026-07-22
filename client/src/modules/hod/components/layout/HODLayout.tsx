@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ReactNode } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { HODDepartmentProvider } from '../../hooks/useHODDepartment';
 import { HODSidebar } from './HODSidebar';
 import { HODHeader } from './HODHeader';
@@ -31,7 +32,7 @@ export function HODLayoutInner({ children }: HODLayoutProps) {
   }, []);
 
   return (
-    <div className={`${dark ? 'dark' : ''} min-h-screen bg-gradient-soft text-foreground flex font-sans antialiased`}>
+    <div className={`${dark ? 'dark' : ''} min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex font-sans antialiased selection:bg-blue-500 selection:text-white`}>
       <HODSidebar
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed(!collapsed)}
@@ -54,9 +55,15 @@ export function HODLayoutInner({ children }: HODLayoutProps) {
             }
           }}
         />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           <HODErrorBoundary>
-            {children}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              {children}
+            </motion.div>
           </HODErrorBoundary>
         </main>
       </div>

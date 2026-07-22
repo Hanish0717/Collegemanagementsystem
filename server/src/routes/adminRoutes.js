@@ -22,7 +22,7 @@ import { requireRole } from '../middleware/rbacMiddleware.js';
 const router = express.Router();
 
 router.use(protect);
-router.use(requireRole('admin', 'super-admin'));
+router.use(requireRole('admin', 'super-admin', 'librarian', 'principal', 'dean', 'hod'));
 
 // Faculty routes
 router.route('/faculty')

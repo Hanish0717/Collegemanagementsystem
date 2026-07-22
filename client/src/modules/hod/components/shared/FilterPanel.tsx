@@ -1,5 +1,5 @@
 import React from 'react';
-import { Filter, RotateCcw, GraduationCap, AlertCircle } from 'lucide-react';
+import { Filter, RotateCcw, GraduationCap, AlertCircle, Sparkles } from 'lucide-react';
 import { HODFilterState } from '../../types';
 
 interface FilterPanelProps {
@@ -24,17 +24,17 @@ export function FilterPanel({
   showFeeDefaulter = false,
 }: FilterPanelProps) {
   return (
-    <div className="flex flex-wrap items-center gap-3 p-3 rounded-2xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-md text-xs font-semibold">
-      <div className="flex items-center gap-1 text-slate-500 font-bold pr-2 border-r border-slate-200 dark:border-slate-800">
-        <Filter className="size-3.5 text-blue-500" />
-        <span>Filters</span>
+    <div className="flex flex-wrap items-center gap-3 p-3.5 rounded-3xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 backdrop-blur-xl text-xs font-bold shadow-2xs">
+      <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 font-extrabold pr-3 border-r border-slate-200 dark:border-slate-800">
+        <Filter className="size-4 text-blue-600 dark:text-blue-400" />
+        <span>Filter Workspace</span>
       </div>
 
       {showAcademicYear && (
         <select
           value={filters.academicYear || ''}
           onChange={(e) => onChange({ ...filters, academicYear: e.target.value })}
-          className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-background focus:outline-none"
+          className="px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer font-bold"
         >
           <option value="">All Academic Years</option>
           <option value="2025-2026">2025-2026</option>
@@ -47,12 +47,12 @@ export function FilterPanel({
         <select
           value={filters.semester || ''}
           onChange={(e) => onChange({ ...filters, semester: e.target.value })}
-          className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-background focus:outline-none"
+          className="px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer font-bold"
         >
           <option value="">All Semesters</option>
           {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
             <option key={s} value={String(s)}>
-              Sem {s}
+              Semester {s}
             </option>
           ))}
         </select>
@@ -62,7 +62,7 @@ export function FilterPanel({
         <select
           value={filters.section || ''}
           onChange={(e) => onChange({ ...filters, section: e.target.value })}
-          className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-background focus:outline-none"
+          className="px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer font-bold"
         >
           <option value="">All Sections</option>
           <option value="A">Section A</option>
@@ -71,10 +71,10 @@ export function FilterPanel({
         </select>
       )}
 
-      {/* ── Admission Type Filter ── */}
+      {/* Admission Type Filter */}
       {showAdmissionType && (
         <div className="flex items-center gap-1.5">
-          <GraduationCap className="size-3.5 text-amber-500 shrink-0" />
+          <GraduationCap className="size-4 text-amber-500 shrink-0" />
           <select
             value={filters.admissionType || 'All'}
             onChange={(e) =>
@@ -83,19 +83,19 @@ export function FilterPanel({
                 admissionType: e.target.value as HODFilterState['admissionType'],
               })
             }
-            className="px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/20 text-amber-700 dark:text-amber-300 focus:outline-none font-bold"
+            className="px-3.5 py-2 rounded-2xl border border-amber-200/80 dark:border-amber-900/60 bg-amber-50/80 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 focus:outline-none font-extrabold cursor-pointer"
           >
-            <option value="All">All Students</option>
+            <option value="All">All Admission Quotas</option>
             <option value="Scholarship">🎓 Scholarship Students</option>
-            <option value="Management">💼 Management Students</option>
+            <option value="Management">💼 Management Quota</option>
           </select>
         </div>
       )}
 
-      {/* ── Fee Defaulter Filter ── */}
+      {/* Fee Defaulter Filter */}
       {showFeeDefaulter && (
         <div className="flex items-center gap-1.5">
-          <AlertCircle className="size-3.5 text-rose-500 shrink-0" />
+          <AlertCircle className="size-4 text-rose-500 shrink-0" />
           <select
             value={filters.feeDefaulterFor || 'none'}
             onChange={(e) =>
@@ -104,13 +104,13 @@ export function FilterPanel({
                 feeDefaulterFor: e.target.value as HODFilterState['feeDefaulterFor'],
               })
             }
-            className="px-3 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/20 text-rose-700 dark:text-rose-300 focus:outline-none font-bold"
+            className="px-3.5 py-2 rounded-2xl border border-rose-200/80 dark:border-rose-900/60 bg-rose-50/80 dark:bg-rose-950/30 text-rose-800 dark:text-rose-300 focus:outline-none font-extrabold cursor-pointer"
           >
-            <option value="none">All Fee Status</option>
+            <option value="none">All Fee Statuses</option>
             <option value="mid1">⚠ Mid-1 Fee Defaulters</option>
             <option value="mid2">⚠ Mid-2 Fee Defaulters</option>
             <option value="labs">⚠ Lab Exam Fee Defaulters</option>
-            <option value="semester">⚠ Semester Exam Fee Defaulters</option>
+            <option value="semester">⚠ Semester Fee Defaulters</option>
           </select>
         </div>
       )}
@@ -118,12 +118,11 @@ export function FilterPanel({
       {onReset && (
         <button
           onClick={onReset}
-          className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 transition cursor-pointer"
+          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer font-bold border border-slate-200/50 dark:border-slate-700/50"
         >
-          <RotateCcw className="size-3.5" /> Reset
+          <RotateCcw className="size-3.5" /> Reset Filters
         </button>
       )}
     </div>
   );
 }
-

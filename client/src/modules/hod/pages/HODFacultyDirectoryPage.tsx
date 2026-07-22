@@ -13,9 +13,7 @@ import { AvatarCard } from '../components/shared/AvatarCard';
 import { SideDrawer } from '../components/shared/SideDrawer';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
 import { Button } from '../components/shared/Button';
-import { Modal } from '../components/shared/Modal';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Briefcase,
   Award,
@@ -162,7 +160,21 @@ export function HODFacultyDirectoryPage() {
             {
               label: 'Export Performance Card',
               icon: FileText,
-              onClick: () => NotificationToast.info('Faculty Card Exported', `Exported record for ${item.name}`),
+              onClick: () => {
+                exportToTextDoc(`Faculty_Performance_${item.empId}.txt`, `Faculty Performance Record — ${item.name}`, {
+                  'Employee ID': item.empId,
+                  'Faculty Name': item.name,
+                  'Designation': item.designation,
+                  'Qualification': item.qualification,
+                  'Specialization': item.specialization,
+                  'Experience': item.experience,
+                  'Assigned Subjects': item.subjectsAssigned,
+                  'Publications': `${item.publications} Papers`,
+                  'Attendance': `${item.attendance}%`,
+                  'Feedback Rating': `${item.feedbackScore} / 5`,
+                });
+                NotificationToast.info('Faculty Card Exported', `Exported record for ${item.name}`);
+              },
             },
           ]}
         />
@@ -177,7 +189,15 @@ export function HODFacultyDirectoryPage() {
       breadcrumbItems={[{ label: 'Faculty Management' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Faculty List', 'Downloading CSV directory...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Faculty_Directory_${departmentInfo.shortName}.csv`, faculty);
+              NotificationToast.success('Exporting Faculty List', 'Downloading CSV directory...');
+            }}
+          >
             Export
           </Button>
           <Button variant="outline" size="sm" iconLeft={Plus} onClick={() => NotificationToast.info('Faculty Request', 'Request sent to Principal & HR')}>
@@ -251,7 +271,10 @@ export function HODFacultyDirectoryPage() {
         subtitle={`Workload allocation for ${departmentInfo.shortName} faculty`}
         variant="assign"
         confirmLabel="Allocate Workload"
-        onConfirm={() => NotificationToast.success('Subject Allocated', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar')}
+        onConfirm={() => {
+          setAssignSubjectsModal(false);
+          NotificationToast.success('Subject Allocated', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar');
+        }}
       >
         <div className="space-y-3">
           <div>
@@ -281,7 +304,10 @@ export function HODFacultyDirectoryPage() {
         subtitle={`Class advisory responsibilities for ${departmentInfo.shortName} cohorts`}
         variant="assign"
         confirmLabel="Assign Advisor"
-        onConfirm={() => NotificationToast.success('Class Advisor Assigned', 'Prof. Sneha Verma assigned as Class Advisor for Sem 5 Section B')}
+        onConfirm={() => {
+          setAssignAdvisorModal(false);
+          NotificationToast.success('Class Advisor Assigned', 'Prof. Sneha Verma assigned as Class Advisor for Sem 5 Section B');
+        }}
       >
         <div className="space-y-3">
           <div>

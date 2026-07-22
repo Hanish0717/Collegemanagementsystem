@@ -7,9 +7,7 @@ import { StatisticsCard } from '../components/shared/StatisticsCard';
 import { GlassCard } from '../components/shared/GlassCard';
 import { LinearProgress } from '../components/shared/ProgressComponents';
 import { StatusBadge } from '../components/shared/StatusBadge';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV } from '../utils/exportUtils';
 import {
   CalendarCheck,
   AlertTriangle,
@@ -60,7 +58,15 @@ export function HODAttendancePage() {
       breadcrumbItems={[{ label: 'Attendance Management' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Report', 'Downloading monthly attendance sheet...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Attendance_Sheet_${departmentInfo.shortName}.csv`, defaulters);
+              NotificationToast.success('Exporting Report', 'Downloading monthly attendance sheet...');
+            }}
+          >
             Export Sheet
           </Button>
           <Button variant="primary" size="sm" iconLeft={Bell} onClick={() => NotificationToast.info('Notifying Defaulters', 'Shortage alerts dispatched to all students <75%')}>

@@ -11,6 +11,7 @@ import { ActionsMenu } from '../components/shared/ActionsMenu';
 import { Modal } from '../components/shared/Modal';
 import { Button } from '../components/shared/Button';
 import { NotificationToast } from '../components/shared/NotificationToast';
+import { exportToTextDoc } from '../utils/exportUtils';
 import {
   CheckCircle2, XCircle, Eye, MessageSquare, Download, Briefcase,
   CalendarCheck, Wrench, Calendar, Clock,
@@ -67,18 +68,33 @@ export function HODApprovalsPage() {
           {i.status === 'Pending' && (
             <>
               <button onClick={() => openModal(i, 'approve')}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 text-[10px] font-black hover:bg-emerald-200 transition">
+                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 text-[10px] font-black hover:bg-emerald-200 transition cursor-pointer">
                 <CheckCircle2 className="size-3.5" /> Approve
               </button>
               <button onClick={() => openModal(i, 'reject')}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-700 text-[10px] font-black hover:bg-rose-200 transition">
+                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-700 text-[10px] font-black hover:bg-rose-200 transition cursor-pointer">
                 <XCircle className="size-3.5" /> Reject
               </button>
             </>
           )}
           <ActionsMenu items={[
             { label: 'View Details', icon: Eye, onClick: () => NotificationToast.info('Request Detail', `Viewing ${i.requestId}`) },
-            { label: 'Download Attachment', icon: Download, onClick: () => NotificationToast.success('Downloaded', 'Attachment saved.') },
+            {
+              label: 'Download Attachment',
+              icon: Download,
+              onClick: () => {
+                exportToTextDoc(`Approval_Attachment_${i.requestId}.txt`, `Approval Request Attachment — ${i.requestId}`, {
+                  'Request ID': i.requestId,
+                  'Applicant': i.applicant,
+                  'Request Type': i.type,
+                  'Department': departmentInfo.name,
+                  'Duration': `${i.days ?? '—'} days`,
+                  'Priority': i.priority,
+                  'Status': i.status,
+                });
+                NotificationToast.success('Downloaded', 'Attachment saved.');
+              },
+            },
             { label: 'Add Remarks', icon: MessageSquare, onClick: () => openModal(i, 'approve') },
           ]} />
         </div>

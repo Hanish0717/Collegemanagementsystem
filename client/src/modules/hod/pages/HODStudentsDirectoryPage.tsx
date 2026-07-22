@@ -13,9 +13,7 @@ import { AvatarCard } from '../components/shared/AvatarCard';
 import { SideDrawer } from '../components/shared/SideDrawer';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
 import { Button } from '../components/shared/Button';
-import { Modal } from '../components/shared/Modal';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Users,
   Award,
@@ -258,7 +256,18 @@ export function HODStudentsDirectoryPage() {
             {
               label: 'Generate Transcript',
               icon: FileText,
-              onClick: () => NotificationToast.info('Transcript Generated', `Exported student card for ${item.name}`),
+              onClick: () => {
+                exportToTextDoc(`Transcript_${item.rollNumber}.txt`, `Official Student Transcript — ${item.name}`, {
+                  'Roll Number': item.rollNumber,
+                  'Registration Number': item.regNumber,
+                  'Student Name': item.name,
+                  'Department': departmentInfo.name,
+                  'CGPA': item.cgpa,
+                  'Attendance': `${item.attendance}%`,
+                  'Admission Type': item.admissionType,
+                });
+                NotificationToast.info('Transcript Generated', `Exported student card for ${item.name}`);
+              },
             },
           ]}
         />
@@ -287,7 +296,15 @@ export function HODStudentsDirectoryPage() {
       breadcrumbItems={[{ label: 'Student Management' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting CSV', 'Downloading student directory...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Student_Directory_${departmentInfo.shortName}.csv`, filteredStudents);
+              NotificationToast.success('Exporting CSV', 'Downloading student directory...');
+            }}
+          >
             Export
           </Button>
           <Button variant="outline" size="sm" iconLeft={Upload} onClick={() => NotificationToast.info('Import Workbench', 'Bulk upload tool ready')}>
@@ -416,6 +433,8 @@ export function HODStudentsDirectoryPage() {
         confirmLabel="Export Report"
         onConfirm={() => {
           setFeeDefaultersModal(false);
+          const defaulters = students.filter((s) => !s.feeStatus?.mid1Paid || !s.feeStatus?.mid2Paid || !s.feeStatus?.labsPaid || !s.feeStatus?.semesterPaid);
+          exportToCSV(`HOD_Fee_Defaulters_${departmentInfo.shortName}.csv`, defaulters);
           NotificationToast.success('Report Exported', 'Fee defaulters report downloaded as CSV');
         }}
       >
@@ -475,7 +494,10 @@ export function HODStudentsDirectoryPage() {
         subtitle={`Select faculty mentor for ${departmentInfo.shortName} cohorts`}
         variant="assign"
         confirmLabel="Assign Mentor"
-        onConfirm={() => NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to Sem 5 Section B')}
+        onConfirm={() => {
+          setAssignMentorModal(false);
+          NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to Sem 5 Section B');
+        }}
       >
         <div className="space-y-3">
           <div>

@@ -142,15 +142,24 @@ export function LibrarianIdCards() {
     queryFn: fetchIDCardPaymentHistory
   });
 
-  // Debounced search for student profile
+  // Debounced search for student profile - only search when user types
   useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (!trimmed) {
+      setSearchResults([]);
+      setSelectedStudentId(null);
+      return;
+    }
+
     const delay = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const data = await searchIDCardStudents(searchQuery);
+        const data = await searchIDCardStudents(trimmed);
         setSearchResults(data);
-        if (data.length > 0 && !selectedStudentId) {
+        if (data.length > 0) {
           setSelectedStudentId(data[0].id);
+        } else {
+          setSelectedStudentId(null);
         }
       } catch (error) {
         toast.error('Error searching students');

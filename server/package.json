@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
+    "dev": "nodemon --watch src src/server.js",
     "test:e2e": "vitest run --threads=false",
     "seed": "node src/seeders/seed.js",
     "seed:rbac": "node src/seeders/seedRBAC.js",

@@ -9,9 +9,7 @@ import { AdvancedTable } from '../components/shared/AdvancedTable';
 import { Column } from '../components/shared/DataTable';
 import { StatusBadge } from '../components/shared/StatusBadge';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   FlaskConical,
   Award,
@@ -63,7 +61,21 @@ export function HODResearchPage() {
         <ActionsMenu
           items={[
             { label: 'View DOI Link', icon: Eye, onClick: () => window.open(`https://doi.org/${item.doi}`, '_blank') },
-            { label: 'Download Citation', icon: Download, onClick: () => NotificationToast.info('Citation Downloaded', `BibTeX citation for ${item.title}`) },
+            {
+              label: 'Download Citation',
+              icon: Download,
+              onClick: () => {
+                exportToTextDoc(`Citation_${item.id}.bib`, `Research Paper Citation — ${item.title}`, {
+                  'Paper Title': item.title,
+                  'Faculty Author': item.faculty,
+                  'Journal': item.journal,
+                  'Indexing': item.indexing,
+                  'Citations': item.citations,
+                  'DOI': item.doi,
+                });
+                NotificationToast.info('Citation Downloaded', `BibTeX citation for ${item.title}`);
+              },
+            },
           ]}
         />
       ),
@@ -77,7 +89,15 @@ export function HODResearchPage() {
       breadcrumbItems={[{ label: 'Research & Innovation' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Publications', 'Downloading Scopus CSV list...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Research_Publications_${departmentInfo.shortName}.csv`, publications);
+              NotificationToast.success('Exporting Publications', 'Downloading Scopus CSV list...');
+            }}
+          >
             Export List
           </Button>
           <Button variant="primary" size="sm" iconLeft={Plus} onClick={() => NotificationToast.info('New Research Project', 'Proposal wizard initiated')}>

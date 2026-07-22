@@ -10,9 +10,7 @@ import { Column } from '../components/shared/DataTable';
 import { StatusBadge } from '../components/shared/StatusBadge';
 import { LinearProgress } from '../components/shared/ProgressComponents';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Award,
   CheckCircle2,
@@ -23,6 +21,7 @@ import {
   BookOpen,
   Eye,
   Search,
+  Star,
 } from 'lucide-react';
 
 export function HODExaminationsPage() {
@@ -68,7 +67,22 @@ export function HODExaminationsPage() {
         <ActionsMenu
           items={[
             { label: 'View Grade Sheet', icon: Eye, onClick: () => NotificationToast.info('Grade Sheet Opened', `Viewing marks for ${item.name}`) },
-            { label: 'Print Hall Ticket', icon: Printer, onClick: () => NotificationToast.success('Hall Ticket Printed', `Printed hall ticket for ${item.rollNumber}`) },
+            {
+              label: 'Print Hall Ticket',
+              icon: Printer,
+              onClick: () => {
+                exportToTextDoc(`HallTicket_${item.rollNumber}.txt`, `Official Exam Hall Ticket — ${item.name}`, {
+                  'Roll Number': item.rollNumber,
+                  'Student Name': item.name,
+                  'Department': departmentInfo.name,
+                  'Semester': item.sem,
+                  'SGPA': item.sgpa,
+                  'CGPA': item.cgpa,
+                  'Result Status': item.status,
+                });
+                NotificationToast.success('Hall Ticket Printed', `Printed hall ticket for ${item.rollNumber}`);
+              },
+            },
           ]}
         />
       ),
@@ -82,7 +96,15 @@ export function HODExaminationsPage() {
       breadcrumbItems={[{ label: 'Examination Management' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Results', 'Downloading semester grade sheets...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Exam_Results_${departmentInfo.shortName}.csv`, results);
+              NotificationToast.success('Exporting Results', 'Downloading semester grade sheets...');
+            }}
+          >
             Export Results
           </Button>
           <Button variant="primary" size="sm" iconLeft={FileText} onClick={() => setActiveTab('halltickets')}>
@@ -94,7 +116,7 @@ export function HODExaminationsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatisticsCard label="Department Pass %" value={`${summary.deptPassPercentage || 94.2}%`} subtitle="Overall pass rate" icon={CheckCircle2} accentColor="emerald" />
           <StatisticsCard label="Average Dept Marks" value={`${summary.averageMarks || 84.5}%`} subtitle="Internal + External" icon={Award} accentColor="blue" />
-          <StatisticsCard label="Top Performers (CGPA > 9.0)" value={summary.topPerformersCount || 18} subtitle="Dean's List" icon={StarIcon} accentColor="purple" />
+          <StatisticsCard label="Top Performers (CGPA > 9.0)" value={summary.topPerformersCount || 18} subtitle="Dean's List" icon={Star} accentColor="purple" />
           <StatisticsCard label="Active Backlogs" value={summary.backlogsCount || 5} subtitle="Remedial support needed" icon={BookOpen} accentColor="rose" />
         </div>
       }

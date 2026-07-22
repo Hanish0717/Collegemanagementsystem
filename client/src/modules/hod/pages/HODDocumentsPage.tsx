@@ -5,6 +5,7 @@ import { PageContainer } from '../components/shared/PageContainer';
 import { GlassCard } from '../components/shared/GlassCard';
 import { Button } from '../components/shared/Button';
 import { NotificationToast } from '../components/shared/NotificationToast';
+import { downloadFile } from '../utils/exportUtils';
 import {
   FolderOpen, Upload, Download, Search, Pin, FileText, File, Eye, MoreHorizontal,
 } from 'lucide-react';
@@ -120,10 +121,21 @@ function DocCard({ doc }: { doc: DocumentItem }) {
         </div>
       </div>
       <div className="flex gap-1 shrink-0">
-        <button className="p-1.5 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition text-blue-600" title="Preview">
+        <button
+          onClick={() => NotificationToast.info('Previewing Document', `Opening document viewer for ${doc.name}`)}
+          className="p-1.5 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition text-blue-600 cursor-pointer"
+          title="Preview"
+        >
           <Eye className="size-3.5" />
         </button>
-        <button className="p-1.5 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition text-emerald-600" title="Download">
+        <button
+          onClick={() => {
+            downloadFile(`${doc.name.replace(/\s+/g, '_')}.${doc.format.toLowerCase()}`, `Official Document File: ${doc.name}\nCategory: ${doc.category}\nUploaded: ${doc.uploadedDate}`, 'text/plain;charset=utf-8;');
+            NotificationToast.success('Document Downloaded', `Downloaded ${doc.name} (${doc.size})`);
+          }}
+          className="p-1.5 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition text-emerald-600 cursor-pointer"
+          title="Download"
+        >
           <Download className="size-3.5" />
         </button>
       </div>
@@ -141,8 +153,23 @@ function DocRow({ doc }: { doc: DocumentItem }) {
       <span className="text-slate-400 shrink-0 hidden md:block">{doc.size}</span>
       <span className="text-slate-400 shrink-0 hidden md:block">{doc.uploadedDate}</span>
       <div className="flex gap-1 shrink-0">
-        <button className="p-1.5 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition text-blue-600"><Eye className="size-3.5" /></button>
-        <button className="p-1.5 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition text-emerald-600"><Download className="size-3.5" /></button>
+        <button
+          onClick={() => NotificationToast.info('Previewing Document', `Opening document viewer for ${doc.name}`)}
+          className="p-1.5 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition text-blue-600 cursor-pointer"
+          title="Preview"
+        >
+          <Eye className="size-3.5" />
+        </button>
+        <button
+          onClick={() => {
+            downloadFile(`${doc.name.replace(/\s+/g, '_')}.${doc.format.toLowerCase()}`, `Official Document File: ${doc.name}\nCategory: ${doc.category}\nUploaded: ${doc.uploadedDate}`, 'text/plain;charset=utf-8;');
+            NotificationToast.success('Document Downloaded', `Downloaded ${doc.name} (${doc.size})`);
+          }}
+          className="p-1.5 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition text-emerald-600 cursor-pointer"
+          title="Download"
+        >
+          <Download className="size-3.5" />
+        </button>
       </div>
     </div>
   );
