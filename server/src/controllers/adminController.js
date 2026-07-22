@@ -117,20 +117,8 @@ export const getFaculty = async (req, res, next) => {
 
     let query = supabase
       .from('faculty')
-      .select('*, users!inner(is_verified)')
-      .eq('is_active', true)
-      .eq('users.is_verified', true);
-
-    const adminDept = adminProfile ? getDeptCode(adminProfile.department) : null;
-    const isGlobalAdmin = !adminProfile || 
-                          !adminProfile.department || 
-                          adminProfile.department === 'Administration' ||
-                          adminProfile.full_name === 'System Admin' ||
-                          adminProfile.email === 'admin@college.com';
-
-    if (!isGlobalAdmin && adminDept) {
-      query = query.eq('department', adminDept);
-    }
+      .select('*')
+      .eq('is_active', true);
 
     const { data: facultyList, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
@@ -187,11 +175,10 @@ export const createFaculty = async (req, res, next) => {
       experience,
       gender,
       phoneNumber,
-      password
-    } = req.body;
+    const effectivePassword = password || 'Staff@12345';
 
-    if (!fullName || !email || !employeeId || !department || !designation || !password) {
-      const error = new Error('Please fill in all required fields (including Password)');
+    if (!fullName || !email || !employeeId || !department || !designation) {
+      const error = new Error('Please fill in all required fields (Name, Email, Employee ID, Department, Designation)');
       error.statusCode = 400;
       throw error;
     }
@@ -252,7 +239,7 @@ export const createFaculty = async (req, res, next) => {
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(effectivePassword, salt);
 
     let user;
     if (existingUser) {
@@ -263,7 +250,7 @@ export const createFaculty = async (req, res, next) => {
           name: fullName,
           full_name: fullName,
           password: hashedPassword,
-          temp_password: password,
+          temp_password: effectivePassword,
           is_active: true
         })
         .eq('id', existingUser.id)
@@ -282,8 +269,8 @@ export const createFaculty = async (req, res, next) => {
           email: cleanEmail,
           role: 'faculty',
           password: hashedPassword,
-          temp_password: password,
-          is_verified: false,
+          temp_password: effectivePassword,
+          is_verified: true,
           is_active: true
         }])
         .select()
