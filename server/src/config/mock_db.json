@@ -573,6 +573,39 @@
       "time": "Just now",
       "unread": true,
       "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784706010866-798",
+      "created_at": "2026-07-22T07:40:10.901Z",
+      "updated_at": "2026-07-22T07:40:10.901Z",
+      "title": "Your ID Card request (Duplicate) has been submitted and is pending approval.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784706030530-851",
+      "created_at": "2026-07-22T07:40:30.570Z",
+      "updated_at": "2026-07-22T07:40:30.570Z",
+      "title": "Your ID Card status has been changed to Blocked.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
+    },
+    {
+      "id": "SN-1784706033572-265",
+      "created_at": "2026-07-22T07:40:33.604Z",
+      "updated_at": "2026-07-22T07:40:33.604Z",
+      "title": "Your ID Card status has been changed to Active.",
+      "type": "Library",
+      "priority": "Medium",
+      "time": "Just now",
+      "unread": true,
+      "student_id": "s1111111-1111-1111-1111-111111111111"
     }
   ],
   "departments": [],
@@ -649,13 +682,24 @@
       "status": "Printed",
       "payment_status": "Waived",
       "rejection_reason": ""
+    },
+    {
+      "id": "4b7d3d27-f8ec-4fe7-a09d-e5fba49dfade",
+      "created_at": "2026-07-22T07:40:10.863Z",
+      "updated_at": "2026-07-22T07:40:10.863Z",
+      "student_id": "s1111111-1111-1111-1111-111111111111",
+      "request_type": "Duplicate",
+      "reason": "Lost Card",
+      "status": "Pending",
+      "payment_status": "Pending",
+      "rejection_reason": ""
     }
   ],
   "id_cards": [
     {
       "id": "37e3d6e1-ad94-476b-9fd8-0defafc7a780",
       "created_at": "2026-07-22T07:36:33.963Z",
-      "updated_at": "2026-07-22T07:36:41.958Z",
+      "updated_at": "2026-07-22T07:40:33.561Z",
       "student_id": "s1111111-1111-1111-1111-111111111111",
       "card_number": "IDCCS100001",
       "barcode": "BAR-CS100001",
