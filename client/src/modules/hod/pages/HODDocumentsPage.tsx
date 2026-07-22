@@ -5,6 +5,7 @@ import { PageContainer } from '../components/shared/PageContainer';
 import { GlassCard } from '../components/shared/GlassCard';
 import { Button } from '../components/shared/Button';
 import { NotificationToast } from '../components/shared/NotificationToast';
+import { downloadFile } from '../utils/exportUtils';
 import {
   FolderOpen, Upload, Download, Search, Pin, FileText, File, Eye, MoreHorizontal,
 } from 'lucide-react';
@@ -128,7 +129,10 @@ function DocCard({ doc }: { doc: DocumentItem }) {
           <Eye className="size-3.5" />
         </button>
         <button
-          onClick={() => NotificationToast.success('Document Downloaded', `Downloaded ${doc.name} (${doc.size})`)}
+          onClick={() => {
+            downloadFile(`${doc.name.replace(/\s+/g, '_')}.${doc.format.toLowerCase()}`, `Official Document File: ${doc.name}\nCategory: ${doc.category}\nUploaded: ${doc.uploadedDate}`, 'text/plain;charset=utf-8;');
+            NotificationToast.success('Document Downloaded', `Downloaded ${doc.name} (${doc.size})`);
+          }}
           className="p-1.5 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition text-emerald-600 cursor-pointer"
           title="Download"
         >
@@ -157,7 +161,10 @@ function DocRow({ doc }: { doc: DocumentItem }) {
           <Eye className="size-3.5" />
         </button>
         <button
-          onClick={() => NotificationToast.success('Document Downloaded', `Downloaded ${doc.name} (${doc.size})`)}
+          onClick={() => {
+            downloadFile(`${doc.name.replace(/\s+/g, '_')}.${doc.format.toLowerCase()}`, `Official Document File: ${doc.name}\nCategory: ${doc.category}\nUploaded: ${doc.uploadedDate}`, 'text/plain;charset=utf-8;');
+            NotificationToast.success('Document Downloaded', `Downloaded ${doc.name} (${doc.size})`);
+          }}
           className="p-1.5 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition text-emerald-600 cursor-pointer"
           title="Download"
         >

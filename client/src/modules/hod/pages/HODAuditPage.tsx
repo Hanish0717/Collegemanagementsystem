@@ -7,6 +7,7 @@ import { Column } from '../components/shared/DataTable';
 import { StatusBadge } from '../components/shared/StatusBadge';
 import { Button } from '../components/shared/Button';
 import { NotificationToast } from '../components/shared/NotificationToast';
+import { exportToCSV } from '../utils/exportUtils';
 import { Download, RefreshCw, ShieldCheck } from 'lucide-react';
 
 const MODULE_BADGE: Record<string, string> = {
@@ -51,7 +52,15 @@ export function HODAuditPage() {
       actions={
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" iconLeft={RefreshCw} onClick={loadLogs}>Refresh</Button>
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exported', 'Audit log CSV downloaded.')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Audit_Trail_${departmentInfo.shortName}.csv`, logs);
+              NotificationToast.success('Exported', 'Audit log CSV downloaded.');
+            }}
+          >
             Export CSV
           </Button>
         </div>

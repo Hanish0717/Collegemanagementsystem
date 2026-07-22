@@ -9,9 +9,7 @@ import { AdvancedTable } from '../components/shared/AdvancedTable';
 import { Column } from '../components/shared/DataTable';
 import { StatusBadge } from '../components/shared/StatusBadge';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Calendar,
   Award,
@@ -65,7 +63,22 @@ export function HODEventsPage() {
         <ActionsMenu
           items={[
             { label: 'View Participant List', icon: Eye, onClick: () => NotificationToast.info('Participants List', `Viewing list for ${item.name}`) },
-            { label: 'Download Summary Report', icon: Download, onClick: () => NotificationToast.success('Report Exported', `Downloaded event summary`) },
+            {
+              label: 'Download Summary Report',
+              icon: Download,
+              onClick: () => {
+                exportToTextDoc(`Event_Summary_${item.id}.txt`, `Event Summary Report — ${item.name}`, {
+                  'Event Name': item.name,
+                  'Category': item.category,
+                  'Coordinator': item.coordinator,
+                  'Venue & Date': `${item.venue} (${item.date})`,
+                  'Delegates': `${item.participants} Delegates`,
+                  'Sanctioned Budget': item.budget,
+                  'Status': item.status,
+                });
+                NotificationToast.success('Report Exported', `Downloaded event summary`);
+              },
+            },
           ]}
         />
       ),
@@ -79,7 +92,15 @@ export function HODEventsPage() {
       breadcrumbItems={[{ label: 'Department Events' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Events', 'Downloading CSV directory...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Events_List_${departmentInfo.shortName}.csv`, events);
+              NotificationToast.success('Exporting Events', 'Downloading CSV directory...');
+            }}
+          >
             Export List
           </Button>
           <Button variant="primary" size="sm" iconLeft={Plus} onClick={() => NotificationToast.info('New Event Proposal', 'Event proposal wizard launched')}>

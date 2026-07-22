@@ -10,9 +10,7 @@ import { Column } from '../components/shared/DataTable';
 import { StatusBadge } from '../components/shared/StatusBadge';
 import { LinearProgress } from '../components/shared/ProgressComponents';
 import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
-
+import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Award,
   CheckCircle2,
@@ -69,7 +67,22 @@ export function HODExaminationsPage() {
         <ActionsMenu
           items={[
             { label: 'View Grade Sheet', icon: Eye, onClick: () => NotificationToast.info('Grade Sheet Opened', `Viewing marks for ${item.name}`) },
-            { label: 'Print Hall Ticket', icon: Printer, onClick: () => NotificationToast.success('Hall Ticket Printed', `Printed hall ticket for ${item.rollNumber}`) },
+            {
+              label: 'Print Hall Ticket',
+              icon: Printer,
+              onClick: () => {
+                exportToTextDoc(`HallTicket_${item.rollNumber}.txt`, `Official Exam Hall Ticket — ${item.name}`, {
+                  'Roll Number': item.rollNumber,
+                  'Student Name': item.name,
+                  'Department': departmentInfo.name,
+                  'Semester': item.sem,
+                  'SGPA': item.sgpa,
+                  'CGPA': item.cgpa,
+                  'Result Status': item.status,
+                });
+                NotificationToast.success('Hall Ticket Printed', `Printed hall ticket for ${item.rollNumber}`);
+              },
+            },
           ]}
         />
       ),
@@ -83,7 +96,15 @@ export function HODExaminationsPage() {
       breadcrumbItems={[{ label: 'Examination Management' }]}
       actions={
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" iconLeft={Download} onClick={() => NotificationToast.success('Exporting Results', 'Downloading semester grade sheets...')}>
+          <Button
+            variant="outline"
+            size="sm"
+            iconLeft={Download}
+            onClick={() => {
+              exportToCSV(`HOD_Exam_Results_${departmentInfo.shortName}.csv`, results);
+              NotificationToast.success('Exporting Results', 'Downloading semester grade sheets...');
+            }}
+          >
             Export Results
           </Button>
           <Button variant="primary" size="sm" iconLeft={FileText} onClick={() => setActiveTab('halltickets')}>
