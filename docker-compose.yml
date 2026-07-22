@@ -46,12 +46,12 @@ services:
       JWT_SECRET: super_secret_jwt_key_12345_college_management
       JWT_EXPIRE: 7d
       FRONTEND_URL: http://localhost:5173
-      EMAIL_USER: 23341a05d0@gmail.com
-      EMAIL_PASS: "vger kaxv ezts pnfo"
+      EMAIL_USER: ${EMAIL_USER:-your_email@gmail.com}
+      EMAIL_PASS: ${EMAIL_PASS:-your_gmail_app_password}
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: 587
       SMTP_SECURE: "false"
-      GOOGLE_CLIENT_ID: 58869313314-5rpg0hrsgt2f9sf8ugckrad38hr98d35.apps.googleusercontent.com
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-your_google_client_id_here.apps.googleusercontent.com}
     volumes:
       - ./server:/app
       - /app/node_modules
