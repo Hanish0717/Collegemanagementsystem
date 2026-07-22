@@ -18,7 +18,8 @@ import {
   UserCheck,
   Clock,
   BookOpen,
-  Shield
+  Shield,
+  AlertTriangle
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { toast } from "sonner";
@@ -66,11 +67,16 @@ interface StudentEligibility {
 }
 
 interface MarkRow {
+  result_id?: string;
   student_id: string;
   user_id: string;
   full_name: string;
   roll_number: string;
   marks: number | null;
+  internal_marks?: number | null;
+  external_marks?: number | null;
+  grace_applied?: boolean;
+  grace_marks?: number;
   grade: string;
   credits: number;
 }
@@ -1358,7 +1364,7 @@ export function AdminExams() {
                                   if (proposedExternal === null) return;
 
                                   requestCorrectionMutation.mutate({
-                                    result_id: m.result_id,
+                                    result_id: m.result_id || '',
                                     new_internal_marks: parseFloat(proposedInternal),
                                     new_external_marks: parseFloat(proposedExternal),
                                     reason
