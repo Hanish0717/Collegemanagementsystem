@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useHODDepartment } from '../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { fetchDepartmentAcademics, approveDepartmentLessonPlan, DepartmentSubject, LessonPlanItem } from '../services/hodAcademicService';
 
 import { PageContainer } from '../components/shared/PageContainer';
+import { Modal } from '../components/shared/Modal';
 import { StatisticsCard } from '../components/shared/StatisticsCard';
 import { AdvancedTable } from '../components/shared/AdvancedTable';
 import { Column } from '../components/shared/DataTable';

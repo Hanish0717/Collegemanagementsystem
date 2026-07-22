@@ -34,6 +34,16 @@ const FACULTY_STATIC_DB = [
   { employeeId: 'FACCSEHOD',         email: 'faculty.hod.cse@college.com',         name: 'Dr. S. Suresh',        department: 'CSE',           role: 'faculty' },
 ];
 
+function normalizeRole(role) {
+  if (!role) return 'student';
+  const r = role.toLowerCase().replace('_', '-');
+  if (r === 'lms') return 'faculty';
+  if (r === 'placement') return 'placement-officer';
+  if (r === 'warden') return 'hostel-warden';
+  if (r === 'transport') return 'transport-manager';
+  return r;
+}
+
 export const protect = async (req, res, next) => {
   let token;
 
@@ -81,6 +91,7 @@ export const protect = async (req, res, next) => {
     if (token && (token.startsWith('demo_token_') || token.startsWith('student_token_') || token.startsWith('demo_'))) {
       const tokenParts = token.replace('demo_token_', '').replace('student_token_', '').replace('demo_', '');
       const targetRole = tokenParts.toLowerCase().includes('student') ? 'student' : (tokenParts || 'student');
+      const normalizedRole = normalizeRole(targetRole);
 
       let studentRecord = null;
       try {
@@ -100,8 +111,8 @@ export const protect = async (req, res, next) => {
         full_name: studentRecord?.full_name || 'Gudipati Chandra',
         fullName: studentRecord?.full_name || 'Gudipati Chandra',
         email: studentRecord?.email || 'student@college.com',
-        role: targetRole,
-        role_name: targetRole,
+        role: normalizedRole,
+        role_name: normalizedRole,
         department: studentRecord?.department || 'CSE',
         is_active: true,
         isActive: true,
@@ -130,8 +141,11 @@ export const protect = async (req, res, next) => {
           .single();
 
         if (data && !error) {
+          const normalizedRole = normalizeRole(data.role || decoded.role);
           user = {
             ...data,
+            role: normalizedRole,
+            role_name: normalizedRole,
             _id: data.id,
             isActive: data.is_active,
             isVerified: data.is_verified,

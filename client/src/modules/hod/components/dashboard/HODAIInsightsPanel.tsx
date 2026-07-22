@@ -1,7 +1,7 @@
 import React from 'react';
 import { GlassCard } from '../shared/GlassCard';
 import { Sparkles, Brain, TrendingUp, AlertCircle, Award } from 'lucide-react';
-import { useHODDepartment } from '../../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 
 export function HODAIInsightsPanel() {
   const { departmentInfo } = useHODDepartment();

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHODDepartment } from '../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { fetchDepartmentStudents, DepartmentStudent } from '../services/hodStudentService';
 import { useNavigate } from '@tanstack/react-router';
 
 import { PageContainer } from '../components/shared/PageContainer';
+import { Modal } from '../components/shared/Modal';
 import { StatisticsCard } from '../components/shared/StatisticsCard';
 import { AdvancedTable } from '../components/shared/AdvancedTable';
 import { Column } from '../components/shared/DataTable';

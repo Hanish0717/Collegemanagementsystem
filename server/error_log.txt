@@ -1181,3 +1181,53 @@ Body: {"email":"student@college.com","password":"password123"}
 [2026-07-22T07:48:53.263Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
 [2026-07-22T07:48:53.271Z] GET /api/admin/faculty - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
 [2026-07-22T07:49:00.195Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T17:53:24.382Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-22T18:03:09.844Z] GET /api/student-module/lms - Status: 404 - Client Error: Not Found - /api/student-module/lms - Body: {}
+[2026-07-22T18:03:09.855Z] GET /api/student-module/lms - Status: 404 - Client Error: Not Found - /api/student-module/lms - Body: {}
+[2026-07-22T18:03:12.384Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T18:03:12.394Z] GET /api/student-module/academic-performance - Status: 404 - Client Error: Not Found - /api/student-module/academic-performance - Body: {}
+[2026-07-22T18:03:12.423Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T18:03:12.433Z] GET /api/student-module/profile - Status: 404 - Client Error: Not Found - /api/student-module/profile - Body: {}
+[2026-07-22T18:03:50.042Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T18:03:50.052Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T18:03:54.240Z] GET /api/library/id-cards/student/7bb18489-ce5c-4a37-9e55-1bbebb09e402 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-22T18:03:54.252Z] GET /api/library/id-cards/student/7bb18489-ce5c-4a37-9e55-1bbebb09e402 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-22T18:04:02.196Z] GET /api/library/id-cards/student/7bb18489-ce5c-4a37-9e55-1bbebb09e402 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-22T18:04:02.251Z] GET /api/library/id-cards/student/7bb18489-ce5c-4a37-9e55-1bbebb09e402 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-22T18:04:31.711Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"learning@college.com","password":"password123"}
+[2026-07-22T18:04:35.501Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-22T18:04:35.506Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-22T18:05:06.064Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T18:05:06.077Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
+[2026-07-22T18:07:58.087Z] GET /api/super-admin/dashboard/stats - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-22T18:08:27.705Z] GET /api/fees?feeType=Transport+Fee&page=1&limit=50 - Status: 500 - Error: column t.fee_type does not exist
+Stack: error: column t.fee_type does not exist
+    at C:\College Management System GA\Collegemanagementsystem\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async PostgresQueryBuilder.execute (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/config/supabase.js:1030:23)
+    at async getFees (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/feeController.js:219:57)
+Body: {}
+
+[2026-07-22T18:08:28.820Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-22T18:08:29.836Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-22T18:08:34.160Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-22T18:08:35.183Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-22T18:08:37.202Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'transport-manager' is not authorized to access this resource - Body: {}
+[2026-07-22T18:14:38.287Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"learning@college.com","password":"password123"}
+[2026-07-22T18:14:44.000Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-22T18:14:44.005Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-22T18:21:44.174Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"learning@college.com","password":"password123"}
+[2026-07-22T18:22:01.779Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-22T18:22:01.783Z] GET /api/faculty-module/materials - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-22T18:30:28.834Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-22T18:30:37.644Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T18:30:38.656Z] GET /api/student-module/notifications - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-22T18:37:33.193Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
+[2026-07-22T18:37:35.523Z] GET /api/faculty/notifications - Status: 403 - Client Error: Forbidden: Your role 'lms' is not authorized to access this resource - Body: {}
+[2026-07-22T18:37:38.628Z] GET /api/faculty-module/performance - Status: 403 - Client Error: Forbidden: Your role 'lms' is not authorized to access this resource - Body: {}
+[2026-07-22T18:37:38.638Z] GET /api/faculty-module/performance - Status: 403 - Client Error: Forbidden: Your role 'lms' is not authorized to access this resource - Body: {}
+[2026-07-22T18:37:43.453Z] GET /api/faculty/notifications - Status: 403 - Client Error: Forbidden: Your role 'lms' is not authorized to access this resource - Body: {}
+[2026-07-22T18:40:09.184Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
+[2026-07-22T18:40:27.714Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
+[2026-07-22T18:41:02.962Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
+[2026-07-22T18:50:32.956Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod@college.comhod@college.com","password":"password123password123"}

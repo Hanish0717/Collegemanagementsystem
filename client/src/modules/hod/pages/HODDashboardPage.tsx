@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHODDepartment } from '../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { getDepartmentDashboardData } from '../services/hodDashboardService';
 
 import { DepartmentHeader } from '../components/shared/DepartmentHeader';

@@ -24,14 +24,40 @@ export interface DepartmentFaculty {
   officeRoom?: string;
 }
 
+function mapFaculty(f: any): DepartmentFaculty {
+  return {
+    id: f.id,
+    photoUrl: f.photo_url || f.photoUrl || '',
+    empId: f.employee_id || f.empId || '',
+    name: f.full_name || f.name || 'Faculty Demo',
+    designation: f.designation || 'Associate Professor',
+    department: f.department || '',
+    qualification: f.qualification || 'M.Tech, Ph.D',
+    specialization: f.specialization || 'Computer Science',
+    experience: f.experience || '8 Years',
+    subjectsAssigned: f.subjects_assigned || f.subjectsAssigned || 'Distributed Systems',
+    classesAssigned: f.classes_assigned || f.classesAssigned || 'Sem 5 Sec A',
+    attendance: f.attendance_percentage || f.attendance || 95,
+    publications: f.publications || 4,
+    feedbackScore: f.feedback_score || f.feedbackScore || 4.5,
+    status: f.status || 'Active',
+    empType: f.employment_type || f.empType || 'Full-time',
+    joiningDate: f.joining_date || f.joiningDate,
+    email: f.email || '',
+    phone: f.phone_number || f.phone || '',
+    officeRoom: f.office_room || f.officeRoom || 'Tech Block 101'
+  };
+}
+
 export async function fetchDepartmentFaculty(deptCode: DepartmentCode = 'AIML') {
   try {
-    const data = await hodApi.get<{ success: boolean; faculty: DepartmentFaculty[] }>(
+    const data = await hodApi.get<{ success: boolean; faculty: any[] }>(
       '/api/hod/faculty',
       {},
       deptCode
     );
-    return data.faculty || [];
+    const list = data.faculty || [];
+    return list.map(mapFaculty);
   } catch (err) {
     console.warn('Backend faculty fetch fallback to isolated dataset');
     return getFallbackFaculty(deptCode);
@@ -40,12 +66,12 @@ export async function fetchDepartmentFaculty(deptCode: DepartmentCode = 'AIML') 
 
 export async function fetchDepartmentFacultyById(facultyId: string, deptCode: DepartmentCode = 'AIML') {
   try {
-    const data = await hodApi.get<{ success: boolean; faculty: DepartmentFaculty }>(
+    const data = await hodApi.get<{ success: boolean; faculty: any }>(
       `/api/hod/faculty/${facultyId}`,
       {},
       deptCode
     );
-    return data.faculty;
+    return mapFaculty(data.faculty);
   } catch (err) {
     const fallback = getFallbackFaculty(deptCode);
     return fallback.find((f) => f.id === facultyId) || fallback[0];

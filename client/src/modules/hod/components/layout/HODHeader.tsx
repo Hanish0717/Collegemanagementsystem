@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useHODDepartment } from '../../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { SearchBar } from '../shared/SearchBar';
 import { AvatarCard } from '../shared/AvatarCard';
 import {
