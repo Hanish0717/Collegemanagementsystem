@@ -38,11 +38,7 @@ const addStudentNotification = async (studentId, title, type, priority = 'Medium
  */
 export const getIdCardStats = async (req, res, next) => {
   try {
-    const DUMMY_EMAILS = ['aarav@college.com', 'priya@college.com', 'ethan@college.com', 'sofia@college.com'];
-    const DUMMY_ROLLS = ['CS100002', 'CS100003', 'CS100004', 'CS100005'];
-
-    const { data: rawStudents = [] } = await supabase.from('students').select('*').eq('is_active', true);
-    const students = rawStudents.filter(s => !DUMMY_EMAILS.includes(s.email) && !DUMMY_ROLLS.includes(s.roll_number));
+    const { data: students = [] } = await supabase.from('students').select('*').eq('is_active', true);
     const { data: idCards = [] } = await supabase.from('id_cards').select('*');
     const { data: requests = [] } = await supabase.from('id_card_requests').select('*');
     const { data: payments = [] } = await supabase.from('id_card_payments').select('*');
@@ -164,18 +160,11 @@ export const searchStudents = async (req, res, next) => {
     const { q } = req.query;
     const searchStr = (q || '').trim();
 
-    const DUMMY_EMAILS = ['aarav@college.com', 'priya@college.com', 'ethan@college.com', 'sofia@college.com'];
-    const DUMMY_ROLLS = ['CS100002', 'CS100003', 'CS100004', 'CS100005'];
-
     // Query active students
-    const { data: rawStudents = [] } = await supabase
+    const { data: students = [] } = await supabase
       .from('students')
       .select('*')
       .eq('is_active', true);
-
-    const students = rawStudents.filter(s => 
-      !DUMMY_EMAILS.includes(s.email) && !DUMMY_ROLLS.includes(s.roll_number)
-    );
 
     // If query provided, filter; otherwise return all real active students
     const filtered = searchStr === '' ? students : students.filter(s => {
