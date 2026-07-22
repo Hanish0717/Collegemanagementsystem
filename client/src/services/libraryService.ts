@@ -311,7 +311,7 @@ export async function fetchIDCardStudentProfile(studentId: string): Promise<any>
   }
 }
 
-export async function createIDCardRequest(payload: { studentId: string; requestType: string; reason: string }): Promise<any> {
+export async function createIDCardRequest(payload: { studentId: string; requestType: string; reason?: string }): Promise<any> {
   try {
     const { data } = await api.post('/api/library/id-cards/request', payload);
     return data.data;
@@ -328,12 +328,13 @@ export async function createIDCardRequest(payload: { studentId: string; requestT
   }
 }
 
-export async function approveRejectIDCardRequest(id: string, action: 'approve' | 'reject', remarks?: string): Promise<any> {
+export async function approveRejectIDCardRequest(id: string, action: 'approve' | 'reject' | { status: 'Approved' | 'Rejected'; rejectionReason?: string }, remarks?: string): Promise<any> {
   try {
-    const { data } = await api.put(`/api/library/id-cards/request/${id}/status`, { action, remarks });
+    const { data } = await api.put(`/api/library/id-cards/request/${id}/status`, typeof action === 'object' ? action : { action, remarks });
     return data.data;
   } catch {
-    return { id, status: action === 'approve' ? 'Approved' : 'Rejected' };
+    const statusVal = typeof action === 'object' ? action.status : (action === 'approve' ? 'Approved' : 'Rejected');
+    return { id, status: statusVal };
   }
 }
 
@@ -352,8 +353,9 @@ export async function collectIDCardPayment(payload: { requestId?: string; amount
   }
 }
 
-export async function reprintIDCard(cardId: string): Promise<any> {
+export async function reprintIDCard(cardIdOrPayload: string | { cardId: string; remarks?: string }): Promise<any> {
   try {
+    const cardId = typeof cardIdOrPayload === 'string' ? cardIdOrPayload : cardIdOrPayload.cardId;
     const { data } = await api.post(`/api/library/id-cards/${cardId}/reprint`);
     return data.data;
   } catch {
@@ -361,16 +363,18 @@ export async function reprintIDCard(cardId: string): Promise<any> {
   }
 }
 
-export async function updateIDCardStatus(studentId: string, status: string): Promise<any> {
+export async function updateIDCardStatus(studentIdOrCardId: string, statusOrPayload: string | { status: 'Active' | 'Blocked' | 'Lost'; remarks?: string }): Promise<any> {
   try {
-    const { data } = await api.put(`/api/library/id-cards/student/${studentId}/status`, { status });
+    const status = typeof statusOrPayload === 'string' ? statusOrPayload : statusOrPayload.status;
+    const { data } = await api.put(`/api/library/id-cards/student/${studentIdOrCardId}/status`, { status });
     return data.data;
   } catch {
-    return { studentId, status };
+    const statusVal = typeof statusOrPayload === 'string' ? statusOrPayload : statusOrPayload.status;
+    return { studentId: studentIdOrCardId, status: statusVal };
   }
 }
 
-export async function reportMissingIDCard(payload: { studentId: string; reason: string }): Promise<any> {
+export async function reportMissingIDCard(payload: { studentId: string; cardId?: string; reason?: string; remarks?: string }): Promise<any> {
   try {
     const { data } = await api.post('/api/library/id-cards/report-missing', payload);
     return data.data;
@@ -405,5 +409,4 @@ export async function handoverIDCard(cardId: string): Promise<any> {
     return { success: true, status: 'Handed Over' };
   }
 }
-
 
