@@ -42,7 +42,6 @@ async function runSuite() {
       body: JSON.stringify({ email: 'admin@college.com', password: 'password123' })
     });
     let data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
     adminToken = data.token;
 
     // Create main test Student record using Admin Token

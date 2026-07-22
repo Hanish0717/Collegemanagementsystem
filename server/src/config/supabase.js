@@ -31,10 +31,9 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const databaseUrl = process.env.DATABASE_URL;
 
-// Determine if we should run in Database Mock Mode
-// Trigger mock mode if: DATABASE_URL is missing, OR it's a placeholder, OR FORCE_MOCK_MODE is set
-let isMockMode = !databaseUrl ||
-                   databaseUrl.includes('your_supabase_postgresql') ||
+// Determine if we should run in Database Mock Mode (only if no live PostgreSQL or Supabase credentials are configured)
+let isMockMode = (!databaseUrl || databaseUrl.includes('your_supabase_postgresql')) &&
+                   (!supabaseUrl || supabaseUrl.includes('your-project') || supabaseUrl.includes('placeholder')) ||
                    process.env.FORCE_MOCK_MODE === 'true';
 
 debugLog("databaseUrl: " + databaseUrl + ", isMockMode: " + isMockMode);
@@ -45,47 +44,52 @@ if (!isMockMode && databaseUrl) {
     const host = hostParts?.[0];
     const port = hostParts?.[1] ? parseInt(hostParts[1], 10) : 5432;
     debugLog("Starting database TCP check for host: " + host + ", port: " + port);
+    if (host) {
+      // 1. Resolve DNS
+      await Promise.race([
+        dns.lookup(host),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500))
+      ]);
 
-    // Check TCP connectivity for ALL hosts (including localhost/127.0.0.1)
-    const portReachable = await new Promise((resolve) => {
-      const socket = new net.Socket();
-      let isResolved = false;
+      // 2. Check if TCP port is reachable
+      const portReachable = await new Promise((resolve) => {
+        const socket = new net.Socket();
+        let isResolved = false;
 
-      const cleanup = () => {
-        socket.removeAllListeners('connect');
-        socket.removeAllListeners('timeout');
-        socket.removeAllListeners('error');
-        socket.on('error', () => {});
-        socket.destroy();
-      };
+        const cleanup = () => {
+          socket.removeAllListeners('connect');
+          socket.removeAllListeners('timeout');
+          socket.on('error', () => {});
+          socket.destroy();
+        };
 
-      const done = (status) => {
-        if (isResolved) return;
-        isResolved = true;
-        cleanup();
-        resolve(status);
-      };
+        const done = (status) => {
+          if (isResolved) return;
+          isResolved = true;
+          cleanup();
+          resolve(status);
+        };
 
-      socket.setTimeout(2000);
-      socket.once('connect', () => done(true));
-      socket.once('timeout', () => done(false));
-      socket.once('error', () => done(false));
+        socket.setTimeout(1500);
+        socket.once('connect', () => done(true));
+        socket.once('timeout', () => done(false));
+        socket.once('error', () => done(false));
+        
+        try {
+          socket.connect(port, host);
+        } catch (e) {
+          done(false);
+        }
+      });
 
-      try {
-        socket.connect(port, host);
-      } catch (e) {
-        done(false);
+      if (!portReachable) {
+        throw new Error(`TCP port ${port} is unreachable`);
       }
-    });
-
-    if (!portReachable) {
-      throw new Error(`TCP port ${port} on ${host} is unreachable (ECONNREFUSED or timeout)`);
+      debugLog("TCP check succeeded!");
     }
-    debugLog("TCP check succeeded for host: " + host + ":" + port);
   } catch (err) {
     debugLog("TCP check error: " + err.message + ", stack: " + err.stack);
-    console.log("⚠️  Database host/port is unreachable. Automatically enabling DATABASE MOCK MODE.");
-    console.log(`   Reason: ${err.message}`);
+    console.log("⚠️ Database host or port is unreachable (e.g. company wifi restriction). Automatically enabling DATABASE MOCK MODE.");
     isMockMode = true;
     process.env.FORCE_MOCK_MODE = 'true';
   }
@@ -116,15 +120,7 @@ if (isMockMode) {
       { id: 'de111111-1111-1111-1111-111111111111', name: 'Dean Academics', full_name: 'Dean Academics Office', email: 'dean@college.com', password: hashedDefaultPassword, role: 'dean', is_verified: true, is_active: true },
       { id: 'ac111111-1111-1111-1111-111111111111', name: 'Accounts Manager', full_name: 'Accounts Office', email: 'accounts@college.com', password: hashedDefaultPassword, role: 'accounts', is_verified: true, is_active: true },
       { id: 'pr111111-1111-1111-1111-111111111111', name: 'Principal', full_name: 'Principal Office', email: 'principal@college.com', password: hashedDefaultPassword, role: 'principal', is_verified: true, is_active: true },
-      { id: 'c5e11111-1111-1111-1111-111111111111', name: 'HOD CSE',   full_name: 'Dr. Anjali Mehra',   email: 'hod.cse@college.com',   password: hashedDefaultPassword, role: 'hod', department: 'CSE',   is_verified: true, is_active: true },
-      { id: 'a1011111-1111-1111-1111-111111111111', name: 'HOD AIML',  full_name: 'Dr. HOD AIML',       email: 'hod.aiml@college.com',  password: hashedDefaultPassword, role: 'hod', department: 'AIML',  is_verified: true, is_active: true },
-      { id: 'ece11111-1111-1111-1111-111111111111', name: 'HOD ECE',   full_name: 'Dr. Ramesh Kumar',   email: 'hod.ece@college.com',   password: hashedDefaultPassword, role: 'hod', department: 'ECE',   is_verified: true, is_active: true },
-      { id: 'eee11111-1111-1111-1111-111111111111', name: 'HOD EEE',   full_name: 'Dr. Suresh Varma',   email: 'hod.eee@college.com',   password: hashedDefaultPassword, role: 'hod', department: 'EEE',   is_verified: true, is_active: true },
-      { id: '4ec11111-1111-1111-1111-111111111111', name: 'HOD MECH',  full_name: 'Dr. Vikram Rathore', email: 'hod.mech@college.com',  password: hashedDefaultPassword, role: 'hod', department: 'MECH',  is_verified: true, is_active: true },
-      { id: 'c1b11111-1111-1111-1111-111111111111', name: 'HOD CIVIL', full_name: 'Dr. Rajesh Gupta',   email: 'hod.civil@college.com', password: hashedDefaultPassword, role: 'hod', department: 'CIVIL', is_verified: true, is_active: true },
-      { id: '17111111-1111-1111-1111-111111111111', name: 'HOD IT',    full_name: 'Dr. Neha Sharma',    email: 'hod.it@college.com',    password: hashedDefaultPassword, role: 'hod', department: 'IT',    is_verified: true, is_active: true },
-      { id: 'd0000000-0000-0000-0000-000000000000', name: 'HOD CSE',   full_name: 'HOD CSE Dept',       email: 'hod@college.com',       password: hashedDefaultPassword, role: 'hod', department: 'CSE',   is_verified: true, is_active: true },
-
+      { id: 'ho111111-1111-1111-1111-111111111111', name: 'HOD CSE', full_name: 'HOD CSE Dept', email: 'hod@college.com', password: hashedDefaultPassword, role: 'hod', is_verified: true, is_active: true },
       { id: 'co111111-1111-1111-1111-111111111111', name: 'Alumni Coordinator', full_name: 'Alumni Coordinator', email: 'alumni.coordinator@college.com', password: hashedDefaultPassword, role: 'alumni-coordinator', is_verified: true, is_active: true },
       { id: 'al111111-1111-1111-1111-111111111111', name: 'Alumni', full_name: 'Alumni Member', email: 'alumni@college.com', password: hashedDefaultPassword, role: 'alumni', is_verified: true, is_active: true }
     ],
@@ -154,51 +150,8 @@ if (isMockMode) {
       { id: 'a1111111-1111-1111-1111-111111111111', user_id: '22222222-2222-2222-2222-222222222222', full_name: 'System Admin', email: 'admin@college.com', employee_id: 'ADM001', department: 'CSE', is_active: true }
     ],
     faculty: [
-      // ── CSE (5 faculty) ──────────────────────────────────────────────────
-      { id: 'f1111111-1111-1111-1111-111111111111', user_id: '33333333-3333-3333-3333-333333333333', full_name: 'Dr. John Smith',       email: 'faculty@college.com',          employee_id: 'FAC2020001', department: 'CSE',   designation: 'Associate Professor',  experience: 12, gender: 'Male',   phone_number: '9876543212', status: 'Active', attendance_percentage: 95.0, is_active: true },
-      { id: 'fcse0002-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Anjali Mehra',       email: 'anjali.mehra@college.com',     employee_id: 'FAC2018002', department: 'CSE',   designation: 'Professor & Head',     experience: 18, gender: 'Female', phone_number: '9876500002', status: 'Active', attendance_percentage: 97.0, is_active: true },
-      { id: 'fcse0003-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Kiran Bose',       email: 'kiran.bose@college.com',       employee_id: 'FAC2021003', department: 'CSE',   designation: 'Assistant Professor',  experience:  5, gender: 'Male',   phone_number: '9876500003', status: 'Active', attendance_percentage: 91.0, is_active: true },
-      { id: 'fcse0004-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Pooja Iyer',       email: 'pooja.iyer@college.com',       employee_id: 'FAC2022004', department: 'CSE',   designation: 'Assistant Professor',  experience:  3, gender: 'Female', phone_number: '9876500004', status: 'Active', attendance_percentage: 88.0, is_active: true },
-      { id: 'fcse0005-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Sunil Chadha',       email: 'sunil.chadha@college.com',     employee_id: 'FAC2015005', department: 'CSE',   designation: 'Professor',            experience: 21, gender: 'Male',   phone_number: '9876500005', status: 'On Leave', attendance_percentage: 82.0, is_active: true },
-
-      // ── AIML (4 faculty) ─────────────────────────────────────────────────
-      { id: 'faiml001-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Ramesh Kumar',       email: 'ramesh.kumar@college.com',     employee_id: 'FAC2019101', department: 'AIML',  designation: 'Professor & Head',     experience: 14, gender: 'Male',   phone_number: '9876501001', status: 'Active', attendance_percentage: 98.0, is_active: true },
-      { id: 'faiml002-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Sneha Verma',      email: 'sneha.verma@college.com',      employee_id: 'FAC2020102', department: 'AIML',  designation: 'Associate Professor',  experience:  9, gender: 'Female', phone_number: '9876501002', status: 'Active', attendance_percentage: 95.0, is_active: true },
-      { id: 'faiml003-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Vikram Rathore',   email: 'vikram.rathore@college.com',   employee_id: 'FAC2021103', department: 'AIML',  designation: 'Assistant Professor',  experience:  6, gender: 'Male',   phone_number: '9876501003', status: 'Active', attendance_percentage: 92.0, is_active: true },
-      { id: 'faiml004-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Ananya Roy',         email: 'ananya.roy@college.com',       employee_id: 'FAC2022104', department: 'AIML',  designation: 'Assistant Professor',  experience:  5, gender: 'Female', phone_number: '9876501004', status: 'Active', attendance_percentage: 96.0, is_active: true },
-
-      // ── ECE (5 faculty) ──────────────────────────────────────────────────
-      { id: 'fece0001-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Ramesh Kumar',       email: 'ramesh.ece@college.com',       employee_id: 'FAC2016201', department: 'ECE',   designation: 'Professor & Head',     experience: 16, gender: 'Male',   phone_number: '9876502001', status: 'Active', attendance_percentage: 96.0, is_active: true },
-      { id: 'fece0002-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Kavitha Nair',       email: 'kavitha.nair@college.com',     employee_id: 'FAC2018202', department: 'ECE',   designation: 'Associate Professor',  experience: 10, gender: 'Female', phone_number: '9876502002', status: 'Active', attendance_percentage: 93.0, is_active: true },
-      { id: 'fece0003-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Arvind Pillai',    email: 'arvind.pillai@college.com',    employee_id: 'FAC2020203', department: 'ECE',   designation: 'Assistant Professor',  experience:  7, gender: 'Male',   phone_number: '9876502003', status: 'Active', attendance_percentage: 90.0, is_active: true },
-      { id: 'fece0004-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Meena Srinivasan', email: 'meena.srinivasan@college.com', employee_id: 'FAC2022204', department: 'ECE',   designation: 'Assistant Professor',  experience:  4, gender: 'Female', phone_number: '9876502004', status: 'Active', attendance_percentage: 88.0, is_active: true },
-      { id: 'fece0005-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Gopal Krishnan',     email: 'gopal.krishnan@college.com',   employee_id: 'FAC2014205', department: 'ECE',   designation: 'Professor',            experience: 22, gender: 'Male',   phone_number: '9876502005', status: 'Active', attendance_percentage: 94.0, is_active: true },
-
-      // ── EEE (4 faculty) ──────────────────────────────────────────────────
-      { id: 'feee0001-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Suresh Varma',       email: 'suresh.varma@college.com',     employee_id: 'FAC2015301', department: 'EEE',   designation: 'Professor & Head',     experience: 17, gender: 'Male',   phone_number: '9876503001', status: 'Active', attendance_percentage: 97.0, is_active: true },
-      { id: 'feee0002-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Lakshmi Prasad',     email: 'lakshmi.prasad@college.com',   employee_id: 'FAC2017302', department: 'EEE',   designation: 'Associate Professor',  experience: 11, gender: 'Female', phone_number: '9876503002', status: 'Active', attendance_percentage: 92.0, is_active: true },
-      { id: 'feee0003-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Raju Naidu',       email: 'raju.naidu@college.com',       employee_id: 'FAC2021303', department: 'EEE',   designation: 'Assistant Professor',  experience:  6, gender: 'Male',   phone_number: '9876503003', status: 'Active', attendance_percentage: 89.0, is_active: true },
-      { id: 'feee0004-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Deepa Moorthy',    email: 'deepa.moorthy@college.com',    employee_id: 'FAC2023304', department: 'EEE',   designation: 'Assistant Professor',  experience:  2, gender: 'Female', phone_number: '9876503004', status: 'Active', attendance_percentage: 85.0, is_active: true },
-
-      // ── MECH (4 faculty) ─────────────────────────────────────────────────
-      { id: 'fmech001-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Vikram Rathore',     email: 'vikram.mech@college.com',      employee_id: 'FAC2016401', department: 'MECH',  designation: 'Professor & Head',     experience: 15, gender: 'Male',   phone_number: '9876504001', status: 'Active', attendance_percentage: 95.0, is_active: true },
-      { id: 'fmech002-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Priya Shankar',      email: 'priya.shankar@college.com',    employee_id: 'FAC2018402', department: 'MECH',  designation: 'Associate Professor',  experience: 10, gender: 'Female', phone_number: '9876504002', status: 'Active', attendance_percentage: 91.0, is_active: true },
-      { id: 'fmech003-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Arun Tiwari',      email: 'arun.tiwari@college.com',      employee_id: 'FAC2020403', department: 'MECH',  designation: 'Assistant Professor',  experience:  8, gender: 'Male',   phone_number: '9876504003', status: 'Active', attendance_percentage: 90.0, is_active: true },
-      { id: 'fmech004-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Sonal Desai',      email: 'sonal.desai@college.com',      employee_id: 'FAC2022404', department: 'MECH',  designation: 'Assistant Professor',  experience:  4, gender: 'Female', phone_number: '9876504004', status: 'On Leave', attendance_percentage: 78.0, is_active: true },
-
-      // ── CIVIL (4 faculty) ────────────────────────────────────────────────
-      { id: 'fcivl001-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Rajesh Gupta',       email: 'rajesh.gupta@college.com',     employee_id: 'FAC2014501', department: 'CIVIL', designation: 'Professor & Head',     experience: 20, gender: 'Male',   phone_number: '9876505001', status: 'Active', attendance_percentage: 98.0, is_active: true },
-      { id: 'fcivl002-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Sudha Menon',        email: 'sudha.menon@college.com',      employee_id: 'FAC2016502', department: 'CIVIL', designation: 'Associate Professor',  experience: 12, gender: 'Female', phone_number: '9876505002', status: 'Active', attendance_percentage: 94.0, is_active: true },
-      { id: 'fcivl003-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Dilip Patel',      email: 'dilip.patel@college.com',      employee_id: 'FAC2019503', department: 'CIVIL', designation: 'Assistant Professor',  experience:  9, gender: 'Male',   phone_number: '9876505003', status: 'Active', attendance_percentage: 88.0, is_active: true },
-      { id: 'fcivl004-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Ritu Sharma',      email: 'ritu.sharma@college.com',      employee_id: 'FAC2023504', department: 'CIVIL', designation: 'Assistant Professor',  experience:  2, gender: 'Female', phone_number: '9876505004', status: 'Active', attendance_percentage: 87.0, is_active: true },
-
-      // ── IT (4 faculty) ───────────────────────────────────────────────────
-      { id: 'fit00001-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Neha Sharma',        email: 'neha.sharma@college.com',      employee_id: 'FAC2017601', department: 'IT',    designation: 'Professor & Head',     experience: 13, gender: 'Female', phone_number: '9876506001', status: 'Active', attendance_percentage: 96.0, is_active: true },
-      { id: 'fit00002-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Dr. Mahesh Reddy',       email: 'mahesh.reddy@college.com',     employee_id: 'FAC2019602', department: 'IT',    designation: 'Associate Professor',  experience:  8, gender: 'Male',   phone_number: '9876506002', status: 'Active', attendance_percentage: 93.0, is_active: true },
-      { id: 'fit00003-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Asha Kulkarni',    email: 'asha.kulkarni@college.com',    employee_id: 'FAC2021603', department: 'IT',    designation: 'Assistant Professor',  experience:  6, gender: 'Female', phone_number: '9876506003', status: 'Active', attendance_percentage: 90.0, is_active: true },
-      { id: 'fit00004-1111-1111-1111-111111111111', user_id: null,                                   full_name: 'Prof. Sanjay Bhatt',     email: 'sanjay.bhatt@college.com',     employee_id: 'FAC2022604', department: 'IT',    designation: 'Assistant Professor',  experience:  4, gender: 'Male',   phone_number: '9876506004', status: 'Active', attendance_percentage: 91.0, is_active: true }
+      { id: 'f1111111-1111-1111-1111-111111111111', user_id: '33333333-3333-3333-3333-333333333333', full_name: 'Dr. John Smith', email: 'faculty@college.com', employee_id: 'FAC2020001', department: 'CSE', designation: 'Associate Professor', experience: 12, gender: 'Male', phone_number: '9876543212', status: 'Active', attendance_percentage: 95.0, is_active: true }
     ],
-
     books: [
       { id: 'b1111111-1111-1111-1111-111111111111', title: 'Introduction to Algorithms', author: 'Cormen, Leiserson, Rivest, Stein', isbn: '9780262033848', category: 'Computer Science', quantity: 5, available_quantity: 4, shelf_location: 'CS-03', publisher: 'MIT Press', edition: '3rd', language: 'English', description: 'The bible of algorithms.', is_active: true },
       { id: 'b2222222-2222-2222-2222-222222222222', title: 'Database System Concepts', author: 'Silberschatz, Korth, Sudarshan', isbn: '9780073523323', category: 'Computer Science', quantity: 3, available_quantity: 3, shelf_location: 'CS-05', publisher: 'McGraw-Hill', edition: '6th', language: 'English', description: 'Core database text.', is_active: true }
@@ -279,21 +232,7 @@ if (isMockMode) {
       'mentorship_sessions',
       'alumni_employment',
       'alumni_education',
-      'alumni_job_applications',
-      'attendance_notifications',
-      'below_75_students',
-      'attendance_notification_requests',
-      'college_settings',
-      'attendance_notification_templates',
-      'attendance_notification_history',
-      'attendance_notification_logs',
-      'id_cards',
-      'id_card_requests',
-      'duplicate_id_cards',
-      'id_card_payments',
-      'id_card_receipts',
-      'missing_id_cards',
-      'id_card_print_history'
+      'alumni_job_applications'
     ];
     let changed = false;
     requiredTables.forEach(table => {
@@ -302,66 +241,6 @@ if (isMockMode) {
         changed = true;
       }
     });
-
-    if (currentDb['college_settings'].length === 0) {
-      currentDb['college_settings'] = [
-        {
-          key: 'attendance_approval_enabled',
-          value: 'false',
-          description: 'Enable/disable HOD approval flow for attendance warnings',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ];
-      changed = true;
-    }
-
-    if (currentDb['attendance_notification_templates'].length === 0) {
-      currentDb['attendance_notification_templates'] = [
-        {
-          id: 'appreciation',
-          name: 'Appreciation',
-          subject: 'Congratulations on Excellent Attendance',
-          body: 'Dear {student_name},\n\nWe are pleased to inform you that you have maintained an excellent attendance of {attendance_percentage}% this month.\n\nKeep up the great work!\n\nBest regards,\nCollege Administration',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'friendly-reminder',
-          name: 'Friendly Reminder',
-          subject: 'Friendly Reminder: Attendance Update',
-          body: 'Dear {student_name},\n\nThis is a friendly reminder that your overall attendance is currently at {attendance_percentage}%.\n\nPlease attend your classes regularly to keep your attendance above the required 75% threshold.\n\nBest regards,\nClass Teacher',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'warning',
-          name: 'Warning',
-          subject: 'Attendance Warning Alert',
-          body: 'Dear {student_name},\n\nYour attendance is currently at {attendance_percentage}%, which is below the required 75% threshold.\n\nPlease take immediate steps to attend your classes regularly to avoid academic penalty.\n\nBest regards,\nClass Teacher',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'critical-warning',
-          name: 'Critical Warning',
-          subject: 'Critical Attendance Warning',
-          body: 'Dear Parent / Student,\n\nThis is to notify you that the attendance of {student_name} ({roll_number}) is critical at {attendance_percentage}%.\n\nPlease meet your department HOD immediately to resolve this.\n\nBest regards,\nDepartment Head',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 'detention-alert',
-          name: 'Detention Alert',
-          subject: 'Detention Risk Alert',
-          body: 'Dear Parent / Student,\n\nYour overall attendance has fallen to {attendance_percentage}%, putting you at immediate risk of detention.\n\nKindly note that you will not be allowed to write the semester exams if this is not resolved.\n\nBest regards,\nPrincipal',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ];
-      changed = true;
-    }
-
     if (changed) {
       saveDb(currentDb);
     }
@@ -687,21 +566,18 @@ if (isMockMode) {
       signUp: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signInWithPassword: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signOut: async () => ({ error: null })
-    },
-    query: async (text, params) => {
-      return { rows: [] };
     }
   };
 } else {
   console.log("✅ LIVE POSTGRESQL / SUPABASE CONNECTION DETECTED. Query builder is online.");
 
   const isLocalDatabase =
-    (databaseUrl?.includes('localhost') ||
-    databaseUrl?.includes('127.0.0.1') ||
-    databaseUrl?.includes('db') ||
-    databaseUrl?.includes('postgres') ||
-    databaseUrl?.includes('host.docker.internal') ||
-    process.env.DATABASE_SSL === 'false') ?? true;
+    databaseUrl.includes('localhost') ||
+    databaseUrl.includes('127.0.0.1') ||
+    databaseUrl.includes('db') ||
+    databaseUrl.includes('postgres') ||
+    databaseUrl.includes('host.docker.internal') ||
+    process.env.DATABASE_SSL === 'false';
 
   const pool = new Pool({
     connectionString: databaseUrl,
@@ -1115,9 +991,6 @@ if (isMockMode) {
       signUp: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signInWithPassword: async ({ email }) => ({ data: { user: { id: 'mock-user-id', email } }, error: null }),
       signOut: async () => ({ error: null })
-    },
-    query: async (text, params) => {
-      return pool.query(text, params);
     }
   };
 }

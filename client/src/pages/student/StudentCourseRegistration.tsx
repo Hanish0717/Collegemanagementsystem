@@ -1,560 +1,220 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  BookOpen, 
-  CheckCircle, 
-  Info, 
-  Loader2, 
-  Bookmark,
-  FileText
-} from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { toast } from "sonner";
-import api from "@/lib/api";
+import { useState } from "react";
+import { Sparkles, MoreVertical, ArrowLeft } from "lucide-react";
 
-interface Course {
-  id: string;
-  course_code: string;
-  course_name: string;
-  credits: number;
-  course_type: string;
-  department: string;
-  year: number;
-  semester: number;
-  mentor?: { id: string; full_name: string };
+interface PreviousSemesterRegistration {
+  semester: string;
+  batch: string;
+  status: string;
 }
 
-interface Registration {
-  id: string;
-  student_id: string;
-  course_id: string;
-  semester: number;
-  year: number;
+interface CourseDetail {
+  name: string;
+  code: string;
+  credits: string | number;
+  type: string;
   status: string;
-  courses?: Course;
-  credits?: number;
 }
 
 export function StudentCourseRegistration() {
-  const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<"course" | "exam">("course");
-  
-  // Student Profile Query
-  const { data: profileRes, isLoading: isProfileLoading } = useQuery({
-    queryKey: ["student-dashboard-profile"],
-    queryFn: async () => {
-      const { data } = await api.get("/api/student-module/dashboard");
-      return data.data?.profile;
-    }
-  });
+  const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  const studentProfile = profileRes;
+  const previousSemesters: PreviousSemesterRegistration[] = [
+    { semester: "I SEMESTER", batch: "2023 - 2024", status: "Previous" },
+    { semester: "II SEMESTER", batch: "2023 - 2024", status: "Previous" },
+    { semester: "III SEMESTER", batch: "2023 - 2024", status: "Previous" },
+    { semester: "IV SEMESTER", batch: "2023 - 2024", status: "Previous" },
+    { semester: "V SEMESTER", batch: "2023 - 2024", status: "Previous" },
+    { semester: "VI SEMESTER", batch: "2023 - 2024", status: "Previous" },
+  ];
 
-  // Selected year and semester filter states
-  const [selectedYear, setSelectedYear] = useState<string>("");
-  const [selectedSemester, setSelectedSemester] = useState<string>("");
-
-  // Initialize filters once student profile is loaded
-  useEffect(() => {
-    if (studentProfile) {
-      setSelectedYear(String(studentProfile.year || "3"));
-      setSelectedSemester(String(studentProfile.semester || "5"));
-    }
-  }, [studentProfile]);
-
-  // Fetch offered courses matching criteria
-  const { data: courses = [], isLoading: isCoursesLoading } = useQuery<Course[]>({
-    queryKey: ["offered-courses", studentProfile?.department, selectedYear, selectedSemester],
-    queryFn: async () => {
-      if (!studentProfile?.department || !selectedYear || !selectedSemester) return [];
-      const { data } = await api.get(
-        `/api/exams/courses?department=${studentProfile.department}&year=${selectedYear}&semester=${selectedSemester}`
-      );
-      return data.data || [];
-    },
-    enabled: !!studentProfile?.department && !!selectedYear && !!selectedSemester
-  });
-
-  // Fetch student's own registrations
-  const { data: myRegistrations = [], isLoading: isRegsLoading } = useQuery<Registration[]>({
-    queryKey: ["my-registrations"],
-    queryFn: async () => {
-      const { data } = await api.get("/api/exams/courses/my-registrations");
-      return data.data || [];
-    }
-  });
-
-  // Fetch student's own exam registrations
-  const { data: myExamRegistrations = [], isLoading: isExamRegsLoading } = useQuery<any[]>({
-    queryKey: ["my-exam-registrations"],
-    queryFn: async () => {
-      const { data } = await api.get("/api/exams/courses/my-exam-registrations");
-      return data.data || [];
-    }
-  });
-
-  // Fetch exams list to check if exam is scheduled
-  const { data: examsList = [] } = useQuery<any[]>({
-    queryKey: ["active-exams"],
-    queryFn: async () => {
-      const { data } = await api.get<{ success: boolean; data: any[] }>("/api/exams");
-      return data.data || [];
-    }
-  });
-
-  // Fetch student academic results history (to calculate earned credits)
-  const { data: results = [], isLoading: isResultsLoading } = useQuery<any[]>({
-    queryKey: ["student-results"],
-    queryFn: async () => {
-      const { data } = await api.get("/api/student-module/results");
-      return data.data || [];
-    }
-  });
-
-  // Register course mutation
-  const registerMutation = useMutation({
-    mutationFn: async (courseId: string) => {
-      const { data } = await api.post("/api/exams/courses/register", { courseId });
-      return data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-registrations"] });
-      queryClient.invalidateQueries({ queryKey: ["course-analytics"] });
-      toast.success("Successfully registered for course!");
-    },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message || "Failed to register.");
-    }
-  });
-
-  // Register exam mutation
-  const registerExamMutation = useMutation({
-    mutationFn: async (courseId: string) => {
-      const { data } = await api.post("/api/exams/courses/register-exam", { courseId });
-      return data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-exam-registrations"] });
-      toast.success("Successfully registered for exam!");
-    },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message || "Failed to register for exam.");
-    }
-  });
-
-  // Register supplementary mutation
-  const registerSupplementaryMutation = useMutation({
-    mutationFn: async (courseId: string) => {
-      const { data } = await api.post("/api/exams/supplementary/register", { courseId });
-      return data.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-exam-registrations"] });
-      toast.success("Successfully registered for supplementary exam!");
-    },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message || "Failed to register for supplementary exam.");
-    }
-  });
-
-  // Year to Semester map
-  const isExamScheduled = examsList.some(e => 
-    e.department === studentProfile?.department && 
-    Number(e.semester) === Number(selectedSemester) &&
-    e.status !== "Results Published"
-  );
-
-  const getSemestersForYear = (yr: string) => {
-    switch (yr) {
-      case "1": return [1, 2];
-      case "2": return [3, 4];
-      case "3": return [5, 6];
-      case "4": return [7, 8];
-      default: return [];
-    }
+  // Realistic course details populated per semester selection
+  const semesterCoursesMap: Record<string, CourseDetail[]> = {
+    "I SEMESTER": [
+      { name: "Linear Algebra and Calculus", code: "R23MBSMT001", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Applied Physics", code: "R23MBSPH001", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Basic Electrical & Electronics Engineering", code: "R23MEEST001", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Engineering Graphics Lab", code: "R23MMECL001", credits: "3", type: "Core Lab", status: "Approved" },
+      { name: "Applied Physics Lab", code: "R23MBSPL001", credits: "1.5", type: "Core Lab", status: "Approved" },
+      { name: "Basic Electrical Lab", code: "R23MEESL001", credits: "1.5", type: "Core Lab", status: "Approved" },
+    ],
+    "II SEMESTER": [
+      { name: "Differential Equations and Vector Calculus", code: "R23MBSMT002", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Engineering Chemistry", code: "R23MBSCH001", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Introduction to Programming", code: "R23MSCST001", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Engineering Chemistry Lab", code: "R23MBSCL001", credits: "1.5", type: "Core Lab", status: "Approved" },
+      { name: "Programming Lab", code: "R23MSCSL001", credits: "1.5", type: "Core Lab", status: "Approved" },
+    ],
+    "III SEMESTER": [
+      { name: "Discrete Mathematical Structures", code: "R23MSCST005", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Data Structures", code: "R23MSCST006", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Computer Organization and Architecture", code: "R23MSCST007", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Data Structures Lab", code: "R23MSCSL003", credits: "1.5", type: "Core Lab", status: "Approved" },
+    ],
+    "IV SEMESTER": [
+      { name: "Probability and Statistics", code: "R23MBSMT009", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Database Management Systems", code: "R23MSCST009", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Design and Analysis of Algorithms", code: "R23MSCST010", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "DBMS Lab", code: "R23MSCSL005", credits: "1.5", type: "Core Lab", status: "Approved" },
+    ],
+    "V SEMESTER": [
+      { name: "Software Engineering", code: "R23MSCST012", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Computer Networks", code: "R23MSCST013", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Artificial Intelligence", code: "R23MSCST014", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Networks Lab", code: "R23MSCSL006", credits: "1.5", type: "Core Lab", status: "Approved" },
+    ],
+    "VI SEMESTER": [
+      { name: "Web Technologies", code: "R23MSCST015", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "OOAD and Design Patterns", code: "R23MSCST016", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Business Analysis", code: "R23MBMCT006", credits: "3", type: "Core Theory", status: "Approved" },
+      { name: "Web Technologies Lab", code: "R23MSCSL008", credits: "1.5", type: "Core Lab", status: "Approved" },
+    ]
   };
 
-  const handleYearChange = (yr: string) => {
-    setSelectedYear(yr);
-    const sems = getSemestersForYear(yr);
-    if (sems.length > 0) {
-      setSelectedSemester(String(sems[0]));
-    }
-  };
-
-  const handleRegister = (courseId: string) => {
-    registerMutation.mutate(courseId);
-  };
-
-  const handleRegisterExam = (courseId: string) => {
-    registerExamMutation.mutate(courseId);
-  };
-
-  const isRegistered = (courseId: string) => {
-    return myRegistrations.some(r => r.course_id === courseId);
-  };
-
-  const isExamRegistered = (courseId: string) => {
-    return myExamRegistrations.some(r => r.course_id === courseId);
-  };
-
-  const handleRegisterSupplementary = (courseId: string) => {
-    registerSupplementaryMutation.mutate(courseId);
-  };
-
-  const hasBacklog = (courseName: string) => {
-    return results.some((r: any) => r.subject === courseName && r.grade === "F");
-  };
-
-  const activeRegistrationsCount = myRegistrations.filter(
-    r => String(r.semester) === selectedSemester
-  ).length;
-
-  const totalCreditsRegistered = myRegistrations
-    .filter(r => String(r.semester) === selectedSemester)
-    .reduce((sum, r) => sum + Number(r.courses?.credits || r.credits || 0), 0);
-
-  // Dynamic max limit matches offered courses credits sum
-  const maxSemesterCredits = courses.reduce((sum, c) => sum + Number(c.credits || 0), 0);
-
-  // Earned credits filter out F grade
-  const earnedCredits = results
-    .filter((res: any) => res.grade && res.grade.toUpperCase() !== "F")
-    .reduce((sum: number, res: any) => sum + Number(res.credits || 0), 0);
-
-  if (isProfileLoading || isResultsLoading) {
-    return (
-      <div className="flex justify-center items-center h-[50vh]">
-        <Loader2 className="animate-spin text-indigo-600 size-8" />
-        <span className="ml-2 text-sm text-muted-foreground">Loading student profile...</span>
-      </div>
-    );
-  }
-
-  // Registered courses matching current filter to display in exam registration tab
-  const registeredCoursesForSem = myRegistrations.filter(
-    r => String(r.semester) === selectedSemester
-  );
+  const selectedCourses = selectedSemester ? (semesterCoursesMap[selectedSemester] || []) : [];
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Course & Exam Registration"
-        desc="Enroll in academic subjects and register for course examinations. View registration statuses and credit limits."
-      />
+    <div className="space-y-4 pb-12">
+      {/* Top Header & Breadcrumb */}
+      <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
 
-      {/* Credit Summary Cards */}
-      <div className="grid md:grid-cols-4 gap-4">
-        <Card>
-          <div className="text-xs text-muted-foreground">Your Branch / Department</div>
-          <div className="text-2xl font-bold mt-2 text-indigo-600">
-            {studentProfile?.department || "Unassigned"}
+        <button onClick={() => window.dispatchEvent(new CustomEvent("open-chatbot"))} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+          <Sparkles className="size-3.5 text-indigo-500" />
+          <span>Ask AI</span>
+        </button>
+      </div>
+
+      {!selectedSemester ? (
+        <>
+          {/* Page Description */}
+          <p className="text-xs text-slate-500 font-medium leading-relaxed">
+            Register for courses in the current semester or view your previous registrations.
+          </p>
+
+          {/* Main List Section */}
+          <div className="space-y-3">
+            <h2 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+              Previous Semesters
+            </h2>
+
+            {/* Previous Semesters Table */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                      <th className="p-4 font-bold text-slate-900 dark:text-white">Semester</th>
+                      <th className="p-4 font-bold text-slate-900 dark:text-white">Batch</th>
+                      <th className="p-4 font-bold text-slate-900 dark:text-white">Status</th>
+                      <th className="p-4 font-bold text-slate-900 dark:text-white">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {previousSemesters.map((sem, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+                        <td className="p-4 font-extrabold text-slate-900 dark:text-white tracking-wide">
+                          {sem.semester}
+                        </td>
+                        <td className="p-4 font-mono font-semibold text-slate-700 dark:text-slate-300">
+                          {sem.batch}
+                        </td>
+                        <td className="p-4">
+                          <span className="bg-[#fef3c7] text-[#d97706] font-bold px-3 py-1 rounded text-[10px] tracking-wide select-none">
+                            {sem.status}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <button
+                            onClick={() => setSelectedSemester(sem.semester)}
+                            className="px-3.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                          >
+                            View Details
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-          <Badge tone="info" className="mt-3">Department Profile</Badge>
-        </Card>
+        </>
+      ) : (
+        <>
+          {/* Semester Detail View */}
+          <div className="flex items-center gap-2 pt-1 relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="p-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition"
+            >
+              <MoreVertical className="size-4" />
+            </button>
 
-        <Card>
-          <div className="text-xs text-muted-foreground">Total Earned Credits</div>
-          <div className="text-2xl font-bold mt-2 text-emerald-600">{earnedCredits} Credits</div>
-          <Badge tone="success" className="mt-3">From declared results</Badge>
-        </Card>
-
-        <Card>
-          <div className="text-xs text-muted-foreground">Registered Courses (Current Sem)</div>
-          <div className="text-2xl font-bold mt-2">{activeRegistrationsCount}</div>
-          <Badge tone="info" className="mt-3">Completed Enrolment</Badge>
-        </Card>
-
-        <Card>
-          <div className="text-xs text-muted-foreground">Total Registered Credits (Current Sem)</div>
-          <div className="text-2xl font-bold mt-2">{totalCreditsRegistered} Credits</div>
-          <Badge tone="warn" className="mt-3">
-            Max Limit: {maxSemesterCredits > 0 ? maxSemesterCredits : 28} Credits
-          </Badge>
-        </Card>
-      </div>
-
-      {/* Tab Switcher */}
-      <div className="flex border-b border-slate-200">
-        <button
-          className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-            activeTab === "course"
-              ? "border-indigo-600 text-indigo-600 bg-indigo-50/10"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-          onClick={() => setActiveTab("course")}
-        >
-          <BookOpen className="size-4" />
-          Course Registration
-        </button>
-        <button
-          className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-            activeTab === "exam"
-              ? "border-indigo-600 text-indigo-600 bg-indigo-50/10"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-          onClick={() => setActiveTab("exam")}
-        >
-          <FileText className="size-4" />
-          Exam Registration
-        </button>
-      </div>
-
-      {/* Filters & Information Banner */}
-      <div className="grid md:grid-cols-4 gap-6">
-        
-        {/* Filters Menu */}
-        <div className="md:col-span-1">
-          <Card className="p-5 space-y-4">
-            <h3 className="font-semibold text-sm border-b pb-2">Academic Filters</h3>
-            
-            <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1">Select Year</label>
-              <select
-                className="w-full text-sm border rounded-lg p-2 bg-background focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                value={selectedYear}
-                onChange={(e) => handleYearChange(e.target.value)}
-              >
-                <option value="1">1st Year</option>
-                <option value="2">2nd Year</option>
-                <option value="3">3rd Year</option>
-                <option value="4">4th Year</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-muted-foreground mb-1">Select Semester</label>
-              <select
-                className="w-full text-sm border rounded-lg p-2 bg-background focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                value={selectedSemester}
-                onChange={(e) => setSelectedSemester(e.target.value)}
-              >
-                {getSemestersForYear(selectedYear).map(s => (
-                  <option key={s} value={String(s)}>Semester {s}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="p-3 bg-indigo-50/50 rounded-lg text-xs text-indigo-800 space-y-1.5">
-              <div className="font-semibold flex items-center gap-1">
-                <Info className="size-3.5" /> Note
+            {showDropdown && (
+              <div className="absolute left-0 top-12 z-10 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-lg p-1.5 text-xs font-semibold">
+                <button
+                  onClick={() => {
+                    setSelectedSemester(null);
+                    setShowDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-50 text-left transition"
+                >
+                  <ArrowLeft className="size-3.5" />
+                  <span>Back to Semesters</span>
+                </button>
               </div>
-              {activeTab === "course" ? (
-                <p>Courses are offered by the Exam Cell Office. Please verify subject names and codes before clicking register.</p>
-              ) : (
-                <p>Registering for an exam requires you to be registered for the course first. Hall tickets are generated based on registered exams.</p>
-              )}
+            )}
+
+            <button
+              onClick={() => setSelectedSemester(null)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold shadow-sm hover:bg-slate-50 transition"
+            >
+              <ArrowLeft className="size-3.5" />
+              <span>Back</span>
+            </button>
+          </div>
+
+          {/* Registered Courses Table */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                    <th className="p-4 font-bold text-slate-900 dark:text-white">Subject Name</th>
+                    <th className="p-4 font-bold text-slate-900 dark:text-white">Subject Code</th>
+                    <th className="p-4 font-bold text-slate-900 dark:text-white">Credits</th>
+                    <th className="p-4 font-bold text-slate-900 dark:text-white">Type</th>
+                    <th className="p-4 font-bold text-slate-900 dark:text-white">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {selectedCourses.map((course, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+                      <td className="p-4 font-bold text-slate-900 dark:text-white">
+                        {course.name}
+                      </td>
+                      <td className="p-4 font-mono font-semibold text-slate-700 dark:text-slate-300">
+                        {course.code}
+                      </td>
+                      <td className="p-4 font-black text-slate-900 dark:text-white">
+                        {course.credits}
+                      </td>
+                      <td className="p-4 font-semibold text-slate-500">
+                        {course.type}
+                      </td>
+                      <td className="p-4">
+                        <span className="bg-[#e2f0d9] text-[#385723] font-bold px-3 py-1 rounded text-[10px] tracking-wide select-none">
+                          {course.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </Card>
-        </div>
-
-        {/* Offered Course Catalog or Exam Registration */}
-        <div className="md:col-span-3">
-          {activeTab === "course" ? (
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <Bookmark className="size-5 text-indigo-600" />
-                  <h3 className="font-semibold text-base">Offered Courses Catalog</h3>
-                </div>
-                <Badge tone="info">
-                  {studentProfile?.department} - Sem {selectedSemester}
-                </Badge>
-              </div>
-
-              {isCoursesLoading || isRegsLoading ? (
-                <div className="flex flex-col justify-center items-center py-12 text-muted-foreground text-sm">
-                  <Loader2 className="animate-spin text-indigo-600 size-6 mb-2" />
-                  <span>Loading available course offerings...</span>
-                </div>
-              ) : courses.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground text-sm">
-                  No courses offered by the Exam Cell Office for the selected Year & Semester.
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {courses.map((course) => {
-                    const registered = isRegistered(course.id);
-                    return (
-                      <div 
-                        key={course.id} 
-                        className={`border rounded-xl p-4 flex flex-col justify-between transition-all ${
-                          registered 
-                            ? "bg-emerald-50/30 border-emerald-200" 
-                            : "bg-card hover:shadow-md hover:border-indigo-200"
-                        }`}
-                      >
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">
-                              {course.course_code}
-                            </span>
-                            <span className="text-xs text-muted-foreground font-medium">
-                              {course.course_type}
-                            </span>
-                          </div>
-                          <h4 className="font-bold text-sm text-foreground line-clamp-1">
-                            {course.course_name}
-                          </h4>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <div>Credits: <span className="font-semibold text-foreground">{course.credits}</span></div>
-                            <div>•</div>
-                            <div>Semester: <span className="font-semibold text-foreground">{course.semester}</span></div>
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            Mentor: <span className="font-semibold text-indigo-600">{course.mentor?.full_name || "N/A"}</span>
-                          </div>
-                        </div>
-
-                        {registered ? (
-                          <div className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1.5 cursor-default">
-                            <CheckCircle className="size-3.5" /> Registered
-                          </div>
-                        ) : Number(selectedYear) < studentProfile.year ? (
-                          <button
-                            disabled
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
-                          >
-                            Registration Closed (Past Semester)
-                          </button>
-                        ) : Number(selectedYear) > studentProfile.year ? (
-                          <button
-                            disabled
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
-                          >
-                            Registration Not Open
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleRegister(course.id)}
-                            disabled={registerMutation.isPending}
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50"
-                          >
-                            Register Course
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </Card>
-          ) : (
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <FileText className="size-5 text-indigo-600" />
-                  <h3 className="font-semibold text-base">Course Exam Registration</h3>
-                </div>
-                <Badge tone="success">
-                  Sem {selectedSemester} Exams
-                </Badge>
-              </div>
-
-              {isCoursesLoading || isExamRegsLoading ? (
-                <div className="flex flex-col justify-center items-center py-12 text-muted-foreground text-sm">
-                  <Loader2 className="animate-spin text-indigo-600 size-6 mb-2" />
-                  <span>Loading offered courses...</span>
-                </div>
-              ) : courses.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground text-sm">
-                  No offered courses found for this semester.
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 gap-4">
-                  {courses.map((course) => {
-                    const examReg = isExamRegistered(course.id);
-                    return (
-                      <div 
-                        key={course.id} 
-                        className={`border rounded-xl p-4 flex flex-col justify-between transition-all ${
-                          examReg 
-                            ? "bg-emerald-50/30 border-emerald-200" 
-                            : "bg-card hover:shadow-md hover:border-indigo-200"
-                        }`}
-                      >
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">
-                              {course.course_code}
-                            </span>
-                            <span className="text-xs text-muted-foreground font-medium">
-                              {course.course_type}
-                            </span>
-                          </div>
-                          <h4 className="font-bold text-sm text-foreground line-clamp-1">
-                            {course.course_name}
-                          </h4>
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            <div>Credits: <span className="font-semibold text-foreground">{course.credits}</span></div>
-                            <div>•</div>
-                            <div>Semester: <span className="font-semibold text-foreground">{course.semester}</span></div>
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            Mentor: <span className="font-semibold text-indigo-600">{course.mentor?.full_name || "N/A"}</span>
-                          </div>
-                        </div>
-
-                        {examReg ? (
-                          <div className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-emerald-100 text-emerald-800 flex items-center justify-center gap-1.5 cursor-default">
-                            <CheckCircle className="size-3.5" /> Exam Registered
-                          </div>
-                        ) : !isRegistered(course.id) ? (
-                          <button
-                            disabled
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
-                          >
-                            Register for Course First
-                          </button>
-                        ) : hasBacklog(course.course_name) ? (
-                          <button
-                            onClick={() => handleRegisterSupplementary(course.id)}
-                            disabled={registerSupplementaryMutation.isPending}
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-amber-600 text-white hover:bg-amber-700 active:scale-95 transition-all disabled:opacity-50"
-                          >
-                            {registerSupplementaryMutation.isPending ? "Registering..." : "Register Supplementary Exam"}
-                          </button>
-                        ) : Number(selectedYear) < studentProfile.year ? (
-                          <button
-                            disabled
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
-                          >
-                            Exam Registration Closed
-                          </button>
-                        ) : Number(selectedYear) > studentProfile.year ? (
-                          <button
-                            disabled
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
-                          >
-                            Exam Registration Not Open
-                          </button>
-                        ) : !isExamScheduled ? (
-                          <button
-                            disabled
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-muted text-muted-foreground cursor-not-allowed border"
-                          >
-                            Registration Not Open (Exam Not Scheduled)
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleRegisterExam(course.id)}
-                            disabled={registerExamMutation.isPending}
-                            className="w-full mt-4 py-2 px-3 rounded-lg font-semibold text-xs bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50"
-                          >
-                            {registerExamMutation.isPending ? "Registering..." : "Register for Exam"}
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </Card>
-          )}
-        </div>
-
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
-

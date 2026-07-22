@@ -1,28 +1,30 @@
 import os
 import sys
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 from fpdf import FPDF
 
 class ERPManualPDF(FPDF):
     def __init__(self):
         super().__init__(orientation="P", unit="mm", format="A4")
-        self.set_margins(16, 12, 15) # Left margin 16mm to clear 12mm sidebar
-        self.set_auto_page_break(auto=True, margin=12)
+        self.set_margins(16, 15, 15) # Left margin 16mm to clear the 12mm sidebar
+        self.set_auto_page_break(auto=True, margin=15)
 
     def draw_sidebar(self):
+        # Draw white background for sidebar
         self.set_fill_color(255, 255, 255)
         self.rect(0, 0, 12, 297, "F")
         
+        # Draw thin divider line
         self.set_draw_color(191, 219, 254) # Blue-200
         self.set_line_width(0.4)
         self.line(12, 0, 12, 297)
         
-        self.set_text_color(29, 78, 216) # Royal Blue-700
+        # Write rotated text: "@harsha_perfect_solutions"
+        self.set_text_color(59, 130, 246) # Blue-500
         self.set_font("times", "B", 7.5)
         with self.rotation(270, 7.5, 140):
             self.text(7.5, 140, "@harsha_perfect_solutions")
             
+        # Draw 6-dot grid handle icon below text
         self.set_fill_color(191, 219, 254)
         dot_y = 190
         dot_x_1 = 4.5
@@ -34,59 +36,69 @@ class ERPManualPDF(FPDF):
     def header(self):
         if self.page_no() > 1:
             self.draw_sidebar()
-            self.set_font("times", "B", 8)
-            self.set_text_color(30, 41, 59)
-            self.set_x(16)
-            self.cell(0, 4.5, "COLLEGE ERP - SYSTEM INTEGRITY & OPERATIONAL BLUEPRINT", align="L", ln=False)
             self.set_font("times", "I", 8)
-            self.set_text_color(100, 116, 139)
-            self.cell(0, 4.5, f"Section {self.page_no() - 1}", align="R", ln=True)
-            
-            self.set_draw_color(29, 78, 216) # Royal Electric Blue
-            self.set_line_width(0.8)
-            self.line(16, 18, 195, 18)
-            self.ln(4)
+            self.set_text_color(100, 116, 139) # Slate-500
+            self.set_x(16)
+            self.cell(0, 5, "COLLEGE ERP - SYSTEM INTEGRITY MANUAL", align="L", ln=False)
+            self.cell(0, 5, f"Section {self.page_no() - 1}", align="R", ln=True)
+            # Add line separator
+            self.set_draw_color(14, 184, 166) # Teal accent color line!
+            self.set_line_width(0.6)
+            self.line(16, 21, 195, 21)
+            self.ln(6)
 
     def footer(self):
         if self.page_no() > 1:
-            self.set_y(-12)
-            self.set_font("times", "I", 7.5)
+            self.set_y(-15)
+            self.set_font("times", "I", 8)
             self.set_text_color(148, 163, 184)
-            self.cell(0, 8, f"Page {self.page_no()}", align="C")
+            # Page Number
+            self.cell(0, 10, f"Page {self.page_no()}", align="C")
             
+            # Left Footer
             self.set_x(16)
-            self.cell(0, 8, "Enterprise Operations Blueprint | Technical Implementation Edition", align="L")
+            self.cell(0, 10, "Enterprise Operations Blueprint", align="L")
             
+            # Right Footer
             self.set_x(16)
-            self.cell(0, 8, "Release v2.6.0 (LTS)", align="R")
+            self.cell(0, 10, "Release v2.4.0 (LTS)", align="R")
 
     def draw_paper_airplane(self, x, y):
-        self.set_fill_color(186, 230, 253)
-        self.set_draw_color(125, 211, 252)
+        # Set color to a nice soft blue/grey
+        self.set_fill_color(186, 230, 253) # sky-200
+        self.set_draw_color(125, 211, 252) # sky-300
         self.polygon([(x, y), (x + 30, y - 10), (x + 10, y + 20), (x, y)], style="F")
-        self.set_fill_color(56, 189, 248)
+        # Draw shadow triangle
+        self.set_fill_color(56, 189, 248) # sky-400
         self.polygon([(x + 10, y + 20), (x + 15, y + 7), (x + 30, y - 10), (x + 10, y + 20)], style="F")
 
     def cover_page(self):
         self.add_page()
         
+        # Left column cover page block background
         self.set_fill_color(255, 255, 255)
         self.rect(0, 0, 80, 297, "F")
         
-        self.set_fill_color(15, 23, 42)
+        # Right column cover page block background
+        self.set_fill_color(11, 19, 41) # Dark navy
         self.rect(80, 0, 130, 297, "F")
         
+        # Left Side Content: Logo image replacement
         if os.path.exists("hps_logo.png"):
             self.image("hps_logo.png", x=6, y=25, w=68)
         
+        # Paper airplane illustration
         self.draw_paper_airplane(25, 138)
         
+        # Bottom left column text
         self.set_y(235)
         self.set_x(10)
         self.set_font("times", "B", 10.5)
         self.set_text_color(15, 23, 42)
-        self.multi_cell(60, 5, "The Future of Education Starts Here\nAI * Automation * Analytics * Governance", align="C")
+        self.multi_cell(60, 5, "The Future of Education Starts Here\nAI * Automation * Analytics * Intelligence", align="C")
         
+        # Right Side Content (x=80)
+        # Cover Illustration PNG embedding
         if os.path.exists("college_erp_cover.png"):
             self.image("college_erp_cover.png", x=88, y=28, w=114, h=70)
             
@@ -99,248 +111,196 @@ class ERPManualPDF(FPDF):
         self.ln(6)
         self.set_x(90)
         self.set_font("times", "I", 10)
-        self.set_text_color(96, 165, 250)
-        self.multi_cell(110, 5, 'Comprehensive System Manual & Technical Blueprint.\n\n"Workflows, Operational Processes, Data Schemas, and Role-Based Governance for 19 Enterprise Modules."\n\nExperience the ultimate synergy of AI, real-time analytics, and enterprise database automation.', new_x="LMARGIN", new_y="NEXT")
+        self.set_text_color(14, 184, 166) # Teal subtitle
+        self.multi_cell(110, 5, 'Transforming Traditional Campuses into AI-Enabled Smart Campuses.\n\n"Empowering minds, automating systems, and building the future of campus governance."\n\nWhy manage when you can innovate? Experience the ultimate synergy of AI, analytics, and automation.', new_x="LMARGIN", new_y="NEXT")
         
-        self.set_fill_color(29, 78, 216)
+        # Add decorative color bar on the right edge
+        self.set_fill_color(14, 184, 166)
         self.rect(206, 0, 4, 297, "F")
 
-    def draw_flowchart(self, steps, y_pos):
-        self.set_y(y_pos)
-        self.set_x(16)
-        self.set_font("times", "B", 9)
-        self.set_text_color(29, 78, 216)
-        self.cell(0, 4.5, "6. System Operational Workflow Flowchart", ln=False)
-        self.ln(5)
+    def draw_flowchart(self, steps):
+        self.set_y(232)
+        self.set_x(16) # Shift x because of sidebar
+        self.set_font("times", "B", 10)
+        self.set_text_color(43, 58, 143) # Indigo
+        self.cell(0, 6, "5. System Operational Workflow Flowchart", ln=False)
+        self.ln(6)
         
         num_steps = len(steps)
         box_w = 34
+        # Total printable width is 180mm.
         spacing = (178 - (num_steps * box_w)) / (num_steps - 1) if num_steps > 1 else 0
         
         for i, step in enumerate(steps):
             x = 16 + i * (box_w + spacing)
             y = self.get_y()
             
-            self.set_fill_color(239, 246, 255)
-            self.set_draw_color(191, 219, 254)
+            # Draw box background
+            self.set_fill_color(240, 253, 250) # Light Teal background
+            self.set_draw_color(14, 184, 166) # Teal outline
             self.set_line_width(0.4)
-            self.rect(x, y, box_w, 12, "F" if i % 2 == 0 else "D")
+            self.rect(x, y, box_w, 14, "F" if i % 2 == 0 else "D")
             if i % 2 == 0:
-                self.rect(x, y, box_w, 12, "D")
+                self.rect(x, y, box_w, 14, "D")
                 
-            self.set_fill_color(29, 78, 216)
-            self.rect(x, y, 2.5, 12, "F")
+            # Draw small vertical accent on left side of the box
+            self.set_fill_color(43, 58, 143) # Deep Indigo
+            self.rect(x, y, 2.5, 14, "F")
             
-            self.set_fill_color(29, 78, 216)
-            self.circle(x + 5, y + 6, 1.8, "F")
+            # Circular step number circle
+            self.set_fill_color(14, 184, 166)
+            self.circle(x + 5, y + 7, 2, "F")
             
-            self.set_y(y + 4.5)
+            # Step Text Number
+            self.set_y(y + 5.5)
             self.set_x(x + 3.8)
-            self.set_font("times", "B", 5)
+            self.set_font("times", "B", 5.5)
             self.set_text_color(255, 255, 255)
             self.cell(2.5, 3, f"0{i+1}", align="C")
             
-            self.set_y(y + 1.8)
+            # Write step name inside box
+            self.set_y(y + 2.2)
             self.set_x(x + 7.5)
-            self.set_font("times", "B", 6.8)
-            self.set_text_color(15, 23, 42)
-            self.multi_cell(box_w - 8, 2.8, step, align="C")
+            self.set_font("times", "B", 7.2)
+            self.set_text_color(30, 41, 59)
+            self.multi_cell(box_w - 8, 3.2, step, align="C")
             
+            # Restore Y coordinate
             self.set_y(y)
             
+            # Draw arrows to connect boxes
             if i < num_steps - 1:
                 arrow_x_start = x + box_w + 1
                 arrow_x_end = arrow_x_start + spacing - 2
-                arrow_y = y + 6
-                self.set_draw_color(29, 78, 216)
-                self.set_line_width(0.5)
+                arrow_y = y + 7
+                self.set_draw_color(43, 58, 143)
+                self.set_line_width(0.6)
                 self.line(arrow_x_start, arrow_y, arrow_x_end, arrow_y)
-                self.line(arrow_x_end - 1.2, arrow_y - 0.8, arrow_x_end, arrow_y)
-                self.line(arrow_x_end - 1.2, arrow_y + 0.8, arrow_x_end, arrow_y)
+                # Draw arrowhead
+                self.line(arrow_x_end - 1.5, arrow_y - 1, arrow_x_end, arrow_y)
+                self.line(arrow_x_end - 1.5, arrow_y + 1, arrow_x_end, arrow_y)
 
-    def add_module_page(self, num, title, kpis, submodules, dataflow, features, process, impl_progress, roles, flowchart_steps):
+    def add_module_page(self, num, title, submodules, features, process, roles, flowchart_steps):
         self.add_page()
         
-        # Header Badge & Title
-        self.set_fill_color(29, 78, 216) # Royal Blue badge
-        self.rect(16, self.get_y(), 26, 8.5, "F")
-        self.set_y(self.get_y() + 1.5)
-        self.set_x(16)
-        self.set_font("times", "B", 8.5)
-        self.set_text_color(255, 255, 255)
-        self.cell(26, 5.5, f"MODULE {num:02d}", align="C", ln=False)
-
-        self.set_x(45)
+        # Header accent bar
+        self.set_fill_color(43, 58, 143) # Navy bar
+        self.rect(16, self.get_y(), 6, 14, "F")
+        
+        # Module title box
+        self.set_fill_color(241, 245, 249) # Slate 100
+        self.rect(22, self.get_y(), 173, 14, "F")
+        self.set_draw_color(226, 232, 240)
+        self.rect(22, self.get_y(), 173, 14, "D")
+        
+        self.set_y(self.get_y() + 2)
+        self.set_x(26)
         self.set_font("times", "B", 13)
+        self.set_text_color(43, 58, 143) # Indigo
+        self.cell(10, 10, f"{num}.", ln=False)
         self.set_text_color(15, 23, 42)
-        self.cell(0, 5.5, title.upper(), ln=True)
-        self.ln(1.5)
-
-        self.set_draw_color(29, 78, 216)
-        self.set_line_width(0.7)
-        self.line(16, self.get_y(), 195, self.get_y())
+        self.cell(0, 10, title.upper(), ln=True)
+        self.ln(6)
+        
+        # 1. Submodules List (Teal Accent Box)
+        self.set_font("times", "B", 10.5)
+        self.set_text_color(43, 58, 143)
+        self.set_x(16)
+        self.cell(0, 6, "1. Key Sub-Modules", ln=True)
+        
+        self.set_fill_color(240, 253, 250) # Light Teal background card
+        self.rect(16, self.get_y(), 179, 11, "F")
+        self.set_draw_color(153, 246, 228) # Teal border
+        self.rect(16, self.get_y(), 179, 11, "D")
+        
+        # Side accent tag for sub-modules
+        self.set_fill_color(14, 184, 166)
+        self.rect(16, self.get_y(), 3, 11, "F")
+        
         self.ln(3)
-        
-        # KPI Stat Strip (3 Side-by-Side Highlights)
-        self.set_font("times", "B", 7.5)
-        kpi_w = 57
-        for k_idx, (k_label, k_val) in enumerate(kpis):
-            kx = 16 + k_idx * (kpi_w + 4)
-            ky = self.get_y()
-            self.set_fill_color(248, 250, 252)
-            self.set_draw_color(226, 232, 240)
-            self.rect(kx, ky, kpi_w, 8.5, "F")
-            self.rect(kx, ky, kpi_w, 8.5, "D")
-            
-            self.set_fill_color(29, 78, 216)
-            self.rect(kx, ky, 2, 8.5, "F")
-
-            self.set_y(ky + 1)
-            self.set_x(kx + 3.5)
-            self.set_text_color(100, 116, 139)
-            self.set_font("times", "B", 6)
-            self.cell(kpi_w - 5, 2.8, k_label.upper(), ln=True)
-
-            self.set_x(kx + 3.5)
-            self.set_text_color(29, 78, 216)
-            self.set_font("times", "B", 8)
-            self.cell(kpi_w - 5, 3.8, k_val, ln=True)
-            self.set_y(ky)
-
-        self.set_y(self.get_y() + 10.5)
-
-        # 1. Key Sub-Modules (Dynamic Height Card)
-        self.set_font("times", "B", 9.5)
-        self.set_text_color(29, 78, 216)
-        self.set_x(16)
-        self.cell(0, 4.5, "1. Key Sub-Modules & Core Capabilities", ln=True)
-        
+        self.set_x(23)
+        self.set_font("times", "B", 8.5)
+        self.set_text_color(13, 148, 136) # Teal text
         sub_text = " | ".join(submodules)
-        self.set_font("times", "B", 7.5)
-        # Calculate dynamic lines using dry_run=True, output="LINES"
-        lines_sub = self.multi_cell(171, 3.4, sub_text, dry_run=True, output="LINES")
-        card_h_sub = max(8.5, len(lines_sub) * 3.4 + 3.5)
+        self.multi_cell(169, 4.5, sub_text, ln=True)
+        self.ln(5)
         
-        card_y = self.get_y()
-        self.set_fill_color(239, 246, 255)
-        self.rect(16, card_y, 179, card_h_sub, "F")
-        self.set_draw_color(191, 219, 254)
-        self.rect(16, card_y, 179, card_h_sub, "D")
-        self.set_fill_color(29, 78, 216)
-        self.rect(16, card_y, 2.5, card_h_sub, "F")
-        
-        self.set_y(card_y + 1.8)
-        self.set_x(21)
-        self.set_text_color(30, 64, 175)
-        self.multi_cell(171, 3.4, sub_text, ln=True)
-        self.set_y(card_y + card_h_sub + 2.5)
-
-        # 2. Workflow & Data Flow Diagram (Dynamic Height Card - Zero Overflow)
-        self.set_font("times", "B", 9.5)
-        self.set_text_color(29, 78, 216)
+        # 2. Features Card
+        self.set_font("times", "B", 10.5)
+        self.set_text_color(43, 58, 143)
         self.set_x(16)
-        self.cell(0, 4.5, "2. Workflow & Architectural Data Flow", ln=True)
-
-        self.set_font("times", "B", 7.5)
-        lines_df = self.multi_cell(171, 3.5, dataflow, dry_run=True, output="LINES")
-        card_h_df = max(8.5, len(lines_df) * 3.5 + 3.5)
-
-        card_y_df = self.get_y()
-        self.set_fill_color(248, 250, 252)
-        self.rect(16, card_y_df, 179, card_h_df, "F")
-        self.set_draw_color(203, 213, 225)
-        self.rect(16, card_y_df, 179, card_h_df, "D")
-        self.set_fill_color(14, 165, 233)
-        self.rect(16, card_y_df, 2.5, card_h_df, "F")
-
-        self.set_y(card_y_df + 1.8)
-        self.set_x(21)
-        self.set_text_color(15, 23, 42)
-        self.multi_cell(171, 3.5, dataflow, ln=True)
-        self.set_y(card_y_df + card_h_df + 2.5)
+        self.cell(0, 6, "2. Operational Features", ln=True)
         
-        # 3. Operational Features
-        self.set_font("times", "B", 9.5)
-        self.set_text_color(29, 78, 216)
-        self.set_x(16)
-        self.cell(0, 4.5, "3. Operational Features & Business Rules", ln=True)
-        
-        self.set_font("times", "", 7.8)
+        self.set_font("times", "", 9)
         self.set_text_color(51, 65, 85)
         for feat in features:
             self.set_x(19)
-            self.set_text_color(29, 78, 216)
-            self.cell(4, 3.6, "[+]", ln=False)
+            # Colorful bullet
+            self.set_text_color(14, 184, 166)
+            self.cell(5, 5, chr(149), ln=False)
             self.set_text_color(51, 65, 85)
-            self.multi_cell(170, 3.6, feat, ln=True)
-        self.ln(2.5)
+            self.multi_cell(169, 4.8, feat, ln=True)
+        self.ln(3)
         
-        # 4. Detailed Working Process
-        self.set_font("times", "B", 9.5)
-        self.set_text_color(29, 78, 216)
+        # 3. Working Process
+        self.set_font("times", "B", 10.5)
+        self.set_text_color(43, 58, 143)
         self.set_x(16)
-        self.cell(0, 4.5, "4. Detailed Working Process & Execution", ln=True)
+        self.cell(0, 6, "3. Working Process Flow", ln=True)
         
-        self.set_draw_color(29, 78, 216)
-        self.set_line_width(0.7)
+        # Draw a left accent line for the process flow
+        self.set_draw_color(43, 58, 143)
+        self.set_line_width(0.8)
         start_y = self.get_y() + 1
         
         self.set_x(21)
-        self.set_font("times", "", 7.8)
+        self.set_font("times", "", 9)
         self.set_text_color(51, 65, 85)
-        self.multi_cell(173, 3.6, process, ln=True)
+        self.multi_cell(174, 5, process, ln=True)
         
         self.line(18, start_y, 18, self.get_y() - 1)
-        self.ln(2.5)
-
-        # 5. Technical Implementation & Architecture Stack (Dynamic Height Card)
-        self.set_font("times", "B", 9.5)
-        self.set_text_color(29, 78, 216)
+        self.ln(3)
+        
+        # 4. Role Permissions
+        self.set_font("times", "B", 10.5)
+        self.set_text_color(43, 58, 143)
         self.set_x(16)
-        self.cell(0, 4.5, "5. Implementation Stack & Progress Blueprint", ln=True)
+        self.cell(0, 6, "4. Role-Based Access Controls (RBAC)", ln=True)
+        
+        # Draw elegant table for roles
+        self.set_fill_color(43, 58, 143) # Indigo header for table
+        self.set_font("times", "B", 8)
+        self.set_text_color(255, 255, 255)
+        self.set_x(16)
+        self.cell(45, 6, "Authorized Role", border=1, ln=False, fill=True)
+        self.cell(134, 6, "Access Scope & Permissions Matrix", border=1, ln=True, fill=True)
+        
+        self.set_font("times", "", 8.5)
+        for role, scope in roles.items():
+            # Color coding rows based on role types
+            role_lower = role.lower()
+            if "admin" in role_lower:
+                self.set_fill_color(239, 246, 255) # Light Blue for Admin
+                self.set_text_color(30, 64, 175)
+            elif "faculty" in role_lower or "hod" in role_lower or "dean" in role_lower:
+                self.set_fill_color(240, 253, 244) # Light Green for Faculty
+                self.set_text_color(22, 101, 52)
+            elif "accounts" in role_lower or "finance" in role_lower:
+                self.set_fill_color(255, 251, 235) # Light Amber for Finance/Accounts
+                self.set_text_color(146, 64, 14)
+            else:
+                self.set_fill_color(248, 250, 252) # Light Grey default
+                self.set_text_color(71, 85, 105)
+                
+            current_y = self.get_y()
+            self.set_x(16)
+            self.multi_cell(45, 4.5, role, border=1, ln=False, fill=True)
+            self.set_y(current_y)
+            self.set_x(61)
+            self.multi_cell(134, 4.5, scope, border=1, ln=True, fill=True)
 
-        card_y_impl = self.get_y()
-        self.set_fill_color(241, 245, 249)
-        self.rect(16, card_y_impl, 179, 13, "F")
-        self.set_draw_color(203, 213, 225)
-        self.rect(16, card_y_impl, 179, 13, "D")
-        self.set_fill_color(16, 185, 129)
-        self.rect(16, card_y_impl, 2.5, 13, "F")
-
-        self.set_y(card_y_impl + 1.5)
-        self.set_x(21)
-        self.set_font("times", "B", 7.2)
-        self.set_text_color(15, 23, 42)
-        self.cell(24, 3.4, "UI Stack:", ln=False)
-        self.set_font("times", "", 7.2)
-        self.set_text_color(30, 64, 175)
-        self.cell(64, 3.4, impl_progress["ui"], ln=False)
-
-        self.set_font("times", "B", 7.2)
-        self.set_text_color(15, 23, 42)
-        self.cell(24, 3.4, "Backend:", ln=False)
-        self.set_font("times", "", 7.2)
-        self.set_text_color(30, 64, 175)
-        self.cell(0, 3.4, impl_progress["backend"], ln=True)
-
-        self.set_x(21)
-        self.set_font("times", "B", 7.2)
-        self.set_text_color(15, 23, 42)
-        self.cell(24, 3.4, "Database:", ln=False)
-        self.set_font("times", "", 7.2)
-        self.set_text_color(30, 64, 175)
-        self.cell(64, 3.4, impl_progress["db"], ln=False)
-
-        self.set_font("times", "B", 7.2)
-        self.set_text_color(15, 23, 42)
-        self.cell(24, 3.4, "Status:", ln=False)
-        self.set_font("times", "B", 7.2)
-        self.set_text_color(16, 185, 129)
-        self.cell(0, 3.4, impl_progress["status"], ln=True)
-        self.set_y(card_y_impl + 15.5)
-
-        # 6. Flowchart (At bottom)
-        self.draw_flowchart(flowchart_steps, self.get_y())
+        # 5. Flowchart
+        self.draw_flowchart(flowchart_steps)
 
 def main():
     pdf = ERPManualPDF()
@@ -351,15 +311,16 @@ def main():
     # 2. Table of Contents
     pdf.add_page()
     
-    pdf.set_fill_color(29, 78, 216)
+    # Draw top design stripe
+    pdf.set_fill_color(14, 184, 166)
     pdf.rect(16, 10, 179, 2, "F")
     
     pdf.ln(8)
     pdf.set_font("times", "B", 18)
-    pdf.set_text_color(29, 78, 216)
+    pdf.set_text_color(43, 58, 143)
     pdf.set_x(16)
     pdf.cell(0, 10, "TABLE OF CONTENTS", ln=True, align="C")
-    pdf.ln(4)
+    pdf.ln(5)
     
     modules_list = [
         "1. Admission Management", "2. Student Information System (SIS)", 
@@ -370,50 +331,43 @@ def main():
         "17. Grievance", "18. Alumni", "19. Administration"
     ]
     
-    pdf.set_font("times", "", 9.5)
+    pdf.set_font("times", "", 10)
     for i, mod in enumerate(modules_list):
         page_num = i + 3
+        # Alternate table of contents backgrounds for beauty
         if i % 2 == 0:
             pdf.set_fill_color(248, 250, 252)
         else:
             pdf.set_fill_color(255, 255, 255)
             
         pdf.set_x(16)
-        pdf.set_text_color(29, 78, 216)
-        pdf.cell(12, 8.5, f"CH {i+1:02d}", ln=False, fill=True)
-        pdf.set_text_color(15, 23, 42)
-        pdf.cell(137, 8.5, f"   {mod.split('. ')[1]}", ln=False, fill=True)
-        pdf.set_text_color(29, 78, 216)
-        pdf.set_font("times", "B", 9)
+        pdf.set_text_color(43, 58, 143)
+        pdf.cell(10, 8.5, f"CH {i+1}", ln=False, fill=True)
+        pdf.set_text_color(51, 65, 85)
+        pdf.cell(139, 8.5, f"   {mod.split('. ')[1]}", ln=False, fill=True)
+        pdf.set_text_color(14, 184, 166)
+        pdf.set_font("times", "B", 9.5)
         pdf.cell(0, 8.5, f"Page {page_num}   ", ln=True, align="R", fill=True)
-        pdf.set_font("times", "", 9.5)
+        pdf.set_font("times", "", 10)
         
         pdf.set_draw_color(226, 232, 240)
         pdf.line(16, pdf.get_y(), 195, pdf.get_y())
         
-    # ALL 19 MODULES WITH ZERO-OVERFLOW DYNAMIC WRAPPING
+    # Add Modules
     # 1. Admission Management
     pdf.add_module_page(
         1, "Admission Management",
-        [("System Type", "100% Online Portal"), ("Seat Allocation", "Cutoff Engine"), ("Student ID", "Auto-Generated")],
-        ["Online Application Portal", "Quota Matrix", "Document Verification", "Fee Receipt Sync", "Seat Allotment Engine", "Roll Number Allocation", "Branch Placement"],
-        "[Prospect Reg] -> [Document Verify] -> [Cutoff Calculation] -> [Quota Check] -> [Seat Allot & Roll No]",
+        ["Online Registration", "Entrance/Management Quota", "Document Verification", "Fee Payment", "Seat Allotment", "Student ID Generation", "Department Allocation"],
         [
-            "Interactive student application portal with real-time validation checks for document uploads.",
-            "Merit list calculation and automated quota screening (General / Management / NRI).",
-            "Automatic student profile creation and institutional registration number generation upon fee payment."
+            "Interactive student portal with validation checks.",
+            "Rank merit list calculations and fee status verification.",
+            "Automatic student profile and institutional ID card initialization."
         ],
-        "Prospects register online and upload certificates. System validates cutoff percentages, assigns document verification slots, records quota reservations, and locks seats upon fee payment receipt. Finally, branch allocations and roll numbers generate.",
+        "Prospects register online. The system checks cutoffs, schedules document verification slots, records quota allocations, and locks seats upon fee transaction confirmation. Finally, it allocates department branches and releases roll numbers.",
         {
-            "ui": "RegisterStudent.tsx, AdmissionDashboard.tsx",
-            "backend": "authService.ts, communicationService.ts",
-            "db": "students, departments, admission_applications",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Admins": "Full administrative control. Modify cutoff rules, override quota reservations, and approve document waivers.",
-            "Principal / Dean": "Approve final seat allocation lists, view merit rank logs, and monitor intake analytics.",
-            "Student Applicant": "Fill admission forms, upload certificates, pay registration fees, and track application status."
+            "Super Admin / Admins": "Complete control. Modify fee status, override quota, edit document verify rules.",
+            "Principal / Dean": "Approve final seat allocation, check merit logs and intake stats.",
+            "Student / Guest": "Fill application forms, upload verification files, pay fees, download receipts."
         },
         ["Registration", "Verification", "Fee Payment", "Seat Allot"]
     )
@@ -421,25 +375,17 @@ def main():
     # 2. Student Information System (SIS)
     pdf.add_module_page(
         2, "Student Information System (SIS)",
-        [("Profile Record", "360 Card View"), ("Certificates", "Instant Generator"), ("Alumni Bridge", "Auto-Graduation")],
-        ["Student 360 Card", "Academic History", "Certificate Generator", "Parent Contact Sync", "ID Card Printer", "Discipline Register", "Graduation Audit"],
-        "[Enrolled Student] -> [360 Master Profile] -> [Conduct History] -> [Certificate Generator] -> [Alumni Sync]",
+        ["Student Profile", "Academic History", "Certificates", "Parent Details", "ID Cards", "Alumni Records"],
         [
-            "Central 360-degree digital master profile card for every enrolled student.",
-            "Automated certificate generator (Bonafide, Transfer, Conduct, Course Completion).",
-            "Continuous record tracking that seamlessly archives profiles into the Alumni database upon graduation."
+            "Central 360-degree digital card for every registered student.",
+            "Automated certificate generation (Bonafide, Transfer, Course Completion).",
+            "Continuous tracking transitioning to alumni database on graduation."
         ],
-        "Students input profile details and upload photo proofs. The system formats printable digital ID cards, maps academic semester records, tracks disciplinary logs, and updates parent details. On graduation, profiles auto-transfer to the Alumni database.",
+        "Students input details and upload files. System formats ID cards, links course completion records, logs discipline logs, and manages parent contacts. Upon graduation, accounts transfer into the alumni directory automatically.",
         {
-            "ui": "StudentDashboard.tsx, StudentProfile.tsx",
-            "backend": "studentService.ts",
-            "db": "students, certificates, parent_details",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Admins": "Full read/write rights. Configure certificate templates and manage disciplinary records.",
-            "HOD / Faculty": "View student profile cards, monitor academic progression, and access parent contact details.",
-            "Student / Parents": "Read-only access to personal profiles, grade cards, and address change submission."
+            "Super Admin / Admins": "Full read/write rights. Manage certificate formats and disciplinary records.",
+            "HOD / Faculty": "View student profile dashboards, check academic progress and parent details.",
+            "Student / Parents": "Read-only access to personal profiles and grade cards. Update address logs."
         },
         ["Profile Reg", "History Log", "ID Card Gen", "Alumni Sync"]
     )
@@ -447,25 +393,17 @@ def main():
     # 3. Academic Management
     pdf.add_module_page(
         3, "Academic Management",
-        [("Curriculum", "CBCS Regulation"), ("Electives", "Merit Auto-Alloc"), ("Timetable", "Clash-Free Engine")],
-        ["Academic Calendar", "Semester Structuring", "Course Registration", "Curriculum Regulations", "Credit Banking", "Open Electives", "Visual Timetables"],
-        "[Regulation Setup] -> [Curriculum & Semester] -> [Clash-Free Timetable] -> [Elective Selection] -> [Enrollment Approved]",
+        ["Academic Calendar", "Semester Creation", "Course Registration", "Curriculum (R20/R23 etc.)", "Credit System", "Electives", "Timetable"],
         [
-            "Configurable curriculum regulations (Choice Based Credit System - CBCS / R23 / R20).",
-            "Automatic elective course allocation engine based on student preference and merit ranks.",
-            "Clash-free visual timetabling matrix mapping classroom capacity and faculty availability."
+            "Configurable curriculum regulations (Choice Based Credit System - CBCS).",
+            "Automatic elective courses allocation based on student preference and merit.",
+            "Clash-free timetabling engines mapping classrooms and faculty availability."
         ],
-        "Deans create semesters and define course codes under regulations. Faculty submit weekly lecture availability. The system compiles visual timetables. Students log in during course registration windows to select open electives.",
+        "Deans create semesters and define course codes under specific regulations (e.g. R23). Faculty input lecture availability. System builds visual calendar timetables. Students login to select electives and register courses.",
         {
-            "ui": "DeanAcademicAdmin.tsx, GovernanceView.tsx",
-            "backend": "academicService.ts",
-            "db": "curriculums, courses, semesters, timetables",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Deans": "Create semesters, regulations, configure course credits, and publish academic calendars.",
-            "HOD / Faculty": "Upload syllabus blueprints, verify course mappings, and manage lab allocations.",
-            "Student": "Select open electives and complete semester course registrations."
+            "Super Admin / Deans": "Create semesters, regulations, map core timetables and publish calendar books.",
+            "HOD / Faculty": "Add syllabus, verify curriculum files, manage course mappings.",
+            "Student": "Select open electives and complete course registrations."
         },
         ["Curriculum", "Semester Set", "Slot Alloc", "Enrollment"]
     )
@@ -473,103 +411,70 @@ def main():
     # 4. Attendance
     pdf.add_module_page(
         4, "Attendance",
-        [("Tracking Mode", "Biometric / RFID"), ("Shortage Alert", "75% Threshold"), ("Parent Alert", "Automated SMS")],
-        ["Biometric RFID Sync", "Daily Class Register", "75% Shortage Tracker", "Parent SMS Trigger", "Duty Leave Approvals", "Department Analytics"],
-        "[RFID Hardware Check-in] -> [Class Register Entry] -> [75% Shortage Run] -> [Warning List] -> [Parent SMS Dispatch]",
+        ["Faculty Attendance Entry", "Student Attendance", "Biometric/RFID Integration", "Shortage Calculation", "Parent SMS", "Reports"],
         [
-            "Real-time biometric RFID hardware integration pulling turnstile punch logs directly to DB.",
-            "Automated attendance shortage calculation flags students below the mandatory 75% threshold.",
-            "SMS messaging engine dispatching immediate absentee alerts to registered parent mobile numbers."
+            "Biometric device integration pulling punch logs in real time.",
+            "Automated attendance shortage reports tracking minimum 75% thresholds.",
+            "SMS triggers dispatching daily warnings to parents for absent students."
         ],
-        "Biometric devices capture entry logs. Faculty review and verify class sheets. The shortage calculator evaluates weekly compliance scores, generates warning letters, and triggers SMS alerts to parents.",
+        "Biometric devices log check-ins. Faculty verify records manually or override errors. The shortage calculator computes compliance scores weekly and schedules SMS alerts. HODs export report indices.",
         {
-            "ui": "AttendanceModule.tsx, AttendanceNotifications.tsx",
-            "backend": "attendanceService.ts, notificationController.js",
-            "db": "attendance_logs, attendance_shortages, notification_logs",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Admin": "Configure biometric ports, clear hardware buffers, and approve attendance waivers.",
-            "HOD / Faculty": "Submit daily class attendance sheets, review department percentages, and sign duty leaves.",
-            "Student / Parent": "View monthly attendance percentages, calendar check-in logs, and warning notices."
+            "Super Admin / Admin": "Configure biometric ports, clear buffer errors, override shortage lists.",
+            "HOD / Faculty": "Submit daily class attendance sheets, review department percentages.",
+            "Student / Parent": "Read-only check-in calendar logs and warning notifications."
         },
         ["RFID Check", "Daily Register", "Shortage Run", "Parent Alert"]
     )
 
-    # 5. Examination (COE Suite)
+    # 5. Examination
     pdf.add_module_page(
-        5, "Examination (Controller Suite)",
-        [("Evaluation", "SGPA/CGPA Engine"), ("Security", "AES-256 Lock"), ("Revaluation", "Instant Grade Sync")],
-        ["Exam Schedules", "Hall Ticket Clearance", "Encrypted Question Bank", "Exam Centers", "Invigilator Roster", "Seating Matrix", "Grace Marks Board", "Malpractice Verdicts"],
-        "[Exam Schedule & Encrypt QP] -> [Hall Ticket Clearance] -> [Seating Matrix] -> [Moderation & Grace Marks] -> [COE Result Publish]",
+        5, "Examination",
+        ["Exam Registration", "Hall Tickets", "Seating Plan", "Internal Marks", "External Marks", "Grace Marks", "Result Processing", "SGPA/CGPA", "Grade Cards", "Revaluation", "Supplementary", "Transcript"],
         [
-            "Dedicated Controller of Examinations (COE) Governance Suite with outcome-based SGPA/CGPA computation.",
-            "Automated Hall Ticket clearance and withhold controls for fee defaulters or low attendance (<65%).",
-            "AES-256 Question Paper encryption, invigilation duty rosters, and anti-malpractice seating matrix.",
-            "Board moderation, revaluation grade updates, grace marks (+1/+2) sanctioning, and malpractice verdicts."
+            "Outcome-based marks evaluation with SGPA/CGPA calculations.",
+            "Automated Hall Ticket release blocks for fee defaulters.",
+            "Configurable grade boundaries and grace marks algorithms."
         ],
-        "Exam branch creates timetables and allocates centers. Candidates clear fee/attendance checks to unlock hall tickets. Question papers undergo AES-256 encryption. Hall invigilators track live attendance. Internal and external marks are moderated, results process to SGPA/CGPA, and grade cards publish.",
+        "Exam branch sets dates. Students register and system screens backlog limits. Halls and seats are auto-arranged. Faculty upload internal marks. External marks are uploaded via Excel keys. Results process, and transcripts generate.",
         {
-            "ui": "DeanExaminationAdmin.tsx, ExaminationControlModule.tsx",
-            "backend": "examService.ts",
-            "db": "exam_schedules, hall_tickets, results, malpractice_cases",
-            "status": "Production-Ready (100% Operational)"
+            "Super Admin / Exam Controller": "Full administrative control over result processing, grace marks, and grade cards.",
+            "HOD / Faculty": "Upload internal marks, review revaluation applications.",
+            "Student": "Register for exams, download hall tickets, view results, and apply for revaluation."
         },
-        {
-            "Controller of Examinations (COE) / Dean": "Complete administrative authority: Approve results, sanction grace marks, execute malpractice verdicts, lock encrypted question papers.",
-            "HOD / Faculty": "Upload internal assessment marks, confirm invigilation duties, and verify moderation keys.",
-            "Student": "Register for exams, download hall tickets, view SGPA/CGPA results, and apply for revaluation."
-        },
-        ["Schedule & Encrypt", "Hall Tickets", "Hall Attendance", "COE Result Publish"]
+        ["Registration", "Seating Plan", "Mark Entry", "CGPA Processing"]
     )
 
     # 6. Faculty ERP
     pdf.add_module_page(
         6, "Faculty ERP",
-        [("Workload", "Weekly Tracker"), ("Research Log", "Scopus & NAAC"), ("Appraisal", "Self-Assessment")],
-        ["Faculty Profile", "Workload Manager", "Leave Portal", "Attendance Register", "Research Publications", "Grant Tracker", "Performance Appraisal", "Payroll Ledger"],
-        "[Workload Allocation] -> [Lecture & Lab Run] -> [Research Pub Log] -> [Appraisal Scoring] -> [Payroll Review]",
+        ["Faculty Profile", "Workload", "Leave", "Attendance", "Research", "Publications", "Performance", "Payroll"],
         [
-            "Workload manager tracking weekly lecture, tutorial, and lab hours against statutory guidelines.",
-            "Research and publication repository cataloging Scopus, Web of Science, and UGC journal papers.",
-            "Self-appraisal digital sheets linked directly to NAAC/NBA accreditation criteria."
+            "Workload manager tracking weekly lecture schedules against guidelines.",
+            "Research and publication log tracking research citations.",
+            "Self-appraisal sheets linked directly to NAAC files."
         ],
-        "Faculty update profiles, upload research citations, submit leave requests, and track weekly lecture schedules. Department heads review performance ratings, calculate appraisal scores, and approve leave allocations.",
+        "Faculty edit profiles, upload research papers, apply for leaves, and track weekly lecture workload. System computes performance scores based on publications and feedback, updating payroll allowance indices.",
         {
-            "ui": "FacultyDashboard.tsx, FacultyProfile.tsx",
-            "backend": "facultyService.ts",
-            "db": "faculty_profiles, workloads, leaves, research_publications",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Admin": "Approve promotions, modify salary scale bands, and configure teaching workload limits.",
-            "HOD / Dean": "Review faculty workloads, approve research grant requests, and sanction leaves.",
-            "Faculty": "Manage personal profiles, submit leave applications, upload research publications, and view payslips."
+            "Super Admin / Admin": "Approve promotions, modify payroll bands, adjust teaching limits.",
+            "HOD / Dean": "Review faculty workloads, approve research funds, sign leaves.",
+            "Faculty": "Manage personal profiles, leaves, research logs, and check salary slips."
         },
         ["Workload Map", "Leave Request", "Research Pub", "Appraisal Run"]
     )
 
-    # 7. Learning Management System (LMS)
+    # 7. Learning Management
     pdf.add_module_page(
-        7, "Learning Management System",
-        [("Content Hub", "PDF / MP4 / Docs"), ("Assessment", "Online Quiz Key"), ("Submission", "Plagiarism Check")],
-        ["Study Materials", "Video Lectures", "Digital Assignments", "Online Quiz Engine", "Discussion Forum", "Virtual Classroom", "Gradebook Sync"],
-        "[Content Upload] -> [Assignment Posting] -> [Timed Online Quiz] -> [Plagiarism Check] -> [Gradebook Auto-Sync]",
+        7, "Learning Management",
+        ["Notes", "Videos", "Assignments", "Quizzes", "Discussion Forum", "Online Classes"],
         [
-            "Central study material repository supporting PDF notes, video lectures, and presentation decks.",
-            "Automated online quiz modules featuring randomized question banks and instant key grading.",
-            "Assignment submission portal with deadline enforcement and plagiarism check indicators."
+            "Direct file uploads (PDF, MP4, Docs) for study material.",
+            "Online assignment submissions with plagiarism detection cues.",
+            "Online quiz modules with automatic grading keys."
         ],
-        "Faculty create course modules, upload study files, and schedule timed quizzes. Students access study materials, watch video lectures, submit assignments, and participate in discussion threads. Quiz scores auto-sync to gradebooks.",
+        "Faculty create course pages and post notes, files, and video links. Quizzes are published with timers. Students submit assignments. Discussion forums allow thread queries. Grades sync to the LMS database.",
         {
-            "ui": "LMSCourseView.tsx, AssignmentSubmission.tsx",
-            "backend": "lmsService.ts",
-            "db": "lms_courses, materials, assignments, quizzes",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "HOD / Faculty": "Upload course materials, create online quizzes, evaluate assignments, and monitor forums.",
-            "Student": "Download study notes, stream video lectures, submit assignments, and attempt online quizzes."
+            "HOD / Faculty": "Upload study material, manage quizzes, grade submissions, run online links.",
+            "Student": "Download notes, watch videos, submit assignments, attempt quizzes."
         },
         ["Course Setup", "Material Add", "Assignments", "Quiz Grade"]
     )
@@ -577,310 +482,216 @@ def main():
     # 8. Placement Cell
     pdf.add_module_page(
         8, "Placement Cell",
-        [("Eligibility", "CGPA / Backlog Filter"), ("Recruiter Portal", "Job & Drive Post"), ("Analytics", "Package & Highest")],
-        ["Company Registry", "Job Drive Postings", "Eligibility Screener", "Student Applications", "Aptitude Testing", "Interview Schedule", "Offer Letter Vault", "Placement Analytics"],
-        "[Recruiter Drive Post] -> [CGPA & Backlog Filter] -> [Aptitude Test & Interview] -> [Digital Offer Letter] -> [Package Stats]",
+        ["Student Eligibility", "Company Registration", "Job Posting", "Applications", "Aptitude Tests", "Interview Schedule", "Offer Letters", "Placement Statistics"],
         [
-            "Automated eligibility criteria filter screening candidates by minimum CGPA and active backlog limits.",
-            "Corporate recruiter portal for posting vacancies, filtering candidate resumes, and managing drive schedules.",
-            "Placement analytics dashboard visualizing branch-wise placement percentages, average packages, and top recruiters."
+            "Eligibility criteria filters (CGPA, backlogs limits).",
+            "Recruiter dashboard to post vacancies and download applicant profiles.",
+            "Placement analytics tracking average and highest package values."
         ],
-        "Placement officer registers corporate recruiters. Companies post vacancies with criteria. Eligible students apply. System schedules online aptitude tests and interview panels. Selected candidates receive digital offer letters.",
+        "Placement officer registers companies. Recruiters upload jobs. Eligible students register. System arranges aptitude exams and interview panels. Offers are logged, updating placement dashboard statistics.",
         {
-            "ui": "PlacementDashboard.tsx, DriveDetailsModal.tsx",
-            "backend": "placementService.ts",
-            "db": "placement_drives, job_applications, offer_letters",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Placement Officer (TPO)": "Register corporate profiles, set CGPA eligibility thresholds, schedule drives, and log offer letters.",
-            "Recruiter": "Post job drives, review filtered student profiles, and update candidate hiring status.",
-            "Student": "View active placement drives, check eligibility status, submit applications, and download offer letters."
+            "Placement Officer (TPO)": "Add corporate profiles, review applications, set CGPA thresholds, upload offers.",
+            "Recruiter": "Post vacancies, filter resumes, update hiring status.",
+            "Student": "View jobs, check eligibility status, apply, and download mock tests."
         },
         ["Eligibility", "Jobs Listing", "Interviews", "Offer Placed"]
     )
 
-    # 9. Hostel Management
+    # 9. Hostel
     pdf.add_module_page(
-        9, "Hostel Management",
-        [("Room Matrix", "Live Vacancy Map"), ("Attendance", "Night Check-in"), ("Pass System", "Digital Outing")],
-        ["Room Allocation", "Night Attendance", "Hostel Fee Ledger", "Visitor Registry", "Outing Gatepasses", "Maintenance Complaints", "Mess Menu Manager"],
-        "[Online Room App] -> [Fee Verification] -> [Bed Matrix Alloc] -> [Night Biometric Sync] -> [Outing & Complaints]",
+        9, "Hostel",
+        ["Room Allocation", "Attendance", "Hostel Fees", "Visitor Log", "Complaints"],
         [
-            "Live bed matrix displaying vacant, occupied, and maintenance-blocked room allocations in real time.",
-            "Digital night attendance register with mobile biometric check-in integration for wardens.",
-            "Automated complaint ticketing system routing plumbing, electrical, and mess issues to maintenance staff."
+            "Live bed matrix displaying vacant, occupied, and maintenance room layouts.",
+            "Outing gate logs and night check-in attendance registries.",
+            "Complaints ticket portal routing issues to wardens."
         ],
-        "Students apply for hostel rooms online. System verifies fee clearance and allocates bed numbers. Wardens record daily night attendance. Outing gatepasses require warden approval and security gate validation.",
+        "Students apply for rooms. System checks fees and assigns beds. Wardens take night attendance via mobile keys. Security logs visitors. Mess systems track student feedbacks.",
         {
-            "ui": "HostelDashboard.tsx, RoomMatrixView.tsx",
-            "backend": "hostelService.ts",
-            "db": "hostel_rooms, hostel_allocations, night_attendance, outing_passes",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Hostel Warden": "Allocate rooms, verify night attendance logs, approve outing passes, and resolve maintenance tickets.",
-            "Accounts Manager": "Post hostel fees, track payment dues, and issue clearance receipts.",
-            "Student Resident": "Apply for room allocation, submit outing requests, log maintenance complaints, and rate mess menus."
+            "Hostel Warden": "Allocate rooms, verify night check-ins, resolve maintenance complaints.",
+            "Accounts Manager": "Post hostel fees and track pending payments.",
+            "Student Resident": "Apply for rooms, submit gatepasses, register complaints, log dining feedbacks."
         },
         ["Room Request", "Outing Pass", "Check-in Log", "Complaints"]
     )
 
-    # 10. Transport Management (Clean Multi-Line Dataflow)
+    # 10. Transport
     pdf.add_module_page(
-        10, "Transport Management",
-        [("Tracking", "Live GPS Coordinates"), ("Routes", "Stop & Capacity Map"), ("Pass Control", "QR / RFID Pass")],
-        ["Route Management", "Bus Capacity Map", "Live GPS Tracking", "Driver Allocations", "Transport Fee Ledger", "Digital Bus Passes", "Vehicle Maintenance"],
-        "[Route & Stop Setup] -> [Route Opt & Fee Pay] -> [Digital Bus Pass] -> [Live GPS Streaming] -> [Fleet Maintenance]",
+        10, "Transport",
+        ["Route Management", "Bus Allocation", "GPS Tracking", "Driver Details", "Fee Collection"],
         [
-            "Route mapper tracking bus stops, fare zones, and seating capacities across fleet vehicles.",
-            "Live GPS vehicle location integration feeding real-time coordinates to student/parent dashboards.",
-            "Digital transport fee collection register linked directly to automated bus boarding pass issuance."
+            "Route mapper tracking stops and bus seating capacities.",
+            "GPS location integration for live bus coordinates.",
+            "Fee collection registers linked to student entry passes."
         ],
-        "Transport manager defines bus routes, pick-up stops, and assigns drivers. Students select routes and pay transport fees online. Digital bus passes generate, and live GPS coordinates stream during transit hours.",
+        "Transport in-charge defines routes and stops. Buses are allocated. Drivers register. Students opt for routes, pay fees, and get boarding cards. GPS devices feed coordinates to the student dashboard.",
         {
-            "ui": "TransportDashboard.tsx, GPSLiveTracker.tsx",
-            "backend": "transportService.ts",
-            "db": "bus_routes, vehicles, transport_allocations, bus_passes",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Transport Officer": "Define routes, assign vehicles and drivers, monitor maintenance schedules, and audit fleet logs.",
-            "Accounts Cell": "Manage transport fee receipts and issue digital bus boarding passes.",
-            "Student / Parent": "View bus route schedules, track live GPS locations on mobile devices, and download bus passes."
+            "Transport Officer": "Define routes, schedule maintenance, allocate drivers, track routes.",
+            "Accounts Cell": "Manage fee logs and bus pass issue lists.",
+            "Student / Parent": "Read-only access to route schedules, bus locations, and fee status."
         },
         ["Route Mapped", "Bus Allocation", "GPS Live", "Pass Release"]
     )
 
-    # 11. Library Management
+    # 11. Library
     pdf.add_module_page(
-        11, "Library Management",
-        [("Search Engine", "OPAC Catalog"), ("Tracking", "Barcode / RFID"), ("Fine Calculator", "Auto-Dues Sync")],
-        ["OPAC Book Catalog", "Barcode Issue / Return", "Overdue Fine Calculator", "Digital E-Books", "Journal Subscription", "Member Registry", "Book Reservation"],
-        "[OPAC Book Catalog] -> [Barcode/RFID Checkout] -> [Return Due Tracking] -> [Overdue Fine Run] -> [Student Fee Dues Sync]",
+        11, "Library",
+        ["Book Catalog", "Issue/Return", "Fine", "Digital Library", "Barcode/RFID"],
         [
-            "Online Public Access Catalog (OPAC) index for physical books, journals, and digital research papers.",
-            "Barcode/RFID scanner integration executing check-outs and returns within seconds.",
-            "Automated library fine calculation engine linked directly to student financial fee ledgers."
+            "OPAC Search index for physical book titles and journals.",
+            "RFID/Barcode tracking scanning book issuance and returns.",
+            "Automated library fine calculations linked to fee books."
         ],
-        "Librarians scan book barcodes for check-outs. System monitors return due dates and sends overdue reminders. Overdue fines auto-calculate daily and sync to the student fee ledger.",
+        "Librarian scans book barcodes. System logs check-out limits and return periods. Reminders are dispatched for overdue items. Fine calculations are linked to student accounts automatically.",
         {
-            "ui": "LibraryDashboard.tsx, OPACCatalogView.tsx",
-            "backend": "libraryService.ts",
-            "db": "library_books, book_issues, fines, digital_resources",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Librarian": "Manage book catalog, scan barcodes, override library fines, upload e-books, and monitor circulation.",
-            "Student / Faculty": "Search OPAC catalog, reserve books online, view checkout history, access e-books, and pay fines."
+            "Librarian": "Manage catalog, scan barcodes, override fines, issue digital books.",
+            "Student / Faculty": "Search catalog, view checkout history, read e-books, pay outstanding fines."
         },
         ["Catalog Find", "Barcode Scan", "Book Issue", "Fine Sync"]
     )
 
-    # 12. Finance & Accounting
+    # 12. Finance
     pdf.add_module_page(
-        12, "Finance & Accounting",
-        [("Ledger", "Tuition & Fee Dues"), ("Scholarships", "Scheme Adjustments"), ("Auditing", "GST & Balance Sheet")],
-        ["Tuition Fee Ledger", "Online Payment Gateway", "Scholarship Adjustments", "Staff Payroll Disbursements", "Vendor Invoices", "GST Compliance", "Financial Balance Sheets"],
-        "[Fee Structure Setup] -> [Online Payment Gateway] -> [Scholarship Ledger Adjust] -> [Vendor & Payroll] -> [Annual Audit Sheet]",
+        12, "Finance",
+        ["Tuition Fees", "Scholarships", "Payroll", "Vendor Payments", "GST Reports", "Accounting"],
         [
-            "Tuition fee ledger managing online payment gateways, installment plans, and transaction receipts.",
-            "Scholarship adjustment engine mapping government schemes, merit concessions, and fee waivers.",
-            "Automated balance sheet, P&L statement, TDS filing, and GST compliance report generator."
+            "Tuition fee ledger tracking dues, installment plans, and online gateways.",
+            "Scholarship adjustment registers and government scheme mappings.",
+            "TDS, GST, and balance sheet generators."
         ],
-        "Finance department generates fee structures. Students pay fees online via payment gateways. Accounts verify scholarship grants, process vendor bills, execute staff payroll disbursements, and generate annual audit ledgers.",
+        "Finance team logs fees, checks scholarship allocations, dispatches vendor payments, and runs payroll accounts. GST records and balance sheets are compiled automatically for annual audit reporting.",
         {
-            "ui": "FinanceDashboard.tsx, FeeReceiptModal.tsx",
-            "backend": "financeService.ts",
-            "db": "fee_structures, fee_payments, scholarships, vendor_invoices",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Finance Head": "Full financial control: Modify fee structures, approve vendor payments, generate balance sheets.",
-            "Accounts Team": "Collect tuition fees, verify scholarship adjustments, disburse staff salaries, and file GST returns.",
-            "Student / Parent": "View fee balance ledgers, make online tuition payments, and download official fee receipts."
+            "Super Admin / Finance Head": "Full financial control, ledger edits, balance sheets, bank reconciliations.",
+            "Accounts Team": "Process tuition fees, verify scholarships, release vendor bills.",
+            "Student / Parent": "View fee balances, pay online, download receipts."
         },
         ["Tuition Bills", "Scholarships", "Ledger Entry", "Audit Sheets"]
     )
 
-    # 13. HRMS & Staff Payroll
+    # 13. HRMS
     pdf.add_module_page(
-        13, "HRMS & Staff Payroll",
-        [("Personnel", "Digital Staff Files"), ("Attendance", "Biometric Sync"), ("Payroll", "Scale & Allowances")],
-        ["Employee Directory", "Recruitment Portal", "Biometric Attendance Sync", "Leave Approval Workflow", "Salary Scale Engine", "Pay Slip Generator", "Service History Log"],
-        "[Employee Registration] -> [Biometric Punch Sync] -> [Leave Deduction Run] -> [Payroll Calculation] -> [Digital Payslip Release]",
+        13, "HRMS",
+        ["Employee Records", "Recruitment", "Attendance", "Leave", "Payroll", "Performance"],
         [
-            "Central employee digital repository storing qualifications, service history, and statutory documents.",
-            "Biometric RFID check-in sync evaluating working hours, overtime, and leave deductions automatically.",
-            "Automated payroll disbursement engine calculating basic pay, DA, HRA, PF, TDS, and generating PDF payslips."
+            "Staff directory with reactive details.",
+            "Leave management board and biometric sync controllers.",
+            "Locked payroll disbursement keys."
         ],
-        "HR creates employee profiles. Biometric hardware syncs daily staff attendance. Department heads approve leaves. Payroll engine computes monthly salaries, applies tax/PF deductions, and generates digital payslips.",
+        "Admin manages personnel records. Department heads sync RFID devices and approve leaves. System calculates basic scales, allowance, and releases salaries. Appraisals track research files for NAAC audits.",
         {
-            "ui": "HRMSDashboard.tsx, PayslipViewerModal.tsx",
-            "backend": "hrmsService.ts",
-            "db": "employees, staff_attendance, leave_requests, payrolls",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / HR Manager": "Create employee records, configure salary bands, approve leaves, and disburse payroll.",
-            "Accounts Officer": "Manage tax deductions, process PF ledgers, and execute bank salary transfer files.",
-            "Faculty / Staff": "View personal service profile, submit leave requests, track biometric logs, and download payslips."
+            "Super Admin / Admins": "Manage records, post openings, approve leaves, release payroll.",
+            "Accounts Manager": "Disburse salary scales, edit allowances.",
+            "HOD / Faculty": "Approve leaves, sync attendance, view performance ratings."
         },
         ["Profile Reg", "Biometric Sync", "Leave Approval", "Disburse Pay"]
     )
 
-    # 14. Inventory & Asset Control
+    # 14. Inventory
     pdf.add_module_page(
-        14, "Inventory & Asset Control",
-        [("Asset Ledger", "WDV Depreciation"), ("Stock Alert", "Low Volume Warning"), ("Security", "Gatepass Audit")],
-        ["Asset Master Register", "Lab Equipment Log", "Purchase Order (PO)", "Consumables Stock", "Depreciation Calculator", "Maintenance Tickets", "Outward Gatepasses"],
-        "[PO Request & Approve] -> [Asset Log & WDV Depreciation] -> [Stock Level Warning] -> [Maintenance Ticket] -> [Outward Gatepass]",
+        14, "Inventory",
+        ["Assets", "Lab Equipment", "Purchase Orders", "Stock", "Maintenance"],
         [
-            "Asset register tracking initial capital costs, location assignments, and Written Down Value (WDV) depreciation.",
-            "Stock consumable indicator raising automatic warnings when lab supplies drop below safety thresholds.",
-            "Outward gatepass log tracking equipment sent out for servicing, calibration, or inter-campus transfer."
+            "Book Value and WDV calculations with depreciation rates.",
+            "Stock consumable indicators warning on low volumes.",
+            "Outward gatepass log with security return checks."
         ],
-        "Department custodians log equipment details. Purchase requests are approved. Stock levels auto-adjust on item issuance. Maintenance tickets trigger repair schedules, and gatepasses authorize security checks.",
+        "Asset register audits initial values vs. depreciation values. Custodians log lab equipment states. Purchase requests are authorized. Stock levels auto-adjust. Gate passes track devices sent out for repair.",
         {
-            "ui": "InventoryDashboard.tsx, GatepassModal.tsx",
-            "backend": "inventoryService.ts",
-            "db": "assets, purchase_orders, inventory_stock, gatepasses",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Admin": "Full asset ledger authority: Approve purchase orders, authorize gatepasses, and write off assets.",
-            "Accounts": "Verify purchase order invoices, update asset ledger values, and execute stock inventory audits.",
-            "HOD / Lab Custodian": "Log equipment status, request consumables restocking, and create maintenance tickets."
+            "Super Admin / Admin": "Full asset ledger access, PO approvals, gatepass issuing.",
+            "Accounts": "Verify PO budgets, balance asset books, restock consumables.",
+            "HOD / Lab Custodian": "Mark equipment serviced, request gatepasses."
         },
         ["PO Request", "Stock Check", "Asset Logging", "Gatepass Log"]
     )
 
-    # 15. Accreditation (NBA / NAAC)
+    # 15. Accreditation
     pdf.add_module_page(
-        15, "Accreditation (NBA / NAAC)",
-        [("NAAC SSR", "Criteria 1-7 Vault"), ("NBA OBE", "CO-PO Attainment"), ("Certificates", "Auto Generator")],
-        ["NAAC Criteria Repository", "NBA CO-PO Attainment", "NIRF / AISHE Exporter", "Event Proposals", "Participant Check-in", "Evidence Vault", "Digital Certificate Signer"],
-        "[Event Proposal] -> [Principal & HOD Sign] -> [Event Check-in & Evidence Ingest] -> [CO-PO Attainment] -> [NAAC Vault & Certs]",
+        15, "Accreditation",
+        ["NBA", "NAAC", "AICTE", "NIRF", "AISHE Reports", "Event Management", "Certificate Management", "Evidence Repository"],
         [
-            "NAAC Self-Study Report (SSR) evidence repository supporting criteria-wise document categorization.",
-            "NBA Outcome-Based Education (OBE) matrix mapping Course Outcomes (CO) to Program Outcomes (PO).",
-            "Event workflow engine managing approval flows, attendance verification, and auto-signed digital certificates."
+            "NBA CO-PO mapping and attainment | NAAC SSR criteria-wise evidence.",
+            "AICTE EOA records, NIRF data, and AISHE DCF filing compliance.",
+            "Event proposal workflow, attendee check-in, and auto-certificates.",
+            "Digital signed certificate downloads and central evidence repositories."
         ],
-        "Faculty submit event proposals. HOD and Principal approve. Students register and attend. Event coordinators upload reports and photo proofs into the accreditation vault. System generates signed participant certificates.",
+        "Faculty/HOD creates an event proposal. The HOD and Principal review and approve it. The event is published for student registration, attendance is verified, and the coordinator uploads the reports and documents. The system then automatically generates participation/organizer certificates and stores event evidence for accreditation criteria.",
         {
-            "ui": "AdminAccreditation.tsx, EventProposalModal.tsx",
-            "backend": "accreditationService.ts, accreditationController.js",
-            "db": "accreditation_events, accreditation_evidence, co_po_mappings",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin": "Manage accreditation parameters, export NAAC/NBA datasets, and oversee evidence repositories.",
-            "Principal / Dean": "Approve event proposals, verify accreditation criteria files, and authorize final SSR submissions.",
-            "HOD / Coordinator": "Map CO-PO metrics, upload department evidence files, mark event attendance, and issue certificates.",
-            "Student": "Register for academic events, check-in to sessions, and download verified participation certificates."
+            "Super Admin": "Manage accreditation modules, approve reports, manage certificates, view analytics.",
+            "Principal / Dean": "Approve events, verify accreditation reports, approve final submissions, monitor progress.",
+            "HOD": "Create/approve event proposals, upload department evidence, validate reports.",
+            "Faculty / Coordinator": "Organize events, mark attendance, upload reports, generate certificates.",
+            "Student": "Register for events, view approvals, download certificates, track participation history."
         },
         ["Event Proposal", "Event Approved", "Certificates", "Evidence Safe"]
     )
 
-    # 16. Communication & Circulars
+    # 16. Communication
     pdf.add_module_page(
-        16, "Communication & Circulars",
-        [("Channels", "SMS / Email / Push"), ("Broadcasting", "Instant Dispatch"), ("Archive", "Public Circulars")],
-        ["Multi-Channel Broadcast", "Official Circulars", "Parent SMS Engine", "Email Newsletter", "Push Notifications", "Notice Board Portal", "Delivery Logs"],
-        "[Circular Draft] -> [Select Target Roles] -> [Multi-Channel Broadcast] -> [Notice Board Feed] -> [Delivery Audit Log]",
+        16, "Communication",
+        ["SMS", "Email", "Push Notifications", "Circulars", "WhatsApp"],
         [
-            "Multi-channel broadcast engine dispatching announcements via SMS, Email, Push Notifications, and WhatsApp.",
-            "Official circular archive displaying verified administrative orders on role dashboards.",
-            "Automated trigger notifications for fee payment reminders, exam dates, emergency holidays, and event updates."
+            "Multi-channel broadcast engine routing alerts via SMS, Email, and WhatsApp.",
+            "Circular archive for official notices.",
+            "Automated triggers for announcements, fee dues, and exam updates."
         ],
-        "Authorized staff draft announcements and select target audiences (Students / Parents / Staff). Dispatch engine transmits bulk messages across channels while simultaneously publishing circulars to user dashboards.",
+        "Authorized staff select channels and enter messages. The communication dispatcher sends bulk messages. Push notifications appear on mobile devices, and official circulars publish to dashboards.",
         {
-            "ui": "AdminCommunication.tsx, BroadcastComposer.tsx",
-            "backend": "communicationService.ts, communicationController.js",
-            "db": "communication_broadcasts, circulars, notification_logs",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin / Admins": "Send institution-wide notifications, publish official circulars, and monitor delivery logs.",
-            "HOD / Faculty": "Message department students, broadcast class announcements, and issue academic notices.",
-            "Student / Parents": "Read-only access to circular notice boards and notification inbox feeds."
+            "Super Admin / Admins": "Send global notifications, upload public circulars.",
+            "HOD / Faculty": "Message department students, issue class circulars.",
+            "Student / Parents": "Read-only notifications inbox."
         },
         ["Circular Draft", "Select Channel", "Bulk Dispatch", "Delivery Log"]
     )
 
-    # 17. Grievance & Redressal
+    # 17. Grievance
     pdf.add_module_page(
-        17, "Grievance & Redressal",
-        [("Privacy", "100% Anonymous Mode"), ("Compliance", "Anti-Ragging Vault"), ("Tracking", "Resolution Tickets")],
-        ["Anonymous Complaint Box", "Anti-Ragging Committee", "Women Cell Portal", "Case Assignment", "Investigation Log", "Hearing Schedule", "Resolution Audit"],
-        "[File Complaint (Anonymous/Named)] -> [Committee Ticket Route] -> [Hearing & Evidence] -> [Resolution Order] -> [Case Closed]",
+        17, "Grievance",
+        ["Complaints", "Anti-Ragging", "Women Cell", "Resolution Tracking"],
         [
-            "100% anonymous complaint submission option preserving student and staff privacy during sensitive filings.",
-            "Legal compliance trackers for Anti-Ragging, Internal Complaints Committee (ICC), and Women Cell regulations.",
-            "Resolution ticketing system tracking case assignments, hearing dates, investigation notes, and final orders."
+            "Anonymous grievance submission portals for security.",
+            "Legal compliance trackers for Anti-Ragging and Women Cell cases.",
+            "Resolution tickets routing incidents to designated review boards."
         ],
-        "Complainant registers a grievance online. System assigns a confidential tracking ticket. Designated committee reviews details, conducts hearings, logs investigation notes, and issues official resolution orders.",
+        "Grievances are registered. The system assigns a case number and notifications are sent to the review board. Investigation logs are filed, and status shifts to Resolved after review.",
         {
-            "ui": "GrievancePortal.tsx, CaseDetailsModal.tsx",
-            "backend": "grievanceService.ts",
-            "db": "grievances, grievance_hearings, resolution_orders",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Grievance Committee": "Review filed complaints, assign investigators, record hearing notes, and issue resolution orders.",
-            "Super Admin": "Monitor grievance resolution statistics, verify legal compliance, and audit pending case logs.",
-            "Student / Staff": "Submit grievances (anonymous or named), upload supporting evidence, and track ticket status."
+            "Grievance Committee": "View reports, assign investigators, record resolution logs.",
+            "Super Admin": "Oversee case statistics and check compliance.",
+            "Student / Faculty": "Submit complaints, track ticket status anonymously."
         },
         ["Complaint File", "Case Routing", "Investigate", "Resolve Close"]
     )
 
-    # 18. Alumni Relations
+    # 18. Alumni
     pdf.add_module_page(
-        18, "Alumni Relations",
-        [("Directory", "Verified Alumni Log"), ("Mentorship", "Student Match"), ("Donations", "80G Tax Receipt")],
-        ["Alumni Directory", "Career Job Portal", "Mentorship Network", "Reunion Events", "Donation Gateway", "Success Stories", "80G Tax Receipts"],
-        "[Graduation Database Sync] -> [Alumni Directory Update] -> [Mentorship & Job Posting] -> [Donation] -> [80G Tax Receipt]",
+        18, "Alumni",
+        ["Alumni Registration", "Donations", "Events", "Mentorship"],
         [
-            "Verified alumni directory automatically populated from student graduation database records.",
-            "Mentorship network pairing experienced alumni professionals with current students for career guidance.",
-            "Secure donation gateway issuing official tax benefit receipts (80G) for institutional contributions."
+            "Verified alumni registry matching student graduation records.",
+            "Secure donation gateways with tax benefit receipts.",
+            "Mentorship network pairing alumni with current students."
         ],
-        "Graduating students transition to the alumni directory. Alumni update employment details, post job referral openings, offer mentorship slots, and make institutional donations. System issues automated tax receipts.",
+        "Graduating students transfer to the alumni directory. Alumni update details, RSVP to events, select mentorship tracks, and process donations. System generates 80G tax benefit certificates.",
         {
-            "ui": "AlumniDashboard.tsx, MentorshipModal.tsx",
-            "backend": "alumniService.ts",
-            "db": "alumni_profiles, mentorship_requests, alumni_donations",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Alumni Officer / Admin": "Verify alumni directory records, organize reunion events, and manage donation ledgers.",
-            "Alumni": "Update professional profiles, post job/internship openings, offer mentorship, and donate funds.",
-            "Student": "Browse alumni directory, apply for alumni job referrals, and request mentorship pairings."
+            "Alumni Officer / Admin": "Verify registry profiles, coordinate events, monitor donations.",
+            "Alumni": "Manage profile details, process contributions, offer mentorship slots.",
+            "Student": "Request mentorship matches, view alumni networks."
         },
         ["Graduate Log", "Mentors Match", "RSVP Event", "Donation Slip"]
     )
 
-    # 19. Administration & Security
+    # 19. Administration
     pdf.add_module_page(
-        19, "Administration & Security",
-        [("RBAC", "19-Module Matrix"), ("Audit Log", "Immutable Tracking"), ("DB Backup", "Automated Schedules")],
-        ["Role Permissions Matrix", "Unified User Control", "Immutable Audit Logs", "System Configuration", "Security Hardening", "Automated DB Backups", "Global Analytics"],
-        "[Define RBAC Permissions] -> [User Access Hardening] -> [Immutable Audit Trail Log] -> [Encrypted Nightly DB Backup]",
+        19, "Administration",
+        ["User Roles", "Permissions", "Audit Logs", "Backup", "Reports", "Analytics Dashboard"],
         [
-            "Granular Role-Based Access Control (RBAC) engine configuring permissions across all 19 system modules.",
-            "Immutable audit trail logging every user login, database modification, API request, and export action.",
-            "Automated database backup cron-jobs creating daily encrypted snapshots with single-click restore capabilities."
+            "Granular role permissions configuration tool.",
+            "Immutable audit logs detailing every user action.",
+            "System database backup schedules."
         ],
-        "Super admins configure role permissions and assign user credentials. The system logs all user actions in an immutable audit ledger. Nightly cron-jobs create encrypted database backups and monitor system health.",
+        "Super admins use the dashboard to map user credentials to roles. The system records all API calls in an immutable audit log. Automated cron-jobs run database backups nightly.",
         {
-            "ui": "AdminGovernanceView.tsx, UserManagementModal.tsx",
-            "backend": "adminService.ts, authMiddleware.js",
-            "db": "users, roles, permissions, audit_logs, backup_logs",
-            "status": "Production-Ready (100% Operational)"
-        },
-        {
-            "Super Admin": "Complete system control: Configure RBAC matrix, manage system settings, view audit logs, schedule backups.",
-            "Auditors / Deans": "View system health metrics, monitor user activity audit logs, and export governance reports."
+            "Super Admin": "Manage system configurations, edit permissions, view audit logs, schedule backups.",
+            "Auditors / Deans": "View logs and export analytics report files."
         },
         ["Define Roles", "Audit Track", "Backup DB", "Analytics View"]
     )
@@ -888,7 +699,7 @@ def main():
     # Save PDF
     output_filename = "college_erp_user_manual.pdf"
     pdf.output(output_filename)
-    print(f"SUCCESS: Zero-Overflow User Manual PDF generated successfully as '{output_filename}'!")
+    print(f"SUCCESS: User Manual PDF generated successfully as '{output_filename}'!")
 
 if __name__ == "__main__":
     main()

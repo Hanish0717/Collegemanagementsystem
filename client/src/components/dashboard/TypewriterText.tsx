@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 interface TypewriterTextProps {
   text: string;
@@ -7,12 +7,12 @@ interface TypewriterTextProps {
 }
 
 export function TypewriterText({ text, speed = 25, onComplete }: TypewriterTextProps) {
-  const [displayedText, setDisplayedText] = useState('');
+  const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
     const tokens = text.match(/\s+|\S+/g) || [];
     let index = 0;
-    setDisplayedText('');
+    setDisplayedText("");
 
     const interval = setInterval(() => {
       if (index < tokens.length) {

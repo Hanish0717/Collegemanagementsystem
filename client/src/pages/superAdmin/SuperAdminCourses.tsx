@@ -1,43 +1,36 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useMemo, useState, useEffect, useRef } from 'react';
-import { BookOpen, Plus, Search, Trash, Edit } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  fetchCourses,
-  addCourse,
-  updateCourse,
-  deleteCourse,
-  fetchDepartments,
-  Course,
-} from '@/services/superAdminService';
-import { Skeleton } from '@/components/ui/skeleton';
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { BookOpen, Plus, Search, Trash, Edit } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchCourses, addCourse, updateCourse, deleteCourse, fetchDepartments, Course } from "@/services/superAdminService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SuperAdminCourses() {
   const queryClient = useQueryClient();
-  const [search, setSearch] = useState('');
-  const [department, setDepartment] = useState('All');
+  const [search, setSearch] = useState("");
+  const [department, setDepartment] = useState("All");
 
   // Form states
-  const [code, setCode] = useState('');
-  const [name, setName] = useState('');
-  const [selectedDept, setSelectedDept] = useState('');
-  const [semester, setSemester] = useState('Semester 1');
+  const [code, setCode] = useState("");
+  const [name, setName] = useState("");
+  const [selectedDept, setSelectedDept] = useState("");
+  const [semester, setSemester] = useState("Semester 1");
   const [credits, setCredits] = useState(3);
-  const [statusVal, setStatusVal] = useState('Active');
+  const [statusVal, setStatusVal] = useState("Active");
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
 
   const formRef = useRef<HTMLDivElement>(null);
   const codeInputRef = useRef<HTMLInputElement>(null);
 
   const { data: courses = [], isLoading: isLoadingCourses } = useQuery({
-    queryKey: ['superAdminCourses'],
+    queryKey: ["superAdminCourses"],
     queryFn: fetchCourses,
   });
 
   const { data: departmentsData = [], isLoading: isLoadingDepts } = useQuery({
-    queryKey: ['superAdminDepartments'],
+    queryKey: ["superAdminDepartments"],
     queryFn: fetchDepartments,
   });
 
@@ -51,62 +44,61 @@ export function SuperAdminCourses() {
   const addMutation = useMutation({
     mutationFn: addCourse,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['superAdminCourses'] });
-      toast.success('Course added successfully');
+      queryClient.invalidateQueries({ queryKey: ["superAdminCourses"] });
+      toast.success("Course added successfully");
       // Reset Form
-      setCode('');
-      setName('');
-      setSemester('Semester 1');
+      setCode("");
+      setName("");
+      setSemester("Semester 1");
       setCredits(3);
-      setStatusVal('Active');
+      setStatusVal("Active");
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || 'Failed to add course');
-    },
+      toast.error(err.response?.data?.message || err.message || "Failed to add course");
+    }
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ code, course }: { code: string; course: Partial<Course> }) =>
-      updateCourse(code, course),
+    mutationFn: ({ code, course }: { code: string; course: Partial<Course> }) => updateCourse(code, course),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['superAdminCourses'] });
-      toast.success('Course updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["superAdminCourses"] });
+      toast.success("Course updated successfully");
       setEditingCourse(null);
       // Reset Form
-      setCode('');
-      setName('');
-      setSemester('Semester 1');
+      setCode("");
+      setName("");
+      setSemester("Semester 1");
       setCredits(3);
-      setStatusVal('Active');
+      setStatusVal("Active");
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || 'Failed to update course');
-    },
+      toast.error(err.response?.data?.message || err.message || "Failed to update course");
+    }
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteCourse,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['superAdminCourses'] });
-      toast.success('Course deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["superAdminCourses"] });
+      toast.success("Course deleted successfully");
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || err.message || 'Failed to delete course');
-    },
+      toast.error(err.response?.data?.message || err.message || "Failed to delete course");
+    }
   });
 
   const handleOpenAdd = () => {
     setEditingCourse(null);
-    setCode('');
-    setName('');
+    setCode("");
+    setName("");
     if (departmentsData.length > 0) {
       setSelectedDept(departmentsData[0].id);
     }
-    setSemester('Semester 1');
+    setSemester("Semester 1");
     setCredits(3);
-    setStatusVal('Active');
-
-    formRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setStatusVal("Active");
+    
+    formRef.current?.scrollIntoView({ behavior: "smooth" });
     setTimeout(() => codeInputRef.current?.focus(), 500);
   };
 
@@ -119,7 +111,7 @@ export function SuperAdminCourses() {
     setCredits(course.credits);
     setStatusVal(course.status);
 
-    formRef.current?.scrollIntoView({ behavior: 'smooth' });
+    formRef.current?.scrollIntoView({ behavior: "smooth" });
     setTimeout(() => codeInputRef.current?.focus(), 500);
   };
 
@@ -132,7 +124,7 @@ export function SuperAdminCourses() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!code || !name) {
-      toast.error('Please fill in course code and name');
+      toast.error("Please fill in course code and name");
       return;
     }
 
@@ -144,12 +136,12 @@ export function SuperAdminCourses() {
           department: selectedDept,
           semester,
           credits: Number(credits),
-          status: statusVal,
-        },
+          status: statusVal
+        }
       });
     } else {
       if (courses.some((c) => c.code.toUpperCase() === code.toUpperCase())) {
-        toast.error('A course with this code already exists');
+        toast.error("A course with this code already exists");
         return;
       }
       const newCourse: Course = {
@@ -168,7 +160,7 @@ export function SuperAdminCourses() {
     () =>
       courses.filter(
         (course) =>
-          (department === 'All' || course.department === department) &&
+          (department === "All" || course.department === department) &&
           [course.code, course.name, course.department].some((value) =>
             value.toLowerCase().includes(search.toLowerCase()),
           ),
@@ -209,9 +201,7 @@ export function SuperAdminCourses() {
           >
             <option value="All">All Departments</option>
             {departmentsData.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
+              <option key={item.id} value={item.id}>{item.name}</option>
             ))}
           </select>
         </div>
@@ -230,13 +220,13 @@ export function SuperAdminCourses() {
               <thead className="border-b">
                 <tr>
                   {[
-                    'Course Code',
-                    'Course Name',
-                    'Department',
-                    'Semester',
-                    'Credits',
-                    'Status',
-                    'Actions',
+                    "Course Code",
+                    "Course Name",
+                    "Department",
+                    "Semester",
+                    "Credits",
+                    "Status",
+                    "Actions",
                   ].map((column) => (
                     <th
                       key={column}
@@ -251,16 +241,13 @@ export function SuperAdminCourses() {
                 {filtered.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-muted-foreground">
-                      No courses found. Click "Add Course" or use the form below to register a new
-                      course.
+                      No courses found. Click "Add Course" or use the form below to register a new course.
                     </td>
                   </tr>
                 ) : (
                   filtered.map((course) => (
                     <tr key={course.code} className="hover:bg-accent/50 transition">
-                      <td className="py-3 px-4 font-semibold text-xs text-primary">
-                        {course.code}
-                      </td>
+                      <td className="py-3 px-4 font-semibold text-xs text-primary">{course.code}</td>
                       <td className="py-3 px-4 font-medium">{course.name}</td>
                       <td className="py-3 px-4">
                         <Badge tone="info">{course.department}</Badge>
@@ -270,11 +257,11 @@ export function SuperAdminCourses() {
                       <td className="py-3 px-4">
                         <Badge
                           tone={
-                            course.status === 'Active'
-                              ? 'success'
-                              : course.status === 'Review'
-                                ? 'warn'
-                                : 'danger'
+                            course.status === "Active"
+                              ? "success"
+                              : course.status === "Review"
+                                ? "warn"
+                                : "danger"
                           }
                         >
                           {course.status}
@@ -310,9 +297,7 @@ export function SuperAdminCourses() {
       <Card>
         <div ref={formRef} className="flex items-center gap-2 mb-4">
           <BookOpen className="size-5 text-indigo" />
-          <h3 className="font-semibold">
-            {editingCourse ? 'Edit Course Details' : 'Add Course Details'}
-          </h3>
+          <h3 className="font-semibold">{editingCourse ? "Edit Course Details" : "Add Course Details"}</h3>
         </div>
         <form onSubmit={handleSave} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -341,9 +326,7 @@ export function SuperAdminCourses() {
                 <option>Loading...</option>
               ) : (
                 departmentsData.map((dept) => (
-                  <option key={dept.id} value={dept.id}>
-                    {dept.name}
-                  </option>
+                  <option key={dept.id} value={dept.id}>{dept.name}</option>
                 ))
               )}
             </select>
@@ -353,18 +336,16 @@ export function SuperAdminCourses() {
               className="rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer focus:border-primary outline-none"
             >
               {[
-                'Semester 1',
-                'Semester 2',
-                'Semester 3',
-                'Semester 4',
-                'Semester 5',
-                'Semester 6',
-                'Semester 7',
-                'Semester 8',
+                "Semester 1",
+                "Semester 2",
+                "Semester 3",
+                "Semester 4",
+                "Semester 5",
+                "Semester 6",
+                "Semester 7",
+                "Semester 8",
               ].map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
+                <option key={item} value={item}>{item}</option>
               ))}
             </select>
             <input
@@ -382,10 +363,8 @@ export function SuperAdminCourses() {
               onChange={(e) => setStatusVal(e.target.value)}
               className="rounded-lg border bg-background px-3 py-2 text-sm cursor-pointer focus:border-primary outline-none"
             >
-              {['Active', 'Review', 'Inactive'].map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
+              {["Active", "Review", "Inactive"].map((item) => (
+                <option key={item} value={item}>{item}</option>
               ))}
             </select>
           </div>
@@ -395,11 +374,11 @@ export function SuperAdminCourses() {
                 type="button"
                 onClick={() => {
                   setEditingCourse(null);
-                  setCode('');
-                  setName('');
-                  setSemester('Semester 1');
+                  setCode("");
+                  setName("");
+                  setSemester("Semester 1");
                   setCredits(3);
-                  setStatusVal('Active');
+                  setStatusVal("Active");
                 }}
                 className="px-4 py-2.5 rounded-lg border text-sm font-medium hover:bg-accent transition cursor-pointer"
               >
@@ -411,7 +390,7 @@ export function SuperAdminCourses() {
               disabled={addMutation.isPending || updateMutation.isPending}
               className="flex-1 px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium hover:opacity-95 transition cursor-pointer disabled:opacity-60"
             >
-              {editingCourse ? 'Update Course' : 'Save Course'}
+              {editingCourse ? "Update Course" : "Save Course"}
             </button>
           </div>
         </form>

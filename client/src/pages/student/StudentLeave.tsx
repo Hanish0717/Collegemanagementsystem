@@ -1,290 +1,328 @@
-import { useState, useEffect } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { Calendar, Send } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import api from '@/lib/api';
+import { useState } from "react";
+import { useLocation, useNavigate } from "@tanstack/react-router";
+import { Sparkles, Search, Plus, SlidersHorizontal, ChevronDown, ArrowLeft, X } from "lucide-react";
+
+type SubModule = "gate-pass" | "punch-logs" | "attendance";
+
+interface GatePassRequest {
+  id: string;
+  requestId: string;
+  type: string;
+  exitDateTime: string;
+  entryDateTime: string;
+  requestedDate: string;
+  lastModifiedDate: string;
+  status: string;
+}
 
 export function StudentLeave() {
-  const [history, setHistory] = useState<any[]>([]);
-  const [leaveType, setLeaveType] = useState('Sick Leave');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [reason, setReason] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const currentView = (queryParams.get("tab") as SubModule) || "gate-pass";
 
-  const fetchLeaves = async () => {
-    setPageLoading(true);
-    try {
-      const res = await api.get('/api/student-module/leave');
-      if (res.data?.success && res.data?.data) {
-        const dbLeaves = res.data.data.map((l: any) => ({
-          id: l._id || l.id,
-          type: l.type,
-          from: new Date(l.from_date || l.from).toISOString().split('T')[0],
-          to: new Date(l.to_date || l.to).toISOString().split('T')[0],
-          days: l.days,
-          status: l.status,
-        }));
-        setHistory(dbLeaves);
-      }
-    } catch (err) {
-      console.error('Error loading leave requests:', err);
-    } finally {
-      setPageLoading(false);
-    }
-  };
+  // Gate Pass State
+  const [gatePasses, setGatePasses] = useState<GatePassRequest[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [gpType, setGpType] = useState("Outing");
+  const [exitTime, setExitTime] = useState("");
+  const [entryTime, setEntryTime] = useState("");
 
-  useEffect(() => {
-    fetchLeaves();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCreateGatePass = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fromDate || !toDate || !reason) {
-      alert('Please fill in all fields.');
-      return;
-    }
-    const diffTime = Math.abs(new Date(toDate).getTime() - new Date(fromDate).getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    if (!exitTime || !entryTime) return;
 
-    setLoading(true);
-    try {
-      const res = await api.post('/api/student-module/leave', {
-        type: leaveType,
-        from: fromDate,
-        to: toDate,
-        days: diffDays,
-        reason,
-      });
-      if (res.data?.success) {
-        alert('Leave request submitted successfully!');
-        setFromDate('');
-        setToDate('');
-        setReason('');
-        fetchLeaves();
-      }
-    } catch (err: any) {
-      console.error('Error submitting leave request:', err);
-      alert(err.response?.data?.message || 'Failed to submit leave request');
-    } finally {
-      setLoading(false);
-    }
+    const newGP: GatePassRequest = {
+      id: `gp_${Date.now()}`,
+      requestId: `GP-${Math.floor(100000 + Math.random() * 900000)}`,
+      type: gpType,
+      exitDateTime: exitTime.replace("T", " "),
+      entryDateTime: entryTime.replace("T", " "),
+      requestedDate: new Date().toISOString().split("T")[0] + " " + new Date().toTimeString().split(" ")[0].slice(0, 5),
+      lastModifiedDate: new Date().toISOString().split("T")[0] + " " + new Date().toTimeString().split(" ")[0].slice(0, 5),
+      status: "Pending",
+    };
+
+    setGatePasses([newGP, ...gatePasses]);
+    setExitTime("");
+    setEntryTime("");
+    setIsModalOpen(false);
   };
 
-  const usedSick = history
-    .filter((l) => l.type === 'Sick Leave' && l.status === 'Approved')
-    .reduce((sum, l) => sum + l.days, 0);
-  const usedCasual = history
-    .filter((l) => l.type === 'Casual Leave' && l.status === 'Approved')
-    .reduce((sum, l) => sum + l.days, 0);
-  const usedEarned = history
-    .filter((l) => l.type === 'Earned Leave' && l.status === 'Approved')
-    .reduce((sum, l) => sum + l.days, 0);
+  const filteredGatePasses = gatePasses.filter(
+    (gp) =>
+      gp.requestId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      gp.type.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const remainingSick = Math.max(0, 5 - usedSick);
-  const remainingCasual = Math.max(0, 4 - usedCasual);
-  const remainingEarned = Math.max(0, 3 - usedEarned);
-  const totalRemaining = remainingSick + remainingCasual + remainingEarned;
+  const navigateToTab = (tab: SubModule) => {
+    navigate({ to: `/dashboard/student/leave?tab=${tab}` });
+  };
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Leave Requests"
-        desc="Apply for leave, track leave balance, and view leave history."
-      />
+    <div className="space-y-4 pb-12">
+      {/* Top Header & Breadcrumb */}
+      <div className="flex flex-wrap items-center justify-end gap-3 pt-1">
 
-      <div className="grid md:grid-cols-4 gap-4">
-        {pageLoading
-          ? [1, 2, 3, 4].map((n) => (
-              <Card key={n} className="h-24 animate-pulse bg-muted/40">
-                <div />
-              </Card>
-            ))
-          : [
-              {
-                label: 'Total Leave Balance',
-                value: `${totalRemaining} days`,
-                tone: 'info' as const,
-              },
-              {
-                label: 'Sick Leave Available',
-                value: `${remainingSick} days`,
-                tone: 'info' as const,
-              },
-              {
-                label: 'Casual Leave Available',
-                value: `${remainingCasual} days`,
-                tone: 'info' as const,
-              },
-              {
-                label: 'Earned Leave Available',
-                value: `${remainingEarned} day`,
-                tone: 'info' as const,
-              },
-            ].map((stat) => (
-              <Card key={stat.label}>
-                <div className="text-xs text-muted-foreground">{stat.label}</div>
-                <div className="text-2xl font-bold mt-2">{stat.value}</div>
-                <Badge tone={stat.tone} className="mt-3">
-                  Available
-                </Badge>
-              </Card>
-            ))}
+        <button onClick={() => window.dispatchEvent(new CustomEvent("open-chatbot"))} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+          <Sparkles className="size-3.5 text-indigo-500" />
+          <span>Ask AI</span>
+        </button>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <h3 className="font-semibold mb-4">Apply for Leave</h3>
-          {pageLoading ? (
-            <div className="h-80 bg-muted/10 animate-pulse rounded-xl border" />
-          ) : (
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
+      {/* RENDER VIEW: GATE PASS */}
+      {currentView === "gate-pass" && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Action Row */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search here..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#f4f5f7] dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 rounded-xl pl-3 pr-10 py-2.5 text-xs text-slate-800 dark:text-slate-200 font-medium focus:outline-none"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+            </div>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold shadow-sm hover:opacity-90 transition shrink-0"
             >
+              <Plus className="size-3.5 stroke-[3]" />
+              <span>New Request</span>
+            </button>
+          </div>
+
+          {/* Table */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                    <th className="p-4">Request ID</th>
+                    <th className="p-4">Type</th>
+                    <th className="p-4">Exit Date Time</th>
+                    <th className="p-4">Entry Date Time</th>
+                    <th className="p-4">Requested Date</th>
+                    <th className="p-4">Last Modified Date</th>
+                    <th className="p-4">Status</th>
+                    <th className="p-4 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  {filteredGatePasses.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="p-8 text-center text-slate-500 font-semibold text-xs">
+                        No results.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredGatePasses.map((gp) => (
+                      <tr key={gp.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition">
+                        <td className="p-4 font-mono font-bold text-indigo-600">{gp.requestId}</td>
+                        <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">{gp.type}</td>
+                        <td className="p-4 font-mono">{gp.exitDateTime}</td>
+                        <td className="p-4 font-mono">{gp.entryDateTime}</td>
+                        <td className="p-4 font-mono text-slate-500">{gp.requestedDate}</td>
+                        <td className="p-4 font-mono text-slate-500">{gp.lastModifiedDate}</td>
+                        <td className="p-4">
+                          <span className="bg-[#fef3c7] text-[#d97706] font-bold px-2.5 py-0.5 rounded text-[10px]">
+                            {gp.status}
+                          </span>
+                        </td>
+                        <td className="p-4 text-center">
+                          <button className="text-indigo-650 font-bold hover:underline">View Details</button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-4 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 bg-slate-50/40 dark:bg-slate-800/20">
+              <div className="flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg p-1.5 bg-white dark:bg-slate-950 select-none cursor-pointer">
+                <span>10 / Page</span>
+                <ChevronDown className="size-3 text-slate-400" />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button className="text-slate-400 hover:text-slate-655">&lt; Previous</button>
+                <button className="text-slate-400 hover:text-slate-655">Next &gt;</button>
+              </div>
+
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Leave Type</label>
+                {filteredGatePasses.length === 0 ? "No records" : `${filteredGatePasses.length} records`}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RENDER VIEW: HOSTEL PUNCH LOGS */}
+      {currentView === "punch-logs" && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Filters Button */}
+          <div>
+            <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold shadow-sm hover:bg-slate-50 transition">
+              <SlidersHorizontal className="size-3.5 text-slate-500" />
+              <span>Filters</span>
+            </button>
+          </div>
+
+          {/* Table */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                    <th className="p-4">Log Type</th>
+                    <th className="p-4">Verify Type</th>
+                    <th className="p-4">Date</th>
+                    <th className="p-4">Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-slate-500 font-semibold text-xs">
+                      No results.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-4 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 bg-slate-50/40 dark:bg-slate-800/20">
+              <div className="flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg p-1.5 bg-white dark:bg-slate-950 select-none cursor-pointer">
+                <span>10 / Page</span>
+                <ChevronDown className="size-3 text-slate-400" />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button className="text-slate-400 hover:text-slate-655">&lt; Previous</button>
+                <button className="text-slate-400 hover:text-slate-655">Next &gt;</button>
+              </div>
+
+              <div>No records</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* RENDER VIEW: HOSTEL ATTENDANCE */}
+      {currentView === "attendance" && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Table */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                    <th className="p-4">Date</th>
+                    <th className="p-4">Hostel Block</th>
+                    <th className="p-4">Hosteler Batch</th>
+                    <th className="p-4">Room</th>
+                    <th className="p-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500 font-semibold text-xs">
+                      No results.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-4 border-t border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 bg-slate-50/40 dark:bg-slate-800/20">
+              <div className="flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg p-1.5 bg-white dark:bg-slate-950 select-none cursor-pointer">
+                <span>10 / Page</span>
+                <ChevronDown className="size-3 text-slate-400" />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button className="text-slate-400 hover:text-slate-655">&lt; Previous</button>
+                <button className="text-slate-400 hover:text-slate-655">Next &gt;</button>
+              </div>
+
+              <div>No records</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Dialog for New Gate Pass Request */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">New Gate Pass Request</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-655">
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateGatePass} className="space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <div className="space-y-1">
+                <label className="block text-[11px] font-bold">Request Type</label>
                 <select
-                  value={leaveType}
-                  onChange={(e) => setLeaveType(e.target.value)}
-                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                  value={gpType}
+                  onChange={(e) => setGpType(e.target.value)}
+                  className="w-full bg-[#f4f5f7] dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-medium"
                 >
-                  {['Sick Leave', 'Casual Leave', 'Earned Leave'].map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
+                  <option value="Outing">Outing</option>
+                  <option value="Home Sick Leave">Home Sick Leave</option>
+                  <option value="Vacation">Vacation</option>
                 </select>
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">From Date</label>
-                  <input
-                    type="date"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                    className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">To Date</label>
-                  <input
-                    type="date"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                    className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Reason</label>
-                <textarea
-                  placeholder="Reason for leave..."
-                  rows={4}
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+
+              <div className="space-y-1">
+                <label className="block text-[11px] font-bold">Exit Date & Time</label>
+                <input
+                  type="datetime-local"
+                  value={exitTime}
+                  onChange={(e) => setExitTime(e.target.value)}
+                  className="w-full bg-[#f4f5f7] dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-medium"
                   required
                 />
               </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2"
-              >
-                <Send className="size-4" /> {loading ? 'Submitting...' : 'Submit Request'}
-              </button>
+
+              <div className="space-y-1">
+                <label className="block text-[11px] font-bold">Expected Entry Date & Time</label>
+                <input
+                  type="datetime-local"
+                  value={entryTime}
+                  onChange={(e) => setEntryTime(e.target.value)}
+                  className="w-full bg-[#f4f5f7] dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-medium"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 border rounded-xl text-xs font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-slate-900 text-white dark:bg-white dark:text-slate-900 rounded-xl text-xs font-bold"
+                >
+                  Submit Request
+                </button>
+              </div>
             </form>
-          )}
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-2 mb-4">
-            <Calendar className="size-5 text-indigo" />
-            <h3 className="font-semibold">Leave Balance Summary</h3>
           </div>
-          <div className="space-y-3">
-            {pageLoading
-              ? [1, 2, 3].map((n) => (
-                  <div key={n} className="h-24 animate-pulse bg-muted/20 border rounded-xl" />
-                ))
-              : [
-                  { type: 'Sick Leave', total: 5, used: usedSick, remaining: remainingSick },
-                  { type: 'Casual Leave', total: 4, used: usedCasual, remaining: remainingCasual },
-                  { type: 'Earned Leave', total: 3, used: usedEarned, remaining: remainingEarned },
-                ].map((item) => (
-                  <div key={item.type} className="p-4 rounded-xl border">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">{item.type}</span>
-                      <Badge tone="info">{item.remaining} days remaining</Badge>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div
-                        className="bg-gradient-primary h-2 rounded-full"
-                        style={{ width: `${(item.used / item.total) * 100}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                      <span>Used: {item.used} days</span>
-                      <span>Total: {item.total} days</span>
-                    </div>
-                  </div>
-                ))}
-          </div>
-        </Card>
-      </div>
-
-      <Card>
-        <h3 className="font-semibold mb-4">Leave History</h3>
-        {pageLoading ? (
-          <div className="h-40 flex items-center justify-center text-sm text-muted-foreground border border-dashed rounded-xl animate-pulse bg-muted/10">
-            Loading leave request history...
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="border-b">
-                <tr>
-                  {['Leave Type', 'From', 'To', 'Days', 'Status'].map((column) => (
-                    <th
-                      key={column}
-                      className="text-left py-3 px-4 font-semibold text-muted-foreground"
-                    >
-                      {column}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {history.map((leave, index) => (
-                  <tr key={leave.id || index} className="hover:bg-accent/50 transition">
-                    <td className="py-3 px-4 font-medium">{leave.type}</td>
-                    <td className="py-3 px-4">{leave.from}</td>
-                    <td className="py-3 px-4">{leave.to}</td>
-                    <td className="py-3 px-4 font-medium">{leave.days}</td>
-                    <td className="py-3 px-4">
-                      <Badge
-                        tone={
-                          leave.status === 'Approved'
-                            ? 'success'
-                            : leave.status === 'Rejected'
-                              ? 'danger'
-                              : 'warn'
-                        }
-                      >
-                        {leave.status}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
+        </div>
+      )}
     </div>
   );
 }

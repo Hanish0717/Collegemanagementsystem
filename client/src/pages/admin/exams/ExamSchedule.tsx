@@ -36,25 +36,6 @@ export function ExamSchedule() {
     }
   });
 
-  // Fetch subjects for dynamic preview
-  const { data: previewSubjects = [], isLoading: isPreviewLoading } = useQuery<any[]>({
-    queryKey: ["schedule-preview-subjects", newDept, newYear, newSem],
-    queryFn: async () => {
-      if (!newDept || !newYear || !newSem) return [];
-      const { data } = await api.get<{ success: boolean; data: any[] }>(
-        `/api/exams/courses?department=${newDept}&year=${newYear}&semester=${newSem}`
-      );
-      const list = data.data || [];
-      return list.map((c: any) => ({
-        code: c.course_code,
-        name: c.course_name,
-        semester: c.semester,
-        ...c
-      }));
-    },
-    enabled: !!newDept && !!newYear && !!newSem
-  });
-
   // 2. Create Exam Schedule Mutation
   const createExamMutation = useMutation({
     mutationFn: async (newExam: any) => {
@@ -109,16 +90,6 @@ export function ExamSchedule() {
   const handleDelete = (id: string) => {
     if (!window.confirm("Are you sure you want to remove this scheduled exam?")) return;
     deleteExamMutation.mutate(id);
-  };
-
-  const getSemestersForYear = (yr: string) => {
-    switch (yr) {
-      case "1": return [1, 2];
-      case "2": return [3, 4];
-      case "3": return [5, 6];
-      case "4": return [7, 8];
-      default: return [1, 2];
-    }
   };
 
   return (
@@ -242,14 +213,7 @@ export function ExamSchedule() {
                 <label className="text-muted-foreground font-semibold block mb-1">Target Year</label>
                 <select
                   value={newYear}
-                  onChange={(e) => {
-                    const yr = e.target.value;
-                    setNewYear(yr);
-                    const sems = getSemestersForYear(yr);
-                    if (!sems.includes(Number(newSem))) {
-                      setNewSem(String(sems[0]));
-                    }
-                  }}
+                  onChange={(e) => setNewYear(e.target.value)}
                   className="w-full rounded-xl border bg-background/60 px-3 py-2 outline-none focus:border-indigo-500 text-xs"
                 >
                   <option value="1">1st Year</option>
@@ -266,9 +230,14 @@ export function ExamSchedule() {
                   onChange={(e) => setNewSem(e.target.value)}
                   className="w-full rounded-xl border bg-background/60 px-3 py-2 outline-none focus:border-indigo-500 text-xs"
                 >
-                  {getSemestersForYear(newYear).map(s => (
-                    <option key={s} value={String(s)}>Sem {s}</option>
-                  ))}
+                  <option value="1">Sem 1</option>
+                  <option value="2">Sem 2</option>
+                  <option value="3">Sem 3</option>
+                  <option value="4">Sem 4</option>
+                  <option value="5">Sem 5</option>
+                  <option value="6">Sem 6</option>
+                  <option value="7">Sem 7</option>
+                  <option value="8">Sem 8</option>
                 </select>
               </div>
             </div>
@@ -293,26 +262,6 @@ export function ExamSchedule() {
                   className="w-full rounded-xl border bg-background/60 px-3 py-2 outline-none focus:border-indigo-500 text-xs"
                 />
               </div>
-            </div>
-            
-            {/* Subjects Preview */}
-            <div className="border rounded-xl p-3 bg-slate-50/50 space-y-2">
-              <div className="font-semibold text-slate-700 flex justify-between">
-                <span>Associated Subjects ({previewSubjects.length})</span>
-                {isPreviewLoading && <Loader2 className="size-3.5 text-indigo-600 animate-spin" />}
-              </div>
-              {previewSubjects.length === 0 ? (
-                <div className="text-[10px] text-muted-foreground italic">No subjects configured for {newDept} - Sem {newSem}.</div>
-              ) : (
-                <div className="max-h-[120px] overflow-y-auto space-y-1.5 pr-1">
-                  {previewSubjects.map((sub: any) => (
-                    <div key={sub.code} className="flex justify-between items-center text-[10px] p-1.5 bg-background rounded-lg border">
-                      <span className="font-medium text-slate-800">{sub.name}</span>
-                      <span className="font-mono text-indigo-600 font-semibold">{sub.code}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
             <button

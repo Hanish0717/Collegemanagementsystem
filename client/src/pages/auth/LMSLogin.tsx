@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from '@tanstack/react-router';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import {
   BookOpen,
   Mail,
@@ -14,22 +14,22 @@ import {
   HelpCircle,
   Calendar,
   Eye,
-  EyeOff,
-} from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { setActiveRole } from '@/lib/roles';
-import { toast } from 'sonner';
+  EyeOff
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { setActiveRole } from "@/lib/roles";
+import { toast } from "sonner";
 
-const LMS_EMAIL = 'learning@college.com';
-const LMS_PASSWORD = 'password123';
+const LMS_EMAIL = "learning@college.com";
+const LMS_PASSWORD = "password123";
 
 const features = [
-  { icon: FileText, label: 'Study Notes', desc: 'Download course PDFs & guides' },
-  { icon: Video, label: 'Video Lectures', desc: 'Embedded recorded lectures' },
-  { icon: HelpCircle, label: 'Interactive Quizzes', desc: 'Auto-graded MCQ assessments' },
-  { icon: MessageSquare, label: 'Discussion Forum', desc: 'Peer & faculty doubt clearing' },
-  { icon: BookOpen, label: 'Assignments', desc: 'Submit & track homework status' },
-  { icon: Calendar, label: 'Online Classes', desc: 'Join live virtual sessions' },
+  { icon: FileText, label: "Study Notes", desc: "Download course PDFs & guides" },
+  { icon: Video, label: "Video Lectures", desc: "Embedded recorded lectures" },
+  { icon: HelpCircle, label: "Interactive Quizzes", desc: "Auto-graded MCQ assessments" },
+  { icon: MessageSquare, label: "Discussion Forum", desc: "Peer & faculty doubt clearing" },
+  { icon: BookOpen, label: "Assignments", desc: "Submit & track homework status" },
+  { icon: Calendar, label: "Online Classes", desc: "Join live virtual sessions" },
 ];
 
 export function LMSLogin() {
@@ -37,7 +37,7 @@ export function LMSLogin() {
   const { login } = useAuth();
 
   const [email, setEmail] = useState(LMS_EMAIL);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +47,7 @@ export function LMSLogin() {
     setEmail(LMS_EMAIL);
     setPassword(LMS_PASSWORD);
     setAutofilled(true);
-    toast.success('Demo credentials auto-filled!');
+    toast.success("Demo credentials auto-filled!");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,16 +58,16 @@ export function LMSLogin() {
     try {
       const result = await login({ email, password });
       // Set lms as the frontend role
-      setActiveRole('lms');
-      localStorage.setItem('campusly.role', 'lms');
-      toast.success('Welcome to the LMS Portal!');
-      navigate({ to: '/dashboard/admin/lms' });
+      setActiveRole("lms");
+      localStorage.setItem("campusly.role", "lms");
+      toast.success("Welcome to the LMS Portal!");
+      navigate({ to: "/dashboard/admin/lms" });
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
         err.response?.data?.error ||
         err.message ||
-        'Login failed. Please check your credentials.';
+        "Login failed. Please check your credentials.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -78,13 +78,9 @@ export function LMSLogin() {
     <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-0 left-0 w-full h-full opacity-5"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-          }}
-        />
+        <div className="absolute top-0 left-0 w-full h-full opacity-5" style={{
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"
+        }} />
         <div className="absolute -top-40 -right-40 size-96 rounded-full bg-emerald-500/20 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 size-96 rounded-full bg-teal-500/20 blur-3xl" />
         <div className="absolute top-1/2 left-1/4 size-64 rounded-full bg-emerald-400/10 blur-2xl" />
@@ -95,7 +91,7 @@ export function LMSLogin() {
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="hidden lg:flex flex-col gap-8"
         >
           {/* Logo */}
@@ -112,14 +108,13 @@ export function LMSLogin() {
           {/* Tagline */}
           <div className="space-y-3">
             <h1 className="text-4xl font-extrabold text-white leading-tight tracking-tight">
-              Your Digital{' '}
+              Your Digital{" "}
               <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
                 Classroom
               </span>
             </h1>
             <p className="text-slate-300 text-sm leading-relaxed max-w-sm">
-              Access course notes, video lectures, interactive quizzes, assignments, live virtual
-              classes, and engage in discussion forums — all in one place.
+              Access course notes, video lectures, interactive quizzes, assignments, live virtual classes, and engage in discussion forums — all in one place.
             </p>
           </div>
 
@@ -147,12 +142,9 @@ export function LMSLogin() {
           {/* Footer quote */}
           <div className="border-t border-white/10 pt-5">
             <blockquote className="text-slate-400 text-xs italic leading-relaxed">
-              "The more that you read, the more things you will know. The more that you learn, the
-              more places you'll go."
+              "The more that you read, the more things you will know. The more that you learn, the more places you'll go."
             </blockquote>
-            <cite className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mt-1.5 block not-italic">
-              — Dr. Seuss
-            </cite>
+            <cite className="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mt-1.5 block not-italic">— Dr. Seuss</cite>
           </div>
         </motion.div>
 
@@ -188,15 +180,15 @@ export function LMSLogin() {
               onClick={handleAutofill}
               className={`w-full mb-5 px-4 py-3 rounded-2xl border text-xs font-semibold flex items-center justify-between transition cursor-pointer ${
                 autofilled
-                  ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300'
-                  : 'bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/25'
+                  ? "bg-emerald-500/20 border-emerald-400/40 text-emerald-300"
+                  : "bg-white/5 border-white/15 text-slate-300 hover:bg-white/10 hover:border-white/25"
               }`}
             >
               <span className="flex items-center gap-2">
                 <span className="size-5 rounded-full bg-emerald-500/30 flex items-center justify-center">
                   <Play className="size-2.5 text-emerald-400 fill-emerald-400 translate-x-px" />
                 </span>
-                {autofilled ? 'Demo credentials filled!' : 'Click to auto-fill demo credentials'}
+                {autofilled ? "Demo credentials filled!" : "Click to auto-fill demo credentials"}
               </span>
               <span className="font-mono text-[10px] opacity-60">learning@college.com</span>
             </button>
@@ -214,9 +206,7 @@ export function LMSLogin() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                  Email Address
-                </label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1.5">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                   <input
@@ -232,13 +222,11 @@ export function LMSLogin() {
 
               {/* Password */}
               <div>
-                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
-                  Password
-                </label>
+                <label className="text-xs font-semibold text-slate-300 block mb-1.5">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
                   <input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

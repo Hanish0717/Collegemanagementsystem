@@ -3,29 +3,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as messService from '@/services/messService';
 import { feePaymentSchema } from '@/lib/validation/messSchemas';
 import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import {
-  CreditCard,
-  Search,
-  DollarSign,
-  Calendar,
-  RefreshCw,
-  ArrowRight,
-  Check,
-  X,
-  ShieldAlert,
-  FileText,
-  ArrowUpRight,
-  TrendingUp,
+import { 
+  CreditCard, Search, DollarSign, Calendar, RefreshCw, 
+  ArrowRight, Check, X, ShieldAlert, FileText, ArrowUpRight, TrendingUp
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function MessFeesAdmin() {
   const qc = useQueryClient();
-  const { data: fees = [], isLoading } = useQuery({
-    queryKey: ['mess-fees'],
-    queryFn: messService.fetchMessFees,
+  const { data: fees = [], isLoading } = useQuery({ 
+    queryKey: ['mess-fees'], 
+    queryFn: messService.fetchMessFees 
   });
-
+  
   // Dashboard state
   const [activeTab, setActiveTab] = useState<'ledger' | 'outstanding'>('ledger');
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,17 +24,16 @@ export default function MessFeesAdmin() {
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Cash' | 'Card'>('UPI');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const payMut = useMutation({
-    mutationFn: ({ id, amount }: { id: string; amount: number }) =>
-      messService.payMessFee(id, amount),
+  const payMut = useMutation({ 
+    mutationFn: ({ id, amount }: { id: string; amount: number }) => messService.payMessFee(id, amount), 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['mess-fees'] });
-      toast.success('Payment recorded successfully!');
+      toast.success("Payment recorded successfully!");
       closePaymentModal();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.error || err.message || 'Failed to submit payment');
-    },
+      toast.error(err.response?.data?.error || err.message || "Failed to submit payment");
+    }
   });
 
   const openPaymentModal = (fee: any) => {
@@ -64,23 +53,22 @@ export default function MessFeesAdmin() {
     if (!paymentTarget) return;
 
     const res = feePaymentSchema.safeParse({ id: paymentTarget.id, amount: collectAmount });
-    if (!res.success) {
+    if (!res.success) { 
       setErrors({ amount: res.error.errors[0].message });
-      toast.error('Please enter a valid amount');
-      return;
+      toast.error("Please enter a valid amount");
+      return; 
     }
     setErrors({});
-
+    
     const amountVal = res.data.amount;
-
+    
     if (amountVal > Number(paymentTarget.pending_amount)) {
       toast.error(`Amount exceeds pending dues (₹${paymentTarget.pending_amount})`);
       return;
     }
 
-    if (!confirm(`Confirm collection of ₹${Number(amountVal).toFixed(2)} via ${paymentMethod}?`))
-      return;
-
+    if (!confirm(`Confirm collection of ₹${Number(amountVal).toFixed(2)} via ${paymentMethod}?`)) return;
+    
     payMut.mutate({ id: paymentTarget.id, amount: amountVal });
   };
 
@@ -107,7 +95,7 @@ export default function MessFeesAdmin() {
       totalCollected,
       totalPending,
       outstandingCount,
-      collectionRate,
+      collectionRate
     };
   }, [fees]);
 
@@ -115,10 +103,8 @@ export default function MessFeesAdmin() {
   const filteredLedger = useMemo(() => {
     return fees.filter((f: any) => {
       const q = searchQuery.toLowerCase();
-      const matchText =
-        (f.resident_name || '').toLowerCase().includes(q) ||
-        (f.resident_id || '').toLowerCase().includes(q);
-
+      const matchText = (f.resident_name || '').toLowerCase().includes(q) || (f.resident_id || '').toLowerCase().includes(q);
+      
       if (activeTab === 'outstanding') {
         return matchText && Number(f.pending_amount || 0) > 0;
       }
@@ -128,36 +114,25 @@ export default function MessFeesAdmin() {
 
   const getStatusBadgeTone = (status: string) => {
     switch (status) {
-      case 'Paid':
-        return 'success';
-      case 'Partially-Paid':
-      case 'Partially Paid':
-        return 'warn';
-      case 'Unpaid':
-      case 'Pending':
-        return 'danger';
-      default:
-        return 'info';
+      case 'Paid': return 'success';
+      case 'Partially-Paid': 
+      case 'Partially Paid': return 'warn';
+      case 'Unpaid': 
+      case 'Pending': return 'danger';
+      default: return 'info';
     }
   };
 
   return (
     <div className="space-y-6 text-left relative min-h-screen">
-      <PageHeader
-        title="Mess Accounts & Ledger"
-        desc="Monitor billing directories, collect subscription fees, and track outstanding ledger accounts."
-      />
+      <PageHeader title="Mess Accounts & Ledger" desc="Monitor billing directories, collect subscription fees, and track outstanding ledger accounts." />
 
       {/* Financial Summary Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-xs">
           <div className="space-y-1">
-            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-              Total Invoiced
-            </span>
-            <div className="text-2xl font-extrabold text-slate-850 dark:text-slate-100">
-              ₹{financialStats.totalInvoiced.toLocaleString('en-IN')}
-            </div>
+            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Total Invoiced</span>
+            <div className="text-2xl font-extrabold text-slate-850 dark:text-slate-100">₹{financialStats.totalInvoiced.toLocaleString('en-IN')}</div>
           </div>
           <div className="size-10 rounded-xl bg-slate-50 dark:bg-slate-900 border grid place-items-center text-slate-600">
             <FileText className="size-5" />
@@ -166,12 +141,8 @@ export default function MessFeesAdmin() {
 
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-xs">
           <div className="space-y-1">
-            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-              Total Collected
-            </span>
-            <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-              ₹{financialStats.totalCollected.toLocaleString('en-IN')}
-            </div>
+            <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Total Collected</span>
+            <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">₹{financialStats.totalCollected.toLocaleString('en-IN')}</div>
           </div>
           <div className="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/35 grid place-items-center text-emerald-600">
             <ArrowUpRight className="size-5" />
@@ -180,12 +151,8 @@ export default function MessFeesAdmin() {
 
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-xs">
           <div className="space-y-1">
-            <span className="text-[10px] text-rose-500/80 uppercase font-bold tracking-wider">
-              Outstanding Dues
-            </span>
-            <div className="text-2xl font-extrabold text-rose-600 dark:text-rose-450">
-              ₹{financialStats.totalPending.toLocaleString('en-IN')}
-            </div>
+            <span className="text-[10px] text-rose-500/80 uppercase font-bold tracking-wider">Outstanding Dues</span>
+            <div className="text-2xl font-extrabold text-rose-600 dark:text-rose-450">₹{financialStats.totalPending.toLocaleString('en-IN')}</div>
           </div>
           <div className="size-10 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/35 grid place-items-center text-rose-600">
             <DollarSign className="size-5" />
@@ -194,12 +161,8 @@ export default function MessFeesAdmin() {
 
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-xs">
           <div className="space-y-1">
-            <span className="text-[10px] text-indigo-500/80 uppercase font-bold tracking-wider">
-              Collection Rate
-            </span>
-            <div className="text-2xl font-extrabold text-indigo-650 dark:text-indigo-400">
-              {financialStats.collectionRate.toFixed(1)}%
-            </div>
+            <span className="text-[10px] text-indigo-500/80 uppercase font-bold tracking-wider">Collection Rate</span>
+            <div className="text-2xl font-extrabold text-indigo-650 dark:text-indigo-400">{financialStats.collectionRate.toFixed(1)}%</div>
           </div>
           <div className="size-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/35 grid place-items-center text-indigo-650">
             <TrendingUp className="size-5" />
@@ -261,9 +224,9 @@ export default function MessFeesAdmin() {
         </div>
       ) : filteredLedger.length === 0 ? (
         <div className="text-sm text-muted-foreground py-16 text-center border border-dashed rounded-3xl">
-          {activeTab === 'outstanding'
-            ? 'No outstanding mess dues found matching your filters!'
-            : 'No accounts records matching your search query.'}
+          {activeTab === 'outstanding' 
+            ? "No outstanding mess dues found matching your filters!" 
+            : "No accounts records matching your search query."}
         </div>
       ) : (
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm overflow-hidden">
@@ -281,29 +244,18 @@ export default function MessFeesAdmin() {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {filteredLedger.map((f: any) => (
-                  <tr
-                    key={f.id}
-                    className="hover:bg-slate-50/50 dark:hover:bg-slate-900/40 transition"
-                  >
+                  <tr key={f.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/40 transition">
                     {/* Member */}
                     <td className="py-4 pl-2">
-                      <div className="font-bold text-slate-800 dark:text-slate-200">
-                        {f.resident_name || 'Unknown Member'}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground mt-0.5 font-mono uppercase">
-                        ID: {f.resident_id?.substring(0, 10)}
-                      </div>
+                      <div className="font-bold text-slate-800 dark:text-slate-200">{f.resident_name || 'Unknown Member'}</div>
+                      <div className="text-[10px] text-muted-foreground mt-0.5 font-mono uppercase">ID: {f.resident_id?.substring(0, 10)}</div>
                     </td>
 
                     {/* Status */}
                     <td className="py-4">
-                      <Badge tone={getStatusBadgeTone(f.payment_status || 'Pending')}>
-                        {f.payment_status || 'Pending'}
-                      </Badge>
+                      <Badge tone={getStatusBadgeTone(f.payment_status || 'Pending')}>{f.payment_status || 'Pending'}</Badge>
                       {f.payment_date && (
-                        <span className="block text-[9px] text-muted-foreground mt-1">
-                          Paid: {new Date(f.payment_date).toLocaleDateString('en-IN')}
-                        </span>
+                        <span className="block text-[9px] text-muted-foreground mt-1">Paid: {new Date(f.payment_date).toLocaleDateString('en-IN')}</span>
                       )}
                     </td>
 
@@ -332,9 +284,7 @@ export default function MessFeesAdmin() {
                           Collect Dues
                         </button>
                       ) : (
-                        <Badge tone="success" className="text-[9px] py-1 px-2.5">
-                          Fully Settled
-                        </Badge>
+                        <Badge tone="success" className="text-[9px] py-1 px-2.5">Fully Settled</Badge>
                       )}
                     </td>
                   </tr>
@@ -348,23 +298,15 @@ export default function MessFeesAdmin() {
       {/* Collect Fee Modal */}
       {paymentTarget && (
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div
-            className="absolute inset-0 bg-black/45 backdrop-blur-xs"
-            onClick={closePaymentModal}
-          />
-
+          <div className="absolute inset-0 bg-black/45 backdrop-blur-xs" onClick={closePaymentModal} />
+          
           <div className="relative w-full max-w-md bg-background border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6 overflow-hidden text-left">
             <div className="flex justify-between items-center pb-4 border-b">
               <div className="flex items-center gap-2">
                 <CreditCard className="size-4 text-indigo-600" />
-                <h3 className="font-extrabold text-base text-slate-850 dark:text-slate-100">
-                  Record Fee Collection
-                </h3>
+                <h3 className="font-extrabold text-base text-slate-850 dark:text-slate-100">Record Fee Collection</h3>
               </div>
-              <button
-                onClick={closePaymentModal}
-                className="p-1.5 rounded-lg border hover:bg-accent transition cursor-pointer"
-              >
+              <button onClick={closePaymentModal} className="p-1.5 rounded-lg border hover:bg-accent transition cursor-pointer">
                 <X className="size-4" />
               </button>
             </div>
@@ -374,33 +316,23 @@ export default function MessFeesAdmin() {
               <div className="p-3.5 bg-slate-50 dark:bg-slate-900 border rounded-2xl text-xs space-y-2">
                 <div className="flex justify-between">
                   <span className="text-slate-450">Member Name:</span>
-                  <strong className="text-slate-750 dark:text-slate-200">
-                    {paymentTarget.resident_name}
-                  </strong>
+                  <strong className="text-slate-750 dark:text-slate-200">{paymentTarget.resident_name}</strong>
                 </div>
                 <div className="flex justify-between border-b pb-1.5">
                   <span className="text-slate-455">Student ID:</span>
-                  <strong className="text-slate-750 dark:text-slate-205 font-mono">
-                    {paymentTarget.resident_id}
-                  </strong>
+                  <strong className="text-slate-750 dark:text-slate-205 font-mono">{paymentTarget.resident_id}</strong>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-455">Remaining Balance:</span>
-                  <strong className="text-rose-650">
-                    ₹{Number(paymentTarget.pending_amount).toFixed(2)}
-                  </strong>
+                  <strong className="text-rose-650">₹{Number(paymentTarget.pending_amount).toFixed(2)}</strong>
                 </div>
               </div>
 
               {/* Input Payment Amount */}
               <div>
-                <label className="block text-xs font-bold text-slate-550 uppercase tracking-wider mb-1.5">
-                  Payment Amount (₹)
-                </label>
+                <label className="block text-xs font-bold text-slate-550 uppercase tracking-wider mb-1.5">Payment Amount (₹)</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-2.5 font-bold text-slate-400 text-xs">
-                    ₹
-                  </span>
+                  <span className="absolute left-3.5 top-2.5 font-bold text-slate-400 text-xs">₹</span>
                   <input
                     type="number"
                     value={collectAmount}
@@ -408,18 +340,12 @@ export default function MessFeesAdmin() {
                     className="w-full rounded-xl border border-slate-200 dark:border-slate-700 pl-8 pr-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-bold"
                   />
                 </div>
-                {errors.amount && (
-                  <div className="text-rose-500 text-[10px] mt-1 font-semibold">
-                    {errors.amount}
-                  </div>
-                )}
+                {errors.amount && <div className="text-rose-500 text-[10px] mt-1 font-semibold">{errors.amount}</div>}
               </div>
 
               {/* Payment Mode */}
               <div>
-                <label className="block text-xs font-bold text-slate-550 uppercase tracking-wider mb-1.5">
-                  Payment Channel
-                </label>
+                <label className="block text-xs font-bold text-slate-550 uppercase tracking-wider mb-1.5">Payment Channel</label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['UPI', 'Cash', 'Card'] as const).map((method) => (
                     <button
@@ -442,11 +368,7 @@ export default function MessFeesAdmin() {
                 <div className="text-[11px] text-muted-foreground bg-indigo-50/20 dark:bg-indigo-950/10 border border-indigo-100/40 p-2.5 rounded-xl flex items-center gap-2">
                   <Check className="size-3.5 text-emerald-500 shrink-0" />
                   <span>
-                    New Pending Balance will be:{' '}
-                    <strong>
-                      ₹{(Number(paymentTarget.pending_amount) - Number(collectAmount)).toFixed(2)}
-                    </strong>
-                    .
+                    New Pending Balance will be: <strong>₹{(Number(paymentTarget.pending_amount) - Number(collectAmount)).toFixed(2)}</strong>.
                   </span>
                 </div>
               )}
@@ -458,7 +380,7 @@ export default function MessFeesAdmin() {
                   disabled={payMut.isPending || !collectAmount}
                   className="flex-1 py-3 bg-gradient-primary text-white text-xs font-bold rounded-xl hover:opacity-95 transition shadow-soft cursor-pointer text-center"
                 >
-                  {payMut.isPending ? 'Recording...' : 'Record Payment'}
+                  {payMut.isPending ? "Recording..." : "Record Payment"}
                 </button>
                 <button
                   onClick={closePaymentModal}

@@ -1,4 +1,4 @@
-import api from '../lib/api';
+import api from "../lib/api";
 
 export interface AdminUser {
   _id: string;
@@ -102,7 +102,7 @@ export interface FacultyStudentsResponse {
 // --- Super Admin - Admins ---
 export async function fetchAdmins(): Promise<AdminUser[]> {
   const { data } = await api.get<{ success: boolean; data: AdminUser[] }>(
-    '/api/super-admin/admins',
+    "/api/super-admin/admins",
   );
   return data.data;
 }
@@ -114,7 +114,7 @@ export async function createAdmin(payload: {
   department?: string;
 }): Promise<AdminUser> {
   const { data } = await api.post<{ success: boolean; data: AdminUser }>(
-    '/api/super-admin/admins',
+    "/api/super-admin/admins",
     payload,
   );
   return data.data;
@@ -137,7 +137,7 @@ export async function deleteAdmin(id: string): Promise<void> {
 
 // --- Admin - Faculty ---
 export async function fetchFaculty(): Promise<FacultyUser[]> {
-  const { data } = await api.get<{ success: boolean; data: FacultyUser[] }>('/api/admin/faculty');
+  const { data } = await api.get<{ success: boolean; data: FacultyUser[] }>("/api/admin/faculty");
   return data.data;
 }
 
@@ -153,7 +153,7 @@ export async function createFaculty(payload: {
   password?: string;
 }): Promise<FacultyUser> {
   const { data } = await api.post<{ success: boolean; data: FacultyUser }>(
-    '/api/admin/faculty',
+    "/api/admin/faculty",
     payload,
   );
   return data.data;
@@ -185,7 +185,7 @@ export async function assignSectionsSubjects(
   payload: FacultyAssignmentPayload,
 ): Promise<FacultyUser> {
   const { data } = await api.post<{ success: boolean; data: FacultyUser }>(
-    '/api/admin/assignments',
+    "/api/admin/assignments",
     payload,
   );
   return data.data;
@@ -194,7 +194,7 @@ export async function assignSectionsSubjects(
 // --- Faculty - Students ---
 export async function fetchFacultyStudents(): Promise<FacultyStudentsResponse> {
   const { data } = await api.get<{ success: boolean; data: FacultyStudentsResponse }>(
-    '/api/faculty/students',
+    "/api/faculty/students",
   );
   return data.data;
 }
@@ -202,7 +202,7 @@ export async function fetchFacultyStudents(): Promise<FacultyStudentsResponse> {
 // --- Academic Helpers ---
 export async function fetchDepartments(): Promise<DepartmentItem[]> {
   const { data } = await api.get<{ success: boolean; data: DepartmentItem[] }>(
-    '/api/academic/departments',
+    "/api/academic/departments",
   );
   return data.data;
 }
@@ -210,7 +210,7 @@ export async function fetchDepartments(): Promise<DepartmentItem[]> {
 export async function fetchSubjects(departmentId?: string): Promise<SubjectItem[]> {
   const url = departmentId
     ? `/api/academic/subjects?department=${departmentId}`
-    : '/api/academic/subjects';
+    : "/api/academic/subjects";
   const { data } = await api.get<{ success: boolean; data: SubjectItem[] }>(url);
   return data.data;
 }
@@ -251,7 +251,7 @@ export async function fetchStudents(params?: {
   const { data } = await api.get<{
     success: boolean;
     data: { students: StudentItem[]; pagination: any };
-  }>('/api/students', { params });
+  }>("/api/students", { params });
   return data.data;
 }
 
@@ -275,11 +275,12 @@ export async function createStudent(payload: {
   collegeFee?: number;
 }): Promise<StudentItem> {
   const { data } = await api.post<{ success: boolean; data: StudentItem }>(
-    '/api/students',
+    "/api/students",
     payload,
   );
   return data.data;
 }
+
 
 export async function updateStudent(
   id: string,
@@ -320,7 +321,7 @@ export async function fetchTimetableSlots(params?: {
   section?: string;
 }): Promise<TimetableSlot[]> {
   const { data } = await api.get<{ success: boolean; data: TimetableSlot[] }>(
-    '/api/admin/timetable',
+    "/api/admin/timetable",
     { params },
   );
   return data.data;
@@ -338,7 +339,7 @@ export async function createTimetableSlot(payload: {
   section: string;
 }): Promise<TimetableSlot> {
   const { data } = await api.post<{ success: boolean; data: TimetableSlot }>(
-    '/api/admin/timetable',
+    "/api/admin/timetable",
     payload,
   );
   return data.data;
@@ -376,20 +377,20 @@ export interface AudienceCounts {
 
 export async function fetchAdminNotifications(): Promise<AdminNotification[]> {
   const { data } = await api.get<{ success: boolean; data: AdminNotification[] }>(
-    '/api/admin/notifications',
+    "/api/admin/notifications"
   );
   return data.data;
 }
 
 export async function markAdminNotificationRead(id: string): Promise<AdminNotification> {
   const { data } = await api.put<{ success: boolean; data: AdminNotification }>(
-    `/api/admin/notifications/${id}/read`,
+    `/api/admin/notifications/${id}/read`
   );
   return data.data;
 }
 
 export async function markAllAdminNotificationsRead(): Promise<void> {
-  await api.post('/api/admin/notifications/mark-all-read');
+  await api.post("/api/admin/notifications/mark-all-read");
 }
 
 export async function deleteAdminNotification(id: string): Promise<void> {
@@ -398,7 +399,7 @@ export async function deleteAdminNotification(id: string): Promise<void> {
 
 export async function fetchBroadcasts(): Promise<BroadcastNotification[]> {
   const { data } = await api.get<{ success: boolean; data: BroadcastNotification[] }>(
-    '/api/admin/broadcasts',
+    "/api/admin/broadcasts"
   );
   return data.data;
 }
@@ -410,15 +411,15 @@ export async function createBroadcast(payload: {
   content: string;
 }): Promise<BroadcastNotification> {
   const { data } = await api.post<{ success: boolean; data: BroadcastNotification }>(
-    '/api/admin/broadcasts',
-    payload,
+    "/api/admin/broadcasts",
+    payload
   );
   return data.data;
 }
 
 export async function fetchAudienceCounts(): Promise<AudienceCounts> {
   const { data } = await api.get<{ success: boolean; data: AudienceCounts }>(
-    '/api/admin/audience-counts',
+    "/api/admin/audience-counts"
   );
   return data.data;
 }

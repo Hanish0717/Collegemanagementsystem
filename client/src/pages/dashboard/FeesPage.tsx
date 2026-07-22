@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
-import { Wallet, AlertCircle, CheckCircle2, Download, X } from 'lucide-react';
-import { toast } from 'sonner';
-import api from '@/lib/api';
+import { useState, useEffect } from "react";
+import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
+import { Wallet, AlertCircle, CheckCircle2, Download, X } from "lucide-react";
+import { toast } from "sonner";
+import api from "@/lib/api";
 
 export function FeesPage() {
   const [fees, setFees] = useState<any[]>([]);
@@ -10,18 +10,18 @@ export function FeesPage() {
     totalRevenue: 0,
     collectedFees: 0,
     pendingFees: 0,
-    overdueFees: 0,
+    overdueFees: 0
   });
   const [loading, setLoading] = useState(true);
   const [payTarget, setPayTarget] = useState<any>(null);
-  const [payMethod, setPayMethod] = useState('Credit/Debit Card');
-  const [payAmount, setPayAmount] = useState<string>('');
+  const [payMethod, setPayMethod] = useState("Credit/Debit Card");
+  const [payAmount, setPayAmount] = useState<string>("");
 
   const fetchData = async () => {
     try {
       const [listRes, reportRes] = await Promise.all([
-        api.get('/api/fees?limit=50'),
-        api.get('/api/fees/report'),
+        api.get("/api/fees?limit=50"),
+        api.get("/api/fees/report")
       ]);
 
       if (listRes.data?.success && listRes.data?.data?.fees) {
@@ -31,7 +31,7 @@ export function FeesPage() {
         setTotals(reportRes.data.data.totals);
       }
     } catch (err) {
-      console.error('Error loading fees database stats:', err);
+      console.error("Error loading fees database stats:", err);
     } finally {
       setLoading(false);
     }
@@ -43,19 +43,17 @@ export function FeesPage() {
 
   useEffect(() => {
     if (payTarget) {
-      setPayAmount(
-        String(payTarget.remainingAmount || payTarget.totalAmount - payTarget.paidAmount || 0),
-      );
+      setPayAmount(String(payTarget.remainingAmount || (payTarget.totalAmount - payTarget.paidAmount) || 0));
     }
   }, [payTarget]);
 
   const handleDownloadInvoice = (fee: any) => {
-    const printWindow = window.open('', '_blank');
+    const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      toast.error('Popup blocked! Please allow popups to download invoice.');
+      toast.error("Popup blocked! Please allow popups to download invoice.");
       return;
     }
-    const studentName = typeof fee.student === 'object' ? fee.student.fullName : fee.student;
+    const studentName = typeof fee.student === "object" ? fee.student.fullName : fee.student;
     const amountVal = fee.totalAmount || fee.amount || 0;
 
     printWindow.document.write(`
@@ -82,10 +80,10 @@ export function FeesPage() {
           </div>
           <div class="details">
             <div class="field"><span class="label">Invoice No:</span> ${fee.id}</div>
-            <div class="field"><span class="label">Due Date:</span> ${fee.dueDate || fee.due_date || ''}</div>
-            <div class="field"><span class="label">Student Name:</span> ${studentName || ''}</div>
-            <div class="field"><span class="label">Semester:</span> ${fee.semester || ''}</div>
-            <div class="field"><span class="label">Payment Status:</span> ${fee.paymentStatus || fee.status || ''}</div>
+            <div class="field"><span class="label">Due Date:</span> ${fee.dueDate || fee.due_date || ""}</div>
+            <div class="field"><span class="label">Student Name:</span> ${studentName || ""}</div>
+            <div class="field"><span class="label">Semester:</span> ${fee.semester || ""}</div>
+            <div class="field"><span class="label">Payment Status:</span> ${fee.paymentStatus || fee.status || ""}</div>
           </div>
           <table class="receipt-table">
             <thead>
@@ -97,7 +95,7 @@ export function FeesPage() {
             <tbody>
               <tr>
                 <td>${fee.feeType || 'College Tuition/Academic Fee'}</td>
-                <td style="text-align: right;">₹${amountVal.toLocaleString('en-IN')}</td>
+                <td style="text-align: right;">₹${(amountVal).toLocaleString('en-IN')}</td>
               </tr>
               <tr style="font-weight: bold;">
                 <td>Total Paid</td>
@@ -129,18 +127,18 @@ export function FeesPage() {
       const res = await api.post(`/api/fees/pay/${payTarget.id}`, {
         amount: Number(payAmount),
         paymentMethod: payMethod,
-        transactionId: 'TXN' + Math.floor(100000 + Math.random() * 900000),
-        remarks: 'Received from college payment admin portal',
+        transactionId: "TXN" + Math.floor(100000 + Math.random() * 900000),
+        remarks: "Received from college payment admin portal"
       });
 
       if (res.data?.success) {
-        toast.success('Payment recorded successfully in database!');
+        toast.success("Payment recorded successfully in database!");
         setPayTarget(null);
         fetchData();
       }
     } catch (err: any) {
-      console.error('Payment registration failed:', err);
-      toast.error(err.response?.data?.message || 'Failed to submit fee payment');
+      console.error("Payment registration failed:", err);
+      toast.error(err.response?.data?.message || "Failed to submit fee payment");
     }
   };
 
@@ -160,7 +158,7 @@ export function FeesPage() {
     return `₹${val.toLocaleString('en-IN')}`;
   };
 
-  const paidCount = fees.filter((f) => f.paymentStatus?.toLowerCase() === 'paid').length;
+  const paidCount = fees.filter(f => f.paymentStatus?.toLowerCase() === "paid").length;
 
   return (
     <div className="space-y-6">
@@ -173,11 +171,11 @@ export function FeesPage() {
           icon={Wallet}
           gradient="bg-gradient-primary"
         />
-        <StatCard
-          label="Pending Balance"
-          value={formatLakhs(totals.pendingFees)}
-          icon={AlertCircle}
-          gradient="bg-gradient-violet"
+        <StatCard 
+          label="Pending Balance" 
+          value={formatLakhs(totals.pendingFees)} 
+          icon={AlertCircle} 
+          gradient="bg-gradient-violet" 
         />
         <StatCard
           label="Paid Invoices"
@@ -190,8 +188,7 @@ export function FeesPage() {
 
       <div className="grid lg:grid-cols-3 gap-4">
         {fees.slice(0, 3).map((f) => {
-          const studentName =
-            f.student && typeof f.student === 'object' ? f.student.fullName : f.student || '—';
+          const studentName = (f.student && typeof f.student === "object") ? f.student.fullName : (f.student || "—");
           return (
             <Card key={f.id} className="gradient-border">
               <div className="flex items-start justify-between">
@@ -201,13 +198,7 @@ export function FeesPage() {
                   <div className="text-xs text-muted-foreground">Due: {f.dueDate}</div>
                 </div>
                 <Badge
-                  tone={
-                    f.paymentStatus === 'paid' || f.paymentStatus === 'Paid'
-                      ? 'success'
-                      : f.paymentStatus === 'overdue' || f.paymentStatus === 'Overdue'
-                        ? 'danger'
-                        : 'warn'
-                  }
+                  tone={f.paymentStatus === "paid" || f.paymentStatus === "Paid" ? "success" : f.paymentStatus === "overdue" || f.paymentStatus === "Overdue" ? "danger" : "warn"}
                 >
                   {f.paymentStatus}
                 </Badge>
@@ -217,7 +208,7 @@ export function FeesPage() {
               </div>
               <button
                 onClick={() => {
-                  if (f.paymentStatus === 'paid' || f.paymentStatus === 'Paid') {
+                  if (f.paymentStatus === "paid" || f.paymentStatus === "Paid") {
                     handleDownloadInvoice(f);
                   } else {
                     setPayTarget(f);
@@ -225,12 +216,12 @@ export function FeesPage() {
                 }}
                 className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-primary text-white text-sm py-2 glow-primary cursor-pointer hover:opacity-95 transition"
               >
-                {f.paymentStatus === 'paid' || f.paymentStatus === 'Paid' ? (
+                {f.paymentStatus === "paid" || f.paymentStatus === "Paid" ? (
                   <>
                     <Download className="size-4" /> Invoice
                   </>
                 ) : (
-                  'Pay Now'
+                  "Pay Now"
                 )}
               </button>
             </Card>
@@ -244,41 +235,28 @@ export function FeesPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
               <tr>
-                {['Invoice', 'Student', 'Amount', 'Paid Amount', 'Due Date', 'Status', ''].map(
-                  (h) => (
-                    <th key={h} className="px-5 py-3 text-left font-medium">
-                      {h}
-                    </th>
-                  ),
-                )}
+                {["Invoice", "Student", "Amount", "Paid Amount", "Due Date", "Status", ""].map((h) => (
+                  <th key={h} className="px-5 py-3 text-left font-medium">
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {fees.map((f) => {
-                const studentName =
-                  f.student && typeof f.student === 'object'
-                    ? f.student.fullName
-                    : f.student || '—';
-                const isPaid = f.paymentStatus === 'paid' || f.paymentStatus === 'Paid';
+                const studentName = (f.student && typeof f.student === "object") ? f.student.fullName : (f.student || "—");
+                const isPaid = f.paymentStatus === "paid" || f.paymentStatus === "Paid";
                 return (
                   <tr key={f.id} className="border-t hover:bg-muted/30">
                     <td className="px-5 py-3 font-mono text-xs">{f.id}</td>
                     <td className="px-5 py-3 font-medium">{studentName}</td>
-                    <td className="px-5 py-3 font-semibold">
-                      ₹{(f.totalAmount || 0).toLocaleString('en-IN')}
-                    </td>
-                    <td className="px-5 py-3 font-semibold text-emerald-600">
-                      ₹{(f.paidAmount || 0).toLocaleString('en-IN')}
-                    </td>
+                    <td className="px-5 py-3 font-semibold">₹{(f.totalAmount || 0).toLocaleString('en-IN')}</td>
+                    <td className="px-5 py-3 font-semibold text-emerald-600">₹{(f.paidAmount || 0).toLocaleString('en-IN')}</td>
                     <td className="px-5 py-3 text-muted-foreground">{f.dueDate}</td>
                     <td className="px-5 py-3">
                       <Badge
                         tone={
-                          isPaid
-                            ? 'success'
-                            : f.paymentStatus === 'overdue' || f.paymentStatus === 'Overdue'
-                              ? 'danger'
-                              : 'warn'
+                          isPaid ? "success" : f.paymentStatus === "overdue" || f.paymentStatus === "Overdue" ? "danger" : "warn"
                         }
                       >
                         {f.paymentStatus}
@@ -307,9 +285,7 @@ export function FeesPage() {
             </tbody>
           </table>
         ) : (
-          <div className="p-8 text-center text-muted-foreground border-t">
-            No student bills found in database.
-          </div>
+          <div className="p-8 text-center text-muted-foreground border-t">No student bills found in database.</div>
         )}
       </Card>
 
@@ -332,56 +308,25 @@ export function FeesPage() {
             </div>
             <div className="p-6 space-y-4">
               <div className="bg-accent/40 p-3 rounded-lg border text-sm space-y-1">
-                <div>
-                  <span className="text-muted-foreground">Student:</span>{' '}
-                  <span className="font-semibold">
-                    {typeof payTarget.student === 'object'
-                      ? payTarget.student.fullName
-                      : payTarget.student}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Invoice ID:</span>{' '}
-                  <span className="font-semibold font-mono text-xs">{payTarget.id}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Total Fee:</span>{' '}
-                  <span className="font-semibold">
-                    ₹{(payTarget.totalAmount || 0).toLocaleString('en-IN')}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Remaining:</span>{' '}
-                  <span className="font-bold text-indigo">
-                    ₹
-                    {(
-                      payTarget.remainingAmount ||
-                      payTarget.totalAmount - payTarget.paidAmount ||
-                      0
-                    ).toLocaleString('en-IN')}
-                  </span>
-                </div>
+                <div><span className="text-muted-foreground">Student:</span> <span className="font-semibold">{typeof payTarget.student === "object" ? payTarget.student.fullName : payTarget.student}</span></div>
+                <div><span className="text-muted-foreground">Invoice ID:</span> <span className="font-semibold font-mono text-xs">{payTarget.id}</span></div>
+                <div><span className="text-muted-foreground">Total Fee:</span> <span className="font-semibold">₹{(payTarget.totalAmount || 0).toLocaleString('en-IN')}</span></div>
+                <div><span className="text-muted-foreground">Remaining:</span> <span className="font-bold text-indigo">₹{(payTarget.remainingAmount || (payTarget.totalAmount - payTarget.paidAmount) || 0).toLocaleString('en-IN')}</span></div>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1 font-medium font-semibold">
-                  Payment Mode
-                </label>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium font-semibold">Payment Mode</label>
                 <select
                   value={payMethod}
                   onChange={(e) => setPayMethod(e.target.value)}
                   className="w-full rounded-xl border bg-background px-3 py-2 text-sm cursor-pointer outline-none focus:border-primary"
                 >
-                  {['Credit/Debit Card', 'UPI Payment', 'Net Banking', 'Cash'].map((method) => (
-                    <option key={method} value={method}>
-                      {method}
-                    </option>
+                  {["Credit/Debit Card", "UPI Payment", "Net Banking", "Cash"].map((method) => (
+                    <option key={method} value={method}>{method}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground mb-1 font-medium font-semibold">
-                  Payment Amount (₹)
-                </label>
+                <label className="block text-xs text-muted-foreground mb-1 font-medium font-semibold">Payment Amount (₹)</label>
                 <input
                   type="number"
                   value={payAmount}

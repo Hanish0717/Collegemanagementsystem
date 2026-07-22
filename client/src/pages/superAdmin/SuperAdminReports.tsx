@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Area,
   AreaChart,
@@ -11,16 +11,16 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts';
-import { Download, Filter } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { downloadReportCSV } from '@/services/superAdminService';
-import { useSuperAdminAnalytics } from '@/hooks/useSuperAdminAnalytics';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "recharts";
+import { Download, Filter } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useState } from "react";
+import { toast } from "sonner";
+import { downloadReportCSV } from "@/services/superAdminService";
+import { useSuperAdminAnalytics } from "@/hooks/useSuperAdminAnalytics";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const reportFilters = ['AY 2026-27', 'AY 2025-26', 'All Cycles'];
+const reportFilters = ["AY 2026-27", "AY 2025-26", "All Cycles"];
 
 export function SuperAdminReports() {
   const [activeFilter, setActiveFilter] = useState(reportFilters[0]);
@@ -31,26 +31,26 @@ export function SuperAdminReports() {
   const attendanceStats = data?.attendanceStats || [];
   const departmentStats = data?.departmentStats || [];
   const summaryCards = data?.summaryCards || {
-    revenue: '₹0',
-    studentCount: '0',
-    facultyCount: '0',
-    placementCount: '0 placed',
+    revenue: "₹0",
+    studentCount: "0",
+    facultyCount: "0",
+    placementCount: "0 placed",
   };
 
   const handleExportAll = async () => {
-    toast.info('Preparing comprehensive report pack...');
+    toast.info("Preparing comprehensive report pack...");
     try {
-      const blob = await downloadReportCSV('comprehensive');
+      const blob = await downloadReportCSV("comprehensive");
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', 'cms_comprehensive_report_pack.csv');
+      link.setAttribute("download", "cms_comprehensive_report_pack.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      toast.success('Comprehensive report pack downloaded.');
+      toast.success("Comprehensive report pack downloaded.");
     } catch (err: any) {
-      toast.error('Failed to download comprehensive report pack');
+      toast.error("Failed to download comprehensive report pack");
     }
   };
 
@@ -59,10 +59,10 @@ export function SuperAdminReports() {
     try {
       const blob = await downloadReportCSV(reportName);
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      const safeFilename = reportName.toLowerCase().replace(/\s+/g, '_') + '.csv';
-      link.setAttribute('download', safeFilename);
+      const safeFilename = reportName.toLowerCase().replace(/\s+/g, "_") + ".csv";
+      link.setAttribute("download", safeFilename);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -100,14 +100,14 @@ export function SuperAdminReports() {
               <button
                 key={filter}
                 onClick={() => handleFilterClick(filter)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${isActive ? 'bg-gradient-primary text-white' : 'border hover:bg-accent'}`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${isActive ? "bg-gradient-primary text-white" : "border hover:bg-accent"}`}
               >
                 {filter}
               </button>
             );
           })}
           <button
-            onClick={() => toast.info('Opening advanced report filters...')}
+            onClick={() => toast.info("Opening advanced report filters...")}
             className="px-4 py-2 rounded-xl border text-sm font-medium hover:bg-accent transition flex items-center gap-2 cursor-pointer"
           >
             <Filter className="size-4" /> More Filters
@@ -117,34 +117,21 @@ export function SuperAdminReports() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { domain: 'Students', count: summaryCards.studentCount || '2,450', metric: 'Active Enrolled', tone: 'info' as const },
-          { domain: 'Faculty', count: summaryCards.facultyCount || '142', metric: 'Teaching Staff', tone: 'info' as const },
-          { domain: 'Departments', count: '12', metric: 'Operational Depts', tone: 'success' as const },
-          { domain: 'Academics', count: '28 Programs', metric: 'Degree Tracks', tone: 'info' as const },
-          { domain: 'Attendance', count: '94.2%', metric: 'Average Monthly Rate', tone: 'success' as const },
-          { domain: 'Examination', count: '100% Published', metric: 'Grade Cards', tone: 'success' as const },
-          { domain: 'Finance', count: summaryCards.revenue || '₹1.85Cr', metric: 'Fees Collected', tone: 'success' as const },
-          { domain: 'Placement', count: summaryCards.placementCount || '88%', metric: 'Placement Rate', tone: 'success' as const },
-          { domain: 'Library', count: '48,200', metric: 'Books & E-Resources', tone: 'info' as const },
-          { domain: 'Hostel', count: '92% Occupancy', metric: 'Hostel Capacity', tone: 'info' as const },
-          { domain: 'Transport', count: '16 Routes', metric: 'Buses Operational', tone: 'info' as const },
+          { label: "Revenue Analytics", value: summaryCards.revenue, tone: "success" as const },
+          { label: "Student Analytics", value: summaryCards.studentCount, tone: "info" as const },
+          { label: "Faculty Analytics", value: summaryCards.facultyCount, tone: "info" as const },
+          { label: "Placement Statistics", value: summaryCards.placementCount, tone: "success" as const },
         ].map((stat) => (
-          <Card key={stat.domain} className="hover:-translate-y-1 transition border-primary/20">
-            <div className="flex items-center justify-between">
-              <div className="text-xs font-bold text-muted-foreground uppercase">{stat.domain} Report</div>
-              <Badge tone={stat.tone}>{stat.metric}</Badge>
-            </div>
+          <Card key={stat.label}>
+            <div className="text-xs text-muted-foreground">{stat.label}</div>
             {isLoading ? (
               <Skeleton className="h-7 w-20 mt-2 animate-pulse bg-muted-foreground/10" />
             ) : (
-              <div className="text-2xl font-bold mt-2 text-foreground">{stat.count}</div>
+              <div className="text-2xl font-bold mt-2">{stat.value}</div>
             )}
-            <button
-              onClick={() => handleDownloadReport(`${stat.domain} Report`)}
-              className="mt-3 w-full py-1.5 rounded-lg border text-xs font-bold hover:bg-accent flex items-center justify-center gap-1.5 transition cursor-pointer"
-            >
-              <Download className="size-3.5" /> View & Export Report
-            </button>
+            <Badge tone={stat.tone} className="mt-3">
+              Available
+            </Badge>
           </Card>
         ))}
       </div>
@@ -161,7 +148,7 @@ export function SuperAdminReports() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                   <Area
                     type="monotone"
                     dataKey="revenue"
@@ -187,21 +174,9 @@ export function SuperAdminReports() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="day" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
-                  <Line
-                    type="monotone"
-                    dataKey="logins"
-                    stroke="#06B6D4"
-                    strokeWidth={2.5}
-                    name="Logins"
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="actions"
-                    stroke="#9333EA"
-                    strokeWidth={2}
-                    name="Actions"
-                  />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Line type="monotone" dataKey="logins" stroke="#06B6D4" strokeWidth={2.5} name="Logins" />
+                  <Line type="monotone" dataKey="actions" stroke="#9333EA" strokeWidth={2} name="Actions" />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -220,7 +195,7 @@ export function SuperAdminReports() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="value" fill="#4F46E5" radius={[8, 8, 0, 0]} name="Count" />
               </BarChart>
             </ResponsiveContainer>
@@ -232,14 +207,14 @@ export function SuperAdminReports() {
         <h3 className="font-semibold mb-4">Download Report Packs</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            'Revenue Report',
-            'Student Report',
-            'Faculty Report',
-            'Placement Report',
-            'Attendance Report',
-            'Security Report',
-            'Backup Report',
-            'Department Report',
+            "Revenue Report",
+            "Student Report",
+            "Faculty Report",
+            "Placement Report",
+            "Attendance Report",
+            "Security Report",
+            "Backup Report",
+            "Department Report",
           ].map((report) => (
             <button
               key={report}

@@ -1,5 +1,5 @@
-import { Outlet, createFileRoute, useRouterState } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   AreaChart,
   Area,
@@ -16,7 +16,7 @@ import {
   Legend,
   LineChart,
   Line,
-} from 'recharts';
+} from "recharts";
 import {
   Briefcase,
   Sparkles,
@@ -25,19 +25,19 @@ import {
   BarChart3,
   Calendar,
   ArrowRight,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
-import { fetchPlacementData, type PlacementDashboardData } from '@/services/placementService';
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
+import { fetchPlacementData, type PlacementDashboardData } from "@/services/placementService";
 
 const statIcons = [Briefcase, Sparkles, Users, TrendingUp, BarChart3, Calendar];
 const statGradients = [
-  'bg-gradient-primary',
-  'bg-gradient-violet',
-  'bg-gradient-cyan',
-  'bg-gradient-primary',
-  'bg-gradient-violet',
-  'bg-gradient-cyan',
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
+  "bg-gradient-primary",
+  "bg-gradient-violet",
+  "bg-gradient-cyan",
 ];
 
 export function PlacementDashboard() {
@@ -46,20 +46,20 @@ export function PlacementDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path === '/dashboard/placement') {
+    if (path === "/dashboard/placement") {
       fetchPlacementData()
         .then((res) => {
           setData(res);
           setLoading(false);
         })
         .catch((err) => {
-          console.warn('Failed to load live placement dashboard data:', err);
+          console.warn("Failed to load live placement dashboard data:", err);
           setLoading(false);
         });
     }
   }, [path]);
 
-  if (path !== '/dashboard/placement') {
+  if (path !== "/dashboard/placement") {
     return <Outlet />;
   }
 
@@ -85,34 +85,34 @@ export function PlacementDashboard() {
 
   const placementStatus = [
     {
-      label: 'Applied',
-      count: appList.filter((a) => a.status === 'Applied').length,
-      tone: 'info' as const,
+      label: "Applied",
+      count: appList.filter((a) => a.status === "Applied").length,
+      tone: "info" as const,
     },
     {
-      label: 'Shortlisted',
-      count: appList.filter((a) => a.status === 'Shortlisted').length,
-      tone: 'warn' as const,
+      label: "Shortlisted",
+      count: appList.filter((a) => a.status === "Shortlisted").length,
+      tone: "warn" as const,
     },
     {
-      label: 'Interview Scheduled',
-      count: appList.filter((a) => a.status === 'Interview Scheduled').length,
-      tone: 'info' as const,
+      label: "Interview Scheduled",
+      count: appList.filter((a) => a.status === "Interview Scheduled").length,
+      tone: "info" as const,
     },
     {
-      label: 'Selected',
-      count: appList.filter((a) => a.status === 'Selected').length,
-      tone: 'success' as const,
+      label: "Selected",
+      count: appList.filter((a) => a.status === "Selected").length,
+      tone: "success" as const,
     },
     {
-      label: 'Offer Released',
-      count: appList.filter((a) => a.status === 'Offer Released').length,
-      tone: 'success' as const,
+      label: "Offer Released",
+      count: appList.filter((a) => a.status === "Offer Released").length,
+      tone: "success" as const,
     },
     {
-      label: 'Rejected',
-      count: appList.filter((a) => a.status === 'Rejected').length,
-      tone: 'danger' as const,
+      label: "Rejected",
+      count: appList.filter((a) => a.status === "Rejected").length,
+      tone: "danger" as const,
     },
   ];
 
@@ -122,8 +122,8 @@ export function PlacementDashboard() {
         title="Placement Overview 🎯"
         desc={
           loading
-            ? 'Synchronizing placement statistics...'
-            : 'Campus recruitment analytics, drive tracking and student placements (Live Database Connected).'
+            ? "Synchronizing placement statistics..."
+            : "Campus recruitment analytics, drive tracking and student placements (Live Database Connected)."
         }
       />
 
@@ -173,7 +173,7 @@ export function PlacementDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Legend />
                 <Line
                   type="monotone"
@@ -212,7 +212,7 @@ export function PlacementDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="value" fill="#4F46E5" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -242,7 +242,7 @@ export function PlacementDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="range" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="count" fill="url(#grad-pkg)" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -294,19 +294,19 @@ export function PlacementDashboard() {
           </div>
           <div className="space-y-2">
             {drives
-              .filter((d) => d.status !== 'Completed')
+              .filter((d) => d.status !== "Completed")
               .slice(0, 4)
               .map((drive) => (
                 <div
                   key={drive.id}
                   className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
                 >
-                  <div className="size-10 rounded-lg bg-blue-600 text-white grid place-items-center font-bold text-sm shrink-0">
+                  <div className="size-10 rounded-lg bg-gradient-to-br from-purple-600 to-cyan-500 text-white grid place-items-center font-bold text-sm shrink-0">
                     {drive.company
-                      .split(' ')
+                      .split(" ")
                       .map((x) => x[0])
                       .slice(0, 2)
-                      .join('')}
+                      .join("")}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm truncate">{drive.company}</div>
@@ -336,7 +336,7 @@ export function PlacementDashboard() {
                 key={offer.id}
                 className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
               >
-                <div className="size-10 rounded-lg bg-blue-600 text-white grid place-items-center font-bold text-sm shrink-0">
+                <div className="size-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 text-white grid place-items-center font-bold text-sm shrink-0">
                   ✓
                 </div>
                 <div className="flex-1 min-w-0">
@@ -344,7 +344,7 @@ export function PlacementDashboard() {
                   <div className="text-xs text-muted-foreground">{offer.company}</div>
                   <div className="text-xs font-semibold text-emerald-600 mt-1">{offer.package}</div>
                 </div>
-                <Badge tone={offer.status === 'Accepted' ? 'success' : 'info'}>
+                <Badge tone={offer.status === "Accepted" ? "success" : "info"}>
                   {offer.status}
                 </Badge>
               </div>
@@ -359,7 +359,7 @@ export function PlacementDashboard() {
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold">Interview Schedules</h3>
-            <Badge>{interviewList.filter((i) => i.status === 'Scheduled').length} Scheduled</Badge>
+            <Badge>{interviewList.filter((i) => i.status === "Scheduled").length} Scheduled</Badge>
           </div>
           <div className="space-y-2">
             {interviewList.slice(0, 5).map((interview) => (
@@ -367,7 +367,7 @@ export function PlacementDashboard() {
                 key={interview.id}
                 className="flex items-start gap-3 p-3 rounded-xl border hover:bg-accent transition"
               >
-                <div className="size-10 rounded-lg bg-blue-600 text-white grid place-items-center font-bold text-sm shrink-0">
+                <div className="size-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-500 text-white grid place-items-center font-bold text-sm shrink-0">
                   {interview.round}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -395,14 +395,14 @@ export function PlacementDashboard() {
             {notifList.map((notif) => (
               <div
                 key={notif.id}
-                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notif.unread ? 'bg-blue-50 border-blue-200' : ''}`}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition ${notif.unread ? "bg-blue-50 border-blue-200" : ""}`}
               >
                 <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium">{notif.title}</div>
                   <div className="text-xs text-muted-foreground">{notif.time}</div>
                 </div>
-                <Badge tone={notif.type === 'Offer' ? 'success' : 'info'} className="text-[10px]">
+                <Badge tone={notif.type === "Offer" ? "success" : "info"} className="text-[10px]">
                   {notif.type}
                 </Badge>
               </div>
@@ -448,10 +448,7 @@ export function PlacementDashboard() {
           </div>
           <div className="space-y-3">
             {placementStatus.map((status) => {
-              const width =
-                appList.length > 0
-                  ? Math.max(12, Math.round((status.count / appList.length) * 100))
-                  : 0;
+              const width = appList.length > 0 ? Math.max(12, Math.round((status.count / appList.length) * 100)) : 0;
               return (
                 <div key={status.label} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">

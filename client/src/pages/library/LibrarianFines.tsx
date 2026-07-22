@@ -1,25 +1,21 @@
-import { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { DollarSign, TrendingUp, Download, Search } from 'lucide-react';
-import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { fetchIssuedBooks, returnBook } from '@/services/libraryService';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { DollarSign, TrendingUp, Download, Search } from "lucide-react";
+import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { fetchIssuedBooks, returnBook } from "@/services/libraryService";
+import { toast } from "sonner";
 
 export function LibrarianFines() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
 
   const [isConfirmCollectOpen, setIsConfirmCollectOpen] = useState(false);
   const [selectedFine, setSelectedFine] = useState<any>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const {
-    data: issuedBooks,
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ['allIssuedBooks'],
+  const { data: issuedBooks, isLoading, refetch } = useQuery({
+    queryKey: ["allIssuedBooks"],
     queryFn: () => fetchIssuedBooks(),
   });
 
@@ -27,23 +23,23 @@ export function LibrarianFines() {
     mutationFn: (issueId: string) => returnBook(issueId),
     onSuccess: () => {
       toast.success(
-        `Successfully collected penalty of ₹${selectedFine?.amount} and returned the book!`,
+        `Successfully collected penalty of ₹${selectedFine?.amount} and returned the book!`
       );
       setIsConfirmCollectOpen(false);
       setSelectedFine(null);
       refetch();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Failed to record fine collection');
+      toast.error(err.response?.data?.message || "Failed to record fine collection");
     },
   });
 
   const fines = issuedBooks
     ? issuedBooks
-        .filter((issue) => (issue.fineAmount || 0) > 0 || issue.status === 'overdue')
+        .filter((issue) => (issue.fineAmount || 0) > 0 || issue.status === "overdue")
         .map((issue) => {
           let amt = issue.fineAmount || 0;
-          if (amt === 0 && issue.status === 'overdue') {
+          if (amt === 0 && issue.status === "overdue") {
             const due = new Date(issue.dueDate);
             const now = new Date();
             if (now > due) {
@@ -55,38 +51,25 @@ export function LibrarianFines() {
           return {
             id: issue._id,
             studentName:
-              typeof issue.student === 'object' && issue.student
+              typeof issue.student === "object" && issue.student
                 ? issue.student.fullName
-                : 'Unknown Student',
+                : "Unknown Student",
             amount: amt,
-            status: issue.status === 'returned' ? 'Paid' : 'Pending',
+            status: issue.status === "returned" ? "Paid" : "Pending",
             date: issue.issueDate,
-            reason: issue.status === 'overdue' ? 'Overdue return' : 'Late return fine',
+            reason: issue.status === "overdue" ? "Overdue return" : "Late return fine",
           };
         })
     : [];
 
   const getMonthlyFineData = () => {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const chartData = months.map((m) => ({ month: m, collection: 0 }));
 
     if (!issuedBooks) return chartData;
 
     issuedBooks.forEach((issue) => {
-      if ((issue.fineAmount || 0) > 0 && issue.status === 'returned' && issue.returnDate) {
+      if ((issue.fineAmount || 0) > 0 && issue.status === "returned" && issue.returnDate) {
         const date = new Date(issue.returnDate);
         const mIdx = date.getMonth();
         chartData[mIdx].collection += issue.fineAmount || 0;
@@ -100,15 +83,15 @@ export function LibrarianFines() {
 
   const filteredFines = fines.filter(
     (f) =>
-      (filterStatus === 'All' || f.status === filterStatus) &&
-      f.studentName.toLowerCase().includes(searchTerm.toLowerCase()),
+      (filterStatus === "All" || f.status === filterStatus) &&
+      f.studentName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPendingFines = fines
-    .filter((f) => f.status === 'Pending')
+    .filter((f) => f.status === "Pending")
     .reduce((sum, f) => sum + f.amount, 0);
   const totalPaidFines = fines
-    .filter((f) => f.status === 'Paid')
+    .filter((f) => f.status === "Paid")
     .reduce((sum, f) => sum + f.amount, 0);
 
   const openCollectConfirm = (fine: any) => {
@@ -123,14 +106,14 @@ export function LibrarianFines() {
 
   const handleExportFines = () => {
     if (!filteredFines || filteredFines.length === 0) {
-      toast.error('No fine records to export.');
+      toast.error("No fine records to export.");
       return;
     }
     setIsExporting(true);
-    toast.loading('Compiling fine audit sheets...');
+    toast.loading("Compiling fine audit sheets...");
 
     try {
-      const headers = ['Fine ID', 'Student Name', 'Reason', 'Amount (INR)', 'Date', 'Status'];
+      const headers = ["Fine ID", "Student Name", "Reason", "Amount (INR)", "Date", "Status"];
       const rows = filteredFines.map((f) => [
         f.id,
         f.studentName,
@@ -140,26 +123,21 @@ export function LibrarianFines() {
         f.status,
       ]);
 
-      const csvContent = [headers, ...rows]
-        .map((e) => e.map((val) => `"${val}"`).join(','))
-        .join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const csvContent = [headers, ...rows].map((e) => e.map((val) => `"${val}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute(
-        'download',
-        `fine_collection_ledger_${new Date().toISOString().split('T')[0]}.csv`,
-      );
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `fine_collection_ledger_${new Date().toISOString().split("T")[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
       toast.dismiss();
-      toast.success('Fine collection ledger successfully exported!');
+      toast.success("Fine collection ledger successfully exported!");
     } catch (err) {
       toast.dismiss();
-      toast.error('Failed to export ledger.');
+      toast.error("Failed to export ledger.");
       console.error(err);
     } finally {
       setIsExporting(false);
@@ -192,7 +170,7 @@ export function LibrarianFines() {
             className="px-4 py-2.5 rounded-xl border text-muted-foreground text-sm glow-primary flex items-center gap-2 cursor-pointer hover:bg-gradient-soft disabled:opacity-50 transition"
           >
             <Download className="size-4" />
-            {isExporting ? 'Exporting...' : 'Export Log'}
+            {isExporting ? "Exporting..." : "Export Log"}
           </button>
         }
       />
@@ -222,7 +200,7 @@ export function LibrarianFines() {
         <Card>
           <div className="text-center">
             <div className="text-3xl font-bold">
-              {fines.filter((f) => f.status === 'Pending').length}
+              {fines.filter((f) => f.status === "Pending").length}
             </div>
             <div className="text-xs text-muted-foreground mt-2">Outstanding Fines</div>
           </div>
@@ -231,7 +209,7 @@ export function LibrarianFines() {
         <Card>
           <div className="text-center">
             <div className="text-3xl font-bold text-emerald-600">
-              {fines.filter((f) => f.status === 'Paid').length}
+              {fines.filter((f) => f.status === "Paid").length}
             </div>
             <div className="text-xs text-muted-foreground mt-2">Resolved Fines</div>
           </div>
@@ -253,7 +231,7 @@ export function LibrarianFines() {
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
               <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
               <YAxis stroke="#64748B" fontSize={12} />
-              <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+              <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
               <Bar dataKey="collection" fill="#7C3AED" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -277,14 +255,14 @@ export function LibrarianFines() {
 
           {/* Status Tabs */}
           <div className="flex gap-2 overflow-x-auto pb-2">
-            {['All', 'Pending', 'Paid'].map((status) => (
+            {["All", "Pending", "Paid"].map((status) => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition cursor-pointer ${
                   filterStatus === status
-                    ? 'bg-gradient-primary text-white'
-                    : 'bg-background border text-muted-foreground hover:border-primary'
+                    ? "bg-gradient-primary text-white"
+                    : "bg-background border text-muted-foreground hover:border-primary"
                 }`}
               >
                 {status}
@@ -331,17 +309,15 @@ export function LibrarianFines() {
                     <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{fine.id}</td>
                     <td className="px-4 py-3 font-medium">{fine.studentName}</td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">{fine.reason}</td>
-                    <td className="px-4 py-3 text-center font-bold text-rose-600">
-                      ₹{fine.amount}
-                    </td>
+                    <td className="px-4 py-3 text-center font-bold text-rose-600">₹{fine.amount}</td>
                     <td className="px-4 py-3 text-center text-xs">{fine.date}</td>
                     <td className="px-4 py-3 text-center">
-                      <Badge tone={fine.status === 'Paid' ? 'success' : 'danger'}>
+                      <Badge tone={fine.status === "Paid" ? "success" : "danger"}>
                         {fine.status}
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      {fine.status === 'Pending' ? (
+                      {fine.status === "Pending" ? (
                         <button
                           disabled={returnBookMutation.isPending}
                           onClick={() => openCollectConfirm(fine)}
@@ -351,9 +327,7 @@ export function LibrarianFines() {
                         </button>
                       ) : (
                         <button
-                          onClick={() =>
-                            toast.success(`Receipt printed for reference ID ${fine.id}`)
-                          }
+                          onClick={() => toast.success(`Receipt printed for reference ID ${fine.id}`)}
                           className="px-3 py-1.5 rounded-lg text-xs border text-muted-foreground hover:bg-background transition cursor-pointer"
                         >
                           Receipt
@@ -395,7 +369,7 @@ export function LibrarianFines() {
                 onClick={handleCollectFineSubmit}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-medium glow-primary cursor-pointer hover:opacity-90 transition disabled:opacity-50"
               >
-                {returnBookMutation.isPending ? 'Confirming...' : 'Confirm Payment'}
+                {returnBookMutation.isPending ? "Confirming..." : "Confirm Payment"}
               </button>
             </div>
           </Card>

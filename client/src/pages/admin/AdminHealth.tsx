@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Heart,
   Calendar,
@@ -9,72 +9,37 @@ import {
   User,
   ShieldAlert,
   Clock,
-  BriefcaseMedical,
-} from 'lucide-react';
-import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
+  BriefcaseMedical
+} from "lucide-react";
+import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
+import { toast } from "sonner";
 
 export function AdminHealth() {
-  const [activeTab, setActiveTab] = useState<'clinic' | 'counselling' | 'emergency'>('clinic');
+  const [activeTab, setActiveTab] = useState<"clinic" | "counselling" | "emergency">("clinic");
 
   // Clinic logs state
   const [clinicLogs, setClinicLogs] = useState([
-    {
-      id: 'MED-001',
-      student: 'Amit Verma',
-      dept: 'CSE',
-      sym: 'Seasonal Fever',
-      medicine: 'Paracetamol 650mg',
-      status: 'Observed & Discharged',
-    },
-    {
-      id: 'MED-002',
-      student: 'Priya Sharma',
-      dept: 'ECE',
-      sym: 'Ankle Sprain (Sports)',
-      medicine: 'Pain Relief Spray + Bandage',
-      status: 'Referred to Ortho',
-    },
-    {
-      id: 'MED-003',
-      student: 'Kunal Kapoor',
-      dept: 'MECH',
-      sym: 'Dehydration',
-      medicine: 'ORS Fluid Drink',
-      status: 'Observed & Discharged',
-    },
+    { id: "MED-001", student: "Amit Verma", dept: "CSE", sym: "Seasonal Fever", medicine: "Paracetamol 650mg", status: "Observed & Discharged" },
+    { id: "MED-002", student: "Priya Sharma", dept: "ECE", sym: "Ankle Sprain (Sports)", medicine: "Pain Relief Spray + Bandage", status: "Referred to Ortho" },
+    { id: "MED-003", student: "Kunal Kapoor", dept: "MECH", sym: "Dehydration", medicine: "ORS Fluid Drink", status: "Observed & Discharged" }
   ]);
 
   // Counselling appointments state
   const [appointments, setAppointments] = useState([
-    {
-      id: 'CNS-101',
-      student: 'Siddharth Roy',
-      counselor: 'Dr. Anjali Sen (Psychologist)',
-      time: '11:00 AM',
-      date: '2026-07-17',
-      status: 'Confirmed',
-    },
-    {
-      id: 'CNS-102',
-      student: 'Neha Gupta',
-      counselor: 'Dr. Anjali Sen (Psychologist)',
-      time: '02:30 PM',
-      date: '2026-07-17',
-      status: 'Pending Guidance',
-    },
+    { id: "CNS-101", student: "Siddharth Roy", counselor: "Dr. Anjali Sen (Psychologist)", time: "11:00 AM", date: "2026-07-17", status: "Confirmed" },
+    { id: "CNS-102", student: "Neha Gupta", counselor: "Dr. Anjali Sen (Psychologist)", time: "02:30 PM", date: "2026-07-17", status: "Pending Guidance" }
   ]);
 
   // Form States
-  const [newStudent, setNewStudent] = useState('');
-  const [newDept, setNewDept] = useState('CSE');
-  const [newSym, setNewSym] = useState('');
-  const [newMed, setNewMed] = useState('');
+  const [newStudent, setNewStudent] = useState("");
+  const [newDept, setNewDept] = useState("CSE");
+  const [newSym, setNewSym] = useState("");
+  const [newMed, setNewMed] = useState("");
 
   const handleAddClinicLog = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStudent.trim() || !newSym.trim() || !newMed.trim()) {
-      toast.error('Please fill in clinic log details!');
+      toast.error("Please fill in clinic log details!");
       return;
     }
     const newLog = {
@@ -83,27 +48,25 @@ export function AdminHealth() {
       dept: newDept,
       sym: newSym,
       medicine: newMed,
-      status: 'Observed & Discharged',
+      status: "Observed & Discharged"
     };
     setClinicLogs([newLog, ...clinicLogs]);
     toast.success(`Medical room log recorded for ${newStudent}!`);
-    setNewStudent('');
-    setNewSym('');
-    setNewMed('');
+    setNewStudent("");
+    setNewSym("");
+    setNewMed("");
   };
 
   const handleConfirmCounselling = (id: string, name: string) => {
-    setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'Confirmed' } : a)));
+    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: "Confirmed" } : a));
     toast.success(`Counselling session confirmed for student: ${name}!`);
   };
 
   const handleTriggerSOS = () => {
-    toast.loading('Broadcasting medical response alerts to campus doctors & wardens...', {
-      duration: 1800,
-    });
+    toast.loading("Broadcasting medical response alerts to campus doctors & wardens...", { duration: 1800 });
     setTimeout(() => {
-      toast.success('SOS Alert sent! Medical Response Team dispatched to Main Block.', {
-        style: { background: '#fee2e2', color: '#991b1b', border: '1px solid #fecaca' },
+      toast.success("SOS Alert sent! Medical Response Team dispatched to Main Block.", {
+        style: { background: "#fee2e2", color: "#991b1b", border: "1px solid #fecaca" }
       });
     }, 1900);
   };
@@ -149,17 +112,17 @@ export function AdminHealth() {
       {/* Tabs */}
       <div className="flex border-b border-slate-200">
         {[
-          { id: 'clinic', label: 'Clinic Log & Medicine', icon: BriefcaseMedical },
-          { id: 'counselling', label: 'Counselling Scheduler', icon: Calendar },
-          { id: 'emergency', label: 'SOS Alerts Control', icon: ShieldAlert },
-        ].map((tab) => (
+          { id: "clinic", label: "Clinic Log & Medicine", icon: BriefcaseMedical },
+          { id: "counselling", label: "Counselling Scheduler", icon: Calendar },
+          { id: "emergency", label: "SOS Alerts Control", icon: ShieldAlert }
+        ].map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={`flex items-center gap-2 px-5 py-3 border-b-2 text-xs font-semibold transition cursor-pointer ${
               activeTab === tab.id
-                ? 'border-indigo-600 text-indigo-600 font-bold'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                ? "border-indigo-600 text-indigo-600 font-bold"
+                : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
             <tab.icon className="size-4" />
@@ -176,30 +139,23 @@ export function AdminHealth() {
         className="space-y-6"
       >
         {/* CLINIC */}
-        {activeTab === 'clinic' && (
+        {activeTab === "clinic" && (
           <div className="grid lg:grid-cols-3 gap-4">
             {/* Roster */}
             <Card className="lg:col-span-2">
               <h3 className="font-semibold text-slate-800 text-sm mb-3">Daily Clinic Visit Log</h3>
               <div className="space-y-3.5">
-                {clinicLogs.map((log) => (
-                  <div
-                    key={log.id}
-                    className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs"
-                  >
+                {clinicLogs.map(log => (
+                  <div key={log.id} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-indigo-700">{log.id}</span>
-                        <span className="font-bold text-slate-800">
-                          {log.student} ({log.dept})
-                        </span>
+                        <span className="font-bold text-slate-800">{log.student} ({log.dept})</span>
                       </div>
                       <div className="text-slate-500 font-semibold">Symptoms: {log.sym}</div>
-                      <div className="text-[10px] text-slate-400 font-bold">
-                        Treatment / Meds: {log.medicine}
-                      </div>
+                      <div className="text-[10px] text-slate-400 font-bold">Treatment / Meds: {log.medicine}</div>
                     </div>
-                    <Badge tone={log.status.includes('Discharged') ? 'success' : 'warn'}>
+                    <Badge tone={log.status.includes("Discharged") ? "success" : "warn"}>
                       {log.status}
                     </Badge>
                   </div>
@@ -212,9 +168,7 @@ export function AdminHealth() {
               <h3 className="font-semibold text-slate-800 text-sm mb-4">Record Clinic Visit</h3>
               <form onSubmit={handleAddClinicLog} className="space-y-3.5">
                 <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">
-                    Student Name
-                  </label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Student Name</label>
                   <input
                     type="text"
                     required
@@ -226,9 +180,7 @@ export function AdminHealth() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">
-                      Department
-                    </label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">Department</label>
                     <select
                       value={newDept}
                       onChange={(e) => setNewDept(e.target.value)}
@@ -241,9 +193,7 @@ export function AdminHealth() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">
-                      Symptoms
-                    </label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">Symptoms</label>
                     <input
                       type="text"
                       required
@@ -255,9 +205,7 @@ export function AdminHealth() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">
-                    Medicine Prescribed
-                  </label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Medicine Prescribed</label>
                   <input
                     type="text"
                     required
@@ -279,11 +227,9 @@ export function AdminHealth() {
         )}
 
         {/* COUNSELLING */}
-        {activeTab === 'counselling' && (
+        {activeTab === "counselling" && (
           <Card>
-            <h3 className="font-semibold text-slate-800 text-sm mb-3">
-              Psychological &amp; Wellness Counselling Sessions
-            </h3>
+            <h3 className="font-semibold text-slate-800 text-sm mb-3">Psychological &amp; Wellness Counselling Sessions</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
@@ -297,7 +243,7 @@ export function AdminHealth() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {appointments.map((row) => (
+                  {appointments.map(row => (
                     <tr key={row.id}>
                       <td className="py-3 font-mono font-bold text-indigo-700">{row.id}</td>
                       <td className="py-3 font-bold text-slate-800">{row.student}</td>
@@ -305,7 +251,7 @@ export function AdminHealth() {
                       <td className="py-3 font-semibold text-slate-500">{row.date}</td>
                       <td className="py-3 text-center font-bold text-slate-700">{row.time}</td>
                       <td className="py-3 text-right">
-                        {row.status === 'Confirmed' ? (
+                        {row.status === "Confirmed" ? (
                           <Badge tone="success">Confirmed</Badge>
                         ) : (
                           <button
@@ -325,34 +271,17 @@ export function AdminHealth() {
         )}
 
         {/* EMERGENCY */}
-        {activeTab === 'emergency' && (
+        {activeTab === "emergency" && (
           <div className="grid lg:grid-cols-3 gap-4">
             <Card className="lg:col-span-2">
-              <h3 className="font-semibold text-slate-800 text-sm mb-3">
-                Emergency Contact Matrix
-              </h3>
+              <h3 className="font-semibold text-slate-800 text-sm mb-3">Emergency Contact Matrix</h3>
               <div className="space-y-3.5">
                 {[
-                  {
-                    name: 'Dr. B. Prasad (Campus Doctor)',
-                    phone: '+91 98451 22355',
-                    role: 'Primary Responder',
-                  },
-                  {
-                    name: 'K. Mohan (Ambulance Service)',
-                    phone: '+91 99015 44810',
-                    role: 'Transport Desk',
-                  },
-                  {
-                    name: 'City Trauma Center (External Hospital)',
-                    phone: '+91 80 2341 8800',
-                    role: 'Partner Trauma Unit',
-                  },
+                  { name: "Dr. B. Prasad (Campus Doctor)", phone: "+91 98451 22355", role: "Primary Responder" },
+                  { name: "K. Mohan (Ambulance Service)", phone: "+91 99015 44810", role: "Transport Desk" },
+                  { name: "City Trauma Center (External Hospital)", phone: "+91 80 2341 8800", role: "Partner Trauma Unit" }
                 ].map((row, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs"
-                  >
+                  <div key={idx} className="p-3 border rounded-xl bg-slate-50/50 flex justify-between items-center text-xs">
                     <div className="space-y-1">
                       <div className="font-bold text-slate-800">{row.name}</div>
                       <div className="text-[10px] text-slate-500 font-semibold">{row.role}</div>
@@ -369,8 +298,7 @@ export function AdminHealth() {
               </div>
               <h3 className="font-bold text-slate-800 text-base mt-4">Emergency Medical SOS</h3>
               <p className="text-[11px] text-slate-500 max-w-xs mt-1">
-                One-click broadcast trigger to all campus first responders, wardens, and medical
-                vans.
+                One-click broadcast trigger to all campus first responders, wardens, and medical vans.
               </p>
               <button
                 onClick={handleTriggerSOS}

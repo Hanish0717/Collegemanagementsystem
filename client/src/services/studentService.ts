@@ -1,6 +1,6 @@
-import api from '@/lib/api';
+import api from "@/lib/api";
 
-export type StudentStatus = 'Active' | 'Warning' | 'Inactive';
+export type StudentStatus = "Active" | "Warning" | "Inactive";
 
 export interface DepartmentOption {
   code: string;
@@ -74,73 +74,57 @@ export interface StudentPayload {
   password?: string;
 }
 
-const mapStudentStatus = (
-  isActive: boolean,
-  attendancePercentage: number | null,
-): StudentStatus => {
-  if (!isActive) return 'Inactive';
-  return (attendancePercentage ?? 0) >= 75 ? 'Active' : 'Warning';
+const mapStudentStatus = (isActive: boolean, attendancePercentage: number | null): StudentStatus => {
+  if (!isActive) return "Inactive";
+  return (attendancePercentage ?? 0) >= 75 ? "Active" : "Warning";
 };
 
 const mapStudent = (student: any): StudentRecord => {
   const attendance =
     student.attendance_percentage !== null && student.attendance_percentage !== undefined
       ? Number(student.attendance_percentage)
-      : student.attendancePercentage !== null && student.attendancePercentage !== undefined
+      : (student.attendancePercentage !== null && student.attendancePercentage !== undefined
         ? Number(student.attendancePercentage)
-        : null;
+        : null);
 
-  const cgpaVal = student.cgpa !== null && student.cgpa !== undefined ? Number(student.cgpa) : null;
+  const cgpaVal =
+    student.cgpa !== null && student.cgpa !== undefined ? Number(student.cgpa) : null;
 
   return {
     id: student.id || student._id,
-    fullName: student.full_name || student.fullName || '',
-    rollNumber: student.roll_number || student.rollNumber || '',
+    fullName: student.full_name || student.fullName || "",
+    rollNumber: student.roll_number || student.rollNumber || "",
     admissionNumber: student.admission_number || student.admissionNumber || null,
-    email: student.email || '',
+    email: student.email || "",
     phoneNumber: student.phone_number || student.phoneNumber || null,
     gender: student.gender || null,
     dateOfBirth: student.date_of_birth || student.dateOfBirth || null,
-    department:
-      typeof student.department === 'object' && student.department !== null
-        ? student.department.code
-        : student.department || '',
+    department: typeof student.department === "object" && student.department !== null ? student.department.code : (student.department || ""),
     year: Number(student.year ?? 1),
     semester: Number(student.semester ?? 1),
-    section: student.section || '',
-    parentName: student.parent_name || student.parentName || '',
-    parentPhone: student.parent_phone || student.parentPhone || '',
+    section: student.section || "",
+    parentName: student.parent_name || student.parentName || "",
+    parentPhone: student.parent_phone || student.parentPhone || "",
     parentEmail: student.parent_email || student.parentEmail || null,
     cgpa: cgpaVal,
     attendancePercentage: attendance,
     profileImage: student.profile_image || student.profileImage || null,
-    isActive:
-      student.is_active !== undefined
-        ? Boolean(student.is_active)
-        : student.isActive !== undefined
-          ? Boolean(student.isActive)
-          : true,
+    isActive: student.is_active !== undefined ? Boolean(student.is_active) : (student.isActive !== undefined ? Boolean(student.isActive) : true),
     createdAt: student.created_at || student.createdAt || new Date().toISOString(),
     updatedAt: student.updated_at || student.updatedAt || new Date().toISOString(),
     status: mapStudentStatus(
-      student.is_active !== undefined
-        ? Boolean(student.is_active)
-        : student.isActive !== undefined
-          ? Boolean(student.isActive)
-          : true,
-      attendance,
+      student.is_active !== undefined ? Boolean(student.is_active) : (student.isActive !== undefined ? Boolean(student.isActive) : true),
+      attendance
     ),
   };
 };
 
-export function getStudentDisplayStatus(
-  student: Pick<StudentRecord, 'status' | 'attendancePercentage'>,
-) {
+export function getStudentDisplayStatus(student: Pick<StudentRecord, "status" | "attendancePercentage">) {
   return student.status || mapStudentStatus(true, student.attendancePercentage ?? null);
 }
 
 export async function fetchDepartments(): Promise<DepartmentOption[]> {
-  const { data } = await api.get<{ success: boolean; data: any[] }>('/api/academic/departments');
+  const { data } = await api.get<{ success: boolean; data: any[] }>("/api/academic/departments");
   return (data.data ?? []).map((dept) => ({
     code: dept.code,
     name: dept.name,
@@ -154,39 +138,39 @@ export async function fetchStudents(filters: StudentFilters = {}): Promise<Stude
   };
 
   if (filters.search) params.search = filters.search;
-  if (filters.department && filters.department !== 'All') params.department = filters.department;
-  if (filters.year && filters.year !== 'All') params.year = filters.year;
+  if (filters.department && filters.department !== "All") params.department = filters.department;
+  if (filters.year && filters.year !== "All") params.year = filters.year;
 
   // Status/attendance/cgpa filtering can be applied client-side or sent to server
   const { data } = await api.get<{
     success: boolean;
     data: { students: any[]; pagination: any };
-  }>('/api/students', { params });
+  }>("/api/students", { params });
 
-  const rawStudents = data.data?.students || [];
+  let rawStudents = data.data?.students || [];
   let formatted = rawStudents.map(mapStudent);
 
   // Apply client-side filters for specific UI filter modal toggles not in backend DB logic
-  if (filters.status && filters.status !== 'All') {
+  if (filters.status && filters.status !== "All") {
     formatted = formatted.filter((s) => s.status === filters.status);
   }
 
-  if (filters.attendance && filters.attendance !== 'All') {
+  if (filters.attendance && filters.attendance !== "All") {
     formatted = formatted.filter((s) => {
       const att = s.attendancePercentage ?? 0;
-      if (filters.attendance === '90%+') return att >= 90;
-      if (filters.attendance === '75-89%') return att >= 75 && att < 90;
-      if (filters.attendance === 'Below 75%') return att < 75;
+      if (filters.attendance === "90%+") return att >= 90;
+      if (filters.attendance === "75-89%") return att >= 75 && att < 90;
+      if (filters.attendance === "Below 75%") return att < 75;
       return true;
     });
   }
 
-  if (filters.cgpa && filters.cgpa !== 'All') {
+  if (filters.cgpa && filters.cgpa !== "All") {
     formatted = formatted.filter((s) => {
       const cg = s.cgpa ?? 0;
-      if (filters.cgpa === '9.0+') return cg >= 9;
-      if (filters.cgpa === '8.0-8.9') return cg >= 8 && cg < 9;
-      if (filters.cgpa === 'Below 8.0') return cg < 8;
+      if (filters.cgpa === "9.0+") return cg >= 9;
+      if (filters.cgpa === "8.0-8.9") return cg >= 8 && cg < 9;
+      if (filters.cgpa === "Below 8.0") return cg < 8;
       return true;
     });
   }
@@ -218,10 +202,10 @@ export async function createStudent(payload: StudentPayload): Promise<StudentRec
   // If password is not provided, set a secure default for mock accounts
   const finalPayload = {
     ...payload,
-    password: payload.password || 'password123',
+    password: payload.password || "password123",
   };
 
-  const { data } = await api.post<{ success: boolean; data: any }>('/api/students', finalPayload);
+  const { data } = await api.post<{ success: boolean; data: any }>("/api/students", finalPayload);
   return mapStudent(data.data);
 }
 
@@ -229,10 +213,7 @@ export async function updateStudent(
   studentId: string,
   payload: Partial<StudentPayload & { isActive: boolean }>,
 ): Promise<StudentRecord> {
-  const { data } = await api.put<{ success: boolean; data: any }>(
-    `/api/students/${studentId}`,
-    payload,
-  );
+  const { data } = await api.put<{ success: boolean; data: any }>(`/api/students/${studentId}`, payload);
   return mapStudent(data.data);
 }
 
@@ -240,18 +221,10 @@ export async function deleteStudent(studentId: string): Promise<void> {
   await api.delete(`/api/students/${studentId}`);
 }
 
-export async function verifyStudent(
-  rollNumber: string,
-  fullName?: string,
-  department?: string,
-): Promise<StudentRecord> {
-  const { data } = await api.post<{ success: boolean; data: any; message: string }>(
-    '/api/students/verify',
-    {
-      rollNumber,
-      fullName,
-      department,
-    },
-  );
+export async function verifyStudent(rollNumber: string, fullName?: string): Promise<StudentRecord> {
+  const { data } = await api.post<{ success: boolean; data: any; message: string }>("/api/students/verify", {
+    rollNumber,
+    fullName,
+  });
   return mapStudent(data.data);
 }

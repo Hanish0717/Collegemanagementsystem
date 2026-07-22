@@ -49,7 +49,7 @@ describe('HostelDashboard realtime subscriptions', () => {
     const { unmount } = render(
       <QueryClientProvider client={qc}>
         <HostelDashboard />
-      </QueryClientProvider>,
+      </QueryClientProvider>
     );
 
     // wait for effect to run and register handlers

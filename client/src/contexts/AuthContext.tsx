@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 import {
   getStoredUser,
   getToken,
   login as apiLogin,
   logout as apiLogout,
   fetchCurrentUser,
-} from '../services/authService';
-import type { AuthUser } from '@/types/auth';
+} from "../services/authService";
+import type { AuthUser } from "@/types/auth";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -45,20 +45,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const refreshUser = async () => {
-    const currentToken = getToken();
-    if (!currentToken) return null;
+    if (!getToken()) return null;
     try {
       const refreshedUser = await fetchCurrentUser();
       setUser(refreshedUser);
-      setToken(currentToken);
       return refreshedUser;
     } catch (err) {
-      const stored = getStoredUser();
-      if (stored) {
-        setUser(stored);
-        setToken(currentToken);
-        return stored;
-      }
       logout();
       return null;
     }
@@ -90,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

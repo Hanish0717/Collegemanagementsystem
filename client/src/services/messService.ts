@@ -86,34 +86,22 @@ export async function fetchFeedbackReport(params?: any) {
 }
 
 export async function exportDailyReport(params?: any) {
-  const resp = await api.get('/api/hostel/mess/reports/daily/export', {
-    params,
-    responseType: 'blob',
-  });
+  const resp = await api.get('/api/hostel/mess/reports/daily/export', { params, responseType: 'blob' });
   return resp.data;
 }
 
 export async function exportMonthlyRevenue(params?: any) {
-  const resp = await api.get('/api/hostel/mess/reports/monthly/export', {
-    params,
-    responseType: 'blob',
-  });
+  const resp = await api.get('/api/hostel/mess/reports/monthly/export', { params, responseType: 'blob' });
   return resp.data;
 }
 
 export async function exportFeeCollectionReport(params?: any) {
-  const resp = await api.get('/api/hostel/mess/reports/fees/export', {
-    params,
-    responseType: 'blob',
-  });
+  const resp = await api.get('/api/hostel/mess/reports/fees/export', { params, responseType: 'blob' });
   return resp.data;
 }
 
 export async function exportFeedbackReport(params?: any) {
-  const resp = await api.get('/api/hostel/mess/reports/feedback/export', {
-    params,
-    responseType: 'blob',
-  });
+  const resp = await api.get('/api/hostel/mess/reports/feedback/export', { params, responseType: 'blob' });
   return resp.data;
 }
 

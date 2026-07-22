@@ -9,7 +9,7 @@ export interface FeeRecord {
   remainingAmount?: number;
   dueDate: string | Date;
   status?: string;
-  paymentStatus?: 'pending' | 'paid' | 'partial' | 'overdue';
+  paymentStatus?: "pending" | "paid" | "partial" | "overdue";
   paymentMethod?: string;
   transactionId?: string;
 }

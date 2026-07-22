@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -13,11 +13,11 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Legend,
-} from 'recharts';
-import { Download, TrendingUp, Users, Briefcase, Loader2 } from 'lucide-react';
-import { Card, PageHeader, Badge } from '@/components/dashboard/ui';
-import { fetchPlacementData } from '@/services/placementService';
-import { toast } from 'sonner';
+} from "recharts";
+import { Download, TrendingUp, Users, Briefcase, Loader2 } from "lucide-react";
+import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
+import { fetchPlacementData } from "@/services/placementService";
+import { toast } from "sonner";
 
 interface ReportItem {
   month: string;
@@ -56,10 +56,7 @@ export function PlacementReports() {
   const [liveData, setLiveData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const handleExportReport = (
-    reportName: string = 'Comprehensive Placement Report',
-    format: string = 'TXT',
-  ) => {
+  const handleExportReport = (reportName: string = "Comprehensive Placement Report", format: string = "TXT") => {
     toast.info(`Generating ${reportName} from live campus metrics...`);
 
     // Retrieve merged lists
@@ -70,20 +67,20 @@ export function PlacementReports() {
     const interviewsList = getMergedInterviews(liveData?.interviews);
 
     const feedbackList = (liveData?.interviews || [])
-      .filter((i: any) => i.status === 'Completed' && i.feedbackComments)
+      .filter((i: any) => i.status === "Completed" && i.feedbackComments)
       .map((i: any) => ({
         id: `FB_${i.id}`,
         studentName: i.studentName,
         rating: i.feedbackRating || 5,
-        outcome: i.feedbackComments.toLowerCase().includes('select') ? 'Selected' : 'Hold',
+        outcome: i.feedbackComments.toLowerCase().includes("select") ? "Selected" : "Hold",
         comments: i.feedbackComments,
-        date: i.date || new Date().toISOString().split('T')[0],
+        date: i.date || new Date().toISOString().split("T")[0]
       }));
 
-    let content = '';
+    let content = "";
     const cleanReportName = reportName.trim().toLowerCase();
 
-    if (cleanReportName.includes('monthly report')) {
+    if (cleanReportName.includes("monthly report")) {
       content = `========================================================================
              CAMPUS PLACEMENT MONTHLY ANALYTICS REPORT
 ========================================================================
@@ -96,18 +93,14 @@ YTD MONTH-BY-MONTH TREND SUMMARY
 ------------------------------------------------------------------------
 This section aggregates the performance metrics across all completed
 recruitment blocks from January to the current active month.
-${placementReports
-  .map(
-    (report, idx) => `
+${placementReports.map((report, idx) => `
 [${idx + 1}] Month: ${report.month}
   * Students Placed       : ${report.placed} students
   * Placement Ratio       : ${report.percentage}%
   * Average CTC Compensation: ${report.avgPackage} LPA
   * Highest CTC Offered   : ${report.highestPackage} LPA
   * Active Companies Visited: ${report.companyCount}
-`,
-  )
-  .join('\n')}
+`).join("\n")}
 
 ------------------------------------------------------------------------
 EXECUTIVE TREND INSIGHTS
@@ -120,57 +113,37 @@ EXECUTIVE TREND INSIGHTS
 ========================================================================
             CONFIDENTIAL - FOR CMS INTERNAL ACADEMIC ARCHIVES
 ========================================================================`;
-    } else if (cleanReportName.includes('stats')) {
+    } else if (cleanReportName.includes("stats")) {
       // CSV format
       const header = `"Month","Placed Students","Placement %","Avg Package (LPA)","Highest Package (LPA)","Active Companies"`;
-      const rows = placementReports.map(
-        (r) =>
-          `"${r.month}","${r.placed}","${r.percentage}%","${r.avgPackage}","${r.highestPackage}","${r.companyCount}"`,
-      );
-
+      const rows = placementReports.map(r => `"${r.month}","${r.placed}","${r.percentage}%","${r.avgPackage}","${r.highestPackage}","${r.companyCount}"`);
+      
       const totalPlaced = placementReports.reduce((sum, r) => sum + r.placed, 0);
-      const avgPct = Math.round(
-        placementReports.reduce((sum, r) => sum + r.percentage, 0) / (placementReports.length || 1),
-      );
-      const avgPackage = (
-        placementReports.reduce((sum, r) => sum + r.avgPackage, 0) / (placementReports.length || 1)
-      ).toFixed(1);
-      const maxPkg = Math.max(...placementReports.map((r) => r.highestPackage), 0);
-      const maxCompanies = Math.max(...placementReports.map((r) => r.companyCount), 0);
+      const avgPct = Math.round(placementReports.reduce((sum, r) => sum + r.percentage, 0) / (placementReports.length || 1));
+      const avgPackage = (placementReports.reduce((sum, r) => sum + r.avgPackage, 0) / (placementReports.length || 1)).toFixed(1);
+      const maxPkg = Math.max(...placementReports.map(r => r.highestPackage), 0);
+      const maxCompanies = Math.max(...placementReports.map(r => r.companyCount), 0);
 
       const totalRow = `"Total/Average","${totalPlaced}","${avgPct}%","${avgPackage}","${maxPkg}","${maxCompanies}"`;
-
-      content = `${header}\n${rows.join('\n')}\n${totalRow}`;
-    } else if (cleanReportName.includes('student data')) {
+      
+      content = `${header}\n${rows.join("\n")}\n${totalRow}`;
+    } else if (cleanReportName.includes("student data")) {
       // CSV format
       const header = `"Application/Offer ID","Student Name","Student ID","Company","Job Role","Status","Test Score %","Round/Stage","Salary Package"`;
-
+      
       // Combine appsList and offersList
-      const appRows = appsList.map((a) => {
-        const offer = offersList.find(
-          (o) =>
-            o.studentName.toLowerCase() === a.studentName.toLowerCase() &&
-            o.company.toLowerCase() === a.company.toLowerCase(),
-        );
-        const pkgVal = offer ? offer.package : '';
+      const appRows = appsList.map(a => {
+        const offer = offersList.find(o => o.studentName.toLowerCase() === a.studentName.toLowerCase() && o.company.toLowerCase() === a.company.toLowerCase());
+        const pkgVal = offer ? offer.package : "";
         return `"${a.id}","${a.studentName}","${a.studentId}","${a.company}","${a.role}","${a.status}","${a.score}%","Round ${a.round}","${pkgVal}"`;
       });
 
-      const offerRows = offersList
-        .filter(
-          (o) =>
-            !appsList.some(
-              (a) =>
-                a.studentName.toLowerCase() === o.studentName.toLowerCase() &&
-                a.company.toLowerCase() === o.company.toLowerCase(),
-            ),
-        )
-        .map((o) => {
-          return `"${o.id}","${o.studentName}","","${o.company}","${o.role}","${o.status}","","","${o.package}"`;
-        });
+      const offerRows = offersList.filter(o => !appsList.some(a => a.studentName.toLowerCase() === o.studentName.toLowerCase() && a.company.toLowerCase() === o.company.toLowerCase())).map(o => {
+        return `"${o.id}","${o.studentName}","","${o.company}","${o.role}","${o.status}","","","${o.package}"`;
+      });
 
-      content = `${header}\n${appRows.join('\n')}\n${offerRows.join('\n')}`;
-    } else if (cleanReportName.includes('company analytics')) {
+      content = `${header}\n${appRows.join("\n")}\n${offerRows.join("\n")}`;
+    } else if (cleanReportName.includes("company analytics")) {
       content = `========================================================================
              CORPORATE RELATIONS & COMPANY ANALYTICS REPORT
 ========================================================================
@@ -181,9 +154,7 @@ Target Role      : Corporate Relations Head / Placement Officer
 ------------------------------------------------------------------------
 ACTIVE CORPORATE PARTNERS PROFILES (${companiesList.length})
 ------------------------------------------------------------------------
-${companiesList
-  .map(
-    (c, idx) => `
+${companiesList.map((c, idx) => `
 [${idx + 1}] ${c.name}
   * Industry Sector      : ${c.industry}
   * Primary HR Contact   : ${c.hrContact}
@@ -192,43 +163,31 @@ ${companiesList
   * CTC Package Standard : ${c.package}
   * Active Hiring Status : ${c.hiringStatus}
   * Prev Year Hire Count : ${c.previousYearHires} students
-`,
-  )
-  .join('\n')}
+`).join("\n")}
 
 ------------------------------------------------------------------------
 ACTIVE RECRUITMENT DRIVES ENGAGEMENT (${drivesList.length})
 ------------------------------------------------------------------------
-${drivesList
-  .map(
-    (d, idx) => `
+${drivesList.map((d, idx) => `
 [${idx + 1}] ${d.company} - ${d.role}
   * Scheduled Date       : ${d.date}
   * Assessment Venue     : ${d.venue}
   * Application Status   : ${d.status}
   * Student Registrants  : ${d.studentCount} candidates
   * Selection Rounds     : ${d.rounds} assessment phases
-`,
-  )
-  .join('\n')}
+`).join("\n")}
 
 ========================================================================
             CONFIDENTIAL - FOR CMS INTERNAL ACADEMIC ARCHIVES
 ========================================================================`;
     } else {
       // Default: Comprehensive report
-      const customDrivesCount = drivesList.filter(
-        (d) => d.id.startsWith('DRV_') || parseInt(d.id) > 1000,
-      ).length;
-      const customAppsCount = appsList.filter(
-        (a) => a.id.startsWith('APP_') || parseInt(a.id) > 1000,
-      ).length;
-      const customOffersCount = offersList.filter(
-        (o) => o.id.startsWith('OFF_') || parseInt(o.id) > 1000,
-      ).length;
-      const acceptedOffersCount = offersList.filter((o) => o.status === 'Accepted').length;
+      const customDrivesCount = drivesList.filter(d => d.id.startsWith("DRV_") || parseInt(d.id) > 1000).length;
+      const customAppsCount = appsList.filter(a => a.id.startsWith("APP_") || parseInt(a.id) > 1000).length;
+      const customOffersCount = offersList.filter(o => o.id.startsWith("OFF_") || parseInt(o.id) > 1000).length;
+      const acceptedOffersCount = offersList.filter(o => o.status === "Accepted").length;
 
-      if (format === 'CSV') {
+      if (format === "CSV") {
         content = `"Placement Analytics & Performance Report"
 "Generated On", "${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}"
 "Reporting Period", "Year-To-Date (YTD) 2026"
@@ -248,19 +207,19 @@ ${drivesList
 
 "Detailed Log - Recruitment Drives"
 "ID", "Company", "Job Role", "Drive Date", "Venue", "Status", "Student Count"
-${drivesList.map((d) => `"${d.id}", "${d.company}", "${d.role}", "${d.date}", "${d.venue}", "${d.status}", "${d.studentCount}"`).join('\n')}
+${drivesList.map((d) => `"${d.id}", "${d.company}", "${d.role}", "${d.date}", "${d.venue}", "${d.status}", "${d.studentCount}"`).join("\n")}
 
 "Detailed Log - Student Applications"
 "ID", "Student Name", "Student ID", "Company", "Job Role", "Hiring Status", "Score", "Round"
-${appsList.map((a) => `"${a.id}", "${a.studentName}", "${a.studentId}", "${a.company}", "${a.role}", "${a.status}", "${a.score}%", "Round ${a.round}"`).join('\n')}
+${appsList.map((a) => `"${a.id}", "${a.studentName}", "${a.studentId}", "${a.company}", "${a.role}", "${a.status}", "${a.score}%", "Round ${a.round}"`).join("\n")}
 
 "Detailed Log - Interview Feedback Entries"
 "ID", "Student Name", "Rating", "Outcome", "Comments", "Date"
-${feedbackList.map((f: any) => `"${f.id}", "${f.studentName}", "${f.rating}", "${f.outcome}", "${f.comments}", "${f.date}"`).join('\n') || '"No feedbacks submitted yet."'}
+${feedbackList.map((f: any) => `"${f.id}", "${f.studentName}", "${f.rating}", "${f.outcome}", "${f.comments}", "${f.date}"`).join("\n") || '"No feedbacks submitted yet."'}
 
 "Detailed Log - Offer Letters Generated"
 "ID", "Student Name", "Company", "Job Designation", "Annual CTC Package", "Official Joining Date", "Offer Date", "Status"
-${offersList.map((o) => `"${o.id}", "${o.studentName}", "${o.company}", "${o.role}", "${o.package}", "${o.joiningDate}", "${o.offerDate}", "${o.status}"`).join('\n')}`;
+${offersList.map((o) => `"${o.id}", "${o.studentName}", "${o.company}", "${o.role}", "${o.package}", "${o.joiningDate}", "${o.offerDate}", "${o.status}"`).join("\n")}`;
       } else {
         content = `========================================================================
          CAMPUS PLACEMENT COMPREHENSIVE PERFORMANCE REPORT
@@ -302,22 +261,22 @@ Below are active records parsed in real-time from your placement dashboard:
 ------------------------------------------------------------------------
 3. ACTIVE RECRUITMENT DRIVES LOG
 ------------------------------------------------------------------------
-${drivesList.map((d, i) => `  ${i + 1}. [${d.status}] ${d.company} - ${d.role} (Date: ${d.date}, Venue: ${d.venue}, Registrants: ${d.studentCount})`).join('\n') || '  No recruitment drives found.'}
+${drivesList.map((d, i) => `  ${i+1}. [${d.status}] ${d.company} - ${d.role} (Date: ${d.date}, Venue: ${d.venue}, Registrants: ${d.studentCount})`).join("\n") || "  No recruitment drives found."}
 
 ------------------------------------------------------------------------
 4. DETAILED APPLICANT TRACKING
 ------------------------------------------------------------------------
-${appsList.map((a, i) => `  ${i + 1}. [${a.status}] ${a.studentName} (${a.studentId}) for ${a.company} - Role: ${a.role} (Score: ${a.score}%)`).join('\n') || '  No applicant tracking records found.'}
+${appsList.map((a, i) => `  ${i+1}. [${a.status}] ${a.studentName} (${a.studentId}) for ${a.company} - Role: ${a.role} (Score: ${a.score}%)`).join("\n") || "  No applicant tracking records found."}
 
 ------------------------------------------------------------------------
 5. FEEDBACK & INTERVIEWS BRIEF
 ------------------------------------------------------------------------
-${feedbackList.map((f: any, i: number) => `  ${i + 1}. [Rating: ${f.rating}/5 - ${f.outcome}] ${f.studentName}: "${f.comments}" (${f.date})`).join('\n') || '  No feedbacks submitted yet.'}
+${feedbackList.map((f: any, i: number) => `  ${i+1}. [Rating: ${f.rating}/5 - ${f.outcome}] ${f.studentName}: "${f.comments}" (${f.date})`).join("\n") || "  No feedbacks submitted yet."}
 
 ------------------------------------------------------------------------
 6. RECENT OFFER LETTERS LOG
 ------------------------------------------------------------------------
-${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studentName} for ${o.company} (${o.role}) at ${o.package} - Joining: ${o.joiningDate}`).join('\n') || '  No offer letters generated yet.'}
+${offersList.map((o, i) => `  ${i+1}. [Status: ${o.status}] Sent to ${o.studentName} for ${o.company} (${o.role}) at ${o.package} - Joining: ${o.joiningDate}`).join("\n") || "  No offer letters generated yet."}
 
 ------------------------------------------------------------------------
 7. RECOMMENDATIONS & STRATEGIC INSIGHTS
@@ -333,14 +292,12 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
     }
 
     setTimeout(() => {
-      const filename = `${reportName.toLowerCase().replace(/[^a-z0-9]/g, '_')}.${format.toLowerCase()}`;
-      const blob = new Blob([content], {
-        type: format === 'CSV' ? 'text/csv;charset=utf-8;' : 'text/plain;charset=utf-8;',
-      });
+      const filename = `${reportName.toLowerCase().replace(/[^a-z0-9]/g, "_")}.${format.toLowerCase()}`;
+      const blob = new Blob([content], { type: format === "CSV" ? "text/csv;charset=utf-8;" : "text/plain;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -358,37 +315,14 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
             const monthOffers = (res.offers || []).filter((o: any) => {
               const offerDate = o.offerDate ? new Date(o.offerDate) : null;
               if (!offerDate) return false;
-              const months = [
-                'Jan',
-                'Feb',
-                'Mar',
-                'Apr',
-                'May',
-                'Jun',
-                'Jul',
-                'Aug',
-                'Sep',
-                'Oct',
-                'Nov',
-                'Dec',
-              ];
+              const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
               return months[offerDate.getMonth()].toLowerCase() === t.month.toLowerCase();
             });
 
-            const packages = monthOffers
-              .map((o: any) => parseFloat(o.package.replace(/[^0-9.]/g, '')))
-              .filter((p: number) => !isNaN(p));
-            const avgPackage =
-              packages.length > 0
-                ? parseFloat(
-                    (packages.reduce((a: number, b: number) => a + b, 0) / packages.length).toFixed(
-                      1,
-                    ),
-                  )
-                : 8.2;
+            const packages = monthOffers.map((o: any) => parseFloat(o.package.replace(/[^0-9.]/g, ''))).filter((p: number) => !isNaN(p));
+            const avgPackage = packages.length > 0 ? parseFloat((packages.reduce((a: number, b: number) => a + b, 0) / packages.length).toFixed(1)) : 8.2;
             const highestPackage = packages.length > 0 ? Math.max(...packages) : 24.5;
-            const companyCount =
-              new Set(monthOffers.map((o: any) => o.company)).size || res.companies?.length || 0;
+            const companyCount = new Set(monthOffers.map((o: any) => o.company)).size || res.companies?.length || 0;
 
             return {
               month: t.month,
@@ -396,7 +330,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
               percentage: t.applied ? Math.round((t.placed / t.applied) * 100) : 0,
               avgPackage,
               highestPackage,
-              companyCount,
+              companyCount
             };
           });
           setPlacementReports(mappedTrends);
@@ -410,7 +344,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
         setLoading(false);
       })
       .catch((err) => {
-        console.warn('Failed to fetch live reports:', err);
+        console.warn("Failed to fetch live reports:", err);
         setLoading(false);
       });
   }, []);
@@ -423,10 +357,10 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
   };
 
   const stats = [
-    { label: 'Total Placed', value: latestMonth.placed, change: '+8.2%', icon: '👥' },
-    { label: 'Placement %', value: `${latestMonth.percentage}%`, change: '+3.5%', icon: '📊' },
-    { label: 'Avg Package', value: `${latestMonth.avgPackage} LPA`, change: '+2.1%', icon: '💰' },
-    { label: 'Active Companies', value: latestMonth.companyCount, change: '+2', icon: '🏢' },
+    { label: "Total Placed", value: latestMonth.placed, change: "+8.2%", icon: "👥" },
+    { label: "Placement %", value: `${latestMonth.percentage}%`, change: "+3.5%", icon: "📊" },
+    { label: "Avg Package", value: `${latestMonth.avgPackage} LPA`, change: "+2.1%", icon: "💰" },
+    { label: "Active Companies", value: latestMonth.companyCount, change: "+2", icon: "🏢" },
   ];
 
   const offersList = getMergedOffers(liveData?.offers);
@@ -434,14 +368,11 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
   const companiesList = getMergedCompanies(liveData?.companies);
 
   const dynamicRecruiters = (() => {
-    const recruitersMap: Record<
-      string,
-      { company: string; placements: number; totalPackage: number }
-    > = {};
-
-    offersList.forEach((offer) => {
-      if (offer.status === 'Accepted' || offer.status === 'Pending') {
-        const pkgVal = parseFloat(offer.package.replace(/[^0-9.]/g, '')) || 8.0;
+    const recruitersMap: Record<string, { company: string; placements: number; totalPackage: number }> = {};
+    
+    offersList.forEach(offer => {
+      if (offer.status === "Accepted" || offer.status === "Pending") {
+        const pkgVal = parseFloat(offer.package.replace(/[^0-9.]/g, "")) || 8.0;
         const compName = offer.company;
         if (recruitersMap[compName]) {
           recruitersMap[compName].placements += 1;
@@ -450,58 +381,36 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
           recruitersMap[compName] = {
             company: compName,
             placements: 1,
-            totalPackage: pkgVal,
+            totalPackage: pkgVal
           };
         }
       }
     });
 
     return Object.values(recruitersMap)
-      .map((r) => ({
+      .map(r => ({
         company: r.company,
         placements: r.placements,
-        avgPackage: parseFloat((r.totalPackage / (r.placements || 1)).toFixed(1)),
+        avgPackage: parseFloat((r.totalPackage / (r.placements || 1)).toFixed(1))
       }))
       .sort((a, b) => b.placements - a.placements)
       .slice(0, 5);
   })();
 
   const readinessScores = appsList.filter((a: any) => a.score > 0).map((a: any) => a.score);
-  const avgReadiness =
-    readinessScores.length > 0
-      ? Math.round(readinessScores.reduce((sum, s) => sum + s, 0) / readinessScores.length)
-      : 78;
+  const avgReadiness = readinessScores.length > 0
+    ? Math.round(readinessScores.reduce((sum, s) => sum + s, 0) / readinessScores.length)
+    : 78;
 
   const activeC = companiesList.length;
-  const partnershipGrowth = activeC > 0 ? ((activeC - 5) / 5) * 100 : 0;
-  const avgPkgGrowth =
-    latestMonth.avgPackage > 0 ? ((latestMonth.avgPackage - 6.0) / 6.0) * 100 : 0;
+  const partnershipGrowth = activeC > 0 ? ((activeC - 5) / 5 * 100) : 0;
+  const avgPkgGrowth = latestMonth.avgPackage > 0 ? ((latestMonth.avgPackage - 6.0) / 6.0 * 100) : 0;
 
   const performanceIndicators = [
-    {
-      metric: 'Placement Success Rate',
-      value: `${latestMonth.percentage}%`,
-      target: '60%',
-      status: latestMonth.percentage >= 60 ? 'success' : 'warning',
-    },
-    {
-      metric: 'Average Package Growth',
-      value: `+${avgPkgGrowth.toFixed(1)}%`,
-      target: '+10%',
-      status: avgPkgGrowth >= 10 ? 'success' : 'warning',
-    },
-    {
-      metric: 'Company Partnership Growth',
-      value: `+${partnershipGrowth.toFixed(1)}%`,
-      target: '+15%',
-      status: partnershipGrowth >= 15 ? 'success' : 'warning',
-    },
-    {
-      metric: 'Student Readiness Score',
-      value: `${avgReadiness}%`,
-      target: '85%',
-      status: avgReadiness >= 85 ? 'success' : 'warning',
-    },
+    { metric: "Placement Success Rate", value: `${latestMonth.percentage}%`, target: "60%", status: latestMonth.percentage >= 60 ? "success" : "warning" },
+    { metric: "Average Package Growth", value: `+${avgPkgGrowth.toFixed(1)}%`, target: "+10%", status: avgPkgGrowth >= 10 ? "success" : "warning" },
+    { metric: "Company Partnership Growth", value: `+${partnershipGrowth.toFixed(1)}%`, target: "+15%", status: partnershipGrowth >= 15 ? "success" : "warning" },
+    { metric: "Student Readiness Score", value: `${avgReadiness}%`, target: "85%", status: avgReadiness >= 85 ? "success" : "warning" },
   ];
 
   return (
@@ -510,8 +419,8 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
         title="Reports & Analytics"
         desc="Comprehensive placement analytics and performance reports."
         actions={
-          <button
-            onClick={() => handleExportReport('Comprehensive Placement Report', 'TXT')}
+          <button 
+            onClick={() => handleExportReport("Comprehensive Placement Report", "TXT")}
             className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
           >
             <Download className="size-4" /> Export Report
@@ -523,9 +432,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
         <Card className="flex items-center justify-center py-12">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="size-8 text-primary animate-spin" />
-            <span className="text-sm text-muted-foreground">
-              Loading reports and analytics charts...
-            </span>
+            <span className="text-sm text-muted-foreground">Loading reports and analytics charts...</span>
           </div>
         </Card>
       )}
@@ -569,7 +476,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                   <Legend />
                   <Line
                     type="monotone"
@@ -615,7 +522,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -645,7 +552,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="range" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="count" fill="url(#grad-pkg-chart)" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -686,7 +593,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
                     <td className="py-3 px-4 text-center font-bold">{report.placed}</td>
                     <td className="py-3 px-4 text-center">
                       <span
-                        className={`font-bold ${report.percentage >= 50 ? 'text-emerald-600' : report.percentage >= 40 ? 'text-amber-600' : 'text-rose-600'}`}
+                        className={`font-bold ${report.percentage >= 50 ? "text-emerald-600" : report.percentage >= 40 ? "text-amber-600" : "text-rose-600"}`}
                       >
                         {report.percentage}%
                       </span>
@@ -729,7 +636,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
                   {(
                     placementReports.reduce((sum, r) => sum + r.avgPackage, 0) /
                     (placementReports.length || 1)
-                  ).toFixed(1)}{' '}
+                  ).toFixed(1)}{" "}
                   LPA
                 </div>
               </div>
@@ -768,10 +675,10 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
         <h3 className="font-semibold mb-4">Download Reports</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { name: 'Monthly Report', format: 'PDF', size: '2.4 MB', ext: 'TXT' },
-            { name: 'Placement Stats', format: 'Excel', size: '1.8 MB', ext: 'CSV' },
-            { name: 'Student Data', format: 'CSV', size: '892 KB', ext: 'CSV' },
-            { name: 'Company Analytics', format: 'PDF', size: '3.1 MB', ext: 'TXT' },
+            { name: "Monthly Report", format: "PDF", size: "2.4 MB", ext: "TXT" },
+            { name: "Placement Stats", format: "Excel", size: "1.8 MB", ext: "CSV" },
+            { name: "Student Data", format: "CSV", size: "892 KB", ext: "CSV" },
+            { name: "Company Analytics", format: "PDF", size: "3.1 MB", ext: "TXT" },
           ].map((report) => (
             <button
               key={report.name}
@@ -832,7 +739,7 @@ ${offersList.map((o, i) => `  ${i + 1}. [Status: ${o.status}] Sent to ${o.studen
                   <div className="text-xs text-muted-foreground">Target: {indicator.target}</div>
                 </div>
                 <Badge tone={indicator.status as any}>
-                  {indicator.status === 'success' ? 'success' : 'warn'}
+                  {indicator.status === "success" ? "success" : "warn"}
                 </Badge>
               </div>
             </div>

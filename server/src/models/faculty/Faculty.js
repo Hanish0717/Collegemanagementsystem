@@ -96,117 +96,16 @@ const facultySchema = new mongoose.Schema(
       type: String,
       required: [true, 'Designation is required'],
       enum: [
-        'Principal',
-        'Vice Principal',
-        'Dean',
-        'HOD',
         'Professor',
         'Associate Professor',
         'Assistant Professor',
-        'Guest Faculty',
-        'Lab Assistant',
-        'Librarian',
-        'Hostel Warden',
-        'Transport Manager',
-        'Office Staff',
-        'Accounts',
-        'Exam Cell',
-        'System Administrator',
         'Senior Lecturer',
         'Lecturer',
         'Lab Instructor',
         'Teaching Assistant',
         'Visiting Faculty',
+        'HOD',
       ],
-    },
-    employeeCategory: {
-      type: String,
-      enum: ['Teaching', 'Non-Teaching'],
-      default: 'Teaching',
-    },
-    facultyType: {
-      type: String,
-      enum: ['Faculty', 'HOD', 'Dean', 'Principal', 'Vice Principal', 'Non-Teaching'],
-      default: 'Faculty',
-    },
-    deanResponsibilities: [
-      {
-        type: String,
-        enum: [
-          'Academics',
-          'Examination',
-          'Student Affairs',
-          'Research',
-          'IQAC',
-          'IMA',
-          'Training & Placements',
-        ],
-      },
-    ],
-    assignedPrograms: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    assignedSemesters: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    employeeStatus: {
-      type: String,
-      enum: ['Active', 'On Leave', 'Transferred', 'Promoted', 'Suspended', 'Resigned', 'Retired', 'Relieved', 'Archived'],
-      default: 'Active',
-    },
-    reportsTo: {
-      userId: { type: String, trim: true },
-      name: { type: String, trim: true },
-      designation: { type: String, trim: true },
-    },
-    permissionProfile: {
-      type: String,
-      default: 'Faculty Template',
-    },
-    lifecycleHistory: [
-      {
-        date: { type: Date, default: Date.now },
-        previousStatus: { type: String },
-        newStatus: { type: String },
-        previousDesignation: { type: String },
-        newDesignation: { type: String },
-        changedBy: { type: String },
-        reason: { type: String },
-      },
-    ],
-    isActing: {
-      type: Boolean,
-      default: false,
-    },
-    designationStartDate: {
-      type: Date,
-    },
-    designationEndDate: {
-      type: Date,
-    },
-    secondaryDepartments: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    advisorSections: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
-    delegatedTo: {
-      userId: { type: String, trim: true },
-      name: { type: String, trim: true },
-      startDate: { type: Date },
-      endDate: { type: Date },
     },
     employmentType: {
       type: String,

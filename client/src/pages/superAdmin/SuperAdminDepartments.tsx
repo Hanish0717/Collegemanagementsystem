@@ -1,15 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Building2, Plus, Search, Users, Edit, Trash, X, Loader2 } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
-import { Department } from '../../services/superAdminService';
-import { useDepartments } from '@/hooks/useDepartments';
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Building2, Plus, Search, Users, Edit, Trash, X, Loader2 } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
+import { Department } from "../../services/superAdminService";
+import { useDepartments } from "@/hooks/useDepartments";
 
 export function SuperAdminDepartments() {
-  const [academicTab, setAcademicTab] = useState('Departments');
-
   const {
     data: departments = [],
     isLoading: loading,
@@ -18,31 +16,31 @@ export function SuperAdminDepartments() {
     deleteDepartment,
   } = useDepartments();
 
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('All');
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("All");
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDept, setEditingDept] = useState<Department | null>(null);
 
   // Form states
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-  const [head, setHead] = useState('');
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+  const [head, setHead] = useState("");
   const [faculty, setFaculty] = useState(0);
   const [students, setStudents] = useState(0);
-  const [budget, setBudget] = useState('');
-  const [deptStatus, setDeptStatus] = useState('Active');
+  const [budget, setBudget] = useState("");
+  const [deptStatus, setDeptStatus] = useState("Active");
 
   const handleOpenAdd = () => {
     setEditingDept(null);
-    setName('');
-    setCode('');
-    setHead('');
+    setName("");
+    setCode("");
+    setHead("");
     setFaculty(0);
     setStudents(0);
-    setBudget('₹1.0Cr');
-    setDeptStatus('Active');
+    setBudget("₹1.0Cr");
+    setDeptStatus("Active");
     setIsModalOpen(true);
   };
 
@@ -59,11 +57,11 @@ export function SuperAdminDepartments() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this department?')) {
+    if (confirm("Are you sure you want to delete this department?")) {
       try {
         await deleteDepartment(id);
       } catch (err: any) {
-        console.error('Error deleting department:', err);
+        console.error("Error deleting department:", err);
       }
     }
   };
@@ -71,7 +69,7 @@ export function SuperAdminDepartments() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !code || !head) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -83,12 +81,12 @@ export function SuperAdminDepartments() {
           faculty: Number(faculty),
           students: Number(students),
           budget,
-          status: deptStatus,
+          status: deptStatus
         };
         await updateDepartment({ code: editingDept.id, payload });
       } else {
         if (departments.some((d) => d.id.toUpperCase() === code.toUpperCase())) {
-          toast.error('A department with this code already exists');
+          toast.error("A department with this code already exists");
           return;
         }
         const payload = {
@@ -104,7 +102,7 @@ export function SuperAdminDepartments() {
       }
       setIsModalOpen(false);
     } catch (err: any) {
-      console.error('Error saving department:', err);
+      console.error("Error saving department:", err);
     }
   };
 
@@ -112,7 +110,7 @@ export function SuperAdminDepartments() {
     () =>
       departments.filter(
         (dept) =>
-          (status === 'All' || dept.status === status) &&
+          (status === "All" || dept.status === status) &&
           [dept.name, dept.head, dept.id].some((value) =>
             value.toLowerCase().includes(search.toLowerCase()),
           ),
@@ -131,8 +129,8 @@ export function SuperAdminDepartments() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Academic Structure & Department Governance"
-        desc="Manage departments, degree programs, course offerings, curriculum frameworks, semesters, and academic years."
+        title="Department Management"
+        desc="Monitor departments, heads, faculty strength, student distribution and operational status."
         actions={
           <button
             onClick={handleOpenAdd}
@@ -142,30 +140,6 @@ export function SuperAdminDepartments() {
           </button>
         }
       />
-
-      {/* Academic Structure Sub-Tabs */}
-      <div className="flex flex-wrap gap-1.5 p-1.5 bg-accent/20 border rounded-xl overflow-x-auto">
-        {[
-          'Departments',
-          'Programs',
-          'Courses',
-          'Curriculum',
-          'Semesters',
-          'Academic Years',
-        ].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setAcademicTab(tab)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
-              academicTab === tab
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
 
       <Card>
         <div className="flex flex-col lg:flex-row gap-3">
@@ -183,7 +157,7 @@ export function SuperAdminDepartments() {
             onChange={(event) => setStatus(event.target.value)}
             className="rounded-xl border bg-background/60 px-4 py-2.5 text-sm outline-none focus:border-primary transition cursor-pointer"
           >
-            {['All', 'Active', 'Review', 'Inactive'].map((item) => (
+            {["All", "Active", "Review", "Inactive"].map((item) => (
               <option key={item}>{item}</option>
             ))}
           </select>
@@ -200,11 +174,11 @@ export function SuperAdminDepartments() {
               <div className="flex items-center gap-2">
                 <Badge
                   tone={
-                    dept.status === 'Active'
-                      ? 'success'
-                      : dept.status === 'Review'
-                        ? 'warn'
-                        : 'danger'
+                    dept.status === "Active"
+                      ? "success"
+                      : dept.status === "Review"
+                        ? "warn"
+                        : "danger"
                   }
                 >
                   {dept.status}
@@ -264,7 +238,7 @@ export function SuperAdminDepartments() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="id" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="faculty" fill="#4F46E5" radius={[8, 8, 0, 0]} name="Faculty" />
                 <Bar dataKey="students" fill="#06B6D4" radius={[8, 8, 0, 0]} name="Students" />
               </BarChart>
@@ -280,20 +254,20 @@ export function SuperAdminDepartments() {
           <div className="space-y-3">
             {[
               {
-                label: 'Total Faculty',
+                label: "Total Faculty",
                 value: departments.reduce((sum, dept) => sum + dept.faculty, 0),
               },
               {
-                label: 'Total Students',
+                label: "Total Students",
                 value: departments.reduce((sum, dept) => sum + dept.students, 0),
               },
               {
-                label: 'Active Departments',
-                value: departments.filter((dept) => dept.status === 'Active').length,
+                label: "Active Departments",
+                value: departments.filter((dept) => dept.status === "Active").length,
               },
               {
-                label: 'Review Required',
-                value: departments.filter((dept) => dept.status === 'Review').length,
+                label: "Review Required",
+                value: departments.filter((dept) => dept.status === "Review").length,
               },
             ].map((stat) => (
               <div
@@ -314,7 +288,7 @@ export function SuperAdminDepartments() {
           <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex justify-between items-center border-b pb-3 mb-4">
               <h3 className="font-bold text-base text-gradient">
-                {editingDept ? 'Edit Department Details' : 'Add New Department'}
+                {editingDept ? "Edit Department Details" : "Add New Department"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -325,9 +299,7 @@ export function SuperAdminDepartments() {
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Department Name *
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Department Name *</label>
                 <input
                   type="text"
                   required
@@ -339,9 +311,7 @@ export function SuperAdminDepartments() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Department Code / ID *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Department Code / ID *</label>
                   <input
                     type="text"
                     required
@@ -353,9 +323,7 @@ export function SuperAdminDepartments() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Head of Department *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Head of Department *</label>
                   <input
                     type="text"
                     required
@@ -368,9 +336,7 @@ export function SuperAdminDepartments() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Faculty Strength
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Faculty Strength</label>
                   <input
                     type="number"
                     value={faculty}
@@ -379,9 +345,7 @@ export function SuperAdminDepartments() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Student Count
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Student Count</label>
                   <input
                     type="number"
                     value={students}
@@ -392,9 +356,7 @@ export function SuperAdminDepartments() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Annual Budget
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Annual Budget</label>
                   <input
                     type="text"
                     placeholder="e.g. ₹1.2Cr"
@@ -428,7 +390,7 @@ export function SuperAdminDepartments() {
                   type="submit"
                   className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-semibold glow-primary hover:opacity-95 transition text-xs cursor-pointer"
                 >
-                  {editingDept ? 'Update' : 'Create'}
+                  {editingDept ? "Update" : "Create"}
                 </button>
               </div>
             </form>

@@ -1,100 +1,86 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { Bell, Database, Mail, Palette, Save, Settings } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createFileRoute } from "@tanstack/react-router";
+import { Bell, Database, Mail, Palette, Save, Settings } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchSystemConfig,
   saveConfigToggles,
-  saveConfigInstitution,
-} from '@/services/superAdminService';
-import { Skeleton } from '@/components/ui/skeleton';
+  saveConfigInstitution
+} from "@/services/superAdminService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const icons = [Mail, Bell, Settings, Database, Palette];
 
 const settingsGroups = [
   {
-    title: 'Email & Communication',
-    items: ['SMTP Configuration', 'SMS gateway Settings', 'Internal chat server'],
+    title: "Email & Communication",
+    items: ["SMTP Configuration", "SMS gateway Settings", "Internal chat server"],
   },
   {
-    title: 'System Alerts & Reminders',
-    items: ['Attendance warnings', 'Auto back-up alerts', 'Holiday broadcast notices'],
+    title: "System Alerts & Reminders",
+    items: ["Attendance warnings", "Auto back-up alerts", "Holiday broadcast notices"],
   },
   {
-    title: 'Database Settings',
-    items: ['Supabase auto-pruning', 'Query optimization cache', 'Weekly diagnostic logs'],
+    title: "Database Settings",
+    items: ["Supabase auto-pruning", "Query optimization cache", "Weekly diagnostic logs"],
   },
 ];
 
 export function SuperAdminConfiguration() {
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState('General Settings');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['superAdminSystemConfig'],
+    queryKey: ["superAdminSystemConfig"],
     queryFn: fetchSystemConfig,
   });
 
-  // AI & API Key state
-  const [aiProvider, setAiProvider] = useState('Gemini 1.5 Pro');
-  const [geminiApiKey, setGeminiApiKey] = useState('••••••••••••••••••••••••••••');
-  const [groqApiKey, setGroqApiKey] = useState('••••••••••••••••••••••••••••');
-  const [openaiApiKey, setOpenaiApiKey] = useState('••••••••••••••••••••••••••••');
-  const [enableAiAttendanceAlerts, setEnableAiAttendanceAlerts] = useState(true);
-  const [enableAiQuestionPaper, setEnableAiQuestionPaper] = useState(true);
-  const [enableAiChatbotSupport, setEnableAiChatbotSupport] = useState(true);
-
   // Institution Settings state
-  const [instName, setInstName] = useState('');
-  const [acadYear, setAcadYear] = useState('');
-  const [bkInterval, setBkInterval] = useState('Daily Backup');
-  const [admEmail, setAdmEmail] = useState('');
-  const [notifNotes, setNotifNotes] = useState('');
+  const [instName, setInstName] = useState("");
+  const [acadYear, setAcadYear] = useState("");
+  const [bkInterval, setBkInterval] = useState("Daily Backup");
+  const [admEmail, setAdmEmail] = useState("");
+  const [notifNotes, setNotifNotes] = useState("");
 
   const configs = data?.toggles || {};
 
   useEffect(() => {
     if (data?.institution) {
-      setInstName(data.institution.instName || '');
-      setAcadYear(data.institution.acadYear || '');
-      setBkInterval(data.institution.bkInterval || 'Daily Backup');
-      setAdmEmail(data.institution.admEmail || '');
-      setNotifNotes(data.institution.notifNotes || '');
+      setInstName(data.institution.instName || "");
+      setAcadYear(data.institution.acadYear || "");
+      setBkInterval(data.institution.bkInterval || "Daily Backup");
+      setAdmEmail(data.institution.admEmail || "");
+      setNotifNotes(data.institution.notifNotes || "");
     }
   }, [data]);
 
   const togglesMutation = useMutation({
     mutationFn: saveConfigToggles,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['superAdminSystemConfig'] });
+      queryClient.invalidateQueries({ queryKey: ["superAdminSystemConfig"] });
     },
     onError: (err: any) => {
-      toast.error(
-        err.response?.data?.message || err.message || 'Failed to update configuration toggle',
-      );
-    },
+      toast.error(err.response?.data?.message || err.message || "Failed to update configuration toggle");
+    }
   });
 
   const institutionMutation = useMutation({
     mutationFn: saveConfigInstitution,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['superAdminSystemConfig'] });
-      toast.success('Institutional configurations saved successfully.');
+      queryClient.invalidateQueries({ queryKey: ["superAdminSystemConfig"] });
+      toast.success("Institutional configurations saved successfully.");
     },
     onError: (err: any) => {
-      toast.error(
-        err.response?.data?.message || err.message || 'Failed to save institution configurations',
-      );
-    },
+      toast.error(err.response?.data?.message || err.message || "Failed to save institution configurations");
+    }
   });
 
   const handleToggle = (item: string) => {
     const nextVal = !configs[item];
     const updated = { ...configs, [item]: nextVal };
     togglesMutation.mutate(updated);
-    toast.success(`${item} has been ${nextVal ? 'enabled' : 'disabled'}`);
+    toast.success(`${item} has been ${nextVal ? "enabled" : "disabled"}`);
   };
 
   const handleSaveInstitution = (e: React.FormEvent) => {
@@ -110,35 +96,8 @@ export function SuperAdminConfiguration() {
     <div className="space-y-6">
       <PageHeader
         title="System Configuration"
-        desc="Configure institutional settings, AI automation engines, API keys, backup policy and system feature toggles."
+        desc="Configure institutional communication, academic cycle, backup and display preferences."
       />
-
-      {/* 9 System Configuration Sub-Tabs */}
-      <div className="flex flex-wrap gap-1.5 p-1.5 bg-accent/20 border rounded-xl overflow-x-auto">
-        {[
-          'General Settings',
-          'Academic Settings',
-          'Email Settings',
-          'Notification Settings',
-          'Backup Settings',
-          'AI Settings',
-          'API Keys',
-          'Prompt Templates',
-          'Feature Toggles',
-        ].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
-              activeTab === tab
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {settingsGroups.map((group, index) => {
@@ -150,8 +109,8 @@ export function SuperAdminConfiguration() {
                 <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center">
                   <Icon className="size-5" />
                 </div>
-                <Badge tone={isGroupEnabled ? 'success' : 'default'}>
-                  {isGroupEnabled ? 'Enabled' : 'Disabled'}
+                <Badge tone={isGroupEnabled ? "success" : "default"}>
+                  {isGroupEnabled ? "Enabled" : "Disabled"}
                 </Badge>
               </div>
               <h3 className="font-semibold">{group.title}</h3>
@@ -173,10 +132,10 @@ export function SuperAdminConfiguration() {
                         <button
                           onClick={() => handleToggle(item)}
                           disabled={togglesMutation.isPending}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${isEnabled ? 'bg-emerald-500' : 'bg-muted'} disabled:opacity-50`}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition cursor-pointer ${isEnabled ? "bg-emerald-500" : "bg-muted"} disabled:opacity-50`}
                         >
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${isEnabled ? 'translate-x-6' : 'translate-x-1'}`}
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${isEnabled ? "translate-x-6" : "translate-x-1"}`}
                           />
                         </button>
                       </div>
@@ -203,15 +162,10 @@ export function SuperAdminConfiguration() {
             <Skeleton className="h-10 w-full" />
           </div>
         ) : (
-          <form
-            onSubmit={handleSaveInstitution}
-            className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
-          >
+          <form onSubmit={handleSaveInstitution} className="space-y-4 p-4 border rounded-xl bg-gradient-soft">
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Institution Name
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Institution Name</label>
                 <input
                   value={instName}
                   onChange={(e) => setInstName(e.target.value)}
@@ -220,9 +174,7 @@ export function SuperAdminConfiguration() {
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Current Academic Year
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Current Academic Year</label>
                 <input
                   value={acadYear}
                   onChange={(e) => setAcadYear(e.target.value)}
@@ -231,9 +183,7 @@ export function SuperAdminConfiguration() {
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">
-                  System Backup Interval
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">System Backup Interval</label>
                 <select
                   value={bkInterval}
                   onChange={(e) => setBkInterval(e.target.value)}
@@ -247,9 +197,7 @@ export function SuperAdminConfiguration() {
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Primary Administrative Email
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Primary Administrative Email</label>
                 <textarea
                   value={admEmail}
                   onChange={(e) => setAdmEmail(e.target.value)}
@@ -259,9 +207,7 @@ export function SuperAdminConfiguration() {
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Notification Settings / Notes
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Notification Settings / Notes</label>
                 <textarea
                   value={notifNotes}
                   onChange={(e) => setNotifNotes(e.target.value)}
@@ -281,101 +227,6 @@ export function SuperAdminConfiguration() {
           </form>
         )}
       </Card>
-
-      {/* AI Settings & API Keys Configuration Card */}
-      {(activeTab === 'AI Settings' || activeTab === 'API Keys' || activeTab === 'Prompt Templates' || activeTab === 'Feature Toggles') && (
-        <Card className="border-primary/30 bg-gradient-soft">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-bold text-foreground">AI Automation & Provider Settings</h3>
-              <p className="text-xs text-muted-foreground">Configure AI provider API keys, automation toggles, and system prompt templates.</p>
-            </div>
-            <Badge tone="info">{aiProvider}</Badge>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-3 p-3 border rounded-xl bg-background">
-              <label className="text-xs font-bold text-foreground block">Primary AI Provider</label>
-              <select
-                value={aiProvider}
-                onChange={(e) => setAiProvider(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border bg-background text-sm cursor-pointer"
-              >
-                <option value="Gemini 1.5 Pro">Google Gemini 1.5 Pro (Recommended)</option>
-                <option value="Groq Llama-3">Groq Llama-3 70B</option>
-                <option value="OpenAI GPT-4o">OpenAI GPT-4o</option>
-              </select>
-
-              <div className="space-y-2 pt-2">
-                <label className="text-xs font-semibold text-muted-foreground block">Gemini API Key</label>
-                <input
-                  type="password"
-                  value={geminiApiKey}
-                  onChange={(e) => setGeminiApiKey(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
-                />
-
-                <label className="text-xs font-semibold text-muted-foreground block">Groq API Key</label>
-                <input
-                  type="password"
-                  value={groqApiKey}
-                  onChange={(e) => setGroqApiKey(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
-                />
-
-                <label className="text-xs font-semibold text-muted-foreground block">OpenAI API Key</label>
-                <input
-                  type="password"
-                  value={openaiApiKey}
-                  onChange={(e) => setOpenaiApiKey(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-lg border bg-background text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3 p-3 border rounded-xl bg-background">
-              <label className="text-xs font-bold text-foreground block">AI Feature Toggles & Automation</label>
-              
-              <label className="flex items-center justify-between p-2.5 rounded-lg border bg-accent/20 cursor-pointer">
-                <span className="text-xs font-medium">Auto Attendance Warning Dispatch</span>
-                <input
-                  type="checkbox"
-                  checked={enableAiAttendanceAlerts}
-                  onChange={(e) => setEnableAiAttendanceAlerts(e.target.checked)}
-                  className="rounded border-primary text-primary focus:ring-primary size-4"
-                />
-              </label>
-
-              <label className="flex items-center justify-between p-2.5 rounded-lg border bg-accent/20 cursor-pointer">
-                <span className="text-xs font-medium">AI Question Paper Blueprint Generation</span>
-                <input
-                  type="checkbox"
-                  checked={enableAiQuestionPaper}
-                  onChange={(e) => setEnableAiQuestionPaper(e.target.checked)}
-                  className="rounded border-primary text-primary focus:ring-primary size-4"
-                />
-              </label>
-
-              <label className="flex items-center justify-between p-2.5 rounded-lg border bg-accent/20 cursor-pointer">
-                <span className="text-xs font-medium">Student Helpdesk AI Chatbot</span>
-                <input
-                  type="checkbox"
-                  checked={enableAiChatbotSupport}
-                  onChange={(e) => setEnableAiChatbotSupport(e.target.checked)}
-                  className="rounded border-primary text-primary focus:ring-primary size-4"
-                />
-              </label>
-
-              <button
-                onClick={() => toast.success('AI Automation Configuration & API Keys updated successfully.')}
-                className="w-full mt-2 px-3 py-2 rounded-lg bg-primary text-white text-xs font-bold hover:bg-primary/90 transition cursor-pointer"
-              >
-                Save AI Settings
-              </button>
-            </div>
-          </div>
-        </Card>
-      )}
     </div>
   );
 }

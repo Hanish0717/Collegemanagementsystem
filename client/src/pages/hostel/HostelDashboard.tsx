@@ -1,30 +1,40 @@
-import { useEffect, useState, useMemo } from 'react';
-import { Outlet, useRouterState } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Building2, Plus, Search, Phone, Edit, Trash2, Eye, Upload, Loader2 } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { supabase } from '@/lib/supabaseClient';
+import { useEffect, useState, useMemo } from "react";
+import { Outlet, useRouterState } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Building2,
+  Plus,
+  Search,
+  Phone,
+  Edit,
+  Trash2,
+  Eye,
+  Upload,
+  Loader2
+} from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { supabase } from "@/lib/supabaseClient";
 import {
   fetchHostelBlocksOverview,
   createHostelBlock,
   updateHostelBlock,
   deleteHostelBlock,
   fetchHostels,
-  type HostelBlockRecord,
-} from '@/services/hostelService';
-import { toast } from 'sonner';
+  type HostelBlockRecord
+} from "@/services/hostelService";
+import { toast } from "sonner";
 
 export function HostelDashboard() {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const queryClient = useQueryClient();
 
   // ── Hostel Blocks Overview UI State ────────────────────
-  const [blockSearch, setBlockSearch] = useState('');
-  const [filterType, setFilterType] = useState('All');
-  const [filterAcType, setFilterAcType] = useState('All');
-  const [filterStatus, setFilterStatus] = useState('All');
-  const [filterOccupancy, setFilterOccupancy] = useState('All');
-  const [filterHostel, setFilterHostel] = useState('All');
+  const [blockSearch, setBlockSearch] = useState("");
+  const [filterType, setFilterType] = useState("All");
+  const [filterAcType, setFilterAcType] = useState("All");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterOccupancy, setFilterOccupancy] = useState("All");
+  const [filterHostel, setFilterHostel] = useState("All");
 
   // Modal States
   const [viewBlock, setViewBlock] = useState<HostelBlockRecord | null>(null);
@@ -33,54 +43,42 @@ export function HostelDashboard() {
   const [loading, setLoading] = useState(false);
 
   // Form Fields State
-  const [formHostelId, setFormHostelId] = useState('');
-  const [formName, setFormName] = useState('');
-  const [formType, setFormType] = useState('Boys');
+  const [formHostelId, setFormHostelId] = useState("");
+  const [formName, setFormName] = useState("");
+  const [formType, setFormType] = useState("Boys");
   const [formCapacity, setFormCapacity] = useState(300);
   const [formTotalRooms, setFormTotalRooms] = useState(150);
   const [formAcRooms, setFormAcRooms] = useState(50);
   const [formNonAcRooms, setFormNonAcRooms] = useState(100);
   const [formOccupants, setFormOccupants] = useState(0);
-  const [formWarden, setFormWarden] = useState('');
-  const [formContact, setFormContact] = useState('');
-  const [formStatus, setFormStatus] = useState('Available');
-  const [formImage, setFormImage] = useState('');
+  const [formWarden, setFormWarden] = useState("");
+  const [formContact, setFormContact] = useState("");
+  const [formStatus, setFormStatus] = useState("Available");
+  const [formImage, setFormImage] = useState("");
 
   // Live Queries (must all be called unconditionally before any early return)
   const { data: blocks = [], isLoading: isBlocksLoading } = useQuery({
-    queryKey: ['hostel-blocks-overview'],
+    queryKey: ["hostel-blocks-overview"],
     queryFn: fetchHostelBlocksOverview,
     staleTime: 0,
   });
 
   const { data: hostelsList = [] } = useQuery({
-    queryKey: ['hostels'],
+    queryKey: ["hostels"],
     queryFn: fetchHostels,
     staleTime: 0,
   });
 
   useEffect(() => {
     const invalidateHostelDashboard = () => {
-      queryClient.invalidateQueries({ queryKey: ['hostel-blocks-overview'] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-blocks-overview"] });
     };
 
     const roomChannel = supabase
-      .channel('hostel-room-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'hostel_rooms' },
-        invalidateHostelDashboard,
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'hostel_allocations' },
-        invalidateHostelDashboard,
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'hostel_blocks' },
-        invalidateHostelDashboard,
-      )
+      .channel("hostel-room-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "hostel_rooms" }, invalidateHostelDashboard)
+      .on("postgres_changes", { event: "*", schema: "public", table: "hostel_allocations" }, invalidateHostelDashboard)
+      .on("postgres_changes", { event: "*", schema: "public", table: "hostel_blocks" }, invalidateHostelDashboard)
       .subscribe();
 
     return () => {
@@ -98,24 +96,24 @@ export function HostelDashboard() {
       setFormAcRooms(editBlock.ac_rooms);
       setFormNonAcRooms(editBlock.non_ac_rooms);
       setFormOccupants(editBlock.occupants);
-      setFormWarden(editBlock.block_warden || '');
-      setFormContact(editBlock.contact_number || '');
-      setFormStatus(editBlock.status || 'Available');
-      setFormImage(editBlock.image_url || '');
-      setFormHostelId(editBlock.hostel_id || '');
+      setFormWarden(editBlock.block_warden || "");
+      setFormContact(editBlock.contact_number || "");
+      setFormStatus(editBlock.status || "Available");
+      setFormImage(editBlock.image_url || "");
+      setFormHostelId(editBlock.hostel_id || "");
     } else {
-      setFormName('');
-      setFormType('Boys');
+      setFormName("");
+      setFormType("Boys");
       setFormCapacity(300);
       setFormTotalRooms(150);
       setFormAcRooms(50);
       setFormNonAcRooms(100);
       setFormOccupants(0);
-      setFormWarden('');
-      setFormContact('');
-      setFormStatus('Available');
-      setFormImage('');
-      setFormHostelId(hostelsList.length > 0 ? hostelsList[0].id : '');
+      setFormWarden("");
+      setFormContact("");
+      setFormStatus("Available");
+      setFormImage("");
+      setFormHostelId(hostelsList.length > 0 ? hostelsList[0].id : "");
     }
   }, [editBlock, showAddModal, hostelsList]);
 
@@ -135,42 +133,33 @@ export function HostelDashboard() {
       totalOccupiedBeds += Number(b.occupants || 0);
     });
     const totalAvailableBeds = Math.max(0, totalCapacity - totalOccupiedBeds);
-    return {
-      totalHostels,
-      totalCapacity,
-      totalRooms,
-      totalAcRooms,
-      totalNonAcRooms,
-      totalOccupiedBeds,
-      totalAvailableBeds,
-    };
+    return { totalHostels, totalCapacity, totalRooms, totalAcRooms, totalNonAcRooms, totalOccupiedBeds, totalAvailableBeds };
   }, [blocks]);
 
   const filteredBlocks = useMemo(() => {
     return blocks.filter((b: any) => {
       if (blockSearch && !b.name.toLowerCase().includes(blockSearch.toLowerCase())) return false;
-      if (filterHostel !== 'All' && b.hostel_id !== filterHostel) return false;
-      if (filterType !== 'All' && b.type !== filterType) return false;
-      if (filterAcType === 'AC' && Number(b.ac_rooms) === 0) return false;
-      if (filterAcType === 'Non-AC' && Number(b.non_ac_rooms) === 0) return false;
-      if (filterStatus !== 'All' && b.status !== filterStatus) return false;
-      if (filterOccupancy !== 'All') {
+      if (filterHostel !== "All" && b.hostel_id !== filterHostel) return false;
+      if (filterType !== "All" && b.type !== filterType) return false;
+      if (filterAcType === "AC" && Number(b.ac_rooms) === 0) return false;
+      if (filterAcType === "Non-AC" && Number(b.non_ac_rooms) === 0) return false;
+      if (filterStatus !== "All" && b.status !== filterStatus) return false;
+      if (filterOccupancy !== "All") {
         const pct = b.capacity > 0 ? (b.occupants / b.capacity) * 100 : 0;
-        if (filterOccupancy === 'low' && pct >= 50) return false;
-        if (filterOccupancy === 'medium' && (pct < 50 || pct > 90)) return false;
-        if (filterOccupancy === 'high' && pct <= 90) return false;
+        if (filterOccupancy === "low" && pct >= 50) return false;
+        if (filterOccupancy === "medium" && (pct < 50 || pct > 90)) return false;
+        if (filterOccupancy === "high" && pct <= 90) return false;
       }
       return true;
     });
   }, [blocks, blockSearch, filterHostel, filterType, filterAcType, filterStatus, filterOccupancy]);
 
   // Render child route if not on the dashboard root
-  if (path !== '/dashboard/hostel') {
+  if (path !== "/dashboard/hostel") {
     return <Outlet />;
   }
 
-  const defaultHostelImage =
-    'https://images.unsplash.com/photo-1555854817-40e098ee7f28?w=800&auto=format&fit=crop&q=60';
+  const defaultHostelImage = "https://images.unsplash.com/photo-1555854817-40e098ee7f28?w=800&auto=format&fit=crop&q=60";
 
   if (isBlocksLoading) {
     return (
@@ -199,39 +188,38 @@ export function HostelDashboard() {
 
     // Validations
     if (!formHostelId) {
-      toast.error('Hostel selection is required.');
+      toast.error("Hostel selection is required.");
       return;
     }
     if (!formName.trim()) {
-      toast.error('Hostel block name is required.');
+      toast.error("Hostel block name is required.");
       return;
     }
     if (formCapacity <= 0) {
-      toast.error('Total capacity must be greater than 0.');
+      toast.error("Total capacity must be greater than 0.");
       return;
     }
     if (formTotalRooms <= 0) {
-      toast.error('Total rooms must be greater than 0.');
+      toast.error("Total rooms must be greater than 0.");
       return;
     }
     if (Number(formAcRooms) + Number(formNonAcRooms) !== Number(formTotalRooms)) {
-      toast.error('AC Rooms count + Non-AC Rooms count must equal Total Rooms.');
+      toast.error("AC Rooms count + Non-AC Rooms count must equal Total Rooms.");
       return;
     }
     if (Number(formOccupants) > Number(formCapacity)) {
       toast.error("Current occupancy cannot exceed the block's capacity.");
       return;
     }
-
+    
     // Check duplicate names
-    const duplicate = blocks.some(
-      (b: any) =>
-        b.name.toLowerCase().trim() === formName.toLowerCase().trim() &&
-        b.hostel_id === formHostelId &&
-        (!editBlock || b.id !== editBlock.id),
+    const duplicate = blocks.some((b: any) => 
+      b.name.toLowerCase().trim() === formName.toLowerCase().trim() && 
+      b.hostel_id === formHostelId &&
+      (!editBlock || b.id !== editBlock.id)
     );
     if (duplicate) {
-      toast.error('A hostel block with this name already exists in the selected hostel.');
+      toast.error("A hostel block with this name already exists in the selected hostel.");
       return;
     }
 
@@ -249,7 +237,7 @@ export function HostelDashboard() {
         block_warden: formWarden.trim(),
         contact_number: formContact.trim(),
         status: formStatus,
-        image_url: formImage,
+        image_url: formImage
       };
 
       if (editBlock) {
@@ -261,10 +249,10 @@ export function HostelDashboard() {
         toast.success(`Successfully added ${formName}!`);
         setShowAddModal(false);
       }
-      queryClient.invalidateQueries({ queryKey: ['hostel-blocks-overview'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-stats'] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-blocks-overview"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-stats"] });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save block details.');
+      toast.error(err.message || "Failed to save block details.");
     } finally {
       setLoading(false);
     }
@@ -275,11 +263,12 @@ export function HostelDashboard() {
     try {
       await deleteHostelBlock(id, name);
       toast.success(`Successfully deleted ${name}.`);
-      queryClient.invalidateQueries({ queryKey: ['hostel-blocks-overview'] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-blocks-overview"] });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete hostel block.');
+      toast.error(err.message || "Failed to delete hostel block.");
     }
   };
+
 
   return (
     <div className="space-y-6">
@@ -311,63 +300,16 @@ export function HostelDashboard() {
         {/* Dynamic Block Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
-            {
-              label: 'Total Hostels',
-              value: blockStats.totalHostels,
-              bg: 'from-indigo-500/10 to-indigo-600/5',
-              border: 'border-indigo-100 dark:border-indigo-950/40',
-              color: 'text-indigo-600 dark:text-indigo-400',
-            },
-            {
-              label: 'Total Capacity',
-              value: blockStats.totalCapacity,
-              bg: 'from-slate-500/10 to-slate-600/5',
-              border: 'border-slate-100 dark:border-slate-800',
-              color: 'text-slate-800 dark:text-slate-200',
-            },
-            {
-              label: 'Total Rooms',
-              value: blockStats.totalRooms,
-              bg: 'from-indigo-500/10 to-indigo-600/5',
-              border: 'border-indigo-100 dark:border-indigo-950/40',
-              color: 'text-indigo-600 dark:text-indigo-400',
-            },
-            {
-              label: 'AC Rooms',
-              value: blockStats.totalAcRooms,
-              bg: 'from-cyan-500/10 to-cyan-600/5',
-              border: 'border-cyan-100 dark:border-cyan-950/40',
-              color: 'text-cyan-600 dark:text-cyan-400',
-            },
-            {
-              label: 'Non-AC Rooms',
-              value: blockStats.totalNonAcRooms,
-              bg: 'from-amber-500/10 to-amber-600/5',
-              border: 'border-amber-100 dark:border-amber-950/40',
-              color: 'text-amber-600 dark:text-amber-400',
-            },
-            {
-              label: 'Occupied Beds',
-              value: blockStats.totalOccupiedBeds,
-              bg: 'from-rose-500/10 to-rose-600/5',
-              border: 'border-rose-100 dark:border-rose-950/40',
-              color: 'text-rose-600 dark:text-rose-400',
-            },
-            {
-              label: 'Available Beds',
-              value: blockStats.totalAvailableBeds,
-              bg: 'from-teal-500/10 to-teal-600/5',
-              border: 'border-teal-100 dark:border-teal-950/40',
-              color: 'text-teal-600 dark:text-teal-400',
-            },
+            { label: "Total Hostels", value: blockStats.totalHostels, bg: "from-indigo-500/10 to-indigo-600/5", border: "border-indigo-100 dark:border-indigo-950/40", color: "text-indigo-600 dark:text-indigo-400" },
+            { label: "Total Capacity", value: blockStats.totalCapacity, bg: "from-slate-500/10 to-slate-600/5", border: "border-slate-100 dark:border-slate-800", color: "text-slate-800 dark:text-slate-200" },
+            { label: "Total Rooms", value: blockStats.totalRooms, bg: "from-indigo-500/10 to-indigo-600/5", border: "border-indigo-100 dark:border-indigo-950/40", color: "text-indigo-600 dark:text-indigo-400" },
+            { label: "AC Rooms", value: blockStats.totalAcRooms, bg: "from-cyan-500/10 to-cyan-600/5", border: "border-cyan-100 dark:border-cyan-950/40", color: "text-cyan-600 dark:text-cyan-400" },
+            { label: "Non-AC Rooms", value: blockStats.totalNonAcRooms, bg: "from-amber-500/10 to-amber-600/5", border: "border-amber-100 dark:border-amber-950/40", color: "text-amber-600 dark:text-amber-400" },
+            { label: "Occupied Beds", value: blockStats.totalOccupiedBeds, bg: "from-rose-500/10 to-rose-600/5", border: "border-rose-100 dark:border-rose-950/40", color: "text-rose-600 dark:text-rose-400" },
+            { label: "Available Beds", value: blockStats.totalAvailableBeds, bg: "from-teal-500/10 to-teal-600/5", border: "border-teal-100 dark:border-teal-950/40", color: "text-teal-600 dark:text-teal-400" }
           ].map((s) => (
-            <Card
-              key={s.label}
-              className={`p-3 text-center flex flex-col justify-center bg-gradient-to-br ${s.bg} ${s.border} rounded-2xl`}
-            >
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                {s.label}
-              </span>
+            <Card key={s.label} className={`p-3 text-center flex flex-col justify-center bg-gradient-to-br ${s.bg} ${s.border} rounded-2xl`}>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{s.label}</span>
               <span className={`text-xl font-extrabold mt-1.5 ${s.color}`}>{s.value}</span>
             </Card>
           ))}
@@ -389,9 +331,7 @@ export function HostelDashboard() {
           <div className="w-full lg:w-auto flex flex-wrap items-center justify-start lg:justify-end gap-3">
             {/* Hostel Filter */}
             <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                Hostel:
-              </span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Hostel:</span>
               <select
                 value={filterHostel}
                 onChange={(e) => setFilterHostel(e.target.value)}
@@ -399,18 +339,14 @@ export function HostelDashboard() {
               >
                 <option value="All">All Hostels</option>
                 {hostelsList.map((h: any) => (
-                  <option key={h.id} value={h.id}>
-                    {h.name}
-                  </option>
+                  <option key={h.id} value={h.id}>{h.name}</option>
                 ))}
               </select>
             </div>
 
             {/* Type Filter */}
             <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                Type:
-              </span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Type:</span>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
@@ -424,9 +360,7 @@ export function HostelDashboard() {
 
             {/* AC Filter */}
             <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                Rooms:
-              </span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Rooms:</span>
               <select
                 value={filterAcType}
                 onChange={(e) => setFilterAcType(e.target.value)}
@@ -440,9 +374,7 @@ export function HostelDashboard() {
 
             {/* Status Filter */}
             <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                Status:
-              </span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Status:</span>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
@@ -457,9 +389,7 @@ export function HostelDashboard() {
 
             {/* Occupancy Filter */}
             <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/60 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700">
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                Occupancy:
-              </span>
+              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Occupancy:</span>
               <select
                 value={filterOccupancy}
                 onChange={(e) => setFilterOccupancy(e.target.value)}
@@ -478,24 +408,21 @@ export function HostelDashboard() {
         {filteredBlocks.length === 0 ? (
           <div className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-12 text-center text-muted-foreground">
             <Building2 className="size-10 mx-auto text-muted-foreground/40 mb-3" />
-            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-              No hostel blocks found matching selected filters.
-            </p>
-            <p className="text-xs text-muted-foreground/60 mt-1">
-              Try modifying your search or filters above.
-            </p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">No hostel blocks found matching selected filters.</p>
+            <p className="text-xs text-muted-foreground/60 mt-1">Try modifying your search or filters above.</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredBlocks.map((b: any) => {
-              const occupancyPercentage =
-                b.capacity > 0 ? Math.round((b.occupants / b.capacity) * 100) : 0;
-              const isFull = b.status === 'Full' || occupancyPercentage >= 100;
-              const statusBadgeTone =
-                b.status === 'Maintenance' ? 'warn' : isFull ? 'danger' : 'success';
-
-              const statusText =
-                b.status === 'Maintenance' ? 'Maintenance' : isFull ? 'Full' : 'Available';
+              const occupancyPercentage = b.capacity > 0 ? Math.round((b.occupants / b.capacity) * 100) : 0;
+              const isFull = b.status === "Full" || occupancyPercentage >= 100;
+              const statusBadgeTone = 
+                b.status === "Maintenance" ? "warn" :
+                isFull ? "danger" : "success";
+              
+              const statusText = 
+                b.status === "Maintenance" ? "Maintenance" :
+                isFull ? "Full" : "Available";
 
               return (
                 <div
@@ -519,13 +446,9 @@ export function HostelDashboard() {
                       />
                     ) : null}
                     {/* Fallback gradient placeholder if no image or fails to load */}
-                    <div
-                      className={`absolute inset-0 bg-blue-600 flex flex-col items-center justify-center text-white ${b.image_url ? 'hidden' : ''}`}
-                    >
+                    <div className={`absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex flex-col items-center justify-center text-white ${b.image_url ? 'hidden' : ''}`}>
                       <Building2 className="size-12 animate-pulse mb-1 text-white/90" />
-                      <span className="text-[10px] uppercase tracking-widest font-bold text-white/80">
-                        {b.code}
-                      </span>
+                      <span className="text-[10px] uppercase tracking-widest font-bold text-white/80">{b.code}</span>
                     </div>
 
                     {/* Dark overlay gradient to blend bottom of image */}
@@ -533,9 +456,7 @@ export function HostelDashboard() {
 
                     {/* Badges on top */}
                     <div className="absolute top-3 left-3 flex gap-1.5 z-10">
-                      <span
-                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full text-white bg-black/55 backdrop-blur-md border border-white/10 uppercase tracking-wider`}
-                      >
+                      <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full text-white bg-black/55 backdrop-blur-md border border-white/10 uppercase tracking-wider`}>
                         {b.type}
                       </span>
                     </div>
@@ -547,11 +468,9 @@ export function HostelDashboard() {
 
                     {/* overlay title */}
                     <div className="absolute bottom-3 left-4 right-4 z-10 text-left">
-                      <h4 className="font-extrabold text-white text-lg tracking-tight drop-shadow-md truncate">
-                        {b.name}
-                      </h4>
+                      <h4 className="font-extrabold text-white text-lg tracking-tight drop-shadow-md truncate">{b.name}</h4>
                       <p className="text-[10px] text-white/85 drop-shadow-sm font-bold tracking-wider uppercase truncate">
-                        {b.hostels?.name || 'General'} • Code: {b.code}
+                        {b.hostels?.name || "General"} • Code: {b.code}
                       </p>
                     </div>
                   </div>
@@ -561,36 +480,20 @@ export function HostelDashboard() {
                     {/* Metrics Grid */}
                     <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 dark:bg-slate-900/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-medium">
-                          Beds Capacity
-                        </span>
-                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">
-                          {b.capacity} beds
-                        </span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-medium">Beds Capacity</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{b.capacity} beds</span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-medium">
-                          Total Rooms
-                        </span>
-                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">
-                          {b.total_rooms} rooms
-                        </span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-medium">Total Rooms</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{b.total_rooms} rooms</span>
                       </div>
                       <div className="flex flex-col border-t border-slate-100 dark:border-slate-800/80 pt-2 col-span-1">
-                        <span className="text-[10px] text-cyan-600 dark:text-cyan-400 uppercase font-semibold">
-                          AC Rooms
-                        </span>
-                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">
-                          {b.ac_rooms}
-                        </span>
+                        <span className="text-[10px] text-cyan-600 dark:text-cyan-400 uppercase font-semibold">AC Rooms</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{b.ac_rooms}</span>
                       </div>
                       <div className="flex flex-col border-t border-slate-100 dark:border-slate-800/80 pt-2 col-span-1">
-                        <span className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-semibold">
-                          Non-AC Rooms
-                        </span>
-                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">
-                          {b.non_ac_rooms}
-                        </span>
+                        <span className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-semibold">Non-AC Rooms</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5">{b.non_ac_rooms}</span>
                       </div>
                     </div>
 
@@ -599,15 +502,16 @@ export function HostelDashboard() {
                       <div className="flex justify-between items-center text-xs">
                         <span className="text-muted-foreground font-medium">Occupancy</span>
                         <span className="font-bold text-slate-800 dark:text-slate-100">
-                          {b.occupants} / {b.capacity}{' '}
-                          <span className="text-muted-foreground font-normal">
-                            ({occupancyPercentage}%)
-                          </span>
+                          {b.occupants} / {b.capacity} <span className="text-muted-foreground font-normal">({occupancyPercentage}%)</span>
                         </span>
                       </div>
                       <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden p-[2px]">
                         <div
-                          className="h-full rounded-full transition-all duration-500 shadow-xs bg-blue-600"
+                          className={`h-full rounded-full transition-all duration-500 shadow-xs ${
+                            occupancyPercentage >= 95 ? "bg-gradient-to-r from-rose-500 to-red-600" :
+                            occupancyPercentage >= 75 ? "bg-gradient-to-r from-amber-400 to-amber-600" :
+                            "bg-gradient-to-r from-teal-400 to-emerald-600"
+                          }`}
                           style={{ width: `${Math.min(100, occupancyPercentage)}%` }}
                         />
                       </div>
@@ -617,15 +521,13 @@ export function HostelDashboard() {
                     <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 text-xs">
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground font-medium">Warden:</span>
-                        <span className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[140px]">
-                          {b.block_warden || 'Not Assigned'}
-                        </span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200 truncate max-w-[140px]">{b.block_warden || "Not Assigned"}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground font-medium">Helpline:</span>
                         <span className="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
                           <Phone className="size-3.5" />
-                          {b.contact_number || 'N/A'}
+                          {b.contact_number || "N/A"}
                         </span>
                       </div>
                     </div>
@@ -672,7 +574,7 @@ export function HostelDashboard() {
             <div className="flex justify-between items-center border-b p-4 px-5">
               <h3 className="font-semibold text-base text-foreground flex items-center gap-2">
                 <Building2 className="size-5 text-indigo-600" />
-                <span>{editBlock ? `Edit: ${editBlock.name}` : 'Create New Hostel Block'}</span>
+                <span>{editBlock ? `Edit: ${editBlock.name}` : "Create New Hostel Block"}</span>
               </h3>
               <button
                 onClick={() => {
@@ -684,16 +586,11 @@ export function HostelDashboard() {
                 ✕
               </button>
             </div>
-
-            <form
-              onSubmit={handleSaveBlock}
-              className="flex-1 overflow-y-auto p-5 space-y-4 text-left"
-            >
+            
+            <form onSubmit={handleSaveBlock} className="flex-1 overflow-y-auto p-5 space-y-4 text-left">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Hostel Block Name *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Hostel Block Name *</label>
                   <input
                     type="text"
                     required
@@ -704,9 +601,7 @@ export function HostelDashboard() {
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Associated Hostel *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Associated Hostel *</label>
                   <select
                     required
                     value={formHostelId}
@@ -715,16 +610,12 @@ export function HostelDashboard() {
                   >
                     <option value="">Select Hostel</option>
                     {hostelsList.map((h: any) => (
-                      <option key={h.id} value={h.id}>
-                        {h.name}
-                      </option>
+                      <option key={h.id} value={h.id}>{h.name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Hostel Type *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Hostel Type *</label>
                   <select
                     value={formType}
                     onChange={(e) => setFormType(e.target.value)}
@@ -736,9 +627,7 @@ export function HostelDashboard() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Status Badge *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Status Badge *</label>
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value)}
@@ -753,9 +642,7 @@ export function HostelDashboard() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Total Capacity (Beds) *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Total Capacity (Beds) *</label>
                   <input
                     type="number"
                     required
@@ -766,9 +653,7 @@ export function HostelDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Total Rooms *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Total Rooms *</label>
                   <input
                     type="number"
                     required
@@ -779,9 +664,7 @@ export function HostelDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Current Occupancy *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Current Occupancy *</label>
                   <input
                     type="number"
                     required
@@ -806,9 +689,7 @@ export function HostelDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Non-AC Rooms *
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Non-AC Rooms *</label>
                   <input
                     type="number"
                     required
@@ -832,9 +713,7 @@ export function HostelDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground">
-                    Contact Phone
-                  </label>
+                  <label className="text-xs font-semibold text-muted-foreground">Contact Phone</label>
                   <input
                     type="text"
                     placeholder="e.g. 9876543210"
@@ -847,9 +726,7 @@ export function HostelDashboard() {
 
               {/* Photo Upload & URL */}
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Block Image (URL or Upload File)
-                </label>
+                <label className="text-xs font-semibold text-muted-foreground">Block Image (URL or Upload File)</label>
                 <div className="flex gap-3">
                   <input
                     type="text"
@@ -874,7 +751,7 @@ export function HostelDashboard() {
                     <img src={formImage} alt="Preview" className="w-full h-full object-cover" />
                     <button
                       type="button"
-                      onClick={() => setFormImage('')}
+                      onClick={() => setFormImage("")}
                       className="absolute top-2 right-2 bg-black/60 text-white rounded-full size-6 flex items-center justify-center text-[10px] cursor-pointer hover:bg-black transition"
                     >
                       ✕
@@ -900,7 +777,7 @@ export function HostelDashboard() {
                   className="flex-1 px-3 py-2.5 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary cursor-pointer hover:opacity-90 transition flex items-center justify-center gap-1.5"
                 >
                   {loading && <Loader2 className="size-3.5 animate-spin" />}
-                  <span>{editBlock ? 'Save Changes' : 'Create Block'}</span>
+                  <span>{editBlock ? "Save Changes" : "Create Block"}</span>
                 </button>
               </div>
             </form>
@@ -936,22 +813,17 @@ export function HostelDashboard() {
               <div>
                 <h3 className="font-bold text-xl text-foreground">{viewBlock.name}</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Hostel: {viewBlock.hostels?.name || 'General'} • Code Reference: {viewBlock.code}
+                  Hostel: {viewBlock.hostels?.name || "General"} • Code Reference: {viewBlock.code}
                 </p>
               </div>
 
               {/* Status */}
               <div className="flex items-center justify-between border-b pb-3 text-xs">
-                <span className="text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">
-                  Block Status:
-                </span>
+                <span className="text-muted-foreground font-semibold uppercase tracking-wider text-[10px]">Block Status:</span>
                 <Badge
                   tone={
-                    viewBlock.status === 'Maintenance'
-                      ? 'warn'
-                      : viewBlock.status === 'Full' || viewBlock.occupants >= viewBlock.capacity
-                        ? 'danger'
-                        : 'success'
+                    viewBlock.status === "Maintenance" ? "warn" :
+                    (viewBlock.status === "Full" || viewBlock.occupants >= viewBlock.capacity) ? "danger" : "success"
                   }
                 >
                   {viewBlock.status}
@@ -961,25 +833,15 @@ export function HostelDashboard() {
               {/* Numbers Grid */}
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div className="border rounded-xl p-2.5 bg-accent/15">
-                  <span className="text-[10px] text-muted-foreground uppercase block">
-                    Capacity
-                  </span>
-                  <span className="font-bold text-base block mt-0.5 text-foreground">
-                    {viewBlock.capacity}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground uppercase block">Capacity</span>
+                  <span className="font-bold text-base block mt-0.5 text-foreground">{viewBlock.capacity}</span>
                 </div>
                 <div className="border rounded-xl p-2.5 bg-accent/15">
-                  <span className="text-[10px] text-muted-foreground uppercase block">
-                    Occupants
-                  </span>
-                  <span className="font-bold text-base block mt-0.5 text-foreground">
-                    {viewBlock.occupants}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground uppercase block">Occupants</span>
+                  <span className="font-bold text-base block mt-0.5 text-foreground">{viewBlock.occupants}</span>
                 </div>
                 <div className="border rounded-xl p-2.5 bg-accent/15">
-                  <span className="text-[10px] text-muted-foreground uppercase block">
-                    Available
-                  </span>
+                  <span className="text-[10px] text-muted-foreground uppercase block">Available</span>
                   <span className="font-bold text-base block mt-0.5 text-teal-600">
                     {Math.max(0, viewBlock.capacity - viewBlock.occupants)}
                   </span>
@@ -991,24 +853,17 @@ export function HostelDashboard() {
                 <div className="flex justify-between text-xs font-semibold">
                   <span className="text-muted-foreground">Occupancy Rate:</span>
                   <span className="text-foreground">
-                    {viewBlock.capacity > 0
-                      ? Math.round((viewBlock.occupants / viewBlock.capacity) * 100)
-                      : 0}
-                    %
+                    {viewBlock.capacity > 0 ? Math.round((viewBlock.occupants / viewBlock.capacity) * 100) : 0}%
                   </span>
                 </div>
                 <div className="w-full bg-accent/30 h-2.5 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
-                      (viewBlock.occupants / viewBlock.capacity) * 100 >= 95
-                        ? 'bg-rose-500'
-                        : (viewBlock.occupants / viewBlock.capacity) * 100 >= 75
-                          ? 'bg-amber-500'
-                          : 'bg-teal-500'
+                      (viewBlock.occupants / viewBlock.capacity) * 100 >= 95 ? "bg-rose-500" :
+                      (viewBlock.occupants / viewBlock.capacity) * 100 >= 75 ? "bg-amber-500" :
+                      "bg-teal-500"
                     }`}
-                    style={{
-                      width: `${Math.min(100, (viewBlock.occupants / viewBlock.capacity) * 100)}%`,
-                    }}
+                    style={{ width: `${Math.min(100, (viewBlock.occupants / viewBlock.capacity) * 100)}%` }}
                   />
                 </div>
               </div>
@@ -1016,9 +871,7 @@ export function HostelDashboard() {
               {/* Room type breakdown */}
               <div className="border rounded-xl p-3 bg-muted/20 space-y-2 text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold uppercase text-[10px]">
-                    Room inventory breakdown:
-                  </span>
+                  <span className="text-muted-foreground font-semibold uppercase text-[10px]">Room inventory breakdown:</span>
                   <span className="font-bold">{viewBlock.total_rooms} rooms</span>
                 </div>
                 <div className="flex justify-between pt-1 border-t">
@@ -1027,9 +880,7 @@ export function HostelDashboard() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Non-AC Accommodations:</span>
-                  <span className="font-semibold text-amber-600">
-                    {viewBlock.non_ac_rooms} rooms
-                  </span>
+                  <span className="font-semibold text-amber-600">{viewBlock.non_ac_rooms} rooms</span>
                 </div>
               </div>
 
@@ -1037,15 +888,13 @@ export function HostelDashboard() {
               <div className="border-t pt-4 space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Hostel Block Warden:</span>
-                  <span className="font-bold text-foreground">
-                    {viewBlock.block_warden || 'Not Assigned'}
-                  </span>
+                  <span className="font-bold text-foreground">{viewBlock.block_warden || "Not Assigned"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Warden Contact Helpline:</span>
                   <span className="font-bold text-foreground flex items-center gap-1">
                     <Phone className="size-3.5" />
-                    {viewBlock.contact_number || '-'}
+                    {viewBlock.contact_number || "-"}
                   </span>
                 </div>
               </div>

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Card, PageHeader, StatCard, Badge } from '@/components/dashboard/ui';
-import { CalendarCheck, Users, UserX, Clock } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
+import { CalendarCheck, Users, UserX, Clock } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -9,8 +9,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from 'recharts';
-import api from '@/lib/api';
+} from "recharts";
+import api from "@/lib/api";
 
 export function AttendancePage() {
   const [report, setReport] = useState<any>(null);
@@ -19,12 +19,12 @@ export function AttendancePage() {
   useEffect(() => {
     const fetchAttendanceReport = async () => {
       try {
-        const res = await api.get('/api/attendance/report');
+        const res = await api.get("/api/attendance/report");
         if (res.data?.success && res.data?.data) {
           setReport(res.data.data);
         }
       } catch (err) {
-        console.error('Error loading attendance ledger report:', err);
+        console.error("Error loading attendance ledger report:", err);
       } finally {
         setLoading(false);
       }
@@ -36,9 +36,7 @@ export function AttendancePage() {
     return (
       <div className="space-y-6">
         <PageHeader title="Attendance" desc="Loading attendance report..." />
-        <div className="p-8 text-center text-muted-foreground font-sans">
-          Compiling attendance logs...
-        </div>
+        <div className="p-8 text-center text-muted-foreground font-sans">Compiling attendance logs...</div>
       </div>
     );
   }
@@ -46,18 +44,15 @@ export function AttendancePage() {
   // Fallbacks if database is empty
   const totals = report?.totals || { total: 0, present: 0, absent: 0, late: 0 };
   const totalsToday = report?.totalsToday || { present: 0, absent: 0 };
-
+  
   // Format trend data
-  const chartData =
-    report?.trends && report.trends.length > 0
-      ? report.trends
-      : [
-          { day: 'Mon', present: 92, absent: 8 },
-          { day: 'Tue', present: 94, absent: 6 },
-          { day: 'Wed', present: 89, absent: 11 },
-          { day: 'Thu', present: 91, absent: 9 },
-          { day: 'Fri', present: 95, absent: 5 },
-        ];
+  const chartData = (report?.trends && report.trends.length > 0) ? report.trends : [
+    { day: "Mon", present: 92, absent: 8 },
+    { day: "Tue", present: 94, absent: 6 },
+    { day: "Wed", present: 89, absent: 11 },
+    { day: "Thu", present: 91, absent: 9 },
+    { day: "Fri", present: 95, absent: 5 }
+  ];
 
   const studentsList = report?.lowAttendanceStudents || [];
 
@@ -79,12 +74,7 @@ export function AttendancePage() {
           icon={UserX}
           gradient="bg-gradient-violet"
         />
-        <StatCard
-          label="On Leave / Late"
-          value={String(totals.late || 0)}
-          icon={Clock}
-          gradient="bg-gradient-cyan"
-        />
+        <StatCard label="On Leave / Late" value={String(totals.late || 0)} icon={Clock} gradient="bg-gradient-cyan" />
         <StatCard
           label="Total Active Ledgers"
           value={String(totals.total || 0)}
@@ -129,13 +119,11 @@ export function AttendancePage() {
           <table className="w-full text-sm">
             <thead className="bg-muted/40 text-xs uppercase text-muted-foreground">
               <tr>
-                {['Student Name', 'Roll Number', 'Current Semester Attendance %', 'Status'].map(
-                  (h) => (
-                    <th key={h} className="px-5 py-3 text-left font-medium">
-                      {h}
-                    </th>
-                  ),
-                )}
+                {["Student Name", "Roll Number", "Current Semester Attendance %", "Status"].map((h) => (
+                  <th key={h} className="px-5 py-3 text-left font-medium">
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>

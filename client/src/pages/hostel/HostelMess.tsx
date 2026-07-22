@@ -1,23 +1,12 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, Outlet, useRouterState } from '@tanstack/react-router';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import {
-  Utensils,
-  Plus,
-  Search,
-  Calendar,
-  Clock,
-  Star,
-  MessageSquare,
-  ShieldAlert,
-  FileDown,
-  CreditCard,
-} from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { useAuth } from '@/contexts/AuthContext';
-import * as messService from '@/services/messService';
-import { toast } from 'sonner';
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, Outlet, useRouterState } from "@tanstack/react-router";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Utensils, Plus, Search, Calendar, Clock, Star, MessageSquare, ShieldAlert, FileDown, CreditCard } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { useAuth } from "@/contexts/AuthContext";
+import * as messService from "@/services/messService";
+import { toast } from "sonner";
 
 const formatLocalDate = (date: Date): string => {
   const y = date.getFullYear();
@@ -33,52 +22,48 @@ export function HostelMess() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   // If we are on a child route (e.g. /menus, /residents, /fees), delegate rendering to the sub-page
-  if (pathname !== '/dashboard/hostel/mess' && pathname !== '/dashboard/hostel/mess/') {
+  if (pathname !== "/dashboard/hostel/mess" && pathname !== "/dashboard/hostel/mess/") {
     return <Outlet />;
   }
 
-  const [activeTab, setActiveTab] = useState<'Breakfast' | 'Lunch' | 'Snacks' | 'Dinner'>(
-    'Breakfast',
-  );
+  const [activeTab, setActiveTab] = useState<"Breakfast" | "Lunch" | "Snacks" | "Dinner">("Breakfast");
   const [selectedDate, setSelectedDate] = useState(formatLocalDate(new Date()));
 
   // Student Feedback Form State
-  const [feedbackMealType, setFeedbackMealType] = useState<
-    'Breakfast' | 'Lunch' | 'Snacks' | 'Dinner'
-  >('Breakfast');
+  const [feedbackMealType, setFeedbackMealType] = useState<"Breakfast" | "Lunch" | "Snacks" | "Dinner">("Breakfast");
   const [feedbackRating, setFeedbackRating] = useState<number>(5);
-  const [feedbackText, setFeedbackText] = useState('');
+  const [feedbackText, setFeedbackText] = useState("");
 
   // Report Export Form State
-  const [reportType, setReportType] = useState<'daily' | 'monthly' | 'fees' | 'feedback'>('daily');
-  const [reportFormat, setReportFormat] = useState<'pdf' | 'excel'>('pdf');
+  const [reportType, setReportType] = useState<"daily" | "monthly" | "fees" | "feedback">("daily");
+  const [reportFormat, setReportFormat] = useState<"pdf" | "excel">("pdf");
   const [reportDate, setReportDate] = useState(formatLocalDate(new Date()));
   const [reportMonth, setReportMonth] = useState(new Date().getMonth() + 1);
   const [reportYear, setReportYear] = useState(new Date().getFullYear());
 
   // Pay Fee Modal State
   const [payFeeId, setPayFeeId] = useState<string | null>(null);
-  const [payAmount, setPayAmount] = useState<string>('');
+  const [payAmount, setPayAmount] = useState<string>("");
 
   // Fetch Live Data (Common)
   const { data: menus = [] } = useQuery({
-    queryKey: ['mess-menus'],
+    queryKey: ["mess-menus"],
     queryFn: () => messService.fetchMenus(),
   });
 
   const { data: residents = [] } = useQuery({
-    queryKey: ['mess-residents'],
+    queryKey: ["mess-residents"],
     queryFn: messService.fetchMessResidents,
-    enabled: user?.role !== 'student',
+    enabled: user?.role !== "student",
   });
 
   const { data: fees = [] } = useQuery({
-    queryKey: ['mess-fees'],
+    queryKey: ["mess-fees"],
     queryFn: messService.fetchMessFees,
   });
 
   const { data: feedback = [] } = useQuery({
-    queryKey: ['mess-feedback'],
+    queryKey: ["mess-feedback"],
     queryFn: messService.fetchFeedback,
   });
 
@@ -86,42 +71,39 @@ export function HostelMess() {
   const submitFeedbackMutation = useMutation({
     mutationFn: messService.submitFeedback,
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['mess-feedback'] });
-      toast.success('Thank you for your feedback!');
-      setFeedbackText('');
+      qc.invalidateQueries({ queryKey: ["mess-feedback"] });
+      toast.success("Thank you for your feedback!");
+      setFeedbackText("");
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.error || err.message || 'Failed to submit feedback');
+      toast.error(err.response?.data?.error || err.message || "Failed to submit feedback");
     },
   });
 
   const payFeeMutation = useMutation({
-    mutationFn: ({ id, amount }: { id: string; amount: number }) =>
-      messService.payMessFee(id, amount),
+    mutationFn: ({ id, amount }: { id: string; amount: number }) => messService.payMessFee(id, amount),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['mess-fees'] });
-      toast.success('Payment recorded successfully!');
+      qc.invalidateQueries({ queryKey: ["mess-fees"] });
+      toast.success("Payment recorded successfully!");
       setPayFeeId(null);
-      setPayAmount('');
+      setPayAmount("");
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.error || err.message || 'Failed to process payment');
+      toast.error(err.response?.data?.error || err.message || "Failed to process payment");
     },
   });
 
   // Helper: check if student is active mess subscriber
   const studentResidentRecord = useMemo(() => {
-    if (user?.role !== 'student') return null;
+    if (user?.role !== "student") return null;
     // match email or name or user_id if present
-    return residents.find(
-      (r: any) => r.resident_id === user._id || r.resident_name === user.fullName,
-    );
+    return residents.find((r: any) => r.resident_id === user._id || r.resident_name === user.fullName);
   }, [residents, user]);
 
   // Derived Analytics Data for Warden Dashboard
   const stats = useMemo(() => {
     const totalMembers = residents.length;
-
+    
     // Today's menus
     const todayStr = formatLocalDate(new Date());
     const todayMenus = menus.filter((m: any) => m.meal_date === todayStr);
@@ -139,17 +121,12 @@ export function HostelMess() {
     }, 0);
 
     // Pending Mess Fees
-    const pendingFees = fees.reduce(
-      (sum: number, f: any) => sum + Number(f.pending_amount || 0),
-      0,
-    );
+    const pendingFees = fees.reduce((sum: number, f: any) => sum + Number(f.pending_amount || 0), 0);
 
     // Average Food Rating
-    const avgRating = feedback.length
-      ? (
-          feedback.reduce((sum: number, f: any) => sum + (f.rating || 0), 0) / feedback.length
-        ).toFixed(1)
-      : 'N/A';
+    const avgRating = feedback.length 
+      ? (feedback.reduce((sum: number, f: any) => sum + (f.rating || 0), 0) / feedback.length).toFixed(1)
+      : "N/A";
 
     return { totalMembers, mealsServedToday, monthlyRevenue, pendingFees, avgRating };
   }, [residents, menus, fees, feedback]);
@@ -162,17 +139,9 @@ export function HostelMess() {
 
   // Weekly Menu specials or details
   const weeklySchedule = useMemo(() => {
-    const daysOfWeek = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ];
+    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const today = new Date();
-
+    
     return Array.from({ length: 7 }).map((_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() - today.getDay() + i); // Start from Sunday
@@ -181,12 +150,10 @@ export function HostelMess() {
 
       // Find any menus scheduled for this date
       const dayMenus = menus.filter((m: any) => m.meal_date === dateStr);
-      let special = 'No Menu Scheduled';
+      let special = "No Menu Scheduled";
       if (dayMenus.length > 0) {
         // Show main food items of Lunch/Dinner as special
-        const mainMeal = dayMenus.find(
-          (m: any) => m.meal_type === 'Lunch' || m.meal_type === 'Dinner',
-        );
+        const mainMeal = dayMenus.find((m: any) => m.meal_type === "Lunch" || m.meal_type === "Dinner");
         if (mainMeal && mainMeal.food_items && mainMeal.food_items.length > 0) {
           special = mainMeal.food_items[0];
         } else if (dayMenus[0].food_items && dayMenus[0].food_items.length > 0) {
@@ -207,11 +174,11 @@ export function HostelMess() {
       }
     });
     return [
-      { name: '1 Star', count: counts[0], fill: '#EF4444' },
-      { name: '2 Stars', count: counts[1], fill: '#F59E0B' },
-      { name: '3 Stars', count: counts[2], fill: '#10B981' },
-      { name: '4 Stars', count: counts[3], fill: '#06B6D4' },
-      { name: '5 Stars', count: counts[4], fill: '#4F46E5' },
+      { name: "1 Star", count: counts[0], fill: "#EF4444" },
+      { name: "2 Stars", count: counts[1], fill: "#F59E0B" },
+      { name: "3 Stars", count: counts[2], fill: "#10B981" },
+      { name: "4 Stars", count: counts[3], fill: "#06B6D4" },
+      { name: "5 Stars", count: counts[4], fill: "#4F46E5" },
     ];
   }, [feedback]);
 
@@ -219,31 +186,27 @@ export function HostelMess() {
   const handleExport = async () => {
     try {
       let blobData;
-      let filename = '';
-
-      if (reportType === 'daily') {
+      let filename = "";
+      
+      if (reportType === "daily") {
         blobData = await messService.exportDailyReport({ date: reportDate, format: reportFormat });
-        filename = `daily-meal-report-${reportDate}.${reportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
-      } else if (reportType === 'monthly') {
-        blobData = await messService.exportMonthlyRevenue({
-          month: reportMonth,
-          year: reportYear,
-          format: reportFormat,
-        });
-        filename = `mess-revenue-report-${reportMonth}-${reportYear}.${reportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
-      } else if (reportType === 'fees') {
+        filename = `daily-meal-report-${reportDate}.${reportFormat === "pdf" ? "pdf" : "xlsx"}`;
+      } else if (reportType === "monthly") {
+        blobData = await messService.exportMonthlyRevenue({ month: reportMonth, year: reportYear, format: reportFormat });
+        filename = `mess-revenue-report-${reportMonth}-${reportYear}.${reportFormat === "pdf" ? "pdf" : "xlsx"}`;
+      } else if (reportType === "fees") {
         blobData = await messService.exportFeeCollectionReport({ format: reportFormat });
-        filename = `mess-fee-collection-report.${reportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
-      } else if (reportType === 'feedback') {
+        filename = `mess-fee-collection-report.${reportFormat === "pdf" ? "pdf" : "xlsx"}`;
+      } else if (reportType === "feedback") {
         blobData = await messService.exportFeedbackReport({ format: reportFormat });
-        filename = `mess-food-feedback-report.${reportFormat === 'pdf' ? 'pdf' : 'xlsx'}`;
+        filename = `mess-food-feedback-report.${reportFormat === "pdf" ? "pdf" : "xlsx"}`;
       }
 
       if (blobData) {
         const url = window.URL.createObjectURL(new Blob([blobData]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', filename);
+        link.setAttribute("download", filename);
         document.body.appendChild(link);
         link.click();
         link.parentNode?.removeChild(link);
@@ -251,8 +214,8 @@ export function HostelMess() {
         toast.success(`Report exported successfully as ${filename.toUpperCase()}`);
       }
     } catch (err: any) {
-      console.error('Export failed:', err);
-      toast.error('Failed to generate and export report');
+      console.error("Export failed:", err);
+      toast.error("Failed to generate and export report");
     }
   };
 
@@ -260,7 +223,7 @@ export function HostelMess() {
     if (!payFeeId) return;
     const amountNum = Number(payAmount);
     if (isNaN(amountNum) || amountNum <= 0) {
-      toast.error('Please enter a valid payment amount');
+      toast.error("Please enter a valid payment amount");
       return;
     }
     payFeeMutation.mutate({ id: payFeeId, amount: amountNum });
@@ -268,13 +231,13 @@ export function HostelMess() {
 
   const handleFeedbackSubmit = () => {
     if (!feedbackText.trim()) {
-      toast.error('Please provide feedback comments');
+      toast.error("Please provide feedback comments");
       return;
     }
 
     const payload = {
       resident_id: user?._id,
-      resident_name: user?.fullName || 'Student',
+      resident_name: user?.fullName || "Student",
       meal_type: feedbackMealType,
       rating: feedbackRating,
       feedback: feedbackText.trim(),
@@ -283,20 +246,14 @@ export function HostelMess() {
     submitFeedbackMutation.mutate(payload);
   };
 
-  const isStudent = user?.role === 'student' || user?.role === 'Student';
+  const isStudent = user?.role === "student" || user?.role === "Student";
 
   // ── RENDER STUDENT VIEW ───────────────────────────────────────────────────
   if (isStudent) {
     // Find matching fee for this student
     const studentFees = fees.filter((f: any) => f.resident_id === user._id);
-    const totalPending = studentFees.reduce(
-      (sum: number, f: any) => sum + Number(f.pending_amount || 0),
-      0,
-    );
-    const totalPaid = studentFees.reduce(
-      (sum: number, f: any) => sum + Number(f.paid_amount || 0),
-      0,
-    );
+    const totalPending = studentFees.reduce((sum: number, f: any) => sum + Number(f.pending_amount || 0), 0);
+    const totalPaid = studentFees.reduce((sum: number, f: any) => sum + Number(f.paid_amount || 0), 0);
 
     return (
       <div className="space-y-6">
@@ -307,56 +264,32 @@ export function HostelMess() {
 
         {/* Student Quick Cards */}
         <div className="grid md:grid-cols-4 gap-4">
-          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
-            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
-              Subscription Status
-            </div>
-            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
-              Subscribed
-            </div>
-            <Badge tone="success" className="mt-3">
-              Active
+          <Card className="bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 border-indigo-100 dark:border-indigo-950/40 rounded-2xl p-4">
+            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Subscription Status</div>
+            <div className="text-2xl font-extrabold mt-2 text-indigo-600 dark:text-indigo-400">Subscribed</div>
+            <Badge tone="success" className="mt-3">Active</Badge>
+          </Card>
+          
+          <Card className="bg-gradient-to-br from-rose-500/10 to-rose-600/5 border-rose-100 dark:border-rose-950/40 rounded-2xl p-4">
+            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Pending Dues</div>
+            <div className="text-2xl font-extrabold mt-2 text-rose-600 dark:text-rose-400">₹{totalPending.toLocaleString("en-IN")}</div>
+            <Badge tone={totalPending > 0 ? "warn" : "success"} className="mt-3">
+              {totalPending > 0 ? "Payment Due" : "No Dues"}
             </Badge>
           </Card>
 
-          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
-            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
-              Pending Dues
-            </div>
-            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
-              ₹{totalPending.toLocaleString('en-IN')}
-            </div>
-            <Badge tone={totalPending > 0 ? 'warn' : 'success'} className="mt-3">
-              {totalPending > 0 ? 'Payment Due' : 'No Dues'}
-            </Badge>
+          <Card className="bg-gradient-to-br from-teal-500/10 to-teal-600/5 border-teal-100 dark:border-teal-950/40 rounded-2xl p-4">
+            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Total Paid (This Term)</div>
+            <div className="text-2xl font-extrabold mt-2 text-teal-600 dark:text-teal-400">₹{totalPaid.toLocaleString("en-IN")}</div>
+            <Badge tone="success" className="mt-3">Paid</Badge>
           </Card>
 
-          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
-            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
-              Total Paid (This Term)
+          <Card className="bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border-cyan-100 dark:border-cyan-950/40 rounded-2xl p-4">
+            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Average Rating</div>
+            <div className="text-2xl font-extrabold mt-2 text-cyan-600 dark:text-cyan-400">
+              {feedback.length ? (feedback.reduce((sum: number, f: any) => sum + f.rating, 0) / feedback.length).toFixed(1) : "N/A"}
             </div>
-            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
-              ₹{totalPaid.toLocaleString('en-IN')}
-            </div>
-            <Badge tone="success" className="mt-3">
-              Paid
-            </Badge>
-          </Card>
-
-          <Card className="bg-blue-50/60 border-blue-200 dark:border-blue-900/50 rounded-2xl p-4">
-            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
-              Average Rating
-            </div>
-            <div className="text-2xl font-extrabold mt-2 text-blue-600 dark:text-blue-400">
-              {feedback.length
-                ? (
-                    feedback.reduce((sum: number, f: any) => sum + f.rating, 0) / feedback.length
-                  ).toFixed(1)
-                : 'N/A'}
-            </div>
-            <Badge tone="info" className="mt-3">
-              Weekly Avg
-            </Badge>
+            <Badge tone="info" className="mt-3">Weekly Avg</Badge>
           </Card>
         </div>
 
@@ -364,9 +297,7 @@ export function HostelMess() {
         <div className="grid lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2 bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-                Daily Mess Menu
-              </h3>
+              <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Daily Mess Menu</h3>
               <input
                 type="date"
                 value={selectedDate}
@@ -376,14 +307,14 @@ export function HostelMess() {
             </div>
 
             <div className="flex gap-2 mb-4">
-              {['Breakfast', 'Lunch', 'Snacks', 'Dinner'].map((tab) => (
+              {["Breakfast", "Lunch", "Snacks", "Dinner"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab as any)}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold transition ${
                     activeTab === tab
-                      ? 'bg-gradient-primary text-white'
-                      : 'bg-muted text-muted-foreground hover:bg-accent'
+                      ? "bg-gradient-primary text-white"
+                      : "bg-muted text-muted-foreground hover:bg-accent"
                   }`}
                 >
                   {tab}
@@ -403,20 +334,12 @@ export function HostelMess() {
                     className="p-4 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition text-left"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                        {item}
-                      </span>
+                      <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item}</span>
                       <Badge tone="info">Available</Badge>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
                       <Clock className="size-3" />
-                      {activeTab === 'Breakfast'
-                        ? '7:30 AM - 9:00 AM'
-                        : activeTab === 'Lunch'
-                          ? '12:30 PM - 2:00 PM'
-                          : activeTab === 'Snacks'
-                            ? '4:30 PM - 5:30 PM'
-                            : '7:30 PM - 9:00 PM'}
+                      {activeTab === "Breakfast" ? "7:30 AM - 9:00 AM" : activeTab === "Lunch" ? "12:30 PM - 2:00 PM" : activeTab === "Snacks" ? "4:30 PM - 5:30 PM" : "7:30 PM - 9:00 PM"}
                     </div>
                   </div>
                 ))}
@@ -426,14 +349,10 @@ export function HostelMess() {
 
           {/* Submit Feedback */}
           <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100 mb-4">
-              Rate Today's Meal
-            </h3>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100 mb-4">Rate Today's Meal</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  Meal
-                </label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Meal</label>
                 <select
                   value={feedbackMealType}
                   onChange={(e) => setFeedbackMealType(e.target.value as any)}
@@ -447,9 +366,7 @@ export function HostelMess() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  Rating
-                </label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Rating</label>
                 <div className="flex gap-1.5 mt-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -460,9 +377,7 @@ export function HostelMess() {
                     >
                       <Star
                         className={`size-6 ${
-                          star <= feedbackRating
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-muted-foreground/30'
+                          star <= feedbackRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"
                         }`}
                       />
                     </button>
@@ -471,9 +386,7 @@ export function HostelMess() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  Feedback Comments
-                </label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Feedback Comments</label>
                 <textarea
                   placeholder="Share your thoughts on the food quality, taste, or service..."
                   rows={3}
@@ -488,7 +401,7 @@ export function HostelMess() {
                 disabled={submitFeedbackMutation.isPending}
                 className="w-full py-2.5 bg-gradient-primary text-white text-xs font-semibold rounded-xl hover:opacity-95 transition"
               >
-                {submitFeedbackMutation.isPending ? 'Submitting...' : 'Submit Feedback'}
+                {submitFeedbackMutation.isPending ? "Submitting..." : "Submit Feedback"}
               </button>
             </div>
           </Card>
@@ -500,9 +413,7 @@ export function HostelMess() {
           <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
             <div className="flex items-center gap-2 mb-4">
               <Calendar className="size-5 text-indigo-600 dark:text-indigo-400" />
-              <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-                Weekly Menu Schedule
-              </h3>
+              <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Weekly Menu Schedule</h3>
             </div>
             <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
               {weeklySchedule.map((schedule) => (
@@ -511,9 +422,7 @@ export function HostelMess() {
                   className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
                 >
                   <div>
-                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 block">
-                      {schedule.day}
-                    </span>
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 block">{schedule.day}</span>
                     <span className="text-[10px] text-muted-foreground">{schedule.date}</span>
                   </div>
                   <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium truncate max-w-[200px]">
@@ -528,9 +437,7 @@ export function HostelMess() {
           <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
             <div className="flex items-center gap-2 mb-4">
               <CreditCard className="size-5 text-indigo-600 dark:text-indigo-400" />
-              <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-                Mess Fee Records
-              </h3>
+              <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Mess Fee Records</h3>
             </div>
             {studentFees.length === 0 ? (
               <div className="p-8 text-center text-sm text-muted-foreground border border-dashed rounded-xl">
@@ -539,21 +446,14 @@ export function HostelMess() {
             ) : (
               <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                 {studentFees.map((fee: any) => (
-                  <div
-                    key={fee.id}
-                    className="p-3 border rounded-xl flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-900/30 transition"
-                  >
+                  <div key={fee.id} className="p-3 border rounded-xl flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-900/30 transition">
                     <div>
-                      <div className="font-semibold text-sm">
-                        Mess Charge (₹{Number(fee.mess_fee).toFixed(0)})
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Pending: ₹{Number(fee.pending_amount).toFixed(0)}
-                      </div>
+                      <div className="font-semibold text-sm">Mess Charge (₹{Number(fee.mess_fee).toFixed(0)})</div>
+                      <div className="text-xs text-muted-foreground">Pending: ₹{Number(fee.pending_amount).toFixed(0)}</div>
                     </div>
                     <div className="flex items-center gap-2.5">
-                      <Badge tone={fee.payment_status === 'Paid' ? 'success' : 'warn'}>
-                        {fee.payment_status || 'Pending'}
+                      <Badge tone={fee.payment_status === "Paid" ? "success" : "warn"}>
+                        {fee.payment_status || "Pending"}
                       </Badge>
                       {Number(fee.pending_amount) > 0 && (
                         <button
@@ -581,9 +481,7 @@ export function HostelMess() {
               <h3 className="text-lg font-bold mb-4">Pay Mess Fees</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
-                    Payment Amount (₹)
-                  </label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Payment Amount (₹)</label>
                   <input
                     type="number"
                     value={payAmount}
@@ -595,7 +493,7 @@ export function HostelMess() {
                   <button
                     onClick={() => {
                       setPayFeeId(null);
-                      setPayAmount('');
+                      setPayAmount("");
                     }}
                     className="px-4 py-2 border rounded-xl text-xs hover:bg-accent font-semibold transition"
                   >
@@ -606,7 +504,7 @@ export function HostelMess() {
                     disabled={payFeeMutation.isPending}
                     className="px-4 py-2 bg-gradient-primary text-white text-xs font-semibold rounded-xl hover:opacity-95 transition"
                   >
-                    {payFeeMutation.isPending ? 'Paying...' : 'Submit Payment'}
+                    {payFeeMutation.isPending ? "Paying..." : "Submit Payment"}
                   </button>
                 </div>
               </div>
@@ -626,7 +524,7 @@ export function HostelMess() {
         actions={
           <div className="flex gap-2">
             <button
-              onClick={() => navigate({ to: '/dashboard/hostel/mess/menus' })}
+              onClick={() => navigate({ to: "/dashboard/hostel/mess/menus" })}
               className="px-4 py-2.5 bg-gradient-primary text-white text-xs font-semibold rounded-xl hover:opacity-95 transition-all flex items-center gap-2 cursor-pointer shadow-soft hover:scale-[1.02]"
             >
               <Plus className="size-4" /> Add Menu Item
@@ -638,30 +536,15 @@ export function HostelMess() {
       {/* Stats Cards Row */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { label: 'Total Mess Members', value: stats.totalMembers, tone: 'info' as const },
-          { label: 'Meals Served Today', value: stats.mealsServedToday, tone: 'success' as const },
-          {
-            label: 'Monthly Revenue',
-            value: `₹${stats.monthlyRevenue.toLocaleString('en-IN')}`,
-            tone: 'success' as const,
-          },
-          {
-            label: 'Pending Mess Fees',
-            value: `₹${stats.pendingFees.toLocaleString('en-IN')}`,
-            tone: 'danger' as const,
-          },
-          { label: 'Avg Food Rating', value: `${stats.avgRating} / 5.0`, tone: 'info' as const },
+          { label: "Total Mess Members", value: stats.totalMembers, tone: "info" as const },
+          { label: "Meals Served Today", value: stats.mealsServedToday, tone: "success" as const },
+          { label: "Monthly Revenue", value: `₹${stats.monthlyRevenue.toLocaleString("en-IN")}`, tone: "success" as const },
+          { label: "Pending Mess Fees", value: `₹${stats.pendingFees.toLocaleString("en-IN")}`, tone: "danger" as const },
+          { label: "Avg Food Rating", value: `${stats.avgRating} / 5.0`, tone: "info" as const },
         ].map((stat) => (
-          <Card
-            key={stat.label}
-            className="p-4 text-center bg-gradient-soft border rounded-2xl flex flex-col justify-center"
-          >
-            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-              {stat.label}
-            </div>
-            <div className="text-xl font-extrabold mt-2 text-slate-800 dark:text-slate-200">
-              {stat.value}
-            </div>
+          <Card key={stat.label} className="p-4 text-center bg-gradient-soft border rounded-2xl flex flex-col justify-center">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{stat.label}</div>
+            <div className="text-xl font-extrabold mt-2 text-slate-800 dark:text-slate-200">{stat.value}</div>
             <Badge tone={stat.tone} className="mt-3 mx-auto">
               Today
             </Badge>
@@ -673,9 +556,7 @@ export function HostelMess() {
       <div className="grid lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-              Daily Mess Menu
-            </h3>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Daily Mess Menu</h3>
             <input
               type="date"
               value={selectedDate}
@@ -685,14 +566,14 @@ export function HostelMess() {
           </div>
 
           <div className="flex gap-2 mb-4">
-            {['Breakfast', 'Lunch', 'Snacks', 'Dinner'].map((tab) => (
+            {["Breakfast", "Lunch", "Snacks", "Dinner"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
                 className={`px-4 py-2 rounded-lg text-xs font-semibold transition ${
                   activeTab === tab
-                    ? 'bg-gradient-primary text-white'
-                    : 'bg-muted text-muted-foreground hover:bg-accent'
+                    ? "bg-gradient-primary text-white"
+                    : "bg-muted text-muted-foreground hover:bg-accent"
                 }`}
               >
                 {tab}
@@ -712,20 +593,12 @@ export function HostelMess() {
                   className="p-4 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition text-left"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      {item}
-                    </span>
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{item}</span>
                     <Badge tone="info">Available</Badge>
                   </div>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
                     <Clock className="size-3" />
-                    {activeTab === 'Breakfast'
-                      ? '7:30 AM - 9:00 AM'
-                      : activeTab === 'Lunch'
-                        ? '12:30 PM - 2:00 PM'
-                        : activeTab === 'Snacks'
-                          ? '4:30 PM - 5:30 PM'
-                          : '7:30 PM - 9:00 PM'}
+                    {activeTab === "Breakfast" ? "7:30 AM - 9:00 AM" : activeTab === "Lunch" ? "12:30 PM - 2:00 PM" : activeTab === "Snacks" ? "4:30 PM - 5:30 PM" : "7:30 PM - 9:00 PM"}
                   </div>
                 </div>
               ))}
@@ -735,23 +608,11 @@ export function HostelMess() {
 
         {/* Quick Links Card */}
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
-          <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100 mb-4">
-            Quick Management Actions
-          </h3>
+          <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100 mb-4">Quick Management Actions</h3>
           <div className="space-y-3">
             {[
-              {
-                label: 'Mess Menu Planner',
-                desc: 'Add, Edit, and Delete weekly menus',
-                tone: 'info' as const,
-                to: '/dashboard/hostel/mess/menus',
-              },
-              {
-                label: 'Mess Fee Collections',
-                desc: 'Collect payments, track outstanding fees',
-                tone: 'warn' as const,
-                to: '/dashboard/hostel/mess/fees',
-              },
+              { label: "Mess Menu Planner", desc: "Add, Edit, and Delete weekly menus", tone: "info" as const, to: "/dashboard/hostel/mess/menus" },
+              { label: "Mess Fee Collections", desc: "Collect payments, track outstanding fees", tone: "warn" as const, to: "/dashboard/hostel/mess/fees" },
             ].map((item) => (
               <button
                 key={item.label}
@@ -759,9 +620,7 @@ export function HostelMess() {
                 className="w-full flex flex-col p-3 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer text-left"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                    {item.label}
-                  </span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{item.label}</span>
                   <Badge tone={item.tone}>Manage</Badge>
                 </div>
                 <span className="text-[10px] text-muted-foreground mt-1">{item.desc}</span>
@@ -777,9 +636,7 @@ export function HostelMess() {
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
           <div className="flex items-center gap-2 mb-4">
             <Calendar className="size-5 text-indigo-600 dark:text-indigo-400" />
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-              Weekly Menu Schedule
-            </h3>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Weekly Menu Schedule</h3>
           </div>
           <div className="space-y-2 pr-1">
             {weeklySchedule.map((schedule) => (
@@ -788,9 +645,7 @@ export function HostelMess() {
                 className="flex items-center justify-between p-3 rounded-xl border hover:bg-accent/50 transition"
               >
                 <div>
-                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 block">
-                    {schedule.day}
-                  </span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 block">{schedule.day}</span>
                   <span className="text-[10px] text-muted-foreground">{schedule.date}</span>
                 </div>
                 <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium truncate max-w-[150px]">
@@ -805,9 +660,7 @@ export function HostelMess() {
         <Card className="lg:col-span-2 bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
           <div className="flex items-center gap-2 mb-4">
             <Utensils className="size-5 text-indigo-600 dark:text-indigo-400" />
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-              Food Rating Distribution
-            </h3>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Food Rating Distribution</h3>
           </div>
           <div className="h-64">
             <ResponsiveContainer>
@@ -815,7 +668,7 @@ export function HostelMess() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
                 <YAxis stroke="#64748B" fontSize={11} allowDecimals={false} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="count" fill="#4F46E5" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -829,17 +682,13 @@ export function HostelMess() {
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
           <div className="flex items-center gap-2 mb-4">
             <FileDown className="size-5 text-indigo-600 dark:text-indigo-400" />
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-              Reports & Exports
-            </h3>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Reports & Exports</h3>
           </div>
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  Report Type
-                </label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Report Type</label>
                 <select
                   value={reportType}
                   onChange={(e) => setReportType(e.target.value as any)}
@@ -853,9 +702,7 @@ export function HostelMess() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  Format
-                </label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Format</label>
                 <select
                   value={reportFormat}
                   onChange={(e) => setReportFormat(e.target.value as any)}
@@ -868,11 +715,9 @@ export function HostelMess() {
             </div>
 
             {/* Dynamic Report Parameters */}
-            {reportType === 'daily' && (
+            {reportType === "daily" && (
               <div>
-                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                  Report Date
-                </label>
+                <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Report Date</label>
                 <input
                   type="date"
                   value={reportDate}
@@ -882,12 +727,10 @@ export function HostelMess() {
               </div>
             )}
 
-            {reportType === 'monthly' && (
+            {reportType === "monthly" && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                    Month
-                  </label>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Month</label>
                   <select
                     value={reportMonth}
                     onChange={(e) => setReportMonth(Number(e.target.value))}
@@ -895,15 +738,13 @@ export function HostelMess() {
                   >
                     {Array.from({ length: 12 }).map((_, i) => (
                       <option key={i + 1} value={i + 1}>
-                        {new Date(0, i).toLocaleString('default', { month: 'long' })}
+                        {new Date(0, i).toLocaleString("default", { month: "long" })}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-                    Year
-                  </label>
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Year</label>
                   <select
                     value={reportYear}
                     onChange={(e) => setReportYear(Number(e.target.value))}
@@ -932,9 +773,7 @@ export function HostelMess() {
         <Card className="bg-background border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 shadow-sm text-left">
           <div className="flex items-center gap-2 mb-4">
             <MessageSquare className="size-5 text-indigo-600 dark:text-indigo-400" />
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">
-              Student Reviews
-            </h3>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100">Student Reviews</h3>
           </div>
           <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
             {feedback.length === 0 ? (
@@ -945,31 +784,22 @@ export function HostelMess() {
               feedback.map((fb: any, index: number) => (
                 <div key={fb.id || index} className="p-3 rounded-xl border bg-gradient-soft">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
-                      {fb.resident_name || 'Anonymous Student'}
-                    </span>
+                    <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{fb.resident_name || "Anonymous Student"}</span>
                     <div className="flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
                           key={i}
                           className={`size-3.5 ${
-                            i < fb.rating
-                              ? 'fill-amber-400 text-amber-400'
-                              : 'text-muted-foreground/30'
+                            i < fb.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"
                           }`}
                         />
                       ))}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-1">
-                    <span>
-                      Meal Type:{' '}
-                      <strong className="text-indigo-600 dark:text-indigo-400">
-                        {fb.meal_type}
-                      </strong>
-                    </span>
+                    <span>Meal Type: <strong className="text-indigo-600 dark:text-indigo-400">{fb.meal_type}</strong></span>
                     <span>•</span>
-                    <span>{fb.created_at ? new Date(fb.created_at).toLocaleDateString() : ''}</span>
+                    <span>{fb.created_at ? new Date(fb.created_at).toLocaleDateString() : ""}</span>
                   </div>
                   <div className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium bg-background/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
                     "{fb.feedback}"

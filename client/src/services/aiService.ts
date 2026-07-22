@@ -1,4 +1,4 @@
-import api from '../lib/api';
+import api from "../lib/api";
 
 export interface ChatResponse {
   response: string;
@@ -13,7 +13,7 @@ export interface PerformanceResponse {
 }
 
 export interface AttendanceRiskResponse {
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  riskLevel: "LOW" | "MEDIUM" | "HIGH";
   percentage: number;
   analysis: string;
 }
@@ -31,7 +31,7 @@ export async function sendChatMessage(
   message: string,
   conversationId?: string | null,
 ): Promise<ChatResponse> {
-  const { data } = await api.post<{ success: boolean; data: ChatResponse }>('/api/ai/chat', {
+  const { data } = await api.post<{ success: boolean; data: ChatResponse }>("/api/ai/chat", {
     message,
     conversationId,
   });
@@ -39,33 +39,21 @@ export async function sendChatMessage(
 }
 
 export async function getPerformancePrediction(): Promise<PerformanceResponse> {
-  const { data } = await api.post<{ success: boolean; data: PerformanceResponse }>(
-    '/api/ai/performance',
-  );
+  const { data } = await api.post<{ success: boolean; data: PerformanceResponse }>("/api/ai/performance");
   return data.data;
 }
 
 export async function getAttendanceRiskAnalysis(): Promise<AttendanceRiskResponse> {
-  const { data } = await api.post<{ success: boolean; data: AttendanceRiskResponse }>(
-    '/api/ai/attendance-risk',
-  );
+  const { data } = await api.post<{ success: boolean; data: AttendanceRiskResponse }>("/api/ai/attendance-risk");
   return data.data;
 }
 
-export async function getStudentRiskAnalysis(
-  targetStudentId: string,
-): Promise<StudentRiskResponse> {
-  const { data } = await api.post<{ success: boolean; data: StudentRiskResponse }>(
-    '/api/ai/student-risk',
-    { targetStudentId },
-  );
+export async function getStudentRiskAnalysis(targetStudentId: string): Promise<StudentRiskResponse> {
+  const { data } = await api.post<{ success: boolean; data: StudentRiskResponse }>("/api/ai/student-risk", { targetStudentId });
   return data.data;
 }
 
 export async function getReportSummary(reportType: string): Promise<ReportSummaryResponse> {
-  const { data } = await api.post<{ success: boolean; data: ReportSummaryResponse }>(
-    '/api/ai/report-summary',
-    { reportType },
-  );
+  const { data } = await api.post<{ success: boolean; data: ReportSummaryResponse }>("/api/ai/report-summary", { reportType });
   return data.data;
 }

@@ -1,78 +1,67 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  Users,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Search,
-  Calendar,
-  Save,
-  Filter,
-  RefreshCw,
-} from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import { toast } from 'sonner';
-import {
-  fetchHostelAttendance,
-  markHostelAttendance,
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { 
+  Users, CheckCircle2, XCircle, Clock, Search, Calendar, Save, Filter, RefreshCw
+} from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { toast } from "sonner";
+import { 
+  fetchHostelAttendance, 
+  markHostelAttendance, 
   fetchHostelAttendanceStats,
   fetchHostelBlocks,
-  fetchRoomsForBlock,
-} from '@/services/hostelService';
+  fetchRoomsForBlock
+} from "@/services/hostelService";
 
 export function HostelAttendance() {
   const queryClient = useQueryClient();
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = new Date().toISOString().split("T")[0];
 
   // Search & Filter State
   const [date, setDate] = useState(todayStr);
-  const [blockId, setBlockId] = useState('All Blocks');
-  const [roomId, setRoomId] = useState('All Rooms');
-  const [search, setSearch] = useState('');
+  const [blockId, setBlockId] = useState("All Blocks");
+  const [roomId, setRoomId] = useState("All Rooms");
+  const [search, setSearch] = useState("");
 
   // Queries
   const { data: hostelsData = [] } = useQuery({
-    queryKey: ['hostels'],
+    queryKey: ["hostels"],
     queryFn: async () => {
       // Just fetch hostels so we have fallback boys hostel id
-      const { fetchHostels } = await import('@/services/hostelService');
+      const { fetchHostels } = await import("@/services/hostelService");
       return fetchHostels();
-    },
+    }
   });
 
-  const activeHostelId = hostelsData[0]?.id || 'h-boys';
+  const activeHostelId = hostelsData[0]?.id || "h-boys";
 
   const { data: blocks = [] } = useQuery({
-    queryKey: ['blocks', activeHostelId],
+    queryKey: ["blocks", activeHostelId],
     queryFn: () => fetchHostelBlocks(activeHostelId),
-    enabled: !!activeHostelId,
+    enabled: !!activeHostelId
   });
 
-  const selectedBlockUuid =
-    blocks.find((b: any) => b.name === blockId || b.id === blockId)?.id || '';
+  const selectedBlockUuid = blocks.find((b: any) => b.name === blockId || b.id === blockId)?.id || "";
 
   const { data: rooms = [] } = useQuery({
-    queryKey: ['rooms', selectedBlockUuid],
+    queryKey: ["rooms", selectedBlockUuid],
     queryFn: () => fetchRoomsForBlock(selectedBlockUuid),
-    enabled: !!selectedBlockUuid,
+    enabled: !!selectedBlockUuid
   });
 
   const {
     data: attendanceResponse = { data: [] },
     isLoading,
-    refetch,
+    refetch
   } = useQuery({
-    queryKey: ['hostel-attendance', date, blockId, roomId, search],
+    queryKey: ["hostel-attendance", date, blockId, roomId, search],
     queryFn: () => fetchHostelAttendance({ date, blockId, roomId, search }),
-    placeholderData: (prev) => prev,
+    placeholderData: (prev) => prev
   });
 
-  const {
-    data: stats = { totalResidents: 0, present: 0, absent: 0, onLeave: 0, attendanceRate: 100 },
-  } = useQuery({
-    queryKey: ['hostel-attendance-stats', date, blockId],
-    queryFn: () => fetchHostelAttendanceStats({ date, blockId }),
+  const { data: stats = { totalResidents: 0, present: 0, absent: 0, onLeave: 0, attendanceRate: 100 } } = useQuery({
+    queryKey: ["hostel-attendance-stats", date, blockId],
+    queryFn: () => fetchHostelAttendanceStats({ date, blockId })
   });
 
   // Local state for temporary changes to remarks
@@ -80,36 +69,29 @@ export function HostelAttendance() {
 
   // Mutations
   const markMutation = useMutation({
-    mutationFn: (payload: {
-      studentId: string;
-      hostelId: string;
-      roomId: string;
-      date: string;
-      status: 'Present' | 'Absent' | 'On Leave';
-      remarks?: string;
-    }) => markHostelAttendance(payload),
+    mutationFn: (payload: { studentId: string; hostelId: string; roomId: string; date: string; status: "Present" | "Absent" | "On Leave"; remarks?: string }) =>
+      markHostelAttendance(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hostel-attendance'] });
-      queryClient.invalidateQueries({ queryKey: ['hostel-attendance-stats'] });
-      toast.success('Attendance updated successfully!');
+      queryClient.invalidateQueries({ queryKey: ["hostel-attendance"] });
+      queryClient.invalidateQueries({ queryKey: ["hostel-attendance-stats"] });
+      toast.success("Attendance updated successfully!");
     },
     onError: (err: any) => {
-      toast.error(err.message || 'Failed to save attendance');
-    },
+      toast.error(err.message || "Failed to save attendance");
+    }
   });
 
   const residents = attendanceResponse.data || [];
 
   const handleStatusChange = (
-    studentId: string,
-    hostelId: string,
-    roomId: string,
-    newStatus: 'Present' | 'Absent' | 'On Leave',
+    studentId: string, 
+    hostelId: string, 
+    roomId: string, 
+    newStatus: "Present" | "Absent" | "On Leave"
   ) => {
-    const currentRemarks =
-      remarksState[studentId] !== undefined
-        ? remarksState[studentId]
-        : residents.find((r: any) => r.studentId === studentId)?.remarks || '';
+    const currentRemarks = remarksState[studentId] !== undefined 
+      ? remarksState[studentId] 
+      : (residents.find((r: any) => r.studentId === studentId)?.remarks || "");
 
     markMutation.mutate({
       studentId,
@@ -117,16 +99,16 @@ export function HostelAttendance() {
       roomId,
       date,
       status: newStatus,
-      remarks: currentRemarks,
+      remarks: currentRemarks
     });
   };
 
   const handleRemarksBlur = (
-    studentId: string,
-    hostelId: string,
-    roomId: string,
-    currentStatus: 'Present' | 'Absent' | 'On Leave',
-    value: string,
+    studentId: string, 
+    hostelId: string, 
+    roomId: string, 
+    currentStatus: "Present" | "Absent" | "On Leave",
+    value: string
   ) => {
     markMutation.mutate({
       studentId,
@@ -134,7 +116,7 @@ export function HostelAttendance() {
       roomId,
       date,
       status: currentStatus,
-      remarks: value,
+      remarks: value
     });
   };
 
@@ -162,9 +144,7 @@ export function HostelAttendance() {
             <CheckCircle2 className="size-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-              {stats.present}
-            </div>
+            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.present}</div>
             <div className="text-xs text-muted-foreground">Present Today</div>
           </div>
         </Card>
@@ -174,9 +154,7 @@ export function HostelAttendance() {
             <XCircle className="size-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-rose-600 dark:text-rose-400">
-              {stats.absent}
-            </div>
+            <div className="text-2xl font-bold text-rose-600 dark:text-rose-400">{stats.absent}</div>
             <div className="text-xs text-muted-foreground">Absent Today</div>
           </div>
         </Card>
@@ -186,9 +164,7 @@ export function HostelAttendance() {
             <Clock className="size-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-              {stats.onLeave}
-            </div>
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.onLeave}</div>
             <div className="text-xs text-muted-foreground">On Leave</div>
           </div>
         </Card>
@@ -226,15 +202,13 @@ export function HostelAttendance() {
                 value={blockId}
                 onChange={(e) => {
                   setBlockId(e.target.value);
-                  setRoomId('All Rooms');
+                  setRoomId("All Rooms");
                 }}
                 className="bg-transparent border-none text-sm focus:outline-none text-foreground font-medium cursor-pointer"
               >
                 <option value="All Blocks">All Blocks</option>
                 {blocks.map((b: any) => (
-                  <option key={b.id} value={b.name}>
-                    {b.name}
-                  </option>
+                  <option key={b.id} value={b.name}>{b.name}</option>
                 ))}
               </select>
             </div>
@@ -246,13 +220,11 @@ export function HostelAttendance() {
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
                 className="bg-transparent border-none text-sm focus:outline-none text-foreground font-medium cursor-pointer"
-                disabled={blockId === 'All Blocks'}
+                disabled={blockId === "All Blocks"}
               >
                 <option value="All Rooms">All Rooms</option>
                 {rooms.map((r: any) => (
-                  <option key={r.id} value={r.id}>
-                    Room {r.room_number}
-                  </option>
+                  <option key={r.id} value={r.id}>Room {r.room_number}</option>
                 ))}
               </select>
             </div>
@@ -297,10 +269,9 @@ export function HostelAttendance() {
               </thead>
               <tbody className="divide-y">
                 {residents.map((r: any) => {
-                  const localRemarks =
-                    remarksState[r.studentId] !== undefined
-                      ? remarksState[r.studentId]
-                      : r.remarks || '';
+                  const localRemarks = remarksState[r.studentId] !== undefined 
+                    ? remarksState[r.studentId] 
+                    : (r.remarks || "");
 
                   return (
                     <tr key={r.studentId} className="hover:bg-accent/40 transition">
@@ -311,54 +282,44 @@ export function HostelAttendance() {
                           </div>
                           <div>
                             <div className="font-semibold text-foreground">{r.fullName}</div>
-                            <div className="text-xs text-muted-foreground font-normal">
-                              {r.rollNumber}
-                            </div>
+                            <div className="text-xs text-muted-foreground font-normal">{r.rollNumber}</div>
                           </div>
                         </div>
                       </td>
                       <td className="py-3.5 px-4">
                         <div className="font-medium text-foreground">Room {r.roomNumber}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {r.blockName} • Bed {r.bedNumber}
-                        </div>
+                        <div className="text-xs text-muted-foreground">{r.blockName} • Bed {r.bedNumber}</div>
                       </td>
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl w-fit border shadow-sm">
                           <button
-                            onClick={() =>
-                              handleStatusChange(r.studentId, r.hostelId, r.roomId, 'Present')
-                            }
+                            onClick={() => handleStatusChange(r.studentId, r.hostelId, r.roomId, "Present")}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                              r.status === 'Present'
-                                ? 'bg-emerald-500 text-white shadow-soft'
-                                : 'text-muted-foreground hover:bg-background hover:text-foreground'
+                              r.status === "Present"
+                                ? "bg-emerald-500 text-white shadow-soft"
+                                : "text-muted-foreground hover:bg-background hover:text-foreground"
                             }`}
                           >
                             <CheckCircle2 className="size-3.5" />
                             Present
                           </button>
                           <button
-                            onClick={() =>
-                              handleStatusChange(r.studentId, r.hostelId, r.roomId, 'Absent')
-                            }
+                            onClick={() => handleStatusChange(r.studentId, r.hostelId, r.roomId, "Absent")}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                              r.status === 'Absent'
-                                ? 'bg-rose-500 text-white shadow-soft'
-                                : 'text-muted-foreground hover:bg-background hover:text-foreground'
+                              r.status === "Absent"
+                                ? "bg-rose-500 text-white shadow-soft"
+                                : "text-muted-foreground hover:bg-background hover:text-foreground"
                             }`}
                           >
                             <XCircle className="size-3.5" />
                             Absent
                           </button>
                           <button
-                            onClick={() =>
-                              handleStatusChange(r.studentId, r.hostelId, r.roomId, 'On Leave')
-                            }
+                            onClick={() => handleStatusChange(r.studentId, r.hostelId, r.roomId, "On Leave")}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer ${
-                              r.status === 'On Leave'
-                                ? 'bg-amber-500 text-white shadow-soft'
-                                : 'text-muted-foreground hover:bg-background hover:text-foreground'
+                              r.status === "On Leave"
+                                ? "bg-amber-500 text-white shadow-soft"
+                                : "text-muted-foreground hover:bg-background hover:text-foreground"
                             }`}
                           >
                             <Clock className="size-3.5" />
@@ -372,21 +333,11 @@ export function HostelAttendance() {
                             type="text"
                             placeholder="Add warden note..."
                             value={localRemarks}
-                            onChange={(e) =>
-                              setRemarksState({
-                                ...remarksState,
-                                [r.studentId]: e.target.value,
-                              })
-                            }
-                            onBlur={(e) =>
-                              handleRemarksBlur(
-                                r.studentId,
-                                r.hostelId,
-                                r.roomId,
-                                r.status,
-                                e.target.value,
-                              )
-                            }
+                            onChange={(e) => setRemarksState({
+                              ...remarksState,
+                              [r.studentId]: e.target.value
+                            })}
+                            onBlur={(e) => handleRemarksBlur(r.studentId, r.hostelId, r.roomId, r.status, e.target.value)}
                             className="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-sm py-1 placeholder:text-muted-foreground/60 text-foreground"
                           />
                           <div className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground/30">

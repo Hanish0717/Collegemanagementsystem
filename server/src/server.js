@@ -2,17 +2,7 @@ import app from './app.js';
 import dotenv from 'dotenv';
 import pkg from 'pg';
 import { seedIfNeeded } from './seed_lightweight.js';
-import { startScheduler } from './scheduler.js';
 dotenv.config();
-
-// Prevent process crashes from unhandled database rejections/exceptions
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('⚠️ Unhandled Promise Rejection at:', promise, 'reason:', reason);
-});
-
-process.on('uncaughtException', (err) => {
-  console.error('⚠️ Uncaught Exception thrown:', err);
-});
 
 const PORT = process.env.PORT || 5000;
 const { Client } = pkg;
@@ -21,7 +11,6 @@ import { isMockMode } from './config/supabase.js';
 
 
 
-// Triggering server restart
 // Startup database migration
 async function runMigrations() {
   if (isMockMode) {
@@ -65,15 +54,6 @@ async function runMigrations() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS temp_password varchar(255);
       ALTER TABLE faculty ADD COLUMN IF NOT EXISTS user_id uuid;
       ALTER TABLE faculty ADD COLUMN IF NOT EXISTS attendance_percentage numeric(5, 2) DEFAULT 100.00;
-
-      -- Ensure books table has all optional columns
-      ALTER TABLE books ADD COLUMN IF NOT EXISTS cover_image text DEFAULT '';
-      ALTER TABLE books ADD COLUMN IF NOT EXISTS description text DEFAULT '';
-      ALTER TABLE books ADD COLUMN IF NOT EXISTS shelf_location varchar(100) DEFAULT '';
-      ALTER TABLE books ADD COLUMN IF NOT EXISTS edition varchar(100) DEFAULT '';
-      ALTER TABLE books ADD COLUMN IF NOT EXISTS language varchar(100) DEFAULT 'English';
-      ALTER TABLE books ADD COLUMN IF NOT EXISTS is_active boolean DEFAULT true;
-      ALTER TABLE books ADD COLUMN IF NOT EXISTS available_quantity integer DEFAULT 0;
 
       -- Create faculty_attendance table
       CREATE TABLE IF NOT EXISTS faculty_attendance (
@@ -229,145 +209,6 @@ async function runMigrations() {
       
       ALTER TABLE student_notifications ADD COLUMN IF NOT EXISTS student_id uuid REFERENCES students(id) ON DELETE CASCADE NULL;
 
-      -- Create attendance_notifications table
-      CREATE TABLE IF NOT EXISTS attendance_notifications (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        student_name varchar(255) NOT NULL,
-        roll_number varchar(100) NOT NULL,
-        department varchar(50) NOT NULL,
-        attendance_percentage numeric(5, 2) NOT NULL,
-        notification_type varchar(100) NOT NULL, -- 'Warning', 'Critical Warning', 'Detention Alert'
-        recipient_role varchar(100) NOT NULL, -- 'Student', 'Parent', 'Faculty', 'HOD'
-        recipient_email varchar(255) NOT NULL,
-        status varchar(50) DEFAULT 'Sent', -- 'Sent', 'Failed'
-        error_details text,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create below_75_students table
-      CREATE TABLE IF NOT EXISTS below_75_students (
-        id varchar(100) PRIMARY KEY,
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        student_name varchar(255) NOT NULL,
-        roll_number varchar(100) NOT NULL,
-        department varchar(50) NOT NULL,
-        year integer NOT NULL,
-        semester integer NOT NULL,
-        section varchar(50) NOT NULL,
-        attendance_percentage numeric(5, 2) NOT NULL,
-        short_attendance_subjects jsonb DEFAULT '[]'::jsonb,
-        parent_name varchar(255),
-        parent_email varchar(255),
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create attendance_notification_requests table
-      CREATE TABLE IF NOT EXISTS attendance_notification_requests (
-        id varchar(100) PRIMARY KEY,
-        teacher_id varchar(100) NOT NULL,
-        teacher_name varchar(255),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        student_name varchar(255) NOT NULL,
-        roll_number varchar(100) NOT NULL,
-        department varchar(50) NOT NULL,
-        attendance_percentage numeric(5, 2) NOT NULL,
-        selected_recipients jsonb DEFAULT '[]'::jsonb,
-        message_type varchar(100) NOT NULL,
-        status varchar(100) NOT NULL DEFAULT 'Pending HOD Approval',
-        remarks text,
-        custom_message text,
-        short_attendance_subjects jsonb DEFAULT '[]'::jsonb,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        approved_by varchar(255),
-        approved_at timestamp with time zone,
-        sent_at timestamp with time zone
-      );
-
-      -- Create college_settings table
-      CREATE TABLE IF NOT EXISTS college_settings (
-        key varchar(255) PRIMARY KEY,
-        value varchar(255) NOT NULL,
-        description text,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Seed HOD approval toggle default if not exists
-      INSERT INTO college_settings (key, value, description)
-      VALUES ('attendance_approval_enabled', 'false', 'Enable/disable HOD approval flow for attendance warnings')
-      ON CONFLICT (key) DO NOTHING;
-
-      -- Create attendance_notification_templates table
-      CREATE TABLE IF NOT EXISTS attendance_notification_templates (
-        id varchar(100) PRIMARY KEY,
-        name varchar(255) NOT NULL,
-        subject varchar(255) NOT NULL,
-        body text NOT NULL,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Seed default templates
-      INSERT INTO attendance_notification_templates (id, name, subject, body) VALUES
-      ('appreciation', 'Appreciation', 'Congratulations on Excellent Attendance', 'Dear {student_name},\n\nWe are pleased to inform you that you have maintained an excellent attendance of {attendance_percentage}% this month.\n\nKeep up the great work!\n\nBest regards,\nCollege Administration'),
-      ('friendly-reminder', 'Friendly Reminder', 'Friendly Reminder: Attendance Update', 'Dear {student_name},\n\nThis is a friendly reminder that your overall attendance is currently at {attendance_percentage}%.\n\nPlease attend your classes regularly to keep your attendance above the required 75% threshold.\n\nBest regards,\nClass Teacher'),
-      ('warning', 'Warning', 'Attendance Warning Alert', 'Dear {student_name},\n\nYour attendance is currently at {attendance_percentage}%, which is below the required 75% threshold.\n\nPlease take immediate steps to attend your classes regularly to avoid academic penalty.\n\nBest regards,\nClass Teacher'),
-      ('critical-warning', 'Critical Warning', 'Critical Attendance Warning', 'Dear Parent / Student,\n\nThis is to notify you that the attendance of {student_name} ({roll_number}) is critical at {attendance_percentage}%.\n\nPlease meet your department HOD immediately to resolve this.\n\nBest regards,\nDepartment Head'),
-      ('detention-alert', 'Detention Alert', 'Detention Risk Alert', 'Dear Parent / Student,\n\nYour overall attendance has fallen to {attendance_percentage}%, putting you at immediate risk of detention.\n\nKindly note that you will not be allowed to write the semester exams if this is not resolved.\n\nBest regards,\nPrincipal')
-      ON CONFLICT (id) DO NOTHING;
-
-      -- Create attendance_notification_history table
-      CREATE TABLE IF NOT EXISTS attendance_notification_history (
-        id varchar(100) PRIMARY KEY,
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        student_name varchar(255) NOT NULL,
-        roll_number varchar(100) NOT NULL,
-        department varchar(50) NOT NULL,
-        teacher_id varchar(100) NOT NULL,
-        teacher_name varchar(255),
-        attendance_percentage numeric(5, 2) NOT NULL,
-        selected_recipients jsonb DEFAULT '[]'::jsonb,
-        notification_type varchar(100) NOT NULL,
-        subject text,
-        message text,
-        status varchar(50) NOT NULL DEFAULT 'Sent',
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        sent_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        approved_by varchar(255),
-        approved_at timestamp with time zone,
-        ip_address varchar(100)
-      );
-
-      -- Create attendance_notification_logs table
-      CREATE TABLE IF NOT EXISTS attendance_notification_logs (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        request_id varchar(100),
-        recipient_role varchar(100) NOT NULL,
-        email_address varchar(255) NOT NULL,
-        delivery_status varchar(50) NOT NULL DEFAULT 'Sent',
-        failed_reason text,
-        retry_count integer DEFAULT 0,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Update attendance_notification_requests columns
-      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS subject text;
-      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS message text;
-      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS attachments jsonb DEFAULT '[]'::jsonb;
-      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS ip_address varchar(100);
-      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS approved_date timestamp with time zone;
-      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS sent_date timestamp with time zone;
-      ALTER TABLE attendance_notification_requests ALTER COLUMN student_id DROP NOT NULL;
-      ALTER TABLE attendance_notification_requests ALTER COLUMN student_name DROP NOT NULL;
-      ALTER TABLE attendance_notification_requests ALTER COLUMN roll_number DROP NOT NULL;
-      ALTER TABLE attendance_notification_requests ALTER COLUMN department DROP NOT NULL;
-      ALTER TABLE attendance_notification_requests ALTER COLUMN attendance_percentage DROP NOT NULL;
-      ALTER TABLE attendance_notification_requests ADD COLUMN IF NOT EXISTS student_ids jsonb DEFAULT '[]'::jsonb;
-      ALTER TABLE faculty_notifications ADD COLUMN IF NOT EXISTS faculty_id uuid REFERENCES users(id);
-
-
-
       -- Hostel Blocks Overview Extra Columns
       ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS type varchar(50) DEFAULT 'Boys';
       ALTER TABLE hostel_blocks ADD COLUMN IF NOT EXISTS capacity integer DEFAULT 0;
@@ -403,8 +244,6 @@ async function runMigrations() {
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
 
-      ALTER TABLE exams ADD COLUMN IF NOT EXISTS max_fee_due_limit integer DEFAULT 0;
-
       -- Create exam_timetables table
       CREATE TABLE IF NOT EXISTS exam_timetables (
         id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -429,24 +268,6 @@ async function runMigrations() {
         UNIQUE(student_id, exam_id)
       );
 
-      -- Create exam_evaluations table
-      CREATE TABLE IF NOT EXISTS exam_evaluations (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        exam_id uuid REFERENCES exams(id) ON DELETE CASCADE,
-        course_id uuid REFERENCES courses(id) ON DELETE SET NULL,
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        faculty_id uuid REFERENCES faculty(id) ON DELETE CASCADE,
-        evaluation_code varchar(50) NOT NULL,
-        pdf_url text NOT NULL,
-        status varchar(50) DEFAULT 'Assigned',
-        marks_breakdown jsonb DEFAULT '{}'::jsonb,
-        total_score numeric(5, 2) DEFAULT 0,
-        evaluated_at timestamp with time zone,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      ALTER TABLE exam_evaluations ADD COLUMN IF NOT EXISTS course_id uuid REFERENCES courses(id) ON DELETE SET NULL;
-
       -- Add exam_id to results table
       ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_id uuid REFERENCES exams(id) ON DELETE SET NULL;
       ALTER TABLE results DROP CONSTRAINT IF EXISTS results_student_subject_semester_key;
@@ -456,42 +277,9 @@ async function runMigrations() {
       -- Advanced Exam Cell Columns
       ALTER TABLE results ADD COLUMN IF NOT EXISTS internal_marks numeric(5,2) DEFAULT 0.00;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS external_marks numeric(5,2) DEFAULT 0.00;
-      ALTER TABLE results ADD COLUMN IF NOT EXISTS total_marks numeric(5,2) DEFAULT 0.00;
-      ALTER TABLE results ADD COLUMN IF NOT EXISTS grade_point numeric(4,2) DEFAULT 0.00;
-      ALTER TABLE results ADD COLUMN IF NOT EXISTS is_published boolean DEFAULT false;
-      ALTER TABLE results ADD COLUMN IF NOT EXISTS course_id uuid REFERENCES courses(id) ON DELETE SET NULL;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_type varchar(50) DEFAULT 'Regular';
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_applied boolean DEFAULT false;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_marks numeric(4,2) DEFAULT 0.00;
-
-      -- Create internal_marks table for Faculty Mid-1, Mid-2, Assignment Entry
-      CREATE TABLE IF NOT EXISTS internal_marks (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        course_id uuid REFERENCES courses(id) ON DELETE SET NULL,
-        faculty_id uuid REFERENCES faculty(id) ON DELETE SET NULL,
-        mid1_marks numeric(5, 2) DEFAULT 0,
-        mid2_marks numeric(5, 2) DEFAULT 0,
-        assignment_marks numeric(5, 2) DEFAULT 0,
-        total_internal numeric(5, 2) DEFAULT 0,
-        semester varchar(50) NOT NULL,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        UNIQUE(student_id, course_id, semester)
-      );
-
-      CREATE TABLE IF NOT EXISTS courses (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        course_code varchar(50) UNIQUE NOT NULL,
-        course_name varchar(255) NOT NULL,
-        credits integer DEFAULT 3,
-        course_type varchar(50) DEFAULT 'Theory',
-        department varchar(100) NOT NULL,
-        year integer DEFAULT 1,
-        semester integer DEFAULT 1,
-        prerequisite_code varchar(50),
-        mentor_id uuid REFERENCES faculty(id) ON DELETE SET NULL,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
 
       ALTER TABLE courses ADD COLUMN IF NOT EXISTS prerequisite_code varchar(50);
 
@@ -593,180 +381,6 @@ async function runMigrations() {
       CREATE INDEX IF NOT EXISTS idx_issued_books_user_id ON issued_books(user_id);
       CREATE INDEX IF NOT EXISTS idx_leave_requests_user ON leave_requests(user_id);
       CREATE INDEX IF NOT EXISTS idx_complaints_user ON complaints(user_id);
-
-      -- Create ebooks table
-      CREATE TABLE IF NOT EXISTS ebooks (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        title varchar(255) NOT NULL,
-        author varchar(255) NOT NULL,
-        category varchar(255) NOT NULL,
-        format varchar(50) DEFAULT 'PDF',
-        size varchar(50) NOT NULL,
-        downloads integer DEFAULT 0,
-        file_url text,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create transport_buses table
-      CREATE TABLE IF NOT EXISTS transport_buses (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        bus_number varchar(50) UNIQUE NOT NULL,
-        make varchar(100),
-        model varchar(100),
-        capacity integer NOT NULL,
-        type varchar(50) DEFAULT 'Diesel',
-        status varchar(50) DEFAULT 'Active',
-        gps_device_number varchar(100),
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create transport_drivers table
-      CREATE TABLE IF NOT EXISTS transport_drivers (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        full_name varchar(255) NOT NULL,
-        phone varchar(50),
-        license_number varchar(100) UNIQUE NOT NULL,
-        experience_years integer DEFAULT 0,
-        status varchar(50) DEFAULT 'Active',
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create transport_routes table
-      CREATE TABLE IF NOT EXISTS transport_routes (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        name varchar(255) NOT NULL,
-        route_number varchar(50) UNIQUE NOT NULL,
-        start_point varchar(255) NOT NULL,
-        end_point varchar(255) NOT NULL,
-        status varchar(50) DEFAULT 'active',
-        bus uuid REFERENCES transport_buses(id) ON DELETE SET NULL,
-        driver uuid REFERENCES transport_drivers(id) ON DELETE SET NULL,
-        stops jsonb DEFAULT '[]'::jsonb,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create transport_allocations table
-      CREATE TABLE IF NOT EXISTS transport_allocations (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        route_id uuid REFERENCES transport_routes(id) ON DELETE CASCADE,
-        stop_name varchar(255),
-        pass_number varchar(100) UNIQUE,
-        academic_year varchar(50) NOT NULL,
-        monthly_fare decimal(10,2) DEFAULT 0.00,
-        status varchar(50) DEFAULT 'Active',
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create transport_fees table
-      CREATE TABLE IF NOT EXISTS transport_fees (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        academic_year varchar(50) NOT NULL,
-        month varchar(50) NOT NULL,
-        year varchar(10) NOT NULL,
-        total_amount decimal(10,2) NOT NULL,
-        status varchar(50) DEFAULT 'Unpaid',
-        due_date varchar(50),
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create id_cards table
-      CREATE TABLE IF NOT EXISTS id_cards (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        card_number varchar(100) UNIQUE NOT NULL,
-        barcode varchar(255),
-        qr_code text,
-        issue_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        expiry_date timestamp with time zone NOT NULL,
-        status varchar(50) DEFAULT 'Active' CHECK (status IN ('Active', 'Blocked', 'Expired', 'Lost')),
-        card_type varchar(50) DEFAULT 'Regular' CHECK (card_type IN ('Regular', 'Duplicate')),
-        print_status varchar(50) DEFAULT 'Pending' CHECK (print_status IN ('Pending', 'Printed')),
-        delivery_status varchar(50) DEFAULT 'Pending',
-        delivered_at timestamp with time zone,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create id_card_requests table
-      CREATE TABLE IF NOT EXISTS id_card_requests (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        request_type varchar(50) DEFAULT 'New' CHECK (request_type IN ('New', 'Duplicate', 'Replacement')),
-        reason text,
-        status varchar(50) DEFAULT 'Pending' CHECK (status IN ('Pending', 'Approved', 'Rejected', 'Printed')),
-        payment_status varchar(50) DEFAULT 'Pending' CHECK (payment_status IN ('Pending', 'Paid', 'Waived')),
-        rejection_reason text,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create duplicate_id_cards table
-      CREATE TABLE IF NOT EXISTS duplicate_id_cards (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        request_id uuid REFERENCES id_card_requests(id) ON DELETE CASCADE,
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        previous_card_number varchar(100),
-        reason text,
-        charge_amount numeric(10, 2) DEFAULT 0.00,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create id_card_payments table
-      CREATE TABLE IF NOT EXISTS id_card_payments (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        request_id uuid REFERENCES id_card_requests(id) ON DELETE CASCADE,
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        amount numeric(10, 2) NOT NULL,
-        payment_method varchar(100) DEFAULT 'Cash',
-        transaction_id varchar(100) UNIQUE,
-        payment_status varchar(50) DEFAULT 'Pending' CHECK (payment_status IN ('Pending', 'Paid', 'Failed')),
-        payment_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create id_card_receipts table
-      CREATE TABLE IF NOT EXISTS id_card_receipts (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        payment_id uuid REFERENCES id_card_payments(id) ON DELETE CASCADE,
-        receipt_number varchar(100) UNIQUE NOT NULL,
-        generated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create missing_id_cards table
-      CREATE TABLE IF NOT EXISTS missing_id_cards (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        student_id uuid REFERENCES students(id) ON DELETE CASCADE,
-        card_number varchar(100) NOT NULL,
-        reported_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        status varchar(50) DEFAULT 'Lost' CHECK (status IN ('Lost', 'Found', 'Deactivated')),
-        remarks text,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-
-      -- Create id_card_print_history table
-      CREATE TABLE IF NOT EXISTS id_card_print_history (
-        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-        card_id uuid REFERENCES id_cards(id) ON DELETE CASCADE,
-        printed_by uuid REFERENCES users(id) ON DELETE SET NULL,
-        print_date timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-        remarks text,
-        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
-      );
-    `);
-
-    // Add delivery columns to id_cards for handover feature (handling existing installations)
-    await client.query(`
-      ALTER TABLE id_cards ADD COLUMN IF NOT EXISTS delivery_status varchar(50) DEFAULT 'Pending';
-      ALTER TABLE id_cards ADD COLUMN IF NOT EXISTS delivered_at timestamp with time zone;
     `);
 
     // Seed default subjects if empty
@@ -1000,52 +614,13 @@ runMigrations()
     }
   })
   .then(() => {
-    let hasStarted = false;
-    let retryTimer = null;
-
-    function startServer(port, retries = 5, delay = 500) {
-      if (hasStarted) return;
-
-      const server = app.listen(port, '0.0.0.0', () => {
-        hasStarted = true;
-        if (retryTimer) clearTimeout(retryTimer);
-        console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${port}`);
-        startScheduler();
-      });
-
-      server.on('error', (err) => {
-        if (hasStarted) {
-          try { server.close(); } catch (e) {}
-          return;
-        }
-
-        if (err.code === 'EADDRINUSE') {
-          try {
-            server.close();
-          } catch (e) {}
-
-          if (retries > 0) {
-            console.warn(`⚠️ Port ${port} is busy. Retrying in ${delay}ms... (${retries} retries left)`);
-            if (retryTimer) clearTimeout(retryTimer);
-            retryTimer = setTimeout(() => {
-              startServer(port, retries - 1, delay);
-            }, delay);
-          } else {
-            const nextPort = port + 1;
-            console.warn(`⚠️ Port ${port} is occupied by another process. Automatically switching to fallback port ${nextPort}...`);
-            startServer(nextPort, 3, delay);
-          }
-        } else {
-          console.error("❌ Server error:", err);
-        }
-      });
-    }
-
-    startServer(PORT);
+    app.listen(PORT, () => {
+      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    });
   })
   .catch((err) => {
     console.error("❌ Critical server startup failure:", err);
-  });
+  }); // trigger reload 123
 
 
 

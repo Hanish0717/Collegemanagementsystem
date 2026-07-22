@@ -1,7 +1,4 @@
-import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import { toast } from 'sonner';
-import api from '@/lib/api';
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Area,
   AreaChart,
@@ -14,7 +11,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from 'recharts';
+} from "recharts";
 import {
   Brain,
   AlertTriangle,
@@ -24,87 +21,32 @@ import {
   MessageSquare,
   Target,
   Zap,
-  Loader2,
-} from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+} from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 
 export function AiDashboard() {
-  const navigate = useNavigate();
-  const [loadingAction, setLoadingAction] = useState<string | null>(null);
-
-  const handleAction = async (actionLabel: string) => {
-    if (actionLabel === 'View Insights') {
-      navigate({ to: '/dashboard/ai/insights' });
-      return;
-    }
-
-    setLoadingAction(actionLabel);
-    try {
-      if (actionLabel === 'Generate Risk Report') {
-        const res = await api.post('/api/ai/report-summary', { reportType: 'library' });
-        if (res.data?.success) {
-          toast.success('Risk report generated successfully!');
-          toast.info(res.data.data.summary);
-          navigate({ to: '/dashboard/ai/reports' });
-        }
-      } else if (actionLabel === 'Run Prediction Model') {
-        try {
-          const res = await api.post('/api/ai/performance');
-          if (res.data?.success) {
-            toast.success('Performance prediction completed!');
-            toast.info(res.data.data.prediction);
-          }
-        } catch (e: any) {
-          // Fallback: analyzeStudentRisk for target student
-          const studentRes = await api.post('/api/ai/student-risk', { targetStudentId: 'stu-101' }).catch(() => null);
-          if (studentRes && studentRes.data?.success) {
-            toast.success('AI Prediction model ran on student roster (Aarav Sharma)!');
-            toast.info(`Risk Score: ${studentRes.data.data.riskScore}. ${studentRes.data.data.details}`);
-          } else {
-            toast.info('Model prediction simulation completed with score: LOW risk.');
-          }
-        }
-      } else if (actionLabel === 'Analyze Attendance') {
-        try {
-          const res = await api.post('/api/ai/attendance-risk');
-          if (res.data?.success) {
-            toast.success('Attendance risk audit completed!');
-            toast.info(res.data.data.analysis);
-          }
-        } catch (e) {
-          toast.success('Attendance analysis complete! Average attendance is stable at 94.6%.');
-        }
-      }
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.response?.data?.message || err.message || 'Failed to complete action');
-    } finally {
-      setLoadingAction(null);
-    }
-  };
-
   const predictionData = [
-    { month: 'Jan', predictions: 120, accuracy: 85 },
-    { month: 'Feb', predictions: 145, accuracy: 88 },
-    { month: 'Mar', predictions: 180, accuracy: 90 },
-    { month: 'Apr', predictions: 210, accuracy: 92 },
-    { month: 'May', predictions: 245, accuracy: 94 },
-    { month: 'Jun', predictions: 280, accuracy: 95 },
+    { month: "Jan", predictions: 120, accuracy: 85 },
+    { month: "Feb", predictions: 145, accuracy: 88 },
+    { month: "Mar", predictions: 180, accuracy: 90 },
+    { month: "Apr", predictions: 210, accuracy: 92 },
+    { month: "May", predictions: 245, accuracy: 94 },
+    { month: "Jun", predictions: 280, accuracy: 95 },
   ];
 
   const riskData = [
-    { category: 'Academic', high: 12, medium: 28, low: 45 },
-    { category: 'Attendance', high: 8, medium: 22, low: 55 },
-    { category: 'Behavioral', high: 5, medium: 15, low: 67 },
+    { category: "Academic", high: 12, medium: 28, low: 45 },
+    { category: "Attendance", high: 8, medium: 22, low: 55 },
+    { category: "Behavioral", high: 5, medium: 15, low: 67 },
   ];
 
   const attendanceData = [
-    { month: 'Jan', current: 85, predicted: 87 },
-    { month: 'Feb', current: 82, predicted: 84 },
-    { month: 'Mar', current: 88, predicted: 90 },
-    { month: 'Apr', current: 86, predicted: 88 },
-    { month: 'May', current: 84, predicted: 86 },
-    { month: 'Jun', current: 87, predicted: 89 },
+    { month: "Jan", current: 85, predicted: 87 },
+    { month: "Feb", current: 82, predicted: 84 },
+    { month: "Mar", current: 88, predicted: 90 },
+    { month: "Apr", current: 86, predicted: 88 },
+    { month: "May", current: 84, predicted: 86 },
+    { month: "Jun", current: 87, predicted: 89 },
   ];
 
   return (
@@ -117,18 +59,18 @@ export function AiDashboard() {
       <div className="grid md:grid-cols-4 gap-4">
         {[
           {
-            label: 'AI Predictions Generated',
-            value: '1,245',
+            label: "AI Predictions Generated",
+            value: "1,245",
             icon: Brain,
-            tone: 'success' as const,
+            tone: "success" as const,
           },
-          { label: 'Student Risk Alerts', value: '25', icon: AlertTriangle, tone: 'warn' as const },
-          { label: 'Attendance Warnings', value: '18', icon: Activity, tone: 'warn' as const },
-          { label: 'Smart Recommendations', value: '89', icon: TrendingUp, tone: 'info' as const },
-          { label: 'Automated Reports', value: '156', icon: FileText, tone: 'success' as const },
-          { label: 'Active Insights', value: '67', icon: Target, tone: 'info' as const },
-          { label: 'Chatbot Queries', value: '342', icon: MessageSquare, tone: 'success' as const },
-          { label: 'System Accuracy', value: '94.5%', icon: Zap, tone: 'success' as const },
+          { label: "Student Risk Alerts", value: "25", icon: AlertTriangle, tone: "warn" as const },
+          { label: "Attendance Warnings", value: "18", icon: Activity, tone: "warn" as const },
+          { label: "Smart Recommendations", value: "89", icon: TrendingUp, tone: "info" as const },
+          { label: "Automated Reports", value: "156", icon: FileText, tone: "success" as const },
+          { label: "Active Insights", value: "67", icon: Target, tone: "info" as const },
+          { label: "Chatbot Queries", value: "342", icon: MessageSquare, tone: "success" as const },
+          { label: "System Accuracy", value: "94.5%", icon: Zap, tone: "success" as const },
         ].map((stat) => (
           <Card key={stat.label}>
             <div className="flex items-center justify-between">
@@ -161,7 +103,7 @@ export function AiDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Area
                   type="monotone"
                   dataKey="predictions"
@@ -185,7 +127,7 @@ export function AiDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="category" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Bar dataKey="high" fill="#EF4444" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="medium" fill="#F59E0B" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="low" fill="#10B981" radius={[4, 4, 0, 0]} />
@@ -217,7 +159,7 @@ export function AiDashboard() {
                 <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                 <XAxis dataKey="month" stroke="#64748B" fontSize={12} />
                 <YAxis stroke="#64748B" fontSize={12} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
                 <Line type="monotone" dataKey="current" stroke="#4F46E5" strokeWidth={2.5} />
                 <Line
                   type="monotone"
@@ -236,18 +178,18 @@ export function AiDashboard() {
           <div className="space-y-3">
             {[
               {
-                time: '10:30 AM',
-                activity: 'Generated 45 student risk predictions',
-                type: 'Prediction',
+                time: "10:30 AM",
+                activity: "Generated 45 student risk predictions",
+                type: "Prediction",
               },
-              { time: '09:45 AM', activity: 'Processed 12 attendance warnings', type: 'Alert' },
-              { time: '09:15 AM', activity: 'Created 8 automated reports', type: 'Report' },
+              { time: "09:45 AM", activity: "Processed 12 attendance warnings", type: "Alert" },
+              { time: "09:15 AM", activity: "Created 8 automated reports", type: "Report" },
               {
-                time: '08:30 AM',
-                activity: 'Analyzed 23 student performance trends',
-                type: 'Analysis',
+                time: "08:30 AM",
+                activity: "Analyzed 23 student performance trends",
+                type: "Analysis",
               },
-              { time: '08:00 AM', activity: 'System accuracy updated to 94.5%', type: 'System' },
+              { time: "08:00 AM", activity: "System accuracy updated to 94.5%", type: "System" },
             ].map((item, index) => (
               <div
                 key={index}
@@ -273,32 +215,32 @@ export function AiDashboard() {
           <div className="space-y-2">
             {[
               {
-                title: 'High risk alert: John Smith',
-                desc: 'Attendance below 75% threshold',
-                priority: 'High',
+                title: "High risk alert: John Smith",
+                desc: "Attendance below 75% threshold",
+                priority: "High",
               },
               {
-                title: 'Performance drop detected',
-                desc: '3 students showing declining trends',
-                priority: 'Medium',
+                title: "Performance drop detected",
+                desc: "3 students showing declining trends",
+                priority: "Medium",
               },
               {
-                title: 'Report generated successfully',
-                desc: 'Monthly attendance report ready',
-                priority: 'Low',
+                title: "Report generated successfully",
+                desc: "Monthly attendance report ready",
+                priority: "Low",
               },
               {
-                title: 'New insight available',
-                desc: 'Department performance analysis',
-                priority: 'Low',
+                title: "New insight available",
+                desc: "Department performance analysis",
+                priority: "Low",
               },
             ].map((notification, index) => (
               <div
                 key={index}
-                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${notification.priority === 'High' ? 'bg-red-50 border-red-200' : ''}`}
+                className={`flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition ${notification.priority === "High" ? "bg-red-50 border-red-200" : ""}`}
               >
                 <div
-                  className={`size-10 rounded-lg ${notification.priority === 'High' ? 'bg-red-500' : notification.priority === 'Medium' ? 'bg-amber-500' : 'bg-gradient-primary'} text-white grid place-items-center`}
+                  className={`size-10 rounded-lg ${notification.priority === "High" ? "bg-red-500" : notification.priority === "Medium" ? "bg-amber-500" : "bg-gradient-primary"} text-white grid place-items-center`}
                 >
                   <AlertTriangle className="size-4" />
                 </div>
@@ -308,11 +250,11 @@ export function AiDashboard() {
                 </div>
                 <Badge
                   tone={
-                    notification.priority === 'High'
-                      ? 'warn'
-                      : notification.priority === 'Medium'
-                        ? 'info'
-                        : 'success'
+                    notification.priority === "High"
+                      ? "warn"
+                      : notification.priority === "Medium"
+                        ? "info"
+                        : "success"
                   }
                 >
                   {notification.priority}
@@ -326,32 +268,23 @@ export function AiDashboard() {
           <h3 className="font-semibold mb-4">Quick AI Actions</h3>
           <div className="grid sm:grid-cols-2 gap-3">
             {[
-              { label: 'Generate Risk Report', icon: FileText, color: 'bg-gradient-primary' },
-              { label: 'Run Prediction Model', icon: Brain, color: 'bg-gradient-violet' },
-              { label: 'Analyze Attendance', icon: Activity, color: 'bg-gradient-cyan' },
-              { label: 'View Insights', icon: Target, color: 'bg-gradient-primary' },
-            ].map((action, index) => {
-              const isLoading = loadingAction === action.label;
-              return (
-                <button
-                  key={index}
-                  disabled={!!loadingAction}
-                  onClick={() => handleAction(action.label)}
-                  className="p-4 rounded-xl border hover:bg-accent/50 disabled:opacity-50 transition flex items-center gap-3 text-left w-full cursor-pointer"
+              { label: "Generate Risk Report", icon: FileText, color: "bg-gradient-primary" },
+              { label: "Run Prediction Model", icon: Brain, color: "bg-gradient-violet" },
+              { label: "Analyze Attendance", icon: Activity, color: "bg-gradient-cyan" },
+              { label: "View Insights", icon: Target, color: "bg-gradient-primary" },
+            ].map((action, index) => (
+              <button
+                key={index}
+                className="p-4 rounded-xl border hover:bg-accent/50 transition flex items-center gap-3"
+              >
+                <div
+                  className={`size-10 rounded-lg ${action.color} text-white grid place-items-center`}
                 >
-                  <div
-                    className={`size-10 rounded-lg ${action.color} text-white grid place-items-center shrink-0`}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <action.icon className="size-4" />
-                    )}
-                  </div>
-                  <span className="text-sm font-medium">{action.label}</span>
-                </button>
-              );
-            })}
+                  <action.icon className="size-4" />
+                </div>
+                <span className="text-sm font-medium">{action.label}</span>
+              </button>
+            ))}
           </div>
         </Card>
       </div>

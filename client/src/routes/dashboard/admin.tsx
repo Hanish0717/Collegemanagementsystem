@@ -1,6 +1,6 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
-import { getStoredUser } from '@/services/authService';
-
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { AdminDashboard } from "@/pages/admin/AdminDashboard";
+import { getStoredUser } from "@/services/authService";
 
 export const Route = createFileRoute("/dashboard/admin")({
   beforeLoad: ({ location }) => {
@@ -41,6 +41,5 @@ export const Route = createFileRoute("/dashboard/admin")({
       throw redirect({ to: "/dashboard" });
     }
   },
-  component: Outlet,
+  component: AdminDashboard,
 });
-
