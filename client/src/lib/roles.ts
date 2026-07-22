@@ -241,7 +241,13 @@ export const ROLES: Record<RoleId, Role> = {
     nav: [
       base,
       { to: "/dashboard/faculty/attendance", label: "Attendance", icon: CalendarCheck },
+      { to: "/dashboard/faculty/marks", label: "Enter Marks", icon: Award },
+      { to: "/dashboard/faculty/classes", label: "My Classes", icon: CalendarCheck },
       { to: "/dashboard/faculty/materials", label: "Materials", icon: BookOpen },
+      { to: "/dashboard/faculty/evaluations", label: "Evaluations", icon: FileSpreadsheet },
+      { to: "/dashboard/faculty/leave", label: "Leave Requests", icon: ClipboardList },
+      { to: "/dashboard/faculty/payroll", label: "My Payroll", icon: Wallet },
+      { to: "/dashboard/faculty/performance", label: "Performance", icon: Activity },
       { to: "/dashboard/faculty/research", label: "Research", icon: FlaskConical },
       { to: "/dashboard/faculty/publications", label: "Publications", icon: FileText },
       { to: "/dashboard/admin/lms", label: "LMS Portal", icon: FileText },
