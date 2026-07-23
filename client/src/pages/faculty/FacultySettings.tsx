@@ -1,359 +1,259 @@
-import { useState, useEffect } from "react";
-import { X, Save, Github, Linkedin, Twitter, Globe, Pencil, Plus } from "lucide-react";
-import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { X, Save, Pencil, Camera, Mail, Phone, MapPin, Award, BookOpen, Calendar, ShieldCheck, UserCheck, Sparkles } from 'lucide-react';
+import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
+import { toast } from 'sonner';
+import { getStoredFacultyProfile, setStoredFacultyProfile, FacultyProfile } from '@/services/facultyProfileService';
 
 export function FacultySettings() {
-  const { user } = useAuth();
-
-  const fullName = user?.fullName || "Faculty Member";
-  const email = user?.email || "";
-
-  const initials = fullName
-    .split(" ")
-    .map((n: string) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase();
-
-  // Edit mode state
+  const [profile, setProfile] = useState<FacultyProfile>(() => getStoredFacultyProfile());
   const [isEditing, setIsEditing] = useState(false);
 
-  // Form states
-  const [aboutMe, setAboutMe] = useState("");
-  const [newSkill, setNewSkill] = useState("");
-  const [skills, setSkills] = useState<string[]>([]);
-  const [socialLinks, setSocialLinks] = useState({
-    github: "",
-    linkedin: "",
-    twitter: "",
-    website: "",
-  });
+  // Form edit states
+  const [phone, setPhone] = useState(profile.phone);
+  const [email, setEmail] = useState(profile.email);
+  const [officeLocation, setOfficeLocation] = useState(profile.officeLocation);
+  const [researchInterests, setResearchInterests] = useState(profile.researchInterests);
+  const [avatar, setAvatar] = useState(profile.avatar);
 
-  // Load state from localStorage on mount
-  useEffect(() => {
-    const role = "faculty";
-    
-    const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "");
-
-    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    if (storedSocials) {
-      setSocialLinks(JSON.parse(storedSocials));
-    } else {
-      setSocialLinks({ github: "", linkedin: "", twitter: "", website: "" });
-    }
-
-    const storedSkills = localStorage.getItem(`cms_${role}_skills`);
-    if (storedSkills) {
-      setSkills(JSON.parse(storedSkills));
-    } else {
-      setSkills([]);
-    }
-  }, []);
-
-  const handleAddSkill = () => {
-    if (newSkill.trim() && !skills.includes(newSkill.trim())) {
-      const updated = [...skills, newSkill.trim()];
-      setSkills(updated);
-      setNewSkill("");
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
-    const updated = skills.filter(s => s !== skillToRemove);
-    setSkills(updated);
-  };
-
-  const handleSave = () => {
-    const role = "faculty";
-    localStorage.setItem(`cms_${role}_about`, aboutMe);
-    localStorage.setItem(`cms_${role}_socials`, JSON.stringify(socialLinks));
-    localStorage.setItem(`cms_${role}_skills`, JSON.stringify(skills));
-    toast.success("Profile changes saved successfully!");
+  const handleSaveProfile = () => {
+    const updated: FacultyProfile = {
+      ...profile,
+      phone,
+      email,
+      officeLocation,
+      researchInterests,
+      avatar,
+    };
+    setProfile(updated);
+    setStoredFacultyProfile(updated);
+    toast.success('Faculty profile updated successfully!');
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    const role = "faculty";
-    
-    const storedAbout = localStorage.getItem(`cms_${role}_about`);
-    setAboutMe(storedAbout || "");
-
-    const storedSocials = localStorage.getItem(`cms_${role}_socials`);
-    setSocialLinks(storedSocials ? JSON.parse(storedSocials) : { github: "", linkedin: "", twitter: "", website: "" });
-
-    const storedSkills = localStorage.getItem(`cms_${role}_skills`);
-    setSkills(storedSkills ? JSON.parse(storedSkills) : []);
-    
-    toast.info("Changes discarded.");
+    setPhone(profile.phone);
+    setEmail(profile.email);
+    setOfficeLocation(profile.officeLocation);
+    setResearchInterests(profile.researchInterests);
+    setAvatar(profile.avatar);
     setIsEditing(false);
+    toast.info('Edits discarded.');
   };
 
-  const joinedDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : "19/05/2026";
-  const [facultyProfile] = useState<any>(() => {
-    const stored = localStorage.getItem("cms_faculty_profile");
-    return stored ? JSON.parse(stored) : null;
-  });
-  const facultyIdVal = facultyProfile?.employeeId || facultyProfile?.employee_id || (user?._id ? `#${user._id.slice(-6).toUpperCase()}` : "#6");
-
-
   return (
-    <div className="space-y-6">
-      <div className="mb-2">
-        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-          Faculty Settings
-        </span>
-        <h2 className="text-sm font-medium text-muted-foreground">
-          Teach, evaluate, inspire
-        </h2>
-      </div>
-
+    <div className="space-y-6 pb-12">
       <PageHeader
-        title="Profile"
-        desc="Manage your identity and public presence."
+        title="Faculty Profile & Settings"
+        desc="View and update your official academic credentials and contact information."
         actions={
-          isEditing ? (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCancel}
-                className="flex items-center gap-1.5 px-4 py-2 border rounded-xl hover:bg-accent text-sm transition cursor-pointer font-medium"
-              >
-                <X className="size-4" /> Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium animate-in fade-in zoom-in-95 duration-150"
-              >
-                <Save className="size-4" /> Save Changes
-              </button>
-            </div>
-          ) : (
+          !isEditing ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm hover:opacity-90 transition cursor-pointer font-medium"
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-soft"
             >
-              <Pencil className="size-4" /> Edit Profile
+              <Pencil className="size-3.5" /> Edit Profile Contact Info
             </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancel}
+                className="px-3.5 py-2 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+              >
+                <X className="size-3.5" /> Cancel
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-soft"
+              >
+                <Save className="size-3.5" /> Save Changes
+              </button>
+            </div>
           )
         }
       />
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="text-center">
-            <div className="mx-auto size-32">
-              <div className="size-full rounded-3xl bg-gradient-primary grid place-items-center text-white text-4xl font-bold shadow-soft">
-                {initials || "FM"}
-              </div>
-            </div>
-            <div className="mt-4 font-bold text-lg">{fullName}</div>
-            <div className="text-xs text-muted-foreground tracking-wider uppercase font-semibold mt-1">
-              FACULTY
-            </div>
-          </Card>
-
-          <Card>
-            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
-              Social Links
-            </h3>
-            {isEditing ? (
-              <div className="space-y-3 animate-in fade-in duration-200">
-                <div className="flex items-center gap-3">
-                  <Github className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="GitHub URL"
-                    value={socialLinks.github}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, github: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <Linkedin className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="LinkedIn URL"
-                    value={socialLinks.linkedin}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, linkedin: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <Twitter className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Twitter URL"
-                    value={socialLinks.twitter}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, twitter: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <Globe className="size-5 text-muted-foreground shrink-0" />
-                  <input
-                    type="text"
-                    placeholder="Website URL"
-                    value={socialLinks.website}
-                    onChange={(e) => setSocialLinks({ ...socialLinks, website: e.target.value })}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3.5">
-                {[
-                  { icon: Github, value: socialLinks.github },
-                  { icon: Linkedin, value: socialLinks.linkedin },
-                  { icon: Twitter, value: socialLinks.twitter },
-                  { icon: Globe, value: socialLinks.website },
-                ].map((item, idx) => {
-                  const isLinked = !!item.value;
-                  const hrefVal = isLinked ? (item.value.startsWith("http") ? item.value : `https://${item.value}`) : undefined;
-                  
-                  return (
-                    <div key={idx} className="flex items-center gap-3">
-                      {isLinked ? (
-                        <a
-                          href={hrefVal}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 text-indigo-600 hover:text-indigo-800 transition"
-                        >
-                          <item.icon className="size-5 shrink-0" />
-                          <span className="text-sm hover:underline break-all">{item.value}</span>
-                        </a>
-                      ) : (
-                        <>
-                          <item.icon className="size-5 text-muted-foreground shrink-0" />
-                          <span className="text-sm text-muted-foreground/60 italic">Not linked</span>
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
+      {/* Profile Header Banner */}
+      <Card className="relative overflow-hidden p-6 md:p-8 border-indigo-100 dark:border-indigo-900/50 bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-purple-50/60 dark:from-slate-900 dark:via-indigo-950/40 dark:to-slate-900">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
+          <div className="relative group">
+            <img
+              src={avatar}
+              alt={profile.name}
+              className="size-28 md:size-32 rounded-3xl object-cover ring-4 ring-indigo-500/30 shadow-lg"
+            />
+            {isEditing && (
+              <div className="absolute inset-0 bg-slate-900/50 rounded-3xl flex items-center justify-center cursor-pointer">
+                <Camera className="size-6 text-white" />
               </div>
             )}
-          </Card>
+          </div>
+
+          <div className="flex-1 text-center md:text-left space-y-2">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+              <Badge tone="purple">{profile.department}</Badge>
+              <Badge tone="info">{profile.category} Faculty</Badge>
+              <Badge tone="success">{profile.status}</Badge>
+            </div>
+
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
+              Prof. {profile.name}
+            </h2>
+
+            <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+              {profile.designation} — {profile.departmentFullName}
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-slate-600 dark:text-slate-400 pt-2 font-medium">
+              <span className="flex items-center gap-1 font-mono font-bold text-slate-800 dark:text-slate-200">
+                <UserCheck className="size-3.5 text-indigo-500" /> ID: {profile.employeeId}
+              </span>
+              <span className="flex items-center gap-1">
+                <Mail className="size-3.5 text-indigo-500" /> {email}
+              </span>
+              <span className="flex items-center gap-1">
+                <Phone className="size-3.5 text-indigo-500" /> {phone}
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="size-3.5 text-indigo-500" /> {officeLocation}
+              </span>
+            </div>
+          </div>
         </div>
+      </Card>
 
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <h3 className="font-semibold mb-3 text-sm tracking-wider uppercase text-muted-foreground">
-              About Me
-            </h3>
-            {isEditing ? (
-              <textarea
-                value={aboutMe}
-                onChange={(e) => setAboutMe(e.target.value)}
-                placeholder="Tell us about yourself..."
-                rows={4}
-                className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary animate-in fade-in duration-200"
-              />
-            ) : (
-              <div className="min-h-16 py-1">
-                {aboutMe ? (
-                  <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">{aboutMe}</p>
-                ) : (
-                  <p className="text-sm text-muted-foreground/60 italic">
-                    No bio provided yet. Add one to let people know who you are!
-                  </p>
-                )}
-              </div>
-            )}
-          </Card>
+      {/* Grid Details */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Official Academic Details */}
+        <Card>
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b">
+            <Award className="size-4 text-indigo-600" />
+            <h3 className="font-bold text-slate-900 dark:text-white text-sm">Official Faculty Credentials</h3>
+          </div>
 
-          <Card>
-            <h3 className="font-semibold mb-3 text-sm tracking-wider uppercase text-muted-foreground">
-              Skills & Expertise
-            </h3>
-            {isEditing ? (
-              <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Add a skill (e.g. React, Python)"
-                    value={newSkill}
-                    onChange={(e) => setNewSkill(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddSkill()}
-                    className="w-full rounded-xl border bg-background/60 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                  <button
-                    onClick={handleAddSkill}
-                    className="px-4 py-2 rounded-xl bg-gradient-primary text-white text-sm font-medium hover:opacity-90 transition cursor-pointer flex items-center gap-1 shrink-0"
-                  >
-                    <Plus className="size-4" /> Add
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {skills.length > 0 ? (
-                    skills.map((skill) => (
-                      <Badge key={skill} tone="info" className="flex items-center gap-1.5 px-3 py-1 rounded-xl">
-                        <span>{skill}</span>
-                        <button onClick={() => handleRemoveSkill(skill)} className="hover:text-rose-500 cursor-pointer">
-                          <X className="size-3" />
-                        </button>
-                      </Badge>
-                    ))
-                  ) : (
-                    <span className="text-xs text-muted-foreground/60">No skills added yet.</span>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-wrap gap-2 py-1">
-                {skills.length > 0 ? (
-                  skills.map((skill) => (
-                    <Badge key={skill} tone="info" className="px-3 py-1 rounded-xl">
-                      {skill}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className="text-sm text-muted-foreground/60 italic">No skills added yet.</span>
-                )}
-              </div>
-            )}
-          </Card>
+          <div className="space-y-3.5 text-xs">
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 font-medium">Employee ID</span>
+              <span className="font-mono font-extrabold text-slate-800 dark:text-slate-200">{profile.employeeId}</span>
+            </div>
 
-          <Card>
-            <h3 className="font-semibold mb-4 text-sm tracking-wider uppercase text-muted-foreground">
-              Account Details
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Email Address
-                </label>
-                <div className="text-sm font-semibold mt-1 truncate">{email}</div>
-              </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Account Status
-                </label>
-                <div className="text-sm font-semibold mt-1 text-emerald-600 flex items-center gap-1.5">
-                  <div className="size-2 rounded-full bg-emerald-500" />
-                  Verified
-                </div>
-              </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Joined On
-                </label>
-                <div className="text-sm font-semibold mt-1">{joinedDate}</div>
-              </div>
-              <div className="p-3.5 border rounded-xl bg-gradient-soft">
-                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                  Faculty ID
-                </label>
-                <div className="text-sm font-semibold mt-1 font-mono">{facultyIdVal}</div>
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 font-medium">Full Name</span>
+              <span className="font-bold text-slate-900 dark:text-white">{profile.name}</span>
+            </div>
+
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 font-medium">Department</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">{profile.departmentFullName} ({profile.department})</span>
+            </div>
+
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 font-medium">Designation</span>
+              <span className="font-semibold text-indigo-600 dark:text-indigo-400">{profile.designation}</span>
+            </div>
+
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 font-medium">Category</span>
+              <span className="font-semibold text-purple-600">{profile.category} Staff</span>
+            </div>
+
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 font-medium">Total Teaching Experience</span>
+              <span className="font-bold text-slate-800 dark:text-slate-200">{profile.experience} Years</span>
+            </div>
+
+            <div className="flex justify-between py-1.5 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-slate-500 font-medium">Date of Joining</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">{profile.joiningDate}</span>
+            </div>
+
+            <div className="flex justify-between py-1.5">
+              <span className="text-slate-500 font-medium">Highest Qualification</span>
+              <span className="font-bold text-indigo-700 dark:text-indigo-300">{profile.qualification}</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Contact & Research Settings (Editable) */}
+        <Card>
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b">
+            <BookOpen className="size-4 text-indigo-600" />
+            <h3 className="font-bold text-slate-900 dark:text-white text-sm">Specialization & Contact Information</h3>
+          </div>
+
+          <div className="space-y-4 text-xs">
+            <div>
+              <label className="text-slate-500 font-semibold block mb-1">Specialization</label>
+              <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 font-semibold text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800">
+                {profile.specialization}
               </div>
             </div>
-          </Card>
-        </div>
+
+            <div>
+              <label className="text-slate-500 font-semibold block mb-1">Research Interests</label>
+              {isEditing ? (
+                <textarea
+                  value={researchInterests}
+                  onChange={(e) => setResearchInterests(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-indigo-300 dark:border-indigo-800 bg-indigo-50/30 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  rows={2}
+                />
+              ) : (
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 font-medium text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800">
+                  {researchInterests}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-slate-500 font-semibold block mb-1">Official Email Address</label>
+              {isEditing ? (
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-indigo-300 dark:border-indigo-800 bg-indigo-50/30 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              ) : (
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 font-medium text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800">
+                  {email}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-slate-500 font-semibold block mb-1">Mobile Number</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-indigo-300 dark:border-indigo-800 bg-indigo-50/30 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              ) : (
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 font-medium text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800">
+                  {phone}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="text-slate-500 font-semibold block mb-1">Office Location</label>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={officeLocation}
+                  onChange={(e) => setOfficeLocation(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-indigo-300 dark:border-indigo-800 bg-indigo-50/30 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              ) : (
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 font-medium text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800">
+                  {officeLocation}
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );
 }
-
-

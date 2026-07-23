@@ -65,10 +65,10 @@ app.use(cors({
     }
 
     if (!origin) return callback(null, true);
-    
+
     // Check if origin is a local network IP address (e.g., http://192.168.x.x, http://10.x.x.x, http://172.x.x.x)
     const isLocalNetworkIp = /^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin);
-    
+
     if (
       allowedOrigins.indexOf(origin) !== -1 ||
       origin.startsWith('http://localhost:') ||
@@ -77,14 +77,14 @@ app.use(cors({
     ) {
       return callback(null, true);
     }
-    
+
     console.warn(`CORS block: Request from origin ${origin} was rejected.`);
     return callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
   },
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 

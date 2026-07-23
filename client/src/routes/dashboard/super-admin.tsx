@@ -1,5 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { SuperAdminDashboard } from "@/pages/superAdmin/SuperAdminDashboard";
+import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
 import { getStoredUser } from "@/services/authService";
 
 export const Route = createFileRoute("/dashboard/super-admin")({
@@ -9,5 +8,5 @@ export const Route = createFileRoute("/dashboard/super-admin")({
       throw redirect({ to: "/dashboard" });
     }
   },
-  component: SuperAdminDashboard,
+  component: Outlet,
 });

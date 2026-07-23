@@ -28,7 +28,7 @@ export function DeanStudentAdmin() {
     loadLiveDbStats();
   }, []);
 
-  const totalDbStudents = dbStats?.totalStudents ?? Number(dbStats?.stats?.find(s => s.label === 'Total Students')?.value || 55);
+  const totalDbStudents = (dbStats as any)?.totalStudents ?? Number(dbStats?.stats?.find(s => s.label === 'Total Students')?.value || 55);
 
   // Dynamic State for Defaulters
   const [defaultersList, setDefaultersList] = useState([

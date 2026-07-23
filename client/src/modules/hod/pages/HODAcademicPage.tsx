@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHODDepartment } from '../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { fetchDepartmentAcademics, approveDepartmentLessonPlan, DepartmentSubject, LessonPlanItem } from '../services/hodAcademicService';
 import { hodStore } from '../services/hodStore';
 

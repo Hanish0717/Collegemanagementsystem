@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHODDepartment } from '../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { fetchDepartmentEvents, EventItem } from '../services/hodMentoringResearchEventService';
 
 import {

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { Outlet, useRouterState, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { Outlet, useRouterState, useNavigate } from '@tanstack/react-router';
+import { motion } from 'framer-motion';
 import {
   Bar,
   BarChart,
@@ -11,8 +11,8 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-  Cell
-} from "recharts";
+  Cell,
+} from 'recharts';
 import {
   Activity,
   Bell,
@@ -24,33 +24,50 @@ import {
   GraduationCap,
   MapPin,
   TrendingUp,
-  AlertTriangle
-} from "lucide-react";
-import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
-import { useAuth } from "@/contexts/AuthContext";
-import api from "@/lib/api";
+  AlertTriangle,
+} from 'lucide-react';
+import { Badge, Card, PageHeader, StatCard } from '@/components/dashboard/ui';
+import { useAuth } from '@/contexts/AuthContext';
+import api from '@/lib/api';
 
-const statIcons = [GraduationCap, TrendingUp, BookOpen, Calendar, DollarSign, CheckCircle, MapPin, Activity];
+const statIcons = [
+  GraduationCap,
+  TrendingUp,
+  BookOpen,
+  Calendar,
+  DollarSign,
+  CheckCircle,
+  MapPin,
+  Activity,
+];
 const statGradients = [
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
-  "bg-gradient-cyan",
-  "bg-gradient-primary",
-  "bg-gradient-violet",
+  'bg-gradient-primary',
+  'bg-gradient-violet',
+  'bg-gradient-cyan',
+  'bg-gradient-primary',
+  'bg-gradient-violet',
+  'bg-gradient-cyan',
+  'bg-gradient-primary',
+  'bg-gradient-violet',
 ];
 
 const gradePoints: Record<string, number> = {
-  "A+": 4.0, "A": 4.0, "A-": 3.7,
-  "B+": 3.3, "B": 3.0, "B-": 2.7,
-  "C+": 2.3, "C": 2.0, "C-": 1.7,
-  "D+": 1.3, "D": 1.0, "F": 0.0
+  'A+': 4.0,
+  A: 4.0,
+  'A-': 3.7,
+  'B+': 3.3,
+  B: 3.0,
+  'B-': 2.7,
+  'C+': 2.3,
+  C: 2.0,
+  'C-': 1.7,
+  'D+': 1.3,
+  D: 1.0,
+  F: 0.0,
 };
 
 export function StudentDashboard() {
-  const path = useRouterState({ select: r => r.location.pathname });
+  const path = useRouterState({ select: (r) => r.location.pathname });
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -60,26 +77,34 @@ export function StudentDashboard() {
   const [activities, setActivities] = useState<any[]>([]);
   const [gpaData, setGpaData] = useState<any[]>([]);
   const [attendanceHistoryData, setAttendanceHistoryData] = useState<any[]>([]);
-  const [displayMonth, setDisplayMonth] = useState<string>(() => new Date().toLocaleString("en-US", { month: "long", year: "numeric" }));
+  const [displayMonth, setDisplayMonth] = useState<string>(() =>
+    new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }),
+  );
   const [notifications, setNotifications] = useState<any[]>([]);
-  const [currentCgpa, setCurrentCgpa] = useState("0.0");
-  const [currentAttendance, setCurrentAttendance] = useState("0%");
+  const [currentCgpa, setCurrentCgpa] = useState('0.0');
+  const [currentAttendance, setCurrentAttendance] = useState('0%');
   const [earnedCredits, setEarnedCredits] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // New detailed attendance states for dashboard integrations
   const [attendanceStats, setAttendanceStats] = useState<any>(null);
   const [subjectWise, setSubjectWise] = useState<any[]>([]);
-  const [borrowedBooks, setBorrowedBooks] = useState<any[]>([]);
 
   useEffect(() => {
+    if (path !== '/dashboard/student' && path !== '/dashboard' && path !== '/dashboard/') return;
+
     const fetchDashboardData = async () => {
       setLoading(true);
-      let resolvedStudentId = "";
+      let resolvedStudentId = '';
       try {
-        const dashRes = await api.get("/api/student-module/dashboard");
+        const dashRes = await api.get('/api/student-module/dashboard');
         if (dashRes.data?.success && dashRes.data?.data) {
-          const { stats: dbStats, activities: dbActivities, notifications: dbNotifs, profile } = dashRes.data.data;
+          const {
+            stats: dbStats,
+            activities: dbActivities,
+            notifications: dbNotifs,
+            profile,
+          } = dashRes.data.data;
 
           setStats(dbStats || []);
           setActivities(dbActivities || []);
@@ -87,7 +112,7 @@ export function StudentDashboard() {
 
           if (profile) {
             setStudentProfile(profile);
-            localStorage.setItem("cms_student_profile", JSON.stringify(profile));
+            localStorage.setItem('cms_student_profile', JSON.stringify(profile));
             resolvedStudentId = profile._id || profile.id;
             if (profile.attendancePercentage !== undefined) {
               setCurrentAttendance(`${profile.attendancePercentage}%`);
@@ -98,28 +123,24 @@ export function StudentDashboard() {
           }
         }
       } catch (err) {
-        console.error("Error loading student dashboard:", err);
+        console.error('Error loading student dashboard:', err);
       }
 
       try {
-        const resultsRes = await api.get("/api/student-module/results");
+        const resultsRes = await api.get('/api/student-module/results');
         if (resultsRes.data?.success && resultsRes.data?.data) {
-          const rawResults = resultsRes.data.data;
-          const dbResults = Array.isArray(rawResults)
-            ? rawResults
-            : (rawResults.currentSemesterSubjectMarks || []);
-
-          if (Array.isArray(dbResults) && dbResults.length > 0) {
+          const dbResults = resultsRes.data.data;
+          if (dbResults.length > 0) {
             const semMap: Record<string, { totalPoints: number; totalCredits: number }> = {};
             let totalCredits = 0;
 
             dbResults.forEach((res: any) => {
-              const sem = res.semester ? `Sem ${res.semester}` : "Sem 5";
-              const grade = res.grade || "A";
+              const sem = res.semester ? `Sem ${res.semester}` : 'Sem 5';
+              const grade = res.grade || 'A';
               const credits = res.credits || 3;
               const gp = gradePoints[grade] !== undefined ? gradePoints[grade] : 3.0;
 
-              if (grade !== "F") {
+              if (grade !== 'F') {
                 totalCredits += credits;
               }
 
@@ -135,7 +156,7 @@ export function StudentDashboard() {
             const sortedSemesters = Object.keys(semMap).sort((a, b) => a.localeCompare(b));
             let runningPoints = 0;
             let runningCredits = 0;
-            const newGpaHistory = sortedSemesters.map(sem => {
+            const newGpaHistory = sortedSemesters.map((sem) => {
               const gpa = Number((semMap[sem].totalPoints / semMap[sem].totalCredits).toFixed(2));
               runningPoints += semMap[sem].totalPoints;
               runningCredits += semMap[sem].totalCredits;
@@ -144,7 +165,7 @@ export function StudentDashboard() {
                 semester: sem,
                 gpa,
                 cgpa,
-                credits: semMap[sem].totalCredits
+                credits: semMap[sem].totalCredits,
               };
             });
 
@@ -152,7 +173,7 @@ export function StudentDashboard() {
           }
         }
       } catch (err) {
-        console.error("Error loading student results for GPA trend:", err);
+        console.error('Error loading student results for GPA trend:', err);
       }
 
       try {
@@ -164,7 +185,7 @@ export function StudentDashboard() {
             if (dbStats) {
               setAttendanceStats(dbStats);
             }
-            if (Array.isArray(dbSubjectWise)) {
+            if (dbSubjectWise) {
               setSubjectWise(dbSubjectWise.slice(0, 4));
             }
             if (monthly && monthly.length > 0) {
@@ -176,13 +197,13 @@ export function StudentDashboard() {
 
               if (targetMonthRecord) {
                 setAttendanceHistoryData([
-                  { name: "Present", count: targetMonthRecord.present || 0, fill: "#10B981" },
-                  { name: "Absent", count: targetMonthRecord.absent || 0, fill: "#EF4444" },
-                  { name: "Late", count: targetMonthRecord.late || 0, fill: "#F59E0B" }
+                  { name: 'Present', count: targetMonthRecord.present || 0, fill: '#10B981' },
+                  { name: 'Absent', count: targetMonthRecord.absent || 0, fill: '#EF4444' },
+                  { name: 'Late', count: targetMonthRecord.late || 0, fill: '#F59E0B' },
                 ]);
-                const parts = targetMonthRecord.month.split("-");
+                const parts = targetMonthRecord.month.split('-');
                 const date = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
-                setDisplayMonth(date.toLocaleString("en-US", { month: "long", year: "numeric" }));
+                setDisplayMonth(date.toLocaleString('en-US', { month: 'long', year: 'numeric' }));
               } else {
                 setAttendanceHistoryData([]);
               }
@@ -190,38 +211,37 @@ export function StudentDashboard() {
           }
         }
       } catch (err) {
-        console.error("Error loading student attendance history:", err);
+        console.error('Error loading student attendance history:', err);
       }
-
-      try {
-        const libRes = await api.get("/api/library/issued");
-        if (libRes.data?.success && libRes.data?.data) {
-          setBorrowedBooks(libRes.data.data);
-        }
-      } catch (err) {
-        console.error("Error loading library books for dashboard:", err);
-      }
-
       setLoading(false);
     };
 
     fetchDashboardData();
-  }, []);
+  }, [path]);
 
-  const attPctVal = attendanceStats ? attendanceStats.percentage : (studentProfile?.attendancePercentage || 85);
+  if (path !== '/dashboard/student' && path !== '/dashboard' && path !== '/dashboard/') {
+    return <Outlet />;
+  }
+
+  const attPctVal = attendanceStats
+    ? attendanceStats.percentage
+    : studentProfile?.attendancePercentage || 85;
   const shortage = attPctVal < 75;
 
   const academicSummaryItems = [
-    { label: "Student Name", value: studentProfile?.fullName || user?.fullName || "Student" },
-    { label: "Current Semester", value: studentProfile?.semester ? `Sem ${studentProfile.semester}` : "N/A" },
-    { label: "Total Credits Earned", value: String(earnedCredits) },
-    { label: "CGPA", value: studentProfile?.cgpa ? String(studentProfile.cgpa) : currentCgpa },
+    { label: 'Student Name', value: studentProfile?.fullName || user?.fullName || 'Student' },
+    {
+      label: 'Current Semester',
+      value: studentProfile?.semester ? `Sem ${studentProfile.semester}` : 'N/A',
+    },
+    { label: 'Total Credits Earned', value: String(earnedCredits) },
+    { label: 'CGPA', value: studentProfile?.cgpa ? String(studentProfile.cgpa) : currentCgpa },
   ];
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`Welcome back, ${studentProfile?.fullName || user?.fullName || "Student"}`}
+        title={`Welcome back, ${studentProfile?.fullName || user?.fullName || 'Student'}`}
         desc="Track attendance, view results, submit assignments, and manage academic activities."
       />
 
@@ -234,35 +254,46 @@ export function StudentDashboard() {
           <div>
             <h4 className="font-bold text-sm text-red-800 font-sans">Attendance Shortage Alert</h4>
             <p className="text-xs text-red-700/80 mt-1">
-              Your overall attendance is <strong className="font-extrabold">{attPctVal}%</strong>, which is below the minimum required 75%. You are at risk of losing examination eligibility.
+              Your overall attendance is <strong className="font-extrabold">{attPctVal}%</strong>,
+              which is below the minimum required 75%. You are at risk of losing examination
+              eligibility.
             </p>
           </div>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {loading ? (
-          [1, 2, 3, 4].map((n) => (
-            <Card key={n} className="h-28 animate-pulse bg-muted/40">
-              <div />
-            </Card>
-          ))
-        ) : (
-          stats
-            .filter((stat) => stat.label !== "Pending Assignments")
-            .map((stat, i) => {
-              let label = stat.label;
-              let val = stat.value;
-              if (label === "Overall Attendance" && attendanceStats) {
-                val = `${attendanceStats.percentage}%`;
-              }
-              return (
-                <motion.div key={stat.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
-                  <StatCard label={label} value={val} change={stat.change} icon={statIcons[i % statIcons.length]} gradient={statGradients[i % statGradients.length]} />
-                </motion.div>
-              );
-            })
-        )}
+        {loading
+          ? [1, 2, 3, 4].map((n) => (
+              <Card key={n} className="h-28 animate-pulse bg-muted/40">
+                <div />
+              </Card>
+            ))
+          : stats
+              .filter((stat) => stat.label !== 'Pending Assignments')
+              .map((stat, i) => {
+                const label = stat.label;
+                let val = stat.value;
+                if (label === 'Overall Attendance' && attendanceStats) {
+                  val = `${attendanceStats.percentage}%`;
+                }
+                return (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                  >
+                    <StatCard
+                      label={label}
+                      value={val}
+                      change={stat.change}
+                      icon={statIcons[i % statIcons.length]}
+                      gradient={statGradients[i % statGradients.length]}
+                    />
+                  </motion.div>
+                );
+              })}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
@@ -272,7 +303,7 @@ export function StudentDashboard() {
               <h3 className="font-semibold">Attendance Summary</h3>
               <p className="text-xs text-muted-foreground">{displayMonth} breakdown</p>
             </div>
-            <Badge tone={shortage ? "danger" : "success"}>{attPctVal}% Overall</Badge>
+            <Badge tone={shortage ? 'danger' : 'success'}>{attPctVal}% Overall</Badge>
           </div>
           <div className="h-72">
             {loading ? (
@@ -283,7 +314,7 @@ export function StudentDashboard() {
                   <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                   <XAxis dataKey="name" stroke="#64748B" fontSize={12} />
                   <YAxis stroke="#64748B" fontSize={12} allowDecimals={false} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                   <Bar dataKey="count" radius={[8, 8, 0, 0]}>
                     {attendanceHistoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -306,16 +337,15 @@ export function StudentDashboard() {
               <h3 className="font-semibold">Quick Actions</h3>
               <Activity className="size-4 text-muted-foreground" />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {[
-                { label: "📢 Notice Board", tone: "info" as const, to: "/dashboard/student/notices" },
-                { label: "👤 My Profile", tone: "purple" as const, to: "/dashboard/student/profile" },
-                { label: "📚 LMS & Assignments", tone: "info" as const, to: "/dashboard/student/lms" },
-                { label: "📅 Time Table", tone: "info" as const, to: "/dashboard/student/timetable" },
-                { label: "🎟️ Exam Hall Ticket", tone: "success" as const, to: "/dashboard/student/hall-ticket" },
-                { label: "💳 Payments & Fees", tone: "warn" as const, to: "/dashboard/student/fees" },
-                { label: "📊 Exam Results", tone: "info" as const, to: "/dashboard/student/results" },
-                { label: "🛠️ Student Services", tone: "purple" as const, to: "/dashboard/student/services" },
+                {
+                  label: 'View Timetable',
+                  tone: 'info' as const,
+                  to: '/dashboard/student/timetable',
+                },
+                { label: 'Pay Fees', tone: 'warn' as const, to: '/dashboard/student/fees' },
+                { label: 'Register Event', tone: 'info' as const, to: '/dashboard/student/events' },
               ].map((item) => (
                 <button
                   key={item.label}
@@ -323,7 +353,7 @@ export function StudentDashboard() {
                   className="w-full flex items-center justify-between p-2.5 rounded-xl bg-gradient-soft border hover:bg-accent/50 transition cursor-pointer text-left"
                 >
                   <span className="text-xs font-semibold">{item.label}</span>
-                  <Badge tone={item.tone}>Go →</Badge>
+                  <Badge tone={item.tone}>Action</Badge>
                 </button>
               ))}
             </div>
@@ -331,14 +361,18 @@ export function StudentDashboard() {
 
           {attendanceStats && (
             <div className="mt-4 pt-4 border-t space-y-2">
-              <div className="text-xs font-semibold text-muted-foreground">Class Slot Breakdown</div>
+              <div className="text-xs font-semibold text-muted-foreground">
+                Class Slot Breakdown
+              </div>
               <div className="flex justify-between items-center text-xs">
                 <span className="text-muted-foreground">Conducted Classes</span>
                 <span className="font-bold">{attendanceStats.total || 0}</span>
               </div>
               <div className="flex justify-between items-center text-xs">
                 <span className="text-muted-foreground">Attended (Present/Late)</span>
-                <span className="font-bold text-emerald-600">{(attendanceStats.present || 0) + (attendanceStats.late || 0)}</span>
+                <span className="font-bold text-emerald-600">
+                  {(attendanceStats.present || 0) + (attendanceStats.late || 0)}
+                </span>
               </div>
               <div className="flex justify-between items-center text-xs">
                 <span className="text-muted-foreground">Absent Classes</span>
@@ -358,24 +392,29 @@ export function StudentDashboard() {
               {subjectWise.map((sw) => {
                 const isShort = sw.percentage < 75;
                 return (
-                  <div key={sw.subject} className="p-3 border rounded-xl bg-gradient-soft flex flex-col justify-between">
+                  <div
+                    key={sw.subject}
+                    className="p-3 border rounded-xl bg-gradient-soft flex flex-col justify-between"
+                  >
                     <div className="flex justify-between items-start gap-2">
                       <span className="text-xs font-semibold truncate flex-1">{sw.subject}</span>
-                      <span className={`text-xs font-bold ${isShort ? "text-red-500" : "text-emerald-500"}`}>
+                      <span
+                        className={`text-xs font-bold ${isShort ? 'text-red-500' : 'text-emerald-500'}`}
+                      >
                         {sw.percentage}%
                       </span>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5 mt-2 overflow-hidden">
-                      <div 
-                        className={`h-full rounded-full ${isShort ? "bg-red-500" : "bg-emerald-500"}`} 
+                      <div
+                        className={`h-full rounded-full ${isShort ? 'bg-red-500' : 'bg-emerald-500'}`}
                         style={{ width: `${sw.percentage}%` }}
                       />
                     </div>
                     <div className="text-[10px] text-muted-foreground mt-1.5 flex justify-between">
                       <span>
-                        Attended: {typeof sw.present === "number" ? (sw.present + (sw.late || 0)) : (sw.attended || Math.round(((sw.total || 20) * (sw.percentage || 85)) / 100))}/{sw.total || sw.totalClasses || 20}
+                        Attended: {sw.present + sw.late}/{sw.total}
                       </span>
-                      <span>{isShort ? "Shortage" : "Good"}</span>
+                      <span>{isShort ? 'Shortage' : 'Good'}</span>
                     </div>
                   </div>
                 );
@@ -387,7 +426,9 @@ export function StudentDashboard() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="font-semibold">GPA & CGPA Progress</h3>
-                <p className="text-xs text-muted-foreground">Semester-wise GPA and Cumulative CGPA tracking</p>
+                <p className="text-xs text-muted-foreground">
+                  Semester-wise GPA and Cumulative CGPA tracking
+                </p>
               </div>
               <Badge tone="success">{currentCgpa}</Badge>
             </div>
@@ -398,9 +439,21 @@ export function StudentDashboard() {
                     <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                     <XAxis dataKey="semester" stroke="#64748B" fontSize={12} />
                     <YAxis stroke="#64748B" fontSize={12} />
-                    <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid #e5e7eb" }} />
-                    <Line type="monotone" dataKey="gpa" name="Semester GPA" stroke="#4F46E5" strokeWidth={2} />
-                    <Line type="monotone" dataKey="cgpa" name="CGPA" stroke="#10B981" strokeWidth={2.5} />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                    <Line
+                      type="monotone"
+                      dataKey="gpa"
+                      name="Semester GPA"
+                      stroke="#4F46E5"
+                      strokeWidth={2}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="cgpa"
+                      name="CGPA"
+                      stroke="#10B981"
+                      strokeWidth={2.5}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
@@ -412,108 +465,28 @@ export function StudentDashboard() {
           </Card>
         )}
 
-
         <Card>
           <div className="flex items-center gap-2 mb-4">
             <GraduationCap className="size-5 text-indigo" />
             <h3 className="font-semibold">Academic Summary</h3>
           </div>
           <div className="space-y-3">
-            {loading ? (
-              [1, 2, 3, 4].map((n) => (
-                <div key={n} className="h-11 bg-muted/20 animate-pulse rounded-xl border" />
-              ))
-            ) : (
-              academicSummaryItems.map(item => (
-                <div key={item.label} className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border">
-                  <span className="text-xs text-muted-foreground">{item.label}</span>
-                  <span className="font-bold text-xs">{item.value}</span>
-                </div>
-              ))
-            )}
+            {loading
+              ? [1, 2, 3, 4].map((n) => (
+                  <div key={n} className="h-11 bg-muted/20 animate-pulse rounded-xl border" />
+                ))
+              : academicSummaryItems.map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex items-center justify-between p-3 rounded-xl bg-gradient-soft border"
+                  >
+                    <span className="text-xs text-muted-foreground">{item.label}</span>
+                    <span className="font-bold text-xs">{item.value}</span>
+                  </div>
+                ))}
           </div>
         </Card>
       </div>
-
-      {/* Library Management Section */}
-      <Card className="w-full overflow-hidden">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
-              <BookOpen className="size-5 text-indigo-600 dark:text-indigo-400" />
-              Library Management
-            </h3>
-            <p className="text-xs text-muted-foreground">Track your book borrow history, return statuses, and outstanding fines.</p>
-          </div>
-          <Badge tone={borrowedBooks.length > 0 ? "info" : "success"}>
-            {borrowedBooks.length} Total Books
-          </Badge>
-        </div>
-
-        {loading ? (
-          <div className="space-y-2 animate-pulse">
-            <div className="h-10 bg-muted/40 rounded-xl" />
-            <div className="h-12 bg-muted/30 rounded-xl" />
-            <div className="h-12 bg-muted/30 rounded-xl" />
-          </div>
-        ) : borrowedBooks.length === 0 ? (
-          <div className="text-center py-10 border border-dashed rounded-2xl bg-gradient-soft/20">
-            <BookOpen className="size-12 text-muted-foreground/45 mx-auto mb-3" />
-            <p className="text-sm font-medium text-muted-foreground">No library transactions recorded yet.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto -mx-6 px-6">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b text-xs font-semibold text-muted-foreground bg-muted/20">
-                  <th className="py-3.5 px-4 rounded-l-xl">S.No</th>
-                  <th className="py-3.5 px-4">Book Name</th>
-                  <th className="py-3.5 px-4">Date Taken</th>
-                  <th className="py-3.5 px-4">Date to be Returned Without Fine</th>
-                  <th className="py-3.5 px-4">Returned</th>
-                  <th className="py-3.5 px-4">Fine</th>
-                  <th className="py-3.5 px-4 rounded-r-xl">Returned Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y text-xs">
-                {borrowedBooks.map((item, index) => {
-                  const bookTitle = typeof item.book === "object" && item.book ? item.book.title : "Library Book";
-                  const isReturned = item.status === "returned";
-                  const hasFine = item.fineAmount && item.fineAmount > 0;
-                  
-                  return (
-                    <tr key={item._id || item.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="py-4 px-4 font-medium text-muted-foreground">{index + 1}</td>
-                      <td className="py-4 px-4 font-semibold text-foreground max-w-xs truncate">{bookTitle}</td>
-                      <td className="py-4 px-4">{item.issueDate}</td>
-                      <td className="py-4 px-4">{item.dueDate}</td>
-                      <td className="py-4 px-4">
-                        <Badge tone={isReturned ? "success" : item.status === "overdue" ? "danger" : "warn"}>
-                          {isReturned ? "Yes" : "No"}
-                        </Badge>
-                      </td>
-                      <td className="py-4 px-4">
-                        {hasFine ? (
-                          <span className="font-semibold text-rose-600 bg-rose-50 dark:bg-rose-950/20 px-2 py-1 rounded">
-                            ₹{item.fineAmount} (With Fine)
-                          </span>
-                        ) : (
-                          <span className="text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-1 rounded">
-                            ₹0 (Without Fine)
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4 px-4 text-muted-foreground">
-                        {item.returnDate || <span className="italic text-muted-foreground/60">—</span>}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Card>
 
       <div className="grid lg:grid-cols-2 gap-4">
         <Card>
@@ -527,31 +500,23 @@ export function StudentDashboard() {
                 <div key={n} className="h-14 bg-muted/20 animate-pulse rounded-xl border" />
               ))
             ) : activities.length > 0 ? (
-              activities.map((activity, idx) => {
-                const actorName = activity.actor || activity.text || "Student";
-                const timeStr = activity.time || activity.date || "Just now";
-                const typeStr = activity.type || "Activity";
-                return (
-                  <div key={idx} className="flex items-center gap-3 py-2 border-b last:border-0">
-                    <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                      {actorName.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div className="flex-1 text-sm">
-                      {activity.text ? (
-                        <span className="font-medium">{activity.text}</span>
-                      ) : (
-                        <>
-                          <span className="font-medium">{activity.actor || "Student"}</span>{" "}
-                          <span className="text-muted-foreground">{activity.action || ""}</span>{" "}
-                          <span className="font-medium">{activity.target || ""}</span>
-                        </>
-                      )}
-                      <div className="text-xs text-muted-foreground mt-0.5">{timeStr}</div>
-                    </div>
-                    <Badge tone="info">{typeStr}</Badge>
+              activities.map((activity, idx) => (
+                <div
+                  key={activity.actor + activity.time + idx}
+                  className="flex items-center gap-3 py-2 border-b last:border-0"
+                >
+                  <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
+                    {activity.actor.slice(0, 2).toUpperCase()}
                   </div>
-                );
-              })
+                  <div className="flex-1 text-sm">
+                    <span className="font-medium">{activity.actor}</span>{' '}
+                    <span className="text-muted-foreground">{activity.action}</span>{' '}
+                    <span className="font-medium">{activity.target}</span>
+                    <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>
+                  </div>
+                  <Badge>{activity.type}</Badge>
+                </div>
+              ))
             ) : (
               <div className="text-center py-8 text-xs text-muted-foreground">
                 No recent activities found in database.
@@ -574,7 +539,7 @@ export function StudentDashboard() {
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? "bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50" : "hover:bg-accent/50"}`}
+                  className={`flex items-start gap-3 p-3 rounded-xl border transition ${notification.unread ? 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-900/50' : 'hover:bg-accent/50'}`}
                 >
                   <div className="size-2 rounded-full bg-gradient-primary shrink-0 mt-1.5" />
                   <div className="flex-1 min-w-0">
@@ -583,11 +548,11 @@ export function StudentDashboard() {
                   </div>
                   <Badge
                     tone={
-                      notification.type === "Alert"
-                        ? "danger"
-                        : notification.type === "Assignment"
-                          ? "warn"
-                          : "info"
+                      notification.type === 'Alert'
+                        ? 'danger'
+                        : notification.type === 'Assignment'
+                          ? 'warn'
+                          : 'info'
                     }
                   >
                     {notification.type}

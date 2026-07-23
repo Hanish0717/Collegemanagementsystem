@@ -38,14 +38,44 @@ export interface DepartmentStudent {
   feeStatus: FeeStatus;
 }
 
+function mapStudent(s: any): DepartmentStudent {
+  return {
+    id: s.id,
+    photoUrl: s.photo_url || s.photoUrl || '',
+    rollNumber: s.roll_number || s.rollNumber || '',
+    regNumber: s.reg_number || s.regNumber || '',
+    name: s.full_name || s.name || 'Student Demo',
+    department: s.department || '',
+    year: s.year || (s.current_semester ? Math.ceil(s.current_semester / 2) : 3),
+    semester: s.semester || s.current_semester || 5,
+    section: s.section || 'A',
+    batch: s.batch || '2023-2027',
+    email: s.email || '',
+    phone: s.phone_number || s.phone || '',
+    mentor: s.mentor || 'Dr. Ramesh Kumar',
+    attendance: s.attendance_percentage || s.attendance || 85,
+    cgpa: s.cgpa || 8.0,
+    placementEligible: s.placement_eligible !== undefined ? s.placement_eligible : true,
+    placementStatus: s.placement_status || s.placementStatus || 'Eligible',
+    status: s.status || 'Active',
+    gender: s.gender,
+    category: s.category,
+    hosteller: s.hosteller !== undefined ? s.hosteller : (s.hostel_allocation !== undefined),
+    admissionType: s.admission_type || s.admissionType || 'Management',
+    scholarshipType: s.scholarship_type || s.scholarshipType,
+    feeStatus: s.fee_status || s.feeStatus || { mid1Paid: true, mid2Paid: true, labsPaid: true, semesterPaid: true }
+  };
+}
+
 export async function fetchDepartmentStudents(deptCode: DepartmentCode = 'AIML') {
   try {
-    const data = await hodApi.get<{ success: boolean; students: DepartmentStudent[] }>(
+    const data = await hodApi.get<{ success: boolean; students: any[] }>(
       '/api/hod/students',
       {},
       deptCode
     );
-    if (data.students && data.students.length > 0) return data.students;
+    const list = data.students || [];
+    return list.map(mapStudent);
   } catch (err) {
     console.warn('Backend student fetch using persistent store');
   }
@@ -54,12 +84,12 @@ export async function fetchDepartmentStudents(deptCode: DepartmentCode = 'AIML')
 
 export async function fetchDepartmentStudentById(studentId: string, deptCode: DepartmentCode = 'AIML') {
   try {
-    const data = await hodApi.get<{ success: boolean; student: DepartmentStudent }>(
+    const data = await hodApi.get<{ success: boolean; student: any }>(
       `/api/hod/students/${studentId}`,
       {},
       deptCode
     );
-    if (data.student) return data.student;
+    return mapStudent(data.student);
   } catch (err) {
     console.warn('Backend student fetch by id using persistent store');
   }

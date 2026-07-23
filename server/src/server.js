@@ -1,6 +1,7 @@
 import app from './app.js';
 import dotenv from 'dotenv';
 import pkg from 'pg';
+import bcrypt from 'bcryptjs';
 import { seedIfNeeded } from './seed_lightweight.js';
 dotenv.config();
 
@@ -253,8 +254,14 @@ async function runMigrations() {
         time varchar(50) NOT NULL,
         hall varchar(50) NOT NULL,
         duration varchar(50) NOT NULL,
+        invigilator_branch varchar(100),
+        invigilator_name varchar(255),
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
+
+      -- Add invigilator columns to exam_timetables if not exist
+      ALTER TABLE exam_timetables ADD COLUMN IF NOT EXISTS invigilator_branch varchar(100);
+      ALTER TABLE exam_timetables ADD COLUMN IF NOT EXISTS invigilator_name varchar(255);
 
       -- Create hall_tickets table
       CREATE TABLE IF NOT EXISTS hall_tickets (
@@ -277,9 +284,16 @@ async function runMigrations() {
       -- Advanced Exam Cell Columns
       ALTER TABLE results ADD COLUMN IF NOT EXISTS internal_marks numeric(5,2) DEFAULT 0.00;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS external_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS mid1_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS mid2_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS assignment_marks numeric(5,2) DEFAULT 0.00;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_type varchar(50) DEFAULT 'Regular';
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_applied boolean DEFAULT false;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_marks numeric(4,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS status varchar(50) DEFAULT 'Pass';
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS is_published boolean DEFAULT false;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS total_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS grade_point numeric(4,2) DEFAULT 0.00;
 
       ALTER TABLE courses ADD COLUMN IF NOT EXISTS prerequisite_code varchar(50);
 
@@ -381,7 +395,93 @@ async function runMigrations() {
       CREATE INDEX IF NOT EXISTS idx_issued_books_user_id ON issued_books(user_id);
       CREATE INDEX IF NOT EXISTS idx_leave_requests_user ON leave_requests(user_id);
       CREATE INDEX IF NOT EXISTS idx_complaints_user ON complaints(user_id);
+
+      -- Add fee_type column to fees table
+      ALTER TABLE fees ADD COLUMN IF NOT EXISTS fee_type varchar(100) DEFAULT 'Academic Fee';
+      UPDATE fees SET fee_type = type WHERE fee_type IS NULL AND type IS NOT NULL;
+      UPDATE fees SET type = fee_type WHERE type IS NULL AND fee_type IS NOT NULL;
+
+      -- Create system_settings table
+      CREATE TABLE IF NOT EXISTS system_settings (
+        key varchar(255) PRIMARY KEY,
+        value jsonb NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create system_notifications table
+      CREATE TABLE IF NOT EXISTS system_notifications (
+        id varchar(50) PRIMARY KEY,
+        title varchar(255) NOT NULL,
+        type varchar(100) NOT NULL,
+        time varchar(100) NOT NULL,
+        unread boolean DEFAULT true,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create security_logs table
+      CREATE TABLE IF NOT EXISTS security_logs (
+        id varchar(50) PRIMARY KEY,
+        user_name varchar(255) NOT NULL,
+        event varchar(255) NOT NULL,
+        ip varchar(50) NOT NULL,
+        time varchar(100) NOT NULL,
+        status varchar(50) NOT NULL,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Update users_role_check constraint to support alumni and alumni-coordinator
+      ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+      ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (
+        role IN (
+          'super-admin', 'admin', 'faculty', 'student', 'parent', 'librarian', 
+          'placement-officer', 'hostel-warden', 'transport-manager', 
+          'principal', 'dean', 'hod', 'exam-cell', 'accounts',
+          'alumni-coordinator', 'alumni'
+        )
+      );
     `);
+
+    // Auto-seed missing demo/ERP users
+    console.log("⚡ Checking for missing demo/ERP users...");
+    const demoUsers = [
+      { email: "superadmin@college.com", name: "Super Admin", role: "super-admin" },
+      { email: "admin@college.com", name: "System Admin", role: "admin" },
+      { email: "faculty@college.com", name: "Dr. Faculty Member", role: "faculty" },
+      { email: "student@college.com", name: "Student Demo", role: "student" },
+      { email: "parent@college.com", name: "Parent Demo", role: "parent" },
+      { email: "librarian@college.com", name: "Librarian Demo", role: "librarian" },
+      { email: "placement@college.com", name: "Placement Officer Demo", role: "placement-officer" },
+      { email: "warden@college.com", name: "Hostel Warden Demo", role: "hostel-warden" },
+      { email: "transport@college.com", name: "Transport Manager Demo", role: "transport-manager" },
+      { email: "principal@college.com", name: "Principal Office", role: "principal" },
+      { email: "dean@college.com", name: "Dean Academics Office", role: "dean" },
+      { email: "hod@college.com", name: "HOD CSE Dept", role: "hod" },
+      { email: "examcell@college.com", name: "Exam Cell Office", role: "exam-cell" },
+      { email: "accounts@college.com", name: "Accounts Office", role: "accounts" },
+      { email: "learning@college.com", name: "LMS Instructor", role: "faculty" },
+      { email: "lms@college.com", name: "LMS Admin", role: "faculty" },
+      { email: "alumni.coordinator@college.com", name: "Alumni Coordinator", role: "alumni-coordinator" },
+      { email: "alumni@college.com", name: "Alumni Member", role: "alumni" }
+    ];
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash("password123", salt);
+
+    for (const u of demoUsers) {
+      const checkRes = await client.query("SELECT id FROM users WHERE email = $1", [u.email]);
+      if (checkRes.rows.length === 0) {
+        await client.query(
+          `INSERT INTO users (name, full_name, email, password, role, is_verified, is_active) 
+           VALUES ($1, $1, $2, $3, $4, true, true)`,
+          [u.name, u.email, hashedPassword, u.role]
+        );
+        console.log(`   ✅ Auto-seeded missing demo user: ${u.email} (${u.role})`);
+      }
+    }
+
+    // Link profiles to newly created user records
+    await client.query("UPDATE students SET user_id = users.id FROM users WHERE students.email = users.email AND students.user_id IS NULL");
+    await client.query("UPDATE faculty SET user_id = users.id FROM users WHERE faculty.email = users.email AND faculty.user_id IS NULL");
 
     // Seed default subjects if empty
     const subjectsCountRes = await client.query("SELECT COUNT(*) FROM subjects");
@@ -563,7 +663,6 @@ async function runMigrations() {
                                err.code === 'ENETUNREACH' || 
                                err.message?.includes('timeout') ||
                                err.message?.includes('getaddrinfo');
-
     if (isNetworkOrTimeout) {
       console.log("\n⚠️  [MIGRATION NOTICE]: Could not connect directly to the PostgreSQL database via TCP.");
       console.log(`ℹ️  Reason: ${err.code || 'TIMEOUT'} (${err.message.split('\n')[0]})`);
