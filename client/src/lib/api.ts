@@ -16,7 +16,6 @@ const getApiBaseUrl = () => {
       return "https://loud-things-accept.loca.lt";
     }
     if (hostname && (hostname.includes("ngrok-free.app") || hostname.includes("ngrok.io"))) {
-      // When using ngrok, replace this with your backend ngrok tunnel URL
       return "YOUR_BACKEND_NGROK_URL";
     }
     // Map localhost/127.0.0.1 to localhost, otherwise use current LAN IP/hostname
@@ -68,15 +67,9 @@ api.interceptors.response.use(
           originalRequest.method || "get",
           originalRequest.data ? (typeof originalRequest.data === "string" ? JSON.parse(originalRequest.data) : originalRequest.data) : undefined
         );
-        return {
-          data: mockResult,
-          status: 200,
-          statusText: "OK",
-          headers: {},
-          config: originalRequest
-        };
+        return { data: mockResult, status: 200, statusText: "OK", headers: {}, config: originalRequest };
       } catch (mockErr) {
-        console.error("Mock handler error:", mockErr);
+        console.error("Mock handler error on 401/network error:", mockErr);
       }
     }
 
@@ -102,9 +95,17 @@ api.interceptors.response.use(
         }
 
         const currentToken = localStorage.getItem("cms_token");
-        const isFacultyToken = currentToken && currentToken.startsWith("faculty_token_");
+        const userStr = localStorage.getItem("cms_user");
 
-        if (!isFacultyToken) {
+        // Protect active user sessions (HOD, Faculty, Admin, Student) from spurious 401 session wipes
+        const isKnownSession =
+          Boolean(currentToken) ||
+          activeRole === "hod" ||
+          activeRole === "faculty" ||
+          activeRole === "admin" ||
+          (userStr && userStr.includes("hod"));
+
+        if (!isKnownSession) {
           localStorage.removeItem("cms_token");
           localStorage.removeItem("cms_user");
           localStorage.removeItem("campusly.role");
