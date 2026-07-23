@@ -582,7 +582,53 @@ export function processMockStudentRequest(url: string, method: string, data?: an
 
   // Hall Ticket API
   if (cleanUrl.includes("/api/student-module/hall-ticket")) {
-    return { success: true, data: getMockData("cms_student_hallticket", INITIAL_HALL_TICKET) };
+    const profile = getMockData("cms_student_profile", INITIAL_STUDENT_PROFILE);
+    const baseTicket = getMockData("cms_student_hallticket", INITIAL_HALL_TICKET);
+    
+    // Determine dynamic exam schedule based on the active student's semester
+    let dynamicSchedule = [];
+    const sem = Number(profile.semester || 1);
+    
+    if (sem === 1) {
+      dynamicSchedule = [
+        { code: "MA101", subject: "Mathematics-I", date: "2026-11-15", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "PH101", subject: "Applied Physics", date: "2026-11-18", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "EE101", subject: "Basic Electrical Engineering", date: "2026-11-21", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS101", subject: "Problem Solving and Programming", date: "2026-11-24", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "EN101", subject: "English for Communication", date: "2026-11-27", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "ME101", subject: "Engineering Graphics", date: "2026-11-30", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" }
+      ];
+    } else if (sem === 3) {
+      dynamicSchedule = [
+        { code: "CS301", subject: "Discrete Mathematics", date: "2026-11-15", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS302", subject: "Digital Logic Design", date: "2026-11-18", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS303", subject: "Computer Organization", date: "2026-11-21", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS304", subject: "Object Oriented Programming", date: "2026-11-24", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS305", subject: "Data Structures", date: "2026-11-27", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" }
+      ];
+    } else if (sem === 7) {
+      dynamicSchedule = [
+        { code: "CS701", subject: "Cryptography & Network Security", date: "2026-11-15", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS702", subject: "Cloud Computing & Distributed Systems", date: "2026-11-18", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS703", subject: "Generative AI Fundamentals", date: "2026-11-21", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" },
+        { code: "CS704", subject: "Mobile App Development", date: "2026-11-24", time: "10:00 AM - 01:00 PM", room: "Hall 204", seatNo: "CSE-01" }
+      ];
+    } else {
+      dynamicSchedule = baseTicket.examSchedule || [];
+    }
+
+    const mockTicket = {
+      ...baseTicket,
+      studentName: profile.fullName || profile.full_name || baseTicket.studentName,
+      rollNumber: profile.rollNumber || profile.roll_number || baseTicket.rollNumber,
+      department: profile.department || baseTicket.department,
+      semester: String(profile.semester || baseTicket.semester),
+      hallTicketNumber: baseTicket.hallTicketNumber?.includes(profile.rollNumber || profile.roll_number || 'never')
+        ? baseTicket.hallTicketNumber 
+        : `HT-${profile.rollNumber || profile.roll_number || '2023CSE042'}-S${profile.semester || 5}`,
+      examSchedule: dynamicSchedule
+    };
+    return { success: true, data: mockTicket };
   }
 
   // Fees API

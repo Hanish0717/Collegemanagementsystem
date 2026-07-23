@@ -16,6 +16,7 @@ import {
   markStudentNotificationRead,
   markAllStudentNotificationsRead,
   deleteStudentNotification,
+  getStudentHallTicket,
 } from '../controllers/studentModuleController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -28,6 +29,8 @@ router.use(protect);
 const studentOnly = authorizeRoles('student', 'admin', 'super-admin');
 // Define allowed roles for notifications (accessible by student, admin, super-admin, and hostel-warden)
 const studentAndWarden = authorizeRoles('student', 'admin', 'super-admin', 'hostel-warden');
+
+router.get('/hall-ticket', studentOnly, getStudentHallTicket);
 
 router.get('/dashboard', studentOnly, getStudentDashboard);
 router.get('/timetable', studentOnly, getStudentTimetable);

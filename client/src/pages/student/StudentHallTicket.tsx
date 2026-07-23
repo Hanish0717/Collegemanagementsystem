@@ -44,13 +44,13 @@ export function StudentHallTicket() {
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <img
             src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
-            alt="ADABALA AMRUTHA"
+            alt={ticket?.studentName || "Student"}
             className="size-24 rounded-lg object-cover border border-slate-200 dark:border-slate-800 shadow-sm"
           />
           <div className="grid grid-cols-2 gap-x-12 gap-y-4 text-xs font-semibold text-slate-700 dark:text-slate-300">
             <div>
               <span className="text-slate-400 font-bold block text-[10px] uppercase">ID</span>
-              <span className="text-sm font-extrabold text-slate-900 dark:text-white">23331A4401</span>
+              <span className="text-sm font-extrabold text-slate-900 dark:text-white">{ticket?.rollNumber || "23331A4401"}</span>
             </div>
             <div>
               <span className="text-slate-400 font-bold block text-[10px] uppercase">Admission no.</span>
@@ -58,15 +58,17 @@ export function StudentHallTicket() {
             </div>
             <div className="col-span-2">
               <span className="text-slate-400 font-bold block text-[10px] uppercase">Candidate Name</span>
-              <span className="text-sm font-extrabold text-slate-900 dark:text-white">ADABALA AMRUTHA 23331A4401</span>
+              <span className="text-sm font-extrabold text-slate-900 dark:text-white">
+                {ticket?.studentName || "ADABALA AMRUTHA"} ({ticket?.rollNumber || "23331A4401"})
+              </span>
             </div>
             <div>
               <span className="text-slate-400 font-bold block text-[10px] uppercase">Program</span>
-              <span className="text-sm font-bold text-slate-900 dark:text-white">-</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">B.Tech - {ticket?.department || "CSE"}</span>
             </div>
             <div>
-              <span className="text-slate-400 font-bold block text-[10px] uppercase">Batch</span>
-              <span className="text-sm font-bold text-slate-900 dark:text-white">-</span>
+              <span className="text-slate-400 font-bold block text-[10px] uppercase">Semester</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Semester {ticket?.semester || "7"}</span>
             </div>
           </div>
         </div>
@@ -139,26 +141,26 @@ export function StudentHallTicket() {
               </div>
             </div>
 
-            {/* Student Details Grid */}
+             {/* Student Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border text-xs">
               <div className="space-y-1.5 font-semibold text-slate-700 dark:text-slate-300">
                 <span className="text-slate-400 font-bold block">Candidate Name:</span>
-                <p className="font-bold text-sm text-slate-900 dark:text-white">ADABALA AMRUTHA</p>
+                <p className="font-bold text-sm text-slate-900 dark:text-white">{ticket?.studentName || "ADABALA AMRUTHA"}</p>
                 <span className="text-slate-400 font-bold block pt-1">Roll Number:</span>
-                <p className="font-mono font-bold text-indigo-600">23331A4401</p>
+                <p className="font-mono font-bold text-indigo-600">{ticket?.rollNumber || "23331A4401"}</p>
               </div>
 
               <div className="space-y-1.5 font-semibold text-slate-700 dark:text-slate-300">
-                <span className="text-slate-400 font-bold block">Department & Semester:</span>
-                <p className="font-bold text-slate-900 dark:text-white">CSE(DS)</p>
+                <span className="text-slate-400 font-bold block">Department:</span>
+                <p className="font-bold text-slate-900 dark:text-white">{ticket?.department || "CSE(DS)"}</p>
                 <span className="text-slate-400 font-bold block pt-1">Semester:</span>
-                <p className="font-bold text-slate-900 dark:text-white">Semester 7</p>
+                <p className="font-bold text-slate-900 dark:text-white">Semester {ticket?.semester || "7"}</p>
               </div>
 
               <div className="space-y-1.5 font-semibold text-slate-700 dark:text-slate-300">
                 <span className="text-slate-400 font-bold block">Assigned Examination Venue:</span>
                 <p className="font-bold leading-tight text-slate-900 dark:text-white">
-                  Block A - Dept of CSE, Exam Hall 102
+                  {ticket?.centerName || "Block A - Dept of CSE, Exam Hall 102"}
                 </p>
               </div>
             </div>
