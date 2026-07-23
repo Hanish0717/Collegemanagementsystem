@@ -134,7 +134,22 @@ api.interceptors.response.use(
         }
       }
     } else if (err.response?.status === 403) {
-      toast.error("Access denied.");
+      // Prevent showing false "Access denied" toast if an in-flight background query hits a 403 right after switching roles
+      if (typeof window !== "undefined") {
+        const activeRole = localStorage.getItem("campusly.role");
+        const reqUrl = (originalRequest.url || "").toLowerCase();
+
+        const isRoleMismatch =
+          (activeRole === "student" && (reqUrl.includes("/faculty") || reqUrl.includes("/admin") || reqUrl.includes("/hod") || reqUrl.includes("/dean"))) ||
+          (activeRole === "faculty" && (reqUrl.includes("/admin") || reqUrl.includes("/super-admin") || reqUrl.includes("/alumni"))) ||
+          (activeRole === "parent" && (reqUrl.includes("/faculty") || reqUrl.includes("/admin") || reqUrl.includes("/hod")));
+
+        if (!isRoleMismatch) {
+          toast.error("Access denied.");
+        }
+      } else {
+        toast.error("Access denied.");
+      }
     }
     return Promise.reject(err);
   },

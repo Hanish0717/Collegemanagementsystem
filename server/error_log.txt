@@ -1231,74 +1231,44 @@ Body: {}
 [2026-07-22T18:40:27.714Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
 [2026-07-22T18:41:02.962Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
 [2026-07-22T18:50:32.956Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod@college.comhod@college.com","password":"password123password123"}
-[2026-07-23T05:35:51.033Z] GET /api/exams - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-23T05:35:51.064Z] GET /api/exams/courses?department=CSE&year=3&semester=5 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-23T05:35:55.235Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-23T05:51:33.533Z] GET /api/exams/courses?department=CSE&year=3&semester=5 - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-23T05:51:33.552Z] GET /api/exams - Status: 401 - Client Error: Not authorized, user not found - Body: {}
-[2026-07-23T05:55:36.479Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
-[2026-07-23T05:55:36.490Z] GET /api/student-module/hall-ticket - Status: 404 - Client Error: Not Found - /api/student-module/hall-ticket - Body: {}
-[2026-07-23T06:07:05.288Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:938:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:07:05.349Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:938:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:08:54.493Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:938:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:08:54.565Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:938:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:13:08.552Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:919:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:13:08.592Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:919:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:13:32.084Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:919:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:13:32.119Z] GET /api/student-module/hall-ticket - Status: 500 - Error: dbTicket.created_at.split is not a function
-Stack: TypeError: dbTicket.created_at.split is not a function
-    at getStudentHallTicket (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/studentModuleController.js:919:62)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {}
-
-[2026-07-23T06:19:15.995Z] POST /api/exams/evaluations/assign - Status: 413 - Client Error: request entity too large - Body: {}
-[2026-07-23T06:19:41.058Z] POST /api/exams/evaluations/assign - Status: 413 - Client Error: request entity too large - Body: {}
-[2026-07-23T06:27:22.494Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
-[2026-07-23T06:27:22.540Z] GET /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Body: {}
-[2026-07-23T06:28:18.336Z] GET /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Body: {}
-[2026-07-23T06:28:22.889Z] GET /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Body: {}
-[2026-07-23T06:29:48.315Z] GET /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Body: {}
-[2026-07-23T06:30:59.735Z] GET /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=66a5fcb8-cf49-4f31-8882-e6d92fe3aed3&department=CSE&year=1&semester=1 - Body: {}
-[2026-07-23T07:13:23.620Z] POST /api/exams/results/consolidate - Status: 500 - Error: supabase.from(...).select(...).eq(...).is is not a function
-Stack: TypeError: supabase.from(...).select(...).eq(...).is is not a function
-    at consolidateExamResults (file:///C:/College%20Management%20System%20GA/Collegemanagementsystem/server/src/controllers/examController.js:2068:8)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Body: {"exam_id":"4eac6429-9d4a-49dd-aa0e-cd3b353d6fea","department":"CSE","year":1,"semester":1}
-
-[2026-07-23T08:37:49.775Z] GET /api/library/id-cards/student/9dc973e2-7a29-462e-8f6c-6b1a903f79d1 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
-[2026-07-23T08:37:49.786Z] GET /api/library/id-cards/student/9dc973e2-7a29-462e-8f6c-6b1a903f79d1 - Status: 403 - Client Error: Forbidden: Your role 'student' is not authorized to access this resource - Body: {}
+[2026-07-23T05:53:01.443Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T05:54:50.088Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T05:54:50.116Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T05:55:30.969Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T05:55:41.608Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T05:55:52.869Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T06:10:29.021Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T06:10:35.939Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T06:18:34.950Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T06:18:40.879Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T06:18:53.486Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-23T06:37:01.318Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:37:01.372Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:38:17.339Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:38:17.353Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:40:22.850Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:40:22.859Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:46:55.313Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:46:55.328Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:47:08.454Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:47:08.471Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:48:29.230Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:48:29.239Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:50:05.870Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:50:05.875Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T06:55:57.165Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-23T06:56:52.608Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T06:56:52.670Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T07:03:42.619Z] GET /api/attendance/templates - Status: 404 - Client Error: Not Found - /api/attendance/templates - Body: {}
+[2026-07-23T07:03:42.633Z] GET /api/attendance/students - Status: 404 - Client Error: Not Found - /api/attendance/students - Body: {}
+[2026-07-23T07:04:20.383Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T07:04:20.432Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T08:24:48.213Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T08:24:48.240Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T08:28:42.483Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T08:29:06.027Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T08:29:06.059Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T08:58:10.586Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:05:38.707Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:05:44.281Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T10:05:44.303Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
