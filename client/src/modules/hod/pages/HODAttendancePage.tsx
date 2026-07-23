@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { fetchDepartmentAttendance, dispatchShortageAlert } from '../services/hodAttendanceExamService';
 
-import { PageContainer } from '../components/shared/PageContainer';
-import { StatisticsCard } from '../components/shared/StatisticsCard';
-import { GlassCard } from '../components/shared/GlassCard';
-import { LinearProgress } from '../components/shared/ProgressComponents';
-import { StatusBadge } from '../components/shared/StatusBadge';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
+import {
+  PageContainer,
+  StatisticsCard,
+  GlassCard,
+  LinearProgress,
+  StatusBadge,
+  NotificationToast,
+  Button,
+} from '../components/shared';
 import { exportToCSV } from '../utils/exportUtils';
 import {
   CalendarCheck,

@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { fetchDepartmentExaminations } from '../services/hodAttendanceExamService';
 
-import { PageContainer } from '../components/shared/PageContainer';
-import { StatisticsCard } from '../components/shared/StatisticsCard';
-import { GlassCard } from '../components/shared/GlassCard';
-import { AdvancedTable } from '../components/shared/AdvancedTable';
-import { Column } from '../components/shared/DataTable';
-import { StatusBadge } from '../components/shared/StatusBadge';
-import { LinearProgress } from '../components/shared/ProgressComponents';
-import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
+import {
+  PageContainer,
+  StatisticsCard,
+  GlassCard,
+  AdvancedTable,
+  Column,
+  StatusBadge,
+  LinearProgress,
+  ActionsMenu,
+  NotificationToast,
+  Button,
+} from '../components/shared';
 import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Award,

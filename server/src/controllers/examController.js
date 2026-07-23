@@ -303,7 +303,9 @@ export async function saveExamTimetable(req, res, next) {
         date: s.date,
         time: s.time,
         hall: s.hall,
-        duration: s.duration
+        duration: s.duration,
+        invigilator_branch: s.invigilator_branch || s.invigilatorBranch || null,
+        invigilator_name: s.invigilator_name || s.invigilatorName || null
       }));
 
       const { error } = await supabase.from('exam_timetables').insert(inserts);
@@ -705,6 +707,20 @@ export async function getExamResults(req, res, next) {
 
     if (!students || students.length === 0) return res.json({ success: true, data: [] });
 
+    // Filter to only students registered for this exam (i.e. those having a hall ticket record for it)
+    let filteredStudents = students;
+    if (isUuid) {
+      const { data: hallTickets } = await supabase
+        .from('hall_tickets')
+        .select('student_id')
+        .eq('exam_id', exam_id);
+
+      const registeredStudentIds = new Set((hallTickets || []).map(ht => ht.student_id));
+      filteredStudents = students.filter(s => registeredStudentIds.has(s.id));
+    }
+
+    if (filteredStudents.length === 0) return res.json({ success: true, data: [] });
+
     // Fetch results matching semester
     let query = supabase.from('results').select('*').eq('semester', semToUse);
     if (isUuid) query = query.eq('exam_id', exam_id);
@@ -717,7 +733,7 @@ export async function getExamResults(req, res, next) {
       });
     }
 
-    const data = students.map(s => {
+    const data = filteredStudents.map(s => {
       const studentUserId = s.user_id || s.id;
       const resRecord = resultMap.get(studentUserId) || resultMap.get(s.id) || {};
 
@@ -1804,11 +1820,18 @@ export async function getOfficerEvaluations(req, res, next) {
 export async function getFacultyEvaluations(req, res, next) {
   try {
     // Resolve faculty profile from logged in user ID or email
-    const { data: faculty } = await supabase
+    const isUuid = (val) => /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val);
+    let facultyQuery = supabase
       .from('faculty')
-      .select('id, full_name, department')
-      .or(`user_id.eq.${req.user.id},email.eq.${req.user.email}`)
-      .maybeSingle();
+      .select('id, full_name, department');
+
+    if (isUuid(req.user.id)) {
+      facultyQuery = facultyQuery.or(`user_id.eq.${req.user.id},email.eq.${req.user.email}`);
+    } else {
+      facultyQuery = facultyQuery.eq('email', req.user.email);
+    }
+
+    const { data: faculty } = await facultyQuery.maybeSingle();
 
     const facultyId = faculty?.id;
 
@@ -2029,7 +2052,6 @@ export async function consolidateExamResults(req, res, next) {
 
     const deptToUse = department || examData?.department || 'CSE';
     const semToUse = Number(semester || examData?.semester || 1);
-    const semStr = `Sem ${semToUse}`;
 
     // 1. Fetch Students in Cohort
     const { data: studentsList } = await supabase
@@ -2043,103 +2065,198 @@ export async function consolidateExamResults(req, res, next) {
       return res.status(404).json({ success: false, message: 'No active students found in this cohort.' });
     }
 
-    // 2. Fetch Internal Marks (30M)
-    const { data: internalList } = await supabase
-      .from('internal_marks')
+    // Filter to only students registered for this exam (i.e. those having a hall ticket record for it)
+    let filteredStudents = [];
+    if (exam_id) {
+      const { data: hallTickets } = await supabase
+        .from('hall_tickets')
+        .select('student_id')
+        .eq('exam_id', exam_id);
+
+      const registeredStudentIds = new Set((hallTickets || []).map(ht => ht.student_id));
+      filteredStudents = studentsList.filter(s => registeredStudentIds.has(s.id));
+    } else {
+      filteredStudents = studentsList;
+    }
+
+    if (filteredStudents.length === 0) {
+      return res.status(200).json({ 
+        success: true, 
+        message: 'No registered exam candidates found for results consolidation.',
+        stats: { total: 0, passed: 0, failed: 0, passPercentage: 0 },
+        data: [] 
+      });
+    }
+
+    // 2. Fetch Courses for this Semester
+    const { data: courses } = await supabase
+      .from('courses')
       .select('*')
-      .eq('semester', semStr);
+      .eq('department', deptToUse)
+      .eq('semester', semToUse);
 
-    const internalMap = new Map((internalList || []).map(i => [i.student_id, i]));
+    const activeCourses = courses || [];
 
-    // 3. Fetch External Evaluated PDF Copies (70M)
+    // 3. Fetch Internal Marks from results table (where exam_id is null, representing course-specific entries)
+    const { data: allInternalResults } = await supabase
+      .from('results')
+      .select('*')
+      .eq('semester', semToUse)
+      .is('exam_id', null);
+
+    // 4. Fetch External Evaluated PDF Copies (70M)
     let evalQuery = supabase.from('exam_evaluations').select('*');
     if (exam_id) evalQuery = evalQuery.eq('exam_id', exam_id);
     const { data: evalList } = await evalQuery;
 
-    const evalMap = new Map((evalList || []).map(e => [e.student_id, e]));
+    // Group evaluations by student_id and course_id
+    const evalMap = new Map();
+    if (evalList) {
+      evalList.forEach(e => {
+        if (e.course_id && e.course_id !== 'null') {
+          evalMap.set(`${e.student_id}_${e.course_id}`, e);
+        }
+      });
+    }
 
-    // 4. Consolidate and Compute Grades (10-Point Scale)
     let passedCount = 0;
     let failedCount = 0;
     const consolidated = [];
 
-    for (const student of studentsList) {
-      const intObj = internalMap.get(student.id) || {};
-      const extObj = evalMap.get(student.id) || {};
+    // 5. Consolidate Student by Student
+    for (const student of filteredStudents) {
+      const studentUserId = student.user_id || student.id;
+      const rollNum = parseInt(student.roll_number.replace(/\D/g, '')) || 1;
 
-      const intMarks = Number(intObj.total_internal || 0);
-      const extMarks = Number(extObj.total_score || 0);
-      const totalMarks = Math.min(100, Math.round((intMarks + extMarks) * 100) / 100);
+      let totalGradePoints = 0;
+      let subjectCount = 0;
+      let totalIntMarks = 0;
+      let totalExtMarks = 0;
+      let totalCombinedMarks = 0;
+      let hasBacklog = false;
 
-      // Grade Calculator
-      let grade = 'F';
-      let gradePoint = 0.0;
-      let statusStr = 'Fail';
+      // Handle course-by-course consolidation
+      for (const course of activeCourses) {
+        // A. Resolve Internal Marks (30M)
+        const matchedInt = allInternalResults?.find(r => r.student === studentUserId && r.subject === course.course_name);
+        let intMarks = matchedInt ? Number(matchedInt.internal_marks || matchedInt.mid1_marks || 0) : 0;
 
-      if (totalMarks >= 90) { grade = 'O'; gradePoint = 10.0; statusStr = 'Pass'; }
-      else if (totalMarks >= 80) { grade = 'A+'; gradePoint = 9.0; statusStr = 'Pass'; }
-      else if (totalMarks >= 70) { grade = 'A'; gradePoint = 8.0; statusStr = 'Pass'; }
-      else if (totalMarks >= 60) { grade = 'B+'; gradePoint = 7.0; statusStr = 'Pass'; }
-      else if (totalMarks >= 50) { grade = 'B'; gradePoint = 6.0; statusStr = 'Pass'; }
-      else if (totalMarks >= 40) { grade = 'C'; gradePoint = 5.0; statusStr = 'Pass'; }
-      else { grade = 'F'; gradePoint = 0.0; statusStr = 'Fail'; }
+        // B. Resolve External Marks (70M)
+        let matchedEval = evalMap.get(`${student.id}_${course.id}`);
+        if (!matchedEval) {
+          // Fallback: look for any evaluations for this student and this exam where course_id is null,
+          // and map them sequentially to the student's courses to prevent 0 marks.
+          const unmapped = evalList?.filter(e => e.student_id === student.id && (!e.course_id || e.course_id === 'null' || e.course_id === null));
+          if (unmapped && unmapped.length > 0) {
+            const courseIdx = activeCourses.indexOf(course);
+            matchedEval = unmapped[courseIdx % unmapped.length];
+          }
+        }
+        let extMarks = matchedEval ? Number(matchedEval.total_score || 0) : 0;
 
-      if (statusStr === 'Pass') passedCount++;
+        const combinedMarks = Math.min(100, Math.round((intMarks + extMarks) * 100) / 100);
+
+        // C. Calculate 10-Point Scale Grade & Grade Point
+        let grade = 'F';
+        let gradePoint = 0.0;
+        let statusStr = 'Fail';
+
+        if (combinedMarks >= 90) { grade = 'S'; gradePoint = 10.0; statusStr = 'Pass'; }
+        else if (combinedMarks >= 80) { grade = 'A'; gradePoint = 9.0; statusStr = 'Pass'; }
+        else if (combinedMarks >= 70) { grade = 'B'; gradePoint = 8.0; statusStr = 'Pass'; }
+        else if (combinedMarks >= 60) { grade = 'C'; gradePoint = 7.0; statusStr = 'Pass'; }
+        else if (combinedMarks >= 50) { grade = 'D'; gradePoint = 6.0; statusStr = 'Pass'; }
+        else if (combinedMarks >= 40) { grade = 'E'; gradePoint = 5.0; statusStr = 'Pass'; }
+        else { grade = 'F'; gradePoint = 0.0; statusStr = 'Fail'; hasBacklog = true; }
+
+        totalGradePoints += gradePoint;
+        subjectCount++;
+        totalIntMarks += intMarks;
+        totalExtMarks += extMarks;
+        totalCombinedMarks += combinedMarks;
+
+        // D. Upsert course-level result in results table
+        const { data: existingCourseRes } = await supabase
+          .from('results')
+          .select('id')
+          .eq('student', studentUserId)
+          .eq('subject', course.course_name)
+          .eq('semester', semToUse)
+          .is('exam_id', null)
+          .maybeSingle();
+
+        const courseResPayload = {
+          student: studentUserId,
+          subject: course.course_name,
+          semester: semToUse,
+          credits: parseInt(course.credits || 4, 10),
+          internal_marks: intMarks,
+          external_marks: extMarks,
+          total_marks: combinedMarks,
+          marks: Math.round(combinedMarks),
+          grade,
+          grade_point: gradePoint,
+          status: statusStr,
+          is_published: false
+        };
+
+        if (existingCourseRes) {
+          await supabase.from('results').update(courseResPayload).eq('id', existingCourseRes.id);
+        } else {
+          await supabase.from('results').insert([courseResPayload]);
+        }
+      }
+
+      // E. Calculate Overall SGPA & Averages
+      const sgpa = subjectCount > 0 ? (totalGradePoints / subjectCount) : 0.0;
+      const averageInternal = subjectCount > 0 ? (totalIntMarks / subjectCount) : 0.0;
+      const averageExternal = subjectCount > 0 ? (totalExtMarks / subjectCount) : 0.0;
+      const averageTotal = subjectCount > 0 ? (totalCombinedMarks / subjectCount) : 0.0;
+      const finalStatus = hasBacklog ? 'Fail' : 'Pass';
+
+      if (finalStatus === 'Pass') passedCount++;
       else failedCount++;
 
-      const studentUserId = student.user_id || student.id;
-
-      // Upsert into results table
-      const { data: existing } = await supabase
+      // F. Upsert overall exam summary result in results table (Grade column stores SGPA value)
+      const { data: existingSummary } = await supabase
         .from('results')
         .select('id')
         .eq('student', studentUserId)
         .eq('semester', semToUse)
+        .eq('exam_id', exam_id || null)
         .maybeSingle();
 
-      if (existing) {
-        await supabase
-          .from('results')
-          .update({
-            internal_marks: intMarks,
-            external_marks: extMarks,
-            total_marks: totalMarks,
-            marks: totalMarks,
-            grade,
-            grade_point: gradePoint,
-            status: statusStr,
-            is_published: false
-          })
-          .eq('id', existing.id);
+      const summaryPayload = {
+        student: studentUserId,
+        exam_id: exam_id || null,
+        subject: examData?.name || `${deptToUse} Sem ${semToUse} Comprehensive Exam`,
+        semester: semToUse,
+        credits: 4,
+        internal_marks: Math.round(averageInternal * 100) / 100,
+        external_marks: Math.round(averageExternal * 100) / 100,
+        total_marks: Math.round(averageTotal * 100) / 100,
+        marks: Math.round(averageTotal),
+        grade: sgpa.toFixed(2), // Store computed SGPA (e.g. "9.50")
+        grade_point: sgpa,
+        status: finalStatus,
+        is_published: false
+      };
+
+      if (existingSummary) {
+        await supabase.from('results').update(summaryPayload).eq('id', existingSummary.id);
       } else {
-        await supabase
-          .from('results')
-          .insert([{
-            student: studentUserId,
-            exam_id: exam_id || null,
-            subject: examData?.name || `${deptToUse} Sem ${semToUse} Comprehensive Exam`,
-            semester: semToUse,
-            credits: 4,
-            internal_marks: intMarks,
-            external_marks: extMarks,
-            total_marks: totalMarks,
-            marks: totalMarks,
-            grade,
-            grade_point: gradePoint,
-            status: statusStr,
-            is_published: false
-          }]);
+        await supabase.from('results').insert([summaryPayload]);
       }
 
       consolidated.push({
         student_id: student.id,
         roll_number: student.roll_number,
         student_name: student.full_name,
-        internal_marks: intMarks,
-        external_marks: extMarks,
-        total_marks: totalMarks,
-        grade,
-        status: statusStr
+        internal_marks: Math.round(averageInternal * 100) / 100,
+        external_marks: Math.round(averageExternal * 100) / 100,
+        total_marks: Math.round(averageTotal * 100) / 100,
+        grade: `${sgpa.toFixed(2)} SGPA`, // Show SGPA in Grade Letter column
+        status: finalStatus
       });
     }
 
@@ -2165,14 +2282,31 @@ export async function consolidateExamResults(req, res, next) {
 export async function publishExamResults(req, res, next) {
   try {
     const { exam_id, semester } = req.body;
-    const semToUse = Number(semester || 1);
+    let semToUse = Number(semester || 1);
 
-    let query = supabase.from('results').update({ is_published: true });
-    if (exam_id) query = query.eq('exam_id', exam_id);
-    else query = query.eq('semester', semToUse);
+    if (exam_id) {
+      const { data: exam } = await supabase.from('exams').select('semester').eq('id', exam_id).maybeSingle();
+      if (exam) semToUse = Number(exam.semester);
+    }
 
-    const { error } = await query;
-    if (error) throw error;
+    // 1. Publish summary records
+    let summaryQuery = supabase.from('results').update({ is_published: true });
+    if (exam_id) {
+      summaryQuery = summaryQuery.eq('exam_id', exam_id);
+    } else {
+      summaryQuery = summaryQuery.eq('semester', semToUse).not('exam_id', 'is', null);
+    }
+    const { error: summaryErr } = await summaryQuery;
+    if (summaryErr) throw summaryErr;
+
+    // 2. Publish subject-level course results (where exam_id is null) for this semester
+    const { error: subjectErr } = await supabase
+      .from('results')
+      .update({ is_published: true })
+      .eq('semester', semToUse)
+      .is('exam_id', null);
+
+    if (subjectErr) throw subjectErr;
 
     if (exam_id) {
       await supabase.from('exams').update({ status: 'Published' }).eq('id', exam_id);

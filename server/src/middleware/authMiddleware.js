@@ -219,6 +219,7 @@ export const protect = async (req, res, next) => {
       }
 
       req.user = user;
+      req.departmentCode = (req.query.department || user.department || 'AIML').toUpperCase();
       next();
     } catch (error) {
       let message = 'Not authorized, invalid token';

@@ -23,6 +23,7 @@ import {
   getDepartmentResearch,
   getDepartmentEvents,
   getDepartmentReports,
+  emailDepartmentReport,
   getDepartmentDocuments,
   getDepartmentApprovals,
   approveRequest,
@@ -31,12 +32,25 @@ import {
   getDepartmentSettingsFull,
 } from '../controllers/hodController.js';
 
+import {
+  getAnnouncements,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement,
+} from '../controllers/announcementController.js';
+
 const router = express.Router();
 
 // Protect all HOD routes with Auth and HOD role checks
 router.use(protect);
 router.use(requireHODRole);
 router.use(departmentIsolationMiddleware);
+
+// Announcements & Circulars Centralized API
+router.get('/announcements', getAnnouncements);
+router.post('/announcements', createAnnouncement);
+router.put('/announcements/:id', updateAnnouncement);
+router.delete('/announcements/:id', deleteAnnouncement);
 
 // ─── GET Endpoints ────────────────────────────────────────
 router.get('/dashboard', getDashboardSummary);
@@ -61,6 +75,7 @@ router.get('/settings-full', getDepartmentSettingsFull);
 
 // ─── POST / PUT Endpoints ─────────────────────────────────
 router.post('/announcement', createDepartmentAnnouncement);
+router.post('/reports/email-report', emailDepartmentReport);
 router.post('/mentor-assignment', assignFacultyMentor);
 router.post('/lesson-plan/approve', approveLessonPlan);
 router.post('/attendance/notify', notifyDefaulters);

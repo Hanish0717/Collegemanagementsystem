@@ -52,7 +52,7 @@ export function Modal({
     info: { icon: Info, bg: 'bg-blue-100 dark:bg-blue-950/50', text: 'text-blue-600' },
   };
 
-  const currentVariant = variantIcons[variant];
+  const currentVariant = variantIcons[variant] || variantIcons.confirmation;
   const Icon = currentVariant.icon;
 
   return (

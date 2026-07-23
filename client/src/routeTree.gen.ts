@@ -79,6 +79,7 @@ import { Route as HodIndexRouteImport } from './routes/hod/index'
 import { Route as Hod403RouteImport } from './routes/hod/403'
 import { Route as Hod404RouteImport } from './routes/hod/404'
 import { Route as HodAcademicsRouteImport } from './routes/hod/academics'
+import { Route as HodAnnouncementsRouteImport } from './routes/hod/announcements'
 import { Route as HodApprovalsRouteImport } from './routes/hod/approvals'
 import { Route as HodAttendanceRouteImport } from './routes/hod/attendance'
 import { Route as HodAuditRouteImport } from './routes/hod/audit'
@@ -112,7 +113,10 @@ import { Route as DashboardAdminCalendarRouteImport } from './routes/dashboard/a
 import { Route as DashboardAdminClubsRouteImport } from './routes/dashboard/admin/clubs'
 import { Route as DashboardAdminCommunicationRouteImport } from './routes/dashboard/admin/communication'
 import { Route as DashboardAdminEventsRouteImport } from './routes/dashboard/admin/events'
+<<<<<<< ours
 import { Route as DashboardAdminFacultyRouteImport } from './routes/dashboard/admin/faculty'
+=======
+>>>>>>> theirs
 import { Route as DashboardAdminFeesRouteImport } from './routes/dashboard/admin/fees'
 import { Route as DashboardAdminFinanceRouteImport } from './routes/dashboard/admin/finance'
 import { Route as DashboardAdminGrievanceRouteImport } from './routes/dashboard/admin/grievance'
@@ -210,7 +214,10 @@ import { Route as DashboardStudentLeaveRouteImport } from './routes/dashboard/st
 import { Route as DashboardStudentLmsRouteImport } from './routes/dashboard/student/lms'
 import { Route as DashboardStudentMaterialsRouteImport } from './routes/dashboard/student/materials'
 import { Route as DashboardStudentNoticesRouteImport } from './routes/dashboard/student/notices'
+<<<<<<< ours
 import { Route as DashboardStudentNotificationsRouteImport } from './routes/dashboard/student/notifications'
+=======
+>>>>>>> theirs
 import { Route as DashboardStudentPlacementRouteImport } from './routes/dashboard/student/placement'
 import { Route as DashboardStudentProfileRouteImport } from './routes/dashboard/student/profile'
 import { Route as DashboardStudentResultsRouteImport } from './routes/dashboard/student/results'
@@ -278,6 +285,13 @@ import { Route as DashboardHostelMessResidentsRouteImport } from './routes/dashb
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+<<<<<<< ours
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+=======
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -293,8 +307,20 @@ const FacultyRoute = FacultyRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+>>>>>>> theirs
   getParentRoute: () => rootRouteImport,
 } as any)
+const FacultyRoute = FacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LmsLoginRoute = LmsLoginRouteImport.update({
+  id: '/lms-login',
+  path: '/lms-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+<<<<<<< ours
 const HodRoute = HodRouteImport.update({
   id: '/hod',
   path: '/hod',
@@ -305,6 +331,130 @@ const LmsLoginRoute = LmsLoginRouteImport.update({
   path: '/lms-login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyOtpRoute = VerifyOtpRouteImport.update({
+  id: '/verify-otp',
+  path: '/verify-otp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniIndexRoute = AlumniIndexRouteImport.update({
+  id: '/alumni/',
+  path: '/alumni/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniAnalyticsRoute = AlumniAnalyticsRouteImport.update({
+  id: '/alumni/analytics',
+  path: '/alumni/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniCommunicationRoute = AlumniCommunicationRouteImport.update({
+  id: '/alumni/communication',
+  path: '/alumni/communication',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniDashboardRoute = AlumniDashboardRouteImport.update({
+  id: '/alumni/dashboard',
+  path: '/alumni/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniDirectoryRoute = AlumniDirectoryRouteImport.update({
+  id: '/alumni/directory',
+  path: '/alumni/directory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniDonationsRoute = AlumniDonationsRouteImport.update({
+  id: '/alumni/donations',
+  path: '/alumni/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniEventsRoute = AlumniEventsRouteImport.update({
+  id: '/alumni/events',
+  path: '/alumni/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniJobsRoute = AlumniJobsRouteImport.update({
+  id: '/alumni/jobs',
+  path: '/alumni/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniMentorshipRoute = AlumniMentorshipRouteImport.update({
+  id: '/alumni/mentorship',
+  path: '/alumni/mentorship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniNetworkRoute = AlumniNetworkRouteImport.update({
+  id: '/alumni/network',
+  path: '/alumni/network',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniNotificationsRoute = AlumniNotificationsRouteImport.update({
+  id: '/alumni/notifications',
+  path: '/alumni/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniRegistrationRoute = AlumniRegistrationRouteImport.update({
+  id: '/alumni/registration',
+  path: '/alumni/registration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniReportsRoute = AlumniReportsRouteImport.update({
+  id: '/alumni/reports',
+  path: '/alumni/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniSettingsRoute = AlumniSettingsRouteImport.update({
+  id: '/alumni/settings',
+  path: '/alumni/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniSuccessStoriesRoute = AlumniSuccessStoriesRouteImport.update({
+  id: '/alumni/success-stories',
+  path: '/alumni/success-stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAccountantRoute = DashboardAccountantRouteImport.update({
+  id: '/accountant',
+  path: '/accountant',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAdminRoute = DashboardAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAiRoute = DashboardAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAttendanceRoute = DashboardAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDeanRoute = DashboardDeanRouteImport.update({
+  id: '/dean',
+  path: '/dean',
+=======
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -445,6 +595,34 @@ const DashboardExamsRoute = DashboardExamsRouteImport.update({
   path: '/exams',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardFacultyRoute = DashboardFacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+>>>>>>> theirs
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEventsRoute = DashboardEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => DashboardRoute,
+} as any)
+<<<<<<< ours
+const DashboardExamRoute = DashboardExamRouteImport.update({
+  id: '/exam',
+  path: '/exam',
+=======
+const DashboardFinanceRoute = DashboardFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+>>>>>>> theirs
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardHostelRoute = DashboardHostelRouteImport.update({
+  id: '/hostel',
+  path: '/hostel',
+  getParentRoute: () => DashboardRoute,
+} as any)
+<<<<<<< ours
 const DashboardFacultyRoute = DashboardFacultyRouteImport.update({
   id: '/faculty',
   path: '/faculty',
@@ -655,6 +833,203 @@ const HodDashboardRoute = HodDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => HodRoute,
 } as any)
+=======
+const DashboardImaRoute = DashboardImaRouteImport.update({
+  id: '/ima',
+  path: '/ima',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardIqacRoute = DashboardIqacRouteImport.update({
+  id: '/iqac',
+  path: '/iqac',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardLibrarianRoute = DashboardLibrarianRouteImport.update({
+  id: '/librarian',
+  path: '/librarian',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardLibraryRoute = DashboardLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardParentRoute = DashboardParentRouteImport.update({
+  id: '/parent',
+  path: '/parent',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPayrollRoute = DashboardPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPlacementRoute = DashboardPlacementRouteImport.update({
+  id: '/placement',
+  path: '/placement',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPrincipalRoute = DashboardPrincipalRouteImport.update({
+  id: '/principal',
+  path: '/principal',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardReceptionistRoute = DashboardReceptionistRouteImport.update({
+  id: '/receptionist',
+  path: '/receptionist',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardStudentRoute = DashboardStudentRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardStudentsRoute = DashboardStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSuperAdminRoute = DashboardSuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardTransportRoute = DashboardTransportRouteImport.update({
+  id: '/transport',
+  path: '/transport',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardVicePrincipalRoute = DashboardVicePrincipalRouteImport.update({
+  id: '/vice-principal',
+  path: '/vice-principal',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const FacultyIndexRoute = FacultyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyAttendanceRoute = FacultyAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyDashboardRoute = FacultyDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyLmsRoute = FacultyLmsRouteImport.update({
+  id: '/lms',
+  path: '/lms',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyMaterialsRoute = FacultyMaterialsRouteImport.update({
+  id: '/materials',
+  path: '/materials',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyMessagesRoute = FacultyMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyNotificationsRoute = FacultyNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyPayrollRoute = FacultyPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyPublicationsRoute = FacultyPublicationsRouteImport.update({
+  id: '/publications',
+  path: '/publications',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyResearchRoute = FacultyResearchRouteImport.update({
+  id: '/research',
+  path: '/research',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultySettingsRoute = FacultySettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const FacultyStudentsRoute = FacultyStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => FacultyRoute,
+} as any)
+const HodIndexRoute = HodIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HodRoute,
+} as any)
+const Hod403Route = Hod403RouteImport.update({
+  id: '/403',
+  path: '/403',
+  getParentRoute: () => HodRoute,
+} as any)
+const Hod404Route = Hod404RouteImport.update({
+  id: '/404',
+  path: '/404',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodAcademicsRoute = HodAcademicsRouteImport.update({
+  id: '/academics',
+  path: '/academics',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodAnnouncementsRoute = HodAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodApprovalsRoute = HodApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodAttendanceRoute = HodAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodAuditRoute = HodAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodAuditLogsRoute = HodAuditLogsRouteImport.update({
+  id: '/audit-logs',
+  path: '/audit-logs',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodCommunicationRoute = HodCommunicationRouteImport.update({
+  id: '/communication',
+  path: '/communication',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodDashboardRoute = HodDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => HodRoute,
+} as any)
+>>>>>>> theirs
 const HodDocumentsRoute = HodDocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
@@ -694,6 +1069,7 @@ const HodResearchRoute = HodResearchRouteImport.update({
   id: '/research',
   path: '/research',
   getParentRoute: () => HodRoute,
+<<<<<<< ours
 } as any)
 const HodResourcesRoute = HodResourcesRouteImport.update({
   id: '/resources',
@@ -735,6 +1111,49 @@ const DashboardAdminAcademicsRoute = DashboardAdminAcademicsRouteImport.update({
   path: '/academics',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+=======
+} as any)
+const HodResourcesRoute = HodResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodSettingsRoute = HodSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodStudentsRoute = HodStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodTimetableRoute = HodTimetableRouteImport.update({
+  id: '/timetable',
+  path: '/timetable',
+  getParentRoute: () => HodRoute,
+} as any)
+const AlumniEventsEventIdRoute = AlumniEventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => AlumniEventsRoute,
+} as any)
+const AlumniProfileIdRoute = AlumniProfileIdRouteImport.update({
+  id: '/alumni/profile/$id',
+  path: '/alumni/profile/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+const DashboardAdminAcademicsRoute = DashboardAdminAcademicsRouteImport.update({
+  id: '/academics',
+  path: '/academics',
+  getParentRoute: () => DashboardAdminRoute,
+} as any)
+>>>>>>> theirs
 const DashboardAdminAccreditationRoute =
   DashboardAdminAccreditationRouteImport.update({
     id: '/accreditation',
@@ -797,11 +1216,14 @@ const DashboardAdminEventsRoute = DashboardAdminEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+<<<<<<< ours
 const DashboardAdminFacultyRoute = DashboardAdminFacultyRouteImport.update({
   id: '/faculty',
   path: '/faculty',
   getParentRoute: () => DashboardAdminRoute,
 } as any)
+=======
+>>>>>>> theirs
 const DashboardAdminFeesRoute = DashboardAdminFeesRouteImport.update({
   id: '/fees',
   path: '/fees',
@@ -872,6 +1294,7 @@ const DashboardAdminTimetableRoute = DashboardAdminTimetableRouteImport.update({
   id: '/timetable',
   path: '/timetable',
   getParentRoute: () => DashboardAdminRoute,
+<<<<<<< ours
 } as any)
 const DashboardAiIndexRoute = DashboardAiIndexRouteImport.update({
   id: '/',
@@ -965,6 +1388,101 @@ const DashboardFacultyIndexRoute = DashboardFacultyIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardFacultyRoute,
 } as any)
+=======
+} as any)
+const DashboardAiIndexRoute = DashboardAiIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardAiAttendanceRoute = DashboardAiAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardAiChatbotRoute = DashboardAiChatbotRouteImport.update({
+  id: '/chatbot',
+  path: '/chatbot',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardAiInsightsRoute = DashboardAiInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardAiNotificationsRoute =
+  DashboardAiNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardAiRoute,
+  } as any)
+const DashboardAiPerformanceRoute = DashboardAiPerformanceRouteImport.update({
+  id: '/performance',
+  path: '/performance',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardAiReportsRoute = DashboardAiReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardAiRiskRoute = DashboardAiRiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardAiSettingsRoute = DashboardAiSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardAiRoute,
+} as any)
+const DashboardDeanIndexRoute = DashboardDeanIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardDeanRoute,
+} as any)
+const DashboardDeanAcademicRoute = DashboardDeanAcademicRouteImport.update({
+  id: '/academic',
+  path: '/academic',
+  getParentRoute: () => DashboardDeanRoute,
+} as any)
+const DashboardDeanApprovalsRoute = DashboardDeanApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => DashboardDeanRoute,
+} as any)
+const DashboardDeanExaminationRoute =
+  DashboardDeanExaminationRouteImport.update({
+    id: '/examination',
+    path: '/examination',
+    getParentRoute: () => DashboardDeanRoute,
+  } as any)
+const DashboardDeanImaRoute = DashboardDeanImaRouteImport.update({
+  id: '/ima',
+  path: '/ima',
+  getParentRoute: () => DashboardDeanRoute,
+} as any)
+const DashboardDeanIqacRoute = DashboardDeanIqacRouteImport.update({
+  id: '/iqac',
+  path: '/iqac',
+  getParentRoute: () => DashboardDeanRoute,
+} as any)
+const DashboardDeanReportsRoute = DashboardDeanReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => DashboardDeanRoute,
+} as any)
+const DashboardDeanStudentRoute = DashboardDeanStudentRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => DashboardDeanRoute,
+} as any)
+const DashboardFacultyIndexRoute = DashboardFacultyIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardFacultyRoute,
+} as any)
+>>>>>>> theirs
 const DashboardFacultyAttendanceRoute =
   DashboardFacultyAttendanceRouteImport.update({
     id: '/attendance',
@@ -1072,12 +1590,21 @@ const DashboardHostelFeesRoute = DashboardHostelFeesRouteImport.update({
   id: '/fees',
   path: '/fees',
   getParentRoute: () => DashboardHostelRoute,
+<<<<<<< ours
 } as any)
 const DashboardHostelMessRoute = DashboardHostelMessRouteImport.update({
   id: '/mess',
   path: '/mess',
   getParentRoute: () => DashboardHostelRoute,
 } as any)
+=======
+} as any)
+const DashboardHostelMessRoute = DashboardHostelMessRouteImport.update({
+  id: '/mess',
+  path: '/mess',
+  getParentRoute: () => DashboardHostelRoute,
+} as any)
+>>>>>>> theirs
 const DashboardHostelNotificationsRoute =
   DashboardHostelNotificationsRouteImport.update({
     id: '/notifications',
@@ -1103,6 +1630,7 @@ const DashboardHostelStudentsRoute = DashboardHostelStudentsRouteImport.update({
   id: '/students',
   path: '/students',
   getParentRoute: () => DashboardHostelRoute,
+<<<<<<< ours
 } as any)
 const DashboardHostelVisitorsRoute = DashboardHostelVisitorsRouteImport.update({
   id: '/visitors',
@@ -1141,6 +1669,46 @@ const DashboardLibrarianIssueRoute = DashboardLibrarianIssueRouteImport.update({
   path: '/issue',
   getParentRoute: () => DashboardLibrarianRoute,
 } as any)
+=======
+} as any)
+const DashboardHostelVisitorsRoute = DashboardHostelVisitorsRouteImport.update({
+  id: '/visitors',
+  path: '/visitors',
+  getParentRoute: () => DashboardHostelRoute,
+} as any)
+const DashboardLibrarianIndexRoute = DashboardLibrarianIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardLibrarianRoute,
+} as any)
+const DashboardLibrarianBooksRoute = DashboardLibrarianBooksRouteImport.update({
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => DashboardLibrarianRoute,
+} as any)
+const DashboardLibrarianDigitalRoute =
+  DashboardLibrarianDigitalRouteImport.update({
+    id: '/digital',
+    path: '/digital',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianFinesRoute = DashboardLibrarianFinesRouteImport.update({
+  id: '/fines',
+  path: '/fines',
+  getParentRoute: () => DashboardLibrarianRoute,
+} as any)
+const DashboardLibrarianIdCardsRoute =
+  DashboardLibrarianIdCardsRouteImport.update({
+    id: '/id-cards',
+    path: '/id-cards',
+    getParentRoute: () => DashboardLibrarianRoute,
+  } as any)
+const DashboardLibrarianIssueRoute = DashboardLibrarianIssueRouteImport.update({
+  id: '/issue',
+  path: '/issue',
+  getParentRoute: () => DashboardLibrarianRoute,
+} as any)
+>>>>>>> theirs
 const DashboardLibrarianMembersRoute =
   DashboardLibrarianMembersRouteImport.update({
     id: '/members',
@@ -1236,6 +1804,7 @@ const DashboardPlacementDrivesRoute =
     id: '/drives',
     path: '/drives',
     getParentRoute: () => DashboardPlacementRoute,
+<<<<<<< ours
   } as any)
 const DashboardPlacementEligibilityRoute =
   DashboardPlacementEligibilityRouteImport.update({
@@ -1278,6 +1847,50 @@ const DashboardStudentComplaintsRoute =
     path: '/complaints',
     getParentRoute: () => DashboardStudentRoute,
   } as any)
+=======
+  } as any)
+const DashboardPlacementEligibilityRoute =
+  DashboardPlacementEligibilityRouteImport.update({
+    id: '/eligibility',
+    path: '/eligibility',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
+const DashboardPlacementInterviewsRoute =
+  DashboardPlacementInterviewsRouteImport.update({
+    id: '/interviews',
+    path: '/interviews',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
+const DashboardPlacementReportsRoute =
+  DashboardPlacementReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
+const DashboardStudentIndexRoute = DashboardStudentIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardStudentRoute,
+} as any)
+const DashboardStudentAssignmentsRoute =
+  DashboardStudentAssignmentsRouteImport.update({
+    id: '/assignments',
+    path: '/assignments',
+    getParentRoute: () => DashboardStudentRoute,
+  } as any)
+const DashboardStudentAttendanceRoute =
+  DashboardStudentAttendanceRouteImport.update({
+    id: '/attendance',
+    path: '/attendance',
+    getParentRoute: () => DashboardStudentRoute,
+  } as any)
+const DashboardStudentComplaintsRoute =
+  DashboardStudentComplaintsRouteImport.update({
+    id: '/complaints',
+    path: '/complaints',
+    getParentRoute: () => DashboardStudentRoute,
+  } as any)
+>>>>>>> theirs
 const DashboardStudentCourseRegistrationRoute =
   DashboardStudentCourseRegistrationRouteImport.update({
     id: '/course-registration',
@@ -1326,12 +1939,15 @@ const DashboardStudentNoticesRoute = DashboardStudentNoticesRouteImport.update({
   path: '/notices',
   getParentRoute: () => DashboardStudentRoute,
 } as any)
+<<<<<<< ours
 const DashboardStudentNotificationsRoute =
   DashboardStudentNotificationsRouteImport.update({
     id: '/notifications',
     path: '/notifications',
     getParentRoute: () => DashboardStudentRoute,
   } as any)
+=======
+>>>>>>> theirs
 const DashboardStudentPlacementRoute =
   DashboardStudentPlacementRouteImport.update({
     id: '/placement',
@@ -1447,6 +2063,7 @@ const DashboardSuperAdminSettingsRoute =
     id: '/settings',
     path: '/settings',
     getParentRoute: () => DashboardSuperAdminRoute,
+<<<<<<< ours
   } as any)
 const DashboardSuperAdminUsersRoute =
   DashboardSuperAdminUsersRouteImport.update({
@@ -1544,12 +2161,99 @@ const DashboardAdminAlumniMessagingRoute =
   DashboardAdminAlumniMessagingRouteImport.update({
     id: '/messaging',
     path: '/messaging',
+=======
+  } as any)
+const DashboardSuperAdminUsersRoute =
+  DashboardSuperAdminUsersRouteImport.update({
+    id: '/users',
+    path: '/users',
+    getParentRoute: () => DashboardSuperAdminRoute,
+  } as any)
+const HodFacultyProfileRoute = HodFacultyProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => HodFacultyRoute,
+} as any)
+const HodStudentsAddRoute = HodStudentsAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => HodStudentsRoute,
+} as any)
+const HodStudentsEditRoute = HodStudentsEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => HodStudentsRoute,
+} as any)
+const HodStudentsProfileRoute = HodStudentsProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => HodStudentsRoute,
+} as any)
+const DashboardAdminAlumniIndexRoute =
+  DashboardAdminAlumniIndexRouteImport.update({
+    id: '/',
+    path: '/',
     getParentRoute: () => DashboardAdminAlumniRoute,
   } as any)
-const DashboardAdminAlumniNetworkingRoute =
-  DashboardAdminAlumniNetworkingRouteImport.update({
-    id: '/networking',
-    path: '/networking',
+const DashboardAdminAlumniAiFeaturesRoute =
+  DashboardAdminAlumniAiFeaturesRouteImport.update({
+    id: '/ai-features',
+    path: '/ai-features',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniAnnouncementsRoute =
+  DashboardAdminAlumniAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniDirectoryRoute =
+  DashboardAdminAlumniDirectoryRouteImport.update({
+    id: '/directory',
+    path: '/directory',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniDonationsRoute =
+  DashboardAdminAlumniDonationsRouteImport.update({
+    id: '/donations',
+    path: '/donations',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniEventsRoute =
+  DashboardAdminAlumniEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniGalleryRoute =
+  DashboardAdminAlumniGalleryRouteImport.update({
+    id: '/gallery',
+    path: '/gallery',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniHelpRoute =
+  DashboardAdminAlumniHelpRouteImport.update({
+    id: '/help',
+    path: '/help',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniInternshipsRoute =
+  DashboardAdminAlumniInternshipsRouteImport.update({
+    id: '/internships',
+    path: '/internships',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniJobsRoute =
+  DashboardAdminAlumniJobsRouteImport.update({
+    id: '/jobs',
+    path: '/jobs',
+>>>>>>> theirs
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniMentorshipRoute =
+  DashboardAdminAlumniMentorshipRouteImport.update({
+    id: '/mentorship',
+    path: '/mentorship',
     getParentRoute: () => DashboardAdminAlumniRoute,
   } as any)
 const DashboardAdminAlumniNotificationsRoute =
@@ -1558,6 +2262,7 @@ const DashboardAdminAlumniNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => DashboardAdminAlumniRoute,
   } as any)
+<<<<<<< ours
 const DashboardAdminAlumniPlacementRoute =
   DashboardAdminAlumniPlacementRouteImport.update({
     id: '/placement',
@@ -1684,6 +2389,146 @@ const DashboardHostelMessIndexRoute =
     path: '/',
     getParentRoute: () => DashboardHostelMessRoute,
   } as any)
+=======
+const DashboardAdminAlumniNetworkingRoute =
+  DashboardAdminAlumniNetworkingRouteImport.update({
+    id: '/networking',
+    path: '/networking',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniNotificationsRoute =
+  DashboardAdminAlumniNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniPlacementRoute =
+  DashboardAdminAlumniPlacementRouteImport.update({
+    id: '/placement',
+    path: '/placement',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniProfileRoute =
+  DashboardAdminAlumniProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniRegistrationRoute =
+  DashboardAdminAlumniRegistrationRouteImport.update({
+    id: '/registration',
+    path: '/registration',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniReportsRoute =
+  DashboardAdminAlumniReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniSettingsRoute =
+  DashboardAdminAlumniSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniStoriesRoute =
+  DashboardAdminAlumniStoriesRouteImport.update({
+    id: '/stories',
+    path: '/stories',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminAlumniVerificationRoute =
+  DashboardAdminAlumniVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => DashboardAdminAlumniRoute,
+  } as any)
+const DashboardAdminExamsIndexRoute =
+  DashboardAdminExamsIndexRouteImport.update({
+    id: '/exams/',
+    path: '/exams/',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsAnalyticsRoute =
+  DashboardAdminExamsAnalyticsRouteImport.update({
+    id: '/exams/analytics',
+    path: '/exams/analytics',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsCorrectionsRoute =
+  DashboardAdminExamsCorrectionsRouteImport.update({
+    id: '/exams/corrections',
+    path: '/exams/corrections',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsCourseRegistrationRoute =
+  DashboardAdminExamsCourseRegistrationRouteImport.update({
+    id: '/exams/course-registration',
+    path: '/exams/course-registration',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsHallTicketsRoute =
+  DashboardAdminExamsHallTicketsRouteImport.update({
+    id: '/exams/hall-tickets',
+    path: '/exams/hall-tickets',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsInvigilationRoute =
+  DashboardAdminExamsInvigilationRouteImport.update({
+    id: '/exams/invigilation',
+    path: '/exams/invigilation',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsQuestionsRoute =
+  DashboardAdminExamsQuestionsRouteImport.update({
+    id: '/exams/questions',
+    path: '/exams/questions',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsResultsRoute =
+  DashboardAdminExamsResultsRouteImport.update({
+    id: '/exams/results',
+    path: '/exams/results',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsScheduleRoute =
+  DashboardAdminExamsScheduleRouteImport.update({
+    id: '/exams/schedule',
+    path: '/exams/schedule',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsSupplementaryRoute =
+  DashboardAdminExamsSupplementaryRouteImport.update({
+    id: '/exams/supplementary',
+    path: '/exams/supplementary',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminExamsTimetableRoute =
+  DashboardAdminExamsTimetableRouteImport.update({
+    id: '/exams/timetable',
+    path: '/exams/timetable',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminFacultyIndexRoute =
+  DashboardAdminFacultyIndexRouteImport.update({
+    id: '/faculty/',
+    path: '/faculty/',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardAdminFacultyAttendanceRoute =
+  DashboardAdminFacultyAttendanceRouteImport.update({
+    id: '/faculty/attendance',
+    path: '/faculty/attendance',
+    getParentRoute: () => DashboardAdminRoute,
+  } as any)
+const DashboardHostelMessIndexRoute =
+  DashboardHostelMessIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardHostelMessRoute,
+  } as any)
+>>>>>>> theirs
 const DashboardHostelMessFeesRoute = DashboardHostelMessFeesRouteImport.update({
   id: '/fees',
   path: '/fees',
@@ -1769,6 +2614,7 @@ export interface FileRoutesByFullPath {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2022,6 +2868,7 @@ export interface FileRoutesByTo {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2287,6 +3134,7 @@ export interface FileRoutesById {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2556,6 +3404,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -2809,6 +3658,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -3073,6 +3923,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -3310,6 +4161,7 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+<<<<<<< ours
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -3597,15 +4449,193 @@ declare module '@tanstack/react-router' {
       path: '/library'
       fullPath: '/dashboard/library'
       preLoaderRoute: typeof DashboardLibraryRouteImport
+=======
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faculty': {
+      id: '/faculty'
+      path: '/faculty'
+      fullPath: '/faculty'
+      preLoaderRoute: typeof FacultyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hod': {
+      id: '/hod'
+      path: '/hod'
+      fullPath: '/hod'
+      preLoaderRoute: typeof HodRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lms-login': {
+      id: '/lms-login'
+      path: '/lms-login'
+      fullPath: '/lms-login'
+      preLoaderRoute: typeof LmsLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-otp': {
+      id: '/verify-otp'
+      path: '/verify-otp'
+      fullPath: '/verify-otp'
+      preLoaderRoute: typeof VerifyOtpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/': {
+      id: '/alumni/'
+      path: '/alumni'
+      fullPath: '/alumni/'
+      preLoaderRoute: typeof AlumniIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/analytics': {
+      id: '/alumni/analytics'
+      path: '/alumni/analytics'
+      fullPath: '/alumni/analytics'
+      preLoaderRoute: typeof AlumniAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/communication': {
+      id: '/alumni/communication'
+      path: '/alumni/communication'
+      fullPath: '/alumni/communication'
+      preLoaderRoute: typeof AlumniCommunicationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/dashboard': {
+      id: '/alumni/dashboard'
+      path: '/alumni/dashboard'
+      fullPath: '/alumni/dashboard'
+      preLoaderRoute: typeof AlumniDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/directory': {
+      id: '/alumni/directory'
+      path: '/alumni/directory'
+      fullPath: '/alumni/directory'
+      preLoaderRoute: typeof AlumniDirectoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/donations': {
+      id: '/alumni/donations'
+      path: '/alumni/donations'
+      fullPath: '/alumni/donations'
+      preLoaderRoute: typeof AlumniDonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/events': {
+      id: '/alumni/events'
+      path: '/alumni/events'
+      fullPath: '/alumni/events'
+      preLoaderRoute: typeof AlumniEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/jobs': {
+      id: '/alumni/jobs'
+      path: '/alumni/jobs'
+      fullPath: '/alumni/jobs'
+      preLoaderRoute: typeof AlumniJobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/mentorship': {
+      id: '/alumni/mentorship'
+      path: '/alumni/mentorship'
+      fullPath: '/alumni/mentorship'
+      preLoaderRoute: typeof AlumniMentorshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/network': {
+      id: '/alumni/network'
+      path: '/alumni/network'
+      fullPath: '/alumni/network'
+      preLoaderRoute: typeof AlumniNetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/notifications': {
+      id: '/alumni/notifications'
+      path: '/alumni/notifications'
+      fullPath: '/alumni/notifications'
+      preLoaderRoute: typeof AlumniNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/registration': {
+      id: '/alumni/registration'
+      path: '/alumni/registration'
+      fullPath: '/alumni/registration'
+      preLoaderRoute: typeof AlumniRegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/reports': {
+      id: '/alumni/reports'
+      path: '/alumni/reports'
+      fullPath: '/alumni/reports'
+      preLoaderRoute: typeof AlumniReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/settings': {
+      id: '/alumni/settings'
+      path: '/alumni/settings'
+      fullPath: '/alumni/settings'
+      preLoaderRoute: typeof AlumniSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni/success-stories': {
+      id: '/alumni/success-stories'
+      path: '/alumni/success-stories'
+      fullPath: '/alumni/success-stories'
+      preLoaderRoute: typeof AlumniSuccessStoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+>>>>>>> theirs
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/notifications': {
-      id: '/dashboard/notifications'
-      path: '/notifications'
-      fullPath: '/dashboard/notifications'
-      preLoaderRoute: typeof DashboardNotificationsRouteImport
+    '/dashboard/accountant': {
+      id: '/dashboard/accountant'
+      path: '/accountant'
+      fullPath: '/dashboard/accountant'
+      preLoaderRoute: typeof DashboardAccountantRouteImport
       parentRoute: typeof DashboardRoute
     }
+<<<<<<< ours
     '/dashboard/parent': {
       id: '/dashboard/parent'
       path: '/parent'
@@ -3653,6 +4683,55 @@ declare module '@tanstack/react-router' {
       path: '/student'
       fullPath: '/dashboard/student'
       preLoaderRoute: typeof DashboardStudentRouteImport
+=======
+    '/dashboard/admin': {
+      id: '/dashboard/admin'
+      path: '/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof DashboardAdminRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/ai': {
+      id: '/dashboard/ai'
+      path: '/ai'
+      fullPath: '/dashboard/ai'
+      preLoaderRoute: typeof DashboardAiRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/attendance': {
+      id: '/dashboard/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/attendance'
+      preLoaderRoute: typeof DashboardAttendanceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/dean': {
+      id: '/dashboard/dean'
+      path: '/dean'
+      fullPath: '/dashboard/dean'
+      preLoaderRoute: typeof DashboardDeanRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/events': {
+      id: '/dashboard/events'
+      path: '/events'
+      fullPath: '/dashboard/events'
+      preLoaderRoute: typeof DashboardEventsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/exam': {
+      id: '/dashboard/exam'
+      path: '/exam'
+      fullPath: '/dashboard/exam'
+      preLoaderRoute: typeof DashboardExamRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/exams': {
+      id: '/dashboard/exams'
+      path: '/exams'
+      fullPath: '/dashboard/exams'
+      preLoaderRoute: typeof DashboardExamsRouteImport
+>>>>>>> theirs
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/students': {
@@ -3662,6 +4741,7 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardStudentsRouteImport
       parentRoute: typeof DashboardRoute
     }
+<<<<<<< ours
     '/dashboard/super-admin': {
       id: '/dashboard/super-admin'
       path: '/super-admin'
@@ -3934,14 +5014,219 @@ declare module '@tanstack/react-router' {
       fullPath: '/alumni/profile/$id'
       preLoaderRoute: typeof AlumniProfileIdRouteImport
       parentRoute: typeof rootRouteImport
+=======
+    '/dashboard/fees': {
+      id: '/dashboard/fees'
+      path: '/fees'
+      fullPath: '/dashboard/fees'
+      preLoaderRoute: typeof DashboardFeesRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/dashboard/admin/': {
-      id: '/dashboard/admin/'
+    '/dashboard/finance': {
+      id: '/dashboard/finance'
+      path: '/finance'
+      fullPath: '/dashboard/finance'
+      preLoaderRoute: typeof DashboardFinanceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/hostel': {
+      id: '/dashboard/hostel'
+      path: '/hostel'
+      fullPath: '/dashboard/hostel'
+      preLoaderRoute: typeof DashboardHostelRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/ima': {
+      id: '/dashboard/ima'
+      path: '/ima'
+      fullPath: '/dashboard/ima'
+      preLoaderRoute: typeof DashboardImaRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/iqac': {
+      id: '/dashboard/iqac'
+      path: '/iqac'
+      fullPath: '/dashboard/iqac'
+      preLoaderRoute: typeof DashboardIqacRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/librarian': {
+      id: '/dashboard/librarian'
+      path: '/librarian'
+      fullPath: '/dashboard/librarian'
+      preLoaderRoute: typeof DashboardLibrarianRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/library': {
+      id: '/dashboard/library'
+      path: '/library'
+      fullPath: '/dashboard/library'
+      preLoaderRoute: typeof DashboardLibraryRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/notifications': {
+      id: '/dashboard/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/notifications'
+      preLoaderRoute: typeof DashboardNotificationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/parent': {
+      id: '/dashboard/parent'
+      path: '/parent'
+      fullPath: '/dashboard/parent'
+      preLoaderRoute: typeof DashboardParentRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/payroll': {
+      id: '/dashboard/payroll'
+      path: '/payroll'
+      fullPath: '/dashboard/payroll'
+      preLoaderRoute: typeof DashboardPayrollRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/placement': {
+      id: '/dashboard/placement'
+      path: '/placement'
+      fullPath: '/dashboard/placement'
+      preLoaderRoute: typeof DashboardPlacementRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/principal': {
+      id: '/dashboard/principal'
+      path: '/principal'
+      fullPath: '/dashboard/principal'
+      preLoaderRoute: typeof DashboardPrincipalRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/receptionist': {
+      id: '/dashboard/receptionist'
+      path: '/receptionist'
+      fullPath: '/dashboard/receptionist'
+      preLoaderRoute: typeof DashboardReceptionistRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/student': {
+      id: '/dashboard/student'
+      path: '/student'
+      fullPath: '/dashboard/student'
+      preLoaderRoute: typeof DashboardStudentRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/students': {
+      id: '/dashboard/students'
+      path: '/students'
+      fullPath: '/dashboard/students'
+      preLoaderRoute: typeof DashboardStudentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/super-admin': {
+      id: '/dashboard/super-admin'
+      path: '/super-admin'
+      fullPath: '/dashboard/super-admin'
+      preLoaderRoute: typeof DashboardSuperAdminRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/transport': {
+      id: '/dashboard/transport'
+      path: '/transport'
+      fullPath: '/dashboard/transport'
+      preLoaderRoute: typeof DashboardTransportRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/vice-principal': {
+      id: '/dashboard/vice-principal'
+      path: '/vice-principal'
+      fullPath: '/dashboard/vice-principal'
+      preLoaderRoute: typeof DashboardVicePrincipalRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/faculty/': {
+      id: '/faculty/'
       path: '/'
-      fullPath: '/dashboard/admin/'
-      preLoaderRoute: typeof DashboardAdminIndexRouteImport
-      parentRoute: typeof DashboardAdminRoute
+      fullPath: '/faculty/'
+      preLoaderRoute: typeof FacultyIndexRouteImport
+      parentRoute: typeof FacultyRoute
     }
+    '/faculty/attendance': {
+      id: '/faculty/attendance'
+      path: '/attendance'
+      fullPath: '/faculty/attendance'
+      preLoaderRoute: typeof FacultyAttendanceRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/dashboard': {
+      id: '/faculty/dashboard'
+      path: '/dashboard'
+      fullPath: '/faculty/dashboard'
+      preLoaderRoute: typeof FacultyDashboardRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/lms': {
+      id: '/faculty/lms'
+      path: '/lms'
+      fullPath: '/faculty/lms'
+      preLoaderRoute: typeof FacultyLmsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/materials': {
+      id: '/faculty/materials'
+      path: '/materials'
+      fullPath: '/faculty/materials'
+      preLoaderRoute: typeof FacultyMaterialsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/messages': {
+      id: '/faculty/messages'
+      path: '/messages'
+      fullPath: '/faculty/messages'
+      preLoaderRoute: typeof FacultyMessagesRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/notifications': {
+      id: '/faculty/notifications'
+      path: '/notifications'
+      fullPath: '/faculty/notifications'
+      preLoaderRoute: typeof FacultyNotificationsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/payroll': {
+      id: '/faculty/payroll'
+      path: '/payroll'
+      fullPath: '/faculty/payroll'
+      preLoaderRoute: typeof FacultyPayrollRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/publications': {
+      id: '/faculty/publications'
+      path: '/publications'
+      fullPath: '/faculty/publications'
+      preLoaderRoute: typeof FacultyPublicationsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+    '/faculty/research': {
+      id: '/faculty/research'
+      path: '/research'
+      fullPath: '/faculty/research'
+      preLoaderRoute: typeof FacultyResearchRouteImport
+      parentRoute: typeof FacultyRoute
+>>>>>>> theirs
+    }
+    '/faculty/settings': {
+      id: '/faculty/settings'
+      path: '/settings'
+      fullPath: '/faculty/settings'
+      preLoaderRoute: typeof FacultySettingsRouteImport
+      parentRoute: typeof FacultyRoute
+    }
+<<<<<<< ours
     '/dashboard/admin/academics': {
       id: '/dashboard/admin/academics'
       path: '/academics'
@@ -4389,14 +5674,471 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/hostel/fees'
       preLoaderRoute: typeof DashboardHostelFeesRouteImport
       parentRoute: typeof DashboardHostelRoute
+=======
+    '/faculty/students': {
+      id: '/faculty/students'
+      path: '/students'
+      fullPath: '/faculty/students'
+      preLoaderRoute: typeof FacultyStudentsRouteImport
+      parentRoute: typeof FacultyRoute
     }
-    '/dashboard/hostel/mess': {
-      id: '/dashboard/hostel/mess'
-      path: '/mess'
-      fullPath: '/dashboard/hostel/mess'
-      preLoaderRoute: typeof DashboardHostelMessRouteImport
-      parentRoute: typeof DashboardHostelRoute
+    '/hod/': {
+      id: '/hod/'
+      path: '/'
+      fullPath: '/hod/'
+      preLoaderRoute: typeof HodIndexRouteImport
+      parentRoute: typeof HodRoute
     }
+    '/hod/403': {
+      id: '/hod/403'
+      path: '/403'
+      fullPath: '/hod/403'
+      preLoaderRoute: typeof Hod403RouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/404': {
+      id: '/hod/404'
+      path: '/404'
+      fullPath: '/hod/404'
+      preLoaderRoute: typeof Hod404RouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/academics': {
+      id: '/hod/academics'
+      path: '/academics'
+      fullPath: '/hod/academics'
+      preLoaderRoute: typeof HodAcademicsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/announcements': {
+      id: '/hod/announcements'
+      path: '/announcements'
+      fullPath: '/hod/announcements'
+      preLoaderRoute: typeof HodAnnouncementsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/approvals': {
+      id: '/hod/approvals'
+      path: '/approvals'
+      fullPath: '/hod/approvals'
+      preLoaderRoute: typeof HodApprovalsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/attendance': {
+      id: '/hod/attendance'
+      path: '/attendance'
+      fullPath: '/hod/attendance'
+      preLoaderRoute: typeof HodAttendanceRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/audit': {
+      id: '/hod/audit'
+      path: '/audit'
+      fullPath: '/hod/audit'
+      preLoaderRoute: typeof HodAuditRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/audit-logs': {
+      id: '/hod/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/hod/audit-logs'
+      preLoaderRoute: typeof HodAuditLogsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/communication': {
+      id: '/hod/communication'
+      path: '/communication'
+      fullPath: '/hod/communication'
+      preLoaderRoute: typeof HodCommunicationRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/dashboard': {
+      id: '/hod/dashboard'
+      path: '/dashboard'
+      fullPath: '/hod/dashboard'
+      preLoaderRoute: typeof HodDashboardRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/documents': {
+      id: '/hod/documents'
+      path: '/documents'
+      fullPath: '/hod/documents'
+      preLoaderRoute: typeof HodDocumentsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/events': {
+      id: '/hod/events'
+      path: '/events'
+      fullPath: '/hod/events'
+      preLoaderRoute: typeof HodEventsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/examinations': {
+      id: '/hod/examinations'
+      path: '/examinations'
+      fullPath: '/hod/examinations'
+      preLoaderRoute: typeof HodExaminationsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/faculty': {
+      id: '/hod/faculty'
+      path: '/faculty'
+      fullPath: '/hod/faculty'
+      preLoaderRoute: typeof HodFacultyRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/mentoring': {
+      id: '/hod/mentoring'
+      path: '/mentoring'
+      fullPath: '/hod/mentoring'
+      preLoaderRoute: typeof HodMentoringRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/notifications': {
+      id: '/hod/notifications'
+      path: '/notifications'
+      fullPath: '/hod/notifications'
+      preLoaderRoute: typeof HodNotificationsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/reports': {
+      id: '/hod/reports'
+      path: '/reports'
+      fullPath: '/hod/reports'
+      preLoaderRoute: typeof HodReportsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/research': {
+      id: '/hod/research'
+      path: '/research'
+      fullPath: '/hod/research'
+      preLoaderRoute: typeof HodResearchRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/resources': {
+      id: '/hod/resources'
+      path: '/resources'
+      fullPath: '/hod/resources'
+      preLoaderRoute: typeof HodResourcesRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/settings': {
+      id: '/hod/settings'
+      path: '/settings'
+      fullPath: '/hod/settings'
+      preLoaderRoute: typeof HodSettingsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/students': {
+      id: '/hod/students'
+      path: '/students'
+      fullPath: '/hod/students'
+      preLoaderRoute: typeof HodStudentsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/timetable': {
+      id: '/hod/timetable'
+      path: '/timetable'
+      fullPath: '/hod/timetable'
+      preLoaderRoute: typeof HodTimetableRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/alumni/events/$eventId': {
+      id: '/alumni/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/alumni/events/$eventId'
+      preLoaderRoute: typeof AlumniEventsEventIdRouteImport
+      parentRoute: typeof AlumniEventsRoute
+    }
+    '/alumni/profile/$id': {
+      id: '/alumni/profile/$id'
+      path: '/alumni/profile/$id'
+      fullPath: '/alumni/profile/$id'
+      preLoaderRoute: typeof AlumniProfileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/admin/': {
+      id: '/dashboard/admin/'
+      path: '/'
+      fullPath: '/dashboard/admin/'
+      preLoaderRoute: typeof DashboardAdminIndexRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/academics': {
+      id: '/dashboard/admin/academics'
+      path: '/academics'
+      fullPath: '/dashboard/admin/academics'
+      preLoaderRoute: typeof DashboardAdminAcademicsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/accreditation': {
+      id: '/dashboard/admin/accreditation'
+      path: '/accreditation'
+      fullPath: '/dashboard/admin/accreditation'
+      preLoaderRoute: typeof DashboardAdminAccreditationRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/admissions': {
+      id: '/dashboard/admin/admissions'
+      path: '/admissions'
+      fullPath: '/dashboard/admin/admissions'
+      preLoaderRoute: typeof DashboardAdminAdmissionsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/alumni': {
+      id: '/dashboard/admin/alumni'
+      path: '/alumni'
+      fullPath: '/dashboard/admin/alumni'
+      preLoaderRoute: typeof DashboardAdminAlumniRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/assignments': {
+      id: '/dashboard/admin/assignments'
+      path: '/assignments'
+      fullPath: '/dashboard/admin/assignments'
+      preLoaderRoute: typeof DashboardAdminAssignmentsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/attendance': {
+      id: '/dashboard/admin/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/admin/attendance'
+      preLoaderRoute: typeof DashboardAdminAttendanceRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/attendance-approvals': {
+      id: '/dashboard/admin/attendance-approvals'
+      path: '/attendance-approvals'
+      fullPath: '/dashboard/admin/attendance-approvals'
+      preLoaderRoute: typeof DashboardAdminAttendanceApprovalsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/attendance-notifications': {
+      id: '/dashboard/admin/attendance-notifications'
+      path: '/attendance-notifications'
+      fullPath: '/dashboard/admin/attendance-notifications'
+      preLoaderRoute: typeof DashboardAdminAttendanceNotificationsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/calendar': {
+      id: '/dashboard/admin/calendar'
+      path: '/calendar'
+      fullPath: '/dashboard/admin/calendar'
+      preLoaderRoute: typeof DashboardAdminCalendarRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/clubs': {
+      id: '/dashboard/admin/clubs'
+      path: '/clubs'
+      fullPath: '/dashboard/admin/clubs'
+      preLoaderRoute: typeof DashboardAdminClubsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/communication': {
+      id: '/dashboard/admin/communication'
+      path: '/communication'
+      fullPath: '/dashboard/admin/communication'
+      preLoaderRoute: typeof DashboardAdminCommunicationRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/events': {
+      id: '/dashboard/admin/events'
+      path: '/events'
+      fullPath: '/dashboard/admin/events'
+      preLoaderRoute: typeof DashboardAdminEventsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/fees': {
+      id: '/dashboard/admin/fees'
+      path: '/fees'
+      fullPath: '/dashboard/admin/fees'
+      preLoaderRoute: typeof DashboardAdminFeesRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/finance': {
+      id: '/dashboard/admin/finance'
+      path: '/finance'
+      fullPath: '/dashboard/admin/finance'
+      preLoaderRoute: typeof DashboardAdminFinanceRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/grievance': {
+      id: '/dashboard/admin/grievance'
+      path: '/grievance'
+      fullPath: '/dashboard/admin/grievance'
+      preLoaderRoute: typeof DashboardAdminGrievanceRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/health': {
+      id: '/dashboard/admin/health'
+      path: '/health'
+      fullPath: '/dashboard/admin/health'
+      preLoaderRoute: typeof DashboardAdminHealthRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/hrms': {
+      id: '/dashboard/admin/hrms'
+      path: '/hrms'
+      fullPath: '/dashboard/admin/hrms'
+      preLoaderRoute: typeof DashboardAdminHrmsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/inventory': {
+      id: '/dashboard/admin/inventory'
+      path: '/inventory'
+      fullPath: '/dashboard/admin/inventory'
+      preLoaderRoute: typeof DashboardAdminInventoryRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/lms': {
+      id: '/dashboard/admin/lms'
+      path: '/lms'
+      fullPath: '/dashboard/admin/lms'
+      preLoaderRoute: typeof DashboardAdminLmsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/notifications': {
+      id: '/dashboard/admin/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/admin/notifications'
+      preLoaderRoute: typeof DashboardAdminNotificationsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/payroll': {
+      id: '/dashboard/admin/payroll'
+      path: '/payroll'
+      fullPath: '/dashboard/admin/payroll'
+      preLoaderRoute: typeof DashboardAdminPayrollRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/reports': {
+      id: '/dashboard/admin/reports'
+      path: '/reports'
+      fullPath: '/dashboard/admin/reports'
+      preLoaderRoute: typeof DashboardAdminReportsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/research': {
+      id: '/dashboard/admin/research'
+      path: '/research'
+      fullPath: '/dashboard/admin/research'
+      preLoaderRoute: typeof DashboardAdminResearchRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/settings': {
+      id: '/dashboard/admin/settings'
+      path: '/settings'
+      fullPath: '/dashboard/admin/settings'
+      preLoaderRoute: typeof DashboardAdminSettingsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/students': {
+      id: '/dashboard/admin/students'
+      path: '/students'
+      fullPath: '/dashboard/admin/students'
+      preLoaderRoute: typeof DashboardAdminStudentsRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/timetable': {
+      id: '/dashboard/admin/timetable'
+      path: '/timetable'
+      fullPath: '/dashboard/admin/timetable'
+      preLoaderRoute: typeof DashboardAdminTimetableRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/ai/': {
+      id: '/dashboard/ai/'
+      path: '/'
+      fullPath: '/dashboard/ai/'
+      preLoaderRoute: typeof DashboardAiIndexRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/attendance': {
+      id: '/dashboard/ai/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/ai/attendance'
+      preLoaderRoute: typeof DashboardAiAttendanceRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/chatbot': {
+      id: '/dashboard/ai/chatbot'
+      path: '/chatbot'
+      fullPath: '/dashboard/ai/chatbot'
+      preLoaderRoute: typeof DashboardAiChatbotRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/insights': {
+      id: '/dashboard/ai/insights'
+      path: '/insights'
+      fullPath: '/dashboard/ai/insights'
+      preLoaderRoute: typeof DashboardAiInsightsRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/notifications': {
+      id: '/dashboard/ai/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/ai/notifications'
+      preLoaderRoute: typeof DashboardAiNotificationsRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/performance': {
+      id: '/dashboard/ai/performance'
+      path: '/performance'
+      fullPath: '/dashboard/ai/performance'
+      preLoaderRoute: typeof DashboardAiPerformanceRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/reports': {
+      id: '/dashboard/ai/reports'
+      path: '/reports'
+      fullPath: '/dashboard/ai/reports'
+      preLoaderRoute: typeof DashboardAiReportsRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/risk': {
+      id: '/dashboard/ai/risk'
+      path: '/risk'
+      fullPath: '/dashboard/ai/risk'
+      preLoaderRoute: typeof DashboardAiRiskRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/ai/settings': {
+      id: '/dashboard/ai/settings'
+      path: '/settings'
+      fullPath: '/dashboard/ai/settings'
+      preLoaderRoute: typeof DashboardAiSettingsRouteImport
+      parentRoute: typeof DashboardAiRoute
+    }
+    '/dashboard/dean/': {
+      id: '/dashboard/dean/'
+      path: '/'
+      fullPath: '/dashboard/dean/'
+      preLoaderRoute: typeof DashboardDeanIndexRouteImport
+      parentRoute: typeof DashboardDeanRoute
+    }
+    '/dashboard/dean/academic': {
+      id: '/dashboard/dean/academic'
+      path: '/academic'
+      fullPath: '/dashboard/dean/academic'
+      preLoaderRoute: typeof DashboardDeanAcademicRouteImport
+      parentRoute: typeof DashboardDeanRoute
+    }
+    '/dashboard/dean/approvals': {
+      id: '/dashboard/dean/approvals'
+      path: '/approvals'
+      fullPath: '/dashboard/dean/approvals'
+      preLoaderRoute: typeof DashboardDeanApprovalsRouteImport
+      parentRoute: typeof DashboardDeanRoute
+>>>>>>> theirs
+    }
+    '/dashboard/dean/examination': {
+      id: '/dashboard/dean/examination'
+      path: '/examination'
+      fullPath: '/dashboard/dean/examination'
+      preLoaderRoute: typeof DashboardDeanExaminationRouteImport
+      parentRoute: typeof DashboardDeanRoute
+    }
+<<<<<<< ours
     '/dashboard/hostel/notifications': {
       id: '/dashboard/hostel/notifications'
       path: '/notifications'
@@ -4431,6 +6173,91 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/hostel/students'
       preLoaderRoute: typeof DashboardHostelStudentsRouteImport
       parentRoute: typeof DashboardHostelRoute
+=======
+    '/dashboard/dean/ima': {
+      id: '/dashboard/dean/ima'
+      path: '/ima'
+      fullPath: '/dashboard/dean/ima'
+      preLoaderRoute: typeof DashboardDeanImaRouteImport
+      parentRoute: typeof DashboardDeanRoute
+    }
+    '/dashboard/dean/iqac': {
+      id: '/dashboard/dean/iqac'
+      path: '/iqac'
+      fullPath: '/dashboard/dean/iqac'
+      preLoaderRoute: typeof DashboardDeanIqacRouteImport
+      parentRoute: typeof DashboardDeanRoute
+    }
+    '/dashboard/dean/reports': {
+      id: '/dashboard/dean/reports'
+      path: '/reports'
+      fullPath: '/dashboard/dean/reports'
+      preLoaderRoute: typeof DashboardDeanReportsRouteImport
+      parentRoute: typeof DashboardDeanRoute
+    }
+    '/dashboard/dean/student': {
+      id: '/dashboard/dean/student'
+      path: '/student'
+      fullPath: '/dashboard/dean/student'
+      preLoaderRoute: typeof DashboardDeanStudentRouteImport
+      parentRoute: typeof DashboardDeanRoute
+    }
+    '/dashboard/faculty/': {
+      id: '/dashboard/faculty/'
+      path: '/'
+      fullPath: '/dashboard/faculty/'
+      preLoaderRoute: typeof DashboardFacultyIndexRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/attendance': {
+      id: '/dashboard/faculty/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/faculty/attendance'
+      preLoaderRoute: typeof DashboardFacultyAttendanceRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/attendance-warnings': {
+      id: '/dashboard/faculty/attendance-warnings'
+      path: '/attendance-warnings'
+      fullPath: '/dashboard/faculty/attendance-warnings'
+      preLoaderRoute: typeof DashboardFacultyAttendanceWarningsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/classes': {
+      id: '/dashboard/faculty/classes'
+      path: '/classes'
+      fullPath: '/dashboard/faculty/classes'
+      preLoaderRoute: typeof DashboardFacultyClassesRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/communication': {
+      id: '/dashboard/faculty/communication'
+      path: '/communication'
+      fullPath: '/dashboard/faculty/communication'
+      preLoaderRoute: typeof DashboardFacultyCommunicationRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/evaluations': {
+      id: '/dashboard/faculty/evaluations'
+      path: '/evaluations'
+      fullPath: '/dashboard/faculty/evaluations'
+      preLoaderRoute: typeof DashboardFacultyEvaluationsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/leave': {
+      id: '/dashboard/faculty/leave'
+      path: '/leave'
+      fullPath: '/dashboard/faculty/leave'
+      preLoaderRoute: typeof DashboardFacultyLeaveRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/marks': {
+      id: '/dashboard/faculty/marks'
+      path: '/marks'
+      fullPath: '/dashboard/faculty/marks'
+      preLoaderRoute: typeof DashboardFacultyMarksRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+>>>>>>> theirs
     }
     '/dashboard/hostel/visitors': {
       id: '/dashboard/hostel/visitors'
@@ -4439,6 +6266,7 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardHostelVisitorsRouteImport
       parentRoute: typeof DashboardHostelRoute
     }
+<<<<<<< ours
     '/dashboard/librarian/': {
       id: '/dashboard/librarian/'
       path: '/'
@@ -4768,12 +6596,463 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardStudentWebinarsRouteImport
       parentRoute: typeof DashboardStudentRoute
     }
+=======
+    '/dashboard/faculty/notifications': {
+      id: '/dashboard/faculty/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/faculty/notifications'
+      preLoaderRoute: typeof DashboardFacultyNotificationsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/payroll': {
+      id: '/dashboard/faculty/payroll'
+      path: '/payroll'
+      fullPath: '/dashboard/faculty/payroll'
+      preLoaderRoute: typeof DashboardFacultyPayrollRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/performance': {
+      id: '/dashboard/faculty/performance'
+      path: '/performance'
+      fullPath: '/dashboard/faculty/performance'
+      preLoaderRoute: typeof DashboardFacultyPerformanceRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/publications': {
+      id: '/dashboard/faculty/publications'
+      path: '/publications'
+      fullPath: '/dashboard/faculty/publications'
+      preLoaderRoute: typeof DashboardFacultyPublicationsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/research': {
+      id: '/dashboard/faculty/research'
+      path: '/research'
+      fullPath: '/dashboard/faculty/research'
+      preLoaderRoute: typeof DashboardFacultyResearchRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/settings': {
+      id: '/dashboard/faculty/settings'
+      path: '/settings'
+      fullPath: '/dashboard/faculty/settings'
+      preLoaderRoute: typeof DashboardFacultySettingsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/faculty/students': {
+      id: '/dashboard/faculty/students'
+      path: '/students'
+      fullPath: '/dashboard/faculty/students'
+      preLoaderRoute: typeof DashboardFacultyStudentsRouteImport
+      parentRoute: typeof DashboardFacultyRoute
+    }
+    '/dashboard/hostel/': {
+      id: '/dashboard/hostel/'
+      path: '/'
+      fullPath: '/dashboard/hostel/'
+      preLoaderRoute: typeof DashboardHostelIndexRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/attendance': {
+      id: '/dashboard/hostel/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/hostel/attendance'
+      preLoaderRoute: typeof DashboardHostelAttendanceRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/complaints': {
+      id: '/dashboard/hostel/complaints'
+      path: '/complaints'
+      fullPath: '/dashboard/hostel/complaints'
+      preLoaderRoute: typeof DashboardHostelComplaintsRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/fees': {
+      id: '/dashboard/hostel/fees'
+      path: '/fees'
+      fullPath: '/dashboard/hostel/fees'
+      preLoaderRoute: typeof DashboardHostelFeesRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/mess': {
+      id: '/dashboard/hostel/mess'
+      path: '/mess'
+      fullPath: '/dashboard/hostel/mess'
+      preLoaderRoute: typeof DashboardHostelMessRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/notifications': {
+      id: '/dashboard/hostel/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/hostel/notifications'
+      preLoaderRoute: typeof DashboardHostelNotificationsRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/reports': {
+      id: '/dashboard/hostel/reports'
+      path: '/reports'
+      fullPath: '/dashboard/hostel/reports'
+      preLoaderRoute: typeof DashboardHostelReportsRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/rooms': {
+      id: '/dashboard/hostel/rooms'
+      path: '/rooms'
+      fullPath: '/dashboard/hostel/rooms'
+      preLoaderRoute: typeof DashboardHostelRoomsRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/settings': {
+      id: '/dashboard/hostel/settings'
+      path: '/settings'
+      fullPath: '/dashboard/hostel/settings'
+      preLoaderRoute: typeof DashboardHostelSettingsRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/students': {
+      id: '/dashboard/hostel/students'
+      path: '/students'
+      fullPath: '/dashboard/hostel/students'
+      preLoaderRoute: typeof DashboardHostelStudentsRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/hostel/visitors': {
+      id: '/dashboard/hostel/visitors'
+      path: '/visitors'
+      fullPath: '/dashboard/hostel/visitors'
+      preLoaderRoute: typeof DashboardHostelVisitorsRouteImport
+      parentRoute: typeof DashboardHostelRoute
+    }
+    '/dashboard/librarian/': {
+      id: '/dashboard/librarian/'
+      path: '/'
+      fullPath: '/dashboard/librarian/'
+      preLoaderRoute: typeof DashboardLibrarianIndexRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/books': {
+      id: '/dashboard/librarian/books'
+      path: '/books'
+      fullPath: '/dashboard/librarian/books'
+      preLoaderRoute: typeof DashboardLibrarianBooksRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/digital': {
+      id: '/dashboard/librarian/digital'
+      path: '/digital'
+      fullPath: '/dashboard/librarian/digital'
+      preLoaderRoute: typeof DashboardLibrarianDigitalRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/fines': {
+      id: '/dashboard/librarian/fines'
+      path: '/fines'
+      fullPath: '/dashboard/librarian/fines'
+      preLoaderRoute: typeof DashboardLibrarianFinesRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/id-cards': {
+      id: '/dashboard/librarian/id-cards'
+      path: '/id-cards'
+      fullPath: '/dashboard/librarian/id-cards'
+      preLoaderRoute: typeof DashboardLibrarianIdCardsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/issue': {
+      id: '/dashboard/librarian/issue'
+      path: '/issue'
+      fullPath: '/dashboard/librarian/issue'
+      preLoaderRoute: typeof DashboardLibrarianIssueRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/members': {
+      id: '/dashboard/librarian/members'
+      path: '/members'
+      fullPath: '/dashboard/librarian/members'
+      preLoaderRoute: typeof DashboardLibrarianMembersRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/notifications': {
+      id: '/dashboard/librarian/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/librarian/notifications'
+      preLoaderRoute: typeof DashboardLibrarianNotificationsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/reports': {
+      id: '/dashboard/librarian/reports'
+      path: '/reports'
+      fullPath: '/dashboard/librarian/reports'
+      preLoaderRoute: typeof DashboardLibrarianReportsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/return': {
+      id: '/dashboard/librarian/return'
+      path: '/return'
+      fullPath: '/dashboard/librarian/return'
+      preLoaderRoute: typeof DashboardLibrarianReturnRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/librarian/settings': {
+      id: '/dashboard/librarian/settings'
+      path: '/settings'
+      fullPath: '/dashboard/librarian/settings'
+      preLoaderRoute: typeof DashboardLibrarianSettingsRouteImport
+      parentRoute: typeof DashboardLibrarianRoute
+    }
+    '/dashboard/parent/': {
+      id: '/dashboard/parent/'
+      path: '/'
+      fullPath: '/dashboard/parent/'
+      preLoaderRoute: typeof DashboardParentIndexRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/parent/attendance': {
+      id: '/dashboard/parent/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/parent/attendance'
+      preLoaderRoute: typeof DashboardParentAttendanceRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/parent/communication': {
+      id: '/dashboard/parent/communication'
+      path: '/communication'
+      fullPath: '/dashboard/parent/communication'
+      preLoaderRoute: typeof DashboardParentCommunicationRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/parent/fees': {
+      id: '/dashboard/parent/fees'
+      path: '/fees'
+      fullPath: '/dashboard/parent/fees'
+      preLoaderRoute: typeof DashboardParentFeesRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/parent/leave': {
+      id: '/dashboard/parent/leave'
+      path: '/leave'
+      fullPath: '/dashboard/parent/leave'
+      preLoaderRoute: typeof DashboardParentLeaveRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/parent/marks': {
+      id: '/dashboard/parent/marks'
+      path: '/marks'
+      fullPath: '/dashboard/parent/marks'
+      preLoaderRoute: typeof DashboardParentMarksRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/parent/notifications': {
+      id: '/dashboard/parent/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/parent/notifications'
+      preLoaderRoute: typeof DashboardParentNotificationsRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/parent/reports': {
+      id: '/dashboard/parent/reports'
+      path: '/reports'
+      fullPath: '/dashboard/parent/reports'
+      preLoaderRoute: typeof DashboardParentReportsRouteImport
+      parentRoute: typeof DashboardParentRoute
+    }
+    '/dashboard/placement/': {
+      id: '/dashboard/placement/'
+      path: '/'
+      fullPath: '/dashboard/placement/'
+      preLoaderRoute: typeof DashboardPlacementIndexRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/applications': {
+      id: '/dashboard/placement/applications'
+      path: '/applications'
+      fullPath: '/dashboard/placement/applications'
+      preLoaderRoute: typeof DashboardPlacementApplicationsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/companies': {
+      id: '/dashboard/placement/companies'
+      path: '/companies'
+      fullPath: '/dashboard/placement/companies'
+      preLoaderRoute: typeof DashboardPlacementCompaniesRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/drives': {
+      id: '/dashboard/placement/drives'
+      path: '/drives'
+      fullPath: '/dashboard/placement/drives'
+      preLoaderRoute: typeof DashboardPlacementDrivesRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/eligibility': {
+      id: '/dashboard/placement/eligibility'
+      path: '/eligibility'
+      fullPath: '/dashboard/placement/eligibility'
+      preLoaderRoute: typeof DashboardPlacementEligibilityRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/interviews': {
+      id: '/dashboard/placement/interviews'
+      path: '/interviews'
+      fullPath: '/dashboard/placement/interviews'
+      preLoaderRoute: typeof DashboardPlacementInterviewsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/reports': {
+      id: '/dashboard/placement/reports'
+      path: '/reports'
+      fullPath: '/dashboard/placement/reports'
+      preLoaderRoute: typeof DashboardPlacementReportsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/student/': {
+      id: '/dashboard/student/'
+      path: '/'
+      fullPath: '/dashboard/student/'
+      preLoaderRoute: typeof DashboardStudentIndexRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/assignments': {
+      id: '/dashboard/student/assignments'
+      path: '/assignments'
+      fullPath: '/dashboard/student/assignments'
+      preLoaderRoute: typeof DashboardStudentAssignmentsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/attendance': {
+      id: '/dashboard/student/attendance'
+      path: '/attendance'
+      fullPath: '/dashboard/student/attendance'
+      preLoaderRoute: typeof DashboardStudentAttendanceRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/complaints': {
+      id: '/dashboard/student/complaints'
+      path: '/complaints'
+      fullPath: '/dashboard/student/complaints'
+      preLoaderRoute: typeof DashboardStudentComplaintsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/course-registration': {
+      id: '/dashboard/student/course-registration'
+      path: '/course-registration'
+      fullPath: '/dashboard/student/course-registration'
+      preLoaderRoute: typeof DashboardStudentCourseRegistrationRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/events': {
+      id: '/dashboard/student/events'
+      path: '/events'
+      fullPath: '/dashboard/student/events'
+      preLoaderRoute: typeof DashboardStudentEventsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/fees': {
+      id: '/dashboard/student/fees'
+      path: '/fees'
+      fullPath: '/dashboard/student/fees'
+      preLoaderRoute: typeof DashboardStudentFeesRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/hall-ticket': {
+      id: '/dashboard/student/hall-ticket'
+      path: '/hall-ticket'
+      fullPath: '/dashboard/student/hall-ticket'
+      preLoaderRoute: typeof DashboardStudentHallTicketRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/id-card': {
+      id: '/dashboard/student/id-card'
+      path: '/id-card'
+      fullPath: '/dashboard/student/id-card'
+      preLoaderRoute: typeof DashboardStudentIdCardRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/leave': {
+      id: '/dashboard/student/leave'
+      path: '/leave'
+      fullPath: '/dashboard/student/leave'
+      preLoaderRoute: typeof DashboardStudentLeaveRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/lms': {
+      id: '/dashboard/student/lms'
+      path: '/lms'
+      fullPath: '/dashboard/student/lms'
+      preLoaderRoute: typeof DashboardStudentLmsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/materials': {
+      id: '/dashboard/student/materials'
+      path: '/materials'
+      fullPath: '/dashboard/student/materials'
+      preLoaderRoute: typeof DashboardStudentMaterialsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/notices': {
+      id: '/dashboard/student/notices'
+      path: '/notices'
+      fullPath: '/dashboard/student/notices'
+      preLoaderRoute: typeof DashboardStudentNoticesRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/placement': {
+      id: '/dashboard/student/placement'
+      path: '/placement'
+      fullPath: '/dashboard/student/placement'
+      preLoaderRoute: typeof DashboardStudentPlacementRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/profile': {
+      id: '/dashboard/student/profile'
+      path: '/profile'
+      fullPath: '/dashboard/student/profile'
+      preLoaderRoute: typeof DashboardStudentProfileRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/results': {
+      id: '/dashboard/student/results'
+      path: '/results'
+      fullPath: '/dashboard/student/results'
+      preLoaderRoute: typeof DashboardStudentResultsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/services': {
+      id: '/dashboard/student/services'
+      path: '/services'
+      fullPath: '/dashboard/student/services'
+      preLoaderRoute: typeof DashboardStudentServicesRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/timetable': {
+      id: '/dashboard/student/timetable'
+      path: '/timetable'
+      fullPath: '/dashboard/student/timetable'
+      preLoaderRoute: typeof DashboardStudentTimetableRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/updates': {
+      id: '/dashboard/student/updates'
+      path: '/updates'
+      fullPath: '/dashboard/student/updates'
+      preLoaderRoute: typeof DashboardStudentUpdatesRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/webinars': {
+      id: '/dashboard/student/webinars'
+      path: '/webinars'
+      fullPath: '/dashboard/student/webinars'
+      preLoaderRoute: typeof DashboardStudentWebinarsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+>>>>>>> theirs
     '/dashboard/students/': {
       id: '/dashboard/students/'
       path: '/'
       fullPath: '/dashboard/students/'
       preLoaderRoute: typeof DashboardStudentsIndexRouteImport
       parentRoute: typeof DashboardStudentsRoute
+<<<<<<< ours
     }
     '/dashboard/students/$studentId': {
       id: '/dashboard/students/$studentId'
@@ -4789,6 +7068,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSuperAdminIndexRouteImport
       parentRoute: typeof DashboardSuperAdminRoute
     }
+=======
+    }
+    '/dashboard/students/$studentId': {
+      id: '/dashboard/students/$studentId'
+      path: '/$studentId'
+      fullPath: '/dashboard/students/$studentId'
+      preLoaderRoute: typeof DashboardStudentsStudentIdRouteImport
+      parentRoute: typeof DashboardStudentsRoute
+    }
+    '/dashboard/super-admin/': {
+      id: '/dashboard/super-admin/'
+      path: '/'
+      fullPath: '/dashboard/super-admin/'
+      preLoaderRoute: typeof DashboardSuperAdminIndexRouteImport
+      parentRoute: typeof DashboardSuperAdminRoute
+    }
+>>>>>>> theirs
     '/dashboard/super-admin/admins': {
       id: '/dashboard/super-admin/admins'
       path: '/admins'
@@ -5120,6 +7416,7 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/admin/faculty/': {
       id: '/dashboard/admin/faculty/'
+<<<<<<< ours
       path: '/'
       fullPath: '/dashboard/admin/faculty/'
       preLoaderRoute: typeof DashboardAdminFacultyIndexRouteImport
@@ -5131,6 +7428,19 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/admin/faculty/attendance'
       preLoaderRoute: typeof DashboardAdminFacultyAttendanceRouteImport
       parentRoute: typeof DashboardAdminFacultyRoute
+=======
+      path: '/faculty'
+      fullPath: '/dashboard/admin/faculty/'
+      preLoaderRoute: typeof DashboardAdminFacultyIndexRouteImport
+      parentRoute: typeof DashboardAdminRoute
+    }
+    '/dashboard/admin/faculty/attendance': {
+      id: '/dashboard/admin/faculty/attendance'
+      path: '/faculty/attendance'
+      fullPath: '/dashboard/admin/faculty/attendance'
+      preLoaderRoute: typeof DashboardAdminFacultyAttendanceRouteImport
+      parentRoute: typeof DashboardAdminRoute
+>>>>>>> theirs
     }
     '/dashboard/hostel/mess/': {
       id: '/dashboard/hostel/mess/'
@@ -5778,6 +8088,7 @@ interface HodRouteChildren {
   Hod403Route: typeof Hod403Route
   Hod404Route: typeof Hod404Route
   HodAcademicsRoute: typeof HodAcademicsRoute
+  HodAnnouncementsRoute: typeof HodAnnouncementsRoute
   HodApprovalsRoute: typeof HodApprovalsRoute
   HodAttendanceRoute: typeof HodAttendanceRoute
   HodAuditRoute: typeof HodAuditRoute
@@ -5803,6 +8114,7 @@ const HodRouteChildren: HodRouteChildren = {
   Hod403Route: Hod403Route,
   Hod404Route: Hod404Route,
   HodAcademicsRoute: HodAcademicsRoute,
+  HodAnnouncementsRoute: HodAnnouncementsRoute,
   HodApprovalsRoute: HodApprovalsRoute,
   HodAttendanceRoute: HodAttendanceRoute,
   HodAuditRoute: HodAuditRoute,
