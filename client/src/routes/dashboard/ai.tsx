@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router';
 import { AiDashboard } from '@/pages/ai/AiDashboard';
 
-export function AiLayout() {
+function AiLayout() {
   const path = useRouterState({ select: (r) => r.location.pathname });
   if (path === '/dashboard/ai' || path === '/dashboard/ai/') {
     return <AiDashboard />;
