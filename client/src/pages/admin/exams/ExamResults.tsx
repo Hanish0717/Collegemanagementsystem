@@ -79,6 +79,9 @@ export function ExamResults() {
     passPercentage: resultsList.length > 0 ? Math.round((resultsList.filter((r: any) => r.status === 'Pass' || r.grade !== 'F').length / resultsList.length) * 100) : 0
   };
 
+  const selectedExam = examsList.find((e: any) => e.id === selectedExamId);
+  const isAlreadyPublished = selectedExam?.status === 'Published';
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -205,11 +208,19 @@ export function ExamResults() {
 
           <button
             onClick={() => publishMutation.mutate()}
-            disabled={publishMutation.isPending || resultsList.length === 0}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition disabled:opacity-50 cursor-pointer"
+            disabled={publishMutation.isPending || resultsList.length === 0 || isAlreadyPublished}
+            className={`text-white text-xs font-bold py-2.5 px-5 rounded-xl flex items-center gap-2 transition ${
+              isAlreadyPublished 
+                ? 'bg-emerald-700/80 cursor-not-allowed opacity-75' 
+                : 'bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/30 cursor-pointer disabled:opacity-50'
+            }`}
           >
             <Send className="size-4" />
-            {publishMutation.isPending ? 'Publishing...' : 'Publish Results & Notify Students'}
+            {publishMutation.isPending 
+              ? 'Publishing...' 
+              : isAlreadyPublished 
+                ? '✓ Published' 
+                : 'Publish Results & Notify Students'}
           </button>
         </div>
 
@@ -219,21 +230,18 @@ export function ExamResults() {
               <tr>
                 <th className="px-4 py-3">Roll No.</th>
                 <th className="px-4 py-3">Student Name</th>
-                <th className="px-4 py-3 text-center">Internal (Max 30)</th>
-                <th className="px-4 py-3 text-center">External (Max 70)</th>
-                <th className="px-4 py-3 text-center">Total (Max 100)</th>
-                <th className="px-4 py-3 text-center">Grade Letter</th>
+                <th className="px-4 py-3 text-center">SGPA Grade</th>
                 <th className="px-4 py-3 text-center">Result Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
               {isResultsLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-slate-400">Loading consolidated results...</td>
+                  <td colSpan={4} className="text-center py-8 text-slate-400">Loading consolidated results...</td>
                 </tr>
               ) : resultsList.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-slate-400">
+                  <td colSpan={4} className="text-center py-8 text-slate-400">
                     No consolidated results generated yet. Click <strong>"Consolidate & Auto-Calculate"</strong> above.
                   </td>
                 </tr>
@@ -244,19 +252,13 @@ export function ExamResults() {
                     <tr key={r.student_id || r.id} className="hover:bg-slate-50/80 transition">
                       <td className="px-4 py-3 font-mono font-bold text-indigo-700">{r.roll_number || r.student?.roll_number}</td>
                       <td className="px-4 py-3 font-semibold text-slate-900">{r.student_name || r.student?.full_name}</td>
-                      <td className="px-4 py-3 text-center font-bold text-slate-700">{r.internal_marks ?? 0} / 30</td>
-                      <td className="px-4 py-3 text-center font-bold text-slate-700">{r.external_marks ?? 0} / 70</td>
-                      <td className="px-4 py-3 text-center font-extrabold text-sm text-indigo-900 bg-indigo-50/50">
-                        {r.total_marks ?? r.marks ?? 0} / 100
-                      </td>
                       <td className="px-4 py-3 text-center">
-                        <span className={`text-xs font-black px-2.5 py-1 rounded-lg ${
-                          r.grade === 'O' || r.grade === 'A+' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                          r.grade === 'A' || r.grade === 'B+' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
-                          r.grade === 'B' || r.grade === 'C' ? 'bg-slate-100 text-slate-800 border border-slate-200' :
-                          'bg-rose-100 text-rose-800 border border-rose-200'
+                        <span className={`text-xs font-extrabold px-2.5 py-1 rounded-lg ${
+                          isPass
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                            : 'bg-rose-100 text-rose-800 border border-rose-200'
                         }`}>
-                          {r.grade || 'F'}
+                          {isPass ? `${r.grade || '0.00'} SGPA` : 'Fail'}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-center">
