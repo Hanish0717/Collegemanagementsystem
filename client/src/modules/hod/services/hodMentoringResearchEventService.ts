@@ -1,5 +1,6 @@
 import { hodApi } from '../api/hodApi';
 import { DepartmentCode } from '../types';
+import { hodStore } from './hodStore';
 
 export interface MentoringItem {
   id: string;
@@ -48,11 +49,27 @@ export async function fetchDepartmentMentoring(deptCode: DepartmentCode = 'AIML'
       summary: any;
       mentoringList: MentoringItem[];
     }>('/api/hod/mentoring', {}, deptCode);
-    return data;
+    if (data.mentoringList && data.mentoringList.length > 0) return data;
   } catch (err) {
-    console.warn('Backend mentoring fetch fallback to isolated dataset');
-    return getFallbackMentoring(deptCode);
+    console.warn('Backend mentoring fetch using persistent store');
   }
+
+  const list = hodStore.getMentoringList(deptCode);
+  return {
+    summary: {
+      totalMentors: 12,
+      studentsAssigned: 480,
+      pendingMeetings: 8,
+      completedMeetings: 42,
+      studentsAtRisk: 5,
+      parentMeetings: 3,
+      mentoringSessions: 50,
+      counselingCases: 4,
+      avgMentorRating: 4.8,
+      openActionItems: 2,
+    },
+    mentoringList: list,
+  };
 }
 
 export async function fetchDepartmentResearch(deptCode: DepartmentCode = 'AIML') {
@@ -81,27 +98,6 @@ export async function fetchDepartmentEvents(deptCode: DepartmentCode = 'AIML') {
     console.warn('Backend events fetch fallback to isolated dataset');
     return getFallbackEvents(deptCode);
   }
-}
-
-function getFallbackMentoring(deptCode: DepartmentCode) {
-  return {
-    summary: {
-      totalMentors: 12,
-      studentsAssigned: 480,
-      pendingMeetings: 8,
-      completedMeetings: 42,
-      studentsAtRisk: 5,
-      parentMeetings: 3,
-      mentoringSessions: 50,
-      counselingCases: 4,
-      avgMentorRating: 4.8,
-      openActionItems: 2,
-    },
-    mentoringList: [
-      { id: 'STU-001', name: 'Aarav Sharma', rollNumber: '23091A4201', sem: 5, sec: 'A', mentor: 'Dr. Ramesh Kumar', lastMeeting: '2026-07-10', nextMeeting: '2026-08-05', riskLevel: 'Low', attendance: 94, cgpa: 9.2, status: 'Active' },
-      { id: 'STU-003', name: 'Chirag Reddy', rollNumber: '23091A4203', sem: 5, sec: 'B', mentor: 'Prof. Sneha Verma', lastMeeting: '2026-07-14', nextMeeting: '2026-07-28', riskLevel: 'Critical', attendance: 68, cgpa: 7.4, status: 'At-Risk' },
-    ],
-  };
 }
 
 function getFallbackResearch(deptCode: DepartmentCode) {

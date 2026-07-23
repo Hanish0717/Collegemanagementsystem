@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
+import { useHODDepartment } from '../hooks/useHODDepartment';
 import { fetchDepartmentResearch, ResearchPublicationItem } from '../services/hodMentoringResearchEventService';
 
-import { PageContainer } from '../components/shared/PageContainer';
-import { StatisticsCard } from '../components/shared/StatisticsCard';
-import { GlassCard } from '../components/shared/GlassCard';
-import { AdvancedTable } from '../components/shared/AdvancedTable';
-import { Column } from '../components/shared/DataTable';
-import { StatusBadge } from '../components/shared/StatusBadge';
-import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
+import {
+  PageContainer,
+  StatisticsCard,
+  GlassCard,
+  AdvancedTable,
+  Column,
+  StatusBadge,
+  ActionsMenu,
+  NotificationToast,
+  Button,
+} from '../components/shared';
 import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   FlaskConical,

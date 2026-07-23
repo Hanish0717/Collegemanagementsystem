@@ -28,6 +28,13 @@ import {
 
 export function HODDashboardPage() {
   const { departmentCode, departmentInfo, academicYear } = useHODDepartment();
+  const [, setStoreTick] = useState(0);
+
+  React.useEffect(() => {
+    const handleUpdate = () => setStoreTick((t) => t + 1);
+    window.addEventListener('hod_store_updated', handleUpdate);
+    return () => window.removeEventListener('hod_store_updated', handleUpdate);
+  }, []);
 
   // Load department-isolated metrics and datasets
   const dashboardData = getDepartmentDashboardData(departmentCode);

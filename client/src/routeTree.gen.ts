@@ -79,6 +79,7 @@ import { Route as HodIndexRouteImport } from './routes/hod/index'
 import { Route as Hod403RouteImport } from './routes/hod/403'
 import { Route as Hod404RouteImport } from './routes/hod/404'
 import { Route as HodAcademicsRouteImport } from './routes/hod/academics'
+import { Route as HodAnnouncementsRouteImport } from './routes/hod/announcements'
 import { Route as HodApprovalsRouteImport } from './routes/hod/approvals'
 import { Route as HodAttendanceRouteImport } from './routes/hod/attendance'
 import { Route as HodAuditRouteImport } from './routes/hod/audit'
@@ -622,6 +623,11 @@ const Hod404Route = Hod404RouteImport.update({
 const HodAcademicsRoute = HodAcademicsRouteImport.update({
   id: '/academics',
   path: '/academics',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodAnnouncementsRoute = HodAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
   getParentRoute: () => HodRoute,
 } as any)
 const HodApprovalsRoute = HodApprovalsRouteImport.update({
@@ -1762,6 +1768,7 @@ export interface FileRoutesByFullPath {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2014,6 +2021,7 @@ export interface FileRoutesByTo {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2278,6 +2286,7 @@ export interface FileRoutesById {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2546,6 +2555,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -2798,6 +2808,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -3061,6 +3072,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -3780,6 +3792,13 @@ declare module '@tanstack/react-router' {
       path: '/academics'
       fullPath: '/hod/academics'
       preLoaderRoute: typeof HodAcademicsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/announcements': {
+      id: '/hod/announcements'
+      path: '/announcements'
+      fullPath: '/hod/announcements'
+      preLoaderRoute: typeof HodAnnouncementsRouteImport
       parentRoute: typeof HodRoute
     }
     '/hod/approvals': {
@@ -5756,6 +5775,7 @@ interface HodRouteChildren {
   Hod403Route: typeof Hod403Route
   Hod404Route: typeof Hod404Route
   HodAcademicsRoute: typeof HodAcademicsRoute
+  HodAnnouncementsRoute: typeof HodAnnouncementsRoute
   HodApprovalsRoute: typeof HodApprovalsRoute
   HodAttendanceRoute: typeof HodAttendanceRoute
   HodAuditRoute: typeof HodAuditRoute
@@ -5781,6 +5801,7 @@ const HodRouteChildren: HodRouteChildren = {
   Hod403Route: Hod403Route,
   Hod404Route: Hod404Route,
   HodAcademicsRoute: HodAcademicsRoute,
+  HodAnnouncementsRoute: HodAnnouncementsRoute,
   HodApprovalsRoute: HodApprovalsRoute,
   HodAttendanceRoute: HodAttendanceRoute,
   HodAuditRoute: HodAuditRoute,
