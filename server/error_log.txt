@@ -1272,3 +1272,71 @@ Body: {}
 [2026-07-23T10:05:38.707Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
 [2026-07-23T10:05:44.281Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
 [2026-07-23T10:05:44.303Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T10:41:30.203Z] GET /api/library/id-cards/payment-history - Status: 500 - Error: Cannot read properties of null (reading 'forEach')
+Stack: TypeError: Cannot read properties of null (reading 'forEach')
+    at getPaymentHistory (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/idCardController.js:979:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-07-23T10:41:30.211Z] GET /api/library/id-cards/stats - Status: 500 - Error: Cannot read properties of null (reading 'filter')
+Stack: TypeError: Cannot read properties of null (reading 'filter')
+    at getIdCardStats (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/idCardController.js:47:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-07-23T10:41:30.219Z] GET /api/library/id-cards/history - Status: 500 - Error: Cannot read properties of null (reading 'forEach')
+Stack: TypeError: Cannot read properties of null (reading 'forEach')
+    at getHistory (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/idCardController.js:908:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+Body: {}
+
+[2026-07-23T10:41:43.002Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:1041:23)
+    at async getEBooks (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/libraryController.js:974:37)
+Body: {}
+
+[2026-07-23T10:42:48.496Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:1041:23)
+    at async getEBooks (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/libraryController.js:974:37)
+Body: {}
+
+[2026-07-23T10:42:53.311Z] GET /api/library/ebooks - Status: 500 - Error: relation "ebooks" does not exist
+Stack: error: relation "ebooks" does not exist
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:1041:23)
+    at async getEBooks (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/libraryController.js:974:37)
+Body: {}
+
+[2026-07-23T10:44:57.165Z] GET /api/exams/evaluations/faculty - Status: 500 - Error: relation "exam_evaluations" does not exist
+Stack: error: relation "exam_evaluations" does not exist
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:1041:23)
+    at async getFacultyEvaluations (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/examController.js:1847:29)
+Body: {}
+
+[2026-07-23T10:45:03.076Z] GET /api/exams/evaluations/faculty - Status: 500 - Error: relation "exam_evaluations" does not exist
+Stack: error: relation "exam_evaluations" does not exist
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:1041:23)
+    at async getFacultyEvaluations (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/examController.js:1847:29)
+Body: {}
+
+[2026-07-23T10:45:26.642Z] GET /api/exams/evaluations/faculty - Status: 500 - Error: relation "exam_evaluations" does not exist
+Stack: error: relation "exam_evaluations" does not exist
+    at F:\Projects\CollegeManagementUpdated\Collegemanagementsystem\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async PostgresQueryBuilder.execute (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:1041:23)
+    at async getFacultyEvaluations (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/controllers/examController.js:1847:29)
+Body: {}
+
+[2026-07-23T10:46:08.177Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T10:46:08.197Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
