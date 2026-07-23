@@ -28,12 +28,18 @@ router.use(requireRole('faculty', 'super-admin'));
 // @access  Private (faculty)
 router.get('/students', async (req, res, next) => {
   try {
-    // Find Faculty profile for logged-in user
-    const { data: facultyMember, error: facErr } = await supabase
-      .from('faculty')
-      .select('*')
-      .eq('user_id', req.user.id || req.user._id)
-      .maybeSingle();
+    // Find Faculty profile for logged-in user safely (supporting both UUID user_id and string employee_id)
+    const userId = (req.user.id || req.user._id || '').toString();
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+
+    let query = supabase.from('faculty').select('*');
+    if (isUuid) {
+      query = query.eq('user_id', userId);
+    } else {
+      query = query.or(`employee_id.eq.${userId},email.eq.${req.user.email || userId}`);
+    }
+
+    const { data: facultyMember, error: facErr } = await query.maybeSingle();
 
     if (facErr || !facultyMember) {
       const error = new Error('Faculty profile not found for this user account');
