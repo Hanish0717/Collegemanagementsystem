@@ -177,7 +177,7 @@ export function ExamTimetable() {
 
   const handleRemoveHall = (slotIndex: number, hallIndex: number) => {
     const updated = [...slotsList];
-    updated[slotIndex].halls = updated[slotIndex].halls.filter((_, idx: number) => idx !== hallIndex);
+    updated[slotIndex].halls = updated[slotIndex].halls.filter((_: any, idx: number) => idx !== hallIndex);
     if (updated[slotIndex].halls.length === 0) {
       updated[slotIndex].halls = [""];
     }

@@ -1,5 +1,6 @@
 import { hodApi } from '../api/hodApi';
 import { DepartmentCode } from '../types';
+import { hodStore } from './hodStore';
 
 export interface FeeStatus {
   mid1Paid: boolean;
@@ -94,7 +95,7 @@ export async function fetchDepartmentStudentById(studentId: string, deptCode: De
     console.warn('Backend student fetch by id using persistent store');
   }
   const students = hodStore.getStudents(deptCode);
-  return students.find((s) => s.id === studentId) || students[0];
+  return students.find((s: DepartmentStudent) => s.id === studentId) || students[0];
 }
 
 function getFallbackStudents(deptCode: DepartmentCode): DepartmentStudent[] {

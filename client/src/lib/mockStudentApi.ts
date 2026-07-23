@@ -617,15 +617,16 @@ export function processMockStudentRequest(url: string, method: string, data?: an
       dynamicSchedule = baseTicket.examSchedule || [];
     }
 
+    const pAny = profile as any;
     const mockTicket = {
       ...baseTicket,
-      studentName: profile.fullName || profile.full_name || baseTicket.studentName,
-      rollNumber: profile.rollNumber || profile.roll_number || baseTicket.rollNumber,
+      studentName: profile.fullName || pAny.full_name || baseTicket.studentName,
+      rollNumber: profile.rollNumber || pAny.roll_number || baseTicket.rollNumber,
       department: profile.department || baseTicket.department,
       semester: String(profile.semester || baseTicket.semester),
-      hallTicketNumber: baseTicket.hallTicketNumber?.includes(profile.rollNumber || profile.roll_number || 'never')
+      hallTicketNumber: baseTicket.hallTicketNumber?.includes(profile.rollNumber || pAny.roll_number || 'never')
         ? baseTicket.hallTicketNumber 
-        : `HT-${profile.rollNumber || profile.roll_number || '2023CSE042'}-S${profile.semester || 5}`,
+        : `HT-${profile.rollNumber || pAny.roll_number || '2023CSE042'}-S${profile.semester || 5}`,
       examSchedule: dynamicSchedule
     };
     return { success: true, data: mockTicket };
