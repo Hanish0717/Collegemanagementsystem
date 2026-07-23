@@ -762,22 +762,6 @@ export function DashboardLayout() {
         )}
       </div>
 
-      {(!collapsed || isMobile) && (
-        <div className="px-3 pt-3">
-          <div
-            className={`flex items-center gap-2 rounded-xl p-2.5 bg-gradient-to-br ${role.gradient} text-white shadow-soft`}
-          >
-            <div className="size-8 rounded-lg bg-white/15 grid place-items-center backdrop-blur">
-              <RoleIcon className="size-4" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-xs font-semibold">{role.name}</div>
-              <div className="text-[10px] opacity-80">{role.short}</div>
-            </div>
-          </div>
-        </div>
-      )}
-
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
         {role.nav.map((item) => {
           const active = item.exact
