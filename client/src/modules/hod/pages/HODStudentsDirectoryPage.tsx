@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useHODDepartment } from '../hooks/useHODDepartment';
 import { fetchDepartmentStudents, DepartmentStudent } from '../services/hodStudentService';
+import { hodStore } from '../services/hodStore';
 import { useNavigate } from '@tanstack/react-router';
 
 import {

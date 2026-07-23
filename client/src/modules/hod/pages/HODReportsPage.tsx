@@ -14,7 +14,7 @@ import {
   Building2, Calendar, Heart, BookOpen, Download, Printer, FileSpreadsheet, Mail, BarChart2, CheckCircle2, ShieldCheck, FileText, Send,
 } from 'lucide-react';
 
-import { api } from '../../../services/api';
+import api from '@/lib/api';
 
 const REPORT_ICONS: Record<string, React.ElementType> = {
   Users, Briefcase, CalendarCheck, Award, FlaskConical, TrendingUp,

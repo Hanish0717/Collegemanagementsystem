@@ -2,7 +2,7 @@ import { DepartmentStudent } from './hodStudentService';
 import { DepartmentSubject, LessonPlanItem } from './hodAcademicService';
 import { DepartmentFaculty } from './hodFacultyService';
 import { MentoringItem, ResearchPublicationItem, EventItem } from './hodMentoringResearchEventService';
-import { ApprovalItem } from './hodApprovalsService';
+import { ApprovalItem } from './hodFinalService';
 
 const STORAGE_KEYS = {
   STUDENTS: 'cms_hod_dynamic_students',
