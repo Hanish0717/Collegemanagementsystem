@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Breadcrumb, BreadcrumbItem } from './Breadcrumb';
-import { useHODDepartment } from '../../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { Sparkles } from 'lucide-react';
 
 interface DepartmentHeaderProps {

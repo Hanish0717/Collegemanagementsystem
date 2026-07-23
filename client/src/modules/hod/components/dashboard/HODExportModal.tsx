@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Download, FileText, Printer, FileSpreadsheet } from 'lucide-react';
-import { useHODDepartment } from '../../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { NotificationToast } from '../shared/NotificationToast';
 import { exportToCSV, exportToExcel } from '../../utils/exportUtils';
 import { getDepartmentDashboardData } from '../../services/hodDashboardService';
@@ -23,7 +23,7 @@ export function HODExportModal({ isOpen, onClose }: HODExportModalProps) {
       Metric: card.title,
       Value: card.value,
       Change: card.change,
-      Status: card.badgeText || card.trend,
+      Status: (card as any).badgeText || (card as any).trend || '',
       Department: departmentInfo.name,
       Generated_At: new Date().toLocaleString()
     }));

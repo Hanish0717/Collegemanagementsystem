@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HOD_NAV_ITEMS } from '../../constants/hodNavigation';
-import { useHODDepartment } from '../../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { Building2, ChevronLeft, ChevronRight, GraduationCap, Sparkles, ShieldCheck } from 'lucide-react';
 
 interface HODSidebarProps {

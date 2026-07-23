@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHODDepartment } from '../hooks/useHODDepartment';
 import { fetchDepartmentMentoring, MentoringItem } from '../services/hodMentoringResearchEventService';
+import { hodStore } from '../services/hodStore';
 
 import { PageContainer } from '../components/shared/PageContainer';
 import { StatisticsCard } from '../components/shared/StatisticsCard';
@@ -12,6 +13,7 @@ import { ActionsMenu } from '../components/shared/ActionsMenu';
 import { Button } from '../components/shared/Button';
 import { Modal } from '../components/shared/Modal';
 import { NotificationToast } from '../components/shared/NotificationToast';
+import { exportToCSV } from '../utils/exportUtils';
 
 import {
   Heart,
@@ -33,6 +35,8 @@ export function HODMentoringPage() {
 
   const [data, setData] = useState<any>(null);
   const [assignModal, setAssignModal] = useState(false);
+  const [selectedCohort, setSelectedCohort] = useState('Sem 5 Section A');
+  const [selectedMentor, setSelectedMentor] = useState('Prof. Vikram Rathore (Asst. Prof)');
 
   useEffect(() => {
     async function loadData() {
@@ -40,6 +44,10 @@ export function HODMentoringPage() {
       setData(res);
     }
     loadData();
+
+    const handleStoreChange = () => loadData();
+    window.addEventListener('hod_store_updated', handleStoreChange);
+    return () => window.removeEventListener('hod_store_updated', handleStoreChange);
   }, [departmentCode]);
 
   const summary = data?.summary || {};
@@ -137,6 +145,50 @@ export function HODMentoringPage() {
         })}
       </div>
 
+      {/* Tab 1: Mentoring Dashboard */}
+      {activeTab === 'dashboard' && (
+        <div className="space-y-6">
+          {/* Live Cohort Mentor Allocations Overview */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-semibold">
+            {[
+              { cohort: 'Sem 5 Section A', sem: 5, sec: 'A', defaultMentor: 'Prof. Vikram Rathore' },
+              { cohort: 'Sem 5 Section B', sem: 5, sec: 'B', defaultMentor: 'Prof. Sneha Verma' },
+              { cohort: 'Sem 7 Section A', sem: 7, sec: 'A', defaultMentor: 'Dr. Ananya Roy' },
+              { cohort: 'Sem 3 Section A', sem: 3, sec: 'A', defaultMentor: 'Dr. Ramesh Kumar' },
+            ].map(({ cohort, sem, sec, defaultMentor }) => {
+              const matched = list.find((s: MentoringItem) => s.sem === sem && s.sec.toUpperCase() === sec);
+              const mentorName = matched?.mentor || defaultMentor;
+              return (
+                <div key={cohort} className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">{cohort}</span>
+                    <span className="text-[10px] font-bold text-slate-400">Assigned Cohort</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Faculty Mentor</span>
+                    <p className="font-extrabold text-sm text-slate-900 dark:text-white mt-0.5">{mentorName}</p>
+                  </div>
+                  <div className="pt-1 flex items-center justify-between text-[11px] text-slate-500 font-bold border-t border-slate-100 dark:border-slate-800">
+                    <span>Mentees: 60 Students</span>
+                    <span className="text-emerald-600 font-black">Active Session</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Department Student Mentoring Roster */}
+          <AdvancedTable
+            title={`${departmentInfo.shortName} Live Mentoring Roster`}
+            subtitle={`Department mentoring allocations strictly isolated to ${departmentInfo.name}`}
+            columns={columns}
+            data={list}
+            keyExtractor={(item) => item.id}
+            searchPlaceholder="Search mentees by name, roll number, or mentor..."
+          />
+        </div>
+      )}
+
       {/* Tab 2: Student Mentoring Roster */}
       {activeTab === 'roster' && (
         <AdvancedTable
@@ -149,12 +201,32 @@ export function HODMentoringPage() {
         />
       )}
 
+      {/* Tab 3: Counseling Records */}
+      {activeTab === 'counseling' && (
+        <GlassCard className="p-5 space-y-4">
+          <h4 className="font-extrabold text-slate-900 dark:text-white text-sm border-b pb-2">Department Counseling Session Log</h4>
+          <div className="space-y-3 text-xs">
+            {list.map((item: MentoringItem) => (
+              <div key={item.id} className="p-4 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-between">
+                <div>
+                  <h5 className="font-black text-slate-900 dark:text-white">{item.name} ({item.rollNumber}) — Sem {item.sem} ({item.sec})</h5>
+                  <p className="text-slate-500 font-medium mt-1">Counselor: {item.mentor} • Last Session: {item.lastMeeting} • Next Scheduled: {item.nextMeeting}</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => NotificationToast.info('Counseling Log', `Opened session notes for ${item.name}`)}>
+                  View Session Log
+                </Button>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      )}
+
       {/* Tab 4: At Risk Analysis */}
       {activeTab === 'riskanalysis' && (
         <GlassCard className="p-5 space-y-4">
           <h4 className="font-extrabold text-slate-900 dark:text-white text-sm border-b pb-2">Student Risk Analysis & Early Warning Workbench</h4>
           <div className="space-y-3 text-xs">
-            {list.filter((s: MentoringItem) => s.riskLevel === 'Critical' || s.riskLevel === 'High').map((item: MentoringItem) => (
+            {list.filter((s: MentoringItem) => s.riskLevel === 'Critical' || s.riskLevel === 'High' || s.riskLevel === 'At-Risk').map((item: MentoringItem) => (
               <div key={item.id} className="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-950/30 border border-rose-200/80 dark:border-rose-900/40 flex items-center justify-between">
                 <div>
                   <h5 className="font-black text-slate-900 dark:text-white">{item.name} ({item.rollNumber})</h5>
@@ -169,14 +241,6 @@ export function HODMentoringPage() {
         </GlassCard>
       )}
 
-      {/* Fallback */}
-      {!['roster', 'riskanalysis'].includes(activeTab) && (
-        <GlassCard className="p-8 text-center text-xs text-slate-500 font-medium">
-          <p className="font-extrabold text-slate-900 dark:text-white text-sm capitalize">{activeTab} Dataset</p>
-          <p className="mt-1">Official {activeTab} records loaded from mentoring cell database for {departmentInfo.name}.</p>
-        </GlassCard>
-      )}
-
       {/* Assign Mentor Modal */}
       <Modal
         isOpen={assignModal}
@@ -186,23 +250,58 @@ export function HODMentoringPage() {
         variant="assign"
         confirmLabel="Assign Mentor"
         onConfirm={() => {
+          const mentorNameClean = selectedMentor.replace(/\s*\([^)]*\)/, '').trim();
+          const semMatch = selectedCohort.match(/Sem\s*(\d+)/i);
+          const secMatch = selectedCohort.match(/Sec(?:tion)?\s*([A-Z])/i);
+          const targetSem = semMatch ? parseInt(semMatch[1], 10) : 5;
+          const targetSec = secMatch ? secMatch[1].toUpperCase() : 'A';
+
+          // 1. Update React local state immediately
+          setData((prev: any) => {
+            const currentList = prev?.mentoringList || [];
+            const updatedList = currentList.map((item: MentoringItem) => {
+              if (item.sem === targetSem && item.sec.toUpperCase() === targetSec) {
+                return { ...item, mentor: mentorNameClean };
+              }
+              return item;
+            });
+            return {
+              ...prev,
+              mentoringList: updatedList,
+            };
+          });
+
+          // 2. Persist in hodStore & dispatch event to sync all pages
+          hodStore.setCohortMentor(selectedCohort, mentorNameClean);
           setAssignModal(false);
-          NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to cohort');
+          NotificationToast.success('Mentor Assigned Successfully', `Assigned ${mentorNameClean} as Mentor for ${selectedCohort}`);
         }}
       >
         <div className="space-y-3">
           <div>
-            <label className="block font-bold mb-1">Select Cohort</label>
-            <select className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-xs">
-              <option>Sem 5 Section A</option>
-              <option>Sem 5 Section B</option>
+            <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">Select Cohort</label>
+            <select
+              value={selectedCohort}
+              onChange={(e) => setSelectedCohort(e.target.value)}
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-xs text-slate-900 dark:text-white"
+            >
+              <option value="Sem 5 Section A">Sem 5 Section A</option>
+              <option value="Sem 5 Section B">Sem 5 Section B</option>
+              <option value="Sem 7 Section A">Sem 7 Section A</option>
+              <option value="Sem 3 Section A">Sem 3 Section A</option>
             </select>
           </div>
           <div>
-            <label className="block font-bold mb-1">Select Faculty Mentor</label>
-            <select className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-xs">
-              <option>Dr. Ramesh Kumar (Professor & Head)</option>
-              <option>Prof. Sneha Verma (Assoc. Prof)</option>
+            <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">Select Faculty Mentor</label>
+            <select
+              value={selectedMentor}
+              onChange={(e) => setSelectedMentor(e.target.value)}
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-xs text-slate-900 dark:text-white"
+            >
+              <option value="Prof. Vikram Rathore (Asst. Prof)">Prof. Vikram Rathore (Asst. Prof)</option>
+              <option value="Dr. Ramesh Kumar (Professor & Head)">Dr. Ramesh Kumar (Professor & Head)</option>
+              <option value="Prof. Sneha Verma (Assoc. Prof)">Prof. Sneha Verma (Assoc. Prof)</option>
+              <option value="Dr. Ananya Roy (Asst. Prof)">Dr. Ananya Roy (Asst. Prof)</option>
             </select>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHODDepartment } from '../hooks/useHODDepartment';
+import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
 import { getDepartmentDashboardData } from '../services/hodDashboardService';
 
 import { DepartmentHeader } from '../components/shared/DepartmentHeader';
@@ -28,6 +28,13 @@ import {
 
 export function HODDashboardPage() {
   const { departmentCode, departmentInfo, academicYear } = useHODDepartment();
+  const [, setStoreTick] = useState(0);
+
+  React.useEffect(() => {
+    const handleUpdate = () => setStoreTick((t) => t + 1);
+    window.addEventListener('hod_store_updated', handleUpdate);
+    return () => window.removeEventListener('hod_store_updated', handleUpdate);
+  }, []);
 
   // Load department-isolated metrics and datasets
   const dashboardData = getDepartmentDashboardData(departmentCode);

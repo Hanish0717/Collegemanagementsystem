@@ -93,7 +93,7 @@ export function HODDepartmentProvider({ children }: { children: ReactNode }) {
   // Resolve department dynamically from logged in HOD user profile or explicit selection
   const departmentCode: DepartmentCode = useMemo(() => {
     if (selectedDeptCode) return selectedDeptCode;
-    const userDept = user?.department || (user as any)?.dept || 'AIML';
+    const userDept = (user as any)?.department || (user as any)?.dept || 'AIML';
     const normalized = String(userDept).toUpperCase().trim();
     return DEPARTMENT_METADATA_MAP[normalized] ? normalized : 'AIML';
   }, [user, selectedDeptCode]);
@@ -159,10 +159,29 @@ export function HODDepartmentProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const DEFAULT_HOD_CONTEXT: HODDepartmentContextType = {
+  departmentCode: 'AIML',
+  departmentInfo: {
+    code: 'AIML',
+    name: 'Department of Artificial Intelligence & Machine Learning',
+    shortName: 'AIML',
+    headName: 'Dr. Head of Department',
+    headEmail: 'hod@college.com',
+    building: 'Technology Block A',
+    totalStudents: 400,
+    totalFaculty: 20,
+    totalLabs: 5,
+  },
+  academicYear: '2025-2026',
+  currentSemester: 'Sem 5',
+  setDepartmentCode: () => {},
+  setAcademicYear: () => {},
+  setSemester: () => {},
+  filterByDepartment: (data) => (Array.isArray(data) ? data : []),
+  hasPermission: () => true,
+};
+
 export function useHODDepartment(): HODDepartmentContextType {
   const context = useContext(HODDepartmentContext);
-  if (!context) {
-    throw new Error('useHODDepartment must be used within a HODDepartmentProvider');
-  }
-  return context;
+  return context || DEFAULT_HOD_CONTEXT;
 }

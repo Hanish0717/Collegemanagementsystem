@@ -1,5 +1,6 @@
 import { hodApi } from '../api/hodApi';
 import { DepartmentCode } from '../types';
+import { hodStore } from './hodStore';
 
 export interface DepartmentSubject {
   code: string;
@@ -34,11 +35,34 @@ export async function fetchDepartmentAcademics(deptCode: DepartmentCode = 'AIML'
       subjects: DepartmentSubject[];
       lessonPlans: LessonPlanItem[];
     }>('/api/hod/academics', {}, deptCode);
-    return data;
+    if (data.subjects && data.subjects.length > 0) return data;
   } catch (err) {
-    console.warn('Backend academics fetch fallback to isolated dataset');
-    return getFallbackAcademics(deptCode);
+    console.warn('Backend academics fetch using persistent store');
   }
+
+  const subjects = hodStore.getSubjects(deptCode);
+  return {
+    summary: {
+      totalSubjects: subjects.length,
+      activeSubjects: subjects.length,
+      facultyAssigned: subjects.filter((s) => s.faculty !== 'Unassigned').length,
+      coursesRunning: subjects.length,
+      pendingLessonPlans: 3,
+      courseFilesUploaded: 12,
+      labCourses: subjects.filter((s) => s.type === 'Lab').length,
+      theoryCourses: subjects.filter((s) => s.type === 'Theory').length,
+      upcomingExams: 2,
+      upcomingEvents: 4,
+      avgStudentPerformance: 88.5,
+      avgAttendance: 91.2,
+    },
+    subjects,
+    lessonPlans: [
+      { id: 'LP-101', subject: `${deptCode}501 — Deep Learning`, faculty: 'Dr. Ramesh Kumar', sem: 5, totalUnits: 5, completedUnits: 4, pendingUnits: 1, completionPct: 80, status: 'Approved' },
+      { id: 'LP-102', subject: `${deptCode}502 — NLP`, faculty: 'Prof. Sneha Verma', sem: 5, totalUnits: 5, completedUnits: 2, pendingUnits: 3, completionPct: 40, status: 'Pending' },
+      { id: 'LP-103', subject: `${deptCode}503L — Computer Vision Lab`, faculty: 'Prof. Vikram Rathore', sem: 5, totalUnits: 5, completedUnits: 3, pendingUnits: 2, completionPct: 60, status: 'Pending' },
+    ],
+  };
 }
 
 export async function approveDepartmentLessonPlan(lessonPlanId: string, decision: 'approved' | 'rejected', deptCode: DepartmentCode = 'AIML') {

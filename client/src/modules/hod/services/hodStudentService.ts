@@ -45,11 +45,11 @@ export async function fetchDepartmentStudents(deptCode: DepartmentCode = 'AIML')
       {},
       deptCode
     );
-    return data.students || [];
+    if (data.students && data.students.length > 0) return data.students;
   } catch (err) {
-    console.warn('Backend student fetch fallback to isolated dataset');
-    return getFallbackStudents(deptCode);
+    console.warn('Backend student fetch using persistent store');
   }
+  return hodStore.getStudents(deptCode);
 }
 
 export async function fetchDepartmentStudentById(studentId: string, deptCode: DepartmentCode = 'AIML') {
@@ -59,11 +59,12 @@ export async function fetchDepartmentStudentById(studentId: string, deptCode: De
       {},
       deptCode
     );
-    return data.student;
+    if (data.student) return data.student;
   } catch (err) {
-    const fallback = getFallbackStudents(deptCode);
-    return fallback.find((s) => s.id === studentId) || fallback[0];
+    console.warn('Backend student fetch by id using persistent store');
   }
+  const students = hodStore.getStudents(deptCode);
+  return students.find((s) => s.id === studentId) || students[0];
 }
 
 function getFallbackStudents(deptCode: DepartmentCode): DepartmentStudent[] {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HODDepartmentProvider } from '../../hooks/useHODDepartment';
+import { HODDepartmentProvider } from '@/modules/hod/hooks/useHODDepartment';
 import { HODSidebar } from './HODSidebar';
 import { HODHeader } from './HODHeader';
 import { HODErrorBoundary } from '../shared/HODErrorBoundary';
