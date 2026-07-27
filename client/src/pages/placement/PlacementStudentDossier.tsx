@@ -78,6 +78,14 @@ export function PlacementStudentDossier() {
     "overview" | "timeline" | "analytics" | "applications" | "interviews" | "offers" | "documents" | "ai" | "comparison" | "audit"
   >("overview");
 
+  // Fast 1000+ Student Candidate Filter States
+  const [candidateSearchQuery, setCandidateSearchQuery] = useState("");
+  const [deptFilter, setDeptFilter] = useState("ALL");
+  const [placementStatusFilter, setPlacementStatusFilter] = useState("ALL");
+  const [minCgpaFilter, setMinCgpaFilter] = useState(0);
+  const [batchFilter, setBatchFilter] = useState("ALL");
+  const [isCandidateListOpen, setIsCandidateListOpen] = useState(false);
+
   // Table Controls
   const [appSearch, setAppSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -213,6 +221,42 @@ export function PlacementStudentDossier() {
     { subject: "Communication", score: 90 },
   ];
 
+  // Scalable candidate dataset generator for fast multi-criteria searching
+  const baseCandidates = allStudents.length > 5 ? allStudents : [
+    { studentId: "CS100001", studentName: "Student Demo", department: "CSE", batch: "2026", cgpa: 8.9, careerStatus: "Placed (Super Dream)", currentPlacement: { company: "Google India", package: "38.5 LPA" } },
+    { studentId: "EC100012", studentName: "Priya Patel", department: "ECE", batch: "2026", cgpa: 8.6, careerStatus: "Placed (Dream)", currentPlacement: { company: "Qualcomm India", package: "22.0 LPA" } },
+    { studentId: "IT202604", studentName: "Rohan Sharma", department: "IT", batch: "2026", cgpa: 8.4, careerStatus: "Placed (Dream)", currentPlacement: { company: "Microsoft India", package: "28.0 LPA" } },
+    { studentId: "CS202688", studentName: "Ananya Deshmukh", department: "CSE", batch: "2026", cgpa: 9.2, careerStatus: "Placed (Super Dream)", currentPlacement: { company: "Amazon India", package: "44.0 LPA" } },
+    { studentId: "EE202619", studentName: "Karthik Verma", department: "EEE", batch: "2026", cgpa: 7.8, careerStatus: "Seeking Placement", currentPlacement: undefined },
+    { studentId: "ME202605", studentName: "Vikram Singh", department: "MECH", batch: "2026", cgpa: 7.2, careerStatus: "Seeking Placement", currentPlacement: undefined },
+    { studentId: "CS202699", studentName: "Sneha Reddy", department: "CSE", batch: "2026", cgpa: 8.1, careerStatus: "Placed (Regular)", currentPlacement: { company: "TCS Digital", package: "9.0 LPA" } },
+    { studentId: "IT202645", studentName: "Amit Kumar", department: "IT", batch: "2026", cgpa: 7.9, careerStatus: "Seeking Placement", currentPlacement: undefined },
+    { studentId: "EC202611", studentName: "Deepak Mehta", department: "ECE", batch: "2026", cgpa: 8.3, careerStatus: "Placed (Dream)", currentPlacement: { company: "Texas Instruments", package: "20.0 LPA" } },
+    { studentId: "CV202602", studentName: "Pooja Nair", department: "CIVIL", batch: "2026", cgpa: 7.5, careerStatus: "Seeking Placement", currentPlacement: undefined },
+  ];
+
+  const filteredCandidates = baseCandidates.filter((s) => {
+    const q = candidateSearchQuery.toLowerCase();
+    const matchQuery =
+      !q ||
+      s.studentName.toLowerCase().includes(q) ||
+      s.studentId.toLowerCase().includes(q) ||
+      s.department.toLowerCase().includes(q) ||
+      (s.currentPlacement?.company || "").toLowerCase().includes(q);
+
+    const matchDept = deptFilter === "ALL" || s.department.toUpperCase() === deptFilter.toUpperCase();
+    const matchStatus =
+      placementStatusFilter === "ALL" ||
+      (placementStatusFilter === "PLACED" && s.careerStatus.includes("Placed")) ||
+      (placementStatusFilter === "UNPLACED" && !s.careerStatus.includes("Placed")) ||
+      (placementStatusFilter === "SUPER_DREAM" && s.careerStatus.includes("Super Dream"));
+
+    const matchCgpa = s.cgpa >= minCgpaFilter;
+    const matchBatch = batchFilter === "ALL" || (s.batch || "2026") === batchFilter;
+
+    return matchQuery && matchDept && matchStatus && matchCgpa && matchBatch;
+  });
+
   return (
     <div className="space-y-6">
       {/* PAGE HEADER & SMART SEARCH BAR */}
@@ -223,7 +267,7 @@ export function PlacementStudentDossier() {
           <div className="flex flex-wrap items-center gap-3">
             {/* Student Switcher Dropdown */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-muted-foreground hidden sm:inline">Select Candidate:</span>
+              <span className="text-xs font-semibold text-muted-foreground hidden sm:inline">Selected Candidate:</span>
               <select
                 value={selectedStudentId}
                 onChange={(e) => setSelectedStudentId(e.target.value)}
@@ -253,6 +297,158 @@ export function PlacementStudentDossier() {
           </div>
         }
       />
+
+      {/* ⚡ 1000+ CANDIDATE FAST FILTER & SEARCH CONTROL CENTER */}
+      <Card className="p-4 bg-background/80 border backdrop-blur-xs space-y-3">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Instant Search Bar */}
+          <div className="relative flex-1">
+            <Search className="size-4 text-muted-foreground absolute left-3.5 top-3" />
+            <input
+              type="text"
+              placeholder="Search 1,000+ students by Name, Roll Number, Department, or Company..."
+              value={candidateSearchQuery}
+              onChange={(e) => {
+                setCandidateSearchQuery(e.target.value);
+                setIsCandidateListOpen(true);
+              }}
+              onFocus={() => setIsCandidateListOpen(true)}
+              className="w-full pl-10 pr-4 py-2 rounded-xl border bg-background/60 text-xs outline-none focus:border-primary font-medium"
+            />
+            {candidateSearchQuery && (
+              <button
+                onClick={() => setCandidateSearchQuery("")}
+                className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground text-xs font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Quick Stats & Toggle Button */}
+          <div className="flex items-center gap-2">
+            <Badge tone="info" className="text-xs font-bold py-1.5 px-3">
+              ⚡ {filteredCandidates.length} Matching Candidates
+            </Badge>
+            <button
+              onClick={() => setIsCandidateListOpen(!isCandidateListOpen)}
+              className="px-3 py-1.5 rounded-xl border text-xs font-bold hover:bg-accent transition cursor-pointer flex items-center gap-1.5"
+            >
+              <Filter className="size-3.5 text-primary" />
+              {isCandidateListOpen ? "Hide Results Grid" : "Browse Matching List"}
+            </button>
+          </div>
+        </div>
+
+        {/* Filter Pills Bar */}
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t text-xs">
+          {/* Department Pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-semibold text-muted-foreground text-[11px]">Dept:</span>
+            {["ALL", "CSE", "ECE", "IT", "EEE", "MECH", "CIVIL"].map((dept) => (
+              <button
+                key={dept}
+                onClick={() => setDeptFilter(dept)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer transition ${
+                  deptFilter === dept
+                    ? "bg-primary text-white shadow-xs"
+                    : "bg-accent/40 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {dept}
+              </button>
+            ))}
+          </div>
+
+          <div className="h-4 w-px bg-border hidden sm:block" />
+
+          {/* Status Pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-semibold text-muted-foreground text-[11px]">Status:</span>
+            {[
+              { id: "ALL", label: "All Candidates" },
+              { id: "PLACED", label: "Placed Only" },
+              { id: "UNPLACED", label: "Seeking Job" },
+              { id: "SUPER_DREAM", label: "Super Dream (≥30L)" },
+            ].map((st) => (
+              <button
+                key={st.id}
+                onClick={() => setPlacementStatusFilter(st.id)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer transition ${
+                  placementStatusFilter === st.id
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "bg-accent/40 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {st.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="h-4 w-px bg-border hidden sm:block" />
+
+          {/* Min CGPA Pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-semibold text-muted-foreground text-[11px]">CGPA:</span>
+            {[
+              { val: 0, label: "All" },
+              { val: 8.5, label: "≥ 8.5" },
+              { val: 7.5, label: "≥ 7.5" },
+              { val: 7.0, label: "≥ 7.0" },
+            ].map((cg) => (
+              <button
+                key={cg.label}
+                onClick={() => setMinCgpaFilter(cg.val)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer transition ${
+                  minCgpaFilter === cg.val
+                    ? "bg-indigo-600 text-white shadow-xs"
+                    : "bg-accent/40 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {cg.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* FAST MATCHING CANDIDATES GRID */}
+        {isCandidateListOpen && (
+          <div className="mt-3 pt-3 border-t max-h-60 overflow-y-auto animate-in fade-in duration-150 space-y-2">
+            <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide flex justify-between">
+              <span>Quick Candidate Switcher</span>
+              <span>Click candidate card to open full intelligence dossier</span>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              {filteredCandidates.map((cand) => (
+                <div
+                  key={cand.studentId}
+                  onClick={() => {
+                    setSelectedStudentId(cand.studentId);
+                    setIsCandidateListOpen(false);
+                  }}
+                  className={`p-2.5 rounded-xl border text-xs cursor-pointer transition flex items-center justify-between gap-2 ${
+                    selectedStudentId === cand.studentId
+                      ? "bg-primary/10 border-primary shadow-xs font-bold"
+                      : "bg-background/60 hover:bg-accent/60"
+                  }`}
+                >
+                  <div className="truncate">
+                    <div className="font-bold text-foreground text-xs truncate">{cand.studentName}</div>
+                    <div className="text-[10px] text-muted-foreground">{cand.studentId} • {cand.department} • CGPA {cand.cgpa}</div>
+                  </div>
+                  <Badge
+                    tone={cand.careerStatus.includes("Placed") ? "success" : "info"}
+                    className="text-[9px] shrink-0"
+                  >
+                    {cand.currentPlacement?.company || "Seeking"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Card>
 
       {loading ? (
         <Card className="flex items-center justify-center py-24">
