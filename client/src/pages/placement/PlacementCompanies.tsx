@@ -223,6 +223,9 @@ export function PlacementCompanies() {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndustry, setSelectedIndustry] = useState("All");
+  const [sortBy, setSortBy] = useState<"name-asc" | "name-desc" | "package-desc" | "hires-desc">("name-asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   // Modal & Saving state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -243,8 +246,6 @@ export function PlacementCompanies() {
   const [previousYearHires, setPreviousYearHires] = useState(0);
   const [hiringStatus, setHiringStatus] = useState("Active");
 
-
-
   useEffect(() => {
     fetchPlacementData()
       .then((res) => {
@@ -260,11 +261,29 @@ export function PlacementCompanies() {
 
   const industries = ["All", "Technology", "Finance", "Consulting", "IT Services", "E-commerce"];
 
-  const filteredCompanies = companies.filter(
-    (comp) =>
-      (selectedIndustry === "All" || comp.industry === selectedIndustry) &&
-      (comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        comp.industry.toLowerCase().includes(searchTerm.toLowerCase())),
+  const filteredCompanies = companies
+    .filter(
+      (comp) =>
+        (selectedIndustry === "All" || comp.industry === selectedIndustry) &&
+        (comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          comp.industry.toLowerCase().includes(searchTerm.toLowerCase())),
+    )
+    .sort((a, b) => {
+      if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+      if (sortBy === "name-desc") return b.name.localeCompare(a.name);
+      if (sortBy === "package-desc") {
+        const pA = parseFloat(a.package.replace(/[^0-9.]/g, "")) || 0;
+        const pB = parseFloat(b.package.replace(/[^0-9.]/g, "")) || 0;
+        return pB - pA;
+      }
+      if (sortBy === "hires-desc") return b.previousYearHires - a.previousYearHires;
+      return 0;
+    });
+
+  const totalPages = Math.ceil(filteredCompanies.length / pageSize) || 1;
+  const paginatedCompanies = filteredCompanies.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
 
   const getCompanyDrives = (companyName: string) => {
@@ -391,41 +410,57 @@ export function PlacementCompanies() {
       {/* Search and Filter Section */}
       <Card>
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="flex-1 relative">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="flex-1 relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <input
                 placeholder="Search by company name or industry…"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                 className="w-full rounded-xl border bg-background/60 pl-10 pr-4 py-2.5 text-sm"
               />
             </div>
-            <div className="flex items-center gap-2 border rounded-xl p-1">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition ${viewMode === "grid" ? "bg-gradient-primary text-white" : "text-muted-foreground"}`}
+            
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="px-3 py-2.5 rounded-xl border bg-background text-xs font-semibold focus:border-primary outline-none cursor-pointer"
               >
-                <Grid className="size-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("table")}
-                className={`p-2 rounded-lg transition ${viewMode === "table" ? "bg-gradient-primary text-white" : "text-muted-foreground"}`}
-              >
-                <List className="size-4" />
-              </button>
+                <option value="name-asc">Sort: Name (A-Z)</option>
+                <option value="name-desc">Sort: Name (Z-A)</option>
+                <option value="package-desc">Sort: Highest Package</option>
+                <option value="hires-desc">Sort: Prev Hires</option>
+              </select>
+
+              <div className="flex items-center gap-1 border rounded-xl p-1 bg-background">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-lg transition cursor-pointer ${viewMode === "grid" ? "bg-gradient-primary text-white shadow-sm" : "text-muted-foreground"}`}
+                  title="Grid View"
+                >
+                  <Grid className="size-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("table")}
+                  className={`p-2 rounded-lg transition cursor-pointer ${viewMode === "table" ? "bg-gradient-primary text-white shadow-sm" : "text-muted-foreground"}`}
+                  title="Table View"
+                >
+                  <List className="size-4" />
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Industry Filter */}
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {industries.map((ind) => (
               <button
                 key={ind}
-                onClick={() => setSelectedIndustry(ind)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition ${
+                onClick={() => { setSelectedIndustry(ind); setCurrentPage(1); }}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
                   selectedIndustry === ind
-                    ? "bg-gradient-primary text-white"
+                    ? "bg-gradient-primary text-white shadow-sm"
                     : "bg-background border text-muted-foreground hover:border-primary"
                 }`}
               >
@@ -448,7 +483,7 @@ export function PlacementCompanies() {
       {/* Grid View */}
       {!loading && viewMode === "grid" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredCompanies.map((company) => (
+          {paginatedCompanies.map((company) => (
             <Card key={company.id} className="hover:-translate-y-1 transition flex flex-col">
               <div className="aspect-video w-full mb-4">
                 {getCompanyLogo(company.name)}
@@ -543,7 +578,7 @@ export function PlacementCompanies() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {filteredCompanies.map((company) => (
+                {paginatedCompanies.map((company) => (
                   <tr key={company.id} className="hover:bg-accent/50 transition">
                     <td className="py-3 px-4">
                       <div className="font-medium">{company.name}</div>
@@ -594,6 +629,49 @@ export function PlacementCompanies() {
               </tbody>
             </table>
           </div>
+        </Card>
+      )}
+
+      {/* Pagination Footer */}
+      {!loading && filteredCompanies.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-muted-foreground">
+          <div>
+            Showing <span className="font-bold text-foreground">{(currentPage - 1) * pageSize + 1}</span> to{" "}
+            <span className="font-bold text-foreground">{Math.min(currentPage * pageSize, filteredCompanies.length)}</span> of{" "}
+            <span className="font-bold text-foreground">{filteredCompanies.length}</span> companies
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 rounded-lg border bg-background hover:bg-accent transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+            >
+              Previous
+            </button>
+            <span className="px-2 font-semibold">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 rounded-lg border bg-background hover:bg-accent transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!loading && filteredCompanies.length === 0 && (
+        <Card className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="size-12 rounded-2xl bg-muted/50 grid place-items-center mb-3">
+            <Search className="size-6 text-muted-foreground/60" />
+          </div>
+          <h4 className="font-bold text-base">No Companies Found</h4>
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+            No recruiting companies match your search or filter criteria. Try clearing search filters or adding a new company.
+          </p>
         </Card>
       )}
 

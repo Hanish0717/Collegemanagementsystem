@@ -36,24 +36,30 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
+  console.error("Router error captured:", error);
   const router = useRouter();
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold">This page didn't load</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Something went wrong. Try again.</p>
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
+      <div className="max-w-xl text-center space-y-4">
+        <h1 className="text-xl font-semibold text-foreground">This page didn't load</h1>
+        <p className="text-sm text-muted-foreground">Something went wrong. Try again.</p>
+        {error && (
+          <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-left text-xs font-mono overflow-auto max-h-48">
+            <div className="font-bold">{error.name}: {error.message}</div>
+            {error.stack && <pre className="mt-2 text-[10px] whitespace-pre-wrap opacity-80">{error.stack}</pre>}
+          </div>
+        )}
         <div className="mt-6 flex gap-2 justify-center">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="rounded-md bg-gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            className="rounded-md bg-gradient-primary px-4 py-2 text-sm font-medium text-primary-foreground cursor-pointer"
           >
             Try again
           </button>
-          <a href="/" className="rounded-md border px-4 py-2 text-sm">
+          <a href="/dashboard/placement" className="rounded-md border px-4 py-2 text-sm">
             Home
           </a>
         </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Plus, Calendar, MapPin, Users, Clock, Loader2, X } from "lucide-react";
+import { Plus, Calendar, MapPin, Users, Clock, Loader2, X, Bell, Send, CheckCircle2 } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchPlacementData, createDrive, updateDrive, DriveItem, CompanyItem } from "@/services/placementService";
+import { fetchPlacementData, createDrive, updateDrive, sendDriveReminder, DriveItem, CompanyItem } from "@/services/placementService";
 import { getCompanyLogo } from "./PlacementCompanies";
 import { toast } from "sonner";
 
@@ -9,7 +9,19 @@ export function PlacementDrives() {
   const [drives, setDrives] = useState<DriveItem[]>([]);
   const [companies, setCompanies] = useState<CompanyItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState<"upcoming" | "ongoing" | "completed">("upcoming");
+  const [selectedTab, setSelectedTab] = useState<"all" | "upcoming" | "ongoing" | "completed">("upcoming");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"date-asc" | "date-desc" | "applicants-desc">("date-asc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+
+  // Reminder Modal States
+  const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+  const [reminderDrive, setReminderDrive] = useState<DriveItem | null>(null);
+  const [reminderType, setReminderType] = useState<"General" | "Deadline">("Deadline");
+  const [reminderTarget, setReminderTarget] = useState<"unapplied" | "all_eligible">("unapplied");
+  const [customReminderMsg, setCustomReminderMsg] = useState("");
+  const [isSendingReminder, setIsSendingReminder] = useState(false);
 
   // Dynamic recruitment calendar configurations for the present month
   const today = new Date();
@@ -41,8 +53,15 @@ export function PlacementDrives() {
   const [driveStatus, setDriveStatus] = useState("Upcoming");
   const [drivePackageMin, setDrivePackageMin] = useState("6.0");
   const [drivePackageMax, setDrivePackageMax] = useState("8.0");
-  const [driveMinCgpa, setDriveMinCgpa] = useState("7.0");
-  const [driveDepartments, setDriveDepartments] = useState<string[]>(["CSE", "ECE"]);
+  
+  // 7 Eligibility Criteria States
+  const [driveMinCgpa, setDriveMinCgpa] = useState("7.5");
+  const [driveDepartments, setDriveDepartments] = useState<string[]>(["CSE", "ECE", "IT"]);
+  const [driveBatch, setDriveBatch] = useState("2026");
+  const [driveMaxBacklogs, setDriveMaxBacklogs] = useState("0");
+  const [driveGender, setDriveGender] = useState("All");
+  const [driveSkills, setDriveSkills] = useState("Python, SQL");
+  const [driveGraduationYear, setDriveGraduationYear] = useState("2026");
 
   useEffect(() => {
     fetchPlacementData()
@@ -66,8 +85,13 @@ export function PlacementDrives() {
     setDriveStatus("Upcoming");
     setDrivePackageMin("6.0");
     setDrivePackageMax("8.0");
-    setDriveMinCgpa("7.0");
-    setDriveDepartments(["CSE", "ECE"]);
+    setDriveMinCgpa("7.5");
+    setDriveDepartments(["CSE", "ECE", "IT"]);
+    setDriveBatch("2026");
+    setDriveMaxBacklogs("0");
+    setDriveGender("All");
+    setDriveSkills("Python, SQL");
+    setDriveGraduationYear("2026");
   };
 
   const openViewDriveModal = (drive: DriveItem) => {
@@ -83,13 +107,44 @@ export function PlacementDrives() {
     setDriveVenue(drive.venue);
     setDriveDeadline(drive.applicationDeadline);
     setDriveStatus(drive.status);
-    const comp = companies.find(c => c.name === drive.company);
-    const pAmt = comp?.package ? parseFloat(comp.package.replace(/[^0-9.]/g, "")) : 8.0;
-    setDrivePackageMin((pAmt * 0.75).toFixed(1));
-    setDrivePackageMax(pAmt.toFixed(1));
-    setDriveMinCgpa("7.0");
-    setDriveDepartments(["CSE", "ECE"]);
+    setDriveMinCgpa(drive.eligibilityMinCgpa ? String(drive.eligibilityMinCgpa) : "7.5");
+    setDriveDepartments(drive.eligibilityDepartments || ["CSE", "ECE", "IT"]);
+    setDriveBatch(drive.eligibilityBatch || "2026");
+    setDriveGender(drive.eligibilityGender || "All");
+    setDriveSkills(drive.eligibilitySkills ? drive.eligibilitySkills.join(", ") : "Python, SQL");
+    setDriveGraduationYear(drive.eligibilityGraduationYear ? String(drive.eligibilityGraduationYear) : "2026");
     setIsEditDriveModalOpen(true);
+  };
+
+  const openReminderModal = (drive: DriveItem) => {
+    setReminderDrive(drive);
+    setReminderType("Deadline");
+    setReminderTarget("unapplied");
+    setCustomReminderMsg(`${drive.company} recruitment deadline is approaching. Please complete your application before ${drive.applicationDeadline}.`);
+    setIsReminderModalOpen(true);
+  };
+
+  const handleSendReminderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reminderDrive) return;
+
+    setIsSendingReminder(true);
+    try {
+      const res = await sendDriveReminder({
+        driveId: reminderDrive.id,
+        reminderType,
+        target: reminderTarget,
+        customMessage: customReminderMsg,
+      });
+
+      toast.success(res.message || `Dispatched reminders to ${res.notifiedCount} eligible candidates.`);
+      setIsReminderModalOpen(false);
+    } catch (err: any) {
+      console.error("Failed to send reminders:", err);
+      toast.error(err.response?.data?.message || err.message || "Failed to send reminders.");
+    } finally {
+      setIsSendingReminder(false);
+    }
   };
 
   const handleAddDrive = async (e: React.FormEvent) => {
@@ -101,6 +156,8 @@ export function PlacementDrives() {
     setIsSaving(true);
 
     try {
+      const skillsArray = driveSkills.split(",").map((s) => s.trim()).filter(Boolean);
+
       await createDrive({
         company: driveCompany,
         role: driveRole,
@@ -110,8 +167,13 @@ export function PlacementDrives() {
         status: driveStatus,
         packageMin: parseFloat(drivePackageMin) || 6.0,
         packageMax: parseFloat(drivePackageMax) || 8.0,
-        eligibilityMinCgpa: parseFloat(driveMinCgpa) || 7.0,
-        eligibilityDepartments: driveDepartments
+        eligibilityMinCgpa: parseFloat(driveMinCgpa) || 7.5,
+        eligibilityDepartments: driveDepartments,
+        eligibilityBatch: driveBatch,
+        eligibilityMaxBacklogs: parseInt(driveMaxBacklogs) || 0,
+        eligibilityGender: driveGender,
+        eligibilitySkills: skillsArray,
+        eligibilityGraduationYear: parseInt(driveGraduationYear) || 2026,
       } as any);
 
       const res = await fetchPlacementData();
@@ -138,6 +200,8 @@ export function PlacementDrives() {
     setIsSaving(true);
 
     try {
+      const skillsArray = driveSkills.split(",").map((s) => s.trim()).filter(Boolean);
+
       await updateDrive(selectedDrive.id, {
         company: driveCompany,
         role: driveRole,
@@ -147,8 +211,13 @@ export function PlacementDrives() {
         status: driveStatus,
         packageMin: parseFloat(drivePackageMin) || 6.0,
         packageMax: parseFloat(drivePackageMax) || 8.0,
-        eligibilityMinCgpa: parseFloat(driveMinCgpa) || 7.0,
-        eligibilityDepartments: driveDepartments
+        eligibilityMinCgpa: parseFloat(driveMinCgpa) || 7.5,
+        eligibilityDepartments: driveDepartments,
+        eligibilityBatch: driveBatch,
+        eligibilityMaxBacklogs: parseInt(driveMaxBacklogs) || 0,
+        eligibilityGender: driveGender,
+        eligibilitySkills: skillsArray,
+        eligibilityGraduationYear: parseInt(driveGraduationYear) || 2026,
       } as any);
 
       const res = await fetchPlacementData();
@@ -165,88 +234,58 @@ export function PlacementDrives() {
     }
   };
 
-  const upcoming = drives.filter((d) => d.status.toLowerCase() === "upcoming");
-  const ongoing = drives.filter((d) => d.status.toLowerCase() === "ongoing");
-  const completed = drives.filter((d) => d.status.toLowerCase() === "completed");
+  const safeDrives = Array.isArray(drives) ? drives : [];
+  const safeCompanies = Array.isArray(companies) ? companies : [];
 
-  const DriveCard = ({ drive }: { drive: DriveItem }) => (
-    <Card className="hover:-translate-y-1 transition">
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="font-semibold">{drive.company}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{drive.role}</p>
-        </div>
-        <Badge
-          tone={
-            drive.status.toLowerCase() === "upcoming"
-              ? "info"
-              : drive.status.toLowerCase() === "ongoing"
-                ? "warn"
-                : "success"
-          }
-        >
-          {drive.status}
-        </Badge>
-      </div>
+  const upcoming = safeDrives.filter((d) => (d?.status || "").toLowerCase() === "upcoming");
+  const ongoing = safeDrives.filter((d) => (d?.status || "").toLowerCase() === "ongoing");
+  const completed = safeDrives.filter((d) => (d?.status || "").toLowerCase() === "completed");
 
-      <div className="space-y-2.5 mb-4">
-        <div className="flex items-center gap-2 text-sm">
-          <Calendar className="size-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Drive Date:</span>
-          <span className="font-medium">{new Date(drive.date).toLocaleDateString()}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <MapPin className="size-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Venue:</span>
-          <span className="font-medium">{drive.venue}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <Clock className="size-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Deadline:</span>
-          <span className="font-medium">
-            {new Date(drive.applicationDeadline).toLocaleDateString()}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <Users className="size-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Applications:</span>
-          <span className="font-medium">{drive.studentCount}</span>
-        </div>
-      </div>
+  const filteredDrives = safeDrives
+    .filter((d) => {
+      const driveStatusClean = (d?.status || "").toLowerCase();
+      const matchTab = selectedTab === "all" || driveStatusClean === selectedTab;
+      const matchSearch =
+        (d?.company || "").toLowerCase().includes((searchTerm || "").toLowerCase()) ||
+        (d?.role || "").toLowerCase().includes((searchTerm || "").toLowerCase()) ||
+        (d?.venue || "").toLowerCase().includes((searchTerm || "").toLowerCase());
+      return matchTab && matchSearch;
+    })
+    .sort((a, b) => {
+      if (sortBy === "date-asc") return new Date(a?.date || 0).getTime() - new Date(b?.date || 0).getTime();
+      if (sortBy === "date-desc") return new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime();
+      if (sortBy === "applicants-desc") return (b?.studentCount || 0) - (a?.studentCount || 0);
+      return 0;
+    });
 
-      <div className="grid grid-cols-2 gap-2 p-2.5 bg-gradient-soft rounded-lg mb-4">
-        <div className="text-center">
-          <div className="text-xs text-muted-foreground">Rounds</div>
-          <div className="font-bold text-lg">{drive.rounds || 3}</div>
-        </div>
-        <div className="text-center">
-          <div className="text-xs text-muted-foreground">Applicants</div>
-          <div className="font-bold text-lg">{drive.studentCount}</div>
-        </div>
-      </div>
-
-      <div className="flex gap-2">
-        <button 
-          onClick={() => openViewDriveModal(drive)}
-          className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
-        >
-          Details
-        </button>
-        <button 
-          onClick={() => openEditDriveModal(drive)}
-          className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
-        >
-          Edit
-        </button>
-      </div>
-    </Card>
+  const totalPages = Math.ceil(filteredDrives.length / pageSize) || 1;
+  const paginatedDrives = filteredDrives.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
+
+  const formatDateSafe = (dateStr?: string) => {
+    if (!dateStr || dateStr === "TBD" || dateStr === "Closed") return dateStr || "N/A";
+    try {
+      const d = new Date(dateStr);
+      return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString(undefined, { dateStyle: 'medium' });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getStatusTone = (status?: string) => {
+    const clean = (status || "").toLowerCase();
+    if (clean === "upcoming") return "info";
+    if (clean === "ongoing") return "warn";
+    return "success";
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Drive Management"
-        desc="Manage recruitment drives, schedules and timelines."
+        title="Placement Drive Management"
+        desc="Manage recruitment drives, schedules, eligibility criteria and deadlines."
         actions={
           <button 
             onClick={() => { resetDriveForm(); setIsAddDriveModalOpen(true); }}
@@ -256,6 +295,32 @@ export function PlacementDrives() {
           </button>
         }
       />
+
+      {/* Search & Filter Controls */}
+      <Card>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="w-full sm:w-72">
+            <input
+              placeholder="Search by company, role or venue..."
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              className="w-full rounded-xl border bg-background/60 px-3.5 py-2 text-xs outline-none focus:border-primary"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold focus:border-primary outline-none cursor-pointer"
+            >
+              <option value="date-asc">Date: Earliest First</option>
+              <option value="date-desc">Date: Latest First</option>
+              <option value="applicants-desc">Most Applicants</option>
+            </select>
+          </div>
+        </div>
+      </Card>
 
       {loading && (
         <Card className="flex items-center justify-center py-12">
@@ -270,8 +335,8 @@ export function PlacementDrives() {
       {!loading && (
         <div className="flex items-center gap-2 border-b">
           <button
-            onClick={() => setSelectedTab("upcoming")}
-            className={`px-4 py-3 font-medium text-sm border-b-2 transition ${
+            onClick={() => { setSelectedTab("upcoming"); setCurrentPage(1); }}
+            className={`px-4 py-3 font-medium text-sm border-b-2 transition cursor-pointer ${
               selectedTab === "upcoming"
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -280,8 +345,8 @@ export function PlacementDrives() {
             Upcoming ({upcoming.length})
           </button>
           <button
-            onClick={() => setSelectedTab("ongoing")}
-            className={`px-4 py-3 font-medium text-sm border-b-2 transition ${
+            onClick={() => { setSelectedTab("ongoing"); setCurrentPage(1); }}
+            className={`px-4 py-3 font-medium text-sm border-b-2 transition cursor-pointer ${
               selectedTab === "ongoing"
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -290,8 +355,8 @@ export function PlacementDrives() {
             Ongoing ({ongoing.length})
           </button>
           <button
-            onClick={() => setSelectedTab("completed")}
-            className={`px-4 py-3 font-medium text-sm border-b-2 transition ${
+            onClick={() => { setSelectedTab("completed"); setCurrentPage(1); }}
+            className={`px-4 py-3 font-medium text-sm border-b-2 transition cursor-pointer ${
               selectedTab === "completed"
                 ? "border-primary text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -299,33 +364,134 @@ export function PlacementDrives() {
           >
             Completed ({completed.length})
           </button>
+          <button
+            onClick={() => { setSelectedTab("all"); setCurrentPage(1); }}
+            className={`px-4 py-3 font-medium text-sm border-b-2 transition cursor-pointer ${
+              selectedTab === "all"
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            All Drives ({drives.length})
+          </button>
         </div>
       )}
 
-      {/* Upcoming Drives */}
-      {!loading && selectedTab === "upcoming" && (
+      {/* Paginated Drives Display */}
+      {!loading && paginatedDrives.length > 0 && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {upcoming.map((drive) => (
-            <DriveCard key={drive.id} drive={drive} />
+          {paginatedDrives.map((drive) => (
+            <Card key={drive.id} className="hover:-translate-y-1 transition">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold">{drive.company}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{drive.role}</p>
+                </div>
+                <Badge tone={getStatusTone(drive.status)}>
+                  {drive.status || "Upcoming"}
+                </Badge>
+              </div>
+
+              <div className="space-y-2.5 mb-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="size-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Drive Date:</span>
+                  <span className="font-medium">{formatDateSafe(drive.date)}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <MapPin className="size-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Venue:</span>
+                  <span className="font-medium">{drive.venue}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="size-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Deadline:</span>
+                  <span className="font-medium">
+                    {formatDateSafe(drive.applicationDeadline)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Users className="size-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Applications:</span>
+                  <span className="font-medium">{drive.studentCount || 0}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 p-2.5 bg-gradient-soft rounded-lg mb-4">
+                <div className="text-center">
+                  <div className="text-xs text-muted-foreground">Rounds</div>
+                  <div className="font-bold text-lg">{drive.rounds || 3}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xs text-muted-foreground">Applicants</div>
+                  <div className="font-bold text-lg">{drive.studentCount || 0}</div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => openViewDriveModal(drive)}
+                  className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
+                >
+                  Details
+                </button>
+                <button 
+                  onClick={() => openEditDriveModal(drive)}
+                  className="flex-1 px-3 py-2 rounded-lg border text-xs font-medium hover:bg-accent transition cursor-pointer"
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={() => openReminderModal(drive)}
+                  className="px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition cursor-pointer text-xs font-semibold flex items-center gap-1.5"
+                  title="Send Multi-Channel Reminders to Eligible Candidates"
+                >
+                  <Bell className="size-3.5" /> Notify
+                </button>
+              </div>
+            </Card>
           ))}
         </div>
       )}
 
-      {/* Ongoing Drives */}
-      {!loading && selectedTab === "ongoing" && (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {ongoing.map((drive) => (
-            <DriveCard key={drive.id} drive={drive} />
-          ))}
-        </div>
+      {!loading && paginatedDrives.length === 0 && (
+        <Card className="flex flex-col items-center justify-center py-16 text-center">
+          <Calendar className="size-12 text-muted-foreground/40 mb-3" />
+          <h4 className="font-bold text-base">No Drives Found</h4>
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+            No recruitment drives match your filter criteria. Try changing tab or creating a new drive.
+          </p>
+        </Card>
       )}
 
-      {/* Completed Drives */}
-      {!loading && selectedTab === "completed" && (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {completed.map((drive) => (
-            <DriveCard key={drive.id} drive={drive} />
-          ))}
+      {/* Pagination Footer */}
+      {!loading && filteredDrives.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-muted-foreground">
+          <div>
+            Showing <span className="font-bold text-foreground">{(currentPage - 1) * pageSize + 1}</span> to{" "}
+            <span className="font-bold text-foreground">{Math.min(currentPage * pageSize, filteredDrives.length)}</span> of{" "}
+            <span className="font-bold text-foreground">{filteredDrives.length}</span> drives
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 rounded-lg border bg-background hover:bg-accent transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+            >
+              Previous
+            </button>
+            <span className="px-2 font-semibold">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 rounded-lg border bg-background hover:bg-accent transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
 
@@ -338,8 +504,8 @@ export function PlacementDrives() {
               <p className="text-xs text-muted-foreground mt-0.5">Timezone-safe dynamic recruitment calendar</p>
             </div>
             <Badge tone="info">
-              {drives.filter((d) => {
-                if (!d.date || d.date === "TBD") return false;
+              {(Array.isArray(drives) ? drives : []).filter((d) => {
+                if (!d?.date || typeof d.date !== "string" || d.date === "TBD") return false;
                 const parts = d.date.split('-');
                 if (parts.length === 3) {
                   return parseInt(parts[0], 10) === calendarYear && parseInt(parts[1], 10) === (calendarMonth + 1);
@@ -372,8 +538,8 @@ export function PlacementDrives() {
 
             {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => {
               // Parse date strictly as YYYY-MM-DD to avoid timezone shifting
-              const dayDrives = drives.filter((d) => {
-                if (!d.date || d.date === "TBD" || d.date === "Closed") return false;
+              const dayDrives = (Array.isArray(drives) ? drives : []).filter((d) => {
+                if (!d?.date || typeof d.date !== "string" || d.date === "TBD" || d.date === "Closed") return false;
                 const parts = d.date.split('-');
                 if (parts.length === 3) {
                   const year = parseInt(parts[0], 10);
@@ -441,9 +607,9 @@ export function PlacementDrives() {
                 <div className="flex flex-col items-center">
                   <div
                     className={`size-10 rounded-lg grid place-items-center font-bold text-sm text-white ${
-                      drive.status.toLowerCase() === "upcoming"
+                      (drive.status || "").toLowerCase() === "upcoming"
                         ? "bg-blue-500"
-                        : drive.status.toLowerCase() === "ongoing"
+                        : (drive.status || "").toLowerCase() === "ongoing"
                           ? "bg-amber-500"
                           : "bg-emerald-500"
                     }`}
@@ -458,21 +624,13 @@ export function PlacementDrives() {
                       <div className="font-semibold">{drive.company}</div>
                       <div className="text-sm text-muted-foreground mt-1">{drive.role}</div>
                       <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                        <div>📅 {new Date(drive.date).toLocaleDateString()}</div>
+                        <div>📅 {formatDateSafe(drive.date)}</div>
                         <div>📍 {drive.venue}</div>
-                        <div>👥 {drive.studentCount} applications</div>
+                        <div>👥 {drive.studentCount || 0} applications</div>
                       </div>
                     </div>
-                    <Badge
-                      tone={
-                        drive.status.toLowerCase() === "upcoming"
-                          ? "info"
-                          : drive.status.toLowerCase() === "ongoing"
-                            ? "warn"
-                            : "success"
-                      }
-                    >
-                      {drive.status}
+                    <Badge tone={getStatusTone(drive.status)}>
+                      {drive.status || "Upcoming"}
                     </Badge>
                   </div>
                 </div>
@@ -514,27 +672,19 @@ export function PlacementDrives() {
                     <td className="py-3 px-4 font-medium">{drive.company}</td>
                     <td className="py-3 px-4">{drive.role}</td>
                     <td className="py-3 px-4 text-muted-foreground text-sm">
-                      {new Date(drive.date).toLocaleDateString()}
+                      {formatDateSafe(drive.date)}
                     </td>
                     <td className="py-3 px-4 text-muted-foreground text-sm">
-                      {new Date(drive.applicationDeadline).toLocaleDateString()}
+                      {formatDateSafe(drive.applicationDeadline)}
                     </td>
-                    <td className="py-3 px-4 text-center font-medium">{drive.studentCount}</td>
+                    <td className="py-3 px-4 text-center font-medium">{drive.studentCount || 0}</td>
                     <td className="py-3 px-4">
                       <Badge tone="info">{drive.rounds || 3} rounds</Badge>
                     </td>
                     <td className="py-3 px-4">
                       <div className="text-center">
-                        <Badge
-                          tone={
-                            drive.status.toLowerCase() === "upcoming"
-                              ? "info"
-                              : drive.status.toLowerCase() === "ongoing"
-                                ? "warn"
-                                : "success"
-                          }
-                        >
-                          {drive.status}
+                        <Badge tone={getStatusTone(drive.status)}>
+                          {drive.status || "Upcoming"}
                         </Badge>
                       </div>
                     </td>
@@ -907,11 +1057,11 @@ export function PlacementDrives() {
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <span className="text-xs text-muted-foreground block">Drive Date</span>
-                    <span className="font-medium">{new Date(selectedDrive.date).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+                    <span className="font-medium">{formatDateSafe(selectedDrive.date)}</span>
                   </div>
                   <div>
                     <span className="text-xs text-muted-foreground block">Registration Deadline</span>
-                    <span className="font-medium">{new Date(selectedDrive.applicationDeadline).toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+                    <span className="font-medium">{formatDateSafe(selectedDrive.applicationDeadline)}</span>
                   </div>
                   <div className="col-span-2">
                     <span className="text-xs text-muted-foreground block">Venue</span>
@@ -949,6 +1099,86 @@ export function PlacementDrives() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Multi-Channel Reminder Modal */}
+      {isReminderModalOpen && reminderDrive && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-md p-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <Bell className="size-5 text-indigo-600 animate-bounce" />
+                <h3 className="font-bold text-base text-gradient">Dispatch Drive Notification</h3>
+              </div>
+              <button
+                onClick={() => setIsReminderModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSendReminderSubmit} className="space-y-4">
+              <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 dark:bg-blue-950/30 text-blue-800 dark:text-blue-200 text-xs">
+                <span className="font-bold block">{reminderDrive.company} — {reminderDrive.role}</span>
+                <span className="text-[11px] opacity-80 block mt-0.5">Notifications will be sent via <strong>In-App</strong>, <strong>College Email</strong>, and <strong>Outlook Calendar Invites</strong> exclusively to eligible candidates.</span>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Notification Type</label>
+                <select
+                  value={reminderType}
+                  onChange={(e) => setReminderType(e.target.value as any)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs font-semibold focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="Deadline">⚠️ Deadline Warning Alert</option>
+                  <option value="General">📢 Drive Announcement & Reminder</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Target Candidates</label>
+                <select
+                  value={reminderTarget}
+                  onChange={(e) => setReminderTarget(e.target.value as any)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs font-semibold focus:border-primary outline-none cursor-pointer"
+                >
+                  <option value="unapplied">Unapplied Eligible Candidates Only</option>
+                  <option value="all_eligible">All Eligible Candidates</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground">Custom Alert Message</label>
+                <textarea
+                  rows={3}
+                  value={customReminderMsg}
+                  onChange={(e) => setCustomReminderMsg(e.target.value)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none resize-none"
+                  placeholder="Enter message text..."
+                />
+              </div>
+
+              <div className="pt-4 border-t flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsReminderModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold text-xs cursor-pointer hover:bg-accent transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSendingReminder}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary cursor-pointer hover:opacity-95 transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+                >
+                  {isSendingReminder ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                  Dispatch Alert
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

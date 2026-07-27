@@ -191,15 +191,22 @@ import { Route as DashboardParentMarksRouteImport } from './routes/dashboard/par
 import { Route as DashboardParentNotificationsRouteImport } from './routes/dashboard/parent/notifications'
 import { Route as DashboardParentReportsRouteImport } from './routes/dashboard/parent/reports'
 import { Route as DashboardPlacementIndexRouteImport } from './routes/dashboard/placement/index'
+import { Route as DashboardPlacementAlumniRouteImport } from './routes/dashboard/placement/alumni'
 import { Route as DashboardPlacementApplicationsRouteImport } from './routes/dashboard/placement/applications'
+import { Route as DashboardPlacementCalendarRouteImport } from './routes/dashboard/placement/calendar'
 import { Route as DashboardPlacementCompaniesRouteImport } from './routes/dashboard/placement/companies'
 import { Route as DashboardPlacementDrivesRouteImport } from './routes/dashboard/placement/drives'
 import { Route as DashboardPlacementEligibilityRouteImport } from './routes/dashboard/placement/eligibility'
+import { Route as DashboardPlacementHistoryRouteImport } from './routes/dashboard/placement/history'
+import { Route as DashboardPlacementIntelligenceRouteImport } from './routes/dashboard/placement/intelligence'
 import { Route as DashboardPlacementInterviewsRouteImport } from './routes/dashboard/placement/interviews'
+import { Route as DashboardPlacementNotificationsRouteImport } from './routes/dashboard/placement/notifications'
 import { Route as DashboardPlacementReportsRouteImport } from './routes/dashboard/placement/reports'
+import { Route as DashboardPlacementTargetsRouteImport } from './routes/dashboard/placement/targets'
 import { Route as DashboardStudentIndexRouteImport } from './routes/dashboard/student/index'
 import { Route as DashboardStudentAssignmentsRouteImport } from './routes/dashboard/student/assignments'
 import { Route as DashboardStudentAttendanceRouteImport } from './routes/dashboard/student/attendance'
+import { Route as DashboardStudentCareerDeclarationRouteImport } from './routes/dashboard/student/career-declaration'
 import { Route as DashboardStudentComplaintsRouteImport } from './routes/dashboard/student/complaints'
 import { Route as DashboardStudentCourseRegistrationRouteImport } from './routes/dashboard/student/course-registration'
 import { Route as DashboardStudentEventsRouteImport } from './routes/dashboard/student/events'
@@ -1218,10 +1225,22 @@ const DashboardPlacementIndexRoute = DashboardPlacementIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardPlacementRoute,
 } as any)
+const DashboardPlacementAlumniRoute =
+  DashboardPlacementAlumniRouteImport.update({
+    id: '/alumni',
+    path: '/alumni',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
 const DashboardPlacementApplicationsRoute =
   DashboardPlacementApplicationsRouteImport.update({
     id: '/applications',
     path: '/applications',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
+const DashboardPlacementCalendarRoute =
+  DashboardPlacementCalendarRouteImport.update({
+    id: '/calendar',
+    path: '/calendar',
     getParentRoute: () => DashboardPlacementRoute,
   } as any)
 const DashboardPlacementCompaniesRoute =
@@ -1242,16 +1261,40 @@ const DashboardPlacementEligibilityRoute =
     path: '/eligibility',
     getParentRoute: () => DashboardPlacementRoute,
   } as any)
+const DashboardPlacementHistoryRoute =
+  DashboardPlacementHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
+const DashboardPlacementIntelligenceRoute =
+  DashboardPlacementIntelligenceRouteImport.update({
+    id: '/intelligence',
+    path: '/intelligence',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
 const DashboardPlacementInterviewsRoute =
   DashboardPlacementInterviewsRouteImport.update({
     id: '/interviews',
     path: '/interviews',
     getParentRoute: () => DashboardPlacementRoute,
   } as any)
+const DashboardPlacementNotificationsRoute =
+  DashboardPlacementNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
 const DashboardPlacementReportsRoute =
   DashboardPlacementReportsRouteImport.update({
     id: '/reports',
     path: '/reports',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
+const DashboardPlacementTargetsRoute =
+  DashboardPlacementTargetsRouteImport.update({
+    id: '/targets',
+    path: '/targets',
     getParentRoute: () => DashboardPlacementRoute,
   } as any)
 const DashboardStudentIndexRoute = DashboardStudentIndexRouteImport.update({
@@ -1269,6 +1312,12 @@ const DashboardStudentAttendanceRoute =
   DashboardStudentAttendanceRouteImport.update({
     id: '/attendance',
     path: '/attendance',
+    getParentRoute: () => DashboardStudentRoute,
+  } as any)
+const DashboardStudentCareerDeclarationRoute =
+  DashboardStudentCareerDeclarationRouteImport.update({
+    id: '/career-declaration',
+    path: '/career-declaration',
     getParentRoute: () => DashboardStudentRoute,
   } as any)
 const DashboardStudentComplaintsRoute =
@@ -1870,14 +1919,21 @@ export interface FileRoutesByFullPath {
   '/dashboard/parent/marks': typeof DashboardParentMarksRoute
   '/dashboard/parent/notifications': typeof DashboardParentNotificationsRoute
   '/dashboard/parent/reports': typeof DashboardParentReportsRoute
+  '/dashboard/placement/alumni': typeof DashboardPlacementAlumniRoute
   '/dashboard/placement/applications': typeof DashboardPlacementApplicationsRoute
+  '/dashboard/placement/calendar': typeof DashboardPlacementCalendarRoute
   '/dashboard/placement/companies': typeof DashboardPlacementCompaniesRoute
   '/dashboard/placement/drives': typeof DashboardPlacementDrivesRoute
   '/dashboard/placement/eligibility': typeof DashboardPlacementEligibilityRoute
+  '/dashboard/placement/history': typeof DashboardPlacementHistoryRoute
+  '/dashboard/placement/intelligence': typeof DashboardPlacementIntelligenceRoute
   '/dashboard/placement/interviews': typeof DashboardPlacementInterviewsRoute
+  '/dashboard/placement/notifications': typeof DashboardPlacementNotificationsRoute
   '/dashboard/placement/reports': typeof DashboardPlacementReportsRoute
+  '/dashboard/placement/targets': typeof DashboardPlacementTargetsRoute
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
+  '/dashboard/student/career-declaration': typeof DashboardStudentCareerDeclarationRoute
   '/dashboard/student/complaints': typeof DashboardStudentComplaintsRoute
   '/dashboard/student/course-registration': typeof DashboardStudentCourseRegistrationRoute
   '/dashboard/student/events': typeof DashboardStudentEventsRoute
@@ -2119,14 +2175,21 @@ export interface FileRoutesByTo {
   '/dashboard/parent/marks': typeof DashboardParentMarksRoute
   '/dashboard/parent/notifications': typeof DashboardParentNotificationsRoute
   '/dashboard/parent/reports': typeof DashboardParentReportsRoute
+  '/dashboard/placement/alumni': typeof DashboardPlacementAlumniRoute
   '/dashboard/placement/applications': typeof DashboardPlacementApplicationsRoute
+  '/dashboard/placement/calendar': typeof DashboardPlacementCalendarRoute
   '/dashboard/placement/companies': typeof DashboardPlacementCompaniesRoute
   '/dashboard/placement/drives': typeof DashboardPlacementDrivesRoute
   '/dashboard/placement/eligibility': typeof DashboardPlacementEligibilityRoute
+  '/dashboard/placement/history': typeof DashboardPlacementHistoryRoute
+  '/dashboard/placement/intelligence': typeof DashboardPlacementIntelligenceRoute
   '/dashboard/placement/interviews': typeof DashboardPlacementInterviewsRoute
+  '/dashboard/placement/notifications': typeof DashboardPlacementNotificationsRoute
   '/dashboard/placement/reports': typeof DashboardPlacementReportsRoute
+  '/dashboard/placement/targets': typeof DashboardPlacementTargetsRoute
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
+  '/dashboard/student/career-declaration': typeof DashboardStudentCareerDeclarationRoute
   '/dashboard/student/complaints': typeof DashboardStudentComplaintsRoute
   '/dashboard/student/course-registration': typeof DashboardStudentCourseRegistrationRoute
   '/dashboard/student/events': typeof DashboardStudentEventsRoute
@@ -2386,14 +2449,21 @@ export interface FileRoutesById {
   '/dashboard/parent/marks': typeof DashboardParentMarksRoute
   '/dashboard/parent/notifications': typeof DashboardParentNotificationsRoute
   '/dashboard/parent/reports': typeof DashboardParentReportsRoute
+  '/dashboard/placement/alumni': typeof DashboardPlacementAlumniRoute
   '/dashboard/placement/applications': typeof DashboardPlacementApplicationsRoute
+  '/dashboard/placement/calendar': typeof DashboardPlacementCalendarRoute
   '/dashboard/placement/companies': typeof DashboardPlacementCompaniesRoute
   '/dashboard/placement/drives': typeof DashboardPlacementDrivesRoute
   '/dashboard/placement/eligibility': typeof DashboardPlacementEligibilityRoute
+  '/dashboard/placement/history': typeof DashboardPlacementHistoryRoute
+  '/dashboard/placement/intelligence': typeof DashboardPlacementIntelligenceRoute
   '/dashboard/placement/interviews': typeof DashboardPlacementInterviewsRoute
+  '/dashboard/placement/notifications': typeof DashboardPlacementNotificationsRoute
   '/dashboard/placement/reports': typeof DashboardPlacementReportsRoute
+  '/dashboard/placement/targets': typeof DashboardPlacementTargetsRoute
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
+  '/dashboard/student/career-declaration': typeof DashboardStudentCareerDeclarationRoute
   '/dashboard/student/complaints': typeof DashboardStudentComplaintsRoute
   '/dashboard/student/course-registration': typeof DashboardStudentCourseRegistrationRoute
   '/dashboard/student/events': typeof DashboardStudentEventsRoute
@@ -2654,14 +2724,21 @@ export interface FileRouteTypes {
     | '/dashboard/parent/marks'
     | '/dashboard/parent/notifications'
     | '/dashboard/parent/reports'
+    | '/dashboard/placement/alumni'
     | '/dashboard/placement/applications'
+    | '/dashboard/placement/calendar'
     | '/dashboard/placement/companies'
     | '/dashboard/placement/drives'
     | '/dashboard/placement/eligibility'
+    | '/dashboard/placement/history'
+    | '/dashboard/placement/intelligence'
     | '/dashboard/placement/interviews'
+    | '/dashboard/placement/notifications'
     | '/dashboard/placement/reports'
+    | '/dashboard/placement/targets'
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
+    | '/dashboard/student/career-declaration'
     | '/dashboard/student/complaints'
     | '/dashboard/student/course-registration'
     | '/dashboard/student/events'
@@ -2903,14 +2980,21 @@ export interface FileRouteTypes {
     | '/dashboard/parent/marks'
     | '/dashboard/parent/notifications'
     | '/dashboard/parent/reports'
+    | '/dashboard/placement/alumni'
     | '/dashboard/placement/applications'
+    | '/dashboard/placement/calendar'
     | '/dashboard/placement/companies'
     | '/dashboard/placement/drives'
     | '/dashboard/placement/eligibility'
+    | '/dashboard/placement/history'
+    | '/dashboard/placement/intelligence'
     | '/dashboard/placement/interviews'
+    | '/dashboard/placement/notifications'
     | '/dashboard/placement/reports'
+    | '/dashboard/placement/targets'
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
+    | '/dashboard/student/career-declaration'
     | '/dashboard/student/complaints'
     | '/dashboard/student/course-registration'
     | '/dashboard/student/events'
@@ -3169,14 +3253,21 @@ export interface FileRouteTypes {
     | '/dashboard/parent/marks'
     | '/dashboard/parent/notifications'
     | '/dashboard/parent/reports'
+    | '/dashboard/placement/alumni'
     | '/dashboard/placement/applications'
+    | '/dashboard/placement/calendar'
     | '/dashboard/placement/companies'
     | '/dashboard/placement/drives'
     | '/dashboard/placement/eligibility'
+    | '/dashboard/placement/history'
+    | '/dashboard/placement/intelligence'
     | '/dashboard/placement/interviews'
+    | '/dashboard/placement/notifications'
     | '/dashboard/placement/reports'
+    | '/dashboard/placement/targets'
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
+    | '/dashboard/student/career-declaration'
     | '/dashboard/student/complaints'
     | '/dashboard/student/course-registration'
     | '/dashboard/student/events'
@@ -4566,11 +4657,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPlacementIndexRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
+    '/dashboard/placement/alumni': {
+      id: '/dashboard/placement/alumni'
+      path: '/alumni'
+      fullPath: '/dashboard/placement/alumni'
+      preLoaderRoute: typeof DashboardPlacementAlumniRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
     '/dashboard/placement/applications': {
       id: '/dashboard/placement/applications'
       path: '/applications'
       fullPath: '/dashboard/placement/applications'
       preLoaderRoute: typeof DashboardPlacementApplicationsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/calendar': {
+      id: '/dashboard/placement/calendar'
+      path: '/calendar'
+      fullPath: '/dashboard/placement/calendar'
+      preLoaderRoute: typeof DashboardPlacementCalendarRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
     '/dashboard/placement/companies': {
@@ -4594,6 +4699,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPlacementEligibilityRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
+    '/dashboard/placement/history': {
+      id: '/dashboard/placement/history'
+      path: '/history'
+      fullPath: '/dashboard/placement/history'
+      preLoaderRoute: typeof DashboardPlacementHistoryRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/intelligence': {
+      id: '/dashboard/placement/intelligence'
+      path: '/intelligence'
+      fullPath: '/dashboard/placement/intelligence'
+      preLoaderRoute: typeof DashboardPlacementIntelligenceRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
     '/dashboard/placement/interviews': {
       id: '/dashboard/placement/interviews'
       path: '/interviews'
@@ -4601,11 +4720,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPlacementInterviewsRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
+    '/dashboard/placement/notifications': {
+      id: '/dashboard/placement/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/placement/notifications'
+      preLoaderRoute: typeof DashboardPlacementNotificationsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
     '/dashboard/placement/reports': {
       id: '/dashboard/placement/reports'
       path: '/reports'
       fullPath: '/dashboard/placement/reports'
       preLoaderRoute: typeof DashboardPlacementReportsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/targets': {
+      id: '/dashboard/placement/targets'
+      path: '/targets'
+      fullPath: '/dashboard/placement/targets'
+      preLoaderRoute: typeof DashboardPlacementTargetsRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
     '/dashboard/student/': {
@@ -4627,6 +4760,13 @@ declare module '@tanstack/react-router' {
       path: '/attendance'
       fullPath: '/dashboard/student/attendance'
       preLoaderRoute: typeof DashboardStudentAttendanceRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
+    '/dashboard/student/career-declaration': {
+      id: '/dashboard/student/career-declaration'
+      path: '/career-declaration'
+      fullPath: '/dashboard/student/career-declaration'
+      preLoaderRoute: typeof DashboardStudentCareerDeclarationRouteImport
       parentRoute: typeof DashboardStudentRoute
     }
     '/dashboard/student/complaints': {
@@ -5505,22 +5645,34 @@ const DashboardParentRouteWithChildren = DashboardParentRoute._addFileChildren(
 )
 
 interface DashboardPlacementRouteChildren {
+  DashboardPlacementAlumniRoute: typeof DashboardPlacementAlumniRoute
   DashboardPlacementApplicationsRoute: typeof DashboardPlacementApplicationsRoute
+  DashboardPlacementCalendarRoute: typeof DashboardPlacementCalendarRoute
   DashboardPlacementCompaniesRoute: typeof DashboardPlacementCompaniesRoute
   DashboardPlacementDrivesRoute: typeof DashboardPlacementDrivesRoute
   DashboardPlacementEligibilityRoute: typeof DashboardPlacementEligibilityRoute
+  DashboardPlacementHistoryRoute: typeof DashboardPlacementHistoryRoute
+  DashboardPlacementIntelligenceRoute: typeof DashboardPlacementIntelligenceRoute
   DashboardPlacementInterviewsRoute: typeof DashboardPlacementInterviewsRoute
+  DashboardPlacementNotificationsRoute: typeof DashboardPlacementNotificationsRoute
   DashboardPlacementReportsRoute: typeof DashboardPlacementReportsRoute
+  DashboardPlacementTargetsRoute: typeof DashboardPlacementTargetsRoute
   DashboardPlacementIndexRoute: typeof DashboardPlacementIndexRoute
 }
 
 const DashboardPlacementRouteChildren: DashboardPlacementRouteChildren = {
+  DashboardPlacementAlumniRoute: DashboardPlacementAlumniRoute,
   DashboardPlacementApplicationsRoute: DashboardPlacementApplicationsRoute,
+  DashboardPlacementCalendarRoute: DashboardPlacementCalendarRoute,
   DashboardPlacementCompaniesRoute: DashboardPlacementCompaniesRoute,
   DashboardPlacementDrivesRoute: DashboardPlacementDrivesRoute,
   DashboardPlacementEligibilityRoute: DashboardPlacementEligibilityRoute,
+  DashboardPlacementHistoryRoute: DashboardPlacementHistoryRoute,
+  DashboardPlacementIntelligenceRoute: DashboardPlacementIntelligenceRoute,
   DashboardPlacementInterviewsRoute: DashboardPlacementInterviewsRoute,
+  DashboardPlacementNotificationsRoute: DashboardPlacementNotificationsRoute,
   DashboardPlacementReportsRoute: DashboardPlacementReportsRoute,
+  DashboardPlacementTargetsRoute: DashboardPlacementTargetsRoute,
   DashboardPlacementIndexRoute: DashboardPlacementIndexRoute,
 }
 
@@ -5530,6 +5682,7 @@ const DashboardPlacementRouteWithChildren =
 interface DashboardStudentRouteChildren {
   DashboardStudentAssignmentsRoute: typeof DashboardStudentAssignmentsRoute
   DashboardStudentAttendanceRoute: typeof DashboardStudentAttendanceRoute
+  DashboardStudentCareerDeclarationRoute: typeof DashboardStudentCareerDeclarationRoute
   DashboardStudentComplaintsRoute: typeof DashboardStudentComplaintsRoute
   DashboardStudentCourseRegistrationRoute: typeof DashboardStudentCourseRegistrationRoute
   DashboardStudentEventsRoute: typeof DashboardStudentEventsRoute
@@ -5553,6 +5706,8 @@ interface DashboardStudentRouteChildren {
 const DashboardStudentRouteChildren: DashboardStudentRouteChildren = {
   DashboardStudentAssignmentsRoute: DashboardStudentAssignmentsRoute,
   DashboardStudentAttendanceRoute: DashboardStudentAttendanceRoute,
+  DashboardStudentCareerDeclarationRoute:
+    DashboardStudentCareerDeclarationRoute,
   DashboardStudentComplaintsRoute: DashboardStudentComplaintsRoute,
   DashboardStudentCourseRegistrationRoute:
     DashboardStudentCourseRegistrationRoute,

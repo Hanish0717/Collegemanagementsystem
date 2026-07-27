@@ -35,9 +35,12 @@ import {
   Image,
   FlaskConical,
   User,
-  Fingerprint,
   Video,
-  CreditCard
+  CreditCard,
+  Calendar,
+  Target,
+  BarChart3,
+  Brain
 } from "lucide-react";
 
 export type RoleId =
@@ -360,9 +363,16 @@ export const ROLES: Record<RoleId, Role> = {
       },
       { to: "/dashboard/placement/companies", label: "Companies", icon: Briefcase },
       { to: "/dashboard/placement/drives", label: "Drives", icon: Sparkles },
-      { to: "/dashboard/placement/eligibility", label: "Eligibility", icon: ClipboardList },
-      { to: "/dashboard/placement/applications", label: "Applications", icon: FileText },
+      { to: "/dashboard/placement/calendar", label: "Placement Calendar", icon: Calendar },
+      { to: "/dashboard/placement/targets", label: "Target Management", icon: Target },
+      { to: "/dashboard/placement/alumni", label: "Alumni Hiring", icon: Users },
+      { to: "/dashboard/placement/history", label: "Student Dossier History", icon: BarChart3 },
+      { to: "/dashboard/placement/intelligence", label: "AI Predictions", icon: Brain },
+      { to: "/dashboard/placement/reports", label: "Analytics & Reports", icon: FileSpreadsheet },
+      { to: "/dashboard/placement/eligibility", label: "Eligibility Config", icon: ClipboardList },
+      { to: "/dashboard/placement/applications", label: "Student Applications", icon: FileText },
       { to: "/dashboard/placement/interviews", label: "Interview Scheduling", icon: CalendarCheck },
+      { to: "/dashboard/placement/notifications", label: "Alerts & Reminders", icon: Bell },
     ],
   },
   warden: {

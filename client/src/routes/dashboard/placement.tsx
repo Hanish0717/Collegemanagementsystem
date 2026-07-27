@@ -7,5 +7,5 @@ export const Route = createFileRoute("/dashboard/placement")({
       throw redirect({ to: "/login" });
     }
   },
-  component: Outlet,
+  component: () => <Outlet />,
 });

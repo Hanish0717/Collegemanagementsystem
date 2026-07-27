@@ -1231,3 +1231,7 @@ Body: {}
 [2026-07-22T18:40:27.714Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
 [2026-07-22T18:41:02.962Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
 [2026-07-22T18:50:32.956Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"hod@college.comhod@college.com","password":"password123password123"}
+[2026-07-27T06:35:49.279Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-27T06:42:40.053Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"alumni.coord@college.com","password":"password123"}
+[2026-07-27T07:04:01.326Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
+[2026-07-27T08:22:42.628Z] GET /api/placement/student-applications?studentId=CS100001 - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
