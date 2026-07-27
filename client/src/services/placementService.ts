@@ -771,6 +771,14 @@ export interface ApplicationHistoryRecord {
   ctc: string;
 }
 
+export interface InterviewRatings {
+  technical: number;
+  hr: number;
+  coding: number;
+  communication: number;
+  overallAvg: number;
+}
+
 export interface InterviewHistoryRecord {
   id: string;
   company: string;
@@ -780,6 +788,7 @@ export interface InterviewHistoryRecord {
   score: string;
   outcome: string;
   feedback: string;
+  ratings?: InterviewRatings;
 }
 
 export interface OfferHistoryRecord {
@@ -788,18 +797,88 @@ export interface OfferHistoryRecord {
   role: string;
   package: string;
   joiningDate: string;
-  status: "Accepted" | "Declined" | "Expired";
+  status: "Accepted" | "Declined" | "Expired" | "Pending";
   offerLetterUrl: string;
+  declinedReason?: string;
+  bondYears?: string;
+  location?: string;
+  verified?: boolean;
+}
+
+export interface DocumentRecord {
+  id: string;
+  name: string;
+  category: "Resume" | "Offer Letter" | "Certificate" | "NOC" | "ID Proof" | "Joining Letter";
+  version: string;
+  uploadedAt: string;
+  fileUrl: string;
+  verificationStatus: "Verified" | "Pending" | "Rejected";
+}
+
+export interface AuditTrailRecord {
+  id: string;
+  performedBy: string;
+  action: string;
+  oldValue?: string;
+  newValue?: string;
+  timestamp: string;
+  reason?: string;
+}
+
+export interface ActivityFeedItem {
+  id: string;
+  title: string;
+  timestamp: string;
+  category: "Application" | "Interview" | "Offer" | "Document" | "Status";
+}
+
+export interface AIStudentInsight {
+  readinessScore: number;
+  employabilityScore: number;
+  placementProbabilityPct: number;
+  strengths: string[];
+  weaknesses: string[];
+  resumeSuggestions: string[];
+  missingSkills: string[];
+  recommendedCertifications: string[];
+  recommendedCompanies: string[];
+}
+
+export interface StudentComparisonData {
+  departmentAvgCgpa: number;
+  departmentAvgPackage: string;
+  batchAvgPackage: string;
+  topPackageInDepartment: string;
+  candidateRankInDept: number;
+  totalStudentsInDept: number;
 }
 
 export interface StudentPlacementDossier {
   studentId: string;
   studentName: string;
+  avatarUrl?: string;
   department: string;
+  batch: string;
   cgpa: number;
   email: string;
   phone: string;
   careerStatus: string;
+  eligibilityStatus: "Eligible" | "Exempted" | "Ineligible";
+  resumeScore: number;
+  employabilityScore: number;
+  profileCompletionPct: number;
+  lastUpdated: string;
+  readinessBadge: "High Priority" | "Job Ready" | "Needs Mentorship" | "Placed";
+  kpis: {
+    applicationsCount: number;
+    interviewsCount: number;
+    offersCount: number;
+    selectionsCount: number;
+    rejectionsCount: number;
+    currentPackageCTC: string;
+    dreamOfferAchieved: boolean;
+    salaryGrowthPct: string;
+  };
   currentPlacement?: {
     company: string;
     role: string;
@@ -807,11 +886,20 @@ export interface StudentPlacementDossier {
     joiningDate: string;
     offerLetterUrl: string;
     resumeUrl: string;
+    bondYears?: string;
+    location?: string;
+    status: string;
+    verified: boolean;
   };
   applicationHistory: ApplicationHistoryRecord[];
   interviewHistory: InterviewHistoryRecord[];
   offerHistory: OfferHistoryRecord[];
-  timeline: { id: string; title: string; timestamp: string; description: string }[];
+  timeline: { id: string; title: string; timestamp: string; description: string; companyLogo?: string; officerNotes?: string; documents?: { name: string; url: string }[] }[];
+  documents: DocumentRecord[];
+  auditTrail: AuditTrailRecord[];
+  activityFeed: ActivityFeedItem[];
+  aiInsights: AIStudentInsight;
+  comparison: StudentComparisonData;
 }
 
 export async function fetchStudentPlacementHistory(studentId: string): Promise<StudentPlacementDossier> {
