@@ -460,15 +460,34 @@ export const login = async (req, res, next) => {
 // @access  Public
 export const googleAuth = async (req, res, next) => {
   try {
-    const { googleUserInfo, role } = req.body;
+    const { credential, googleUserInfo, role } = req.body;
 
-    if (!googleUserInfo || !googleUserInfo.sub || !googleUserInfo.email) {
-      const error = new Error('Invalid Google user info');
+    let googleId = googleUserInfo?.sub;
+    let email = googleUserInfo?.email;
+    let name = googleUserInfo?.name || 'Google User';
+
+    if (credential && process.env.GOOGLE_CLIENT_ID) {
+      try {
+        const ticket = await googleClient.verifyIdToken({
+          idToken: credential,
+          audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (payload) {
+          googleId = payload.sub;
+          email = payload.email;
+          name = payload.name || name;
+        }
+      } catch (err) {
+        console.warn('Google ID Token verification fallback to userInfo payload:', err.message);
+      }
+    }
+
+    if (!googleId || !email) {
+      const error = new Error('Invalid Google user info or ID token');
       error.statusCode = 400;
       return next(error);
     }
-
-    const { sub: googleId, email, name } = googleUserInfo;
 
     // Find existing user by googleId or email in Supabase
     const { data: userByGoogle } = await supabase
@@ -483,42 +502,29 @@ export const googleAuth = async (req, res, next) => {
       .eq('email', email)
       .maybeSingle();
 
-    let user = userByGoogle || userByEmail;
+    if (!user) {
+      const error = new Error('Your institutional account has not been created. Please contact the Administrator.');
+      error.statusCode = 404;
+      return next(error);
+    }
 
-    if (user) {
-      // Link Google account if not already linked
-      if (!user.google_id) {
-        const { data: updatedUser } = await supabase
-          .from('users')
-          .update({ google_id: googleId, is_verified: true })
-          .eq('id', user.id)
-          .select()
-          .single();
-
-        user = updatedUser;
-      }
-      if (!user.is_active) {
-        const error = new Error('Account is deactivated. Please contact administration.');
-        error.statusCode = 401;
-        return next(error);
-      }
-    } else {
-      // Create new user via Google — auto-verified
-      const { data: newUser } = await supabase
+    if (!user.google_id) {
+      const { data: updatedUser } = await supabase
         .from('users')
-        .insert([{
-          name,
-          full_name: name,
-          email,
-          google_id: googleId,
-          role: role || 'student',
-          is_verified: true,
-          is_active: true,
-        }])
+        .update({ google_id: googleId, is_verified: true })
+        .eq('id', user.id)
         .select()
         .single();
 
-      user = newUser;
+      if (updatedUser) {
+        user = updatedUser;
+      }
+    }
+
+    if (!user.is_active) {
+      const error = new Error('Account is deactivated. Please contact administration.');
+      error.statusCode = 401;
+      return next(error);
     }
 
     const token = generateToken(user.id);

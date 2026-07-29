@@ -102,15 +102,23 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const googleClientId =
+    (typeof process !== "undefined" && process.env?.VITE_GOOGLE_CLIENT_ID) ||
+    "1054928492049-mockgoogleclientid.apps.googleusercontent.com";
+
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <FloatingChatWidget />
-        <Toaster position="top-right" richColors closeButton />
-      </AuthProvider>
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <AuthProvider>
+          <Outlet />
+          <FloatingChatWidget />
+          <Toaster position="top-right" richColors closeButton />
+        </AuthProvider>
+      </GoogleOAuthProvider>
     </QueryClientProvider>
   );
 }

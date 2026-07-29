@@ -300,7 +300,7 @@
     {
       "id": "76ad18e5-e5f8-4b09-9a6f-6a7aa4ce97f6",
       "created_at": "2026-07-21T06:08:07.040Z",
-      "updated_at": "2026-07-21T06:08:07.040Z",
+      "updated_at": "2026-07-29T07:57:35.306Z",
       "user_id": "50e760c4-c332-41ab-94dc-146b3991e84f",
       "full_name": "ramesh",
       "email": "23341a4219@gmrit.edu.in",
@@ -310,7 +310,7 @@
       "experience": 0,
       "phone_number": "",
       "is_active": true,
-      "status": "Active"
+      "status": "active"
     }
   ],
   "books": [

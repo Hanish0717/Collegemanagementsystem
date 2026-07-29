@@ -1236,3 +1236,43 @@ Body: {}
 [2026-07-27T07:04:01.326Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
 [2026-07-27T08:22:42.628Z] GET /api/placement/student-applications?studentId=CS100001 - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
 [2026-07-27T12:10:03.309Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:17:57.406Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:17:57.417Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:18:04.319Z] GET /api/super-admin/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:18:19.791Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:18:19.802Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:14.146Z] GET /api/student-module/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:14.155Z] GET /api/student-module/dashboard - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:14.210Z] GET /api/student-module/results - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:14.222Z] GET /api/student-module/results - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:14.263Z] GET /api/attendance/student/std_2023_cse_042 - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:14.275Z] GET /api/attendance/student/std_2023_cse_042 - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:16.232Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:16.242Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:21:20.571Z] GET /api/super-admin/dashboard/stats - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-29T05:38:13.360Z] POST /api/auth/login - Status: 400 - Client Error: Password is required - Body: {"email":"parent@college.com","admissionNumber":"ADM2026102"}
+[2026-07-29T06:21:28.555Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:21:28.572Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:21:28.593Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:21:28.597Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:21:45.690Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:21:45.711Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:23:05.669Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms@college.com","password":"password123"}
+[2026-07-29T06:23:14.341Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:23:14.349Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:23:14.357Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:23:14.365Z] GET /api/transport/dashboard - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:23:50.044Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:23:50.056Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:24:01.713Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:24:01.725Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:25:29.545Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T06:25:29.558Z] GET /api/dashboard/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-29T08:03:46.565Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}
+[2026-07-29T08:03:47.601Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}
+[2026-07-29T08:05:03.273Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}
+[2026-07-29T08:05:04.302Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}
+[2026-07-29T08:06:50.814Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}
+[2026-07-29T08:06:51.838Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}
+[2026-07-29T08:08:33.002Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}
+[2026-07-29T08:08:34.023Z] GET /api/super-admin/departments - Status: 403 - Client Error: Forbidden: Your role 'admin' is not authorized to access this resource - Body: {}

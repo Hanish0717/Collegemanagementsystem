@@ -102,9 +102,14 @@ api.interceptors.response.use(
         }
 
         const currentToken = localStorage.getItem("cms_token");
-        const isFacultyToken = currentToken && currentToken.startsWith("faculty_token_");
+        const isDemoToken = currentToken && (
+          currentToken.startsWith("faculty_token_") ||
+          currentToken.startsWith("demo_token_") ||
+          currentToken.startsWith("student_token_") ||
+          currentToken.startsWith("mock_")
+        );
 
-        if (!isFacultyToken) {
+        if (!isDemoToken) {
           localStorage.removeItem("cms_token");
           localStorage.removeItem("cms_user");
           localStorage.removeItem("campusly.role");
