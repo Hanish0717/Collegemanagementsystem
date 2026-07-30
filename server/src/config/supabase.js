@@ -46,37 +46,43 @@ if (!isMockMode && databaseUrl) {
     const port = hostParts?.[1] ? parseInt(hostParts[1], 10) : 5432;
     debugLog("Starting database TCP check for host: " + host + ", port: " + port);
 
-    // Check TCP connectivity for ALL hosts (including localhost/127.0.0.1)
-    const portReachableError = await new Promise((resolve) => {
-      const socket = new net.Socket();
-      let isResolved = false;
+    // Check TCP connectivity for ALL hosts (including localhost/127.0.0.1) with retries
+    let portReachableError = null;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      portReachableError = await new Promise((resolve) => {
+        const socket = new net.Socket();
+        let isResolved = false;
 
-      const cleanup = () => {
-        socket.removeAllListeners('connect');
-        socket.removeAllListeners('timeout');
-        socket.removeAllListeners('error');
-        socket.on('error', () => {});
-        socket.destroy();
-      };
+        const cleanup = () => {
+          socket.removeAllListeners('connect');
+          socket.removeAllListeners('timeout');
+          socket.removeAllListeners('error');
+          socket.on('error', () => {});
+          socket.destroy();
+        };
 
-      const done = (err) => {
-        if (isResolved) return;
-        isResolved = true;
-        cleanup();
-        resolve(err);
-      };
+        const done = (err) => {
+          if (isResolved) return;
+          isResolved = true;
+          cleanup();
+          resolve(err);
+        };
 
-      socket.setTimeout(4000); // 4 seconds timeout
-      socket.once('connect', () => done(null));
-      socket.once('timeout', () => done(new Error('Connection timed out')));
-      socket.once('error', (err) => done(err));
+        socket.setTimeout(4000);
+        socket.once('connect', () => done(null));
+        socket.once('timeout', () => done(new Error('Connection timed out')));
+        socket.once('error', (err) => done(err));
 
-      try {
-        socket.connect(port, host);
-      } catch (e) {
-        done(e);
-      }
-    });
+        try {
+          socket.connect(port, host);
+        } catch (e) {
+          done(e);
+        }
+      });
+
+      if (!portReachableError) break;
+      if (attempt < 3) await new Promise((r) => setTimeout(r, 500));
+    }
 
     if (portReachableError) {
       throw portReachableError;

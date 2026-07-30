@@ -1,306 +1,534 @@
-import { useState, useEffect } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { Briefcase, Building2, Send, Upload } from 'lucide-react';
-import { Badge, Card, PageHeader } from '@/components/dashboard/ui';
-import api from '@/lib/api';
+import { useState, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
+import { Briefcase, Building2, Send, Upload, Lock, CheckCircle2, AlertCircle, Clock, X, FileText, Globe, Linkedin, Phone, XCircle } from "lucide-react";
+import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
+import { fetchPlacementData, createApplication, fetchStudentApplications, withdrawStudentApplication, checkStudentDriveEligibility, type DriveItem, type StudentApplicationItem, type StudentProfile } from "@/services/placementService";
+import { toast } from "sonner";
 
 export function StudentPlacement() {
-  const [list, setList] = useState<any[]>([]);
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [linkedin, setLinkedin] = useState('');
-  const [portfolio, setPortfolio] = useState('');
-  const [updating, setUpdating] = useState(false);
+  const [drives, setDrives] = useState<DriveItem[]>([]);
+  const [myApplications, setMyApplications] = useState<StudentApplicationItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchPlacements = async () => {
+  // Application Modal States
+  const [selectedDrive, setSelectedDrive] = useState<DriveItem | null>(null);
+  const [activeApp, setActiveApp] = useState<StudentApplicationItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Form Fields
+  const [phone, setPhone] = useState("");
+  const [coverNote, setCoverNote] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
+  const [resumeUrl, setResumeUrl] = useState("");
+
+  const currentStudentProfile: StudentProfile = {
+    studentId: "CS100001",
+    full_name: "Student Demo",
+    department: "CSE",
+    cgpa: 8.2,
+    backlogs: 0,
+    batch: "2026",
+    gender: "Male",
+    graduationYear: 2026,
+    skills: ["Python", "SQL", "React", "Node.js"]
+  };
+
+  const loadData = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/api/student-module/placements');
-      if (res.data?.success && res.data?.data) {
-        const dbPlacements = res.data.data.map((p: any) => ({
-          company: p.company,
-          position: p.position,
-          status: p.status,
-          appliedDate:
-            p.appliedDate !== '-' ? new Date(p.appliedDate).toISOString().split('T')[0] : '-',
-        }));
-        setList(dbPlacements);
-      }
+      const [drivesRes, appsRes] = await Promise.all([
+        fetchPlacementData(),
+        fetchStudentApplications(currentStudentProfile.studentId),
+      ]);
+      setDrives(drivesRes.drives || []);
+      setMyApplications(appsRes || []);
     } catch (err) {
-      console.error('Error loading placements:', err);
+      console.warn("Failed to load student placement data:", err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchPlacements();
+    loadData();
   }, []);
 
-  const handleApply = (companyName: string) => {
-    alert(
-      `Application submitted successfully for ${companyName}! Our Placement Office will review your profile.`,
-    );
-    // Update local state to show applied
-    setList((prev) =>
-      prev.map((p) => {
-        if (p.company === companyName) {
-          return { ...p, status: 'Applied', appliedDate: new Date().toISOString().split('T')[0] };
-        }
-        return p;
-      }),
+  const getDriveApplication = (drive: DriveItem) => {
+    return myApplications.find(
+      (a) => a.company.toLowerCase() === drive.company.toLowerCase() && a.role.toLowerCase() === drive.role.toLowerCase()
     );
   };
 
-  const handleProfileUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    setUpdating(true);
-    setTimeout(() => {
-      setUpdating(false);
-      alert('Professional profile updated successfully! Resume uploaded.');
-      setLinkedin('');
-      setPortfolio('');
-      setResumeFile(null);
-    }, 1500);
+  const openApplicationModal = (drive: DriveItem) => {
+    const eligibility = checkStudentDriveEligibility(currentStudentProfile, drive);
+    if (!eligibility.isEligible) {
+      toast.error(`Ineligible to apply. ${eligibility.reasons.join("; ")}`);
+      return;
+    }
+
+    const existing = getDriveApplication(drive);
+    setSelectedDrive(drive);
+    setActiveApp(existing || null);
+
+    setPhone(existing?.phone || "+91 98765 43210");
+    setCoverNote(existing?.coverNote || "");
+    setLinkedinUrl(existing?.linkedinUrl || "https://linkedin.com/in/studentdemo");
+    setPortfolioUrl(existing?.portfolioUrl || "https://studentdemo.dev");
+    setResumeUrl(existing?.resumeUrl || "https://college.edu/resumes/CS100001.pdf");
+    setIsModalOpen(true);
+  };
+
+  const handleSubmitApplication = async (status: "Draft" | "Submitted") => {
+    if (!selectedDrive) return;
+
+    const eligibility = checkStudentDriveEligibility(currentStudentProfile, selectedDrive);
+    if (!eligibility.isEligible) {
+      toast.error(`Cannot apply: Ineligible for drive. ${eligibility.reasons.join("; ")}`);
+      return;
+    }
+
+    const isDeadlinePassed = selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline);
+    if (isDeadlinePassed) {
+      toast.error("Application is locked because drive deadline has passed.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await createApplication({
+        studentName: currentStudentProfile.full_name,
+        studentId: currentStudentProfile.studentId,
+        company: selectedDrive.company,
+        role: selectedDrive.role,
+        department: currentStudentProfile.department,
+        cgpa: currentStudentProfile.cgpa,
+        backlogs: currentStudentProfile.backlogs,
+        batch: currentStudentProfile.batch,
+        gender: currentStudentProfile.gender,
+        graduationYear: currentStudentProfile.graduationYear,
+        skills: currentStudentProfile.skills,
+        status,
+        phone,
+        coverNote,
+        linkedinUrl,
+        portfolioUrl,
+        resumeUrl,
+      });
+
+      toast.success(status === "Draft" ? "Application saved as Draft!" : "Application submitted successfully!");
+      setIsModalOpen(false);
+      loadData();
+    } catch (err: any) {
+      console.error("Error submitting application:", err);
+      toast.error(err.response?.data?.message || err.message || "Failed to submit application.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (!selectedDrive || !activeApp) return;
+
+    const isDeadlinePassed = selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline);
+    if (isDeadlinePassed) {
+      toast.error("Cannot withdraw application after deadline.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await withdrawStudentApplication(selectedDrive.id, currentStudentProfile.studentId);
+      toast.success("Application withdrawn.");
+      setIsModalOpen(false);
+      loadData();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || "Failed to withdraw application.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getStatusBadgeTone = (status: string) => {
+    switch (status) {
+      case "Verified":
+      case "Selected":
+      case "Offer Released":
+        return "success";
+      case "Submitted":
+      case "Applied":
+        return "info";
+      case "Draft":
+        return "warn";
+      case "Rejected":
+      case "Withdrawn":
+        return "danger";
+      default:
+        return "info";
+    }
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Placement Applications"
-        desc="View placement opportunities, apply for jobs, and track application status."
+        title="Student Application Portal 🎓"
+        desc="Explore campus recruitment drives, submit applications, edit allowed details before deadline, and track application status."
+        actions={
+          <Link
+            to="/dashboard/student/career-declaration"
+            className="px-3.5 py-2 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary flex items-center gap-1.5 cursor-pointer hover:opacity-95 transition"
+          >
+            <Briefcase className="size-4" /> Career Opt-Out Declaration
+          </Link>
+        }
       />
 
-      <div className="grid md:grid-cols-4 gap-4">
-        {loading
-          ? [1, 2, 3, 4].map((n) => (
-              <Card key={n} className="h-24 animate-pulse bg-muted/40">
-                <div />
-              </Card>
-            ))
-          : [
-              { label: 'Total Companies', value: list.length.toString(), tone: 'info' as const },
-              {
-                label: 'Applied',
-                value: list.filter((p) => p.status !== 'Not Applied').length.toString(),
-                tone: 'success' as const,
-              },
-              {
-                label: 'Shortlisted',
-                value: list.filter((p) => p.status === 'Shortlisted').length.toString(),
-                tone: 'info' as const,
-              },
-              {
-                label: 'Interviews',
-                value: list.filter((p) => p.status === 'Interview Scheduled').length.toString(),
-                tone: 'warn' as const,
-              },
-            ].map((stat) => (
-              <Card key={stat.label}>
-                <div className="text-xs text-muted-foreground">{stat.label}</div>
-                <div className="text-2xl font-bold mt-2">{stat.value}</div>
-                <Badge tone={stat.tone} className="mt-3">
-                  Current
-                </Badge>
-              </Card>
+      {/* Student Profile Card */}
+      <Card className="bg-gradient-soft border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div>
+            <span className="font-bold text-sm text-foreground block">{currentStudentProfile.full_name} ({currentStudentProfile.studentId})</span>
+            <span className="text-muted-foreground mt-0.5 block">
+              Branch: <span className="font-semibold text-foreground">{currentStudentProfile.department}</span> • CGPA: <span className="font-semibold text-emerald-600">{currentStudentProfile.cgpa}</span> • Active Backlogs: <span className="font-semibold text-foreground">{currentStudentProfile.backlogs}</span> • Batch: <span className="font-semibold text-foreground">{currentStudentProfile.batch}</span>
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {currentStudentProfile.skills.map((sk) => (
+              <Badge key={sk} tone="info" className="text-[10px]">
+                {sk}
+              </Badge>
             ))}
+          </div>
+        </div>
+      </Card>
+
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Available Recruitment Drives", value: drives.length.toString(), tone: "info" as const },
+          { label: "My Submitted Applications", value: myApplications.filter((a) => a.status === "Submitted" || a.status === "Verified").length.toString(), tone: "success" as const },
+          { label: "Draft Applications", value: myApplications.filter((a) => a.status === "Draft").length.toString(), tone: "warn" as const },
+          { label: "Verified Applications", value: myApplications.filter((a) => a.status === "Verified").length.toString(), tone: "success" as const },
+        ].map((stat) => (
+          <Card key={stat.label}>
+            <div className="text-xs text-muted-foreground">{stat.label}</div>
+            <div className="text-2xl font-bold mt-1.5">{loading ? "…" : stat.value}</div>
+            <Badge tone={stat.tone} className="mt-2 text-[10px]">
+              Active Drive
+            </Badge>
+          </Card>
+        ))}
       </div>
 
+      {/* Recruitment Drives */}
       <Card>
-        <h3 className="font-semibold mb-4">Placement Opportunities</h3>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-bold text-base">Campus Recruitment Drives</h3>
+            <p className="text-xs text-muted-foreground">Automatic eligibility evaluation based on CGPA, Branch, Backlogs, Gender, and Skills.</p>
+          </div>
+        </div>
+
         {loading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((n) => (
-              <Card key={n} className="h-44 animate-pulse bg-muted/20">
-                <div />
-              </Card>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((n) => (
+              <Card key={n} className="h-44 animate-pulse bg-muted/20" />
             ))}
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {list.map((placement) => (
-              <Card key={placement.company} className="hover:-translate-y-1 transition">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="size-11 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                    {placement.company.slice(0, 2)}
-                  </div>
-                  <Badge
-                    tone={
-                      placement.status === 'Not Applied'
-                        ? 'info'
-                        : placement.status === 'Interview Scheduled'
-                          ? 'warn'
-                          : 'success'
-                    }
-                  >
-                    {placement.status}
-                  </Badge>
-                </div>
-                <h3 className="font-semibold text-sm">{placement.company}</h3>
-                <p className="text-xs text-muted-foreground mt-1">{placement.position}</p>
-                <div className="mt-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Applied</span>
-                    <span className="font-medium">{placement.appliedDate}</span>
-                  </div>
-                </div>
-                {placement.status === 'Not Applied' && (
-                  <button
-                    onClick={() => handleApply(placement.company)}
-                    className="mt-4 w-full px-3 py-2 rounded-lg bg-gradient-primary text-white text-xs font-medium hover:opacity-90 transition"
-                  >
-                    Apply Now
-                  </button>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
-      </Card>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {drives.map((drive) => {
+              const existing = getDriveApplication(drive);
+              const isDeadlinePassed = drive.applicationDeadline ? new Date() > new Date(drive.applicationDeadline) : false;
+              const eligibility = checkStudentDriveEligibility(currentStudentProfile, drive);
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <h3 className="font-semibold mb-4">Application Status</h3>
-          <div className="space-y-2">
-            {loading ? (
-              [1, 2].map((n) => (
-                <div key={n} className="h-16 animate-pulse bg-muted/20 border rounded-xl" />
-              ))
-            ) : list.filter((p) => p.status !== 'Not Applied').length > 0 ? (
-              list
-                .filter((p) => p.status !== 'Not Applied')
-                .map((placement) => (
-                  <div
-                    key={placement.company}
-                    className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
-                  >
-                    <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
-                      {placement.company.slice(0, 2)}
+              return (
+                <Card key={drive.id} className="hover:-translate-y-1 transition flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="size-10 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-bold shadow-sm">
+                        {drive.company.slice(0, 2).toUpperCase()}
+                      </div>
+                      {existing ? (
+                        <Badge tone={getStatusBadgeTone(existing.status)}>
+                          {existing.status}
+                        </Badge>
+                      ) : !eligibility.isEligible ? (
+                        <Badge tone="danger">Not Eligible</Badge>
+                      ) : isDeadlinePassed ? (
+                        <Badge tone="danger">Closed</Badge>
+                      ) : (
+                        <Badge tone="success">Eligible</Badge>
+                      )}
                     </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium">{placement.company}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {placement.position} • {placement.appliedDate}
+
+                    <h4 className="font-bold text-sm text-foreground">{drive.company}</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">{drive.role}</p>
+
+                    <div className="mt-4 space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground flex items-center gap-1"><Clock className="size-3" /> Deadline:</span>
+                        <span className={`font-semibold ${isDeadlinePassed ? "text-rose-600" : "text-emerald-600"}`}>
+                          {drive.applicationDeadline}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Drive Date:</span>
+                        <span className="font-medium">{drive.date}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Venue:</span>
+                        <span className="font-medium">{drive.venue}</span>
                       </div>
                     </div>
-                    <Badge tone={placement.status === 'Interview Scheduled' ? 'warn' : 'success'}>
-                      {placement.status}
-                    </Badge>
-                  </div>
-                ))
-            ) : (
-              <div className="p-4 border border-dashed rounded-xl text-center text-muted-foreground text-sm">
-                No active placement applications.
-              </div>
-            )}
-          </div>
-        </Card>
 
-        <Card>
-          <div className="flex items-center gap-2 mb-4">
-            <Briefcase className="size-5 text-indigo" />
-            <h3 className="font-semibold">Upcoming Interviews</h3>
-          </div>
-          <div className="space-y-2">
-            {loading ? (
-              [1, 2].map((n) => (
-                <div key={n} className="h-16 animate-pulse bg-muted/20 border rounded-xl" />
-              ))
-            ) : list.filter((p) => p.status === 'Interview Scheduled').length > 0 ? (
-              list
-                .filter((p) => p.status === 'Interview Scheduled')
-                .map((placement) => (
-                  <div key={placement.company} className="p-4 rounded-xl bg-gradient-soft border">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">{placement.company}</span>
-                      <Badge tone="warn">Interview</Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground">{placement.position}</div>
-                    <div className="mt-2 text-xs text-muted-foreground">
-                      Date: May 28, 2026 • Time: 10:00 AM
-                    </div>
+                    {/* Eligibility Breakdown */}
+                    {!eligibility.isEligible && (
+                      <div className="mt-3 p-2.5 rounded-xl bg-rose-50/80 border border-rose-200 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-[11px] space-y-1">
+                        <div className="font-bold flex items-center gap-1">
+                          <XCircle className="size-3.5 text-rose-600" /> Ineligible Reasons:
+                        </div>
+                        {eligibility.reasons.map((reason, idx) => (
+                          <div key={idx} className="pl-4 text-[10px] flex items-center gap-1 font-medium">
+                            <span>•</span> <span>{reason}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                ))
-            ) : (
-              <div className="p-4 border border-dashed rounded-xl text-center text-muted-foreground text-sm">
-                No upcoming interviews scheduled.
-              </div>
-            )}
-          </div>
-        </Card>
-      </div>
 
-      <Card>
-        <h3 className="font-semibold mb-4">Upload Resume</h3>
-        {loading ? (
-          <div className="h-32 bg-muted/10 animate-pulse rounded-xl border" />
-        ) : (
-          <form
-            onSubmit={handleProfileUpdate}
-            className="space-y-4 p-4 border rounded-xl bg-gradient-soft"
-          >
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Upload className="size-4 text-muted-foreground" />
-                <span className="text-sm">Upload updated resume</span>
-              </label>
-              <input
-                type="file"
-                className="text-sm"
-                onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
-              />
-            </div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <input
-                placeholder="LinkedIn profile URL"
-                value={linkedin}
-                onChange={(e) => setLinkedin(e.target.value)}
-                className="rounded-lg border bg-background px-3 py-2 text-sm"
-              />
-              <input
-                placeholder="Portfolio URL"
-                value={portfolio}
-                onChange={(e) => setPortfolio(e.target.value)}
-                className="rounded-lg border bg-background px-3 py-2 text-sm"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={updating}
-              className="w-full px-4 py-2.5 rounded-lg bg-gradient-primary text-white text-sm font-medium flex items-center justify-center gap-2"
-            >
-              <Send className="size-4" /> {updating ? 'Updating...' : 'Update Profile'}
-            </button>
-          </form>
+                  <div className="mt-4 pt-3 border-t">
+                    {existing ? (
+                      <button
+                        onClick={() => openApplicationModal(drive)}
+                        className="w-full px-3 py-2 rounded-xl bg-accent hover:bg-accent/80 text-foreground text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        {isDeadlinePassed ? <Lock className="size-3.5" /> : <FileText className="size-3.5" />}
+                        {isDeadlinePassed ? "View Application (Locked)" : `Edit Application (${existing.status})`}
+                      </button>
+                    ) : !eligibility.isEligible ? (
+                      <button
+                        disabled
+                        className="w-full px-3 py-2 rounded-xl bg-rose-100/60 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold cursor-not-allowed flex items-center justify-center gap-1.5"
+                      >
+                        <XCircle className="size-3.5" /> Not Eligible
+                      </button>
+                    ) : isDeadlinePassed ? (
+                      <button
+                        disabled
+                        className="w-full px-3 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-medium cursor-not-allowed flex items-center justify-center gap-1.5"
+                      >
+                        <Lock className="size-3.5" /> Deadline Passed
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => openApplicationModal(drive)}
+                        className="w-full px-3 py-2 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary hover:opacity-95 transition cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <Send className="size-3.5" /> Apply Now
+                      </button>
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
         )}
       </Card>
 
+      {/* Applications Tracker */}
       <Card>
-        <div className="flex items-center gap-2 mb-4">
-          <Building2 className="size-5 text-indigo" />
-          <h3 className="font-semibold">Placement Statistics</h3>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {loading
-            ? [1, 2, 3, 4].map((n) => (
-                <div key={n} className="h-20 animate-pulse bg-muted/20 border rounded-xl" />
-              ))
-            : [
-                { label: 'Campus Placements', value: '85%', icon: '🎓' },
-                { label: 'Average Package', value: '₹8.5L', icon: '💰' },
-                { label: 'Highest Package', value: '₹25L', icon: '🚀' },
-                { label: 'Companies Visited', value: '45', icon: '🏢' },
-              ].map((item) => (
-                <div key={item.label} className="p-4 rounded-xl bg-gradient-soft border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{item.icon}</span>
-                    <span className="text-sm font-medium">{item.label}</span>
+        <h3 className="font-bold text-base mb-4">My Submitted Applications</h3>
+        {myApplications.length === 0 ? (
+          <div className="p-8 border border-dashed rounded-xl text-center text-muted-foreground text-xs">
+            You haven't submitted any placement applications yet. Choose an open drive above to apply.
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {myApplications.map((app) => (
+              <div
+                key={app.id}
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border bg-background/50 hover:bg-accent/30 transition gap-3"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-xl bg-gradient-violet text-white grid place-items-center text-xs font-bold">
+                    {app.company.slice(0, 2).toUpperCase()}
                   </div>
-                  <div className="text-2xl font-bold">{item.value}</div>
+                  <div>
+                    <h4 className="font-bold text-sm text-foreground">{app.company}</h4>
+                    <p className="text-xs text-muted-foreground">{app.role} • Applied on {app.appliedDate}</p>
+                  </div>
                 </div>
-              ))}
-        </div>
+
+                <div className="flex items-center justify-between sm:justify-end gap-3">
+                  {app.isDeadlinePassed && (
+                    <span className="text-[10px] font-semibold text-rose-600 flex items-center gap-1">
+                      <Lock className="size-3" /> Locked
+                    </span>
+                  )}
+                  <Badge tone={getStatusBadgeTone(app.status)}>
+                    {app.status}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
+
+      {/* Application Drawer / Modal */}
+      {isModalOpen && selectedDrive && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-background border rounded-2xl shadow-xl w-full max-w-lg p-6 my-8 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex justify-between items-center border-b pb-3 mb-4">
+              <div>
+                <h3 className="font-bold text-base text-gradient">
+                  Application: {selectedDrive.company}
+                </h3>
+                <p className="text-xs text-muted-foreground">{selectedDrive.role}</p>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {/* Deadline Locking Alert */}
+            {selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline) ? (
+              <div className="p-3 mb-4 rounded-xl bg-rose-50 border border-rose-200 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2 font-medium">
+                <Lock className="size-4 shrink-0" />
+                <span>Application deadline has passed. Fields are locked and editing is disabled.</span>
+              </div>
+            ) : (
+              <div className="p-3 mb-4 rounded-xl bg-blue-50 border border-blue-200 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 text-xs flex items-center gap-2">
+                <Clock className="size-4 shrink-0" />
+                <span>Editing updates your existing application. Only 1 application per drive is saved.</span>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                  <Phone className="size-3" /> Contact Phone Number *
+                </label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none disabled:opacity-60"
+                  placeholder="+91 98765 43210"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                    <Linkedin className="size-3" /> LinkedIn Profile URL
+                  </label>
+                  <input
+                    type="url"
+                    value={linkedinUrl}
+                    onChange={(e) => setLinkedinUrl(e.target.value)}
+                    disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60"
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                    <Globe className="size-3" /> Portfolio URL
+                  </label>
+                  <input
+                    type="url"
+                    value={portfolioUrl}
+                    onChange={(e) => setPortfolioUrl(e.target.value)}
+                    disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                    className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60"
+                    placeholder="https://myportfolio.dev"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                  <FileText className="size-3" /> Statement of Interest / Cover Note
+                </label>
+                <textarea
+                  rows={3}
+                  value={coverNote}
+                  onChange={(e) => setCoverNote(e.target.value)}
+                  disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60 resize-none"
+                  placeholder="Brief statement highlighting relevant skills and achievements for this role..."
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                  <Upload className="size-3" /> Resume Link (PDF)
+                </label>
+                <input
+                  type="text"
+                  value={resumeUrl}
+                  onChange={(e) => setResumeUrl(e.target.value)}
+                  disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                  className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60"
+                  placeholder="https://college.edu/resumes/CS100001.pdf"
+                />
+              </div>
+
+              {/* Modal Action Footer */}
+              {selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline) ? (
+                <div className="pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="w-full px-4 py-2.5 rounded-xl border text-muted-foreground font-semibold text-xs cursor-pointer hover:bg-accent transition"
+                  >
+                    Close (Application Locked)
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2 pt-4 border-t">
+                  {activeApp && activeApp.status !== "Withdrawn" && (
+                    <button
+                      type="button"
+                      disabled={isSaving}
+                      onClick={handleWithdraw}
+                      className="px-3.5 py-2.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                    >
+                      Withdraw
+                    </button>
+                  )}
+
+                  <div className="flex-1 flex gap-2 justify-end">
+                    <button
+                      type="button"
+                      disabled={isSaving}
+                      onClick={() => handleSubmitApplication("Draft")}
+                      className="px-4 py-2.5 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition cursor-pointer disabled:opacity-50"
+                    >
+                      Save Draft
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isSaving}
+                      onClick={() => handleSubmitApplication("Submitted")}
+                      className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary hover:opacity-95 transition cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                    >
+                      <Send className="size-3.5" /> Submit Application
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

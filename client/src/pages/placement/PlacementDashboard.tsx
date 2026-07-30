@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useRouterState, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   AreaChart,
@@ -23,14 +23,16 @@ import {
   Users,
   TrendingUp,
   BarChart3,
-  Calendar,
+  Calendar as CalendarIcon,
   ArrowRight,
+  Building2,
+  Bell,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { fetchPlacementData, type PlacementDashboardData } from "@/services/placementService";
 
-const statIcons = [Briefcase, Sparkles, Users, TrendingUp, BarChart3, Calendar];
+const statIcons = [Briefcase, Sparkles, Users, TrendingUp, BarChart3, CalendarIcon];
 const statGradients = [
   "bg-gradient-primary",
   "bg-gradient-violet",
@@ -119,11 +121,63 @@ export function PlacementDashboard() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Placement Overview 🎯"
+        title="Placement Coordinator Overview 🎯"
         desc={
           loading
             ? "Synchronizing placement statistics..."
-            : "Campus recruitment analytics, drive tracking and student placements (Live Database Connected)."
+            : "Campus recruitment analytics, drive tracking and student placements."
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/dashboard/placement/companies"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <Building2 className="size-3.5 text-primary" /> Companies
+            </Link>
+            <Link
+              to="/dashboard/placement/drives"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <Briefcase className="size-3.5 text-purple-500" /> Drives
+            </Link>
+            <Link
+              to="/dashboard/placement/calendar"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <CalendarIcon className="size-3.5 text-emerald-500" /> Calendar
+            </Link>
+            <Link
+              to="/dashboard/placement/targets"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <Sparkles className="size-3.5 text-amber-500" /> Target Management
+            </Link>
+            <Link
+              to="/dashboard/placement/alumni"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <Users className="size-3.5 text-indigo-500" /> Alumni Hiring
+            </Link>
+            <Link
+              to="/dashboard/placement/history"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <BarChart3 className="size-3.5 text-cyan-500" /> Student Dossier History
+            </Link>
+            <Link
+              to="/dashboard/placement/intelligence"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <Sparkles className="size-3.5 text-purple-500" /> AI Predictions
+            </Link>
+            <Link
+              to="/dashboard/placement/notifications"
+              className="px-3 py-2 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <Bell className="size-3.5 text-blue-500" /> Alerts
+            </Link>
+          </div>
         }
       />
 

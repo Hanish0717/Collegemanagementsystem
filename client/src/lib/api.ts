@@ -95,17 +95,9 @@ api.interceptors.response.use(
         }
 
         const currentToken = localStorage.getItem("cms_token");
-        const userStr = localStorage.getItem("cms_user");
+        const isFacultyToken = currentToken && currentToken.startsWith("faculty_token_");
 
-        // Protect active user sessions (HOD, Faculty, Admin, Student) from spurious 401 session wipes
-        const isKnownSession =
-          Boolean(currentToken) ||
-          activeRole === "hod" ||
-          activeRole === "faculty" ||
-          activeRole === "admin" ||
-          (userStr && userStr.includes("hod"));
-
-        if (!isKnownSession) {
+        if (!isFacultyToken) {
           localStorage.removeItem("cms_token");
           localStorage.removeItem("cms_user");
           localStorage.removeItem("campusly.role");

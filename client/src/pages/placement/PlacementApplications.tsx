@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Search, Plus, Filter, Loader2, Upload, X, Check, FileSpreadsheet } from "lucide-react";
+import { Search, Plus, Filter, Loader2, Upload, X, Check, FileSpreadsheet, Download, CheckCircle, XCircle } from "lucide-react";
 import { Card, PageHeader, Badge } from "@/components/dashboard/ui";
-import { fetchPlacementData, createApplication } from "@/services/placementService";
+import { fetchPlacementData, createApplication, updateApplication, exportApplicationsToCsv } from "@/services/placementService";
 import { toast } from "sonner";
 
 interface ApplicationItem {
@@ -30,6 +30,27 @@ export function PlacementApplications() {
   const openViewModal = (app: ApplicationItem) => {
     setSelectedApplication(app);
     setIsViewModalOpen(true);
+  };
+
+  const handleUpdateStatus = async (app: ApplicationItem, newStatus: string) => {
+    try {
+      toast.loading(`Updating status to ${newStatus}...`);
+      await updateApplication(app.id, {
+        company: app.company,
+        role: app.role,
+        studentId: app.studentId,
+        status: newStatus
+      });
+      toast.dismiss();
+      toast.success(`Application for ${app.studentName} marked as ${newStatus}`);
+      
+      setApplications((prev) =>
+        prev.map((item) => (item.id === app.id ? { ...item, status: newStatus } : item))
+      );
+    } catch (err: any) {
+      toast.dismiss();
+      toast.error(err.message || "Failed to update status");
+    }
   };
 
   // Import Applications Modal States
@@ -208,19 +229,28 @@ export function PlacementApplications() {
   }, []);
 
   const statuses = [
+    "Draft",
+    "Submitted",
+    "Verified",
+    "Rejected",
+    "Withdrawn",
     "Applied",
     "Shortlisted",
     "Interview Scheduled",
     "Selected",
-    "Rejected",
     "Offer Released",
   ];
+
   const statusColors: Record<string, any> = {
+    Draft: "info",
+    Submitted: "info",
+    Verified: "success",
+    Rejected: "danger",
+    Withdrawn: "danger",
     Applied: "info",
     Shortlisted: "warn",
     "Interview Scheduled": "info",
     Selected: "success",
-    Rejected: "danger",
     "Offer Released": "success",
   };
 
@@ -240,18 +270,18 @@ export function PlacementApplications() {
   const stats = [
     { label: "Total Applications", value: applications.length, color: "bg-blue-500" },
     {
-      label: "Shortlisted",
-      value: applications.filter((a) => a.status === "Shortlisted").length,
-      color: "bg-amber-500",
-    },
-    {
-      label: "Selected",
-      value: applications.filter((a) => a.status === "Selected" || a.status === "Offer Released").length,
+      label: "Verified / Selected",
+      value: applications.filter((a) => a.status === "Verified" || a.status === "Selected" || a.status === "Offer Released").length,
       color: "bg-emerald-500",
     },
     {
-      label: "Rejected",
-      value: applications.filter((a) => a.status === "Rejected").length,
+      label: "Submitted / Applied",
+      value: applications.filter((a) => a.status === "Submitted" || a.status === "Applied" || a.status === "Draft").length,
+      color: "bg-amber-500",
+    },
+    {
+      label: "Rejected / Withdrawn",
+      value: applications.filter((a) => a.status === "Rejected" || a.status === "Withdrawn").length,
       color: "bg-rose-500",
     },
   ];
@@ -259,18 +289,27 @@ export function PlacementApplications() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Application Management"
-        desc="Track student applications and manage interview workflows."
+        title="Student Applications Registry"
+        desc="Officer portal for verifying unique student placement applications."
         actions={
-          <button 
-            onClick={() => {
-              setIsImportModalOpen(true);
-              setImportTab("csv");
-            }}
-            className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-sm glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
-          >
-            <Plus className="size-4" /> Import Applications
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => exportApplicationsToCsv(filteredApplications)}
+              disabled={filteredApplications.length === 0}
+              className="px-3.5 py-2.5 rounded-xl border bg-background text-xs font-semibold hover:bg-accent transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <Download className="size-4 text-emerald-600" /> Export CSV
+            </button>
+            <button 
+              onClick={() => {
+                setIsImportModalOpen(true);
+                setImportTab("csv");
+              }}
+              className="px-4 py-2.5 rounded-xl bg-gradient-primary text-white text-xs font-semibold glow-primary flex items-center gap-2 cursor-pointer hover:opacity-95 transition"
+            >
+              <Plus className="size-4" /> Import Applications
+            </button>
+          </div>
         }
       />
 
@@ -405,12 +444,32 @@ export function PlacementApplications() {
                       <Badge tone={(statusColors[app.status] || "info") as any}>{app.status}</Badge>
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <button 
-                        onClick={() => openViewModal(app)}
-                        className="text-xs text-blue-600 hover:underline cursor-pointer font-medium"
-                      >
-                        View
-                      </button>
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button 
+                          onClick={() => openViewModal(app)}
+                          className="px-2 py-1 rounded border text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition cursor-pointer font-medium"
+                        >
+                          View
+                        </button>
+                        {app.status !== "Verified" && app.status !== "Rejected" && app.status !== "Withdrawn" && (
+                          <>
+                            <button
+                              onClick={() => handleUpdateStatus(app, "Verified")}
+                              className="px-2 py-1 rounded bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 hover:bg-emerald-100 transition cursor-pointer text-xs font-semibold flex items-center gap-1"
+                              title="Verify Application"
+                            >
+                              <CheckCircle className="size-3.5" /> Verify
+                            </button>
+                            <button
+                              onClick={() => handleUpdateStatus(app, "Rejected")}
+                              className="px-2 py-1 rounded bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 hover:bg-rose-100 transition cursor-pointer text-xs font-semibold flex items-center gap-1"
+                              title="Reject Application"
+                            >
+                              <XCircle className="size-3.5" /> Reject
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
