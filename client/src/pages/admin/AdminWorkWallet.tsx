@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CheckCircle2,
   Clock,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Badge, Card, PageHeader, StatCard } from "@/components/dashboard/ui";
 import { toast } from "sonner";
+import api from "@/lib/api";
 
 export interface TaskItem {
   id: string;
@@ -108,6 +109,32 @@ export function AdminWorkWallet() {
     },
   ]);
 
+  useEffect(() => {
+    let isMounted = true;
+    api.get("/api/admin/work-wallet")
+      .then((res) => {
+        if (isMounted && res.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+          const fetchedTasks: TaskItem[] = res.data.data.map((t: any) => ({
+            id: t.id,
+            title: t.title,
+            category: t.category,
+            assignee: t.assignee,
+            assignedBy: t.assigned_by || t.assignedBy || "Admin Office",
+            priority: t.priority || "Medium",
+            status: t.status || "Pending",
+            dueDate: t.due_date || t.dueDate || "Aug 05, 2026",
+            commentsCount: Number(t.comments_count || t.commentsCount || 0),
+            description: t.description || ""
+          }));
+          setTasks(fetchedTasks);
+        }
+      })
+      .catch((err) => {
+        console.warn("Using offline work wallet state:", err.message);
+      });
+    return () => { isMounted = false; };
+  }, []);
+
   const filteredTasks = tasks.filter((t) => {
     const matchesSearch =
       t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -124,15 +151,16 @@ export function AdminWorkWallet() {
     return true;
   });
 
-  const handleCreateTask = (e: React.FormEvent) => {
+  const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!taskTitle.trim()) {
       toast.error("Please enter a task title.");
       return;
     }
 
+    const tempId = `TSK-${Math.floor(100 + Math.random() * 900)}`;
     const newTask: TaskItem = {
-      id: `TSK-${Math.floor(100 + Math.random() * 900)}`,
+      id: tempId,
       title: taskTitle,
       category: taskCategory,
       assignee: taskAssignee,
@@ -144,6 +172,23 @@ export function AdminWorkWallet() {
       description: taskDescription || "Assigned via Admin Work Wallet task manager.",
     };
 
+    try {
+      const res = await api.post("/api/admin/work-wallet", {
+        title: taskTitle,
+        category: taskCategory,
+        assignee: taskAssignee,
+        priority: taskPriority,
+        dueDate: taskDueDate,
+        description: taskDescription
+      });
+      if (res.data?.data) {
+        const created = res.data.data;
+        newTask.id = created.id || tempId;
+      }
+    } catch (err) {
+      console.warn("Persisted task in local state due to offline mode");
+    }
+
     setTasks([newTask, ...tasks]);
     toast.success(`Task "${newTask.id}: ${newTask.title}" assigned to ${newTask.assignee}!`);
     setIsCreateModalOpen(false);
@@ -151,10 +196,17 @@ export function AdminWorkWallet() {
     setTaskDescription("");
   };
 
-  const handleStatusChange = (taskId: string, newStatus: TaskItem["status"]) => {
+  const handleStatusChange = async (taskId: string, newStatus: TaskItem["status"]) => {
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
     );
+
+    try {
+      await api.put(`/api/admin/work-wallet/${taskId}/status`, { status: newStatus });
+    } catch (err) {
+      console.warn("Status updated locally");
+    }
+
     toast.success(`Task ${taskId} status updated to "${newStatus}"`);
   };
 

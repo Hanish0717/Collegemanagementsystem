@@ -418,16 +418,63 @@ async function runMigrations() {
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
 
-      -- Create security_logs table
-      CREATE TABLE IF NOT EXISTS security_logs (
+      -- Create work_wallet_tasks table
+      CREATE TABLE IF NOT EXISTS work_wallet_tasks (
         id varchar(50) PRIMARY KEY,
-        user_name varchar(255) NOT NULL,
-        event varchar(255) NOT NULL,
-        ip varchar(50) NOT NULL,
-        time varchar(100) NOT NULL,
-        status varchar(50) NOT NULL,
+        title varchar(255) NOT NULL,
+        category varchar(100) NOT NULL,
+        assignee varchar(255) NOT NULL,
+        assigned_by varchar(255) NOT NULL,
+        priority varchar(50) NOT NULL DEFAULT 'Medium',
+        status varchar(50) NOT NULL DEFAULT 'Pending',
+        due_date varchar(100) NOT NULL,
+        comments_count integer DEFAULT 0,
+        description text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create backups table
+      CREATE TABLE IF NOT EXISTS backups (
+        id varchar(50) PRIMARY KEY,
+        type varchar(100) NOT NULL,
+        size varchar(50) NOT NULL,
+        date varchar(100) NOT NULL,
+        status varchar(50) DEFAULT 'Completed',
+        cloud varchar(50) DEFAULT 'Synced',
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
+
+      -- Create audit_logs table
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id uuid REFERENCES users(id) ON DELETE SET NULL,
+        user_name varchar(255) NOT NULL,
+        role varchar(100) NOT NULL,
+        action varchar(255) NOT NULL,
+        module varchar(100) NOT NULL,
+        details jsonb DEFAULT '{}'::jsonb,
+        ip_address varchar(50),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Create login_history table
+      CREATE TABLE IF NOT EXISTS login_history (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id uuid REFERENCES users(id) ON DELETE CASCADE,
+        email varchar(255) NOT NULL,
+        role varchar(100) NOT NULL,
+        ip_address varchar(50),
+        user_agent text,
+        status varchar(50) NOT NULL DEFAULT 'Success',
+        login_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      -- Indexes for performance optimization
+      CREATE INDEX IF NOT EXISTS idx_work_wallet_tasks_status ON work_wallet_tasks(status);
+      CREATE INDEX IF NOT EXISTS idx_security_logs_created_at ON security_logs(created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
+      CREATE INDEX IF NOT EXISTS idx_login_history_login_at ON login_history(login_at DESC);
 
       -- Update users_role_check constraint to support alumni and alumni-coordinator
       ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
@@ -647,6 +694,25 @@ async function runMigrations() {
         await client.query(
           "INSERT INTO student_notifications (id, title, type, priority, time, unread) VALUES ($1, $2, $3, $4, $5, $6)",
           n
+        );
+      }
+    }
+
+    // Seed work wallet tasks if empty
+    const workWalletCount = await client.query("SELECT COUNT(*) FROM work_wallet_tasks");
+    if (parseInt(workWalletCount.rows[0].count) === 0) {
+      console.log("Seeding work_wallet_tasks table...");
+      const tasks = [
+        ['TSK-101', 'Review NAAC Criterion 3 R&D Documentation', 'Accreditation', 'Dean Academics', 'Office of the Principal', 'High', 'Approval Required', 'Jul 31, 2026', 4, 'Audit research publication proof certificates for 2025-2026 faculty submissions.'],
+        ['TSK-102', 'Consolidate Mid-Semester Attendance Reports', 'Academic Monitoring', 'HOD CSE', 'Admin Office', 'High', 'In Progress', 'Aug 02, 2026', 2, 'Flag all students with <75% attendance across Semester 5 sections A and B.'],
+        ['TSK-103', 'Approve Q3 Laboratory Procurement Invoice', 'Inventory & Assets', 'Finance Officer', 'Admin Office', 'Medium', 'Pending', 'Aug 04, 2026', 1, 'Verify vendor GST tax invoice for 40 new Intel i7 workstations.'],
+        ['TSK-104', 'Finalize Mid-Term Examination Timetable Matrix', 'Exam Cell', 'Exam Controller', 'Vice Principal', 'High', 'Completed', 'Jul 25, 2026', 6, 'Publish clash-free examination hall distribution list for August end-term.'],
+        ['TSK-105', 'Execute Alumni Guest Lecture Sponsorship MOU', 'Alumni Affairs', 'Alumni Coordinator', 'Office of the Principal', 'Low', 'In Progress', 'Aug 10, 2026', 3, 'Coordinate keynote address and workshop logistics for Tech Fest 2026.']
+      ];
+      for (const t of tasks) {
+        await client.query(
+          "INSERT INTO work_wallet_tasks (id, title, category, assignee, assigned_by, priority, status, due_date, comments_count, description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+          t
         );
       }
     }

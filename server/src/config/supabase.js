@@ -303,7 +303,10 @@ if (isMockMode) {
       'departments',
       'security_logs',
       'system_notifications',
-      'backups'
+      'backups',
+      'work_wallet_tasks',
+      'audit_logs',
+      'login_history'
     ];
     let changed = false;
     requiredTables.forEach(table => {
@@ -312,6 +315,54 @@ if (isMockMode) {
         changed = true;
       }
     });
+
+    if (!currentDb['work_wallet_tasks'] || currentDb['work_wallet_tasks'].length === 0) {
+      currentDb['work_wallet_tasks'] = [
+        {
+          id: "TSK-101",
+          title: "Review NAAC Criterion 3 R&D Documentation",
+          category: "Accreditation",
+          assignee: "Dean Academics",
+          assigned_by: "Office of the Principal",
+          priority: "High",
+          status: "Approval Required",
+          due_date: "Jul 31, 2026",
+          comments_count: 4,
+          description: "Audit research publication proof certificates for 2025-2026 faculty submissions.",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: "TSK-102",
+          title: "Consolidate Mid-Semester Attendance Reports",
+          category: "Academic Monitoring",
+          assignee: "HOD CSE",
+          assigned_by: "Admin Office",
+          priority: "High",
+          status: "In Progress",
+          due_date: "Aug 02, 2026",
+          comments_count: 2,
+          description: "Flag all students with <75% attendance across Semester 5 sections A and B.",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: "TSK-103",
+          title: "Approve Q3 Laboratory Procurement Invoice",
+          category: "Inventory & Assets",
+          assignee: "Finance Officer",
+          assigned_by: "Admin Office",
+          priority: "Medium",
+          status: "Pending",
+          due_date: "Aug 04, 2026",
+          comments_count: 1,
+          description: "Verify vendor GST tax invoice for 40 new Intel i7 workstations.",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ];
+      changed = true;
+    }
 
     if (!currentDb['departments'] || currentDb['departments'].length === 0) {
       currentDb['departments'] = [
@@ -1188,6 +1239,25 @@ if (isMockMode) {
 }
 
 debugLog("Supabase.js module loading completed successfully!");
+
+export const executeTransaction = async (transactionCallback) => {
+  if (isMockMode || !pool) {
+    const mockDb = getMockDb();
+    return await transactionCallback(mockDb);
+  }
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await transactionCallback(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+};
 
 export const supabase = activeSupabaseClient;
 export { isMockMode, getMockDb };

@@ -16,6 +16,11 @@ import {
   createBroadcast,
   getAudienceCounts,
 } from '../controllers/adminController.js';
+import {
+  getWorkWalletTasks,
+  createWorkWalletTask,
+  updateWorkWalletTaskStatus,
+} from '../controllers/workWalletController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { requireRole } from '../middleware/rbacMiddleware.js';
 
@@ -65,5 +70,13 @@ router.route('/broadcasts')
 
 router.route('/audience-counts')
   .get(getAudienceCounts);
+
+// Work Wallet routes
+router.route('/work-wallet')
+  .get(getWorkWalletTasks)
+  .post(createWorkWalletTask);
+
+router.route('/work-wallet/:id/status')
+  .put(updateWorkWalletTaskStatus);
 
 export default router;
