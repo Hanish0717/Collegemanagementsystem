@@ -3,18 +3,27 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes("placeholder.supabase.co")) {
+const isConfigured = Boolean(
+  supabaseUrl &&
+  supabaseAnonKey &&
+  !supabaseUrl.includes("placeholder.supabase.co") &&
+  supabaseUrl !== "https://your_supabase_project.supabase.co" &&
+  supabaseAnonKey !== "placeholder_key" &&
+  supabaseAnonKey !== "your_supabase_anon_key_here"
+);
+
+if (!isConfigured) {
   console.warn(
-    "⚠️ Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in client/.env environment configuration."
+    "⚠️ Missing or placeholder VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY in environment configuration. Supabase client initialized in fallback mode."
   );
 }
 
-// Ensure valid HTTPS URL and Key are supplied to createClient
-const targetUrl = supabaseUrl && !supabaseUrl.includes("placeholder.supabase.co") ? supabaseUrl : "https://rdzitvvxxdhtbzzqoasd.supabase.co";
-const targetKey = supabaseAnonKey && supabaseAnonKey !== "placeholder_key" ? supabaseAnonKey : "";
+// Ensure valid non-empty URL and Key are passed to createClient to prevent runtime throws
+const targetUrl = isConfigured ? supabaseUrl : "https://placeholder.supabase.co";
+const targetKey = isConfigured ? supabaseAnonKey : "placeholder_key";
 
 if (import.meta.env.DEV) {
-  console.log("⚡ Supabase initialized with URL:", targetUrl);
+  console.log("⚡ Supabase client initialized. Live integration active:", isConfigured);
 }
 
 export const supabase = createClient(targetUrl, targetKey, {
@@ -23,4 +32,3 @@ export const supabase = createClient(targetUrl, targetKey, {
     autoRefreshToken: false,
   },
 });
-

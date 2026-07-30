@@ -1,25 +1,25 @@
 import express from 'express';
 import {
-  getFaculty,
-  createFaculty,
-  updateFaculty,
-  deleteFaculty,
-  assignFaculty,
-  getTimetable,
-  createTimetableSlot,
-  deleteTimetableSlot,
-  getAdminNotifications,
-  markAdminNotificationRead,
-  markAllAdminNotificationsRead,
-  deleteAdminNotification,
-  getBroadcasts,
-  createBroadcast,
-  getAudienceCounts,
+    getFaculty,
+    createFaculty,
+    updateFaculty,
+    deleteFaculty,
+    assignFaculty,
+    getTimetable,
+    createTimetableSlot,
+    deleteTimetableSlot,
+    getAdminNotifications,
+    markAdminNotificationRead,
+    markAllAdminNotificationsRead,
+    deleteAdminNotification,
+    getBroadcasts,
+    createBroadcast,
+    getAudienceCounts,
 } from '../controllers/adminController.js';
 import {
-  getWorkWalletTasks,
-  createWorkWalletTask,
-  updateWorkWalletTaskStatus,
+    getWorkWalletTasks,
+    createWorkWalletTask,
+    updateWorkWalletTaskStatus,
 } from '../controllers/workWalletController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { requireRole } from '../middleware/rbacMiddleware.js';
@@ -31,52 +31,52 @@ router.use(requireRole('admin', 'super-admin', 'librarian', 'principal', 'dean',
 
 // Faculty routes
 router.route('/faculty')
-  .get(getFaculty)
-  .post(createFaculty);
+    .get(getFaculty)
+    .post(createFaculty);
 
 router.route('/faculty/:id')
-  .put(updateFaculty)
-  .delete(deleteFaculty);
+    .put(updateFaculty)
+    .delete(deleteFaculty);
 
 // Assignments
 router.route('/assignments')
-  .post(assignFaculty);
+    .post(assignFaculty);
 
 // Timetable routes
 router.route('/timetable')
-  .get(getTimetable)
-  .post(createTimetableSlot);
+    .get(getTimetable)
+    .post(createTimetableSlot);
 
 router.route('/timetable/:id')
-  .delete(deleteTimetableSlot);
+    .delete(deleteTimetableSlot);
 
 // Operational Notifications
 router.route('/notifications')
-  .get(getAdminNotifications);
+    .get(getAdminNotifications);
 
 router.route('/notifications/mark-all-read')
-  .post(markAllAdminNotificationsRead);
+    .post(markAllAdminNotificationsRead);
 
 router.route('/notifications/:id')
-  .delete(deleteAdminNotification);
+    .delete(deleteAdminNotification);
 
 router.route('/notifications/:id/read')
-  .put(markAdminNotificationRead);
+    .put(markAdminNotificationRead);
 
 // Broadcast routes
 router.route('/broadcasts')
-  .get(getBroadcasts)
-  .post(createBroadcast);
+    .get(getBroadcasts)
+    .post(createBroadcast);
 
 router.route('/audience-counts')
-  .get(getAudienceCounts);
+    .get(getAudienceCounts);
 
 // Work Wallet routes
 router.route('/work-wallet')
-  .get(getWorkWalletTasks)
-  .post(createWorkWalletTask);
+    .get(getWorkWalletTasks)
+    .post(createWorkWalletTask);
 
 router.route('/work-wallet/:id/status')
-  .put(updateWorkWalletTaskStatus);
+    .put(updateWorkWalletTaskStatus);
 
 export default router;
