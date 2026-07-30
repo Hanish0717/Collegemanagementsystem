@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Calendar, Plus, Save, Loader2 } from "lucide-react";
+import { Calendar, Plus, Save, Loader2, X } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { toast } from "sonner";
 import api from "@/lib/api";
+import { DEPARTMENTS_LIST, getFacultyByDepartment } from "@/services/facultyProfileService";
 
 interface Exam {
   id: string;
@@ -87,13 +88,21 @@ export function ExamTimetable() {
       if (savedSlots.length > 0) {
         const formatted = savedSlots.map(s => {
           const match = s.subject.match(/^(.+?)\s*\((.+?)\)$/);
+          // Split by comma to extract halls array
+          const rawHall = s.hall || s.halls || "Block A - Room 101";
+          const hallsArray = typeof rawHall === "string" 
+            ? rawHall.split(",").map((h: string) => h.trim()).filter(Boolean)
+            : Array.isArray(rawHall) ? rawHall : ["Block A - Room 101"];
+
           return {
             subject_code: match ? match[2] : s.subject,
             subject_name: match ? match[1] : s.subject,
             date: s.date ? s.date.split("T")[0] : "",
             time_slot: s.time || "10:00 AM - 01:00 PM",
-            hall: s.hall || "Block A - Room 101",
-            duration: s.duration || "3 Hours"
+            halls: hallsArray.length > 0 ? hallsArray : ["Block A - Room 101"],
+            duration: s.duration || "3 Hours",
+            invigilator_branch: s.invigilator_branch || s.invigilatorBranch || "",
+            invigilator_name: s.invigilator_name || s.invigilatorName || ""
           };
         });
         setSlotsList(formatted);
@@ -104,8 +113,10 @@ export function ExamTimetable() {
           subject_name: s.name,
           date: "",
           time_slot: "10:00 AM - 01:00 PM",
-          hall: "Block A - Room 101",
-          duration: "3 Hours"
+          halls: ["Block A - Room 101"],
+          duration: "3 Hours",
+          invigilator_branch: "",
+          invigilator_name: ""
         }));
         setSlotsList(prepopulated);
         setIsEditing(true); // Editable by default if creating new timetable
@@ -140,8 +151,10 @@ export function ExamTimetable() {
         subject_name: "",
         date: "",
         time_slot: "10:00 AM - 01:00 PM",
-        hall: "Block A - Room 101",
-        duration: "3 Hours"
+        halls: ["Block A - Room 101"],
+        duration: "3 Hours",
+        invigilator_branch: "",
+        invigilator_name: ""
       }
     ]);
   };
@@ -150,9 +163,30 @@ export function ExamTimetable() {
     setSlotsList(prev => prev.filter((_, idx) => idx !== index));
   };
 
-  const handleSlotChange = (index: number, field: string, val: string) => {
+  const handleSlotChange = (index: number, field: string, val: any) => {
     const updated = [...slotsList];
     updated[index][field] = val;
+    setSlotsList(updated);
+  };
+
+  const handleAddHall = (slotIndex: number) => {
+    const updated = [...slotsList];
+    updated[slotIndex].halls = [...updated[slotIndex].halls, ""];
+    setSlotsList(updated);
+  };
+
+  const handleRemoveHall = (slotIndex: number, hallIndex: number) => {
+    const updated = [...slotsList];
+    updated[slotIndex].halls = updated[slotIndex].halls.filter((_: any, idx: number) => idx !== hallIndex);
+    if (updated[slotIndex].halls.length === 0) {
+      updated[slotIndex].halls = [""];
+    }
+    setSlotsList(updated);
+  };
+
+  const handleHallChange = (slotIndex: number, hallIndex: number, val: string) => {
+    const updated = [...slotsList];
+    updated[slotIndex].halls[hallIndex] = val;
     setSlotsList(updated);
   };
 
@@ -166,8 +200,11 @@ export function ExamTimetable() {
       subject: `${s.subject_name} (${s.subject_code})`,
       date: s.date,
       time: s.time_slot,
-      hall: s.hall || "Block A - Room 101",
-      duration: s.duration || "3 Hours"
+      // Join halls array back by comma for DB storage
+      hall: s.halls.filter((h: string) => h.trim().length > 0).join(", ") || "Block A - Room 101",
+      duration: s.duration || "3 Hours",
+      invigilator_branch: s.invigilator_branch || "",
+      invigilator_name: s.invigilator_name || ""
     }));
     saveTimetableMutation.mutate({ id: selectedExamId, slots: payload });
   };
@@ -327,10 +364,26 @@ export function ExamTimetable() {
               No subjects or slots configured. Click 'Add Exam Slot' to structure the sessions.
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {slotsList.map((slot, idx) => (
-                <div key={idx} className="flex flex-col md:flex-row gap-3 items-end md:items-center bg-muted/30 p-3 rounded-xl border border-dashed">
-                  <div className="flex-1 grid md:grid-cols-6 gap-3 text-xs">
+                <div key={idx} className="relative bg-slate-50/50 dark:bg-slate-800/40 p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-sm space-y-4 hover:shadow-md transition duration-200">
+                  {/* Header row with Delete button */}
+                  <div className="flex justify-between items-center border-b border-slate-150 dark:border-slate-700 pb-2 mb-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg dark:bg-indigo-950/40 dark:text-indigo-400">
+                      Exam Slot #{idx + 1}
+                    </span>
+                    {isEditing && (
+                      <button
+                        onClick={() => handleRemoveSlot(idx)}
+                        className="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 text-[10px] font-bold transition cursor-pointer active:scale-95 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/30"
+                      >
+                        Delete Slot
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Row 1: Subject Code, Subject Name, Exam Date */}
+                  <div className="grid md:grid-cols-3 gap-4">
                     <div>
                       <label className="text-[10px] font-semibold text-muted-foreground block mb-1">Subject Code</label>
                       <input
@@ -339,7 +392,7 @@ export function ExamTimetable() {
                         value={slot.subject_code}
                         disabled={!isEditing}
                         onChange={(e) => handleSlotChange(idx, "subject_code", e.target.value)}
-                        className="w-full rounded-lg border bg-background px-3 py-1.5 outline-none text-xs focus:border-indigo-500 font-mono disabled:opacity-75 disabled:bg-slate-100"
+                        className="w-full rounded-xl border bg-background px-3.5 py-2.5 outline-none text-xs focus:border-indigo-500 font-mono disabled:opacity-75 disabled:bg-slate-100"
                       />
                     </div>
                     <div>
@@ -350,7 +403,7 @@ export function ExamTimetable() {
                         value={slot.subject_name}
                         disabled={!isEditing}
                         onChange={(e) => handleSlotChange(idx, "subject_name", e.target.value)}
-                        className="w-full rounded-lg border bg-background px-3 py-1.5 outline-none text-xs focus:border-indigo-500 disabled:opacity-75 disabled:bg-slate-100"
+                        className="w-full rounded-xl border bg-background px-3.5 py-2.5 outline-none text-xs focus:border-indigo-500 disabled:opacity-75 disabled:bg-slate-100"
                       />
                     </div>
                     <div>
@@ -360,31 +413,60 @@ export function ExamTimetable() {
                         value={slot.date ? slot.date.split("T")[0] : ""}
                         disabled={!isEditing}
                         onChange={(e) => handleSlotChange(idx, "date", e.target.value)}
-                        className="w-full rounded-lg border bg-background px-3 py-1.5 outline-none text-xs focus:border-indigo-500 disabled:opacity-75 disabled:bg-slate-100"
+                        className="w-full rounded-xl border bg-background px-3.5 py-2.5 outline-none text-xs focus:border-indigo-500 disabled:opacity-75 disabled:bg-slate-100"
                       />
                     </div>
+                  </div>
+
+                  {/* Row 2: Session Slot, Exam Hall, Duration */}
+                  <div className="grid md:grid-cols-3 gap-4">
                     <div>
                       <label className="text-[10px] font-semibold text-muted-foreground block mb-1">Session Slot</label>
                       <select
                         value={slot.time_slot}
                         disabled={!isEditing}
                         onChange={(e) => handleSlotChange(idx, "time_slot", e.target.value)}
-                        className="w-full rounded-lg border bg-background px-3 py-1.5 outline-none text-xs focus:border-indigo-500 cursor-pointer disabled:opacity-75 disabled:bg-slate-100"
+                        className="w-full rounded-xl border bg-background px-3.5 py-2.5 outline-none text-xs focus:border-indigo-500 cursor-pointer disabled:opacity-75 disabled:bg-slate-100"
                       >
                         <option value="10:00 AM - 01:00 PM">Morning (10:00 AM - 01:00 PM)</option>
                         <option value="02:00 PM - 05:00 PM">Afternoon (02:00 PM - 05:00 PM)</option>
                       </select>
                     </div>
                     <div>
-                      <label className="text-[10px] font-semibold text-muted-foreground block mb-1">Exam Hall</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Block A - Room 101"
-                        value={slot.hall || ""}
-                        disabled={!isEditing}
-                        onChange={(e) => handleSlotChange(idx, "hall", e.target.value)}
-                        className="w-full rounded-lg border bg-background px-3 py-1.5 outline-none text-xs focus:border-indigo-500 disabled:opacity-75 disabled:bg-slate-100"
-                      />
+                      <label className="text-[10px] font-semibold text-muted-foreground block mb-1">Exam Halls</label>
+                      <div className="space-y-2">
+                        {(slot.halls || ["Block A - Room 101"]).map((hall: string, hallIdx: number) => (
+                          <div key={hallIdx} className="flex items-center gap-1.5">
+                            <input
+                              type="text"
+                              placeholder="e.g. Block A - Room 101"
+                              value={hall}
+                              disabled={!isEditing}
+                              onChange={(e) => handleHallChange(idx, hallIdx, e.target.value)}
+                              className="w-full rounded-xl border bg-background px-3 py-1.5 outline-none text-xs focus:border-indigo-500 disabled:opacity-75 disabled:bg-slate-100"
+                            />
+                            {isEditing && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveHall(idx, hallIdx)}
+                                className="p-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition cursor-pointer dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/30"
+                                title="Remove Hall"
+                              >
+                                <X className="size-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        {isEditing && (
+                          <button
+                            type="button"
+                            onClick={() => handleAddHall(idx)}
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-dashed border-indigo-300 text-indigo-700 bg-indigo-50/50 hover:bg-indigo-100/50 text-[10px] font-bold transition cursor-pointer dark:bg-indigo-950/20 dark:text-indigo-400 dark:border-indigo-900/30"
+                          >
+                            <Plus className="size-3" /> Add Hall
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div>
                       <label className="text-[10px] font-semibold text-muted-foreground block mb-1">Duration</label>
@@ -394,19 +476,51 @@ export function ExamTimetable() {
                         value={slot.duration || ""}
                         disabled={!isEditing}
                         onChange={(e) => handleSlotChange(idx, "duration", e.target.value)}
-                        className="w-full rounded-lg border bg-background px-3 py-1.5 outline-none text-xs focus:border-indigo-500 font-mono disabled:opacity-75 disabled:bg-slate-100"
+                        className="w-full rounded-xl border bg-background px-3.5 py-2.5 outline-none text-xs focus:border-indigo-500 font-mono disabled:opacity-75 disabled:bg-slate-100"
                       />
                     </div>
                   </div>
 
-                  {isEditing && (
-                    <button
-                      onClick={() => handleRemoveSlot(idx)}
-                      className="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 text-[10px] font-bold transition cursor-pointer active:scale-95"
-                    >
-                      Delete Slot
-                    </button>
-                  )}
+                  {/* Row 3: Branch Field, Faculty Selector (Invigilation Purpose) */}
+                  <div className="grid md:grid-cols-2 gap-4 border-t border-dashed border-slate-200 dark:border-slate-700 pt-3">
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted-foreground block mb-1">Invigilator Branch</label>
+                      <select
+                        value={slot.invigilator_branch || ""}
+                        disabled={!isEditing}
+                        onChange={(e) => {
+                          const br = e.target.value;
+                          handleSlotChange(idx, "invigilator_branch", br);
+                          handleSlotChange(idx, "invigilator_name", ""); // reset selected faculty
+                        }}
+                        className="w-full rounded-xl border bg-background px-3.5 py-2.5 outline-none text-xs focus:border-indigo-500 cursor-pointer disabled:opacity-75 disabled:bg-slate-100"
+                      >
+                        <option value="">-- Select Invigilator Branch --</option>
+                        {DEPARTMENTS_LIST.map((d) => (
+                          <option key={d.code} value={d.code}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted-foreground block mb-1">Invigilator Staff Member</label>
+                      <select
+                        value={slot.invigilator_name || ""}
+                        disabled={!isEditing || !slot.invigilator_branch}
+                        onChange={(e) => handleSlotChange(idx, "invigilator_name", e.target.value)}
+                        className="w-full rounded-xl border bg-background px-3.5 py-2.5 outline-none text-xs focus:border-indigo-500 cursor-pointer disabled:opacity-75 disabled:bg-slate-100"
+                      >
+                        <option value="">
+                          {!slot.invigilator_branch ? "Choose branch first" : "-- Select Invigilator --"}
+                        </option>
+                        {slot.invigilator_branch &&
+                          getFacultyByDepartment(slot.invigilator_branch).map((f) => (
+                            <option key={f.employeeId} value={f.name}>
+                              {f.name} ({f.employeeId})
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

@@ -193,7 +193,12 @@ export const getStudentAttendance = async (req, res, next) => {
 // @access  Private (faculty, admin, super-admin)
 export const getClassAttendance = async (req, res, next) => {
   try {
-    const { department, semester, section, subject, date, period } = req.query;
+    let { department, semester, section, subject, date, period } = req.query;
+
+    // Enforce faculty isolation: Force queries to use authenticated faculty's assigned department
+    if (req.user && req.user.role === 'faculty' && req.user.department) {
+      department = req.user.department;
+    }
 
     let studentQuery = supabase
       .from('students')
@@ -612,7 +617,12 @@ export const markAttendanceViaQR = async (req, res, next) => {
 // @access  Private (faculty, admin, super-admin)
 export const bulkMarkAttendance = async (req, res, next) => {
   try {
-    const { subject, date, department, semester, section, period, time, records } = req.body;
+    let { subject, date, department, semester, section, period, time, records } = req.body;
+
+    // Enforce faculty isolation: Force bulk marking to use authenticated faculty's assigned department
+    if (req.user && req.user.role === 'faculty' && req.user.department) {
+      department = req.user.department;
+    }
 
     if (!subject || !date || !records || !Array.isArray(records)) {
       const error = new Error('Please fill in all required fields and provide records array');

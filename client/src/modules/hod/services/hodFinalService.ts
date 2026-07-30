@@ -80,14 +80,18 @@ function getFallbackDocuments() {
 // ─── Approvals ────────────────────────────────────────────
 export interface ApprovalItem {
   id: string;
-  requestId: string;
+  requestId?: string;
   applicant: string;
   type: string;
-  submittedDate: string;
+  submittedDate?: string;
   status: string;
   priority: string;
-  days: number | null;
-  remarks: string;
+  days?: number | null;
+  remarks?: string;
+  role?: string;
+  date?: string;
+  reason?: string;
+  department?: string;
 }
 
 export async function fetchDepartmentApprovals(deptCode: DepartmentCode = 'AIML') {

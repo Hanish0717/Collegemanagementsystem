@@ -279,3 +279,53 @@
     animation: pulse-glow 3s ease-in-out infinite;
   }
 }
+
+/* Global Print Stylesheet for Official University Reports */
+@media print {
+  /* Hide all screen UI elements, toasts, floating widgets, sidebars, and navbars */
+  aside,
+  header,
+  nav,
+  .print\:hidden,
+  [role="status"],
+  [role="alert"],
+  div[class*="toast"],
+  div[class*="Toast"],
+  div[class*="Copilot"],
+  div[class*="Chatbot"],
+  div[class*="chat"],
+  button[class*="fixed"],
+  div[class*="fixed"] {
+    display: none !important;
+  }
+
+  /* Reset html & body for pristine paper rendering */
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 11pt !important;
+  }
+
+  /* Target the printable document template */
+  .printable-official-report {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Prevent signature blocks and tables from breaking across page boundary */
+  .avoid-page-break,
+  tr,
+  table,
+  .signature-block {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}

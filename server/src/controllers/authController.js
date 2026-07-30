@@ -25,29 +25,35 @@ const populateUserProfileInfo = async (userResponse) => {
 
   try {
     if (role === 'student') {
-      const { data: student } = await supabase
-        .from('students')
-        .select('roll_number')
-        .eq('user_id', userId)
-        .maybeSingle();
+      let query = supabase.from('students').select('roll_number');
+      if (isUUID(userId)) {
+        query = query.eq('user_id', userId);
+      } else {
+        query = query.eq('email', userResponse.email);
+      }
+      const { data: student } = await query.maybeSingle();
       if (student) {
         userResponse.rollNumber = student.roll_number;
       }
     } else if (role === 'faculty') {
-      const { data: fac } = await supabase
-        .from('faculty')
-        .select('employee_id')
-        .eq('user_id', userId)
-        .maybeSingle();
+      let query = supabase.from('faculty').select('employee_id');
+      if (isUUID(userId)) {
+        query = query.eq('user_id', userId);
+      } else {
+        query = query.eq('email', userResponse.email);
+      }
+      const { data: fac } = await query.maybeSingle();
       if (fac) {
         userResponse.employeeId = fac.employee_id;
       }
     } else if (role === 'admin') {
-      const { data: adm } = await supabase
-        .from('admins')
-        .select('employee_id')
-        .eq('user_id', userId)
-        .maybeSingle();
+      let query = supabase.from('admins').select('employee_id');
+      if (isUUID(userId)) {
+        query = query.eq('user_id', userId);
+      } else {
+        query = query.eq('email', userResponse.email);
+      }
+      const { data: adm } = await query.maybeSingle();
       if (adm) {
         userResponse.employeeId = adm.employee_id;
       }

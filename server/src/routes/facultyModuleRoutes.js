@@ -12,6 +12,8 @@ import {
   createFacultyLeaveRequest,
   getStudentPerformance,
   updateStudentLeaveRequestStatus,
+  getFacultyInternalMarks,
+  saveFacultyInternalMarks,
 } from '../controllers/facultyModuleController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorizeRoles } from '../middleware/roleMiddleware.js';
@@ -36,5 +38,9 @@ router.route('/leave')
   .get(getFacultyLeaveRequests)
   .post(createFacultyLeaveRequest);
 router.put('/leave/:id/status', updateStudentLeaveRequestStatus);
+
+router.route('/internal-marks')
+  .get(getFacultyInternalMarks)
+  .post(saveFacultyInternalMarks);
 
 export default router;

@@ -1,20 +1,26 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://placeholder.supabase.co";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder_key";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const isPlaceholder = supabaseUrl.includes("placeholder.supabase.co");
+if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes("placeholder.supabase.co")) {
+  console.warn(
+    "⚠️ Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in client/.env environment configuration."
+  );
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Ensure valid HTTPS URL and Key are supplied to createClient
+const targetUrl = supabaseUrl && !supabaseUrl.includes("placeholder.supabase.co") ? supabaseUrl : "https://rdzitvvxxdhtbzzqoasd.supabase.co";
+const targetKey = supabaseAnonKey && supabaseAnonKey !== "placeholder_key" ? supabaseAnonKey : "";
+
+if (import.meta.env.DEV) {
+  console.log("⚡ Supabase initialized with URL:", targetUrl);
+}
+
+export const supabase = createClient(targetUrl, targetKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
   },
-  realtime: {
-    // Disable realtime sockets if using placeholder domain to prevent WebSocket ERR_NAME_NOT_RESOLVED
-    transport: isPlaceholder ? undefined : undefined,
-    params: {
-      eventsPerSecond: 0,
-    },
-  },
 });
+

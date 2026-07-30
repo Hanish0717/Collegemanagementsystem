@@ -1,4 +1,5 @@
 import { DepartmentCode } from '../types';
+import { hodStore } from './hodStore';
 import {
   Users,
   GraduationCap,
@@ -32,16 +33,31 @@ export interface KPICardData {
 
 export function getDepartmentDashboardData(deptCode: DepartmentCode) {
   const code = (deptCode || 'AIML').toUpperCase();
+  const storeFaculty = hodStore.getFaculty(deptCode);
+  const storeSubjects = hodStore.getSubjects(deptCode);
 
   // Multiplier for slight variations per department
   const factor = code === 'CSE' ? 1.4 : code === 'ECE' ? 1.1 : code === 'EEE' ? 0.8 : 1.0;
 
+  // Dynamic Faculty Workload Data from hodStore
+  const facultyWorkloadData = storeFaculty.map((f) => {
+    // Count subjects assigned
+    const subCount = f.subjectsAssigned ? f.subjectsAssigned.split(',').length : 1;
+    return {
+      name: f.name.replace(/^(Dr\.|Prof\.)\s*/, ''),
+      workload: subCount * 7 + 4,
+      researchScore: Math.round(f.feedbackScore * 20),
+      rating: f.feedbackScore,
+      subjects: f.subjectsAssigned,
+    };
+  });
+
   // 20 Animated KPI Cards
   const kpiCards: KPICardData[] = [
     { id: 'total-students', title: 'Total Students', value: Math.round(480 * factor), change: '+4.2% YoY', isPositive: true, subtitle: 'Enrolled in Sem 1 to 8', icon: Users, accent: 'blue', sparkline: [420, 440, 455, 460, 472, 480] },
-    { id: 'total-faculty', title: 'Total Faculty', value: Math.round(24 * factor), change: '100% Onboarded', isPositive: true, subtitle: 'Professors & Assoc Profs', icon: GraduationCap, accent: 'indigo', sparkline: [20, 21, 22, 22, 23, 24] },
-    { id: 'total-subjects', title: 'Total Subjects', value: 32, change: 'R23 Curriculum', isPositive: true, subtitle: 'Core & Elective courses', icon: BookOpen, accent: 'purple', sparkline: [28, 30, 30, 32, 32, 32] },
-    { id: 'active-courses', title: 'Active Courses', value: 16, change: 'Running this sem', isPositive: true, subtitle: 'Theory & Practical labs', icon: Layers, accent: 'emerald', sparkline: [14, 15, 16, 16, 16, 16] },
+    { id: 'total-faculty', title: 'Total Faculty', value: storeFaculty.length || Math.round(24 * factor), change: '100% Onboarded', isPositive: true, subtitle: 'Professors & Assoc Profs', icon: GraduationCap, accent: 'indigo', sparkline: [20, 21, 22, 22, 23, 24] },
+    { id: 'total-subjects', title: 'Total Subjects', value: storeSubjects.length || 32, change: 'R23 Curriculum', isPositive: true, subtitle: 'Core & Elective courses', icon: BookOpen, accent: 'purple', sparkline: [28, 30, 30, 32, 32, 32] },
+    { id: 'active-courses', title: 'Active Courses', value: storeSubjects.filter(s => s.status === 'Active').length || 16, change: 'Running this sem', isPositive: true, subtitle: 'Theory & Practical labs', icon: Layers, accent: 'emerald', sparkline: [14, 15, 16, 16, 16, 16] },
     { id: 'today-attendance', title: "Today's Attendance %", value: '92.4%', change: '+1.2% vs yesterday', isPositive: true, subtitle: 'Student biometric log', icon: CalendarCheck, accent: 'emerald', sparkline: [88, 90, 89, 91, 91, 92.4] },
     { id: 'faculty-attendance', title: 'Faculty Attendance %', value: '98.5%', change: '35/36 Present', isPositive: true, subtitle: 'Biometric verified', icon: GraduationCap, accent: 'blue', sparkline: [96, 97, 98, 98, 98.5, 98.5] },
     { id: 'avg-gpa', title: 'Average CGPA', value: '8.42', change: '+0.15 vs last sem', isPositive: true, subtitle: 'Max GPA: 9.94', icon: Award, accent: 'purple', sparkline: [8.1, 8.2, 8.3, 8.35, 8.4, 8.42] },
@@ -93,15 +109,6 @@ export function getDepartmentDashboardData(deptCode: DepartmentCode) {
     { sem: 'Sem 3', passRate: 94, avgGpa: 8.35 },
     { sem: 'Sem 4', passRate: 95, avgGpa: 8.5 },
     { sem: 'Sem 5', passRate: 96, avgGpa: 8.6 },
-  ];
-
-  // Faculty Workloads
-  const facultyWorkloadData = [
-    { name: 'Dr. Anjali M.', workload: 14, researchScore: 95, rating: 4.8 },
-    { name: 'Dr. Ramesh K.', workload: 18, researchScore: 90, rating: 4.7 },
-    { name: 'Prof. Vikram R.', workload: 20, researchScore: 82, rating: 4.6 },
-    { name: 'Prof. Sneha V.', workload: 16, researchScore: 88, rating: 4.9 },
-    { name: 'Prof. Rajesh G.', workload: 18, researchScore: 78, rating: 4.5 },
   ];
 
   // Low Attention Alerts

@@ -79,6 +79,7 @@ import { Route as HodIndexRouteImport } from './routes/hod/index'
 import { Route as Hod403RouteImport } from './routes/hod/403'
 import { Route as Hod404RouteImport } from './routes/hod/404'
 import { Route as HodAcademicsRouteImport } from './routes/hod/academics'
+import { Route as HodAnnouncementsRouteImport } from './routes/hod/announcements'
 import { Route as HodApprovalsRouteImport } from './routes/hod/approvals'
 import { Route as HodAttendanceRouteImport } from './routes/hod/attendance'
 import { Route as HodAuditRouteImport } from './routes/hod/audit'
@@ -221,6 +222,7 @@ import { Route as DashboardStudentLeaveRouteImport } from './routes/dashboard/st
 import { Route as DashboardStudentLmsRouteImport } from './routes/dashboard/student/lms'
 import { Route as DashboardStudentMaterialsRouteImport } from './routes/dashboard/student/materials'
 import { Route as DashboardStudentNoticesRouteImport } from './routes/dashboard/student/notices'
+import { Route as DashboardStudentNotificationsRouteImport } from './routes/dashboard/student/notifications'
 import { Route as DashboardStudentPlacementRouteImport } from './routes/dashboard/student/placement'
 import { Route as DashboardStudentProfileRouteImport } from './routes/dashboard/student/profile'
 import { Route as DashboardStudentResultsRouteImport } from './routes/dashboard/student/results'
@@ -633,6 +635,11 @@ const Hod404Route = Hod404RouteImport.update({
 const HodAcademicsRoute = HodAcademicsRouteImport.update({
   id: '/academics',
   path: '/academics',
+  getParentRoute: () => HodRoute,
+} as any)
+const HodAnnouncementsRoute = HodAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
   getParentRoute: () => HodRoute,
 } as any)
 const HodApprovalsRoute = HodApprovalsRouteImport.update({
@@ -1400,6 +1407,12 @@ const DashboardStudentNoticesRoute = DashboardStudentNoticesRouteImport.update({
   path: '/notices',
   getParentRoute: () => DashboardStudentRoute,
 } as any)
+const DashboardStudentNotificationsRoute =
+  DashboardStudentNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardStudentRoute,
+  } as any)
 const DashboardStudentPlacementRoute =
   DashboardStudentPlacementRouteImport.update({
     id: '/placement',
@@ -1837,6 +1850,7 @@ export interface FileRoutesByFullPath {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -1974,6 +1988,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/student/lms': typeof DashboardStudentLmsRoute
   '/dashboard/student/materials': typeof DashboardStudentMaterialsRoute
   '/dashboard/student/notices': typeof DashboardStudentNoticesRoute
+  '/dashboard/student/notifications': typeof DashboardStudentNotificationsRoute
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/profile': typeof DashboardStudentProfileRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
@@ -2100,6 +2115,7 @@ export interface FileRoutesByTo {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2234,6 +2250,7 @@ export interface FileRoutesByTo {
   '/dashboard/student/lms': typeof DashboardStudentLmsRoute
   '/dashboard/student/materials': typeof DashboardStudentMaterialsRoute
   '/dashboard/student/notices': typeof DashboardStudentNoticesRoute
+  '/dashboard/student/notifications': typeof DashboardStudentNotificationsRoute
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/profile': typeof DashboardStudentProfileRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
@@ -2375,6 +2392,7 @@ export interface FileRoutesById {
   '/hod/403': typeof Hod403Route
   '/hod/404': typeof Hod404Route
   '/hod/academics': typeof HodAcademicsRoute
+  '/hod/announcements': typeof HodAnnouncementsRoute
   '/hod/approvals': typeof HodApprovalsRoute
   '/hod/attendance': typeof HodAttendanceRoute
   '/hod/audit': typeof HodAuditRoute
@@ -2512,6 +2530,7 @@ export interface FileRoutesById {
   '/dashboard/student/lms': typeof DashboardStudentLmsRoute
   '/dashboard/student/materials': typeof DashboardStudentMaterialsRoute
   '/dashboard/student/notices': typeof DashboardStudentNoticesRoute
+  '/dashboard/student/notifications': typeof DashboardStudentNotificationsRoute
   '/dashboard/student/placement': typeof DashboardStudentPlacementRoute
   '/dashboard/student/profile': typeof DashboardStudentProfileRoute
   '/dashboard/student/results': typeof DashboardStudentResultsRoute
@@ -2654,6 +2673,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -2791,6 +2811,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/lms'
     | '/dashboard/student/materials'
     | '/dashboard/student/notices'
+    | '/dashboard/student/notifications'
     | '/dashboard/student/placement'
     | '/dashboard/student/profile'
     | '/dashboard/student/results'
@@ -2917,6 +2938,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -3051,6 +3073,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/lms'
     | '/dashboard/student/materials'
     | '/dashboard/student/notices'
+    | '/dashboard/student/notifications'
     | '/dashboard/student/placement'
     | '/dashboard/student/profile'
     | '/dashboard/student/results'
@@ -3191,6 +3214,7 @@ export interface FileRouteTypes {
     | '/hod/403'
     | '/hod/404'
     | '/hod/academics'
+    | '/hod/announcements'
     | '/hod/approvals'
     | '/hod/attendance'
     | '/hod/audit'
@@ -3328,6 +3352,7 @@ export interface FileRouteTypes {
     | '/dashboard/student/lms'
     | '/dashboard/student/materials'
     | '/dashboard/student/notices'
+    | '/dashboard/student/notifications'
     | '/dashboard/student/placement'
     | '/dashboard/student/profile'
     | '/dashboard/student/results'
@@ -3921,6 +3946,13 @@ declare module '@tanstack/react-router' {
       path: '/academics'
       fullPath: '/hod/academics'
       preLoaderRoute: typeof HodAcademicsRouteImport
+      parentRoute: typeof HodRoute
+    }
+    '/hod/announcements': {
+      id: '/hod/announcements'
+      path: '/announcements'
+      fullPath: '/hod/announcements'
+      preLoaderRoute: typeof HodAnnouncementsRouteImport
       parentRoute: typeof HodRoute
     }
     '/hod/approvals': {
@@ -4917,6 +4949,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardStudentNoticesRouteImport
       parentRoute: typeof DashboardStudentRoute
     }
+    '/dashboard/student/notifications': {
+      id: '/dashboard/student/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/student/notifications'
+      preLoaderRoute: typeof DashboardStudentNotificationsRouteImport
+      parentRoute: typeof DashboardStudentRoute
+    }
     '/dashboard/student/placement': {
       id: '/dashboard/student/placement'
       path: '/placement'
@@ -5779,6 +5818,7 @@ interface DashboardStudentRouteChildren {
   DashboardStudentLmsRoute: typeof DashboardStudentLmsRoute
   DashboardStudentMaterialsRoute: typeof DashboardStudentMaterialsRoute
   DashboardStudentNoticesRoute: typeof DashboardStudentNoticesRoute
+  DashboardStudentNotificationsRoute: typeof DashboardStudentNotificationsRoute
   DashboardStudentPlacementRoute: typeof DashboardStudentPlacementRoute
   DashboardStudentProfileRoute: typeof DashboardStudentProfileRoute
   DashboardStudentResultsRoute: typeof DashboardStudentResultsRoute
@@ -5805,6 +5845,7 @@ const DashboardStudentRouteChildren: DashboardStudentRouteChildren = {
   DashboardStudentLmsRoute: DashboardStudentLmsRoute,
   DashboardStudentMaterialsRoute: DashboardStudentMaterialsRoute,
   DashboardStudentNoticesRoute: DashboardStudentNoticesRoute,
+  DashboardStudentNotificationsRoute: DashboardStudentNotificationsRoute,
   DashboardStudentPlacementRoute: DashboardStudentPlacementRoute,
   DashboardStudentProfileRoute: DashboardStudentProfileRoute,
   DashboardStudentResultsRoute: DashboardStudentResultsRoute,
@@ -5997,6 +6038,7 @@ interface HodRouteChildren {
   Hod403Route: typeof Hod403Route
   Hod404Route: typeof Hod404Route
   HodAcademicsRoute: typeof HodAcademicsRoute
+  HodAnnouncementsRoute: typeof HodAnnouncementsRoute
   HodApprovalsRoute: typeof HodApprovalsRoute
   HodAttendanceRoute: typeof HodAttendanceRoute
   HodAuditRoute: typeof HodAuditRoute
@@ -6022,6 +6064,7 @@ const HodRouteChildren: HodRouteChildren = {
   Hod403Route: Hod403Route,
   Hod404Route: Hod404Route,
   HodAcademicsRoute: HodAcademicsRoute,
+  HodAnnouncementsRoute: HodAnnouncementsRoute,
   HodApprovalsRoute: HodApprovalsRoute,
   HodAttendanceRoute: HodAttendanceRoute,
   HodAuditRoute: HodAuditRoute,
