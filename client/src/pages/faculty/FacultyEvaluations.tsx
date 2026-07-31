@@ -346,7 +346,7 @@ export function FacultyEvaluations() {
             <div className="grid lg:grid-cols-12 flex-1 overflow-hidden">
               {/* Left Column: PDF Answer Copy Viewer (7 Cols) */}
               {(() => {
-                const apiBase = import.meta.env.VITE_API_URL || "http://localhost:5000";
+                const apiBase = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" ? "" : "http://localhost:5000");
                 const pdfUrlToUse = `${apiBase}/api/exams/evaluations/${activeEvaluation.id}/pdf`;
 
                 return (

@@ -14,7 +14,7 @@ import { fetchDepartments } from "@/services/studentService";
 import {
   StudentFormModal,
   StudentDeleteAlert,
-} from "../dashboard/students/StudentDialogs";
+} from "../students/StudentDialogs";
 
 export function HostelStudents() {
   const queryClient = useQueryClient();

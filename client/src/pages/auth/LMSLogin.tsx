@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { setActiveRole } from "@/lib/roles";
 import { toast } from "sonner";
+import { EduSuiteLogoGraphic } from "@/components/ui/EduSuiteLogo";
 
 const LMS_EMAIL = "learning@college.com";
 const LMS_PASSWORD = "password123";
@@ -61,7 +62,7 @@ export function LMSLogin() {
       setActiveRole("lms");
       localStorage.setItem("campusly.role", "lms");
       toast.success("Welcome to the LMS Portal!");
-      navigate({ to: "/dashboard/admin/lms" });
+      navigate({ to: "/admin/lms" });
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
@@ -96,11 +97,9 @@ export function LMSLogin() {
         >
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="size-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-              <BookOpen className="size-6 text-white" />
-            </div>
+            <EduSuiteLogoGraphic className="size-12 animate-pulse" />
             <div>
-              <div className="font-bold text-white text-xl tracking-tight">CMS Learning Portal</div>
+              <div className="font-bold text-white text-xl tracking-tight">EduSuite Learning Portal</div>
               <div className="text-emerald-400 text-xs font-medium">Learning Management System</div>
             </div>
           </div>
@@ -158,11 +157,9 @@ export function LMSLogin() {
           <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl shadow-black/40">
             {/* Mobile logo */}
             <div className="lg:hidden flex items-center gap-3 mb-6">
-              <div className="size-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-                <BookOpen className="size-5 text-white" />
-              </div>
+              <EduSuiteLogoGraphic className="size-10" />
               <div>
-                <div className="font-bold text-white">CMS Learning Portal</div>
+                <div className="font-bold text-white">EduSuite Learning Portal</div>
                 <div className="text-emerald-400 text-xs">Learning Management System</div>
               </div>
             </div>
@@ -279,7 +276,7 @@ export function LMSLogin() {
                 Main CMS Login
               </Link>
               <Link
-                to="/dashboard/admin/lms"
+                to="/admin/lms"
                 className="px-3 py-2 rounded-xl border border-emerald-400/20 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-[11px] font-semibold text-center transition"
               >
                 Guest LMS View
@@ -287,7 +284,7 @@ export function LMSLogin() {
             </div>
 
             <p className="text-center text-[10px] text-slate-500 mt-5">
-              © {new Date().getFullYear()} College Management System. LMS Portal.
+              © {new Date().getFullYear()} EduSuite Pro. LMS Portal.
             </p>
           </div>
         </motion.div>

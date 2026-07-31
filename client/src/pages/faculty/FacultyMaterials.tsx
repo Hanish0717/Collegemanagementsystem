@@ -530,8 +530,8 @@ export function FacultyMaterials() {
                   { label:'Upload Material',    icon:Upload,       color:'text-violet-600 bg-violet-50 border-violet-100', action:()=>setActiveTab('upload') },
                   { label:'View Analytics',     icon:BarChart3,    color:'text-blue-600 bg-blue-50 border-blue-100',       action:()=>setActiveTab('analytics') },
                   { label:'Create Assignment',  icon:ClipboardList,color:'text-emerald-600 bg-emerald-50 border-emerald-100',action:()=>setActiveTab('upload') },
-                  { label:'Enter Marks',        icon:PenLine,      color:'text-orange-600 bg-orange-50 border-orange-100', action:()=>navigate({to:'/dashboard/faculty/marks'}) },
-                  { label:'Send Announcement',  icon:Bell,         color:'text-pink-600 bg-pink-50 border-pink-100',       action:()=>navigate({to:'/dashboard/faculty/communication'}) },
+                  { label:'Enter Marks',        icon:PenLine,      color:'text-orange-600 bg-orange-50 border-orange-100', action:()=>navigate({to:'/faculty/marks'}) },
+                  { label:'Send Announcement',  icon:Bell,         color:'text-pink-600 bg-pink-50 border-pink-100',       action:()=>navigate({to:'/faculty/communication'}) },
                   { label:'Open Material Library',icon:BookOpen,   color:'text-indigo-600 bg-indigo-50 border-indigo-100',  action:()=>setGroupBySubj(p=>!p) },
                 ].map(({ label, icon: Icon, color, action }) => (
                   <button key={label} onClick={action}

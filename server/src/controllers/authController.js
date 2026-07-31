@@ -361,7 +361,29 @@ export const login = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10);
         const defaultHash = await bcrypt.hash('password123', salt);
 
-        if (cleanEmail.startsWith('hod.') || cleanEmail === 'hod@college.com') {
+        if (cleanEmail === 'superadmin@college.com' || cleanEmail.includes('superadmin') || cleanEmail.includes('super_admin')) {
+          user = {
+            id: '11111111-1111-1111-1111-111111111111',
+            name: 'Super Admin',
+            full_name: 'Super System Administrator',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'super_admin',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'admin@college.com' || cleanEmail === 'admin') {
+          user = {
+            id: '22222222-1111-1111-1111-111111111111',
+            name: 'System Admin',
+            full_name: 'Campus System Administrator',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'admin',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail.startsWith('hod.') || cleanEmail === 'hod@college.com') {
           const branchMatch = cleanEmail.match(/hod\.([a-z]+)@/i);
           const deptCode = branchMatch ? branchMatch[1].toUpperCase() : 'CSE';
 
@@ -376,9 +398,10 @@ export const login = async (req, res, next) => {
             is_verified: true,
             is_active: true
           };
-        } else if (cleanEmail === 'faculty@college.com' || cleanEmail.startsWith('faculty.')) {
+        } else if (cleanEmail === 'faculty@college.com' || cleanEmail === 'srinivas.faculty@gmail.com' || cleanEmail.includes('faculty')) {
           user = {
             id: '22222222-2222-2222-2222-222222222222',
+            name: 'Dr. Faculty Member',
             full_name: 'Dr. Faculty Member',
             email: cleanEmail,
             password: defaultHash,
@@ -387,9 +410,120 @@ export const login = async (req, res, next) => {
             is_verified: true,
             is_active: true
           };
+        } else if (cleanEmail === 'principal@college.com' || cleanEmail.includes('principal')) {
+          user = {
+            id: '33333333-1111-1111-1111-111111111111',
+            name: 'Dr. Principal',
+            full_name: 'Dr. Principal Academic Head',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'principal',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'dean@college.com' || cleanEmail.includes('dean')) {
+          user = {
+            id: '33333333-2222-2222-2222-222222222222',
+            name: 'Dr. Dean Academics',
+            full_name: 'Dr. Dean Academics',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'dean',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'librarian@college.com' || cleanEmail.includes('librarian')) {
+          user = {
+            id: '55555555-1111-1111-1111-111111111111',
+            name: 'Librarian',
+            full_name: 'Head Librarian',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'librarian',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'placement@college.com' || cleanEmail.includes('placement')) {
+          user = {
+            id: '66666666-1111-1111-1111-111111111111',
+            name: 'Placement Officer',
+            full_name: 'Dean Training & Placements',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'placement',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'warden@college.com' || cleanEmail.includes('warden')) {
+          user = {
+            id: '77777777-1111-1111-1111-111111111111',
+            name: 'Hostel Warden',
+            full_name: 'Chief Hostel Warden',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'warden',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'transport@college.com' || cleanEmail.includes('transport')) {
+          user = {
+            id: '88888888-1111-1111-1111-111111111111',
+            name: 'Transport Manager',
+            full_name: 'Fleet Transport Manager',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'transport',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'examcell@college.com' || cleanEmail.includes('exam')) {
+          user = {
+            id: '99999999-1111-1111-1111-111111111111',
+            name: 'Exam Cell Officer',
+            full_name: 'Controller of Examinations',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'exam_cell',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail === 'accounts@college.com' || cleanEmail.includes('accounts') || cleanEmail.includes('finance')) {
+          user = {
+            id: '99999999-2222-2222-2222-222222222222',
+            name: 'Accounts Manager',
+            full_name: 'Chief Accounts Officer',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'accounts',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail.includes('lms') || cleanEmail === 'learning@college.com') {
+          user = {
+            id: '99999999-3333-3333-3333-333333333333',
+            name: 'LMS Coordinator',
+            full_name: 'Digital Learning Coordinator',
+            email: cleanEmail,
+            password: defaultHash,
+            role: 'lms',
+            is_verified: true,
+            is_active: true
+          };
+        } else if (cleanEmail.includes('alumni')) {
+          user = {
+            id: '99999999-4444-4444-4444-444444444444',
+            name: 'Alumni Manager',
+            full_name: 'Alumni Network Coordinator',
+            email: cleanEmail,
+            password: defaultHash,
+            role: cleanEmail.includes('coord') ? 'alumni_coordinator' : 'alumni',
+            is_verified: true,
+            is_active: true
+          };
         } else if (cleanEmail === 'student@college.com' || cleanEmail === 'hanish@gmail.com' || cleanEmail.includes('student') || cleanEmail.startsWith('student.')) {
           user = {
             id: '44444444-4444-4444-4444-444444444444',
+            name: 'Gudipati Chandra',
             full_name: 'Gudipati Chandra',
             email: cleanEmail,
             password: defaultHash,

@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, ArrowLeft, Edit, Loader2, Trash2, UserRound } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
-import { StudentDeleteAlert, StudentFormModal } from "./students/StudentDialogs";
+import { StudentDeleteAlert, StudentFormModal } from "../students/StudentDialogs";
 import {
   deleteStudent,
   fetchDepartments,
@@ -61,7 +61,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["students"] });
       toast.success("Student deleted successfully");
-      navigate({ to: "/dashboard/students" });
+      navigate({ to: "/students" });
     },
     onError: (mutationError: unknown) => {
       const message = mutationError instanceof Error ? mutationError.message : "Failed to delete student";
@@ -77,7 +77,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
           desc="View and manage student details."
           actions={
             <button
-              onClick={() => navigate({ to: "/dashboard/students" })}
+              onClick={() => navigate({ to: "/students" })}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm bg-background/60"
             >
               <ArrowLeft className="size-4" /> Back
@@ -100,7 +100,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
           desc="View and manage student details."
           actions={
             <button
-              onClick={() => navigate({ to: "/dashboard/students" })}
+              onClick={() => navigate({ to: "/students" })}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm bg-background/60"
             >
               <ArrowLeft className="size-4" /> Back
@@ -113,7 +113,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
             {error instanceof Error ? error.message : "Student profile could not be loaded."}
           </p>
           <button
-            onClick={() => navigate({ to: "/dashboard/students" })}
+            onClick={() => navigate({ to: "/students" })}
             className="px-4 py-2 rounded-xl border text-sm hover:bg-accent"
           >
             Back to students
@@ -133,7 +133,7 @@ export function StudentProfilePage({ studentId }: StudentProfilePageProps) {
         actions={
           <div className="flex gap-2">
             <button
-              onClick={() => navigate({ to: "/dashboard/students" })}
+              onClick={() => navigate({ to: "/students" })}
               className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm bg-background/60"
             >
               <ArrowLeft className="size-4" /> Back

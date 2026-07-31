@@ -63,7 +63,7 @@ export function FacultyDashboard() {
     path === '/faculty/dashboard' ||
     path === '/faculty/' ||
     path === '/faculty' ||
-    path === '/dashboard/faculty' ||
+    path === '/faculty' ||
     path === '/dashboard';
 
   if (!isFacultyDashboardPath) {
@@ -125,7 +125,7 @@ export function FacultyDashboard() {
 
             <div className="pt-2">
               <button
-                onClick={() => navigate({ to: '/dashboard/faculty/classes' })}
+                onClick={() => navigate({ to: '/faculty/classes' })}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition cursor-pointer"
               >
                 <span>View My Classes</span>
@@ -217,13 +217,13 @@ export function FacultyDashboard() {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
           {[
-            { label: 'Counselling', icon: HeartHandshake, to: '/dashboard/faculty/students' },
-            { label: 'Timetable', icon: CalendarIcon, to: '/dashboard/faculty/classes' },
-            { label: 'Lesson Plans', icon: BookOpen, to: '/dashboard/faculty/materials' },
-            { label: 'Attendance', icon: CheckSquare, to: '/dashboard/faculty/attendance' },
-            { label: 'Paper Evaluation', icon: FileCheck, to: '/dashboard/faculty/evaluations' },
-            { label: 'Internal Mid Marks', icon: FileCheck, to: '/dashboard/faculty/marks' },
-            { label: 'Results', icon: GraduationCap, to: '/dashboard/faculty/performance' },
+            { label: 'Counselling', icon: HeartHandshake, to: '/faculty/students' },
+            { label: 'Timetable', icon: CalendarIcon, to: '/faculty/classes' },
+            { label: 'Lesson Plans', icon: BookOpen, to: '/faculty/materials' },
+            { label: 'Attendance', icon: CheckSquare, to: '/faculty/attendance' },
+            { label: 'Paper Evaluation', icon: FileCheck, to: '/faculty/evaluations' },
+            { label: 'Internal Mid Marks', icon: FileCheck, to: '/faculty/marks' },
+            { label: 'Results', icon: GraduationCap, to: '/faculty/performance' },
             { label: 'AI Quiz Builder', icon: Sparkles, to: '/dashboard/ai' },
           ].map((item) => {
             const IconComp = item.icon;
@@ -523,7 +523,7 @@ export function FacultyDashboard() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">Today's Schedule</h3>
               <button
-                onClick={() => navigate({ to: '/dashboard/faculty/classes' })}
+                onClick={() => navigate({ to: '/faculty/classes' })}
                 className="text-xs text-blue-600 font-semibold hover:underline cursor-pointer"
               >
                 View Timetable

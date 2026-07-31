@@ -462,7 +462,7 @@ export function DashboardPage() {
         <GlassCard className="p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-lg">Recent Registrations</h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/dashboard/admin/alumni/registration" })} className="rounded-xl text-primary">View All</Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/admin/alumni/registration" })} className="rounded-xl text-primary">View All</Button>
           </div>
           <div className="space-y-4 flex-1 overflow-y-auto max-h-[400px] pr-2">
             {[

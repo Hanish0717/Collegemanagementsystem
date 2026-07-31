@@ -1040,7 +1040,7 @@ export function RegistrationPage() {
 
             {/* Modal actions footer */}
             <div className="p-6 border-t bg-muted/10 flex justify-between items-center shrink-0">
-              <Button onClick={() => navigate({ to: `/dashboard/admin/alumni/directory` })} className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
+              <Button onClick={() => navigate({ to: `/admin/alumni/directory` })} className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
                 View Full Alumni Profile <ArrowRight className="w-4 h-4 ml-1.5" />
               </Button>
               <div className="flex gap-2">

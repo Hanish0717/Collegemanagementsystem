@@ -70,17 +70,17 @@ export function DeanDashboard() {
   const handleQuickAction = (actionName: string) => {
     switch (actionName) {
       case 'Approve Requests':
-        navigate({ to: '/dashboard/dean/approvals' });
+        navigate({ to: '/dean/approvals' });
         break;
       case 'Generate Reports':
       case 'Export Reports':
-        navigate({ to: '/dashboard/dean/reports' });
+        navigate({ to: '/dean/reports' });
         break;
       case 'Send Notifications':
         toast.success('Opening Dean Executive Notification Dispatch Console...');
         break;
       case 'Department Analytics':
-        navigate({ to: '/dashboard/dean/academic' });
+        navigate({ to: '/dean/academic' });
         break;
       case 'Meeting Scheduler':
         toast.info('Initiating Dean & HOD Academic Council Meeting Scheduler...');
@@ -137,13 +137,13 @@ export function DeanDashboard() {
 
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
-            onClick={() => navigate({ to: '/dashboard/dean/approvals' })}
+            onClick={() => navigate({ to: '/dean/approvals' })}
             className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md transition flex items-center gap-2 cursor-pointer"
           >
             <CheckCircle className="size-4" /> Executive Approvals ({pendingApprovalsCount})
           </button>
           <button
-            onClick={() => navigate({ to: '/dashboard/dean/reports' })}
+            onClick={() => navigate({ to: '/dean/reports' })}
             className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold backdrop-blur-md transition flex items-center gap-2 cursor-pointer"
           >
             <Download className="size-4" /> Institutional Reports
@@ -255,7 +255,7 @@ export function DeanDashboard() {
                 <CheckCircle className="size-3.5" /> Batch Approve All
               </button>
               <button
-                onClick={() => navigate({ to: '/dashboard/dean/approvals' })}
+                onClick={() => navigate({ to: '/dean/approvals' })}
                 className="px-3 py-1.5 rounded-xl border bg-background text-xs font-bold hover:bg-accent flex items-center gap-1 transition"
               >
                 View Hub <ChevronRight className="size-3.5" />
@@ -346,11 +346,11 @@ export function DeanDashboard() {
 
             <div className="space-y-1.5">
               {[
-                { title: 'Student Administration', to: '/dashboard/dean/student', icon: Users },
-                { title: 'Examination Administration', to: '/dashboard/dean/examination', icon: BookOpen },
-                { title: 'Academic Administration', to: '/dashboard/dean/academic', icon: Building2 },
-                { title: 'IMA Administration (R&D)', to: '/dashboard/dean/ima', icon: Sparkles },
-                { title: 'IQAC Quality Assurance', to: '/dashboard/dean/iqac', icon: Award },
+                { title: 'Student Administration', to: '/dean/student', icon: Users },
+                { title: 'Examination Administration', to: '/dean/examination', icon: BookOpen },
+                { title: 'Academic Administration', to: '/dean/academic', icon: Building2 },
+                { title: 'IMA Administration (R&D)', to: '/dean/ima', icon: Sparkles },
+                { title: 'IQAC Quality Assurance', to: '/dean/iqac', icon: Award },
               ].map((dom) => (
                 <button
                   key={dom.title}
@@ -389,7 +389,7 @@ export function DeanDashboard() {
 
           <div className="flex items-center gap-2">
             <a
-              href="/dashboard/admin/faculty"
+              href="/admin/faculty"
               className="px-3 py-1.5 rounded-xl border bg-background text-xs font-bold hover:bg-accent flex items-center gap-1.5 transition"
             >
               Full Roster <ExternalLink className="size-3.5" />

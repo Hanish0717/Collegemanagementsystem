@@ -1272,3 +1272,154 @@ Body: {}
 [2026-07-23T10:05:38.707Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
 [2026-07-23T10:05:44.281Z] GET /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=&department=CSE&year=1&semester=1 - Body: {}
 [2026-07-23T10:05:44.303Z] GET /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Status: 404 - Client Error: Not Found - /api/faculty-module/internal-marks?course_id=393c6f30-c049-4457-b798-df61bc6eed99&department=CSE&year=1&semester=1 - Body: {}
+[2026-07-23T10:30:44.207Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:32:58.993Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:33:21.975Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:33:48.150Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:36:24.148Z] GET /api/exams/evaluations/faculty - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-23T10:37:40.764Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-23T10:39:23.258Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:40:47.381Z] GET /favicon.ico - Status: 404 - Client Error: Not Found - /favicon.ico - Body: {}
+[2026-07-23T10:46:09.360Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"srinivas.faculty@gmail.com","password":"password123"}
+[2026-07-23T10:46:38.747Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T10:46:38.760Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-23T10:59:36.643Z] GET /api/super-admin/automations - Status: 500 - Error: relation "automations" does not exist
+Stack: error: relation "automations" does not exist
+    at C:\Users\lokesh\OneDrive\Desktop\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/config/supabase.js:1041:23)
+    at async getAutomations (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/superAdminController.js:1009:50)
+Body: {}
+
+[2026-07-23T10:59:39.321Z] GET /api/super-admin/automations - Status: 500 - Error: relation "automations" does not exist
+Stack: error: relation "automations" does not exist
+    at C:\Users\lokesh\OneDrive\Desktop\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/config/supabase.js:1041:23)
+    at async getAutomations (file:///C:/Users/lokesh/OneDrive/Desktop/cms1/server/src/controllers/superAdminController.js:1009:50)
+Body: {}
+
+[2026-07-23T13:45:58.640Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-23T14:27:27.718Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"superadmin@college.com","password":"password123"}
+[2026-07-23T14:27:31.915Z] GET /api/super-admin/departments - Status: 500 - Error: relation "departments" does not exist
+Stack: error: relation "departments" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getDepartments (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/superAdminController.js:600:36)
+Body: {}
+
+[2026-07-23T14:27:33.667Z] GET /api/super-admin/departments - Status: 500 - Error: relation "departments" does not exist
+Stack: error: relation "departments" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getDepartments (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/superAdminController.js:600:36)
+Body: {}
+
+[2026-07-23T14:27:33.683Z] GET /api/super-admin/courses - Status: 500 - Error: relation "subjects" does not exist
+Stack: error: relation "subjects" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getCourses (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/superAdminController.js:763:29)
+Body: {}
+
+[2026-07-23T14:27:51.529Z] GET /api/super-admin/departments - Status: 500 - Error: relation "departments" does not exist
+Stack: error: relation "departments" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getDepartments (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/superAdminController.js:600:36)
+Body: {}
+
+[2026-07-23T14:27:51.532Z] GET /api/super-admin/courses - Status: 500 - Error: relation "subjects" does not exist
+Stack: error: relation "subjects" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getCourses (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/superAdminController.js:763:29)
+Body: {}
+
+[2026-07-23T14:27:56.093Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"admin@college.com","password":"password123"}
+[2026-07-23T14:28:08.733Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"admin@college.com","password":"password123"}
+[2026-07-23T14:28:10.791Z] GET /api/students?limit=1000 - Status: 500 - Error: relation "students" does not exist
+Stack: error: relation "students" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getStudents (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/studentController.js:84:61)
+Body: {}
+
+[2026-07-23T14:28:14.932Z] GET /api/admin/timetable?department=CSE&year=3&semester=5&section=A - Status: 500 - Error: relation "timetable" does not exist
+Stack: error: relation "timetable" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getTimetable (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/adminController.js:694:36)
+Body: {}
+
+[2026-07-23T14:28:16.133Z] GET /api/students?limit=50 - Status: 500 - Error: relation "students" does not exist
+Stack: error: relation "students" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getStudents (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/studentController.js:84:61)
+Body: {}
+
+[2026-07-23T14:28:16.217Z] GET /api/students?limit=50 - Status: 500 - Error: relation "students" does not exist
+Stack: error: relation "students" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getStudents (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/studentController.js:84:61)
+Body: {}
+
+[2026-07-23T14:28:16.862Z] GET /api/faculty-attendance/list?department=CSE&date=2026-07-23 - Status: 500 - Error: relation "faculty" does not exist
+Stack: error: relation "faculty" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getFacultyAttendanceList (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/facultyAttendanceController.js:25:53)
+Body: {}
+
+[2026-07-23T14:28:16.933Z] GET /api/faculty-attendance/list?department=CSE&date=2026-07-23 - Status: 500 - Error: relation "faculty" does not exist
+Stack: error: relation "faculty" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getFacultyAttendanceList (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/facultyAttendanceController.js:25:53)
+Body: {}
+
+[2026-07-23T14:28:17.593Z] GET /api/exams - Status: 500 - Error: relation "exams" does not exist
+Stack: error: relation "exams" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getExams (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/examController.js:67:36)
+Body: {}
+
+[2026-07-23T14:28:21.280Z] GET /api/fees/report - Status: 500 - Error: relation "fees" does not exist
+Stack: error: relation "fees" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getFeesReport (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/feeController.js:580:39)
+Body: {}
+
+[2026-07-23T14:28:21.296Z] GET /api/fees?page=1&limit=50 - Status: 500 - Error: relation "fees" does not exist
+Stack: error: relation "fees" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getFees (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/feeController.js:219:57)
+Body: {}
+
+[2026-07-23T14:28:24.573Z] GET /api/exams - Status: 500 - Error: relation "exams" does not exist
+Stack: error: relation "exams" does not exist
+    at C:\Users\aswin\Downloads\cms1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async PostgresQueryBuilder.execute (file:///C:/Users/aswin/Downloads/cms1/server/src/config/supabase.js:1041:23)
+    at async getExams (file:///C:/Users/aswin/Downloads/cms1/server/src/controllers/examController.js:67:36)
+Body: {}
+

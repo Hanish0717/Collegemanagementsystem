@@ -357,7 +357,7 @@ export function AdminAcademics() {
                   </div>
                   <div className="pt-2 flex justify-end">
                     <Link
-                      to="/dashboard/admin/lms"
+                      to="/admin/lms"
                       className="text-[11px] font-bold text-indigo-600 flex items-center gap-1 hover:underline"
                     >
                       Audit Syllabus Outlines <ChevronRight className="size-3" />
@@ -373,19 +373,19 @@ export function AdminAcademics() {
               {[
                 {
                   label: 'Weekly Timetables',
-                  path: '/dashboard/admin/timetable',
+                  path: '/admin/timetable',
                   icon: Calendar,
                   color: 'text-indigo-600 bg-indigo-50 border-indigo-100',
                 },
                 {
                   label: 'LMS Digital Syllabus',
-                  path: '/dashboard/admin/lms',
+                  path: '/admin/lms',
                   icon: BookOpen,
                   color: 'text-cyan-600 bg-cyan-50 border-cyan-100',
                 },
                 {
                   label: 'Examination Schedules',
-                  path: '/dashboard/admin/exams/schedule',
+                  path: '/admin/exams/schedule',
                   icon: Award,
                   color: 'text-violet-600 bg-violet-50 border-violet-100',
                 },

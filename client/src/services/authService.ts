@@ -76,73 +76,26 @@ const frontendRoleToBackendRole: Record<RoleId, string> = {
   alumni: "alumni",
 };
 
+import { normalizeRole, resolveDashboardRoute, toBackendRoleFormat } from "@/lib/roleResolver";
+
 /** Convert backend role string to frontend RoleId */
 export function toFrontendRole(backendRole: string): RoleId {
-  if (!backendRole) return "student";
-  const clean = backendRole.toLowerCase().trim();
-  const hyphenated = clean.replace(/_/g, "-");
-  const underscored = clean.replace(/-/g, "_");
-
-  return (
-    backendRoleToFrontendRole[backendRole] ??
-    backendRoleToFrontendRole[clean] ??
-    backendRoleToFrontendRole[hyphenated] ??
-    backendRoleToFrontendRole[underscored] ??
-    "student"
-  );
+  const normalized = normalizeRole(backendRole);
+  if (!normalized) {
+    console.warn(`[authService] toFrontendRole fallback for invalid backendRole: "${backendRole}"`);
+    return "student";
+  }
+  return normalized;
 }
 
 /** Convert frontend RoleId to backend role string */
 export function toBackendRole(frontendRole: RoleId): string {
-  return frontendRoleToBackendRole[frontendRole] ?? "student";
+  return toBackendRoleFormat(frontendRole);
 }
-
-// ── Role → Dashboard Route Mapping ──────────────────────
-const roleDashboardMap: Record<string, string> = {
-  "super-admin": "/dashboard/super-admin",
-  super_admin: "/dashboard/super-admin",
-  superadmin: "/dashboard/super-admin",
-  admin: "/dashboard/admin",
-  faculty: "/dashboard/faculty",
-  lms: "/dashboard/admin/lms",
-  student: "/dashboard/student",
-  parent: "/dashboard/parent",
-  librarian: "/dashboard/librarian",
-  "placement-officer": "/dashboard/placement",
-  placement_officer: "/dashboard/placement",
-  placement: "/dashboard/placement",
-  "hostel-warden": "/dashboard/hostel",
-  hostel_warden: "/dashboard/hostel",
-  warden: "/dashboard/hostel",
-  "transport-manager": "/dashboard/transport",
-  transport_manager: "/dashboard/transport",
-  transport: "/dashboard/transport",
-  principal: "/dashboard/admin",
-  dean: "/dashboard/admin",
-  hod: "/hod/dashboard",
-  "exam-cell": "/dashboard/admin/exams",
-  exam_cell: "/dashboard/admin/exams",
-  examcell: "/dashboard/admin/exams",
-  accounts: "/dashboard/admin/fees",
-  "alumni-coordinator": "/dashboard/admin/alumni",
-  alumni_coordinator: "/dashboard/admin/alumni",
-  alumni: "/dashboard/admin/alumni",
-};
 
 /** Get the correct dashboard path for a backend role */
 export function getDashboardForRole(backendRole: string): string {
-  if (!backendRole) return "/dashboard";
-  const clean = backendRole.toLowerCase().trim();
-  const hyphenated = clean.replace(/_/g, "-");
-  const underscored = clean.replace(/-/g, "_");
-
-  return (
-    roleDashboardMap[backendRole] ??
-    roleDashboardMap[clean] ??
-    roleDashboardMap[hyphenated] ??
-    roleDashboardMap[underscored] ??
-    "/dashboard"
-  );
+  return resolveDashboardRoute(backendRole);
 }
 
 // ── Storage Keys ────────────────────────────────────────

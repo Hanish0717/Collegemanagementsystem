@@ -43,7 +43,12 @@ const statGradients = [
 ];
 
 export function AdminDashboard() {
-  const path = useRouterState({ select: (r) => r.location.pathname });
+  const rawPath = useRouterState({ select: (r) => r.location.pathname });
+  const cleanPath = rawPath.endsWith('/') && rawPath.length > 1 ? rawPath.slice(0, -1) : rawPath;
+  const isAdminRoot =
+    cleanPath === "/admin" ||
+    cleanPath === "/dashboard" ||
+    rawPath === "/admin/";
 
   const [stats, setStats] = useState<any[]>([]);
   const [studentAnalytics, setStudentAnalytics] = useState<any[]>([]);
@@ -54,7 +59,7 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path !== "/dashboard/admin") return;
+    if (!isAdminRoot) return;
 
     const fetchDashboardData = async () => {
       try {
@@ -84,9 +89,9 @@ export function AdminDashboard() {
     };
 
     fetchDashboardData();
-  }, [path]);
+  }, [cleanPath, rawPath]);
 
-  if (path !== "/dashboard/admin") {
+  if (!isAdminRoot) {
     return <Outlet />;
   }
 

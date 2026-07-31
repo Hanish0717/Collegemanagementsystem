@@ -21,6 +21,7 @@ import { useGoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { toast } from 'sonner';
 import { ROLE_LIST, setActiveRole, type RoleId } from '@/lib/roles';
 import { getDashboardForRole, toFrontendRole } from '@/services/authService';
+import { normalizeRole, resolveDashboardRoute } from '@/lib/roleResolver';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 import {
@@ -374,27 +375,10 @@ function LoginForm() {
       }
 
       let result;
-      try {
-        if (roleId === 'parent') {
-          result = await login({ email: email || 'parent@college.com', admissionNumber: admissionNumber || 'ADM2026102' });
-        } else {
-          result = await login({ email: email || `${roleId || 'student'}@college.com`, password: password || 'password123' });
-        }
-      } catch (backendErr) {
-        console.warn('Backend login fallback:', backendErr);
-        const fallbackRole = roleId || 'student';
-        const fallbackUser = {
-          _id: 'demo_' + fallbackRole,
-          fullName: 'Demo ' + fallbackRole.toUpperCase() + ' User',
-          email: email || `${fallbackRole}@college.com`,
-          role: fallbackRole,
-          isActive: true,
-        };
-        localStorage.setItem('cms_token', 'demo_token_' + fallbackRole);
-        localStorage.setItem('cms_user', JSON.stringify(fallbackUser));
-        localStorage.setItem('campusly.role', fallbackRole);
-        setActiveRole(fallbackRole as any);
-        result = fallbackUser;
+      if (roleId === 'parent') {
+        result = await login({ email: email || 'parent@college.com', admissionNumber: admissionNumber || 'ADM2026102' });
+      } else {
+        result = await login({ email: email || `${roleId || 'super_admin'}@college.com`, password: password || 'password123' });
       }
 
       if (result && result.needsVerification) {
@@ -406,28 +390,29 @@ function LoginForm() {
       }
 
       const user = result;
-      const userFrontendRole = toFrontendRole(user.role || roleId || 'student');
+      const userFrontendRole = normalizeRole(user.role || roleId);
+
+      if (!userFrontendRole) {
+        setError('Unknown or invalid role received from server. Please contact your administrator.');
+        return;
+      }
 
       setActiveRole(userFrontendRole);
       localStorage.setItem('campusly.role', userFrontendRole);
 
-      if (userFrontendRole === 'lms') {
-        navigate({ to: '/dashboard/admin/lms' });
-      } else {
-        const targetDash = getDashboardForRole(user.role || userFrontendRole);
-        navigate({ to: targetDash as any });
-        setTimeout(() => {
-          if (window.location.pathname.includes('/login')) {
-            window.location.href = targetDash;
-          }
-        }, 150);
-      }
+      const targetDash = resolveDashboardRoute(userFrontendRole);
+      navigate({ to: targetDash as any });
+      setTimeout(() => {
+        if (window.location.pathname.includes('/login')) {
+          window.location.href = targetDash;
+        }
+      }, 150);
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
         err.response?.data?.error ||
         err.message ||
-        'Login failed. Please try again.';
+        'Login failed. Please verify your credentials and try again.';
       setError(msg);
     } finally {
       setLoading(false);

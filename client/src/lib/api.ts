@@ -18,13 +18,13 @@ const getApiBaseUrl = () => {
     if (hostname && (hostname.includes("ngrok-free.app") || hostname.includes("ngrok.io"))) {
       return "YOUR_BACKEND_NGROK_URL";
     }
-    // Map localhost/127.0.0.1 to localhost, otherwise use current LAN IP/hostname
-    const apiPort = "5000";
+    // Map localhost/127.0.0.1 to local server, otherwise use relative /api for deployed domain (or LAN IP with port)
     if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
-      return `http://${hostname}:${apiPort}`;
+      const isIpOrLan = /^\d+\.\d+\.\d+\.\d+$/.test(hostname) || hostname.endsWith(".local");
+      return isIpOrLan ? `http://${hostname}:5000` : "/api";
     }
 
-    return `http://localhost:${apiPort}`;
+    return "http://localhost:5000";
   }
 
   return "http://localhost:5000";
@@ -39,8 +39,16 @@ const api = axios.create({
   },
 });
 
-// Attach JWT from localStorage to every request
+// Attach JWT from localStorage & deduplicate /api prefix
 api.interceptors.request.use((config) => {
+  if (config.url) {
+    const base = config.baseURL || "";
+    // If baseURL is "/api" or ends with "/api" and url starts with "/api/", deduplicate
+    if ((base === "/api" || base.endsWith("/api")) && config.url.startsWith("/api/")) {
+      config.url = config.url.substring(4);
+    }
+  }
+
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("cms_token");
     if (token) {
@@ -58,8 +66,10 @@ api.interceptors.response.use(
   async (err) => {
     const originalRequest = err.config;
 
-    // Check if network error, 404, or 500 error occurred when trying to reach backend
-    if (!err.response || err.code === "ERR_NETWORK" || err.response?.status === 404 || err.response?.status >= 500) {
+    const isAuthReq = (originalRequest?.url || "").includes("/auth/") || (originalRequest?.url || "").includes("/login");
+
+    // Check if network error, 404, or 500 error occurred when trying to reach backend (non-auth requests only)
+    if (!isAuthReq && (!err.response || err.code === "ERR_NETWORK" || err.response?.status === 404 || err.response?.status >= 500)) {
       try {
         const { processMockStudentRequest } = await import("./mockStudentApi");
         const mockResult = processMockStudentRequest(
@@ -69,7 +79,7 @@ api.interceptors.response.use(
         );
         return { data: mockResult, status: 200, statusText: "OK", headers: {}, config: originalRequest };
       } catch (mockErr) {
-        console.error("Mock handler error on 401/network error:", mockErr);
+        console.error("Mock handler error on network error:", mockErr);
       }
     }
 

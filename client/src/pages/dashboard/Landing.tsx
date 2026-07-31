@@ -1,1128 +1,965 @@
 import { Link } from "@tanstack/react-router";
+import { EduSuiteLogoGraphic, EduSuiteLogo as Logo } from "@/components/ui/EduSuiteLogo";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-  GraduationCap,
-  Users,
-  BookOpen,
-  Calendar,
-  Bus,
-  Building2,
-  Bell,
-  BarChart3,
-  Sparkles,
-  ArrowRight,
-  Check,
   Star,
-  LayoutDashboard,
-  Brain,
-  Database,
-  Cpu,
-  HardDrive,
-  Network,
+  Check,
+  ArrowRight,
   Shield,
-  Target,
-  TrendingUp,
-  Award,
-  Briefcase,
-  Building,
-  Microscope,
-  Wrench,
-  TreePine,
-  FlaskConical,
-  Gamepad2,
-  Music,
-  Camera,
-  Trophy,
-  Coffee,
-  Users as UsersIcon,
-  GraduationCap as GradCap,
   Zap,
-  Heart,
-  Package,
-  Monitor,
-  Search,
   Cloud,
-  Facebook,
+  Search,
+  ChevronRight,
+  Play,
+  Plus,
+  Trash2,
+  Share2,
+  WifiOff,
+  Github,
   Twitter,
   Linkedin,
-  Instagram,
-  Mail,
-  MessageSquare,
+  Globe,
   Send,
-  X,
+  Sparkles,
+  Lock,
+  Tag,
+  FileText,
+  Pin,
+  CheckSquare,
+  List,
+  Code,
+  Image as ImageIcon,
+  ChevronDown,
+  Clock
 } from "lucide-react";
-import { createFileRoute } from "@tanstack/react-router";
+
+// Note interface for the interactive mockup
+interface Note {
+  id: string;
+  title: string;
+  category: "Work" | "Study" | "Ideas" | "Personal";
+  date: string;
+  snippet: string;
+  pinned?: boolean;
+  goals: { id: string; text: string; done: boolean }[];
+}
+
+
 
 export function Landing() {
-  const [activeSection, setActiveSection] = useState("about");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ["about", "departments", "facilities", "placements", "campus", "contact"];
-      const scrollPosition = window.scrollY + 100;
+  // EduSuite Pro Interactive Mockup State
+  const [notes, setNotes] = useState<Note[]>([
+    {
+      id: "1",
+      title: "Project Roadmap",
+      category: "Work",
+      date: "Today, 10:30 AM",
+      snippet: "Q2 planning, features, timeline and milestones for the product launch...",
+      pinned: true,
+      goals: [
+        { id: "g1", text: "Research & Discovery", done: true },
+        { id: "g2", text: "Wireframes", done: true },
+        { id: "g3", text: "Development", done: false },
+        { id: "g4", text: "Testing", done: false },
+        { id: "g5", text: "Launch 🚀", done: false }
+      ]
+    },
+    {
+      id: "2",
+      title: "Design ideas",
+      category: "Ideas",
+      date: "Yesterday",
+      snippet: "Ideas for landing page, animations and micro-interactions...",
+      goals: [
+        { id: "g6", text: "Landing page mockup iteration", done: false },
+        { id: "g7", text: "Smooth page transition tests", done: true },
+        { id: "g8", text: "Micro-animations for buttons", done: false }
+      ]
+    },
+    {
+      id: "3",
+      title: "React Notes",
+      category: "Study",
+      date: "May 12",
+      snippet: "useState, useEffect, custom hooks and performance optimization...",
+      goals: [
+        { id: "g9", text: "Check hook dependency arrays", done: true },
+        { id: "g10", text: "Write custom useLocalStorage hook", done: false },
+        { id: "g11", text: "Analyze bundle size with analyzer", done: false }
+      ]
+    }
+  ]);
 
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const offsetTop = element.offsetTop;
-          const offsetBottom = offsetTop + element.offsetHeight;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
-            setActiveSection(section);
-            break;
-          }
+  const [selectedNoteId, setSelectedNoteId] = useState<string>("1");
+  const [searchQuery, setSearchQuery] = useState("");
+  const selectedNote = notes.find((n) => n.id === selectedNoteId) || notes[0];
+
+  // Handler to toggle goals in interactive mockup
+  const toggleGoal = (noteId: string, goalId: string) => {
+    setNotes(
+      notes.map((n) => {
+        if (n.id === noteId) {
+          return {
+            ...n,
+            goals: n.goals.map((g) => (g.id === goalId ? { ...g, done: !g.done } : g))
+          };
         }
-      }
+        return n;
+      })
+    );
+  };
+
+  // Add note handler
+  const handleAddNote = () => {
+    const newId = (notes.length + 1).toString();
+    const newNote: Note = {
+      id: newId,
+      title: "New Note Checklist",
+      category: "Ideas",
+      date: "Just now",
+      snippet: "Start adding tasks and notes here...",
+      goals: [
+        { id: `g_new_1`, text: "Write down initial thoughts", done: false },
+        { id: `g_new_2`, text: "Set priorities", done: false }
+      ]
     };
+    setNotes([newNote, ...notes]);
+    setSelectedNoteId(newId);
+  };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Delete note handler
+  const handleDeleteNote = (id: string) => {
+    if (notes.length <= 1) return;
+    const remaining = notes.filter((n) => n.id !== id);
+    setNotes(remaining);
+    setSelectedNoteId(remaining[0].id);
+  };
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+  // Filter notes by search query
+  const filteredNotes = notes.filter(
+    (n) =>
+      n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      n.snippet.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Category tags helper
+  const getCategoryColor = (cat: string) => {
+    switch (cat) {
+      case "Work":
+        return "bg-amber-100/60 text-amber-800 border-amber-200/40";
+      case "Study":
+        return "bg-emerald-100/60 text-emerald-800 border-emerald-200/40";
+      case "Ideas":
+        return "bg-purple-100/60 text-purple-800 border-purple-200/40";
+      case "Personal":
+        return "bg-rose-100/60 text-rose-800 border-rose-200/40";
+      default:
+        return "bg-slate-100/60 text-slate-800 border-slate-200/40";
     }
   };
 
-  const navItems = [
-    { id: "about", label: "About" },
-    { id: "departments", label: "Departments" },
-    { id: "facilities", label: "Facilities" },
-    { id: "placements", label: "Placements" },
-    { id: "campus", label: "Campus Life" },
-    { id: "contact", label: "Contact" },
-  ];
+  const getCategoryDotColor = (cat: string) => {
+    switch (cat) {
+      case "Work":
+        return "bg-amber-500";
+      case "Study":
+        return "bg-emerald-500";
+      case "Ideas":
+        return "bg-purple-500";
+      case "Personal":
+        return "bg-rose-500";
+      default:
+        return "bg-slate-500";
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-hero">
-      {/* Nav */}
-      <header className="sticky top-0 z-50">
-        <div className="mx-auto max-w-7xl px-6 py-4">
-          <div className="glass rounded-2xl flex items-center justify-between px-5 py-3 shadow-soft">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="size-9 rounded-xl bg-gradient-primary grid place-items-center text-white">
-                <GraduationCap className="size-5" />
-              </div>
-              <span className="font-bold text-lg tracking-tight">College Management System</span>
+    <div className="min-h-screen bg-[#FBFDFF] text-[#081A3A] font-sans selection:bg-[#EAF3FF] selection:text-[#0A5BFF] antialiased overflow-x-hidden">
+      
+      {/* Background glow decorations */}
+      <div className="absolute top-0 left-0 w-full h-[900px] overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-30%] left-[-10%] w-[65%] h-[65%] rounded-full bg-blue-500/5 blur-[160px]" />
+        <div className="absolute top-[15%] right-[-10%] w-[55%] h-[55%] rounded-full bg-indigo-500/5 blur-[160px]" />
+      </div>
+
+      {/* STICKY NAVBAR */}
+      <header className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/85 border-b border-[#E2EEFF]/80 px-6 py-4 transition-all">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link to="/" className="hover:opacity-95 transition">
+            <Logo />
+          </Link>
+          
+          <nav className="hidden md:flex items-center gap-8 text-[15px] font-semibold text-[#4A5E80]">
+            <a href="#features" className="hover:text-[#0A5BFF] transition">Features</a>
+            <a href="#pricing" className="hover:text-[#0A5BFF] transition">Pricing</a>
+            <a href="#download" className="hover:text-[#0A5BFF] transition">Download</a>
+            <a href="#blog" className="hover:text-[#0A5BFF] transition">Blog</a>
+            <a href="#about" className="hover:text-[#0A5BFF] transition">About</a>
+          </nav>
+
+          <div className="hidden md:flex items-center gap-4">
+            <Link
+              to="/login"
+              className="text-[15px] font-bold text-[#4A5E80] hover:text-[#0A5BFF] px-4 py-2 transition"
+            >
+              Sign in
             </Link>
-            <nav className="hidden md:flex items-center gap-7 text-sm">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`transition relative ${
-                    activeSection === item.id
-                      ? "text-gradient font-medium"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {item.label}
-                  {activeSection === item.id && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-primary"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </button>
-              ))}
-            </nav>
-            <div className="flex items-center gap-2">
-              <Link
-                to="/login"
-                className="text-sm px-3 py-1.5 rounded-lg hover:bg-accent transition"
-              >
-                Student Portal
-              </Link>
-              <Link
-                to="/login"
-                className="text-sm px-4 py-2 rounded-lg bg-gradient-primary text-primary-foreground glow-primary font-medium"
-              >
-                Login
-              </Link>
-            </div>
+            <Link
+              to="/login"
+              className="bg-[#0A5BFF] hover:bg-[#0047D6] text-white text-sm font-bold px-5.5 py-2.5 rounded-full transition shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/15"
+            >
+              Get Started
+            </Link>
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition"
+          >
+            <svg
+              className="size-6 text-[#081A3A]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-slate-100 mt-4 overflow-hidden bg-white"
+            >
+              <div className="flex flex-col gap-4 py-4 px-2 text-sm font-semibold text-[#4A5E80]">
+                <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#0A5BFF] py-2 transition">Features</a>
+                <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#0A5BFF] py-2 transition">Pricing</a>
+                <a href="#download" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#0A5BFF] py-2 transition">Download</a>
+                <a href="#blog" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#0A5BFF] py-2 transition">Blog</a>
+                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="hover:text-[#0A5BFF] py-2 transition">About</a>
+                <hr className="border-slate-100" />
+                <div className="flex flex-col gap-2 pt-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center font-bold py-2.5 rounded-xl border border-slate-200 text-[#4A5E80] hover:bg-slate-50 transition"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center bg-[#0A5BFF] hover:bg-[#0047D6] text-white font-bold py-2.5 rounded-xl transition"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-        <div className="mx-auto max-w-7xl px-6 pt-20 pb-28 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl mx-auto text-center"
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-xs font-medium mb-6">
-              <Sparkles className="size-3.5 text-indigo" />
-              <span>Excellence in Engineering Education — Since 1981</span>
+      {/* HERO SECTION */}
+      <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 px-6 z-10">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+          
+          {/* Left Text Column */}
+          <div className="lg:col-span-5 space-y-8 text-center lg:text-left flex flex-col items-center lg:items-start">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF3FF] border border-[#CDE1FF]/60 text-xs font-bold text-[#0A5BFF] shadow-sm select-none">
+              <span className="text-[#0A5BFF]">⭐</span>
+              <span>Your Campus. Always With You.</span>
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold leading-[1.05]">
-              Empowering Students Through <br />{" "}
-              <span className="text-gradient">Smart Digital Campus Management</span>
+
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-[#081A3A] tracking-tight leading-[1.08] font-sans">
+              The Smartest Way <br />
+              to Manage Campus
             </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              A premier engineering institution dedicated to academic excellence, innovation, and
-              holistic development. Transforming futures through world-class education and
-              cutting-edge research.
+
+            <p className="text-[16px] text-slate-500 leading-relaxed max-w-lg">
+              EduSuite Pro is a beautiful, fast, and secure college management and ERP platform for modern institutions. Streamline admissions, track attendance, manage grades, and connect classrooms.
             </p>
-            <div className="mt-9 flex items-center justify-center gap-3">
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-primary text-primary-foreground font-medium glow-primary animate-pulse-glow"
+                to="/login"
+                className="bg-[#0A5BFF] hover:bg-[#0047D6] text-white font-bold px-8 py-4 rounded-xl flex items-center justify-center gap-2 transition w-full sm:w-auto shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25 hover:translate-y-[-1px]"
               >
-                Explore Campus ERP <ArrowRight className="size-4" />
+                <span>Enter Campus Portal</span>
+                <ArrowRight className="size-4" />
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass-card font-medium"
+                className="bg-white border border-[#E2EEFF] text-[#081A3A] hover:bg-slate-50 font-bold px-8 py-4 rounded-xl flex items-center justify-center gap-3 transition w-full sm:w-auto shadow-sm hover:shadow-md"
               >
-                <LayoutDashboard className="size-4" /> Student Portal
+                <span>Live Demo</span>
+                <div className="size-5 rounded-full bg-[#0A5BFF] flex items-center justify-center text-white shrink-0">
+                  <Play className="size-2.5 fill-current ml-0.5" />
+                </div>
               </Link>
             </div>
-            <div className="mt-10 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <Check className="size-4 text-indigo" /> AICTE Approved
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <Check className="size-4 text-indigo" /> NBA Accredited
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <Check className="size-4 text-indigo" /> 92% Placement Record
-              </span>
-            </div>
-          </motion.div>
 
-          {/* Floating preview */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-16 relative max-w-5xl mx-auto"
-          >
-            <div className="absolute -inset-4 bg-gradient-primary rounded-3xl blur-2xl opacity-20" />
-            <div className="relative glass-card rounded-2xl p-3 shadow-soft">
-              <div className="rounded-xl overflow-hidden bg-background border">
-                <div className="h-9 border-b flex items-center gap-1.5 px-3">
-                  <div className="size-2.5 rounded-full bg-red-400" />
-                  <div className="size-2.5 rounded-full bg-yellow-400" />
-                  <div className="size-2.5 rounded-full bg-green-400" />
-                </div>
-                <div className="grid grid-cols-12 gap-3 p-4">
-                  <div className="col-span-2 space-y-2">
-                    {["Dashboard", "Students", "Faculty", "Exams", "Fees", "Library"].map(
-                      (i, idx) => (
-                        <div
-                          key={i}
-                          className={`text-xs px-2.5 py-2 rounded-lg ${idx === 0 ? "bg-gradient-primary text-white" : "bg-muted/60"}`}
-                        >
-                          {i}
-                        </div>
-                      ),
-                    )}
+            {/* Horizontal Trust Highlights */}
+            <div className="pt-8 border-t border-[#E2EEFF]/60 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-semibold text-slate-500">
+              <div className="flex items-center gap-2">
+                <Shield className="size-4 text-[#0A5BFF]" />
+                <span>Private & Secure</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Cloud className="size-4 text-[#0A5BFF]" />
+                <span>Sync Everywhere</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="size-4 text-[#0A5BFF]" />
+                <span>Works Offline</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Mockup Column */}
+          <div className="lg:col-span-7 relative w-full flex justify-center mt-8 lg:mt-0">
+            {/* Soft decorative background glows */}
+            <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/10 to-indigo-500/5 rounded-3xl blur-3xl opacity-50 pointer-events-none" />
+            
+            {/* Interactive Dashboard Mockup Device Frame */}
+            <div className="w-full max-w-[660px] bg-slate-900/5 rounded-[22px] p-2.5 shadow-2xl relative border border-slate-200/40 backdrop-blur-md">
+              <div className="w-full bg-white rounded-xl overflow-hidden border border-slate-200/60 flex flex-col h-[400px] md:h-[450px]">
+                
+                {/* Mock Browser Title Bar */}
+                <div className="h-9 bg-slate-50/80 border-b border-slate-200/50 flex items-center justify-between px-4 select-none shrink-0">
+                  <div className="flex gap-1.5">
+                    <div className="size-2.5 rounded-full bg-red-400/80" />
+                    <div className="size-2.5 rounded-full bg-yellow-400/80" />
+                    <div className="size-2.5 rounded-full bg-green-400/80" />
                   </div>
-                  <div className="col-span-10 grid grid-cols-4 gap-3">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="rounded-xl p-3 bg-gradient-soft border">
-                        <div className="text-[10px] text-muted-foreground">Metric {i}</div>
-                        <div className="text-lg font-bold mt-1">{(i * 2480).toLocaleString()}</div>
-                        <div className="h-12 mt-2 bg-gradient-primary opacity-70 rounded-md" />
-                      </div>
-                    ))}
-                    <div className="col-span-3 rounded-xl border p-4 h-40 bg-card">
-                      <div className="text-xs font-medium mb-2">Weekly Attendance</div>
-                      <div className="flex items-end gap-2 h-24">
-                        {[60, 75, 55, 82, 72, 90, 68].map((h, i) => (
+                  <div className="bg-white border border-slate-100 text-[10px] text-slate-400 rounded-md py-0.5 px-16 max-w-[220px] w-full text-center truncate shadow-sm">
+                    app.edusuite.com/all-notes
+                  </div>
+                  <div className="size-4" />
+                </div>
+
+                {/* Dashboard Core Content Workspace */}
+                <div className="flex flex-1 overflow-hidden text-xs">
+                  
+                  {/* Column 1: Mock Sidebar */}
+                  <div className="w-[150px] md:w-[170px] bg-slate-50/50 border-r border-slate-100 p-3 flex flex-col justify-between shrink-0 select-none">
+                    <div className="space-y-4">
+                      
+                      {/* "+ New Note" Button */}
+                      <button
+                        onClick={handleAddNote}
+                        className="w-full bg-[#0A5BFF] hover:bg-[#0047D6] text-white rounded-lg py-2 px-2.5 font-bold flex items-center justify-center gap-1.5 transition shadow-sm text-[11px]"
+                      >
+                        <Plus className="size-3.5" />
+                        <span>New Note</span>
+                      </button>
+
+                      {/* Folder Routes List */}
+                      <div className="space-y-0.5">
+                        <div className="px-2 py-1.5 rounded-md bg-blue-50/80 text-[#0A5BFF] font-bold flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <FileText className="size-3.5" />
+                            <span>All Notes</span>
+                          </div>
+                          <span className="text-[10px] bg-blue-100/50 px-1.5 py-0.5 rounded-full">{notes.length + 125}</span>
+                        </div>
+
+                        {[
+                          { name: "Pinned", icon: Pin, count: 12 },
+                          { name: "Recent", icon: Clock },
+                          { name: "Favorites", icon: Star },
+                          { name: "Trash", icon: Trash2 }
+                        ].map((item, idx) => (
                           <div
-                            key={i}
-                            className="flex-1 rounded-md bg-gradient-primary"
-                            style={{ height: `${h}%` }}
-                          />
+                            key={idx}
+                            className="px-2 py-1.5 rounded-md hover:bg-slate-100/60 text-slate-600 font-medium flex items-center justify-between cursor-pointer"
+                          >
+                            <div className="flex items-center gap-2">
+                              <item.icon className="size-3.5" />
+                              <span>{item.name}</span>
+                            </div>
+                            {item.count !== undefined && (
+                              <span className="text-[10px] text-slate-400">{item.count}</span>
+                            )}
+                          </div>
                         ))}
                       </div>
-                    </div>
-                    <div className="rounded-xl border p-4 h-40 bg-gradient-violet text-white">
-                      <div className="text-xs opacity-80">Events</div>
-                      <div className="text-2xl font-bold mt-2">12</div>
-                      <div className="text-xs opacity-80 mt-1">Upcoming this month</div>
+
+                      {/* Tag Categories */}
+                      <div className="space-y-1.5 pt-2">
+                        <p className="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider">Tags</p>
+                        <div className="space-y-0.5">
+                          {[
+                            { name: "Work", count: 34 },
+                            { name: "Study", count: 28 },
+                            { name: "Ideas", count: 16 },
+                            { name: "Personal", count: 20 }
+                          ].map((tag, idx) => (
+                            <div
+                              key={idx}
+                              className="px-2 py-1 rounded-md hover:bg-slate-100/60 text-slate-600 flex items-center justify-between cursor-pointer"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className={`size-1.5 rounded-full ${getCategoryDotColor(tag.name)}`} />
+                                <span>{tag.name}</span>
+                              </div>
+                              <span className="text-[10px] text-slate-400">{tag.count}</span>
+                            </div>
+                          ))}
+                          <button
+                            onClick={handleAddNote}
+                            className="text-[10px] text-slate-400 font-semibold px-2 py-1 flex items-center gap-1 hover:text-[#0A5BFF] transition"
+                          >
+                            <Plus className="size-2.5" />
+                            <span>New Tag</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Column 2: Note List */}
+                  <div className="w-[170px] md:w-[200px] border-r border-slate-100 p-2.5 flex flex-col gap-2 shrink-0 select-none bg-white">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                      <span className="font-extrabold text-[#081A3A] text-sm">All Notes</span>
+                      <button className="text-[10px] text-[#4A5E80] font-semibold flex items-center gap-0.5 hover:text-[#0A5BFF] transition">
+                        <span>Recent</span>
+                        <ChevronDown className="size-3 shrink-0" />
+                      </button>
+                    </div>
+
+                    {/* Search box with shortcut badge */}
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-2.5 size-3 text-slate-400" />
+                      <input
+                        type="text"
+                        placeholder="Search notes..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-100 rounded-md py-1.5 pl-8 pr-10 text-[10px] focus:outline-none focus:border-blue-300 focus:bg-white"
+                      />
+                      <div className="absolute right-2 top-2 text-[8px] font-bold text-slate-400 border border-slate-200 bg-white px-1.5 py-0.5 rounded shadow-sm select-none">
+                        ⌘K
+                      </div>
+                    </div>
+
+                    {/* Note cards */}
+                    <div className="space-y-1.5 overflow-y-auto flex-1 pr-0.5">
+                      {filteredNotes.map((note) => (
+                        <div
+                          key={note.id}
+                          onClick={() => setSelectedNoteId(note.id)}
+                          className={`p-2.5 rounded-lg border text-left cursor-pointer transition ${
+                            selectedNoteId === note.id
+                              ? "bg-blue-50/70 border-blue-200/60 shadow-sm"
+                              : "border-slate-100/50 hover:bg-slate-50/60"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className="font-bold text-slate-800 text-[11px] truncate flex-1">{note.title}</span>
+                            {note.pinned && <Pin className="size-2.5 text-amber-500 fill-amber-500 shrink-0" />}
+                          </div>
+                          <p className="text-[10px] text-slate-400 line-clamp-2 leading-relaxed mb-2">
+                            {note.snippet}
+                          </p>
+                          <div className="flex items-center justify-between gap-1">
+                            <span className={`text-[9px] px-1.5 py-0.2 rounded-md border font-semibold ${getCategoryColor(note.category)}`}>
+                              {note.category}
+                            </span>
+                            <span className="text-[8px] text-slate-400 font-semibold">{note.date}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Column 3: Note Editor Detail View */}
+                  <div className="flex-1 p-3.5 bg-[#FAFDFE] flex flex-col gap-3 justify-between overflow-y-auto">
+                    <div className="space-y-3.5">
+                      {/* Note Title & Action Bar */}
+                      <div className="flex items-center justify-between gap-4 pb-2.5 border-b border-slate-200/50">
+                        <div className="flex-1 truncate">
+                          <h4 className="font-black text-[#081A3A] text-[14px] truncate">{selectedNote.title}</h4>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-slate-400 shrink-0">
+                          <button
+                            onClick={() => handleDeleteNote(selectedNote.id)}
+                            className="p-1 hover:bg-red-50 hover:text-red-600 rounded transition"
+                            title="Delete Note"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                          <button className="p-1 hover:bg-slate-100 hover:text-slate-600 rounded transition" title="Share">
+                            <Share2 className="size-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Mock Text Editor Toolbar */}
+                      <div className="flex items-center gap-2 text-slate-400 py-1 border-b border-slate-100 select-none overflow-x-auto">
+                        <span className="font-bold text-[11px] px-1 hover:text-slate-800 cursor-pointer">B</span>
+                        <span className="italic text-[11px] px-1 hover:text-slate-800 cursor-pointer">I</span>
+                        <span className="underline text-[11px] px-1 hover:text-slate-800 cursor-pointer">U</span>
+                        <div className="w-px h-3.5 bg-slate-200 mx-1" />
+                        <List className="size-3.5 cursor-pointer hover:text-slate-800" />
+                        <CheckSquare className="size-3.5 cursor-pointer hover:text-slate-800" />
+                        <Code className="size-3.5 cursor-pointer hover:text-slate-800" />
+                        <ImageIcon className="size-3.5 cursor-pointer hover:text-slate-800" />
+                      </div>
+
+                      {/* Checklist Content */}
+                      <div className="space-y-2 pt-1 text-slate-600">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Goals</p>
+                        <div className="space-y-1.5">
+                          {selectedNote.goals.map((goal) => (
+                            <div
+                              key={goal.id}
+                              onClick={() => toggleGoal(selectedNote.id, goal.id)}
+                              className="flex items-start gap-2.5 cursor-pointer group"
+                            >
+                              <div className="pt-0.5 shrink-0">
+                                {goal.done ? (
+                                  <div className="size-3.5 rounded bg-[#0A5BFF] text-white flex items-center justify-center">
+                                    <Check className="size-2.5 stroke-[3]" />
+                                  </div>
+                                ) : (
+                                  <div className="size-3.5 rounded border border-slate-300 group-hover:border-blue-400 transition bg-white" />
+                                )}
+                              </div>
+                              <span className={`text-[11px] leading-relaxed transition ${
+                                goal.done ? "text-slate-400 line-through" : "text-slate-700 font-medium"
+                              }`}>
+                                {goal.text}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sync Status Footer */}
+                    <div className="flex items-center justify-between text-[9px] text-slate-400 pt-3 border-t border-slate-100 select-none shrink-0">
+                      <div className="flex items-center gap-1">
+                        <span className="size-1.5 rounded-full bg-green-500" />
+                        <span>Saved 2 min ago</span>
+                      </div>
+                      <Cloud className="size-3 text-green-500" />
+                    </div>
+
+                  </div>
                 </div>
+
               </div>
             </div>
-          </motion.div>
+
+            {/* Handwritten curved arrow pointing up-left */}
+            <div className="absolute -bottom-12 right-[15%] hidden md:flex items-center gap-3 text-slate-500 select-none">
+              <svg className="w-16 h-16 text-[#0A5BFF]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M75 75C60 75 40 65 30 45"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeDasharray="5 5"
+                />
+                <path
+                  d="M26 53L29 42L40 46"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-2xl text-[#081A3A] font-semibold rotate-[-5deg] tracking-wide" style={{ fontFamily: "'Caveat', cursive" }}>
+                Clean. Focused. Distraction-free.
+              </span>
+            </div>
+
+          </div>
+
         </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              About Our College
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">
-              Excellence in Education Since 1981
+      {/* CORE MODULES SECTION */}
+      <section id="features" className="py-24 px-6 relative bg-white border-t border-[#E2EEFF]/40">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="text-center max-w-2xl mx-auto space-y-3.5 mb-16">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#0A5BFF]">
+              Core Modules
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#081A3A] tracking-tight">
+              Everything you need to stay{" "}
+              <span className="text-[#0A5BFF] relative inline-block">
+                organized
+                <svg className="absolute -bottom-2 left-0 w-full h-[7px] text-[#0A5BFF]" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M5 5 Q 50 12, 95 5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" fill="none" />
+                </svg>
+              </span>
             </h2>
-            <p className="mt-4 text-muted-foreground">
-              A premier institution dedicated to academic excellence, innovation, and holistic
-              development of students. Our smart ERP system ensures seamless campus management and
-              enhanced learning experience.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <h3 className="text-2xl font-bold mb-4">Our Vision & Mission</h3>
-              <p className="text-muted-foreground mb-4">
-                To be a global leader in education by fostering innovation, research, and ethical
-                values. We aim to transform students into responsible citizens and future leaders.
-              </p>
-              <ul className="space-y-3">
-                {[
-                  "Academic Excellence through innovative curriculum",
-                  "State-of-the-art infrastructure and facilities",
-                  "Industry partnerships for practical exposure",
-                  "Focus on research and development",
-                  "Holistic student development programs",
-                ].map((item, index) => (
-                  <li key={index} className="flex items-center gap-2 text-sm">
-                    <Check className="size-4 text-indigo" /> {item}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="grid grid-cols-2 gap-4"
-            >
-              {[
-                { v: "5,000+", l: "Students", icon: Users },
-                { v: "250+", l: "Faculty", icon: GradCap },
-                { v: "7", l: "Departments", icon: Building },
-                { v: "92%", l: "Placements", icon: TrendingUp },
-              ].map((stat) => (
-                <div key={stat.l} className="glass-card rounded-2xl p-6 text-center">
-                  <stat.icon className="size-8 text-indigo mx-auto mb-2" />
-                  <div className="text-3xl font-bold text-gradient">{stat.v}</div>
-                  <div className="text-sm text-muted-foreground mt-1">{stat.l}</div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Departments Section */}
-      <section id="departments" className="py-24 bg-gradient-soft">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              Academic Departments
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">Our Departments</h2>
-            <p className="mt-4 text-muted-foreground">
-              Explore our diverse departments offering cutting-edge programs and world-class
-              education.
-            </p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[
-              {
-                name: "CSE",
-                icon: Cpu,
-                faculty: 45,
-                students: 850,
-                desc: "Computer Science & Engineering",
-              },
-              {
-                name: "AIML",
-                icon: Brain,
-                faculty: 32,
-                students: 380,
-                desc: "Artificial Intelligence & ML",
-              },
-              {
-                name: "AI&DS",
-                icon: Database,
-                faculty: 28,
-                students: 350,
-                desc: "AI & Data Science",
-              },
-              {
-                name: "ECE",
-                icon: Microscope,
-                faculty: 38,
-                students: 620,
-                desc: "Electronics & Communication",
-              },
-              {
-                name: "EEE",
-                icon: Zap,
-                faculty: 42,
-                students: 580,
-                desc: "Electrical & Electronics",
-              },
-              {
-                name: "Mechanical",
-                icon: Wrench,
-                faculty: 35,
-                students: 520,
-                desc: "Mechanical Engineering",
-              },
-              {
-                name: "Civil",
-                icon: Building,
-                faculty: 28,
-                students: 450,
-                desc: "Civil Engineering",
-              },
-            ].map((dept, index) => (
-              <motion.div
-                key={dept.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card rounded-2xl p-6 hover:scale-105 transition cursor-pointer"
-              >
-                <div className="size-12 rounded-xl bg-gradient-primary text-white grid place-items-center mb-4">
-                  <dept.icon className="size-6" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{dept.name}</h3>
-                <p className="text-xs text-muted-foreground mb-4">{dept.desc}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{dept.faculty} Faculty</span>
-                  <span className="text-muted-foreground">{dept.students} Students</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Capabilities Section */}
-      <section id="capabilities" className="py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              ERP Capabilities
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">Smart Campus Management</h2>
-            <p className="mt-4 text-muted-foreground">
-              Comprehensive ERP system to manage every aspect of your institution efficiently.
-            </p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                name: "Attendance Management",
-                icon: Users,
-                desc: "Real-time attendance tracking with biometric integration",
-              },
-              {
-                name: "Fee Management",
-                icon: Briefcase,
-                desc: "Online payment processing and receipt generation",
-              },
-              {
-                name: "Library Management",
-                icon: BookOpen,
-                desc: "Digital library with barcode scanning system",
-              },
-              {
-                name: "Hostel Management",
-                icon: Building2,
-                desc: "Room allocation and mess management system",
-              },
-              {
-                name: "Transport Management",
-                icon: Bus,
-                desc: "GPS-enabled fleet tracking and route optimization",
-              },
-              {
-                name: "Placement Management",
-                icon: Target,
-                desc: "Complete placement cell management and analytics",
-              },
-              {
-                name: "AI Analytics",
-                icon: Brain,
-                desc: "Predictive analytics for student performance",
-              },
-              {
-                name: "Online Exams",
-                icon: BarChart3,
-                desc: "Secure online examination platform with AI proctoring",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={feature.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card rounded-2xl p-6 hover:scale-105 transition"
-              >
-                <div className="size-12 rounded-xl bg-gradient-primary text-white grid place-items-center mb-4">
-                  <feature.icon className="size-6" />
-                </div>
-                <h3 className="font-semibold mb-2">{feature.name}</h3>
-                <p className="text-xs text-muted-foreground">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Placements Section */}
-      <section id="placements" className="py-24 bg-gradient-soft">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              Placements
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">Industry Partnerships</h2>
-            <p className="mt-4 text-muted-foreground">
-              Our students are placed in top companies with excellent packages through our dedicated
-              placement cell.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-4 gap-6 mb-16">
-            {[
-              { v: "92%", l: "Placement Rate", icon: Award },
-              { v: "₹24 LPA", l: "Highest Package", icon: TrendingUp },
-              { v: "₹8.5 LPA", l: "Average Package", icon: BarChart3 },
-              { v: "150+", l: "Recruiters", icon: Building2 },
-            ].map((stat) => (
-              <motion.div
-                key={stat.l}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="glass-card rounded-2xl p-6 text-center"
-              >
-                <stat.icon className="size-8 text-indigo mx-auto mb-2" />
-                <div className="text-3xl font-bold text-gradient">{stat.v}</div>
-                <div className="text-sm text-muted-foreground mt-1">{stat.l}</div>
-              </motion.div>
-            ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="text-2xl font-bold text-center mb-8">Top Recruiters</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-              {[
-                { name: "Infosys", icon: Building, label: "Hiring Partner", offers: "150+ Offers" },
-                { name: "TCS", icon: Briefcase, label: "Campus Recruiter", offers: "200+ Offers" },
-                { name: "Wipro", icon: Cpu, label: "Top Recruiter", offers: "180+ Offers" },
-                { name: "Amazon", icon: Package, label: "Placement Partner", offers: "80+ Offers" },
-                { name: "Microsoft", icon: Monitor, label: "Hiring Partner", offers: "60+ Offers" },
-                { name: "Google", icon: Search, label: "Top Recruiter", offers: "40+ Offers" },
-                {
-                  name: "Accenture",
-                  icon: Users,
-                  label: "Campus Recruiter",
-                  offers: "120+ Offers",
-                },
-                { name: "IBM", icon: Database, label: "Placement Partner", offers: "90+ Offers" },
-                { name: "Oracle", icon: Cloud, label: "Hiring Partner", offers: "70+ Offers" },
-                { name: "Cisco", icon: Network, label: "Mass Recruiter", offers: "100+ Offers" },
-              ].map((company, index) => (
-                <div
-                  key={company.name}
-                  className="glass-card rounded-xl p-5 text-center hover:scale-105 transition cursor-pointer group"
-                >
-                  <div className="size-12 rounded-lg bg-gradient-primary text-white grid place-items-center mx-auto mb-3 group-hover:scale-110 transition">
-                    <company.icon className="size-6" />
-                  </div>
-                  <div className="font-semibold text-sm mb-1">{company.name}</div>
-                  <div className="text-xs text-indigo font-medium mb-2">{company.label}</div>
-                  <div className="text-xs text-muted-foreground">{company.offers}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Notice Board Section */}
-      <section className="py-16 bg-gradient-soft">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-12"
-          >
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Bell className="size-5 text-indigo" />
-              <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-                Notice Board
-              </div>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold">Latest Announcements</h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              {
-                type: "Exams",
-                title: "End Semester Exams",
-                date: "May 15-30, 2026",
-                icon: Calendar,
-              },
-              {
-                type: "Placements",
-                title: "TCS Campus Drive",
-                date: "June 5, 2026",
-                icon: Briefcase,
-              },
-              {
-                type: "Admissions",
-                title: "B.Tech Admissions 2026",
-                date: "Open Now",
-                icon: GraduationCap,
-              },
-              { type: "Events", title: "Tech Fest 2026", date: "June 15-17, 2026", icon: Trophy },
-            ].map((notice, index) => (
-              <motion.div
-                key={notice.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card rounded-xl p-5 hover:scale-105 transition cursor-pointer"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <notice.icon className="size-4 text-indigo" />
-                  <span className="text-xs font-medium text-indigo">{notice.type}</span>
-                </div>
-                <h3 className="font-semibold text-sm mb-2">{notice.title}</h3>
-                <p className="text-xs text-muted-foreground">{notice.date}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Campus Life Section */}
-      <section id="campus" className="py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              Campus Life
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">Beyond Academics</h2>
-            <p className="mt-4 text-muted-foreground">
-              Vibrant campus life with numerous clubs, events, sports, and cultural activities.
-            </p>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-            {[
-              {
-                name: "Technical Clubs",
-                icon: Cpu,
-                count: 15,
-                desc: "Robotics, Coding, Innovation",
-              },
-              { name: "Cultural Events", icon: Music, count: 25, desc: "Music, Dance, Drama" },
-              {
-                name: "Sports Activities",
-                icon: Trophy,
-                count: 20,
-                desc: "Cricket, Football, Basketball",
-              },
-              { name: "Workshops", icon: UsersIcon, count: 30, desc: "Skill development programs" },
-              { name: "Photography Club", icon: Camera, count: 12, desc: "Visual arts and media" },
-              {
-                name: "Social Service",
-                icon: Heart,
-                count: 18,
-                desc: "Community outreach programs",
-              },
-            ].map((activity, index) => (
-              <motion.div
-                key={activity.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card rounded-2xl p-6 hover:scale-105 transition"
-              >
-                <div className="size-12 rounded-xl bg-gradient-primary text-white grid place-items-center mb-4">
-                  <activity.icon className="size-6" />
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{activity.name}</h3>
-                <p className="text-xs text-muted-foreground mb-3">{activity.desc}</p>
-                <div className="text-sm font-medium text-indigo">
-                  {activity.count} Active Groups
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h3 className="text-2xl font-bold text-center mb-8">Upcoming Events</h3>
-            <div className="space-y-4">
-              {[
-                { event: "Annual Tech Fest", date: "June 15-17, 2026", type: "Technical" },
-                { event: "Cultural Night", date: "June 20, 2026", type: "Cultural" },
-                { event: "Sports Week", date: "July 5-10, 2026", type: "Sports" },
-                { event: "Alumni Meet", date: "July 25, 2026", type: "Networking" },
-              ].map((event, index) => (
-                <div
-                  key={event.event}
-                  className="glass-card rounded-xl p-4 flex items-center justify-between hover:scale-105 transition"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="size-12 rounded-lg bg-gradient-primary text-white grid place-items-center">
-                      <Calendar className="size-5" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{event.event}</div>
-                      <div className="text-xs text-muted-foreground">{event.date}</div>
-                    </div>
-                  </div>
-                  <span className="text-xs px-3 py-1 rounded-full bg-gradient-primary text-white">
-                    {event.type}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Facilities Section */}
-      <section id="facilities" className="py-24 bg-gradient-soft">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              Campus Facilities
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">World-Class Infrastructure</h2>
-            <p className="mt-4 text-muted-foreground">
-              State-of-the-art facilities designed to provide the best learning environment for our
-              students.
-            </p>
-          </motion.div>
-
+          {/* Grid of 6 modules - Centered icons & texts */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                name: "Central Library",
-                icon: BookOpen,
-                desc: "50,000+ books, digital resources, reading rooms",
+                title: "Academics",
+                desc: "Manage study plans, courses, curriculum, and class schedules.",
+                icon: FileText,
+                iconColor: "text-blue-500",
+                iconBg: "bg-blue-50"
               },
               {
-                name: "Hostel Facilities",
-                icon: Building2,
-                desc: "AC rooms, mess, 24/7 security, Wi-Fi",
+                title: "Attendance",
+                desc: "Real-time attendance tracking with automated notification alerts.",
+                icon: Tag,
+                iconColor: "text-purple-500",
+                iconBg: "bg-purple-50"
               },
               {
-                name: "Transport Service",
-                icon: Bus,
-                desc: "GPS-enabled buses covering entire city",
+                title: "Exams & Grades",
+                desc: "Seamless exam coordination, result publishing, and transcript generation.",
+                icon: Search,
+                iconColor: "text-emerald-500",
+                iconBg: "bg-emerald-50"
               },
               {
-                name: "Smart Classrooms",
-                icon: Monitor,
-                desc: "Projectors, smart boards, video conferencing",
+                title: "Library",
+                desc: "Digital library management, book cataloging, and circulation tracking.",
+                icon: WifiOff,
+                iconColor: "text-amber-500",
+                iconBg: "bg-amber-50"
               },
               {
-                name: "Advanced Laboratories",
-                icon: FlaskConical,
-                desc: "Well-equipped labs for all departments",
+                title: "Hostel & Mess",
+                desc: "Room allotment, warden dashboard, and daily mess menu scheduling.",
+                icon: Cloud,
+                iconColor: "text-sky-500",
+                iconBg: "bg-sky-50"
               },
               {
-                name: "Sports Complex",
-                icon: Trophy,
-                desc: "Indoor stadium, gym, playgrounds, courts",
-              },
-            ].map((facility, index) => (
-              <motion.div
-                key={facility.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card rounded-2xl p-6 hover:scale-105 transition"
+                title: "Security & Fees",
+                desc: "Role-based portals with secure fee payment gates and audit trails.",
+                icon: Lock,
+                iconColor: "text-rose-500",
+                iconBg: "bg-rose-50"
+              }
+            ].map((mod, idx) => (
+              <div
+                key={idx}
+                className="group bg-white p-8 rounded-3xl border border-[#E2EEFF]/80 hover:border-blue-200 hover:bg-slate-50/10 shadow-sm hover:shadow-md transition-all hover:translate-y-[-2px] flex flex-col items-center text-center space-y-5"
               >
-                <div className="size-12 rounded-xl bg-gradient-primary text-white grid place-items-center mb-4">
-                  <facility.icon className="size-6" />
+                <div className={`size-14 rounded-full ${mod.iconBg} ${mod.iconColor} flex items-center justify-center transition-transform group-hover:scale-[1.05] shrink-0`}>
+                  <mod.icon className="size-6 stroke-[2]" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{facility.name}</h3>
-                <p className="text-xs text-muted-foreground">{facility.desc}</p>
-              </motion.div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-bold text-[#081A3A] group-hover:text-[#0A5BFF] transition-colors">
+                    {mod.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm leading-relaxed max-w-[240px]">
+                    {mod.desc}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Dashboard preview */}
-      <section id="preview" className="py-24">
-        <div className="mx-auto max-w-7xl px-6 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              Institutional Dashboard
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">Your Campus Command Center</h2>
-            <p className="mt-4 text-muted-foreground">
-              Institutional dashboards with real-time analytics, academic performance metrics,
-              student engagement tracking, and compliance reporting — all accessible from any
-              device.
+          <div className="text-center mt-12">
+            <p className="text-xs text-slate-400 font-semibold">
+              More coming soon: <span className="text-[#0A5BFF] hover:underline cursor-pointer">Reminders</span>, <span className="text-[#0A5BFF] hover:underline cursor-pointer">Collaboration</span>, <span className="text-[#0A5BFF] hover:underline cursor-pointer">Export</span> & more.
             </p>
-            <ul className="mt-6 space-y-3">
-              {[
-                "Department-Specific Dashboards",
-                "Live Academic Analytics",
-                "Customizable Dashboard Widgets",
-                "24/7 Accessibility & Monitoring",
-              ].map((x) => (
-                <li key={x} className="flex items-center gap-2 text-sm">
-                  <Check className="size-4 text-indigo" /> {x}
-                </li>
-              ))}
-            </ul>
-            <Link
-              to="/dashboard"
-              className="mt-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-primary text-primary-foreground font-medium glow-primary"
-            >
-              View Live Dashboard <ArrowRight className="size-4" />
-            </Link>
           </div>
-          <div className="relative">
-            <div className="absolute -inset-6 bg-gradient-cyan rounded-3xl blur-2xl opacity-20" />
-            <div className="relative glass-card rounded-2xl p-5 space-y-3">
-              <div className="grid grid-cols-3 gap-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="rounded-xl bg-gradient-soft p-3 border">
-                    <div className="text-xs text-muted-foreground">KPI {i}</div>
-                    <div className="font-bold text-lg">{(i * 1234).toLocaleString()}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="rounded-xl p-4 bg-card border">
-                <div className="text-xs font-medium mb-3">Performance</div>
-                <svg viewBox="0 0 300 80" className="w-full h-20">
-                  <defs>
-                    <linearGradient id="g" x1="0" x2="1">
-                      <stop offset="0%" stopColor="#4F46E5" />
-                      <stop offset="100%" stopColor="#06B6D4" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M0 60 C 40 20, 80 70, 120 40 S 200 10, 240 30 S 300 20, 300 25"
-                    stroke="url(#g)"
-                    strokeWidth="3"
-                    fill="none"
-                  />
-                </svg>
-              </div>
-              <div className="rounded-xl p-4 bg-gradient-primary text-white">
-                <div className="text-xs opacity-90">Top Department</div>
-                <div className="text-2xl font-bold mt-1">Computer Science</div>
-                <div className="text-xs opacity-80 mt-1">CGPA avg 8.9 · 4,200 students</div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 bg-gradient-soft">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              Trusted by Leadership
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">What Educators Say</h2>
+      {/* WHY EDUSUITE PRO SECTION */}
+      <section className="py-24 px-6 bg-slate-50/40 border-t border-[#E2EEFF]/40">
+        <div className="max-w-7xl mx-auto space-y-16">
+          
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#0A5BFF]">
+              Why EduSuite Pro?
+            </p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-[#081A3A] tracking-tight">
+              Built for focus. Designed for productivity.
+            </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-5">
+
+          {/* 4 columns laid out horizontally (icon left, texts right) */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                name: "Dr. Anjali Mehra",
-                role: "Dean of Academic Affairs, IIT",
-                quote:
-                  "The integrated platform replaced our fragmented systems. Faculty engagement increased by 45%, and administrative load decreased significantly. Best decision we made this decade.",
+                title: "Lightning-Fast",
+                desc: "Real-time dashboard updates and quick academic record search.",
+                icon: Zap,
+                iconBg: "bg-blue-50 text-blue-500"
               },
               {
-                name: "Rohan Verma",
-                role: "Registrar & Senior Administrator",
-                quote:
-                  "Compliance reporting that took our office weeks now generates in hours. The dashboards provide unprecedented visibility into institutional performance. Our stakeholders are impressed.",
+                title: "Sleek Portals",
+                desc: "Clean role-based user interfaces tailored for students and staff.",
+                icon: Sparkles,
+                iconBg: "bg-blue-50 text-blue-500"
               },
               {
-                name: "Prof. Sarah Chen",
-                role: "Head of Department, Computer Science",
-                quote:
-                  "Automated attendance, seamless grading, instant student feedback — it's transformed how we teach and mentor. Students appreciate the transparency, and we have more time for what matters.",
+                title: "Cross-Device",
+                desc: "Access schedules, grades, and resources from any phone or browser.",
+                icon: Globe,
+                iconBg: "bg-blue-50 text-blue-500"
               },
-            ].map((t) => (
-              <div key={t.name} className="glass-card rounded-2xl p-6">
-                <div className="flex gap-1 text-indigo">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="size-4 fill-current" />
+              {
+                title: "Role-Based Access",
+                desc: "Secure end-to-end encryption and custom administrative permissions.",
+                icon: Shield,
+                iconBg: "bg-blue-50 text-blue-500"
+              }
+            ].map((col, idx) => (
+              <div key={idx} className="flex items-start gap-4 text-left">
+                <div className={`size-12 rounded-full ${col.iconBg} flex items-center justify-center shrink-0`}>
+                  <col.icon className="size-5" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-extrabold text-[#081A3A] text-base leading-snug">
+                    {col.title}
+                  </h3>
+                  <p className="text-slate-500 text-xs leading-relaxed">
+                    {col.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* CALL TO ACTION (CTA) SECTION WITH GLOW & NOTEBOOK MOCKUP */}
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-gradient-to-br from-[#00183F] to-[#01112D] rounded-[32px] p-8 md:p-16 text-white grid lg:grid-cols-12 gap-12 items-center relative overflow-hidden shadow-2xl">
+            {/* Grid overlay pattern */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(10,91,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(10,91,255,0.025)_1px,transparent_1px)] bg-[size:24px_24px] opacity-40 pointer-events-none" />
+            
+            {/* Decorative soft blue lights */}
+            <div className="absolute -top-24 -left-24 size-96 bg-[#0A5BFF]/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -bottom-24 -right-24 size-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+            {/* Left Column: Notebook illustration */}
+            <div className="lg:col-span-5 flex justify-center relative z-10 select-none">
+              <div className="relative group perspective">
+                {/* 3D-ish Notebook shape */}
+                <div className="w-[180px] h-[240px] bg-gradient-to-r from-[#0C3CB5] to-[#0A5BFF] rounded-r-[14px] rounded-l-[4px] shadow-2xl relative border-y border-r border-[#3070FF]/30 transform rotate-[-8deg] hover:rotate-0 transition-transform duration-500 flex flex-col justify-between p-5">
+                  {/* Notebook Spine lines */}
+                  <div className="absolute top-0 left-0 h-full w-[10px] bg-slate-900/35 rounded-l-[4px] border-r border-white/5" />
+                  
+                  {/* Embedded Custom Mini Logo */}
+                  <div className="flex flex-col items-center gap-1.5 self-center mt-6">
+                    <div className="size-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                      <EduSuiteLogoGraphic className="size-10" />
+                    </div>
+                    <span className="text-[12px] font-extrabold uppercase tracking-widest text-white mt-2">EduSuite Pro</span>
+                  </div>
+
+                  {/* Ribbon Bookmark */}
+                  <div className="absolute top-0 right-5 w-4 h-16 bg-amber-400 rounded-b-md shadow-sm border-x border-b border-amber-500/20" />
+
+                  {/* Horizontal gold debossing effect */}
+                  <div className="w-16 h-1 bg-amber-400/20 rounded-full mx-auto mb-2" />
+                </div>
+
+                {/* Styled pen layout next to it */}
+                <div className="absolute bottom-[-10px] right-[-25px] w-6 h-[180px] bg-gradient-to-b from-[#1C1F2B] via-[#2F3241] to-[#1C1F2B] rounded-full shadow-lg transform rotate-[25deg] border border-slate-700/20 flex flex-col justify-between py-8 items-center select-none pointer-events-none">
+                  {/* Silver Clip */}
+                  <div className="w-1.5 h-10 bg-slate-300 rounded-b-sm absolute top-4 left-1.5 shadow-sm" />
+                  {/* Gold rings */}
+                  <div className="w-full h-1 bg-amber-400/80 my-1" />
+                  <div className="w-full h-1 bg-amber-400/80 my-1" />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: CTA Texts and ratings */}
+            <div className="lg:col-span-7 space-y-6 relative z-10 text-center lg:text-left flex flex-col items-center lg:items-start">
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
+                Empower your institution <br />
+                with EduSuite Pro.
+              </h2>
+              <p className="text-slate-400 text-sm leading-relaxed max-w-lg">
+                Join modern academies and universities that trust EduSuite Pro to streamline campus administration and student workflows.
+              </p>
+
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2 w-full">
+                <Link
+                  to="/login"
+                  className="bg-white hover:bg-slate-50 text-[#081A3A] font-bold px-7 py-3.5 rounded-xl transition shadow-lg w-full sm:w-auto text-center flex items-center justify-center gap-2"
+                >
+                  <span>Enter Campus Portal</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+                <Link
+                  to="/login"
+                  className="border border-white/20 bg-transparent hover:bg-white/5 text-white font-bold px-7 py-3.5 rounded-xl transition w-full sm:w-auto text-center"
+                >
+                  Explore Features
+                </Link>
+              </div>
+
+              {/* Ratings and user proofs */}
+              <div className="pt-6 flex flex-col sm:flex-row items-center gap-4 border-t border-slate-800/80 w-full justify-center lg:justify-start">
+                {/* User avatars list stack */}
+                <div className="flex -space-x-2.5">
+                  {[
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80",
+                    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&auto=format&fit=crop&q=80"
+                  ].map((url, idx) => (
+                    <img
+                      key={idx}
+                      src={url}
+                      alt="User avatar"
+                      className="size-8 rounded-full border border-[#081A3A] object-cover bg-slate-800"
+                    />
                   ))}
                 </div>
-                <p className="mt-3 text-sm">"{t.quote}"</p>
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-gradient-primary" />
-                  <div>
-                    <div className="font-medium text-sm">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
+
+                <div className="flex flex-col items-center sm:items-start text-xs leading-none gap-1">
+                  <div className="flex text-amber-400 gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="size-3 fill-current" />
+                    ))}
                   </div>
+                  <span className="text-slate-400 font-bold">
+                    4.9/5 from 2,500+ users
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* CTA */}
-      <section className="py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-primary p-12 text-center text-white shadow-soft">
-            <div className="absolute inset-0 grid-bg opacity-20" />
-            <div className="relative">
-              <h2 className="text-4xl md:text-5xl font-bold">
-                Join the Future of Higher Education
-              </h2>
-              <p className="mt-3 opacity-90 max-w-xl mx-auto">
-                Transform your institution with an integrated digital ecosystem trusted by 150+
-                universities and colleges worldwide.
-              </p>
-              <div className="mt-8 flex justify-center gap-3">
-                <Link
-                  to="/dashboard"
-                  className="px-6 py-3 rounded-xl bg-white text-foreground font-medium hover:scale-105 transition"
-                >
-                  Request Campus Demo
-                </Link>
-                <Link to="/login" className="px-6 py-3 rounded-xl glass text-white font-medium">
-                  Explore ERP Features
-                </Link>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <div className="text-xs uppercase tracking-widest text-indigo font-semibold">
-              Contact Us
-            </div>
-            <h2 className="mt-3 text-4xl md:text-5xl font-bold">Get in Touch</h2>
-            <p className="mt-4 text-muted-foreground">
-              Have questions? Reach out to us for admissions, placements, or general inquiries.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                icon: Building,
-                title: "Address",
-                content: "College Campus, Main Road, City - 500001",
-              },
-              { icon: Users, title: "Phone", content: "+91 98765 43210" },
-              { icon: Mail, title: "Email", content: "info@college.edu" },
-            ].map((contact, index) => (
-              <motion.div
-                key={contact.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card rounded-2xl p-6 text-center"
-              >
-                <div className="size-12 rounded-xl bg-gradient-primary text-white grid place-items-center mx-auto mb-4">
-                  <contact.icon className="size-6" />
+      {/* FOOTER */}
+      <footer className="border-t border-[#E2EEFF]/60 bg-[#030E21] text-slate-400 py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="grid md:grid-cols-12 gap-10 pb-12 border-b border-slate-800/60">
+            
+            {/* Left Brand Column */}
+            <div className="md:col-span-4 space-y-6">
+              <div className="flex items-center gap-3">
+                <EduSuiteLogoGraphic className="size-9" />
+                <div className="flex flex-col leading-none">
+                  <span className="font-extrabold text-lg tracking-tight text-white flex items-center">
+                    <span>EduSuite</span>
+                    <span className="text-[#0A5BFF] ml-0.5">Pro</span>
+                  </span>
+                  <span className="text-[8px] text-slate-500 font-semibold tracking-wider uppercase mt-0.5">
+                    Empowering Digital Campus
+                  </span>
                 </div>
-                <h3 className="font-semibold mb-2">{contact.title}</h3>
-                <p className="text-sm text-muted-foreground">{contact.content}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <footer className="border-t py-10">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div className="md:col-span-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="size-8 rounded-lg bg-gradient-primary grid place-items-center text-white">
-                  <GraduationCap className="size-4" />
-                </div>
-                <span className="font-semibold">College Management System</span>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Empowering students through smart digital campus management. Excellence in
-                engineering education since 1981.
+
+              <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
+                A modern campus management and ERP application. Empower your institution. Streamline workflows. Achieve more.
               </p>
-              <div className="flex gap-3">
+
+              {/* Social icons */}
+              <div className="flex gap-4">
                 {[
-                  { icon: Facebook, label: "Facebook" },
-                  { icon: Twitter, label: "Twitter" },
-                  { icon: Linkedin, label: "LinkedIn" },
-                  { icon: Instagram, label: "Instagram" },
-                ].map((social) => (
+                  { icon: Github, link: "#" },
+                  { icon: Twitter, link: "#" },
+                  { icon: Linkedin, link: "#" },
+                  { icon: Globe, link: "#" }
+                ].map((social, idx) => (
                   <a
-                    key={social.label}
-                    href="#"
-                    className="size-8 rounded-lg bg-muted flex items-center justify-center hover:bg-gradient-primary hover:text-white transition"
+                    key={idx}
+                    href={social.link}
+                    className="size-8 rounded-lg bg-slate-900 hover:bg-[#0A5BFF] hover:text-white flex items-center justify-center transition-colors text-slate-400"
                   >
                     <social.icon className="size-4" />
                   </a>
                 ))}
               </div>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link to="/" className="hover:text-foreground transition">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={() => scrollToSection("about")}
-                    className="hover:text-foreground transition"
-                  >
-                    About
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => scrollToSection("departments")}
-                    className="hover:text-foreground transition"
-                  >
-                    Departments
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => scrollToSection("placements")}
-                    className="hover:text-foreground transition"
-                  >
-                    Placements
-                  </button>
-                </li>
-              </ul>
+
+            {/* Middle Sitemap Columns */}
+            <div className="md:col-span-5 grid grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-bold text-white text-sm mb-4">Product</h4>
+                <ul className="space-y-2 text-sm text-slate-400">
+                  <li><Link to="/login" className="hover:text-white transition">Features</Link></li>
+                  <li><Link to="/login" className="hover:text-white transition">Download</Link></li>
+                  <li><Link to="/login" className="hover:text-white transition">Pricing</Link></li>
+                  <li><Link to="/login" className="hover:text-white transition">Roadmap</Link></li>
+                  <li><Link to="/login" className="hover:text-white transition">Changelog</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold text-white text-sm mb-4">Resources</h4>
+                <ul className="space-y-2 text-sm text-slate-400">
+                  <li><a href="#" className="hover:text-white transition">Blog</a></li>
+                  <li><a href="#" className="hover:text-white transition">Help Center</a></li>
+                  <li><a href="#" className="hover:text-white transition">Guides</a></li>
+                  <li><a href="#" className="hover:text-white transition">Templates</a></li>
+                  <li><a href="#" className="hover:text-white transition">API</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-bold text-white text-sm mb-4">Company</h4>
+                <ul className="space-y-2 text-sm text-slate-400">
+                  <li><a href="#" className="hover:text-white transition">About Us</a></li>
+                  <li><a href="#" className="hover:text-white transition">Careers</a></li>
+                  <li><a href="#" className="hover:text-white transition">Privacy Policy</a></li>
+                  <li><a href="#" className="hover:text-white transition">Terms of Service</a></li>
+                  <li><a href="#" className="hover:text-white transition">Contact</a></li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Important Links</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link to="/login" className="hover:text-foreground transition">
-                    Student Portal
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/login" className="hover:text-foreground transition">
-                    Login
-                  </Link>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition">
-                    Admissions
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-foreground transition">
-                    Exam Results
-                  </a>
-                </li>
-              </ul>
+
+            {/* Newsletter Column */}
+            <div className="md:col-span-3 space-y-4">
+              <h4 className="font-bold text-white text-sm">Stay in the loop</h4>
+              <p className="text-slate-400 text-sm">
+                Subscribe to get product updates and productivity tips.
+              </p>
+              
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="bg-slate-900 border border-slate-800/80 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#0A5BFF] flex-1 max-w-[200px]"
+                />
+                <button className="bg-[#0A5BFF] hover:bg-[#0047D6] text-white p-2.5 rounded-xl transition flex items-center justify-center shrink-0">
+                  <Send className="size-4" />
+                </button>
+              </div>
             </div>
+
           </div>
-          <div className="border-t pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-muted-foreground">
-              © 2026 College Management System. All rights reserved.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              AICTE Approved | NBA Accredited | ISO 9001:2015 Certified
-            </p>
+
+          {/* Footer copyright */}
+          <div className="pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500 gap-4 select-none">
+            <p>© 2026 EduSuite Pro. All rights reserved.</p>
           </div>
+
         </div>
       </footer>
+
     </div>
   );
 }

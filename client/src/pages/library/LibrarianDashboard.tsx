@@ -192,28 +192,28 @@ export function LibrarianDashboard() {
         <h3 className="font-semibold mb-3 text-gradient">Quick Command Actions</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Link
-            to="/dashboard/librarian/issue"
+            to="/librarian/issue"
             className="p-3.5 rounded-xl border bg-gradient-soft hover:border-primary transition flex items-center gap-2 text-sm font-semibold cursor-pointer group"
           >
             <PlusCircle className="size-4 text-violet-600 group-hover:scale-110 transition" />
             <span>Issue Book</span>
           </Link>
           <Link
-            to="/dashboard/librarian/return"
+            to="/librarian/return"
             className="p-3.5 rounded-xl border bg-gradient-soft hover:border-primary transition flex items-center gap-2 text-sm font-semibold cursor-pointer group"
           >
             <MinusCircle className="size-4 text-cyan-600 group-hover:scale-110 transition" />
             <span>Return Book</span>
           </Link>
           <Link
-            to="/dashboard/librarian/members"
+            to="/librarian/members"
             className="p-3.5 rounded-xl border bg-gradient-soft hover:border-primary transition flex items-center gap-2 text-sm font-semibold cursor-pointer group"
           >
             <UserPlus className="size-4 text-emerald-600 group-hover:scale-110 transition" />
             <span>Add Member</span>
           </Link>
           <Link
-            to="/dashboard/librarian/settings"
+            to="/librarian/settings"
             className="p-3.5 rounded-xl border bg-gradient-soft hover:border-primary transition flex items-center gap-2 text-sm font-semibold cursor-pointer group"
           >
             <Settings className="size-4 text-slate-600 group-hover:scale-110 transition" />

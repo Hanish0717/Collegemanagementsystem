@@ -47,6 +47,10 @@ const app = express();
 // Robust CORS middleware supporting dynamic localhost and 127.0.0.1 development ports
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  'https://cms.thehps.in',
+  'http://cms.thehps.in',
+  'https://cms1.thehps.in',
+  'http://cms1.thehps.in',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:8080',
@@ -66,14 +70,16 @@ app.use(cors({
 
     if (!origin) return callback(null, true);
 
-    // Check if origin is a local network IP address (e.g., http://192.168.x.x, http://10.x.x.x, http://172.x.x.x)
+    // Check if origin is a local network IP address or ending with .thehps.in
     const isLocalNetworkIp = /^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/.test(origin);
+    const isTheHpsDomain = /^https?:\/\/(.+\.)?thehps\.in$/.test(origin);
 
     if (
       allowedOrigins.indexOf(origin) !== -1 ||
       origin.startsWith('http://localhost:') ||
       origin.startsWith('http://127.0.0.1:') ||
-      isLocalNetworkIp
+      isLocalNetworkIp ||
+      isTheHpsDomain
     ) {
       return callback(null, true);
     }

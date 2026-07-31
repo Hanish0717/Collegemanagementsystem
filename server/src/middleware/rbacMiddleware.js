@@ -25,16 +25,32 @@ export function requireRole(...allowedRoles) {
         return next(error);
       }
 
-      const userRole = req.user.role || req.user.role_name;
+      const rawRole = req.user.role || req.user.role_name || '';
+      const userRole = String(rawRole).toLowerCase().trim();
+      const userRoleUnderscored = userRole.replace(/-/g, '_');
+      const userRoleHyphenated = userRole.replace(/_/g, '-');
 
       // Super-admin bypasses everything
-      if (userRole === 'super-admin') {
-        req.userRoles = [{ slug: userRole, level: 0 }];
+      if (
+        userRole === 'super-admin' ||
+        userRole === 'super_admin' ||
+        userRole === 'superadmin'
+      ) {
+        req.userRoles = [{ slug: 'super_admin', level: 0 }];
         return next();
       }
 
-      // Check if user has any of the allowed roles
-      if (!allowedRoles.includes(userRole)) {
+      // Check if user has any of the allowed roles (support both hyphenated and underscored)
+      const matchesAllowed = allowedRoles.some((role) => {
+        const rClean = String(role).toLowerCase().trim();
+        return (
+          rClean === userRole ||
+          rClean === userRoleUnderscored ||
+          rClean === userRoleHyphenated
+        );
+      });
+
+      if (!matchesAllowed) {
         const error = new Error(
           `Forbidden: Your role '${userRole}' is not authorized to access this resource`
         );

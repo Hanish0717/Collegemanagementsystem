@@ -11,7 +11,9 @@ if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes("placeholder.supaba
 
 // Ensure valid HTTPS URL and Key are supplied to createClient
 const targetUrl = supabaseUrl && !supabaseUrl.includes("placeholder.supabase.co") ? supabaseUrl : "https://rdzitvvxxdhtbzzqoasd.supabase.co";
-const targetKey = supabaseAnonKey && supabaseAnonKey !== "placeholder_key" ? supabaseAnonKey : "";
+const targetKey = supabaseAnonKey && supabaseAnonKey !== "placeholder_key" 
+  ? supabaseAnonKey 
+  : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.t-41aIjR2dB";
 
 if (import.meta.env.DEV) {
   console.log("⚡ Supabase initialized with URL:", targetUrl);

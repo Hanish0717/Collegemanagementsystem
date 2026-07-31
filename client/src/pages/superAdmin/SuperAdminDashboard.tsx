@@ -84,7 +84,13 @@ const statsConfig = [
 ];
 
 export function SuperAdminDashboard() {
-  const path = useRouterState({ select: (r) => r.location.pathname });
+  const rawPath = useRouterState({ select: (r) => r.location.pathname });
+  const cleanPath = rawPath.endsWith('/') && rawPath.length > 1 ? rawPath.slice(0, -1) : rawPath;
+  const isSuperAdminRoot =
+    cleanPath === "/super-admin" ||
+    cleanPath === "/dashboard" ||
+    rawPath === "/super-admin/";
+
   const { data: liveStats, isLoading } = useSuperAdminStats();
 
   const analyticsData = liveStats?.systemAnalytics || [];
@@ -93,7 +99,7 @@ export function SuperAdminDashboard() {
   const actLogs = liveStats?.superAdminActivities || [];
   const notifyLogs = liveStats?.superAdminNotifications || [];
 
-  if (path !== "/dashboard/super-admin") {
+  if (!isSuperAdminRoot) {
     return <Outlet />;
   }
 

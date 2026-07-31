@@ -155,7 +155,7 @@ export function HostelDashboard() {
   }, [blocks, blockSearch, filterHostel, filterType, filterAcType, filterStatus, filterOccupancy]);
 
   // Render child route if not on the dashboard root
-  if (path !== "/dashboard/hostel") {
+  if (path !== "/hostel") {
     return <Outlet />;
   }
 

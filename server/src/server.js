@@ -696,16 +696,16 @@ runMigrations()
       console.log("⚡ Checking database query builder connectivity...");
       const { data: students, count, error } = await supabase
         .from('students')
-        .select('*, users!inner(is_verified)', { count: 'exact' })
-        .eq('is_active', true)
-        .eq('users.is_verified', true)
+        .select('*', { count: 'exact' })
         .range(0, 5);
 
       if (error) {
-        console.error("❌ Supabase query builder error:", error);
+        console.error("❌ Supabase query builder error:", error.message || error);
       } else {
-        console.log(`\n🔑 LIVE STUDENTS IN DATABASE (${count} total):`);
-        students.forEach(r => console.log(`   - ${r.full_name} (${r.roll_number}) | ${r.email} | Dept: ${r.department}`));
+        console.log(`\n🔑 LIVE STUDENTS IN DATABASE (${count || (students ? students.length : 0)} total):`);
+        if (students && students.length > 0) {
+          students.forEach(r => console.log(`   - ${r.full_name || r.name || 'Student'} | ${r.email} | Dept: ${r.department}`));
+        }
         console.log("======================================\n");
       }
     } catch (err) {

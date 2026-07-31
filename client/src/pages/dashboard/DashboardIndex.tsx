@@ -33,6 +33,7 @@ import { Card, PageHeader, StatCard, Badge } from "@/components/dashboard/ui";
 import { supabase } from "@/lib/supabaseClient";
 import { fetchDashboardData, type DashboardStats } from "@/services/dashboardService";
 import { getActiveRole } from "@/lib/roles";
+import { resolveDashboardRoute } from "@/lib/roleResolver";
 import { getStoredUser } from "@/services/authService";
 import { fetchStats as fetchWardenStats, fetchDashboardCharts as fetchWardenCharts } from "@/services/hostelService";
 import { fetchTransportData } from "@/services/transportService";
@@ -163,10 +164,10 @@ export function DashboardIndex() {
   }, []);
 
   if (activeRole.id === "super_admin") {
-    return <Navigate to="/dashboard/super-admin" />;
+    return <Navigate to={resolveDashboardRoute("super_admin") as any} />;
   }
   if (activeRole.id === "admin") {
-    return <Navigate to="/dashboard/admin" />;
+    return <Navigate to={resolveDashboardRoute("admin") as any} />;
   }
   if (activeRole.id === "parent") {
     return <ParentDashboard />;

@@ -406,11 +406,11 @@ export function FacultyClasses() {
                 </div>
                 <div className="space-y-2">
                   {[
-                    { label: 'Start Live Class', icon: Play, color: 'text-violet-600 bg-violet-50 border-violet-100', to: '/dashboard/faculty/classes' },
-                    { label: 'Take Attendance',  icon: ClipboardCheck, color: 'text-blue-600 bg-blue-50 border-blue-100',   to: '/dashboard/faculty/attendance' },
-                    { label: 'Upload Materials', icon: Upload, color: 'text-emerald-600 bg-emerald-50 border-emerald-100', to: '/dashboard/faculty/materials' },
-                    { label: 'Enter Marks',      icon: PenLine, color: 'text-orange-600 bg-orange-50 border-orange-100',   to: '/dashboard/faculty/marks' },
-                    { label: 'Send Announcement',icon: Bell, color: 'text-pink-600 bg-pink-50 border-pink-100',     to: '/dashboard/faculty/communication' },
+                    { label: 'Start Live Class', icon: Play, color: 'text-violet-600 bg-violet-50 border-violet-100', to: '/faculty/classes' },
+                    { label: 'Take Attendance',  icon: ClipboardCheck, color: 'text-blue-600 bg-blue-50 border-blue-100',   to: '/faculty/attendance' },
+                    { label: 'Upload Materials', icon: Upload, color: 'text-emerald-600 bg-emerald-50 border-emerald-100', to: '/faculty/materials' },
+                    { label: 'Enter Marks',      icon: PenLine, color: 'text-orange-600 bg-orange-50 border-orange-100',   to: '/faculty/marks' },
+                    { label: 'Send Announcement',icon: Bell, color: 'text-pink-600 bg-pink-50 border-pink-100',     to: '/faculty/communication' },
                   ].map(({ label, icon: Icon, color, to }) => (
                     <button key={label} onClick={() => navigate({ to })}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border text-sm font-medium transition hover:scale-[1.01] cursor-pointer ${color}`}>

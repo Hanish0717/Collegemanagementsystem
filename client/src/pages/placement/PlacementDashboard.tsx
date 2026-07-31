@@ -46,7 +46,7 @@ export function PlacementDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path === "/dashboard/placement") {
+    if (path === "/placement") {
       fetchPlacementData()
         .then((res) => {
           setData(res);
@@ -59,7 +59,7 @@ export function PlacementDashboard() {
     }
   }, [path]);
 
-  if (path !== "/dashboard/placement") {
+  if (path !== "/placement") {
     return <Outlet />;
   }
 

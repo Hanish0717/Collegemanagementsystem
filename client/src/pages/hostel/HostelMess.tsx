@@ -22,7 +22,7 @@ export function HostelMess() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   // If we are on a child route (e.g. /menus, /residents, /fees), delegate rendering to the sub-page
-  if (pathname !== "/dashboard/hostel/mess" && pathname !== "/dashboard/hostel/mess/") {
+  if (pathname !== "/hostel/mess" && pathname !== "/hostel/mess/") {
     return <Outlet />;
   }
 
@@ -524,7 +524,7 @@ export function HostelMess() {
         actions={
           <div className="flex gap-2">
             <button
-              onClick={() => navigate({ to: "/dashboard/hostel/mess/menus" })}
+              onClick={() => navigate({ to: "/hostel/mess/menus" })}
               className="px-4 py-2.5 bg-gradient-primary text-white text-xs font-semibold rounded-xl hover:opacity-95 transition-all flex items-center gap-2 cursor-pointer shadow-soft hover:scale-[1.02]"
             >
               <Plus className="size-4" /> Add Menu Item
@@ -611,8 +611,8 @@ export function HostelMess() {
           <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-100 mb-4">Quick Management Actions</h3>
           <div className="space-y-3">
             {[
-              { label: "Mess Menu Planner", desc: "Add, Edit, and Delete weekly menus", tone: "info" as const, to: "/dashboard/hostel/mess/menus" },
-              { label: "Mess Fee Collections", desc: "Collect payments, track outstanding fees", tone: "warn" as const, to: "/dashboard/hostel/mess/fees" },
+              { label: "Mess Menu Planner", desc: "Add, Edit, and Delete weekly menus", tone: "info" as const, to: "/hostel/mess/menus" },
+              { label: "Mess Fee Collections", desc: "Collect payments, track outstanding fees", tone: "warn" as const, to: "/hostel/mess/fees" },
             ].map((item) => (
               <button
                 key={item.label}

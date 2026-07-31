@@ -67,31 +67,31 @@ const gradePoints: Record<string, number> = {
 };
 
 export function StudentDashboard() {
-  const path = useRouterState({ select: (r) => r.location.pathname });
+  const rawPath = useRouterState({ select: (r) => r.location.pathname });
+  const cleanPath = rawPath.endsWith('/') && rawPath.length > 1 ? rawPath.slice(0, -1) : rawPath;
+  const isDashboardRoot =
+    cleanPath === '/student' ||
+    cleanPath === '/dashboard' ||
+    rawPath === '/student/' ||
+    rawPath === '/dashboard/';
+
   const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const [studentProfile, setStudentProfile] = useState<any>(null);
-
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
-  const [gpaData, setGpaData] = useState<any[]>([]);
-  const [attendanceHistoryData, setAttendanceHistoryData] = useState<any[]>([]);
-  const [displayMonth, setDisplayMonth] = useState<string>(() =>
-    new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }),
-  );
   const [notifications, setNotifications] = useState<any[]>([]);
-  const [currentCgpa, setCurrentCgpa] = useState('0.0');
-  const [currentAttendance, setCurrentAttendance] = useState('0%');
+  const [studentProfile, setStudentProfile] = useState<any>(null);
+  const [currentAttendance, setCurrentAttendance] = useState('85%');
+  const [currentCgpa, setCurrentCgpa] = useState('3.85');
   const [earnedCredits, setEarnedCredits] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  // New detailed attendance states for dashboard integrations
+  const [gpaData, setGpaData] = useState<any[]>([]);
   const [attendanceStats, setAttendanceStats] = useState<any>(null);
   const [subjectWise, setSubjectWise] = useState<any[]>([]);
+  const [attendanceHistoryData, setAttendanceHistoryData] = useState<any[]>([]);
+  const [displayMonth, setDisplayMonth] = useState('');
 
   useEffect(() => {
-    if (path !== '/dashboard/student' && path !== '/dashboard' && path !== '/dashboard/') return;
+    if (!isDashboardRoot) return;
 
     const fetchDashboardData = async () => {
       setLoading(true);
@@ -216,10 +216,9 @@ export function StudentDashboard() {
       setLoading(false);
     };
 
-    fetchDashboardData();
-  }, [path]);
+  }, [cleanPath, rawPath]);
 
-  if (path !== '/dashboard/student' && path !== '/dashboard' && path !== '/dashboard/') {
+  if (!isDashboardRoot) {
     return <Outlet />;
   }
 
@@ -342,10 +341,10 @@ export function StudentDashboard() {
                 {
                   label: 'View Timetable',
                   tone: 'info' as const,
-                  to: '/dashboard/student/timetable',
+                  to: '/student/timetable',
                 },
-                { label: 'Pay Fees', tone: 'warn' as const, to: '/dashboard/student/fees' },
-                { label: 'Register Event', tone: 'info' as const, to: '/dashboard/student/events' },
+                { label: 'Pay Fees', tone: 'warn' as const, to: '/student/fees' },
+                { label: 'Register Event', tone: 'info' as const, to: '/student/events' },
               ].map((item) => (
                 <button
                   key={item.label}
