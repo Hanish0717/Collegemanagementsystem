@@ -316,7 +316,8 @@ if (isMockMode) {
       'interview_rounds',
       'recruiter_notifications',
       'assessments',
-      'assessment_status_logs'
+      'assessment_status_history',
+      'assessment_timeline'
     ];
     let changed = false;
     requiredTables.forEach(table => {
@@ -331,66 +332,51 @@ if (isMockMode) {
         {
           id: 'asm-10111111-1111-1111-1111-111111111111',
           drive_id: 'd1111111-1111-1111-1111-111111111111',
+          recruiter_id: 'co111111-1111-1111-1111-111111111111',
           company_id: 'c1111111-1111-1111-1111-111111111111',
           company_name: 'TechCorp Solutions',
-          title: 'Round 1: General Aptitude & Problem Solving',
+          assessment_name: 'Round 1: General Aptitude & Problem Solving',
           description: 'Initial screening assessment covering quantitative aptitude, logical reasoning, and verbal ability.',
-          assessment_type: 'Aptitude',
-          duration_minutes: 60,
-          total_marks: 100,
-          passing_marks: 45,
-          scheduled_start: '2026-08-05T10:00:00.000Z',
-          scheduled_end: '2026-08-05T11:00:00.000Z',
-          venue_or_link: 'Online Assessment Portal / Computer Lab 1 & 2',
           instructions: 'No calculators allowed. Ensure stable internet connection throughout the test window.',
-          status: 'Scheduled',
-          created_by_role: 'recruiter',
-          created_by_name: 'Sarah Jenkins (TechCorp Recruiter)',
-          rejection_reason: null,
+          passing_marks: 45,
+          total_marks: 100,
+          duration: 60,
+          current_status: 'Scheduled',
+          created_by: 'Sarah Jenkins (TechCorp Recruiter)',
           created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
           updated_at: new Date().toISOString()
         },
         {
           id: 'asm-10222222-2222-2222-2222-222222222222',
           drive_id: 'd1111111-1111-1111-1111-111111111111',
+          recruiter_id: 'co111111-1111-1111-1111-111111111111',
           company_id: 'c1111111-1111-1111-1111-111111111111',
           company_name: 'TechCorp Solutions',
-          title: 'Round 2: Core Technical & Data Structures',
+          assessment_name: 'Round 2: Core Technical & Data Structures',
           description: 'Hands-on coding and technical conceptual evaluation on algorithms, SQL, and OOP.',
-          assessment_type: 'Technical',
-          duration_minutes: 90,
-          total_marks: 100,
-          passing_marks: 60,
-          scheduled_start: '2026-08-06T14:00:00.000Z',
-          scheduled_end: '2026-08-06T15:30:00.000Z',
-          venue_or_link: 'Main Auditorium & Coding Lab 3',
           instructions: 'Compiler available in C++, Java, and Python. Automated test suite scoring.',
-          status: 'Draft',
-          created_by_role: 'recruiter',
-          created_by_name: 'Sarah Jenkins (TechCorp Recruiter)',
-          rejection_reason: null,
+          passing_marks: 60,
+          total_marks: 100,
+          duration: 90,
+          current_status: 'Draft',
+          created_by: 'Sarah Jenkins (TechCorp Recruiter)',
           created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
           updated_at: new Date().toISOString()
         },
         {
           id: 'asm-10333333-3333-3333-3333-333333333333',
           drive_id: 'd2222222-2222-2222-2222-222222222222',
+          recruiter_id: 'co111111-1111-1111-1111-111111111111',
           company_id: 'c2222222-2222-2222-2222-222222222222',
           company_name: 'Innovate Systems',
-          title: 'Innovate Systems Full-Stack Skill Challenge',
+          assessment_name: 'Innovate Systems Full-Stack Skill Challenge',
           description: 'Comprehensive skill test for Software Development Engineer role.',
-          assessment_type: 'Mixed',
-          duration_minutes: 120,
-          total_marks: 150,
-          passing_marks: 90,
-          scheduled_start: '2026-08-10T09:30:00.000Z',
-          scheduled_end: '2026-08-10T11:30:00.000Z',
-          venue_or_link: 'Virtual Proctored Exam Portal',
           instructions: 'Webcam proctoring required.',
-          status: 'Submitted_to_TPO',
-          created_by_role: 'recruiter',
-          created_by_name: 'Alex Rivera (Innovate HR)',
-          rejection_reason: null,
+          passing_marks: 90,
+          total_marks: 150,
+          duration: 120,
+          current_status: 'Submitted_to_TPO',
+          created_by: 'Alex Rivera (Innovate HR)',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }
@@ -398,46 +384,88 @@ if (isMockMode) {
       changed = true;
     }
 
-    if (!currentDb['assessment_status_logs'] || currentDb['assessment_status_logs'].length === 0) {
-      currentDb['assessment_status_logs'] = [
+    if (!currentDb['assessment_status_history'] || currentDb['assessment_status_history'].length === 0) {
+      currentDb['assessment_status_history'] = [
         {
-          id: 'asl-101',
+          id: 'ash-101',
           assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
           from_status: null,
           to_status: 'Draft',
-          changed_by_role: 'recruiter',
-          changed_by_name: 'Sarah Jenkins',
+          changed_by: 'Sarah Jenkins',
           comments: 'Created initial assessment draft foundation for Drive #d1111111.',
           created_at: new Date(Date.now() - 3 * 86400000).toISOString()
         },
         {
-          id: 'asl-102',
+          id: 'ash-102',
           assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
           from_status: 'Draft',
           to_status: 'Submitted_to_TPO',
-          changed_by_role: 'recruiter',
-          changed_by_name: 'Sarah Jenkins',
+          changed_by: 'Sarah Jenkins',
           comments: 'Submitted assessment syllabus and schedule to Placement Cell for approval.',
           created_at: new Date(Date.now() - 2.5 * 86400000).toISOString()
         },
         {
-          id: 'asl-103',
+          id: 'ash-103',
           assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
           from_status: 'Submitted_to_TPO',
           to_status: 'Approved',
-          changed_by_role: 'placement_officer',
-          changed_by_name: 'Placement Officer Office',
+          changed_by: 'Placement Officer Office',
           comments: 'Reviewed and approved assessment structure.',
           created_at: new Date(Date.now() - 2 * 86400000).toISOString()
         },
         {
-          id: 'asl-104',
+          id: 'ash-104',
           assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
           from_status: 'Approved',
           to_status: 'Scheduled',
-          changed_by_role: 'placement_officer',
-          changed_by_name: 'Placement Officer Office',
+          changed_by: 'Placement Officer Office',
           comments: 'Slot and lab assigned for August 5th test window.',
+          created_at: new Date(Date.now() - 1 * 86400000).toISOString()
+        }
+      ];
+      changed = true;
+    }
+
+    if (!currentDb['assessment_timeline'] || currentDb['assessment_timeline'].length === 0) {
+      currentDb['assessment_timeline'] = [
+        {
+          id: 'atl-101',
+          assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
+          event_type: 'CREATED',
+          title: 'Assessment Foundation Created',
+          description: 'Assessment "Round 1: General Aptitude & Problem Solving" was initialized.',
+          actor_name: 'Sarah Jenkins',
+          actor_role: 'Company Recruiter',
+          created_at: new Date(Date.now() - 3 * 86400000).toISOString()
+        },
+        {
+          id: 'atl-102',
+          assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
+          event_type: 'SUBMITTED',
+          title: 'Submitted to TPO',
+          description: 'Assessment specifications submitted to Training & Placement Officer.',
+          actor_name: 'Sarah Jenkins',
+          actor_role: 'Company Recruiter',
+          created_at: new Date(Date.now() - 2.5 * 86400000).toISOString()
+        },
+        {
+          id: 'atl-103',
+          assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
+          event_type: 'APPROVED',
+          title: 'Assessment Approved by TPO',
+          description: 'TPO reviewed and verified assessment total marks and syllabus.',
+          actor_name: 'Dr. Ramesh Kumar',
+          actor_role: 'Placement Officer',
+          created_at: new Date(Date.now() - 2 * 86400000).toISOString()
+        },
+        {
+          id: 'atl-104',
+          assessment_id: 'asm-10111111-1111-1111-1111-111111111111',
+          event_type: 'SCHEDULED',
+          title: 'Exam Window Scheduled',
+          description: 'Scheduled for August 5th 10:00 AM in Computer Lab 1 & 2.',
+          actor_name: 'Placement Operations',
+          actor_role: 'Placement Officer',
           created_at: new Date(Date.now() - 1 * 86400000).toISOString()
         }
       ];

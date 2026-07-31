@@ -45,22 +45,18 @@ export const CreateAssessmentModal: React.FC<CreateAssessmentModalProps> = ({
       await onCreate({
         drive_id: driveId,
         company_name: selectedDrive?.company_name || 'Partner Company',
-        title: title.trim(),
+        assessment_name: title.trim(),
         description: description.trim(),
-        assessment_type: assessmentType,
-        duration_minutes: Number(durationMinutes),
+        duration: Number(durationMinutes),
         total_marks: Number(totalMarks),
         passing_marks: Number(passingMarks),
-        scheduled_start: scheduledStart ? new Date(scheduledStart).toISOString() : undefined,
-        scheduled_end: scheduledEnd ? new Date(scheduledEnd).toISOString() : undefined,
-        venue_or_link: venueOrLink.trim(),
         instructions: instructions.trim(),
-        status: initialStatus
+        current_status: initialStatus
       });
       onClose();
     } catch (err) {
       console.error(err);
-    } fontFinally: {
+    } finally {
       setIsSubmitting(false);
     }
   };
