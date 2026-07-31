@@ -51,6 +51,7 @@ import {
   PlayCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { AssessmentManagementPage } from "@/modules/assessment/pages/AssessmentManagementPage";
 import {
   fetchRecruiterMe,
   fetchPortalStats,
@@ -1204,98 +1205,10 @@ export const CompanyDashboard: React.FC = () => {
                 </div>
               )}
 
-              {/* ── 4. ASSESSMENT MANAGEMENT TAB (PLACEMENT OFFICER RESPONSIBILITY) ── */}
+              {/* ── 4. ASSESSMENT MANAGEMENT TAB (RECUTIER & PLACEMENT OFFICER COLLABORATION) ── */}
               {activeWorkspaceTab === "assessment_management" && (
                 <div className="space-y-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
-                    <div>
-                      <h3 className="text-lg font-bold text-foreground">Assessment Management & Invigilation</h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">Managed by Placement Officer: Schedule, lab allocation, live exam conduct, and invigilation monitoring.</p>
-                    </div>
-                    <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">
-                      Placement Officer Desk
-                    </span>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-600 dark:text-blue-300 flex items-start gap-3">
-                    <Clock className="size-4 shrink-0 mt-0.5 text-blue-500" />
-                    <div>
-                      <strong className="font-bold">Placement Cell Governance:</strong> The Placement Cell conducts the assessment, allocates computer labs, assigns invigilators, and verifies live attendance. Recruiter receives published scores after completion.
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    {/* Schedule & Venue Card */}
-                    <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-                      <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                        <Calendar className="size-4 text-purple-500" /> Assessment Schedule & Venue
-                      </h4>
-                      <div className="space-y-2 text-xs">
-                        <div className="flex justify-between py-1.5 border-b border-border">
-                          <span className="text-muted-foreground">Assigned Venue:</span>
-                          <span className="font-bold text-foreground">{selectedDrive?.venue || "Main Tech Block Lab 1"}</span>
-                        </div>
-                        <div className="flex justify-between py-1.5 border-b border-border">
-                          <span className="text-muted-foreground">Lab Capacity:</span>
-                          <span className="font-bold text-foreground">150 Systems (CS Lab 1 & 2)</span>
-                        </div>
-                        <div className="flex justify-between py-1.5 border-b border-border">
-                          <span className="text-muted-foreground">Exam Date:</span>
-                          <span className="font-bold text-purple-500">{selectedDrive?.date || "2026-08-15"}</span>
-                        </div>
-                        <div className="flex justify-between py-1.5">
-                          <span className="text-muted-foreground">Exam Time Slot:</span>
-                          <span className="font-bold text-foreground">10:00 AM - 11:30 AM</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Invigilation & Staff Card */}
-                    <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-                      <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                        <UserCheck className="size-4 text-emerald-500" /> Assigned Invigilators
-                      </h4>
-                      <div className="space-y-2 text-xs">
-                        <div className="p-2.5 rounded-xl bg-background border border-border flex items-center justify-between">
-                          <span className="font-semibold text-foreground">Prof. Ramesh V. (CSE Dept)</span>
-                          <span className="text-[10px] font-bold text-emerald-500">Chief Invigilator</span>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-background border border-border flex items-center justify-between">
-                          <span className="font-semibold text-foreground">Dr. Sunita M. (IT Dept)</span>
-                          <span className="text-[10px] font-bold text-blue-500">Lab Co-ordinator</span>
-                        </div>
-                        <div className="p-2.5 rounded-xl bg-background border border-border flex items-center justify-between">
-                          <span className="font-semibold text-foreground">Placement Cell Operations Team</span>
-                          <span className="text-[10px] font-bold text-purple-500">System Monitoring</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Conduct Status Card */}
-                    <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-                      <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
-                        <Shield className="size-4 text-amber-500" /> Exam Conduct Status
-                      </h4>
-                      <div className="space-y-3 text-xs">
-                        <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
-                          <p className="font-bold">Status: Assessment Conducted & Completed</p>
-                          <p className="text-[11px] mt-0.5">Placement Officer recorded attendance and compiled test answer scripts.</p>
-                        </div>
-                        <div className="flex justify-between text-xs pt-1">
-                          <span className="text-muted-foreground">Eligible Candidates:</span>
-                          <span className="font-bold text-foreground">{eligibleStudents.length || 142}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">Present Candidates:</span>
-                          <span className="font-bold text-emerald-500">138</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">Absent Candidates:</span>
-                          <span className="font-bold text-rose-500">4</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <AssessmentManagementPage userRole="recruiter" />
                 </div>
               )}
 

@@ -40,6 +40,7 @@ import visitorRoutes from './routes/hostel/visitorRoutes.js';
 import alumniRoutes from './routes/alumniRoutes.js';
 import hodRoutes from './routes/hodRoutes.js';
 import companyRecruiterRoutes from './routes/companyRecruiterRoutes.js';
+import assessmentRoutes from './routes/assessmentRoutes.js';
 
 dotenv.config();
 
@@ -125,6 +126,7 @@ app.use('/api/faculty', facultyRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/transport', transportRoutes);
 app.use('/api/placement', placementRoutes);
+app.use('/api/assessments', assessmentRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/events', eventRoutes);
 

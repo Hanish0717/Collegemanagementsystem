@@ -11,7 +11,9 @@ if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes("placeholder.supaba
 
 // Ensure valid HTTPS URL and Key are supplied to createClient
 const targetUrl = supabaseUrl && !supabaseUrl.includes("placeholder.supabase.co") ? supabaseUrl : "https://rdzitvvxxdhtbzzqoasd.supabase.co";
-const targetKey = supabaseAnonKey && supabaseAnonKey !== "placeholder_key" ? supabaseAnonKey : "";
+const targetKey = supabaseAnonKey && supabaseAnonKey !== "placeholder_key" && supabaseAnonKey.trim() !== "" 
+  ? supabaseAnonKey 
+  : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkeml0dnZ4eGRodGJ6enFvYXNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU0NTAwMDAsImV4cCI6MjAzMTAyNjAwMH0.placeholder";
 
 if (import.meta.env.DEV) {
   console.log("⚡ Supabase initialized with URL:", targetUrl);

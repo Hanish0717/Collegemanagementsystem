@@ -200,6 +200,7 @@ import { Route as DashboardParentReportsRouteImport } from './routes/dashboard/p
 import { Route as DashboardPlacementIndexRouteImport } from './routes/dashboard/placement/index'
 import { Route as DashboardPlacementAlumniRouteImport } from './routes/dashboard/placement/alumni'
 import { Route as DashboardPlacementApplicationsRouteImport } from './routes/dashboard/placement/applications'
+import { Route as DashboardPlacementAssessmentsRouteImport } from './routes/dashboard/placement/assessments'
 import { Route as DashboardPlacementCalendarRouteImport } from './routes/dashboard/placement/calendar'
 import { Route as DashboardPlacementCompaniesRouteImport } from './routes/dashboard/placement/companies'
 import { Route as DashboardPlacementDrivesRouteImport } from './routes/dashboard/placement/drives'
@@ -1284,6 +1285,12 @@ const DashboardPlacementApplicationsRoute =
     path: '/applications',
     getParentRoute: () => DashboardPlacementRoute,
   } as any)
+const DashboardPlacementAssessmentsRoute =
+  DashboardPlacementAssessmentsRouteImport.update({
+    id: '/assessments',
+    path: '/assessments',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
 const DashboardPlacementCalendarRoute =
   DashboardPlacementCalendarRouteImport.update({
     id: '/calendar',
@@ -1993,6 +2000,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/parent/reports': typeof DashboardParentReportsRoute
   '/dashboard/placement/alumni': typeof DashboardPlacementAlumniRoute
   '/dashboard/placement/applications': typeof DashboardPlacementApplicationsRoute
+  '/dashboard/placement/assessments': typeof DashboardPlacementAssessmentsRoute
   '/dashboard/placement/calendar': typeof DashboardPlacementCalendarRoute
   '/dashboard/placement/companies': typeof DashboardPlacementCompaniesRoute
   '/dashboard/placement/drives': typeof DashboardPlacementDrivesRoute
@@ -2259,6 +2267,7 @@ export interface FileRoutesByTo {
   '/dashboard/parent/reports': typeof DashboardParentReportsRoute
   '/dashboard/placement/alumni': typeof DashboardPlacementAlumniRoute
   '/dashboard/placement/applications': typeof DashboardPlacementApplicationsRoute
+  '/dashboard/placement/assessments': typeof DashboardPlacementAssessmentsRoute
   '/dashboard/placement/calendar': typeof DashboardPlacementCalendarRoute
   '/dashboard/placement/companies': typeof DashboardPlacementCompaniesRoute
   '/dashboard/placement/drives': typeof DashboardPlacementDrivesRoute
@@ -2543,6 +2552,7 @@ export interface FileRoutesById {
   '/dashboard/parent/reports': typeof DashboardParentReportsRoute
   '/dashboard/placement/alumni': typeof DashboardPlacementAlumniRoute
   '/dashboard/placement/applications': typeof DashboardPlacementApplicationsRoute
+  '/dashboard/placement/assessments': typeof DashboardPlacementAssessmentsRoute
   '/dashboard/placement/calendar': typeof DashboardPlacementCalendarRoute
   '/dashboard/placement/companies': typeof DashboardPlacementCompaniesRoute
   '/dashboard/placement/drives': typeof DashboardPlacementDrivesRoute
@@ -2828,6 +2838,7 @@ export interface FileRouteTypes {
     | '/dashboard/parent/reports'
     | '/dashboard/placement/alumni'
     | '/dashboard/placement/applications'
+    | '/dashboard/placement/assessments'
     | '/dashboard/placement/calendar'
     | '/dashboard/placement/companies'
     | '/dashboard/placement/drives'
@@ -3094,6 +3105,7 @@ export interface FileRouteTypes {
     | '/dashboard/parent/reports'
     | '/dashboard/placement/alumni'
     | '/dashboard/placement/applications'
+    | '/dashboard/placement/assessments'
     | '/dashboard/placement/calendar'
     | '/dashboard/placement/companies'
     | '/dashboard/placement/drives'
@@ -3377,6 +3389,7 @@ export interface FileRouteTypes {
     | '/dashboard/parent/reports'
     | '/dashboard/placement/alumni'
     | '/dashboard/placement/applications'
+    | '/dashboard/placement/assessments'
     | '/dashboard/placement/calendar'
     | '/dashboard/placement/companies'
     | '/dashboard/placement/drives'
@@ -4847,6 +4860,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPlacementApplicationsRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
+    '/dashboard/placement/assessments': {
+      id: '/dashboard/placement/assessments'
+      path: '/assessments'
+      fullPath: '/dashboard/placement/assessments'
+      preLoaderRoute: typeof DashboardPlacementAssessmentsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
     '/dashboard/placement/calendar': {
       id: '/dashboard/placement/calendar'
       path: '/calendar'
@@ -5852,6 +5872,7 @@ const DashboardParentRouteWithChildren = DashboardParentRoute._addFileChildren(
 interface DashboardPlacementRouteChildren {
   DashboardPlacementAlumniRoute: typeof DashboardPlacementAlumniRoute
   DashboardPlacementApplicationsRoute: typeof DashboardPlacementApplicationsRoute
+  DashboardPlacementAssessmentsRoute: typeof DashboardPlacementAssessmentsRoute
   DashboardPlacementCalendarRoute: typeof DashboardPlacementCalendarRoute
   DashboardPlacementCompaniesRoute: typeof DashboardPlacementCompaniesRoute
   DashboardPlacementDrivesRoute: typeof DashboardPlacementDrivesRoute
@@ -5870,6 +5891,7 @@ interface DashboardPlacementRouteChildren {
 const DashboardPlacementRouteChildren: DashboardPlacementRouteChildren = {
   DashboardPlacementAlumniRoute: DashboardPlacementAlumniRoute,
   DashboardPlacementApplicationsRoute: DashboardPlacementApplicationsRoute,
+  DashboardPlacementAssessmentsRoute: DashboardPlacementAssessmentsRoute,
   DashboardPlacementCalendarRoute: DashboardPlacementCalendarRoute,
   DashboardPlacementCompaniesRoute: DashboardPlacementCompaniesRoute,
   DashboardPlacementDrivesRoute: DashboardPlacementDrivesRoute,
