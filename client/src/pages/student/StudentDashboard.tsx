@@ -186,7 +186,7 @@ export function StudentDashboard() {
               setAttendanceStats(dbStats);
             }
             if (dbSubjectWise) {
-              setSubjectWise(dbSubjectWise.slice(0, 4));
+              setSubjectWise(Array.isArray(dbSubjectWise) ? dbSubjectWise.slice(0, 4) : []);
             }
             if (monthly && monthly.length > 0) {
               const curMonthStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
@@ -502,14 +502,14 @@ export function StudentDashboard() {
             ) : activities.length > 0 ? (
               activities.map((activity, idx) => (
                 <div
-                  key={activity.actor + activity.time + idx}
+                  key={(activity.actor || 'System') + (activity.time || '') + idx}
                   className="flex items-center gap-3 py-2 border-b last:border-0"
                 >
                   <div className="size-9 rounded-full bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                    {activity.actor.slice(0, 2).toUpperCase()}
+                    {(activity.actor || 'System').slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 text-sm">
-                    <span className="font-medium">{activity.actor}</span>{' '}
+                    <span className="font-medium">{activity.actor || 'System'}</span>{' '}
                     <span className="text-muted-foreground">{activity.action}</span>{' '}
                     <span className="font-medium">{activity.target}</span>
                     <div className="text-xs text-muted-foreground mt-0.5">{activity.time}</div>

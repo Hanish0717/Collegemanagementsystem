@@ -233,7 +233,7 @@ export function StudentPlacement() {
         {loading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((n) => (
-              <Card key={n} className="h-44 animate-pulse bg-muted/20" />
+              <Card key={n} className="h-44 animate-pulse bg-muted/20">{null}</Card>
             ))}
           </div>
         ) : (
@@ -248,7 +248,7 @@ export function StudentPlacement() {
                   <div>
                     <div className="flex items-start justify-between mb-3">
                       <div className="size-10 rounded-xl bg-gradient-primary text-white grid place-items-center text-xs font-bold shadow-sm">
-                        {drive.company.slice(0, 2).toUpperCase()}
+                        {(drive.company || 'DR').slice(0, 2).toUpperCase()}
                       </div>
                       {existing ? (
                         <Badge tone={getStatusBadgeTone(existing.status)}>
@@ -353,7 +353,7 @@ export function StudentPlacement() {
               >
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-xl bg-gradient-violet text-white grid place-items-center text-xs font-bold">
-                    {app.company.slice(0, 2).toUpperCase()}
+                    {(app.company || 'CP').slice(0, 2).toUpperCase()}
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-foreground">{app.company}</h4>
@@ -418,7 +418,7 @@ export function StudentPlacement() {
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                  disabled={!!(selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline))}
                   className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-sm focus:border-primary outline-none disabled:opacity-60"
                   placeholder="+91 98765 43210"
                 />
@@ -433,7 +433,7 @@ export function StudentPlacement() {
                     type="url"
                     value={linkedinUrl}
                     onChange={(e) => setLinkedinUrl(e.target.value)}
-                    disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                    disabled={!!(selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline))}
                     className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60"
                     placeholder="https://linkedin.com/in/username"
                   />
@@ -446,7 +446,7 @@ export function StudentPlacement() {
                     type="url"
                     value={portfolioUrl}
                     onChange={(e) => setPortfolioUrl(e.target.value)}
-                    disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                    disabled={!!(selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline))}
                     className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60"
                     placeholder="https://myportfolio.dev"
                   />
@@ -461,7 +461,7 @@ export function StudentPlacement() {
                   rows={3}
                   value={coverNote}
                   onChange={(e) => setCoverNote(e.target.value)}
-                  disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                  disabled={!!(selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline))}
                   className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60 resize-none"
                   placeholder="Brief statement highlighting relevant skills and achievements for this role..."
                 />
@@ -475,7 +475,7 @@ export function StudentPlacement() {
                   type="text"
                   value={resumeUrl}
                   onChange={(e) => setResumeUrl(e.target.value)}
-                  disabled={selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline)}
+                  disabled={!!(selectedDrive.applicationDeadline && new Date() > new Date(selectedDrive.applicationDeadline))}
                   className="w-full mt-1.5 px-3 py-2 rounded-xl border bg-background text-xs focus:border-primary outline-none disabled:opacity-60"
                   placeholder="https://college.edu/resumes/CS100001.pdf"
                 />

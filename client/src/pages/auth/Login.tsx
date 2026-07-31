@@ -200,6 +200,12 @@ function LoginForm() {
         role: 'accounts',
         roleName: 'Accounts Manager',
       },
+      '5050': {
+        email: 'recruiter@company.com',
+        password: 'password123',
+        role: 'company_recruiter',
+        roleName: 'Company Recruiter',
+      },
     };
 
     const match = credentialsMap[enteredPin];
@@ -219,7 +225,7 @@ function LoginForm() {
       }, 800);
     } else {
       setPinError(
-        'Invalid PIN! Try 1111 (Super Admin), 1212 (LMS Coordinator), 1313 (LMS Portal), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).',
+        'Invalid PIN! Try 1111 (Super Admin), 1212 (LMS Coordinator), 1313 (LMS Portal), 2222 (Admin), 3333 (Faculty), 4444 (Student), 5555 (Parent), 6666 (Placement), 5050 (Company Recruiter), 7777 (Librarian), 8888 (Principal), 9999 (HOD), 8080 (Dean), 7070 (Exam Cell), 6060 (Accounts).',
       );
       setPin(['', '', '', '']);
       setTimeout(() => {
@@ -258,6 +264,7 @@ function LoginForm() {
     accounts: 'accounts@college.com',
     alumni_coordinator: 'alumni.coord@college.com',
     alumni: 'alumni@college.com',
+    company_recruiter: 'recruiter@company.com',
   };
 
   const [email, setEmail] = useState('hanish@gmail.com');
@@ -373,7 +380,24 @@ function LoginForm() {
         }
       } catch (backendErr) {
         console.warn('Backend login fallback:', backendErr);
-        const fallbackRole = roleId || 'student';
+        let fallbackRole: RoleId = roleId || 'student';
+        const cleanEmail = (email || '').toLowerCase().trim();
+        if (cleanEmail.includes('placement')) fallbackRole = 'placement';
+        else if (cleanEmail.includes('company') || cleanEmail.includes('recruiter')) fallbackRole = 'company_recruiter';
+        else if (cleanEmail.includes('superadmin') || cleanEmail.includes('super-admin')) fallbackRole = 'super_admin';
+        else if (cleanEmail.includes('admin')) fallbackRole = 'admin';
+        else if (cleanEmail.includes('faculty')) fallbackRole = 'faculty';
+        else if (cleanEmail.includes('principal')) fallbackRole = 'principal';
+        else if (cleanEmail.includes('dean')) fallbackRole = 'dean';
+        else if (cleanEmail.includes('hod')) fallbackRole = 'hod';
+        else if (cleanEmail.includes('exam')) fallbackRole = 'exam_cell';
+        else if (cleanEmail.includes('accounts')) fallbackRole = 'accounts';
+        else if (cleanEmail.includes('librarian')) fallbackRole = 'librarian';
+        else if (cleanEmail.includes('warden') || cleanEmail.includes('hostel')) fallbackRole = 'warden';
+        else if (cleanEmail.includes('transport')) fallbackRole = 'transport';
+        else if (cleanEmail.includes('parent')) fallbackRole = 'parent';
+        else if (cleanEmail.includes('alumni')) fallbackRole = 'alumni';
+
         const fallbackUser = {
           _id: 'demo_' + fallbackRole,
           fullName: 'Demo ' + fallbackRole.toUpperCase() + ' User',

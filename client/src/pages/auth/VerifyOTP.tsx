@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { ShieldCheck, Loader2, ArrowRight, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
+import { getDashboardForRole } from "@/services/authService";
+
 
 export function VerifyOTP() {
   const navigate = useNavigate();
@@ -103,20 +105,11 @@ export function VerifyOTP() {
             };
             localStorage.setItem("campusly.role", roleMap[data.user.role] || "student");
           }
-          setSuccess("Email verified! Redirecting to dashboard…");
-          const dashboardMap: Record<string, string> = {
-            "super-admin": "/dashboard/super-admin",
-            admin: "/dashboard/admin",
-            faculty: "/dashboard/faculty",
-            student: "/dashboard/student",
-            parent: "/dashboard/parent",
-            librarian: "/dashboard/librarian",
-            "placement-officer": "/dashboard/placement",
-            "hostel-warden": "/dashboard/hostel",
-            "transport-manager": "/dashboard/transport",
-          };
-          const dashPath = dashboardMap[data.user?.role] || "/dashboard";
-          setTimeout(() => navigate({ to: dashPath }), 1500);
+          setSuccess("Email verified successfully! Redirecting...");
+          const targetDashboard = getDashboardForRole(data.user?.role || "student");
+          setTimeout(() => {
+            navigate({ to: targetDashboard as any });
+          }, 1500);
         } else {
           setSuccess("Email verified! You can now sign in.");
           setTimeout(() => navigate({ to: "/login" }), 2000);

@@ -1236,3 +1236,111 @@ Body: {}
 [2026-07-27T07:04:01.326Z] GET /api/faculty/students - Status: 404 - Client Error: Faculty profile not found for this user account - Body: {}
 [2026-07-27T08:22:42.628Z] GET /api/placement/student-applications?studentId=CS100001 - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
 [2026-07-27T12:10:03.309Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-30T04:49:46.583Z] GET /api/auth/me - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-30T09:59:09.240Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"recruiter@company.com","password":"password123"}
+[2026-07-30T09:59:09.575Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T09:59:09.584Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T10:06:38.587Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"recruiter@company.com","password":"password123"}
+[2026-07-30T10:06:38.645Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T10:06:38.651Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T10:06:39.812Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T10:39:12.605Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T10:39:12.608Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T10:39:13.324Z] GET /api/company/portal/offers?driveId=DRV_103 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_103 - Body: {}
+[2026-07-30T10:39:13.326Z] GET /api/company/portal/drives/DRV_103/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_103/timeline - Body: {}
+[2026-07-30T10:39:15.331Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T10:39:15.332Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T10:39:15.809Z] GET /api/company/portal/offers?driveId=DRV_101 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_101 - Body: {}
+[2026-07-30T10:39:15.810Z] GET /api/company/portal/drives/DRV_101/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_101/timeline - Body: {}
+[2026-07-30T10:40:04.280Z] GET /api/company/portal/offers?driveId=DRV_103 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_103 - Body: {}
+[2026-07-30T10:40:04.281Z] GET /api/company/portal/drives/DRV_103/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_103/timeline - Body: {}
+[2026-07-30T10:40:05.100Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T10:40:05.102Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T10:41:09.663Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T10:41:09.664Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T10:51:57.927Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lokesh@gmail.com","password":"Recruit@dKg@IR"}
+[2026-07-30T10:51:58.249Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T10:51:58.253Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:00:52.451Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"recruiter@company.com","password":"password123"}
+[2026-07-30T11:00:52.510Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:00:52.515Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:00:53.371Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T11:01:38.347Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T11:01:38.348Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T11:01:39.650Z] GET /api/company/portal/offers?driveId=DRV_103 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_103 - Body: {}
+[2026-07-30T11:01:39.652Z] GET /api/company/portal/drives/DRV_103/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_103/timeline - Body: {}
+[2026-07-30T11:01:41.321Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T11:01:41.322Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T11:01:42.037Z] GET /api/company/portal/offers?driveId=DRV_101 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_101 - Body: {}
+[2026-07-30T11:01:42.039Z] GET /api/company/portal/drives/DRV_101/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_101/timeline - Body: {}
+[2026-07-30T11:01:45.430Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T11:01:45.431Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T11:01:50.246Z] GET /api/company/portal/offers?driveId=DRV_101 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_101 - Body: {}
+[2026-07-30T11:01:50.247Z] GET /api/company/portal/drives/DRV_101/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_101/timeline - Body: {}
+[2026-07-30T11:02:06.224Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T11:02:06.226Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T11:02:07.191Z] GET /api/company/portal/offers?driveId=DRV_103 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_103 - Body: {}
+[2026-07-30T11:02:07.192Z] GET /api/company/portal/drives/DRV_103/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_103/timeline - Body: {}
+[2026-07-30T11:02:08.624Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T11:02:08.625Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T11:02:09.083Z] GET /api/company/portal/offers?driveId=DRV_101 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_101 - Body: {}
+[2026-07-30T11:02:09.085Z] GET /api/company/portal/drives/DRV_101/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_101/timeline - Body: {}
+[2026-07-30T11:02:09.932Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T11:02:09.934Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T11:02:10.781Z] GET /api/company/portal/offers?driveId=DRV_103 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_103 - Body: {}
+[2026-07-30T11:02:10.783Z] GET /api/company/portal/drives/DRV_103/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_103/timeline - Body: {}
+[2026-07-30T11:02:11.397Z] GET /api/company/portal/offers?driveId=DRV_102 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_102 - Body: {}
+[2026-07-30T11:02:11.399Z] GET /api/company/portal/drives/DRV_102/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_102/timeline - Body: {}
+[2026-07-30T11:02:12.275Z] GET /api/company/portal/offers?driveId=DRV_101 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_101 - Body: {}
+[2026-07-30T11:02:12.277Z] GET /api/company/portal/drives/DRV_101/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_101/timeline - Body: {}
+[2026-07-30T11:36:43.416Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"recruiter@company.com","password":"password123"}
+[2026-07-30T11:36:43.486Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:36:43.493Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:36:44.135Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T11:37:30.625Z] GET /api/company/portal/offers?driveId=DRV_TCS_03 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_03 - Body: {}
+[2026-07-30T11:37:30.627Z] GET /api/company/portal/drives/DRV_TCS_03/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_03/timeline - Body: {}
+[2026-07-30T11:37:31.385Z] GET /api/company/portal/offers?driveId=DRV_TCS_02 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_02 - Body: {}
+[2026-07-30T11:37:31.387Z] GET /api/company/portal/drives/DRV_TCS_02/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_02/timeline - Body: {}
+[2026-07-30T11:37:32.993Z] GET /api/company/portal/offers?driveId=DRV_TCS_01 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_01 - Body: {}
+[2026-07-30T11:37:32.995Z] GET /api/company/portal/drives/DRV_TCS_01/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_01/timeline - Body: {}
+[2026-07-30T11:37:34.492Z] GET /api/company/portal/offers?driveId=DRV_TCS_02 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_02 - Body: {}
+[2026-07-30T11:37:34.494Z] GET /api/company/portal/drives/DRV_TCS_02/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_02/timeline - Body: {}
+[2026-07-30T11:37:35.173Z] GET /api/company/portal/offers?driveId=DRV_TCS_03 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_03 - Body: {}
+[2026-07-30T11:37:35.174Z] GET /api/company/portal/drives/DRV_TCS_03/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_03/timeline - Body: {}
+[2026-07-30T11:37:36.527Z] GET /api/company/portal/offers?driveId=DRV_TCS_02 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_02 - Body: {}
+[2026-07-30T11:37:36.529Z] GET /api/company/portal/drives/DRV_TCS_02/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_02/timeline - Body: {}
+[2026-07-30T11:37:41.076Z] GET /api/company/portal/offers?driveId=DRV_TCS_01 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_01 - Body: {}
+[2026-07-30T11:37:41.078Z] GET /api/company/portal/drives/DRV_TCS_01/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_01/timeline - Body: {}
+[2026-07-30T11:38:02.211Z] GET /api/company/portal/offers?driveId=DRV_TCS_01 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_TCS_01 - Body: {}
+[2026-07-30T11:38:02.214Z] GET /api/company/portal/drives/DRV_TCS_01/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_TCS_01/timeline - Body: {}
+[2026-07-30T11:46:08.425Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"recruiter@company.com","password":"password123"}
+[2026-07-30T11:46:08.531Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:46:08.547Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:46:10.108Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T11:46:55.058Z] GET /api/company/portal/offers?driveId=DRV_1785412008679_1 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_1785412008679_1 - Body: {}
+[2026-07-30T11:46:55.064Z] GET /api/company/portal/drives/DRV_1785412008679_1/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_1785412008679_1/timeline - Body: {}
+[2026-07-30T11:46:55.829Z] GET /api/company/portal/drives/DRV_1785412008679_2/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_1785412008679_2/timeline - Body: {}
+[2026-07-30T11:46:55.856Z] GET /api/company/portal/offers?driveId=DRV_1785412008679_2 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_1785412008679_2 - Body: {}
+[2026-07-30T11:46:56.723Z] GET /api/company/portal/offers?driveId=DRV_1785412008679_1 - Status: 404 - Client Error: Not Found - /api/company/portal/offers?driveId=DRV_1785412008679_1 - Body: {}
+[2026-07-30T11:46:56.731Z] GET /api/company/portal/drives/DRV_1785412008679_1/timeline - Status: 404 - Client Error: Not Found - /api/company/portal/drives/DRV_1785412008679_1/timeline - Body: {}
+[2026-07-30T11:52:35.181Z] GET /api/company/placement/results-review - Status: 401 - Client Error: Not authorized, invalid token - Body: {}
+[2026-07-30T11:56:17.363Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T11:56:17.404Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T11:56:19.458Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T11:56:46.095Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"ashok@gmail.com","password":"ashok123"}
+[2026-07-30T11:56:46.237Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:56:46.254Z] GET /api/company/auth/me - Status: 403 - Client Error: Forbidden: Your role 'company-recruiter' is not authorized to access this resource - Body: {}
+[2026-07-30T11:56:47.585Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T11:57:11.033Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T11:57:11.085Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T11:57:12.257Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T11:57:25.546Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T11:57:25.589Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T11:57:26.858Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, no token provided - Body: {}
+[2026-07-30T11:59:29.585Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T11:59:29.637Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T12:00:37.416Z] GET /api/company/auth/me - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T12:00:37.462Z] GET /api/company/portal/drives - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T12:00:37.505Z] GET /api/company/portal/stats - Status: 401 - Client Error: Not authorized, user not found - Body: {}
+[2026-07-30T12:08:43.050Z] POST /api/company/placement/student/test-submit - Status: 401 - Client Error: Not authorized, no token provided - Body: {"testId":"TST_1785413322973","studentId":"CS2026101","studentName":"Aarav Sharma","score":88,"department":"CSE"}
+[2026-07-30T12:09:30.804Z] POST /api/company/placement/student/test-submit - Status: 401 - Client Error: Not authorized, no token provided - Body: {"testId":"TST_1785413370661","studentId":"CS2026101","studentName":"Aarav Sharma","score":88,"department":"CSE"}

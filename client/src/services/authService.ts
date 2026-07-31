@@ -20,6 +20,7 @@ const demoCredentialsByRole: Record<RoleId, { email: string; password: string }>
   lms: { email: "lms@college.com", password: "password123" },
   alumni_coordinator: { email: "alumni.coordinator@college.com", password: "password123" },
   alumni: { email: "alumni@college.com", password: "password123" },
+  company_recruiter: { email: "recruiter@company.com", password: "password123" },
 };
 
 // ── Role Mapping (backend ↔ frontend) ───────────────────
@@ -54,6 +55,8 @@ const backendRoleToFrontendRole: Record<string, RoleId> = {
   "alumni-coordinator": "alumni_coordinator",
   alumni_coordinator: "alumni_coordinator",
   alumni: "alumni",
+  "company-recruiter": "company_recruiter",
+  company_recruiter: "company_recruiter",
 };
 
 const frontendRoleToBackendRole: Record<RoleId, string> = {
@@ -74,6 +77,7 @@ const frontendRoleToBackendRole: Record<RoleId, string> = {
   accounts: "accounts",
   alumni_coordinator: "alumni-coordinator",
   alumni: "alumni",
+  company_recruiter: "company-recruiter",
 };
 
 /** Convert backend role string to frontend RoleId */
@@ -127,6 +131,8 @@ const roleDashboardMap: Record<string, string> = {
   "alumni-coordinator": "/dashboard/admin/alumni",
   alumni_coordinator: "/dashboard/admin/alumni",
   alumni: "/dashboard/admin/alumni",
+  "company-recruiter": "/company/dashboard",
+  company_recruiter: "/company/dashboard",
 };
 
 /** Get the correct dashboard path for a backend role */
@@ -183,6 +189,22 @@ export async function loginAsDemoRole(roleId: RoleId): Promise<AuthUser> {
 
 /** Fetch the currently authenticated user from backend. */
 export async function fetchCurrentUser(): Promise<AuthUser> {
+  const storedUser = getStoredUser();
+  if (storedUser?.role === "company_recruiter") {
+    try {
+      const { data } = await api.get<{ success: boolean; user: any }>("/api/company/auth/me");
+      const recruiterUser = {
+        ...data.user,
+        role: "company_recruiter"
+      } as unknown as AuthUser;
+      localStorage.setItem(USER_KEY, JSON.stringify(recruiterUser));
+      localStorage.setItem(ROLE_KEY, "company_recruiter");
+      return recruiterUser;
+    } catch (e) {
+      return storedUser;
+    }
+  }
+
   const { data } = await api.get<{ success: boolean; user: AuthUser }>("/api/auth/me");
   localStorage.setItem(USER_KEY, JSON.stringify(data.user));
 

@@ -40,7 +40,8 @@ import {
   Calendar,
   Target,
   BarChart3,
-  Brain
+  Brain,
+  CheckSquare
 } from "lucide-react";
 
 export type RoleId =
@@ -60,7 +61,8 @@ export type RoleId =
   | "exam_cell"
   | "accounts"
   | "alumni_coordinator"
-  | "alumni";
+  | "alumni"
+  | "company_recruiter";
 
 export type NavItem = {
   to: string;
@@ -362,6 +364,8 @@ export const ROLES: Record<RoleId, Role> = {
         exact: true,
       },
       { to: "/dashboard/placement/companies", label: "Companies", icon: Briefcase },
+      { to: "/dashboard/placement/recruiters", label: "Company Recruiters", icon: UserPlus },
+      { to: "/dashboard/placement/results-review", label: "Recruiter Results Review", icon: CheckSquare },
       { to: "/dashboard/placement/drives", label: "Drives", icon: Sparkles },
       { to: "/dashboard/placement/calendar", label: "Placement Calendar", icon: Calendar },
       { to: "/dashboard/placement/targets", label: "Target Management", icon: Target },
@@ -545,6 +549,18 @@ export const ROLES: Record<RoleId, Role> = {
     accent: "bg-indigo-500",
     nav: [...alumniWorkspaceNav],
   },
+  company_recruiter: {
+    id: "company_recruiter",
+    name: "Company Recruiter",
+    short: "Campus hiring portal",
+    description: "Dedicated portal for company recruiters to manage assigned drives, applicants, and interviews.",
+    icon: Briefcase,
+    gradient: "from-blue-600 to-indigo-600",
+    accent: "bg-blue-500",
+    nav: [
+      { to: "/company/dashboard", label: "Recruiter Dashboard", icon: LayoutDashboard, exact: true }
+    ],
+  },
 };
 
 export const ROLE_LIST = Object.values(ROLES);
@@ -556,6 +572,30 @@ export function setActiveRole(id: RoleId) {
 }
 export function getActiveRole(): Role {
   if (typeof window === "undefined") return ROLES.super_admin;
+
+  const storedUserRaw = localStorage.getItem("cms_user") || localStorage.getItem("company_recruiter_user");
+  if (storedUserRaw) {
+    try {
+      const user = JSON.parse(storedUserRaw);
+      if (user?.role) {
+        let roleStr = String(user.role).toLowerCase().trim();
+        if (roleStr === "placement-officer" || roleStr === "placement_officer") roleStr = "placement";
+        if (roleStr === "hostel-warden" || roleStr === "hostel_warden") roleStr = "warden";
+        if (roleStr === "transport-manager" || roleStr === "transport_manager") roleStr = "transport";
+        if (roleStr === "super-admin" || roleStr === "superadmin") roleStr = "super_admin";
+        if (roleStr === "company-recruiter" || roleStr === "company_recruiter") roleStr = "company_recruiter";
+        if (roleStr === "alumni-coordinator") roleStr = "alumni_coordinator";
+        if (roleStr === "exam-cell" || roleStr === "examcell") roleStr = "exam_cell";
+
+        if (ROLES[roleStr as RoleId]) {
+          localStorage.setItem(KEY, roleStr);
+          return ROLES[roleStr as RoleId];
+        }
+      }
+    } catch (e) {}
+  }
+
   const id = (localStorage.getItem(KEY) as RoleId) || "super_admin";
   return ROLES[id] ?? ROLES.super_admin;
 }
+

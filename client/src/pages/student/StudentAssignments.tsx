@@ -233,7 +233,7 @@ export function StudentAssignments() {
                 className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
               >
                 <div className="size-10 rounded-lg bg-gradient-violet text-white grid place-items-center text-xs font-semibold">
-                  {assignment.subject.slice(0, 2)}
+                  {(assignment.subject || 'AS').slice(0, 2)}
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{assignment.title}</div>

@@ -202,8 +202,12 @@ export function DashboardIndex() {
     return <LibrarianDashboard />;
   }
   if (activeRole.id === "placement") {
-    return <PlacementDashboard />;
+    return <Navigate to="/dashboard/placement" />;
   }
+  if (activeRole.id === "company_recruiter") {
+    return <Navigate to="/company/dashboard" />;
+  }
+
 
   // Extraction of real-time data or fallback mocks
   const stats = data?.stats || [];

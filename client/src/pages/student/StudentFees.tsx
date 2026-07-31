@@ -290,7 +290,7 @@ export function StudentFees() {
                 className="flex items-center gap-3 p-3 rounded-xl border hover:bg-accent/50 transition"
               >
                 <div className="size-10 rounded-lg bg-gradient-primary text-white grid place-items-center text-xs font-semibold">
-                  {payment.type.slice(0, 2)}
+                  {(payment.type || 'FE').slice(0, 2)}
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{payment.type}</div>

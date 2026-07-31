@@ -48,22 +48,21 @@ export function PlacementDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path === "/dashboard/placement") {
-      fetchPlacementData()
-        .then((res) => {
-          setData(res);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.warn("Failed to load live placement dashboard data:", err);
-          setLoading(false);
-        });
-    }
-  }, [path]);
+    fetchPlacementData()
+      .then((res) => {
+        setData(res);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.warn("Failed to load live placement dashboard data:", err);
+        setLoading(false);
+      });
+  }, []);
 
-  if (path !== "/dashboard/placement") {
+  if (!path.startsWith("/dashboard/placement")) {
     return <Outlet />;
   }
+
 
   if (loading) {
     return (

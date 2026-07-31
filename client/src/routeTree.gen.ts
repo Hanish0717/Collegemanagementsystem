@@ -34,6 +34,8 @@ import { Route as AlumniRegistrationRouteImport } from './routes/alumni/registra
 import { Route as AlumniReportsRouteImport } from './routes/alumni/reports'
 import { Route as AlumniSettingsRouteImport } from './routes/alumni/settings'
 import { Route as AlumniSuccessStoriesRouteImport } from './routes/alumni/success-stories'
+import { Route as CompanyDashboardRouteImport } from './routes/company/dashboard'
+import { Route as CompanyLoginRouteImport } from './routes/company/login'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardAccountantRouteImport } from './routes/dashboard/accountant'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
@@ -201,7 +203,9 @@ import { Route as DashboardPlacementHistoryRouteImport } from './routes/dashboar
 import { Route as DashboardPlacementIntelligenceRouteImport } from './routes/dashboard/placement/intelligence'
 import { Route as DashboardPlacementInterviewsRouteImport } from './routes/dashboard/placement/interviews'
 import { Route as DashboardPlacementNotificationsRouteImport } from './routes/dashboard/placement/notifications'
+import { Route as DashboardPlacementRecruitersRouteImport } from './routes/dashboard/placement/recruiters'
 import { Route as DashboardPlacementReportsRouteImport } from './routes/dashboard/placement/reports'
+import { Route as DashboardPlacementResultsReviewRouteImport } from './routes/dashboard/placement/results-review'
 import { Route as DashboardPlacementTargetsRouteImport } from './routes/dashboard/placement/targets'
 import { Route as DashboardStudentIndexRouteImport } from './routes/dashboard/student/index'
 import { Route as DashboardStudentAssignmentsRouteImport } from './routes/dashboard/student/assignments'
@@ -404,6 +408,16 @@ const AlumniSettingsRoute = AlumniSettingsRouteImport.update({
 const AlumniSuccessStoriesRoute = AlumniSuccessStoriesRouteImport.update({
   id: '/alumni/success-stories',
   path: '/alumni/success-stories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompanyDashboardRoute = CompanyDashboardRouteImport.update({
+  id: '/company/dashboard',
+  path: '/company/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompanyLoginRoute = CompanyLoginRouteImport.update({
+  id: '/company/login',
+  path: '/company/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
@@ -1285,10 +1299,22 @@ const DashboardPlacementNotificationsRoute =
     path: '/notifications',
     getParentRoute: () => DashboardPlacementRoute,
   } as any)
+const DashboardPlacementRecruitersRoute =
+  DashboardPlacementRecruitersRouteImport.update({
+    id: '/recruiters',
+    path: '/recruiters',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
 const DashboardPlacementReportsRoute =
   DashboardPlacementReportsRouteImport.update({
     id: '/reports',
     path: '/reports',
+    getParentRoute: () => DashboardPlacementRoute,
+  } as any)
+const DashboardPlacementResultsReviewRoute =
+  DashboardPlacementResultsReviewRouteImport.update({
+    id: '/results-review',
+    path: '/results-review',
     getParentRoute: () => DashboardPlacementRoute,
   } as any)
 const DashboardPlacementTargetsRoute =
@@ -1769,6 +1795,8 @@ export interface FileRoutesByFullPath {
   '/alumni/reports': typeof AlumniReportsRoute
   '/alumni/settings': typeof AlumniSettingsRoute
   '/alumni/success-stories': typeof AlumniSuccessStoriesRoute
+  '/company/dashboard': typeof CompanyDashboardRoute
+  '/company/login': typeof CompanyLoginRoute
   '/dashboard/accountant': typeof DashboardAccountantRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
@@ -1929,7 +1957,9 @@ export interface FileRoutesByFullPath {
   '/dashboard/placement/intelligence': typeof DashboardPlacementIntelligenceRoute
   '/dashboard/placement/interviews': typeof DashboardPlacementInterviewsRoute
   '/dashboard/placement/notifications': typeof DashboardPlacementNotificationsRoute
+  '/dashboard/placement/recruiters': typeof DashboardPlacementRecruitersRoute
   '/dashboard/placement/reports': typeof DashboardPlacementReportsRoute
+  '/dashboard/placement/results-review': typeof DashboardPlacementResultsReviewRoute
   '/dashboard/placement/targets': typeof DashboardPlacementTargetsRoute
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
@@ -2039,6 +2069,8 @@ export interface FileRoutesByTo {
   '/alumni/reports': typeof AlumniReportsRoute
   '/alumni/settings': typeof AlumniSettingsRoute
   '/alumni/success-stories': typeof AlumniSuccessStoriesRoute
+  '/company/dashboard': typeof CompanyDashboardRoute
+  '/company/login': typeof CompanyLoginRoute
   '/dashboard/accountant': typeof DashboardAccountantRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/events': typeof DashboardEventsRoute
@@ -2185,7 +2217,9 @@ export interface FileRoutesByTo {
   '/dashboard/placement/intelligence': typeof DashboardPlacementIntelligenceRoute
   '/dashboard/placement/interviews': typeof DashboardPlacementInterviewsRoute
   '/dashboard/placement/notifications': typeof DashboardPlacementNotificationsRoute
+  '/dashboard/placement/recruiters': typeof DashboardPlacementRecruitersRoute
   '/dashboard/placement/reports': typeof DashboardPlacementReportsRoute
+  '/dashboard/placement/results-review': typeof DashboardPlacementResultsReviewRoute
   '/dashboard/placement/targets': typeof DashboardPlacementTargetsRoute
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
@@ -2299,6 +2333,8 @@ export interface FileRoutesById {
   '/alumni/reports': typeof AlumniReportsRoute
   '/alumni/settings': typeof AlumniSettingsRoute
   '/alumni/success-stories': typeof AlumniSuccessStoriesRoute
+  '/company/dashboard': typeof CompanyDashboardRoute
+  '/company/login': typeof CompanyLoginRoute
   '/dashboard/accountant': typeof DashboardAccountantRoute
   '/dashboard/admin': typeof DashboardAdminRouteWithChildren
   '/dashboard/ai': typeof DashboardAiRouteWithChildren
@@ -2459,7 +2495,9 @@ export interface FileRoutesById {
   '/dashboard/placement/intelligence': typeof DashboardPlacementIntelligenceRoute
   '/dashboard/placement/interviews': typeof DashboardPlacementInterviewsRoute
   '/dashboard/placement/notifications': typeof DashboardPlacementNotificationsRoute
+  '/dashboard/placement/recruiters': typeof DashboardPlacementRecruitersRoute
   '/dashboard/placement/reports': typeof DashboardPlacementReportsRoute
+  '/dashboard/placement/results-review': typeof DashboardPlacementResultsReviewRoute
   '/dashboard/placement/targets': typeof DashboardPlacementTargetsRoute
   '/dashboard/student/assignments': typeof DashboardStudentAssignmentsRoute
   '/dashboard/student/attendance': typeof DashboardStudentAttendanceRoute
@@ -2574,6 +2612,8 @@ export interface FileRouteTypes {
     | '/alumni/reports'
     | '/alumni/settings'
     | '/alumni/success-stories'
+    | '/company/dashboard'
+    | '/company/login'
     | '/dashboard/accountant'
     | '/dashboard/admin'
     | '/dashboard/ai'
@@ -2734,7 +2774,9 @@ export interface FileRouteTypes {
     | '/dashboard/placement/intelligence'
     | '/dashboard/placement/interviews'
     | '/dashboard/placement/notifications'
+    | '/dashboard/placement/recruiters'
     | '/dashboard/placement/reports'
+    | '/dashboard/placement/results-review'
     | '/dashboard/placement/targets'
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
@@ -2844,6 +2886,8 @@ export interface FileRouteTypes {
     | '/alumni/reports'
     | '/alumni/settings'
     | '/alumni/success-stories'
+    | '/company/dashboard'
+    | '/company/login'
     | '/dashboard/accountant'
     | '/dashboard/attendance'
     | '/dashboard/events'
@@ -2990,7 +3034,9 @@ export interface FileRouteTypes {
     | '/dashboard/placement/intelligence'
     | '/dashboard/placement/interviews'
     | '/dashboard/placement/notifications'
+    | '/dashboard/placement/recruiters'
     | '/dashboard/placement/reports'
+    | '/dashboard/placement/results-review'
     | '/dashboard/placement/targets'
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
@@ -3103,6 +3149,8 @@ export interface FileRouteTypes {
     | '/alumni/reports'
     | '/alumni/settings'
     | '/alumni/success-stories'
+    | '/company/dashboard'
+    | '/company/login'
     | '/dashboard/accountant'
     | '/dashboard/admin'
     | '/dashboard/ai'
@@ -3263,7 +3311,9 @@ export interface FileRouteTypes {
     | '/dashboard/placement/intelligence'
     | '/dashboard/placement/interviews'
     | '/dashboard/placement/notifications'
+    | '/dashboard/placement/recruiters'
     | '/dashboard/placement/reports'
+    | '/dashboard/placement/results-review'
     | '/dashboard/placement/targets'
     | '/dashboard/student/assignments'
     | '/dashboard/student/attendance'
@@ -3377,6 +3427,8 @@ export interface RootRouteChildren {
   AlumniReportsRoute: typeof AlumniReportsRoute
   AlumniSettingsRoute: typeof AlumniSettingsRoute
   AlumniSuccessStoriesRoute: typeof AlumniSuccessStoriesRoute
+  CompanyDashboardRoute: typeof CompanyDashboardRoute
+  CompanyLoginRoute: typeof CompanyLoginRoute
   AlumniIndexRoute: typeof AlumniIndexRoute
   AlumniProfileIdRoute: typeof AlumniProfileIdRoute
 }
@@ -3556,6 +3608,20 @@ declare module '@tanstack/react-router' {
       path: '/alumni/success-stories'
       fullPath: '/alumni/success-stories'
       preLoaderRoute: typeof AlumniSuccessStoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/company/dashboard': {
+      id: '/company/dashboard'
+      path: '/company/dashboard'
+      fullPath: '/company/dashboard'
+      preLoaderRoute: typeof CompanyDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/company/login': {
+      id: '/company/login'
+      path: '/company/login'
+      fullPath: '/company/login'
+      preLoaderRoute: typeof CompanyLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/': {
@@ -4727,11 +4793,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPlacementNotificationsRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
+    '/dashboard/placement/recruiters': {
+      id: '/dashboard/placement/recruiters'
+      path: '/recruiters'
+      fullPath: '/dashboard/placement/recruiters'
+      preLoaderRoute: typeof DashboardPlacementRecruitersRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
     '/dashboard/placement/reports': {
       id: '/dashboard/placement/reports'
       path: '/reports'
       fullPath: '/dashboard/placement/reports'
       preLoaderRoute: typeof DashboardPlacementReportsRouteImport
+      parentRoute: typeof DashboardPlacementRoute
+    }
+    '/dashboard/placement/results-review': {
+      id: '/dashboard/placement/results-review'
+      path: '/results-review'
+      fullPath: '/dashboard/placement/results-review'
+      preLoaderRoute: typeof DashboardPlacementResultsReviewRouteImport
       parentRoute: typeof DashboardPlacementRoute
     }
     '/dashboard/placement/targets': {
@@ -5655,7 +5735,9 @@ interface DashboardPlacementRouteChildren {
   DashboardPlacementIntelligenceRoute: typeof DashboardPlacementIntelligenceRoute
   DashboardPlacementInterviewsRoute: typeof DashboardPlacementInterviewsRoute
   DashboardPlacementNotificationsRoute: typeof DashboardPlacementNotificationsRoute
+  DashboardPlacementRecruitersRoute: typeof DashboardPlacementRecruitersRoute
   DashboardPlacementReportsRoute: typeof DashboardPlacementReportsRoute
+  DashboardPlacementResultsReviewRoute: typeof DashboardPlacementResultsReviewRoute
   DashboardPlacementTargetsRoute: typeof DashboardPlacementTargetsRoute
   DashboardPlacementIndexRoute: typeof DashboardPlacementIndexRoute
 }
@@ -5671,7 +5753,9 @@ const DashboardPlacementRouteChildren: DashboardPlacementRouteChildren = {
   DashboardPlacementIntelligenceRoute: DashboardPlacementIntelligenceRoute,
   DashboardPlacementInterviewsRoute: DashboardPlacementInterviewsRoute,
   DashboardPlacementNotificationsRoute: DashboardPlacementNotificationsRoute,
+  DashboardPlacementRecruitersRoute: DashboardPlacementRecruitersRoute,
   DashboardPlacementReportsRoute: DashboardPlacementReportsRoute,
+  DashboardPlacementResultsReviewRoute: DashboardPlacementResultsReviewRoute,
   DashboardPlacementTargetsRoute: DashboardPlacementTargetsRoute,
   DashboardPlacementIndexRoute: DashboardPlacementIndexRoute,
 }
@@ -5996,6 +6080,8 @@ const rootRouteChildren: RootRouteChildren = {
   AlumniReportsRoute: AlumniReportsRoute,
   AlumniSettingsRoute: AlumniSettingsRoute,
   AlumniSuccessStoriesRoute: AlumniSuccessStoriesRoute,
+  CompanyDashboardRoute: CompanyDashboardRoute,
+  CompanyLoginRoute: CompanyLoginRoute,
   AlumniIndexRoute: AlumniIndexRoute,
   AlumniProfileIdRoute: AlumniProfileIdRoute,
 }

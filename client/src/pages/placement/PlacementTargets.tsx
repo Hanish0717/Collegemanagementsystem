@@ -59,6 +59,13 @@ export function PlacementTargets() {
     }
   };
 
+  /** Request clarification from student for a pending exemption request */
+  const processDeclarationAction = async (_id: string, _action: string, notes: string): Promise<void> => {
+    // Clarification request is logged locally until a dedicated backend endpoint is available
+    console.info(`[PlacementTargets] Clarification requested. Notes: ${notes}`);
+    return Promise.resolve();
+  };
+
   const handleNewRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentName.trim() || !reason.trim()) {
@@ -247,7 +254,7 @@ export function PlacementTargets() {
                         </Badge>
                       </td>
                       <td className="py-3 px-4 text-right">
-                        {reqItem.status === "Pending" || reqItem.status === "Submitted" || reqItem.status === "Clarification Requested" ? (
+                        {reqItem.status === "Pending" ? (
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               disabled={isUpdating}

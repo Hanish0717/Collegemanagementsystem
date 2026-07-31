@@ -303,7 +303,18 @@ if (isMockMode) {
       'departments',
       'security_logs',
       'system_notifications',
-      'backups'
+      'backups',
+      'company_recruiters',
+      'company_recruiter_sessions',
+      'online_tests',
+      'online_test_results',
+      'recruiter_result_uploads',
+      'tpo_reviews',
+      'manual_overrides',
+      'audit_logs',
+      'final_shortlists',
+      'interview_rounds',
+      'recruiter_notifications'
     ];
     let changed = false;
     requiredTables.forEach(table => {
