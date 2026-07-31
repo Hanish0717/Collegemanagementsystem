@@ -22,7 +22,7 @@ import {
   type RoomRecord
 } from "@/services/hostelService";
 import { fetchDepartments } from "@/services/studentService";
-import { StudentFormModal } from "../dashboard/students/StudentDialogs";
+import { StudentFormModal } from "../students/StudentDialogs";
 import { supabase } from "@/lib/supabaseClient";
 
 export function HostelRooms() {

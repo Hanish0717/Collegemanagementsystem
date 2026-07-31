@@ -67,14 +67,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "College Management System — Premium Educational Platform" },
+      { title: "EduSuite Pro — Empowering Digital Campus" },
       {
         name: "description",
         content:
-          "A modern, beautiful college management system to run students, faculty, attendance, exams, fees, library and more.",
+          "A modern, beautiful campus management system to run students, faculty, attendance, exams, fees, library and more.",
       },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as any },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Caveat:wght@400;700&display=swap",
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

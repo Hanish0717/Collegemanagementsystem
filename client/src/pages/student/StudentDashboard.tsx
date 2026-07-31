@@ -91,7 +91,7 @@ export function StudentDashboard() {
   const [subjectWise, setSubjectWise] = useState<any[]>([]);
 
   useEffect(() => {
-    if (path !== '/dashboard/student' && path !== '/dashboard' && path !== '/dashboard/') return;
+    if (path !== '/student' && path !== '/dashboard' && path !== '/dashboard/') return;
 
     const fetchDashboardData = async () => {
       setLoading(true);
@@ -219,7 +219,7 @@ export function StudentDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== '/dashboard/student' && path !== '/dashboard' && path !== '/dashboard/') {
+  if (path !== '/student' && path !== '/dashboard' && path !== '/dashboard/') {
     return <Outlet />;
   }
 
@@ -342,10 +342,10 @@ export function StudentDashboard() {
                 {
                   label: 'View Timetable',
                   tone: 'info' as const,
-                  to: '/dashboard/student/timetable',
+                  to: '/student/timetable',
                 },
-                { label: 'Pay Fees', tone: 'warn' as const, to: '/dashboard/student/fees' },
-                { label: 'Register Event', tone: 'info' as const, to: '/dashboard/student/events' },
+                { label: 'Pay Fees', tone: 'warn' as const, to: '/student/fees' },
+                { label: 'Register Event', tone: 'info' as const, to: '/student/events' },
               ].map((item) => (
                 <button
                   key={item.label}

@@ -44,7 +44,7 @@ export function DeanModuleErrorBoundary({ error, reset }: Props) {
             <RefreshCw className="size-3.5" /> Retry Module
           </button>
           <a
-            href="/dashboard/dean"
+            href="/dean"
             className="px-4 py-2 rounded-xl border border-input text-foreground text-xs font-bold hover:bg-accent transition flex items-center gap-2 cursor-pointer"
           >
             <LayoutDashboard className="size-3.5" /> Return to Dean Dashboard

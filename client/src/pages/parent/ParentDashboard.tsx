@@ -66,7 +66,7 @@ export function ParentDashboard() {
   }, []);
 
   useEffect(() => {
-    if (path !== "/dashboard/parent" && path !== "/dashboard" && path !== "/dashboard/") return;
+    if (path !== "/parent" && path !== "/dashboard" && path !== "/dashboard/") return;
 
     const fetchDashboardData = async () => {
       try {
@@ -135,7 +135,7 @@ export function ParentDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== "/dashboard/parent" && path !== "/dashboard" && path !== "/dashboard/") {
+  if (path !== "/parent" && path !== "/dashboard" && path !== "/dashboard/") {
     return <Outlet />;
   }
 
@@ -220,10 +220,10 @@ export function ParentDashboard() {
           </div>
           <div className="space-y-3">
             {[
-              { label: "View Attendance", tone: "info" as const, to: "/dashboard/parent/attendance" },
-              { label: "Check Marks", tone: "success" as const, to: "/dashboard/parent/marks" },
-              { label: "Pay Fees", tone: "warn" as const, to: "/dashboard/parent/fees" },
-              { label: "Contact Teacher", tone: "info" as const, to: "/dashboard/parent/communication" },
+              { label: "View Attendance", tone: "info" as const, to: "/parent/attendance" },
+              { label: "Check Marks", tone: "success" as const, to: "/parent/marks" },
+              { label: "Pay Fees", tone: "warn" as const, to: "/parent/fees" },
+              { label: "Contact Teacher", tone: "info" as const, to: "/parent/communication" },
             ].map((item) => (
               <button
                 key={item.label}

@@ -1340,3 +1340,6 @@ Body: {}
 
 [2026-07-23T10:46:08.177Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
 [2026-07-23T10:46:08.197Z] GET /api/students?limit=1000 - Status: 403 - Client Error: Forbidden: Your role 'faculty' is not authorized to access this resource - Body: {}
+[2026-07-31T07:33:45.120Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms@college.com","password":"password123"}
+[2026-07-31T07:33:55.450Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}
+[2026-07-31T07:34:04.154Z] POST /api/auth/login - Status: 401 - Client Error: Invalid credentials - Body: {"email":"lms.coordinator@college.com","password":"password123"}

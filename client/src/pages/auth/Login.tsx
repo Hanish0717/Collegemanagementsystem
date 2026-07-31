@@ -412,7 +412,7 @@ function LoginForm() {
       localStorage.setItem('campusly.role', userFrontendRole);
 
       if (userFrontendRole === 'lms') {
-        navigate({ to: '/dashboard/admin/lms' });
+        navigate({ to: '/admin/lms' });
       } else {
         const targetDash = getDashboardForRole(user.role || userFrontendRole);
         navigate({ to: targetDash as any });

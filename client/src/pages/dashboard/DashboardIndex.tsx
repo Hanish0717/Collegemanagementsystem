@@ -163,10 +163,10 @@ export function DashboardIndex() {
   }, []);
 
   if (activeRole.id === "super_admin") {
-    return <Navigate to="/dashboard/super-admin" />;
+    return <Navigate to="/super-admin" />;
   }
   if (activeRole.id === "admin") {
-    return <Navigate to="/dashboard/admin" />;
+    return <Navigate to="/admin" />;
   }
   if (activeRole.id === "parent") {
     return <ParentDashboard />;

@@ -1009,7 +1009,7 @@ export function LibrarianDigital() {
 
   // Copy shareable link
   const handleCopyLink = (book: RichBook) => {
-    const url = `${window.location.origin}/dashboard/librarian/digital?bookId=${book.id}`;
+    const url = `${window.location.origin}/librarian/digital?bookId=${book.id}`;
     navigator.clipboard.writeText(url);
     toast.success("Shareable resource link copied to clipboard!");
   };

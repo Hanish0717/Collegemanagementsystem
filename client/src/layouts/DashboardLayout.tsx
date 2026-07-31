@@ -35,7 +35,8 @@ import { getDashboardForRole, toBackendRole } from "@/services/authService";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Badge } from "@/components/dashboard/ui";
-import { StudentFormModal } from "@/pages/dashboard/students/StudentDialogs";
+import { EduSuiteLogoGraphic } from "@/components/ui/EduSuiteLogo";
+import { StudentFormModal } from "@/pages/students/StudentDialogs";
 import {
   createResident,
   registerVisitor,
@@ -74,13 +75,13 @@ export function DashboardLayout() {
     const active = getActiveRole();
     if (typeof window !== "undefined") {
       const p = window.location.pathname;
-      if (!p.startsWith("/dashboard/admin") && !p.startsWith("/dashboard/super-admin") && (p.startsWith("/dashboard/faculty") || p.startsWith("/faculty"))) return ROLES.faculty;
+      if (!p.startsWith("/admin") && !p.startsWith("/super-admin") && p.startsWith("/faculty")) return ROLES.faculty;
     }
     return active;
   });
 
   useEffect(() => {
-    if (!path.startsWith("/dashboard/admin") && !path.startsWith("/dashboard/super-admin") && (path.startsWith("/dashboard/faculty") || path.startsWith("/faculty"))) {
+    if (!path.startsWith("/admin") && !path.startsWith("/super-admin") && path.startsWith("/faculty")) {
       if (role.id !== "faculty") setRole(ROLES.faculty);
     } else {
       const active = getActiveRole();
@@ -418,7 +419,7 @@ export function DashboardLayout() {
             toast.info(`Notification: ${payload.new.title}`, {
               action: {
                 label: "View",
-                onClick: () => navigate({ to: "/dashboard/hostel/notifications" }),
+                onClick: () => navigate({ to: "/hostel/notifications" }),
               }
             });
           }
@@ -613,12 +614,12 @@ export function DashboardLayout() {
   };
 
   const handleNotificationClick = () => {
-    const notifRoute = role.nav.find((item) => item.label === "Notifications")?.to ?? "/dashboard/notifications";
+    const notifRoute = role.nav.find((item) => item.label === "Notifications")?.to ?? "/notifications";
     navigate({ to: notifRoute });
   };
 
   const handleProfileClick = () => {
-    const settingsRoute = role.nav.find((item) => item.label.toLowerCase() === "settings")?.to ?? "/dashboard/settings";
+    const settingsRoute = role.nav.find((item) => item.label.toLowerCase() === "settings")?.to ?? "/settings";
     navigate({ to: settingsRoute });
   };
 
@@ -749,15 +750,14 @@ export function DashboardLayout() {
   const SidebarContent = ({ isMobile = false }) => (
     <>
       <div className="p-4 flex items-center gap-2.5 border-b border-sidebar-border h-16">
-        <div
-          className={`size-9 rounded-xl bg-gradient-to-br ${role.gradient} grid place-items-center text-white shrink-0`}
-        >
-          <GraduationCap className="size-5" />
-        </div>
+        <EduSuiteLogoGraphic className="size-8" />
         {(!collapsed || isMobile) && (
           <div className="leading-tight">
-            <div className="font-bold text-base tracking-tight">College Management</div>
-            <div className="text-[10px] text-muted-foreground">{role.name} workspace</div>
+            <div className="font-bold text-base tracking-tight flex items-center">
+              <span className="text-white">EduSuite</span>
+              <span className="text-[#0A5BFF] ml-0.5">Pro</span>
+            </div>
+            <div className="text-[10px] text-slate-400">{role.name} workspace</div>
           </div>
         )}
       </div>
@@ -795,8 +795,8 @@ export function DashboardLayout() {
                     onClick={() => { if (isMobile) setMobileOpen(false); }}
                     className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
                       ${active
-                        ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
-                        : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+                        ? `bg-[#0A5BFF] text-white shadow-md font-semibold`
+                        : "text-slate-400 hover:bg-sidebar-accent hover:text-white"
                       }`}
                   >
                     <span className="relative shrink-0">
@@ -854,7 +854,7 @@ export function DashboardLayout() {
                           search={subHasQuery ? Object.fromEntries(new URL(sub.to, window.location.origin).searchParams) : undefined}
                           onClick={handleSubClick}
                           className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm transition cursor-pointer ${
-                            subActive ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold' : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
+                            subActive ? 'bg-[#0A5BFF]/10 text-white font-semibold' : 'text-slate-400 hover:text-white'
                           }`}
                         >
                           <span className="size-3.5">{sub.icon ? <sub.icon className="size-3" /> : null}</span>
@@ -881,8 +881,8 @@ export function DashboardLayout() {
               }}
               className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer
                 ${active
-                  ? `bg-gradient-to-r ${role.gradient} text-white shadow-soft`
-                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
+                  ? `bg-[#0A5BFF] text-white shadow-md font-semibold`
+                  : "text-slate-400 hover:bg-sidebar-accent hover:text-white"
                 }`}
             >
               <span className="relative shrink-0">
@@ -905,13 +905,36 @@ export function DashboardLayout() {
           );
         })}
       </nav>
-      <div className="p-3 border-t border-sidebar-border">
+      <div className="p-3 border-t border-sidebar-border mt-auto">
+        {(!collapsed || isMobile) ? (
+          <div className="flex items-center gap-3 p-2 rounded-xl bg-[#122345]/50 border border-[#132549] mb-2">
+            <div className="relative shrink-0">
+              <div className="size-10 rounded-full bg-gradient-to-tr from-[#0A5BFF] to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                {displayName.charAt(0)}
+              </div>
+              <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border-2 border-[#08132D]" />
+            </div>
+            <div className="min-w-0 flex-1 leading-tight text-left">
+              <div className="text-xs font-semibold text-white truncate">{displayName}</div>
+              <div className="text-[9px] text-slate-400 truncate capitalize">{role.name}</div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex justify-center mb-2">
+            <div className="relative">
+              <div className="size-10 rounded-full bg-gradient-to-tr from-[#0A5BFF] to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                {displayName.charAt(0)}
+              </div>
+              <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border-2 border-[#08132D]" />
+            </div>
+          </div>
+        )}
         <button
           onClick={() => {
             if (isMobile) setMobileOpen(false);
             setShowLogoutConfirm(true);
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-sidebar-accent hover:text-foreground hover:text-rose-600 transition cursor-pointer"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:bg-rose-950/30 hover:text-rose-400 transition cursor-pointer"
         >
           <LogOut className="size-4" />
           {(!collapsed || isMobile) && <span>Logout</span>}
@@ -921,12 +944,12 @@ export function DashboardLayout() {
   );
 
   return (
-    <div className={`${dark ? "dark" : ""} min-h-screen bg-gradient-soft text-foreground`}>
+    <div className={`${dark ? "dark" : ""} min-h-screen bg-[#F4F7FE] dark:bg-slate-950 text-foreground`}>
       <div className="flex min-h-screen">
         {/* Desktop Sidebar */}
         <aside
           className={`${collapsed ? "w-20" : "w-64"
-            } transition-all duration-300 hidden md:flex flex-col glass border-r border-sidebar-border sticky top-0 h-screen`}
+            } transition-all duration-300 hidden md:flex flex-col bg-[#08132D] border-r border-[#132549] sticky top-0 h-screen`}
         >
           <SidebarContent />
         </aside>
@@ -938,7 +961,7 @@ export function DashboardLayout() {
               className="fixed inset-0 bg-black/60 backdrop-blur-xs"
               onClick={() => setMobileOpen(false)}
             />
-            <aside className="w-64 bg-background border-r border-sidebar-border flex flex-col h-full relative z-10 animate-in slide-in-from-left duration-250">
+            <aside className="w-64 bg-[#08132D] border-r border-[#132549] flex flex-col h-full relative z-10 animate-in slide-in-from-left duration-250">
               <SidebarContent isMobile={true} />
             </aside>
           </div>
@@ -946,7 +969,7 @@ export function DashboardLayout() {
 
         {/* Main Workspace */}
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-40 h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-4 px-6 justify-between shadow-xs">
+          <header className="sticky top-0 z-40 h-16 bg-[#F4F7FE]/90 dark:bg-slate-950/90 backdrop-blur-md flex items-center gap-4 px-6 justify-between">
             {/* Hamburger Button */}
             <button
               onClick={() => {
@@ -1021,7 +1044,7 @@ export function DashboardLayout() {
               <div className="relative">
                 <button
                   onClick={() => setShowRoleInfo(!showRoleInfo)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r ${role.gradient} cursor-pointer hover:opacity-95 shadow-soft transition`}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-[#0A5BFF] cursor-pointer hover:bg-[#0A5BFF]/90 shadow-sm transition`}
                 >
                   <RoleIcon className="size-3.5" />
                   <span>{role.name}</span>
@@ -1139,7 +1162,7 @@ export function DashboardLayout() {
                           <>
                             <button
                               onClick={() => {
-                                navigate({ to: "/dashboard/admin/alumni/registration" });
+                                navigate({ to: "/admin/alumni/registration" });
                                 setShowNewActions(false);
                               }}
                               className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
@@ -1149,7 +1172,7 @@ export function DashboardLayout() {
                             </button>
                             <button
                               onClick={() => {
-                                navigate({ to: "/dashboard/admin/alumni/events" });
+                                navigate({ to: "/admin/alumni/events" });
                                 setShowNewActions(false);
                               }}
                               className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
@@ -1159,7 +1182,7 @@ export function DashboardLayout() {
                             </button>
                             <button
                               onClick={() => {
-                                navigate({ to: "/dashboard/admin/alumni/donations" });
+                                navigate({ to: "/admin/alumni/donations" });
                                 setShowNewActions(false);
                               }}
                               className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
@@ -1169,7 +1192,7 @@ export function DashboardLayout() {
                             </button>
                             <button
                               onClick={() => {
-                                navigate({ to: "/dashboard/admin/alumni/mentorship" });
+                                navigate({ to: "/admin/alumni/mentorship" });
                                 setShowNewActions(false);
                               }}
                               className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"
@@ -1179,7 +1202,7 @@ export function DashboardLayout() {
                             </button>
                             <button
                               onClick={() => {
-                                navigate({ to: "/dashboard/admin/alumni/announcements" });
+                                navigate({ to: "/admin/alumni/announcements" });
                                 setShowNewActions(false);
                               }}
                               className="w-full text-left px-2.5 py-2 rounded-lg text-xs hover:bg-accent flex items-center gap-2 cursor-pointer transition"

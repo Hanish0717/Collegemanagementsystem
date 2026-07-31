@@ -22,7 +22,7 @@ import {
   StudentFilterModal,
   StudentFormModal,
   StudentVerifyModal,
-} from "./students/StudentDialogs";
+} from "../students/StudentDialogs";
 import {
   createStudent,
   deleteStudent,
@@ -446,7 +446,7 @@ export function StudentsPage() {
                       <td className="px-5 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => navigate({ to: `/dashboard/students/${student.id}` })}
+                            onClick={() => navigate({ to: `/students/${student.id}` })}
                             className="text-indigo text-xs font-medium hover:underline"
                           >
                             View

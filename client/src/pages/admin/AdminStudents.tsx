@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Filter, Plus, Search, UserPlus, Trash2, Edit, Loader2, X, Eye, BookOpen, FileText, Users, UserCheck, CreditCard, Award, GraduationCap, CheckCircle, AlertCircle } from "lucide-react";
 import { Badge, Card, PageHeader } from "@/components/dashboard/ui";
 import { toast } from "sonner";
+import { EduSuiteLogoGraphic } from "@/components/ui/EduSuiteLogo";
 import api from "@/lib/api";
 import {
   fetchStudents,
@@ -1494,8 +1495,8 @@ export function AdminStudents() {
                         
                         {/* Logo header */}
                         <div className="flex items-center gap-1.5 border-b border-indigo-800 pb-2">
-                          <GraduationCap className="size-5 text-cyan-400" />
-                          <span className="text-[9px] font-black tracking-widest uppercase">Campusly University</span>
+                          <EduSuiteLogoGraphic className="size-5" />
+                          <span className="text-[9px] font-black tracking-widest uppercase">EduSuite Pro</span>
                           <Badge className="ml-auto text-[8px] bg-cyan-500 hover:bg-cyan-500 text-white border-0 py-0 px-1">STUDENT</Badge>
                         </div>
 

@@ -36,11 +36,11 @@ export function DeanHome() {
   };
 
   const domainModules = [
-    { label: 'Student Admin', icon: Users, to: '/dashboard/dean/student', color: 'bg-blue-50 border-blue-100 text-blue-700' },
-    { label: 'Examination', icon: BookOpen, to: '/dashboard/dean/examination', color: 'bg-violet-50 border-violet-100 text-violet-700' },
-    { label: 'Academic', icon: Award, to: '/dashboard/dean/academic', color: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
-    { label: 'IMA', icon: Sparkles, to: '/dashboard/dean/ima', color: 'bg-amber-50 border-amber-100 text-amber-700' },
-    { label: 'IQAC', icon: Building2, to: '/dashboard/dean/iqac', color: 'bg-rose-50 border-rose-100 text-rose-700' },
+    { label: 'Student Admin', icon: Users, to: '/dean/student', color: 'bg-blue-50 border-blue-100 text-blue-700' },
+    { label: 'Examination', icon: BookOpen, to: '/dean/examination', color: 'bg-violet-50 border-violet-100 text-violet-700' },
+    { label: 'Academic', icon: Award, to: '/dean/academic', color: 'bg-emerald-50 border-emerald-100 text-emerald-700' },
+    { label: 'IMA', icon: Sparkles, to: '/dean/ima', color: 'bg-amber-50 border-amber-100 text-amber-700' },
+    { label: 'IQAC', icon: Building2, to: '/dean/iqac', color: 'bg-rose-50 border-rose-100 text-rose-700' },
   ];
 
   return (

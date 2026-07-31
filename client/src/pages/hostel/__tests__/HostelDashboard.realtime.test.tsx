@@ -30,9 +30,9 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     ...original,
     useRouterState: (options?: any) => {
       if (options?.select) {
-        return options.select({ location: { pathname: '/dashboard/hostel' } });
+        return options.select({ location: { pathname: '/hostel' } });
       }
-      return { location: { pathname: '/dashboard/hostel' } };
+      return { location: { pathname: '/hostel' } };
     },
     useNavigate: () => vi.fn(),
   };

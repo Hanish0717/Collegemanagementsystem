@@ -54,7 +54,7 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (path !== "/dashboard/admin") return;
+    if (path !== "/admin") return;
 
     const fetchDashboardData = async () => {
       try {
@@ -86,7 +86,7 @@ export function AdminDashboard() {
     fetchDashboardData();
   }, [path]);
 
-  if (path !== "/dashboard/admin") {
+  if (path !== "/admin") {
     return <Outlet />;
   }
 

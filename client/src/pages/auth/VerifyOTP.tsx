@@ -105,15 +105,15 @@ export function VerifyOTP() {
           }
           setSuccess("Email verified! Redirecting to dashboard…");
           const dashboardMap: Record<string, string> = {
-            "super-admin": "/dashboard/super-admin",
-            admin: "/dashboard/admin",
-            faculty: "/dashboard/faculty",
-            student: "/dashboard/student",
-            parent: "/dashboard/parent",
-            librarian: "/dashboard/librarian",
-            "placement-officer": "/dashboard/placement",
-            "hostel-warden": "/dashboard/hostel",
-            "transport-manager": "/dashboard/transport",
+            "super-admin": "/super-admin",
+            admin: "/admin",
+            faculty: "/faculty",
+            student: "/student",
+            parent: "/parent",
+            librarian: "/librarian",
+            "placement-officer": "/placement",
+            "hostel-warden": "/hostel",
+            "transport-manager": "/transport",
           };
           const dashPath = dashboardMap[data.user?.role] || "/dashboard";
           setTimeout(() => navigate({ to: dashPath }), 1500);

@@ -3,7 +3,8 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HOD_NAV_ITEMS } from '../../constants/hodNavigation';
 import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
-import { Building2, ChevronLeft, ChevronRight, GraduationCap, Sparkles, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, GraduationCap, Sparkles, ShieldCheck } from 'lucide-react';
+import { EduSuiteLogoGraphic } from "@/components/ui/EduSuiteLogo";
 
 interface HODSidebarProps {
   collapsed: boolean;
@@ -33,27 +34,26 @@ export function HODSidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMob
 
       {/* Premium Vercel/Linear Sidebar Container */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 bg-slate-900 text-slate-100 border-r border-slate-800/80 shadow-2xl transition-all duration-300 flex flex-col justify-between select-none ${
+        className={`fixed top-0 left-0 bottom-0 z-50 bg-[#08132D] text-slate-100 border-r border-[#132549] shadow-2xl transition-all duration-300 flex flex-col justify-between select-none ${
           collapsed ? 'w-20' : 'w-64'
         } ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         <div>
           {/* Header Branding */}
-          <div className="p-4 flex items-center justify-between border-b border-slate-800/80 h-16 bg-slate-950/40">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="size-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 grid place-items-center text-white shadow-lg shadow-blue-500/25 shrink-0 ring-1 ring-white/20">
-                <Building2 className="size-5" />
-              </div>
+          <div className="p-4 flex items-center justify-between border-b border-[#132549] h-16">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <EduSuiteLogoGraphic className="size-8" />
               {!collapsed && (
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="leading-tight truncate"
                 >
-                  <div className="font-extrabold text-sm tracking-tight text-white flex items-center gap-1.5">
-                    Campusly <span className="px-1.5 py-0.5 text-[9px] rounded-md bg-blue-500/20 text-blue-400 border border-blue-500/30">HOD</span>
+                  <div className="font-extrabold text-sm tracking-tight text-white flex items-center gap-1">
+                    <span>EduSuite</span>
+                    <span className="text-[#0A5BFF]">Pro</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 font-medium truncate">{departmentInfo.name || 'Department ERP'}</div>
+                  <div className="text-[10px] text-slate-400 font-medium truncate">{departmentInfo.name || 'Department ERP'}</div>
                 </motion.div>
               )}
             </div>
@@ -104,8 +104,8 @@ export function HODSidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMob
                   onClick={onCloseMobile}
                   className={`relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group cursor-pointer ${
                     isActive
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-600/25 ring-1 ring-white/20'
-                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
+                      ? 'bg-[#0A5BFF] text-white shadow-md'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-[#122345]'
                   }`}
                   title={collapsed ? item.label : undefined}
                 >
@@ -126,21 +126,27 @@ export function HODSidebar({ collapsed, onToggleCollapse, mobileOpen, onCloseMob
         </div>
 
         {/* Footer User Info */}
-        <div className="p-3 border-t border-slate-800/80 bg-slate-950/40">
+        <div className="p-3 border-t border-[#132549] bg-[#122345]/30">
           {!collapsed ? (
             <div className="flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-800/50 transition">
-              <div className="size-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-500 text-white grid place-items-center font-bold text-xs shadow-md shrink-0 ring-1 ring-white/20">
-                {departmentInfo.headName ? departmentInfo.headName.charAt(0) : 'H'}
+              <div className="relative shrink-0">
+                <div className="size-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-500 text-white grid place-items-center font-bold text-xs shadow-md ring-1 ring-white/20">
+                  {departmentInfo.headName ? departmentInfo.headName.charAt(0) : 'H'}
+                </div>
+                <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border-2 border-[#08132D]" />
               </div>
-              <div className="truncate text-xs">
+              <div className="truncate text-xs text-left">
                 <p className="font-bold text-slate-100 truncate">{departmentInfo.headName || 'HOD Administrator'}</p>
-                <p className="text-[10px] text-slate-400 font-medium truncate">{departmentInfo.email || `hod.${departmentInfo.shortName.toLowerCase()}@college.edu`}</p>
+                <p className="text-[10px] text-slate-400 font-medium truncate">Online</p>
               </div>
             </div>
           ) : (
             <div className="grid place-items-center">
-              <div className="size-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-500 text-white grid place-items-center font-bold text-xs shadow-md ring-1 ring-white/20">
-                {departmentInfo.headName ? departmentInfo.headName.charAt(0) : 'H'}
+              <div className="relative">
+                <div className="size-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-500 text-white grid place-items-center font-bold text-xs shadow-md ring-1 ring-white/20">
+                  {departmentInfo.headName ? departmentInfo.headName.charAt(0) : 'H'}
+                </div>
+                <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border-2 border-[#08132D]" />
               </div>
             </div>
           )}

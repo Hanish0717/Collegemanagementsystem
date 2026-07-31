@@ -333,3 +333,28 @@
 [2026-07-23T10:21:28.775Z] Starting database TCP check for host: 127.0.0.1, port: 5433
 [2026-07-23T10:21:30.329Z] TCP check succeeded for host: 127.0.0.1:5433
 [2026-07-23T10:21:30.334Z] Supabase.js module loading completed successfully!
+[2026-07-30T11:12:10.561Z] Supabase.js module loading starting
+[2026-07-30T11:12:10.595Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-30T11:12:10.595Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-30T11:12:25.867Z] Supabase.js module loading starting
+[2026-07-30T11:12:25.874Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-30T11:12:25.875Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-30T11:13:08.018Z] TCP check error: Connection timed out, stack: Error: Connection timed out
+    at Socket.<anonymous> (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:71:41)
+    at Object.onceWrapper (node:events:630:28)
+    at Socket.emit (node:events:509:28)
+    at Socket._onTimeout (node:net:610:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+[2026-07-30T11:13:08.228Z] Supabase.js module loading completed successfully!
+[2026-07-31T05:13:55.922Z] Supabase.js module loading starting
+[2026-07-31T05:13:55.956Z] databaseUrl: postgresql://postgres:postgres@127.0.0.1:5433/college_management, isMockMode: false
+[2026-07-31T05:13:55.957Z] Starting database TCP check for host: 127.0.0.1, port: 5433
+[2026-07-31T05:14:35.597Z] TCP check error: Connection timed out, stack: Error: Connection timed out
+    at Socket.<anonymous> (file:///F:/Projects/CollegeManagementUpdated/Collegemanagementsystem/server/src/config/supabase.js:71:41)
+    at Object.onceWrapper (node:events:630:28)
+    at Socket.emit (node:events:509:28)
+    at Socket._onTimeout (node:net:610:8)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+[2026-07-31T05:14:35.853Z] Supabase.js module loading completed successfully!

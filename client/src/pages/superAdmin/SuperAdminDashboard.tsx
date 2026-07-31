@@ -93,7 +93,7 @@ export function SuperAdminDashboard() {
   const actLogs = liveStats?.superAdminActivities || [];
   const notifyLogs = liveStats?.superAdminNotifications || [];
 
-  if (path !== "/dashboard/super-admin") {
+  if (path !== "/super-admin") {
     return <Outlet />;
   }
 
