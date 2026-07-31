@@ -281,6 +281,47 @@ async function runMigrations() {
       ALTER TABLE results DROP CONSTRAINT IF EXISTS results_student_subject_semester_exam_key;
       ALTER TABLE results ADD CONSTRAINT results_student_subject_semester_exam_key UNIQUE (student, subject, semester, exam_id);
 
+      -- Create Assessment Management Foundation tables
+      CREATE TABLE IF NOT EXISTS assessments (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        drive_id uuid REFERENCES placement_drives(id) ON DELETE CASCADE NOT NULL,
+        recruiter_id uuid REFERENCES users(id) ON DELETE SET NULL,
+        company_id uuid REFERENCES companies(id) ON DELETE SET NULL,
+        company_name varchar(255),
+        assessment_name varchar(255) NOT NULL,
+        description text,
+        instructions text,
+        passing_marks integer NOT NULL DEFAULT 40,
+        total_marks integer NOT NULL DEFAULT 100,
+        duration integer NOT NULL DEFAULT 60,
+        current_status varchar(50) NOT NULL DEFAULT 'Draft',
+        created_by varchar(255),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+        CONSTRAINT unique_assessment_name_per_drive UNIQUE (drive_id, assessment_name)
+      );
+
+      CREATE TABLE IF NOT EXISTS assessment_status_history (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        assessment_id uuid REFERENCES assessments(id) ON DELETE CASCADE NOT NULL,
+        from_status varchar(50),
+        to_status varchar(50) NOT NULL,
+        changed_by varchar(255),
+        comments text,
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS assessment_timeline (
+        id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+        assessment_id uuid REFERENCES assessments(id) ON DELETE CASCADE NOT NULL,
+        event_type varchar(100) NOT NULL,
+        title varchar(255) NOT NULL,
+        description text,
+        actor_name varchar(255),
+        actor_role varchar(50),
+        created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+      );
+
       -- Advanced Exam Cell Columns
       ALTER TABLE results ADD COLUMN IF NOT EXISTS internal_marks numeric(5,2) DEFAULT 0.00;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS external_marks numeric(5,2) DEFAULT 0.00;

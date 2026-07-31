@@ -626,7 +626,7 @@ if (isMockMode) {
       this.tableName = tableName;
       db = loadDb();
       if (!db[tableName]) { db[tableName] = []; }
-      this._data = db[tableName];
+      this._data = [...(db[tableName] || [])];
       this._error = null;
     }
 

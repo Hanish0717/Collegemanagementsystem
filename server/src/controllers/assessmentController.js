@@ -33,6 +33,11 @@ export const IMMUTABLE_DELETE_STATUSES = [
   'Sent_to_Recruiter'
 ];
 
+export async function getAssessmentsByDrive(req, res) {
+  req.query = { ...req.query, drive_id: req.params.driveId };
+  return getAssessments(req, res);
+}
+
 /**
  * Get all assessments with optional filtering by drive_id, recruiter_id, current_status, or search query
  */
@@ -204,6 +209,8 @@ export async function createAssessment(req, res) {
       .from('assessments')
       .select('*')
       .eq('drive_id', drive_id);
+
+    console.log('DEBUG duplicate check:', (existingSameDrive || []).map(a => a.assessment_name || a.title), 'checking:', name);
 
     const isDuplicate = (existingSameDrive || []).some(
       a => (a.assessment_name || a.title || '').toLowerCase().trim() === name.toLowerCase()
