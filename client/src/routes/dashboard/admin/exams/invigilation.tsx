@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ExamInvigilation } from "@/pages/admin/exams/ExamInvigilation";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard/admin/exams/invigilation")({
-  component: ExamInvigilation,
+  beforeLoad: () => {
+    throw redirect({ to: "/dashboard/admin/exams/timetable" });
+  },
 });

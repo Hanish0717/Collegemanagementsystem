@@ -50,11 +50,25 @@ export function requireRole(...allowedRoles) {
   };
 }
 
+const ROLE_PERMISSIONS = {
+  'super-admin': ['*'],
+  'super_admin': ['*'],
+  'admin': [
+    'Student.View', 'Student.Edit', 'Faculty.View', 'Faculty.Assign',
+    'Department.View', 'Department.Monitor', 'Reports.Export',
+    'Finance.View', 'Notifications.Send', 'Settings.Edit', 'Approvals.Manage'
+  ],
+  'principal': [
+    'Student.View', 'Faculty.View', 'Department.View', 'Department.Monitor',
+    'Reports.Export', 'Finance.View', 'Notifications.Send', 'Approvals.Manage'
+  ],
+  'faculty': ['Student.View', 'Faculty.View', 'Attendance.Mark', 'Marks.Entry'],
+  'student': ['Student.View', 'Course.Register', 'Results.View', 'Fees.View'],
+  'parent': ['Student.View', 'Attendance.View', 'Fees.View', 'Results.View']
+};
+
 /**
  * requirePermission — Authorize by permission slug(s)
- * 
- * Stub implementation that allows all permissions for admins/super-admins,
- * and standard check if roles match.
  */
 export function requirePermission(...requiredPermissions) {
   return async (req, res, next) => {
@@ -67,15 +81,22 @@ export function requirePermission(...requiredPermissions) {
 
       const userRole = req.user.role || req.user.role_name;
 
-      // Super-admin / admin can do anything in this stubbed permission check
-      if (userRole === 'super-admin' || userRole === 'admin') {
+      if (userRole === 'super-admin' || userRole === 'super_admin') {
         return next();
       }
 
-      // Forbidden for others
-      const error = new Error(`Forbidden: You don't have permission to perform this action`);
-      error.statusCode = 403;
-      return next(error);
+      const permissions = ROLE_PERMISSIONS[userRole] || [];
+      const hasPermission = requiredPermissions.every(p =>
+        permissions.includes('*') || permissions.includes(p)
+      );
+
+      if (!hasPermission) {
+        const error = new Error(`Forbidden: You lack permission (${requiredPermissions.join(', ')})`);
+        error.statusCode = 403;
+        return next(error);
+      }
+
+      next();
     } catch (error) {
       next(error);
     }

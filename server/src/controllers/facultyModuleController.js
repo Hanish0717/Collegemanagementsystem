@@ -4,8 +4,29 @@ import { dispatchNotification } from '../services/notificationService.js';
 // @desc    Get faculty dashboard stats
 // @route   GET /api/faculty-module/dashboard
 // @access  Private (faculty)
+// Helper to resolve faculty profile safely
+const getFacultyProfile = async (user) => {
+  const isUuid = (val) => /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val);
+  
+  let query = supabase.from('faculty').select('*');
+  if (isUuid(user.id || user._id)) {
+    query = query.eq('user_id', user.id || user._id);
+  } else {
+    query = query.eq('email', user.email);
+  }
+  const { data: facultyMember } = await query.maybeSingle();
+  return facultyMember;
+};
+
+// @desc    Get faculty dashboard stats
+// @route   GET /api/faculty-module/dashboard
+// @access  Private (faculty)
 export const getFacultyDashboard = async (req, res, next) => {
   try {
+    const facultyMember = await getFacultyProfile(req.user);
+    const dbUserId = facultyMember?.user_id || req.user.id || req.user._id;
+    const dbFacultyId = facultyMember?.id;
+
     // 1. Get students count
     const { count: studentsCount } = await supabase
       .from('students')
@@ -13,16 +34,18 @@ export const getFacultyDashboard = async (req, res, next) => {
       .eq('is_active', true);
 
     // 2. Get study materials count
-    const { count: materialsCount } = await supabase
-      .from('study_materials')
-      .select('*', { count: 'exact', head: true })
-      .eq('faculty', req.user.id || req.user._id);
+    const { count: materialsCount } = dbFacultyId 
+      ? await supabase
+          .from('study_materials')
+          .select('*', { count: 'exact', head: true })
+          .eq('faculty', dbFacultyId)
+      : { count: 0 };
 
     // 3. Get pending leave requests
     const { data: leaveRequests } = await supabase
       .from('leave_requests')
       .select('*')
-      .eq('user_id', req.user.id || req.user._id);
+      .eq('user_id', dbUserId);
 
     const pendingLeave = leaveRequests ? leaveRequests.filter(r => r.status === 'Pending').length : 0;
 
@@ -34,12 +57,14 @@ export const getFacultyDashboard = async (req, res, next) => {
 
     // Fetch dynamic activities
     const activities = [];
-    const { data: recentMaterials } = await supabase
-      .from('study_materials')
-      .select('*')
-      .eq('faculty', req.user.id || req.user._id)
-      .order('created_at', { ascending: false })
-      .limit(2);
+    const recentMaterials = dbFacultyId 
+      ? (await supabase
+          .from('study_materials')
+          .select('*')
+          .eq('faculty', dbFacultyId)
+          .order('created_at', { ascending: false })
+          .limit(2)).data
+      : null;
 
     if (recentMaterials) {
       recentMaterials.forEach(m => {
@@ -52,7 +77,6 @@ export const getFacultyDashboard = async (req, res, next) => {
         });
       });
     }
-
 
     if (activities.length === 0) {
       activities.push({
@@ -90,7 +114,6 @@ export const getFacultyDashboard = async (req, res, next) => {
       });
     }
 
-
     // Calculate weekly attendance trend
     const attendanceStats = [];
     const { data: attRecords } = await supabase
@@ -117,13 +140,6 @@ export const getFacultyDashboard = async (req, res, next) => {
         attendanceStats.push({ day: dayName, percentage: pct });
       });
     }
-
-    // 0. Get faculty profile
-    const { data: facultyMember } = await supabase
-      .from('faculty')
-      .select('*')
-      .eq('user_id', req.user.id || req.user._id)
-      .maybeSingle();
 
     const profile = facultyMember ? {
       ...facultyMember,
@@ -742,6 +758,171 @@ export const updateStudentLeaveRequestStatus = async (req, res, next) => {
         _id: updatedRequest.id
       }
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get internal mid marks for course cohort
+// @route   GET /api/faculty-module/internal-marks
+// @access  Private (faculty)
+export const getFacultyInternalMarks = async (req, res, next) => {
+  try {
+    const { course_id, department, year, semester } = req.query;
+    if (!course_id) {
+      return res.status(400).json({ success: false, message: 'course_id query parameter is required' });
+    }
+
+    // 1. Fetch course details
+    let courseQuery = supabase.from('courses').select('*');
+    if (course_id.includes('-') || course_id.length > 10) {
+      courseQuery = courseQuery.eq('id', course_id);
+    } else {
+      courseQuery = courseQuery.eq('course_code', course_id);
+    }
+    const { data: course } = await courseQuery.maybeSingle();
+
+    if (!course) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+
+    // 2. Fetch all student course registrations for this course
+    console.log(`[getFacultyInternalMarks] Querying registrations for course: ${course.id}`);
+    const { data: enrollments } = await supabase
+      .from('student_course_registrations')
+      .select('student_id')
+      .eq('course_id', course.id);
+
+    const studentIds = enrollments?.map(e => e.student_id).filter(Boolean) || [];
+    console.log(`[getFacultyInternalMarks] Found student IDs:`, studentIds);
+
+    let studentList = [];
+    if (studentIds.length > 0) {
+      const { data: students } = await supabase
+        .from('students')
+        .select('*')
+        .in('id', studentIds);
+      studentList = students || [];
+    }
+
+    if (studentList.length === 0) {
+      // Fallback: Fetch all active students matching course department, year, semester
+      console.log(`[getFacultyInternalMarks] Falling back to cohort query for CSE Dept, Year: ${course.year || 1}, Sem: ${course.semester || 1}`);
+      const { data: fallbackStudents } = await supabase
+        .from('students')
+        .select('*')
+        .eq('department', course.department || department || 'CSE')
+        .eq('year', Number(course.year || year || 1))
+        .eq('semester', Number(course.semester || semester || 1))
+        .eq('is_active', true);
+      
+      studentList = fallbackStudents || [];
+    }
+    console.log(`[getFacultyInternalMarks] Final studentList count:`, studentList.length);
+
+    // 3. Fetch existing results/marks for this subject/course (must be course-level where exam_id is null)
+    const { data: existingResults } = await supabase
+      .from('results')
+      .select('*')
+      .eq('subject', course.course_name)
+      .eq('semester', Number(course.semester || semester || 1))
+      .is('exam_id', null);
+
+    // 4. Map students to internal marks schema
+    const data = studentList.map(s => {
+      const resRecord = existingResults?.find(r => r.student === s.user_id || r.student === s.id);
+      return {
+        student_id: s.id,
+        student_name: s.full_name,
+        roll_number: s.roll_number,
+        mid1_marks: Number(resRecord?.mid1_marks || 0),
+        mid2_marks: Number(resRecord?.mid2_marks || 0),
+        assignment_marks: Number(resRecord?.assignment_marks || 0),
+        total_internal: Number(resRecord?.internal_marks || 0),
+        status: resRecord ? (resRecord.status || 'assigned') : 'Pending'
+      };
+    });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Save/upload internal mid marks for course cohort
+// @route   POST /api/faculty-module/internal-marks
+// @access  Private (faculty)
+export const saveFacultyInternalMarks = async (req, res, next) => {
+  try {
+    const { course_id, semester, marks_data } = req.body;
+    if (!course_id || !marks_data || !Array.isArray(marks_data)) {
+      return res.status(400).json({ success: false, message: 'course_id and marks_data array are required' });
+    }
+
+    // 1. Fetch course details
+    let courseQuery = supabase.from('courses').select('*');
+    if (course_id.includes('-') || course_id.length > 10) {
+      courseQuery = courseQuery.eq('id', course_id);
+    } else {
+      courseQuery = courseQuery.eq('course_code', course_id);
+    }
+    const { data: course } = await courseQuery.maybeSingle();
+
+    if (!course) {
+      return res.status(404).json({ success: false, message: 'Course not found' });
+    }
+
+    // 2. Upsert results/marks for each student
+    for (const record of marks_data) {
+      const { data: student } = await supabase
+        .from('students')
+        .select('user_id, id')
+        .eq('id', record.student_id)
+        .maybeSingle();
+
+      if (student) {
+        const studentIdentifier = student.user_id || student.id;
+        const { data: existing } = await supabase
+          .from('results')
+          .select('*')
+          .eq('student', studentIdentifier)
+          .eq('subject', course.course_name)
+          .is('exam_id', null)
+          .maybeSingle();
+ 
+        if (existing) {
+          await supabase
+            .from('results')
+            .update({
+              mid1_marks: record.mid1_marks,
+              mid2_marks: 0,
+              assignment_marks: record.assignment_marks,
+              internal_marks: record.total_internal,
+              marks: record.total_internal,
+              status: 'assigned'
+            })
+            .eq('id', existing.id);
+        } else {
+          await supabase
+            .from('results')
+            .insert({
+              student: studentIdentifier,
+              subject: course.course_name,
+              credits: parseInt(course.credits || 4, 10),
+              semester: course.semester || semester || 1,
+              mid1_marks: record.mid1_marks,
+              mid2_marks: 0,
+              assignment_marks: record.assignment_marks,
+              internal_marks: record.total_internal,
+              marks: record.total_internal,
+              grade: 'Pending',
+              status: 'assigned'
+            });
+        }
+      }
+    }
+
+    res.status(200).json({ success: true, message: 'Internal marks saved successfully' });
   } catch (error) {
     next(error);
   }

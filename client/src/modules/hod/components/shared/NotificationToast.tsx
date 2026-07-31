@@ -17,4 +17,9 @@ export const NotificationToast = {
       description: message,
     });
   },
+  warning: (title: string, message?: string) => {
+    toast.warning(title, {
+      description: message,
+    });
+  },
 };

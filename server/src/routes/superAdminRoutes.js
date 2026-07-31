@@ -46,6 +46,8 @@ import { requireRole } from '../middleware/rbacMiddleware.js';
 const router = express.Router();
 
 router.get('/dashboard/stats', protect, requireRole('super-admin'), getSuperAdminStats);
+router.get('/departments', protect, requireRole('super-admin', 'admin', 'principal'), getDepartments);
+router.get('/users', protect, requireRole('super-admin', 'admin', 'principal'), getUsers);
 
 router.use(protect);
 router.use(requireRole('super-admin'));

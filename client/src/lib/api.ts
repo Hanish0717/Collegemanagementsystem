@@ -16,7 +16,6 @@ const getApiBaseUrl = () => {
       return "https://loud-things-accept.loca.lt";
     }
     if (hostname && (hostname.includes("ngrok-free.app") || hostname.includes("ngrok.io"))) {
-      // When using ngrok, replace this with your backend ngrok tunnel URL
       return "YOUR_BACKEND_NGROK_URL";
     }
     // Map localhost/127.0.0.1 to localhost, otherwise use current LAN IP/hostname
@@ -68,15 +67,9 @@ api.interceptors.response.use(
           originalRequest.method || "get",
           originalRequest.data ? (typeof originalRequest.data === "string" ? JSON.parse(originalRequest.data) : originalRequest.data) : undefined
         );
-        return {
-          data: mockResult,
-          status: 200,
-          statusText: "OK",
-          headers: {},
-          config: originalRequest
-        };
+        return { data: mockResult, status: 200, statusText: "OK", headers: {}, config: originalRequest };
       } catch (mockErr) {
-        console.error("Mock handler error:", mockErr);
+        console.error("Mock handler error on 401/network error:", mockErr);
       }
     }
 
@@ -133,7 +126,22 @@ api.interceptors.response.use(
         }
       }
     } else if (err.response?.status === 403) {
-      toast.error("Access denied.");
+      // Prevent showing false "Access denied" toast if an in-flight background query hits a 403 right after switching roles
+      if (typeof window !== "undefined") {
+        const activeRole = localStorage.getItem("campusly.role");
+        const reqUrl = (originalRequest.url || "").toLowerCase();
+
+        const isRoleMismatch =
+          (activeRole === "student" && (reqUrl.includes("/faculty") || reqUrl.includes("/admin") || reqUrl.includes("/hod") || reqUrl.includes("/dean"))) ||
+          (activeRole === "faculty" && (reqUrl.includes("/admin") || reqUrl.includes("/super-admin") || reqUrl.includes("/alumni"))) ||
+          (activeRole === "parent" && (reqUrl.includes("/faculty") || reqUrl.includes("/admin") || reqUrl.includes("/hod")));
+
+        if (!isRoleMismatch) {
+          toast.error("Access denied.");
+        }
+      } else {
+        toast.error("Access denied.");
+      }
     }
     return Promise.reject(err);
   },

@@ -47,9 +47,9 @@ if (!isMockMode && databaseUrl) {
     debugLog("Starting database TCP check for host: " + host + ", port: " + port);
 
     // Check TCP connectivity for ALL hosts (including localhost/127.0.0.1) with retries
-    let portReachable = false;
+    let portReachableError = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
-      portReachable = await new Promise((resolve) => {
+      portReachableError = await new Promise((resolve) => {
         const socket = new net.Socket();
         let isResolved = false;
 
@@ -61,31 +61,31 @@ if (!isMockMode && databaseUrl) {
           socket.destroy();
         };
 
-        const done = (status) => {
+        const done = (err) => {
           if (isResolved) return;
           isResolved = true;
           cleanup();
-          resolve(status);
+          resolve(err);
         };
 
-        socket.setTimeout(8000);
-        socket.once('connect', () => done(true));
-        socket.once('timeout', () => done(false));
-        socket.once('error', () => done(false));
+        socket.setTimeout(4000);
+        socket.once('connect', () => done(null));
+        socket.once('timeout', () => done(new Error('Connection timed out')));
+        socket.once('error', (err) => done(err));
 
         try {
           socket.connect(port, host);
         } catch (e) {
-          done(false);
+          done(e);
         }
       });
 
-      if (portReachable) break;
+      if (!portReachableError) break;
       if (attempt < 3) await new Promise((r) => setTimeout(r, 500));
     }
 
-    if (!portReachable) {
-      throw new Error(`TCP port ${port} on ${host} is unreachable (ECONNREFUSED or timeout)`);
+    if (portReachableError) {
+      throw portReachableError;
     }
     debugLog("TCP check succeeded for host: " + host + ":" + port);
   } catch (err) {
@@ -865,6 +865,15 @@ if (isMockMode) {
       return this;
     }
 
+    is(column, value) {
+      if (value === null) {
+        this.conditions.push({ column: `t.${column}`, operator: 'IS NULL', value: undefined });
+      } else {
+        this.conditions.push({ column: `t.${column}`, operator: '=', value });
+      }
+      return this;
+    }
+
     in(column, values) {
       this.conditions.push({ column: `t.${column}`, operator: 'IN', value: values });
       return this;
@@ -929,6 +938,8 @@ if (isMockMode) {
             }
           } else if (c.operator === 'IS NOT NULL') {
             parts.push(`${c.column} IS NOT NULL`);
+          } else if (c.operator === 'IS NULL') {
+            parts.push(`${c.column} IS NULL`);
           } else {
             params.push(c.value);
             parts.push(`${c.column} ${c.operator} $${paramCounter++}`);
@@ -1063,7 +1074,7 @@ if (isMockMode) {
 
           if (this.selectString.includes(':')) {
             const relations = [];
-            const matches = this.selectString.matchAll(/(\w+):(\w+)\(\*\)/g);
+            const matches = this.selectString.matchAll(/(\w+):(\w+)\(([^)]+)\)/g);
             for (const m of matches) {
               relations.push({ fieldName: m[1], relationTable: m[2] });
             }

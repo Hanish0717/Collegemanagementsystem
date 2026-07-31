@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { StudentPlatformUpdates } from "@/pages/student/StudentPlatformUpdates";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard/student/updates")({
-  component: StudentPlatformUpdates,
+  beforeLoad: () => {
+    throw redirect({ to: "/dashboard/student/notifications" });
+  },
 });

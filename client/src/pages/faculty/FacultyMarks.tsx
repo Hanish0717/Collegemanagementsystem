@@ -12,6 +12,19 @@ export function FacultyMarks() {
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [search, setSearch] = useState('');
   const [studentsMarks, setStudentsMarks] = useState<any[]>([]);
+  const [unlockedStudents, setUnlockedStudents] = useState<Set<string>>(new Set());
+
+  const handleUnlock = (studentId: string) => {
+    setUnlockedStudents(prev => {
+      const next = new Set(prev);
+      if (next.has(studentId)) {
+        next.delete(studentId);
+      } else {
+        next.add(studentId);
+      }
+      return next;
+    });
+  };
 
   // 1. Fetch Offered Courses
   const { data: coursesList = [] } = useQuery({
@@ -44,16 +57,16 @@ export function FacultyMarks() {
 
   // Handle Score Input Change
   const handleScoreChange = (studentId: string, field: string, val: string) => {
-    const num = Math.max(0, Number(val) || 0);
+    const maxVal = field === 'mid1_marks' ? 20 : 10;
+    const num = Math.min(maxVal, Math.max(0, Number(val) || 0));
     setStudentsMarks(prev => prev.map(s => {
       if (s.student_id === studentId) {
         const updated = { ...s, [field]: num };
-        const m1 = field === 'mid1_marks' ? num : Number(updated.mid1_marks || 0);
-        const m2 = field === 'mid2_marks' ? num : Number(updated.mid2_marks || 0);
+        const mid = field === 'mid1_marks' ? num : Number(updated.mid1_marks || 0);
         const ass = field === 'assignment_marks' ? num : Number(updated.assignment_marks || 0);
         
-        // Auto compute Internal Score out of 30: (Mid1 + Mid2)/2 + Assignment
-        const calcInternal = Math.min(30, Math.round((((m1 + m2) / 2) + ass) * 100) / 100);
+        // Auto compute Internal Score out of 30: Mid Marks (Max 20) + Assignment (Max 10)
+        const calcInternal = Math.min(30, Math.round((mid + ass) * 100) / 100);
         return { ...updated, total_internal: calcInternal };
       }
       return s;
@@ -73,6 +86,7 @@ export function FacultyMarks() {
       return data;
     },
     onSuccess: () => {
+      setUnlockedStudents(new Set());
       refetch();
       toast.success('Internal mid marks saved successfully!');
     },
@@ -86,14 +100,14 @@ export function FacultyMarks() {
     (s.roll_number || '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalSubmitted = studentsMarks.filter(s => s.status === 'Submitted').length;
+  const totalSubmitted = studentsMarks.filter(s => s.status && s.status.toLowerCase() !== 'pending').length;
   const totalPending = studentsMarks.length - totalSubmitted;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Faculty Internal Mid Marks Entry"
-        desc="Enter Mid-1 (15M), Mid-2 (15M), and Assignment (5M) marks. System automatically computes 30M Internal Score."
+        desc="Enter Mid Marks (20M) and Assignment (10M) marks. System automatically computes 30M Internal Score."
       />
 
       {/* Filter Header */}
@@ -213,7 +227,7 @@ export function FacultyMarks() {
           </div>
 
           <Badge tone="info" className="text-xs font-bold">
-            Internal Rule: (Mid1 + Mid2)/2 + Assignment (Max 30)
+            Internal Rule: Mid Marks (Max 20) + Assignment (Max 10)
           </Badge>
         </div>
 
@@ -223,86 +237,96 @@ export function FacultyMarks() {
               <tr>
                 <th className="px-4 py-3">Roll No.</th>
                 <th className="px-4 py-3">Student Name</th>
-                <th className="px-4 py-3 text-center">Mid-1 (Max 15)</th>
-                <th className="px-4 py-3 text-center">Mid-2 (Max 15)</th>
-                <th className="px-4 py-3 text-center">Assignment (Max 5)</th>
+                <th className="px-4 py-3 text-center">Mid Marks (Max 20)</th>
+                <th className="px-4 py-3 text-center">Assignment (Max 10)</th>
                 <th className="px-4 py-3 text-center">Internal Score (Max 30)</th>
-                <th className="px-4 py-3 text-center">Status</th>
+                <th className="px-4 py-3 text-center">Status / Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-slate-800">
               {isMarksLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-slate-400">Loading student roster...</td>
+                  <td colSpan={6} className="text-center py-8 text-slate-400">Loading student roster...</td>
                 </tr>
               ) : filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-8 text-slate-400">No students found for this cohort.</td>
+                  <td colSpan={6} className="text-center py-8 text-slate-400">No students found for this cohort.</td>
                 </tr>
               ) : (
-                filteredStudents.map(s => (
-                  <tr key={s.student_id} className="hover:bg-slate-50/80 transition">
-                    <td className="px-4 py-3 font-mono font-bold text-indigo-700">{s.roll_number}</td>
-                    <td className="px-4 py-3 font-semibold text-slate-900">{s.student_name}</td>
-                    
-                    {/* Mid 1 Input */}
-                    <td className="px-4 py-3 text-center">
-                      <input
-                        type="number"
-                        min="0"
-                        max="15"
-                        step="0.5"
-                        value={s.mid1_marks !== undefined ? s.mid1_marks : ''}
-                        onChange={e => handleScoreChange(s.student_id, 'mid1_marks', e.target.value)}
-                        className="w-20 text-center font-bold border border-slate-300 rounded-lg py-1 px-2 focus:border-indigo-600 bg-slate-50/50 outline-none"
-                      />
-                    </td>
-
-                    {/* Mid 2 Input */}
-                    <td className="px-4 py-3 text-center">
-                      <input
-                        type="number"
-                        min="0"
-                        max="15"
-                        step="0.5"
-                        value={s.mid2_marks !== undefined ? s.mid2_marks : ''}
-                        onChange={e => handleScoreChange(s.student_id, 'mid2_marks', e.target.value)}
-                        className="w-20 text-center font-bold border border-slate-300 rounded-lg py-1 px-2 focus:border-indigo-600 bg-slate-50/50 outline-none"
-                      />
-                    </td>
-
-                    {/* Assignment Input */}
-                    <td className="px-4 py-3 text-center">
-                      <input
-                        type="number"
-                        min="0"
-                        max="5"
-                        step="0.5"
-                        value={s.assignment_marks !== undefined ? s.assignment_marks : ''}
-                        onChange={e => handleScoreChange(s.student_id, 'assignment_marks', e.target.value)}
-                        className="w-20 text-center font-bold border border-slate-300 rounded-lg py-1 px-2 focus:border-indigo-600 bg-slate-50/50 outline-none"
-                      />
-                    </td>
-
-                    {/* Calculated Internal Total */}
-                    <td className="px-4 py-3 text-center font-extrabold text-sm text-indigo-900 bg-indigo-50/50">
-                      {s.total_internal} / 30
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-4 py-3 text-center">
-                      {s.status === 'Submitted' ? (
-                        <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full inline-flex items-center gap-1">
-                          ✓ Saved
-                        </span>
-                      ) : (
-                        <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full inline-flex items-center gap-1">
-                          Pending
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))
+                filteredStudents.map(s => {
+                  const isSaved = s.status && s.status.toLowerCase() !== 'pending';
+                  const isLocked = isSaved && !unlockedStudents.has(s.student_id);
+ 
+                  return (
+                    <tr key={s.student_id} className="hover:bg-slate-50/80 transition">
+                      <td className="px-4 py-3 font-mono font-bold text-indigo-700">{s.roll_number}</td>
+                      <td className="px-4 py-3 font-semibold text-slate-900">{s.student_name}</td>
+                      
+                      {/* Mid Marks Input */}
+                      <td className="px-4 py-3 text-center">
+                        <input
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.5"
+                          disabled={isLocked}
+                          value={s.mid1_marks !== undefined ? s.mid1_marks : ''}
+                          onChange={e => handleScoreChange(s.student_id, 'mid1_marks', e.target.value)}
+                          className={`w-24 text-center font-bold border rounded-lg py-1 px-2 focus:border-indigo-600 outline-none transition ${
+                            isLocked 
+                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' 
+                              : 'bg-slate-50/50 border-slate-300'
+                          }`}
+                        />
+                      </td>
+ 
+                      {/* Assignment Input */}
+                      <td className="px-4 py-3 text-center">
+                        <input
+                          type="number"
+                          min="0"
+                          max="10"
+                          step="0.5"
+                          disabled={isLocked}
+                          value={s.assignment_marks !== undefined ? s.assignment_marks : ''}
+                          onChange={e => handleScoreChange(s.student_id, 'assignment_marks', e.target.value)}
+                          className={`w-24 text-center font-bold border rounded-lg py-1 px-2 focus:border-indigo-600 outline-none transition ${
+                            isLocked 
+                              ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' 
+                              : 'bg-slate-50/50 border-slate-300'
+                          }`}
+                        />
+                      </td>
+ 
+                      {/* Calculated Internal Total */}
+                      <td className="px-4 py-3 text-center font-extrabold text-sm text-indigo-900 bg-indigo-50/50">
+                        {s.total_internal} / 30
+                      </td>
+ 
+                      {/* Status & Action */}
+                      <td className="px-4 py-3 text-center">
+                        {isSaved ? (
+                          <div className="flex items-center justify-center gap-1.5">
+                            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+                              ✓ Assigned
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleUnlock(s.student_id)}
+                              className="px-2 py-0.5 border border-indigo-200 text-indigo-700 hover:bg-indigo-600 hover:text-white rounded text-[10px] font-bold transition cursor-pointer"
+                            >
+                              {unlockedStudents.has(s.student_id) ? "Lock" : "Modify"}
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full inline-flex items-center gap-1">
+                            Pending
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

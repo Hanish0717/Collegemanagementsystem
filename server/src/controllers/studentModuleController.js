@@ -313,21 +313,55 @@ export const getStudentTimetable = async (req, res, next) => {
 // @access  Private (student)
 export const getStudentResults = async (req, res, next) => {
   try {
-    const { data: results } = await supabase
-      .from('results')
+    // 1. Resolve student profile
+    const { data: student } = await supabase
+      .from('students')
       .select('*')
-      .eq('student', req.user.id || req.user._id);
+      .eq('user_id', req.user.id || req.user._id)
+      .maybeSingle();
 
-    if (!results) {
-      return res.status(200).json({ success: true, data: [] });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
     }
 
-    const formatted = results.map(r => ({
-      ...r,
-      _id: r.id
-    }));
+    // 2. Check if semester results are published
+    let summaryQuery = supabase
+      .from('results')
+      .select('*')
+      .eq('semester', student.semester)
+      .not('exam_id', 'is', null);
 
-    return res.status(200).json({ success: true, data: formatted });
+    if (student.user_id) {
+      summaryQuery = summaryQuery.or(`student.eq.${student.user_id},student.eq.${student.id}`);
+    } else {
+      summaryQuery = summaryQuery.eq('student', student.id);
+    }
+    const { data: examSummary } = await summaryQuery.maybeSingle();
+
+    const isPublished = examSummary?.is_published || false;
+
+    // 3. Fetch course-specific results (where exam_id is null)
+    let subjectQuery = supabase
+      .from('results')
+      .select('*')
+      .eq('semester', student.semester)
+      .is('exam_id', null);
+
+    if (student.user_id) {
+      subjectQuery = subjectQuery.or(`student.eq.${student.user_id},student.eq.${student.id}`);
+    } else {
+      subjectQuery = subjectQuery.eq('student', student.id);
+    }
+    const { data: subjectResults } = await subjectQuery;
+
+    // Only return results if the administrator has published them
+    const finalResults = isPublished ? (subjectResults || []) : [];
+
+    res.status(200).json({
+      success: true,
+      student,
+      data: finalResults
+    });
   } catch (error) {
     next(error);
   }
@@ -835,6 +869,124 @@ export const deleteStudentNotification = async (req, res, next) => {
 
     if (error) throw error;
     res.status(200).json({ success: true, message: 'Notification deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get student hall ticket
+// @route   GET /api/student-module/hall-ticket
+// @access  Private (student)
+export const getStudentHallTicket = async (req, res, next) => {
+  try {
+    const profile = await getProfile(req.user.id || req.user._id, req.user.email);
+    if (!profile) {
+      return res.status(404).json({ success: false, message: 'Student profile not found' });
+    }
+
+    // 1. Try to fetch approved hall ticket from the database
+    const { data: dbTicket } = await supabase
+      .from('hall_tickets')
+      .select('*')
+      .eq('student_id', profile.id)
+      .eq('status', 'Approved')
+      .maybeSingle();
+
+    // 2. Fetch all exams matching student's department, year, semester
+    const { data: examsList } = await supabase
+      .from('exams')
+      .select('id')
+      .eq('department', profile.department || 'CSE')
+      .eq('year', Number(profile.year || 1))
+      .eq('semester', Number(profile.semester || 1));
+
+    const examIds = examsList?.map(e => e.id) || [];
+
+    // 3. Fetch published timetables for these exams
+    const { data: publishedSlots } = examIds.length > 0
+      ? await supabase
+          .from('exam_timetables')
+          .select('*')
+          .in('exam_id', examIds)
+      : { data: [] };
+
+    // 4. Fetch student's exam registrations to see which subjects they are registered for exams
+    const { data: examRegistrations } = await supabase
+      .from('exam_registrations')
+      .select('course_id')
+      .eq('student_id', profile.id);
+
+    // 5. Map registered course IDs for quick lookup
+    const registeredSet = new Set(examRegistrations?.map(c => c.course_id) || []);
+
+    // 6. Fetch courses from the database matching the student's registrations
+    const { data: registeredCoursesList } = await supabase
+      .from('courses')
+      .select('*')
+      .in('id', Array.from(registeredSet));
+
+    // Determine target exam schedule list
+    const scheduleList = [];
+
+    if (registeredCoursesList && registeredCoursesList.length > 0) {
+      registeredCoursesList.forEach((course, idx) => {
+        const courseCode = course.course_code || course.code;
+        const courseName = course.course_name || course.name;
+
+        // Find matching published slot in exam_timetables
+        const matchingSlot = publishedSlots?.find(slot => {
+          const codeMatch = slot.subject.match(/\(([^)]+)\)/);
+          const subjectCode = codeMatch ? codeMatch[1] : slot.subject;
+          return subjectCode === courseCode;
+        });
+
+        // Split halls if multiple
+        const roomName = matchingSlot?.hall || dbTicket?.center_name || "Block B - Central Examination Building, Hall 204";
+
+        let dateStr = `2026-11-${15 + idx * 3}`;
+        if (matchingSlot?.date) {
+          try {
+            dateStr = typeof matchingSlot.date === 'string'
+              ? matchingSlot.date.split('T')[0]
+              : new Date(matchingSlot.date).toISOString().split('T')[0];
+          } catch (e) {}
+        }
+
+        scheduleList.push({
+          code: courseCode,
+          subject: courseName,
+          date: dateStr,
+          time: matchingSlot?.time || "10:00 AM - 01:00 PM",
+          room: roomName,
+          seatNo: dbTicket?.seat_number || `S-${Math.floor(100 + Math.random() * 900)}`
+        });
+      });
+    }
+
+    let issuedDateStr = "2026-07-20";
+    if (dbTicket && dbTicket.created_at) {
+      try {
+        issuedDateStr = typeof dbTicket.created_at === 'string'
+          ? dbTicket.created_at.split('T')[0]
+          : new Date(dbTicket.created_at).toISOString().split('T')[0];
+      } catch (e) {}
+    }
+
+    // Assemble the complete ticket object
+    const ticketData = {
+      examSession: "Nov - Dec 2026 Regular End-Sem Examinations",
+      hallTicketNumber: dbTicket?.hall_ticket_number || `HT-${profile.roll_number || '2023CSE042'}-S${profile.semester || 1}`,
+      studentName: profile.full_name || profile.fullName,
+      rollNumber: profile.roll_number || profile.rollNumber || '2023CSE042',
+      department: profile.department || 'Computer Science & Engineering',
+      semester: String(profile.semester || 1),
+      centerName: dbTicket?.center_name || `Block B - Central Examination Building, Hall 204`,
+      issuedDate: issuedDateStr,
+      status: dbTicket?.status || "Approved",
+      examSchedule: scheduleList
+    };
+
+    res.status(200).json({ success: true, data: ticketData });
   } catch (error) {
     next(error);
   }

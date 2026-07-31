@@ -130,31 +130,34 @@ export const protect = async (req, res, next) => {
 
       let user = null;
 
-      const isUUID = typeof decoded.id === 'string' &&
-        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(decoded.id);
+      if (decoded.id || decoded.email) {
+        try {
+          let query = supabase.from('users').select('*');
+          if (decoded.id && decoded.email) {
+            query = query.or(`id.eq.${decoded.id},email.eq.${decoded.email}`);
+          } else if (decoded.id) {
+            query = query.eq('id', decoded.id);
+          } else {
+            query = query.eq('email', decoded.email);
+          }
+          const { data } = await query.maybeSingle();
 
-      if (isUUID) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', decoded.id)
-          .single();
-
-        if (data && !error) {
-          const normalizedRole = normalizeRole(data.role || decoded.role);
-          user = {
-            ...data,
-            role: normalizedRole,
-            role_name: normalizedRole,
-            _id: data.id,
-            isActive: data.is_active,
-            isVerified: data.is_verified,
-            fullName: data.full_name,
-            phoneNumber: data.phone_number,
-            childEmail: data.child_email,
-            toObject: function () { return this; },
-          };
-        }
+          if (data) {
+            const normalizedRole = normalizeRole(data.role || decoded.role);
+            user = {
+              ...data,
+              role: normalizedRole,
+              role_name: normalizedRole,
+              _id: data.id,
+              isActive: data.is_active ?? true,
+              isVerified: data.is_verified ?? true,
+              fullName: data.full_name || data.name,
+              phoneNumber: data.phone_number,
+              childEmail: data.child_email,
+              toObject: function () { return this; },
+            };
+          }
+        } catch (e) {}
       }
 
       if (!user && (decoded.role === 'company_recruiter' || decoded.role === 'company-recruiter' || String(decoded.id || '').startsWith('rec'))) {
@@ -205,6 +208,34 @@ export const protect = async (req, res, next) => {
             isVerified: true,
             toObject: function () { return this; },
           };
+        } else if (decoded.email) {
+          const demoEmailRoleMap = {
+            'principal@college.com': { name: 'Principal Office', role: 'principal' },
+            'dean@college.com': { name: 'Dean Academics Office', role: 'dean' },
+            'hod@college.com': { name: 'HOD CSE Dept', role: 'hod' },
+            'examcell@college.com': { name: 'Exam Cell Office', role: 'exam-cell' },
+            'accounts@college.com': { name: 'Accounts Office', role: 'accounts' },
+            'superadmin@college.com': { name: 'Super Admin', role: 'super-admin' },
+            'admin@college.com': { name: 'System Admin', role: 'admin' },
+          };
+
+          const demoUser = demoEmailRoleMap[decoded.email.toLowerCase().trim()];
+          if (demoUser) {
+            user = {
+              id: decoded.id || 'demo_' + demoUser.role,
+              _id: decoded.id || 'demo_' + demoUser.role,
+              full_name: demoUser.name,
+              fullName: demoUser.name,
+              email: decoded.email,
+              role: demoUser.role,
+              role_name: demoUser.role,
+              is_active: true,
+              isActive: true,
+              is_verified: true,
+              isVerified: true,
+              toObject: function () { return this; },
+            };
+          }
         } else if (decoded.role === 'student' || decoded.id === '44444444-4444-4444-4444-444444444444') {
           user = {
             id: decoded.id || 'std_2023_cse_042',
@@ -238,6 +269,7 @@ export const protect = async (req, res, next) => {
       }
 
       req.user = user;
+      req.departmentCode = (req.query.department || user.department || 'AIML').toUpperCase();
       next();
     } catch (error) {
       let message = 'Not authorized, invalid token';

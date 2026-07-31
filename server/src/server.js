@@ -254,8 +254,14 @@ async function runMigrations() {
         time varchar(50) NOT NULL,
         hall varchar(50) NOT NULL,
         duration varchar(50) NOT NULL,
+        invigilator_branch varchar(100),
+        invigilator_name varchar(255),
         created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
       );
+
+      -- Add invigilator columns to exam_timetables if not exist
+      ALTER TABLE exam_timetables ADD COLUMN IF NOT EXISTS invigilator_branch varchar(100);
+      ALTER TABLE exam_timetables ADD COLUMN IF NOT EXISTS invigilator_name varchar(255);
 
       -- Create hall_tickets table
       CREATE TABLE IF NOT EXISTS hall_tickets (
@@ -278,9 +284,16 @@ async function runMigrations() {
       -- Advanced Exam Cell Columns
       ALTER TABLE results ADD COLUMN IF NOT EXISTS internal_marks numeric(5,2) DEFAULT 0.00;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS external_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS mid1_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS mid2_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS assignment_marks numeric(5,2) DEFAULT 0.00;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS exam_type varchar(50) DEFAULT 'Regular';
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_applied boolean DEFAULT false;
       ALTER TABLE results ADD COLUMN IF NOT EXISTS grace_marks numeric(4,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS status varchar(50) DEFAULT 'Pass';
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS is_published boolean DEFAULT false;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS total_marks numeric(5,2) DEFAULT 0.00;
+      ALTER TABLE results ADD COLUMN IF NOT EXISTS grade_point numeric(4,2) DEFAULT 0.00;
 
       ALTER TABLE courses ADD COLUMN IF NOT EXISTS prerequisite_code varchar(50);
 
@@ -650,7 +663,6 @@ async function runMigrations() {
                                err.code === 'ENETUNREACH' || 
                                err.message?.includes('timeout') ||
                                err.message?.includes('getaddrinfo');
-
     if (isNetworkOrTimeout) {
       console.log("\n⚠️  [MIGRATION NOTICE]: Could not connect directly to the PostgreSQL database via TCP.");
       console.log(`ℹ️  Reason: ${err.code || 'TIMEOUT'} (${err.message.split('\n')[0]})`);

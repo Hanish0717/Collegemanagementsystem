@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
+import { useHODDepartment } from '../hooks/useHODDepartment';
 import { fetchDepartmentAcademics, approveDepartmentLessonPlan, DepartmentSubject, LessonPlanItem } from '../services/hodAcademicService';
+import { hodStore } from '../services/hodStore';
 
-import { PageContainer } from '../components/shared/PageContainer';
-import { Modal } from '../components/shared/Modal';
-import { StatisticsCard } from '../components/shared/StatisticsCard';
-import { AdvancedTable } from '../components/shared/AdvancedTable';
-import { Column } from '../components/shared/DataTable';
-import { StatusBadge } from '../components/shared/StatusBadge';
-import { GlassCard } from '../components/shared/GlassCard';
-import { LinearProgress } from '../components/shared/ProgressComponents';
-import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
+import {
+  PageContainer,
+  StatisticsCard,
+  AdvancedTable,
+  Column,
+  StatusBadge,
+  GlassCard,
+  LinearProgress,
+  ActionsMenu,
+  Button,
+  Modal,
+  NotificationToast,
+} from '../components/shared';
 import { exportToCSV } from '../utils/exportUtils';
 import {
   BookOpen,
@@ -38,18 +41,60 @@ export function HODAcademicPage() {
   const [academics, setAcademics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Modals state
+  // Modals and New Course state
   const [assignSubjectModal, setAssignSubjectModal] = useState(false);
+  const [isAddingNewCourse, setIsAddingNewCourse] = useState(false);
+  const [newCourseName, setNewCourseName] = useState('');
+  const [newCourseCode, setNewCourseCode] = useState('');
+  const [newCourseCredits, setNewCourseCredits] = useState('4');
+  const [newCourseSem, setNewCourseSem] = useState('5');
+  const [newCourseType, setNewCourseType] = useState('Theory');
+  const [selectedSubjectCode, setSelectedSubjectCode] = useState('');
+  const [selectedFacultyName, setSelectedFacultyName] = useState('Dr. Ramesh Kumar (Professor & Head)');
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       const data = await fetchDepartmentAcademics(departmentCode);
       setAcademics(data);
+      if (data?.subjects?.[0]?.code) {
+        setSelectedSubjectCode(data.subjects[0].code);
+      }
       setLoading(false);
     }
     loadData();
+
+    const handleStoreUpdate = () => loadData();
+    window.addEventListener('hod_store_updated', handleStoreUpdate);
+    return () => window.removeEventListener('hod_store_updated', handleStoreUpdate);
   }, [departmentCode]);
+
+  const handleAddNewCourse = () => {
+    if (!newCourseName.trim() || !newCourseCode.trim()) {
+      NotificationToast.error('Validation Error', 'Please enter both course name and course code');
+      return;
+    }
+
+    const createdSubject: DepartmentSubject = {
+      code: newCourseCode.trim().toUpperCase(),
+      name: newCourseName.trim(),
+      credits: parseInt(newCourseCredits, 10) || 4,
+      sem: parseInt(newCourseSem, 10) || 5,
+      year: Math.ceil((parseInt(newCourseSem, 10) || 5) / 2),
+      section: 'A',
+      type: newCourseType,
+      faculty: 'Unassigned',
+      coordinator: 'Unassigned',
+      status: 'Active',
+    };
+
+    hodStore.addSubject(createdSubject);
+    setSelectedSubjectCode(createdSubject.code);
+    setIsAddingNewCourse(false);
+    setNewCourseName('');
+    setNewCourseCode('');
+    NotificationToast.success('Course Catalog Updated', `Created new course ${createdSubject.name} (${createdSubject.code}).`);
+  };
 
   const handleApprovePlan = async (id: string, decision: 'approved' | 'rejected') => {
     await approveDepartmentLessonPlan(id, decision, departmentCode);
@@ -288,29 +333,152 @@ export function HODAcademicPage() {
       {/* Assign Subject Modal */}
       <Modal
         isOpen={assignSubjectModal}
-        onClose={() => setAssignSubjectModal(false)}
+        onClose={() => {
+          setAssignSubjectModal(false);
+          setIsAddingNewCourse(false);
+        }}
         title="Assign Course Subject"
         subtitle={`Allocate subject course to ${departmentInfo.shortName} faculty`}
         variant="assign"
         confirmLabel="Assign Subject"
         onConfirm={() => {
+          const targetSubj = academics?.subjects?.find((s: any) => s.code === selectedSubjectCode) || academics?.subjects?.[0];
+          const subjName = targetSubj ? `${targetSubj.name} (${targetSubj.code})` : 'Course Subject';
+          const facName = selectedFacultyName || 'Dr. Ramesh Kumar (Professor & Head)';
+
+          if (targetSubj) {
+            hodStore.assignFacultyToSubject(targetSubj.code, facName);
+          }
+
           setAssignSubjectModal(false);
-          NotificationToast.success('Subject Assigned', 'Assigned Deep Learning (AIML501) to Dr. Ramesh Kumar');
+          setIsAddingNewCourse(false);
+          NotificationToast.success('Subject Assigned', `Assigned ${subjName} to ${facName}`);
         }}
       >
-        <div className="space-y-3">
+        <div className="space-y-4 text-xs font-semibold">
+          {/* Select Subject Header with + Add New Course toggle */}
           <div>
-            <label className="block font-bold mb-1">Select Subject</label>
-            <select className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold">
-              <option>Deep Learning & Neural Networks (AIML501)</option>
-              <option>Natural Language Processing (AIML502)</option>
-            </select>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="font-bold text-slate-800 dark:text-slate-200">Select Subject / Course</label>
+              <button
+                type="button"
+                onClick={() => setIsAddingNewCourse(!isAddingNewCourse)}
+                className="text-[11px] font-extrabold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="size-3.5" />
+                {isAddingNewCourse ? 'Select Existing Course' : '+ Add New Course'}
+              </button>
+            </div>
+
+            {!isAddingNewCourse ? (
+              <select
+                value={selectedSubjectCode}
+                onChange={(e) => {
+                  if (e.target.value === '__ADD_NEW__') {
+                    setIsAddingNewCourse(true);
+                  } else {
+                    setSelectedSubjectCode(e.target.value);
+                  }
+                }}
+                className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+              >
+                {academics?.subjects?.map((subj: any) => (
+                  <option key={subj.code} value={subj.code}>
+                    {subj.name} ({subj.code}) — Sem {subj.sem}
+                  </option>
+                ))}
+                <option value="__ADD_NEW__" className="text-blue-600 font-bold">+ Add New Course / Subject...</option>
+              </select>
+            ) : (
+              /* Inline Add New Course Form */
+              <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 space-y-3 mt-1">
+                <div className="flex items-center justify-between border-b border-blue-200/60 dark:border-blue-900/40 pb-1.5">
+                  <span className="font-extrabold text-blue-900 dark:text-blue-200 text-xs flex items-center gap-1.5">
+                    <BookOpen className="size-3.5 text-blue-600" />
+                    Create New Department Course
+                  </span>
+                  <span className="text-[10px] text-blue-500 font-bold">{departmentInfo.shortName} Catalog</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Course Name *</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Generative AI & LLMs"
+                      value={newCourseName}
+                      onChange={(e) => setNewCourseName(e.target.value)}
+                      className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Course Code *</label>
+                    <input
+                      type="text"
+                      placeholder={`e.g. ${departmentCode}504`}
+                      value={newCourseCode}
+                      onChange={(e) => setNewCourseCode(e.target.value)}
+                      className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono font-bold text-xs uppercase"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Credits</label>
+                    <select
+                      value={newCourseCredits}
+                      onChange={(e) => setNewCourseCredits(e.target.value)}
+                      className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-xs"
+                    >
+                      <option value="4">4 Credits (Theory)</option>
+                      <option value="3">3 Credits (Theory)</option>
+                      <option value="2">2 Credits (Lab / Practical)</option>
+                      <option value="1">1 Credit (Seminar)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">Semester</label>
+                    <select
+                      value={newCourseSem}
+                      onChange={(e) => setNewCourseSem(e.target.value)}
+                      className="w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-xs"
+                    >
+                      <option value="1">Sem 1 (Yr 1)</option>
+                      <option value="2">Sem 2 (Yr 1)</option>
+                      <option value="3">Sem 3 (Yr 2)</option>
+                      <option value="4">Sem 4 (Yr 2)</option>
+                      <option value="5">Sem 5 (Yr 3)</option>
+                      <option value="6">Sem 6 (Yr 3)</option>
+                      <option value="7">Sem 7 (Yr 4)</option>
+                      <option value="8">Sem 8 (Yr 4)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button variant="outline" size="sm" onClick={() => setIsAddingNewCourse(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="primary" size="sm" iconLeft={Plus} onClick={handleAddNewCourse}>
+                    Save & Select Course
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
+
           <div>
-            <label className="block font-bold mb-1">Select Faculty</label>
-            <select className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold">
-              <option>Dr. Ramesh Kumar (Professor & Head)</option>
-              <option>Prof. Sneha Verma (Assoc. Prof)</option>
+            <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">Select Faculty Member</label>
+            <select
+              value={selectedFacultyName}
+              onChange={(e) => setSelectedFacultyName(e.target.value)}
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+            >
+              <option value="Dr. Ramesh Kumar (Professor & Head)">Dr. Ramesh Kumar (Professor & Head)</option>
+              <option value="Prof. Sneha Verma (Assoc. Prof)">Prof. Sneha Verma (Assoc. Prof)</option>
+              <option value="Prof. Vikram Rathore (Asst. Prof)">Prof. Vikram Rathore (Asst. Prof)</option>
+              <option value="Dr. Ananya Roy (Asst. Prof)">Dr. Ananya Roy (Asst. Prof)</option>
             </select>
           </div>
         </div>

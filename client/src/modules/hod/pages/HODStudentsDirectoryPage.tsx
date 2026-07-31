@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useHODDepartment } from '@/modules/hod/hooks/useHODDepartment';
+import { useHODDepartment } from '../hooks/useHODDepartment';
 import { fetchDepartmentStudents, DepartmentStudent } from '../services/hodStudentService';
+import { hodStore } from '../services/hodStore';
 import { useNavigate } from '@tanstack/react-router';
 
-import { PageContainer } from '../components/shared/PageContainer';
-import { Modal } from '../components/shared/Modal';
-import { StatisticsCard } from '../components/shared/StatisticsCard';
-import { AdvancedTable } from '../components/shared/AdvancedTable';
-import { Column } from '../components/shared/DataTable';
-import { StatusBadge } from '../components/shared/StatusBadge';
-import { FilterPanel } from '../components/shared/FilterPanel';
-import { AvatarCard } from '../components/shared/AvatarCard';
-import { SideDrawer } from '../components/shared/SideDrawer';
-import { ActionsMenu } from '../components/shared/ActionsMenu';
-import { Button } from '../components/shared/Button';
-import { NotificationToast } from '../components/shared/NotificationToast';
+import {
+  PageContainer,
+  StatisticsCard,
+  AdvancedTable,
+  Column,
+  StatusBadge,
+  FilterPanel,
+  AvatarCard,
+  SideDrawer,
+  ActionsMenu,
+  Button,
+  Modal,
+  NotificationToast,
+} from '../components/shared';
 import { exportToCSV, exportToTextDoc } from '../utils/exportUtils';
 import {
   Users,
@@ -89,6 +92,8 @@ export function HODStudentsDirectoryPage() {
   // Modals state
   const [assignMentorModal, setAssignMentorModal] = useState(false);
   const [feeDefaultersModal, setFeeDefaultersModal] = useState(false);
+  const [selectedCohort, setSelectedCohort] = useState('Sem 5 Section A');
+  const [selectedMentor, setSelectedMentor] = useState('Prof. Vikram Rathore (Asst. Prof)');
 
   useEffect(() => {
     async function loadData() {
@@ -98,6 +103,10 @@ export function HODStudentsDirectoryPage() {
       setLoading(false);
     }
     loadData();
+
+    const handleStoreChange = () => loadData();
+    window.addEventListener('hod_store_updated', handleStoreChange);
+    return () => window.removeEventListener('hod_store_updated', handleStoreChange);
   }, [departmentCode]);
 
   // ── KPI metrics ────────────────────────────────────────────────────────────
@@ -189,6 +198,16 @@ export function HODStudentsDirectoryPage() {
       render: (item) => (
         <span className="font-bold text-slate-700 dark:text-slate-300">
           Yr {item.year} / Sem {item.semester} ({item.section})
+        </span>
+      ),
+    },
+    {
+      key: 'mentor',
+      header: 'Assigned Mentor',
+      render: (item) => (
+        <span className="inline-flex items-center gap-1 font-extrabold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-900/40 px-2.5 py-1 rounded-xl text-[11px]">
+          <UserCheck className="size-3 text-blue-600 shrink-0" />
+          {item.mentor || 'Unassigned'}
         </span>
       ),
     },
@@ -497,25 +516,56 @@ export function HODStudentsDirectoryPage() {
         variant="assign"
         confirmLabel="Assign Mentor"
         onConfirm={() => {
+          const mentorNameClean = selectedMentor.replace(/\s*\([^)]*\)/, '').trim();
+          const semMatch = selectedCohort.match(/Sem\s*(\d+)/i);
+          const secMatch = selectedCohort.match(/Sec(?:tion)?\s*([A-Z])/i);
+          const targetSem = semMatch ? parseInt(semMatch[1], 10) : 5;
+          const targetSec = secMatch ? secMatch[1].toUpperCase() : 'A';
+
+          // 1. Update React local state immediately
+          setStudents((prev) =>
+            prev.map((s) => {
+              if (
+                (s.semester === targetSem && s.section.toUpperCase() === targetSec) ||
+                s.section.toUpperCase() === targetSec
+              ) {
+                return { ...s, mentor: mentorNameClean };
+              }
+              return s;
+            })
+          );
+
+          // 2. Persist in hodStore & dispatch event to sync all pages
+          hodStore.setCohortMentor(selectedCohort, mentorNameClean);
           setAssignMentorModal(false);
-          NotificationToast.success('Mentor Assigned', 'Assigned Dr. Ramesh Kumar to Sem 5 Section B');
+          NotificationToast.success('Mentor Assigned Successfully', `Assigned ${mentorNameClean} as Mentor for ${selectedCohort}`);
         }}
       >
         <div className="space-y-3">
           <div>
-            <label className="block font-bold mb-1">Select Cohort</label>
-            <select className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold">
-              <option>Sem 5 Section A</option>
-              <option>Sem 5 Section B</option>
-              <option>Sem 3 Section A</option>
+            <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">Select Cohort</label>
+            <select
+              value={selectedCohort}
+              onChange={(e) => setSelectedCohort(e.target.value)}
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-xs text-slate-900 dark:text-white"
+            >
+              <option value="Sem 5 Section A">Sem 5 Section A</option>
+              <option value="Sem 5 Section B">Sem 5 Section B</option>
+              <option value="Sem 7 Section A">Sem 7 Section A</option>
+              <option value="Sem 3 Section A">Sem 3 Section A</option>
             </select>
           </div>
           <div>
-            <label className="block font-bold mb-1">Select Faculty Member</label>
-            <select className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold">
-              <option>Dr. Ramesh Kumar (Assoc. Prof)</option>
-              <option>Prof. Sneha Verma (Asst. Prof)</option>
-              <option>Prof. Vikram Rathore (Asst. Prof)</option>
+            <label className="block font-bold mb-1 text-slate-800 dark:text-slate-200">Select Faculty Member</label>
+            <select
+              value={selectedMentor}
+              onChange={(e) => setSelectedMentor(e.target.value)}
+              className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 font-bold text-xs text-slate-900 dark:text-white"
+            >
+              <option value="Prof. Vikram Rathore (Asst. Prof)">Prof. Vikram Rathore (Asst. Prof)</option>
+              <option value="Dr. Ramesh Kumar (Professor & Head)">Dr. Ramesh Kumar (Professor & Head)</option>
+              <option value="Prof. Sneha Verma (Assoc. Prof)">Prof. Sneha Verma (Assoc. Prof)</option>
+              <option value="Dr. Ananya Roy (Asst. Prof)">Dr. Ananya Roy (Asst. Prof)</option>
             </select>
           </div>
         </div>
