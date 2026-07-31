@@ -1,5 +1,6 @@
 import express from 'express';
-import { protect, authorizeRoles } from '../middleware/authMiddleware.js';
+import { protect } from '../middleware/authMiddleware.js';
+import { authorizeRoles } from '../middleware/roleMiddleware.js';
 import {
   getAssessments,
   getAssessmentById,
