@@ -1419,5 +1419,189 @@
       "status": "Approved",
       "approved_by": "e1111111-1111-1111-1111-111111111111"
     }
-  ]
+  ],
+  "attendance_notifications": [],
+  "below_75_students": [],
+  "attendance_notification_requests": [],
+  "college_settings": [
+    {
+      "key": "attendance_approval_enabled",
+      "value": "false",
+      "description": "Enable/disable HOD approval flow for attendance warnings",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    }
+  ],
+  "attendance_notification_templates": [
+    {
+      "id": "appreciation",
+      "name": "Appreciation",
+      "subject": "Congratulations on Excellent Attendance",
+      "body": "Dear {student_name},\n\nWe are pleased to inform you that you have maintained an excellent attendance of {attendance_percentage}% this month.\n\nKeep up the great work!\n\nBest regards,\nCollege Administration",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "friendly-reminder",
+      "name": "Friendly Reminder",
+      "subject": "Friendly Reminder: Attendance Update",
+      "body": "Dear {student_name},\n\nThis is a friendly reminder that your overall attendance is currently at {attendance_percentage}%.\n\nPlease attend your classes regularly to keep your attendance above the required 75% threshold.\n\nBest regards,\nClass Teacher",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "warning",
+      "name": "Warning",
+      "subject": "Attendance Warning Alert",
+      "body": "Dear {student_name},\n\nYour attendance is currently at {attendance_percentage}%, which is below the required 75% threshold.\n\nPlease take immediate steps to attend your classes regularly to avoid academic penalty.\n\nBest regards,\nClass Teacher",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "critical-warning",
+      "name": "Critical Warning",
+      "subject": "Critical Attendance Warning",
+      "body": "Dear Parent / Student,\n\nThis is to notify you that the attendance of {student_name} ({roll_number}) is critical at {attendance_percentage}%.\n\nPlease meet your department HOD immediately to resolve this.\n\nBest regards,\nDepartment Head",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "detention-alert",
+      "name": "Detention Alert",
+      "subject": "Detention Risk Alert",
+      "body": "Dear Parent / Student,\n\nYour overall attendance has fallen to {attendance_percentage}%, putting you at immediate risk of detention.\n\nKindly note that you will not be allowed to write the semester exams if this is not resolved.\n\nBest regards,\nPrincipal",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    }
+  ],
+  "attendance_notification_history": [],
+  "attendance_notification_logs": [],
+  "id_cards": [],
+  "duplicate_id_cards": [],
+  "id_card_payments": [],
+  "id_card_receipts": [],
+  "missing_id_cards": [],
+  "id_card_print_history": [],
+  "security_logs": [
+    {
+      "id": "LOG-8921",
+      "user_name": "superadmin@college.com",
+      "event": "Super Admin Login",
+      "ip": "192.168.1.100",
+      "time": "10 mins ago",
+      "status": "Success",
+      "created_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "LOG-8920",
+      "user_name": "admin@college.com",
+      "event": "Admin Settings Modified",
+      "ip": "192.168.1.102",
+      "time": "45 mins ago",
+      "status": "Success",
+      "created_at": "2026-07-30T13:08:57.369Z"
+    },
+    {
+      "id": "LOG-8919",
+      "user_name": "unknown@test.com",
+      "event": "Failed Auth Attempt",
+      "ip": "203.0.113.45",
+      "time": "2 hours ago",
+      "status": "Failed",
+      "created_at": "2026-07-30T11:53:57.369Z"
+    },
+    {
+      "id": "LOG-8918",
+      "user_name": "faculty@college.com",
+      "event": "Grade Book Export",
+      "ip": "192.168.1.115",
+      "time": "3 hours ago",
+      "status": "Success",
+      "created_at": "2026-07-30T10:53:57.369Z"
+    },
+    {
+      "id": "LOG-8917",
+      "user_name": "System Security",
+      "event": "Automated Vulnerability Scan",
+      "ip": "127.0.0.1",
+      "time": "5 hours ago",
+      "status": "Success",
+      "created_at": "2026-07-30T08:53:57.369Z"
+    }
+  ],
+  "backups": [
+    {
+      "id": "BK-2026-07-22",
+      "type": "Full Database Backup",
+      "size": "4.2 GB",
+      "date": "2026-07-22 02:00 AM",
+      "status": "Completed",
+      "cloud": "Synced",
+      "created_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "BK-2026-07-21",
+      "type": "Full Database Backup",
+      "size": "4.1 GB",
+      "date": "2026-07-21 02:00 AM",
+      "status": "Completed",
+      "cloud": "Synced",
+      "created_at": "2026-07-29T13:53:57.369Z"
+    },
+    {
+      "id": "BK-2026-07-20",
+      "type": "Full Database Backup",
+      "size": "4.0 GB",
+      "date": "2026-07-20 02:00 AM",
+      "status": "Completed",
+      "cloud": "Synced",
+      "created_at": "2026-07-28T13:53:57.369Z"
+    }
+  ],
+  "work_wallet_tasks": [
+    {
+      "id": "TSK-101",
+      "title": "Review NAAC Criterion 3 R&D Documentation",
+      "category": "Accreditation",
+      "assignee": "Dean Academics",
+      "assigned_by": "Office of the Principal",
+      "priority": "High",
+      "status": "Approval Required",
+      "due_date": "Jul 31, 2026",
+      "comments_count": 4,
+      "description": "Audit research publication proof certificates for 2025-2026 faculty submissions.",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "TSK-102",
+      "title": "Consolidate Mid-Semester Attendance Reports",
+      "category": "Academic Monitoring",
+      "assignee": "HOD CSE",
+      "assigned_by": "Admin Office",
+      "priority": "High",
+      "status": "In Progress",
+      "due_date": "Aug 02, 2026",
+      "comments_count": 2,
+      "description": "Flag all students with <75% attendance across Semester 5 sections A and B.",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    },
+    {
+      "id": "TSK-103",
+      "title": "Approve Q3 Laboratory Procurement Invoice",
+      "category": "Inventory & Assets",
+      "assignee": "Finance Officer",
+      "assigned_by": "Admin Office",
+      "priority": "Medium",
+      "status": "Pending",
+      "due_date": "Aug 04, 2026",
+      "comments_count": 1,
+      "description": "Verify vendor GST tax invoice for 40 new Intel i7 workstations.",
+      "created_at": "2026-07-30T13:53:57.369Z",
+      "updated_at": "2026-07-30T13:53:57.369Z"
+    }
+  ],
+  "audit_logs": [],
+  "login_history": []
 }

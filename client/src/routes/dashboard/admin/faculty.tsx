@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router';
-import { AdminFaculty } from '@/pages/admin/AdminFaculty';
+import { AdminFaculty } from '@/modules/admin/pages/AdminFacultyPage';
 
 function AdminFacultyLayout() {
   const path = useRouterState({ select: (r) => r.location.pathname });

@@ -1,44 +1,44 @@
 import express from 'express';
 import {
-  getSuperAdminStats,
-  getAdmins,
-  createAdmin,
-  updateAdmin,
-  deleteAdmin,
-  getDepartments,
-  createDepartment,
-  updateDepartment,
-  deleteDepartment,
-  getCourses,
-  createCourse,
-  updateCourse,
-  deleteCourse,
-  getBackups,
-  createBackup,
-  restoreBackup,
-  saveBackupSettings,
-  getAutomations,
-  toggleAutomation,
-  saveAutomationSettings,
-  getNotifications,
-  toggleNotificationRead,
-  markAllNotificationsRead,
-  deleteNotification,
-  clearAllNotifications,
-  saveNotificationCategories,
-  getSecurityLogs,
-  getSystemSettings,
-  saveProfile,
-  saveSecuritySettings,
-  saveNotificationPrefs,
-  updatePassword,
-  getSystemConfig,
-  saveConfigToggles,
-  saveConfigInstitution,
-  getReportsData,
-  downloadReportCSV,
-  getUsers,
-  toggleUserStatus,
+    getSuperAdminStats,
+    getAdmins,
+    createAdmin,
+    updateAdmin,
+    deleteAdmin,
+    getDepartments,
+    createDepartment,
+    updateDepartment,
+    deleteDepartment,
+    getCourses,
+    createCourse,
+    updateCourse,
+    deleteCourse,
+    getBackups,
+    createBackup,
+    restoreBackup,
+    saveBackupSettings,
+    getAutomations,
+    toggleAutomation,
+    saveAutomationSettings,
+    getNotifications,
+    toggleNotificationRead,
+    markAllNotificationsRead,
+    deleteNotification,
+    clearAllNotifications,
+    saveNotificationCategories,
+    getSecurityLogs,
+    getSystemSettings,
+    saveProfile,
+    saveSecuritySettings,
+    saveNotificationPrefs,
+    updatePassword,
+    getSystemConfig,
+    saveConfigToggles,
+    saveConfigInstitution,
+    getReportsData,
+    downloadReportCSV,
+    getUsers,
+    toggleUserStatus,
 } from '../controllers/superAdminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { requireRole } from '../middleware/rbacMiddleware.js';
@@ -53,92 +53,92 @@ router.use(protect);
 router.use(requireRole('super-admin'));
 
 router.route('/users')
-  .get(getUsers);
+    .get(getUsers);
 
 router.route('/users/:id/status')
-  .put(toggleUserStatus);
+    .put(toggleUserStatus);
 
 router.route('/admins')
-  .get(getAdmins)
-  .post(createAdmin);
+    .get(getAdmins)
+    .post(createAdmin);
 
 router.route('/admins/:id')
-  .put(updateAdmin)
-  .delete(deleteAdmin);
+    .put(updateAdmin)
+    .delete(deleteAdmin);
 
 router.route('/departments')
-  .get(getDepartments)
-  .post(createDepartment);
+    .get(getDepartments)
+    .post(createDepartment);
 
 router.route('/departments/:code')
-  .put(updateDepartment)
-  .delete(deleteDepartment);
+    .put(updateDepartment)
+    .delete(deleteDepartment);
 
 // Courses
 router.route('/courses')
-  .get(getCourses)
-  .post(createCourse);
+    .get(getCourses)
+    .post(createCourse);
 router.route('/courses/:code')
-  .put(updateCourse)
-  .delete(deleteCourse);
+    .put(updateCourse)
+    .delete(deleteCourse);
 
 // Backups
 router.route('/backups')
-  .get(getBackups)
-  .post(createBackup);
+    .get(getBackups)
+    .post(createBackup);
 router.route('/backups/restore')
-  .post(restoreBackup);
+    .post(restoreBackup);
 router.route('/backups/settings')
-  .post(saveBackupSettings);
+    .post(saveBackupSettings);
 
 // Automations
 router.route('/automations')
-  .get(getAutomations);
+    .get(getAutomations);
 router.route('/automations/:name/toggle')
-  .put(toggleAutomation);
+    .put(toggleAutomation);
 router.route('/automations/:name/settings')
-  .post(saveAutomationSettings);
+    .post(saveAutomationSettings);
 
 // Notifications
 router.route('/notifications')
-  .get(getNotifications)
-  .delete(clearAllNotifications);
+    .get(getNotifications)
+    .delete(clearAllNotifications);
 router.route('/notifications/mark-all-read')
-  .post(markAllNotificationsRead);
+    .post(markAllNotificationsRead);
 router.route('/notifications/categories')
-  .post(saveNotificationCategories);
+    .post(saveNotificationCategories);
 router.route('/notifications/:id')
-  .delete(deleteNotification);
+    .delete(deleteNotification);
 router.route('/notifications/:id/read')
-  .put(toggleNotificationRead);
+    .put(toggleNotificationRead);
 
 // Security Logs
 router.route('/security-logs')
-  .get(getSecurityLogs);
+    .get(getSecurityLogs);
 
 // Settings & Config
 router.route('/settings')
-  .get(getSystemSettings);
+    .get(getSystemSettings);
 router.route('/settings/profile')
-  .post(saveProfile);
+    .post(saveProfile);
 router.route('/settings/password')
-  .post(updatePassword);
+    .post(updatePassword);
 router.route('/settings/security')
-  .post(saveSecuritySettings);
+    .post(saveSecuritySettings);
 router.route('/settings/notifications')
-  .post(saveNotificationPrefs);
+    .post(saveNotificationPrefs);
 
 router.route('/config')
-  .get(getSystemConfig);
+    .get(getSystemConfig);
 router.route('/config/toggles')
-  .post(saveConfigToggles);
+    .post(saveConfigToggles);
 router.route('/config/institution')
-  .post(saveConfigInstitution);
+    .post(saveConfigInstitution);
 
 // Reports
 router.route('/reports/data')
-  .get(getReportsData);
+    .get(getReportsData);
 router.route('/reports/download/:type')
-  .get(downloadReportCSV);
+    .get(downloadReportCSV);
 
 export default router;
